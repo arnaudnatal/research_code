@@ -4,6 +4,7 @@
   - [ ] See for econometrics with gift
   - [ ] Order descriptive statistics and layout
   - [ ] Explore literature on gift and benefits of marriage
+  - [ ] Sub sample by quantiles of assets and income
 ## Debt
   - [ ] Ratios with 2020
   - [ ] Descriptive 2010 - 2016 - 2020
