@@ -233,10 +233,7 @@ tab hwcaste caste, m
 
 
 
-********* 1000 var
-foreach x in marriagedowry engagementtotalcost engagementhusbandcost engagementwifecost marriagetotalcost marriagehusbandcost marriagewifecost marriageexpenses{
-gen `x'1000=`x'/1000
-}
+
 
 
 ********** How pay marriage?
@@ -262,9 +259,102 @@ replace howpaymarriage_gift=1 if howpaymarriage=="Both & gift"
 tab1 howpaymarriage_loan howpaymarriage_capital howpaymarriage_gift
 drop howpaymarriage
 
+
+
+********** Date
+gen datecovid=.
+replace datecovid=1 if marriagedate<td(24mar2020)  // before lockdown
+replace datecovid=2 if marriagedate>=td(24mar2020) & marriagedate<=td(31may2020)  // during lockdown
+replace datecovid=3 if marriagedate>td(31may2020) & marriagedate<=td(01sep2020) // post 1
+replace datecovid=4 if marriagedate>td(01sep2020) & marriagedate!=.
+tab marriagedate datecovid
+
+
+
+
+********** Age at marriage
+tab age
+gen yearborn1=yofd(dofc(submissiondate))
+gen yearborn=yearborn1-age
+gen yearmarriage=year(marriagedate)
+gen ageatmarriage=yearmarriage-yearborn
+drop yearborn1 yearborn yearmarriage
+order marriagedowry marriagedate age sex ageatmarriage, last
+tab ageatmarriage
+sort ageatmarriage
+
+
+********** Decision making
+fre marriagedecision
+gen marriagedecision_rec=.
+replace marriagedecision_rec=1 if marriagedecision==1
+replace marriagedecision_rec=2 if marriagedecision==2
+replace marriagedecision_rec=3 if marriagedecision>=3 & marriagedecision!=.
+fre marriagedecision_rec
+
+
+
+
+
+********** Marriage decision
+/*
+forvalues i=1(1)19{
+gen _todrop_relation_INDID_`i'=.
+}
+
+forvalues i=1(1)19{
+replace _todrop_relation_INDID_`i'=relationshiptohead if INDID==`i'
+}
+forvalues i=1(1)19{
+bysort HHID2010: egen relation_INDID_`i'=max(_todrop_relation_INDID_`i')
+}
+drop _todrop_*
+
+gen marriagedecisionrelation=.
+forvalues i=1(1)19{
+replace marriagedecisionrelation=relation_INDID_`i' if marriagedecision==`i'
+}
+tab marriagedecisionrelation
+tab marriagedecision
+label values marriagedecisionrelation relationshiptohead
+tab marriagedecisionrelation relationshiptohead
+fre marriagedecisionrelation
+gen marriagedecision_cat=1 if marriagedecisionrelation==1
+foreach x in 2 3 4{
+replace marriagedecision_cat=2 if marriagedecisionrelation==`x'
+}
+foreach x in 5 8 13{
+replace marriagedecision_cat=3 if marriagedecisionrelation==`x'
+}
+label define marriagedecision_cat 1"Head" 2"Wife, grand parents" 3"Personal choice"
+label values marriagedecision_cat marriagedecision_cat
+fre marriagedecision_cat
+*/
+
+
+
 save"$directory\NEEMSIS2\NEEMSIS2-marriage_v4.dta", replace
 ****************************************
 * END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -458,32 +548,311 @@ save"$directory\NEEMSIS2\NEEMSIS2-marriage_v5.dta", replace
 
 
 
+
+
+
+
+
+
+
+
+
+****************************************
+* Creation
+****************************************
+use"$directory\NEEMSIS2\NEEMSIS2-marriage_v5.dta", clear
+
+********* 1000 var
+foreach x in marriagedowry engagementtotalcost engagementhusbandcost engagementwifecost marriagetotalcost marriagehusbandcost marriagewifecost marriageexpenses{
+gen `x'1000=`x'/1000
+}
+
+
+
+
+
+
+
+********** On assets
+*
+gen MEAR=marriageexpenses/assets
+*
+gen MCAR=.
+replace MCAR=marriagehusbandcost/assets if sex==1
+replace MCAR=marriagewifecost/assets if sex==2
+*
+gen ECAR=.
+replace ECAR=engagementhusbandcost/assets if sex==1
+replace ECAR=engagementwifecost/assets if sex==2
+*
+gen DAAR=.
+replace DAAR=marriagedowry/assets if sex==2
+
+
+
+
+
+
+********** On income
+*
+gen MEIR=marriageexpenses/totalincome_HH
+*
+gen MCIR=.
+replace MCIR=marriagehusbandcost/totalincome_HH if sex==1
+replace MCIR=marriagewifecost/totalincome_HH if sex==2
+*
+gen ECIR=.
+replace ECIR=engagementhusbandcost/totalincome_HH if sex==1
+replace ECIR=engagementwifecost/totalincome_HH if sex==2
+*
+gen DAIR=.
+replace DAIR=marriagedowry/totalincome_HH if sex==2
+
+
+
+
+
+
+
+********** On cost
+*
+gen MEMC=.
+replace MEMC=marriageexpenses/marriagehusbandcost if sex==1
+replace MEMC=marriageexpenses/marriagewifecost if sex==2
+*
+gen DMC=.
+replace DMC=marriagedowry/marriagetotalcost
+
+
+
+
+
+
+
+********** Total cost
+*Total cost of marriage: engagement, marriage and dowry
+gen husbtotalcost1000=.
+gen wifetotalcost1000=.
+gen totalcost1000=.
+replace husbtotalcost1000=(engagementhusbandcost+marriagehusbandcost)/1000
+replace wifetotalcost1000=(engagementwifecost+marriagewifecost+marriagedowry)/1000
+replace totalcost1000=(engagementtotalcost+marriagetotalcost+marriagedowry)/1000
+*Total cost on assets and income
+gen TCAR=.
+replace TCAR=(husbtotalcost1000*1000)/assets if sex==1
+replace TCAR=(wifetotalcost1000*1000)/assets if sex==2
+
+gen TCIR=.
+replace TCIR=(husbtotalcost1000*1000)/totalincome_HH if sex==1
+replace TCIR=(wifetotalcost1000*1000)/totalincome_HH if sex==2
+
+
+
+
+
+
+
+********* Share
+gen husbandsharemarriage=marriagehusbandcost/marriagetotalcost
+gen wifesharemarriage=marriagewifecost/marriagetotalcost
+gen husbandshareengagement=engagementhusbandcost/engagementtotalcost
+gen wifeshareengagement=engagementwifecost/engagementtotalcost
+
+gen testmar=husbandsharemarriage+wifesharemarriage
+gen testenga=husbandshareengagement+wifeshareengagement
+
+tab1 testmar testenga
+drop testmar testenga
+
+gen husbandsharetotal=husbtotalcost1000/totalcost1000
+gen wifesharetotal=wifetotalcost1000/totalcost1000
+
+gen testtotal=husbandsharetotal+wifesharetotal
+tab testtotal
+drop testtotal
+
+
+
+
+
+
+
+
+********** Total cost and dowry
+gen DWTC=.
+replace DWTC=marriagedowry1000/wifetotalcost1000
+
+gen DWTCnodowry=.
+replace DWTCnodowry=marriagedowry1000/(engagementwifecost1000+marriagewifecost1000)
+
+
+
+
+
+
+
+
+
+********** Intercaste marriage
+gen intercaste=0 if hwcaste==caste
+replace intercaste=1 if hwcaste!=caste
+
+
+
+
+
+
+********** Gift
+gen gifttoexpenses=totalmarriagegiftamount/marriageexpenses
+gen gifttocost=.
+replace gifttocost=totalmarriagegiftamount/marriagehusbandcost if sex==1
+replace gifttocost=totalmarriagegiftamount/marriagewifecost if sex==2
+
+
+gen benefitscost=0
+replace benefitscost=1 if gifttocost>1 & gifttocost!=.
+tab1 gifttocost benefitscost
+
+gen benefitsexpenses=0
+replace benefitsexpenses=1 if gifttoexpenses>1 & gifttoexpenses!=.
+tab1 gifttoexpenses benefitsexpenses
+
+
+
+
+
+********** Net benefits of marriage
+clonevar totalmarriagegiftamount_recode=totalmarriagegiftamount
+recode totalmarriagegiftamount_recode (.=0)
+gen netbenefitsmarriage1000=.
+replace netbenefitsmarriage1000=(marriagedowry+totalmarriagegiftamount_recode-marriagehusbandcost)/1000 if sex==1
+replace netbenefitsmarriage1000=(totalmarriagegiftamount_recode-marriagewifecost-marriagedowry)/1000 if sex==2
+*Benefits on assets and income
+gen BAR=netbenefitsmarriage1000*1000/assets
+gen BIR=netbenefitsmarriage1000*1000/totalincome_HH
+
+
+
+
+********** Gift on income and assets
+gen GAR=totalmarriagegiftamount/assets
+gen GIR=totalmarriagegiftamount/totalincome_HH
+
+
+
+save"$directory\NEEMSIS2\NEEMSIS2-marriage_v6.dta", replace
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ****************************************
 * Preliminary analysis
 ****************************************
-use"$directory\NEEMSIS2\NEEMSIS2-marriage_v5.dta", clear
+use"$directory\NEEMSIS2\NEEMSIS2-marriage_v6.dta", clear
+
+
+********** Who marries?
+tab caste sex, nofreq col
+tab edulevel sex, nofreq col
+tabstat ageatmarriage, stat(n mean p50) by(sex)
+
+
+
+
+********** Type of marriage
+tab caste
+tab hwcaste caste, cell nofreq
+tab hwcaste caste if sex==1
+tab hwcaste caste if sex==2
+tab marriagearranged caste, col nofreq
+tab marriagetype caste, col nofreq
+*tab marriagedecision caste
+*tab marriagedecision_rec caste, col nofreq
+tab marriagespousefamily caste, col nofreq
+tabstat peoplewedding, stat(mean sd p50 min max) by(caste)
+tab datecovid caste, nofreq col
+
+
+
+********** Cost of marriage
+* Marriage
+tabstat marriagetotalcost1000 husbandsharemarriage wifesharemarriage, stat(mean sd p50) by(caste)
+* Engagement
+tabstat engagementtotalcost1000 husbandshareengagement wifeshareengagement, stat(mean sd p50) by(caste)
+* Dowry
+tabstat marriagedowry1000 DWTC DWTCnodowry, stat(n mean sd p50) by(caste)
+* Total
+tabstat totalcost1000 husbandsharetotal wifesharetotal, stat(n mean sd p50) by(caste)
+
+
+
+********** Relative cost of marriage
+* Points
+gen assets1000=assets/1000
+gen totalincome1000_HH=totalincome_HH/1000
+tabstat assets1000 totalincome1000_HH, stat(n mean sd p50) by(sex)
+* Assets
+tabstat MCAR ECAR DAAR TCAR, stat(n mean sd p50) by(sex)
+* Income
+tabstat MCIR ECIR DAIR TCIR, stat(n mean sd p50) by(sex)
+* Expenses
+tabstat marriageexpenses1000 MEAR MEIR MEMC, stat(n mean sd p50) by(sex)
+
+
+
+
+********** Schemes
+tab schemeamount7 intercaste
+tab schemeamount8 intercaste
+*Nothing
+
+
+
+
 
 ********** Gift as form of saving?
 fre dummymarriagegift
 fre sex
-*
-gen giftexp=.
-replace giftexp=totalmarriagegiftamount-marriageexpenses
-tab giftexp
-*40% have benefits
-drop giftexp
-*
-gen giftcost=.
-replace giftcost=totalmarriagegiftamount-marriagehusbandcost if sex==1 & dummymarriagegift==1
-replace giftcost=totalmarriagegiftamount-marriagewifecost if sex==2 & dummymarriagegift==1
-tab giftcost sex
-gen giftbenefits=.
-replace giftbenefits=-1 if giftcost<0
-replace giftbenefits=0 if giftcost==0
-replace giftbenefits=1 if giftcost>0
-tab giftbenefits sex
-*Less than half had benefits from marriage
-drop giftcost giftbenefits
+gen totalmarriagegiftamount1000=totalmarriagegiftamount/1000
+* Gift and relative to cost 
+tabstat totalmarriagegiftamount1000 gifttoexpenses gifttocost, stat(n mean sd p50) by(sex)
+* Gift relative to assets and income
+tabstat GAR GIR, stat(n mean sd p50) by(sex)
+* Benefits on marriage ceremony
+tab benefitscost sex, col
+tab benefitsexpenses sex, col
+
+
+
+********** Net benefits of marriage
+tabstat netbenefitsmarriage, stat(n mean sd min q max) by(sex) 
+tabstat BAR BIR, stat(n mean sd p50) by(sex)
+tabstat BAR BIR if netbenefitsmarriage>1, stat(n mean sd p50) by(sex)
+reg netbenefitsmarriage i.sex i.caste
+/*
+Est-ce que quand le HH est au placé, il dégage plus de profit?
+Si jamais il appartient à un Panchayat, etc
+*/
+
+
 
 
 ********** Gift and people wedding
@@ -516,16 +885,60 @@ plot totalmarriagegiftamount peoplewedding
 *twoway (scatter totalmarriagegiftamount peoplewedding, legend(off) ytitle("Total gift amount")) (lfit totalmarriagegiftamount peoplewedding)
 
 
+
+
+********** If better situation is the cost higher ?
+tabstat wifesharemarriage if sex==1, stat(n mean sd p50) by(marriagespousefamily)
+tabstat husbandsharemarriage if sex==2, stat(n mean sd p50) by(marriagespousefamily)
+
+
+
+
+
+********** Date
+twoway (scatter peoplewedding marriagedate, legend(off) ytitle("Nb people at wedding"))
+twoway (scatter marriagetotalcost marriagedate, legend(off))
+
+
+
+
+********** Type of marriage
+tabstat marriagetotalcost1000, stat(min p50 max)
+
+stripplot marriagetotalcost1000, over(marriagearranged) separate(caste) ///
+cumul cumprob box centre refline vertical /// 
+xsize(3) xtitle("") xlabel(,angle())  ///
+ylabel(0(100)1800) ymtick(0(50)1800) ytitle() ///
+msymbol(oh oh oh) mcolor(plr1 ply1 plg1) 
+
+
+
+
 ****************************************
 * END
 
 
-cls
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ****************************************
 * Loans verif
 ****************************************
-use"$directory\NEEMSIS2\NEEMSIS2-loans_v13.dta", clear
-drop _merge
+use"$directory\NEEMSIS2\NEEMSIS2-loans_v12.dta", clear
+
 
 ********** Check les HH who face one marriage since 2016
 preserve
@@ -586,85 +999,5 @@ gen marriageintotalloaned=totalmarriageloanamount/totalloanamount
 tabstat marriageintotalloaned if n==1 & dummymarriage==1, stat(n mean sd p50) by(caste)
 
 
-
-
-
-
-
-
-
-
-
-
-
-* Date
-gen datecovid=.
-replace datecovid=1 if marriagedate<td(24mar2020)  // before lockdown
-replace datecovid=2 if marriagedate>=td(24mar2020) & marriagedate<=td(31may2020)  // during lockdown
-replace datecovid=3 if marriagedate>td(31may2020) & marriagedate<=td(01sep2020) // post 1
-replace datecovid=4 if marriagedate>td(01sep2020) & marriagedate!=.
-tab marriagedate datecovid
-
-
-* Decision making
-fre marriagedecision
-gen marriagedecision_rec=.
-replace marriagedecision_rec=1 if marriagedecision==1
-replace marriagedecision_rec=2 if marriagedecision==2
-replace marriagedecision_rec=3 if marriagedecision>=3 & marriagedecision!=.
-fre marriagedecision_rec
-
-* Age at marriage
-destring age, replace
-replace age=age_p16+4 if age==. & age_p16!=.
-tab age
-gen yearborn1=yofd(dofc(startquestionnaire))
-gen yearborn=yearborn1-age
-gen yearmarriage=year(marriagedate)
-gen ageatmarriage=yearmarriage-yearborn
-drop yearborn1 yearborn yearmarriage
-order marriagedowry marriagedate age_new age sex ageatmarriage, last
-tab ageatmarriage
-sort ageatmarriage
-
-
-
-* Marriage decision
-keep if dummymarriage==1
-tab INDID
-forvalues i=1(1)19{
-gen _todrop_relation_INDID_`i'=.
-}
-
-forvalues i=1(1)19{
-replace _todrop_relation_INDID_`i'=relationshiptohead if INDID==`i'
-}
-forvalues i=1(1)19{
-bysort HHID2010: egen relation_INDID_`i'=max(_todrop_relation_INDID_`i')
-}
-drop _todrop_*
-
-gen marriagedecisionrelation=.
-forvalues i=1(1)19{
-replace marriagedecisionrelation=relation_INDID_`i' if marriagedecision==`i'
-}
-tab marriagedecisionrelation
-tab marriagedecision
-label values marriagedecisionrelation relationshiptohead
-tab marriagedecisionrelation relationshiptohead
-fre marriagedecisionrelation
-gen marriagedecision_cat=1 if marriagedecisionrelation==1
-foreach x in 2 3 4{
-replace marriagedecision_cat=2 if marriagedecisionrelation==`x'
-}
-foreach x in 5 8 13{
-replace marriagedecision_cat=3 if marriagedecisionrelation==`x'
-}
-label define marriagedecision_cat 1"Head" 2"Wife, grand parents" 3"Personal choice"
-label values marriagedecision_cat marriagedecision_cat
-fre marriagedecision_cat
-
-*new setof
-gen cro1="["
-gen cro2="]"
-egen setofmarriagegroup_newold=concat(setofmarriagegroup_o cro1 marriedid_o cro2)
+****************************************
+* END
