@@ -3,7 +3,7 @@
 ## Marriage
   - [ ] See for econometrics with gift
   - [ ] Order descriptive statistics and layout
-  - [ ] Explore literature on gift and benefits of marriage
+  - [ ] Explore literature on gift and benefits of marriage (panchayat)
   - [ ] Sub sample by quantiles of assets and income
 ## Debt
   - [ ] Ratios with 2020
