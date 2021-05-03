@@ -5,6 +5,7 @@
   - [ ] Order descriptive statistics and layout
   - [ ] Explore literature on gift and benefits of marriage (panchayat)
   - [ ] Sub sample by quantiles of assets and income
+  - [ ] Network approach of marriage: values of gift --> number of people at wedding --> Network AND type of debt --> WKP --> Network
 ## Debt
   - [ ] Ratios with 2020
   - [ ] Descriptive 2010 - 2016 - 2020
