@@ -14,7 +14,7 @@ clear all
 
 global directory "D:\Documents\_Thesis\Research-Marriage\Data"
 
-
+cd"$directory\NEEMSIS2"
 
 
 ****************************************
@@ -22,7 +22,7 @@ global directory "D:\Documents\_Thesis\Research-Marriage\Data"
 ****************************************
 
 ********** First: recreate the old one
-use "$directory\NEEMSIS2\NEEMSIS2-HH_v15.dta", clear
+use "$directory\NEEMSIS2\NEEMSIS2-HH_v16.dta", clear
 split setofmarriagegroup, p([)
 gen cro1="["
 gen cro2="]"
@@ -56,111 +56,47 @@ bysort HHID2010: egen dummymarriage2010=max(m2010)
 drop m2010
 
 
-/*
-********** Matching
-*Composition par sexe et par age
-*keep if livinghome==1 | livinghome==2
-replace maritalstatus=1 if husbandwifecaste!=.
-fre sex
-
-gen male_married=.
-gen male_unmarried=.
-gen female_married=.
-gen female_unmarried=.
-
-replace male_married=1 if sex==1 & maritalstatus==1
-replace male_unmarried=1 if sex==1 & maritalstatus>1
-replace female_married=1 if sex==2 & maritalstatus==1
-replace female_unmarried=1 if sex==2 & maritalstatus>1
-
-gen male_00_18=0
-gen male_18_30=0
-gen male_30_45=0
-gen male_45_99=0
-
-gen female_00_18=0
-gen female_18_30=0
-gen female_30_45=0
-gen female_45_99=0
-
-replace male_00_18=1 if sex==1 & age<18
-replace male_18_30=1 if sex==1 & age>18 & age<30
-replace male_30_45=1 if sex==1 & age>30 & age<45
-replace male_45_99=1 if sex==1 & age>45
-
-replace female_00_18=1 if sex==2 & age<18
-replace female_18_30=1 if sex==2 & age>18 & age<30
-replace female_30_45=1 if sex==2 & age>30 & age<45
-replace female_45_99=1 if sex==2 & age>45
-
-
-*Richesse
-tab assets
-tab totalincome_HH
-
-*Worker composition
-gen nbemployment=.
-gen nbunemployment=.
-
-replace nbemployment=1 if totalincome_indiv>0
-replace nbunemployment=1 if totalincome_indiv==0
-
-*HH size
-gen size=1
-
-*HH level
-foreach x in male_00_18 male_18_30 male_30_45 male_45_99 female_00_18 female_18_30 female_30_45 female_45_99 male_married male_unmarried female_married female_unmarried nbemployment nbunemployment size{
-bysort HHID2010: egen HH_`x'=sum(`x') 
-drop `x'
-}
-
-
-psmatch2 dummymarriage HH_male_00_18 HH_male_18_30 HH_male_30_45 HH_male_45_99 HH_female_00_18 HH_female_18_30 HH_female_30_45 HH_female_45_99, kernel bwidth(0.0001) common
-*Good
-pstest HH_male_00_18 HH_male_18_30 HH_male_30_45 HH_male_45_99 HH_female_00_18 HH_female_18_30 HH_female_30_45 HH_female_45_99, treated(dummymarriage) both graph
-*/
-
 
 ********** Keep the HH
 keep if dummymarriage==1 | dummymarriage2010==1
 
 
+********** Intermediate saving
+save"NEEMSIS2-marriage.dta", replace
 
 
-
-
-
-
-
-********** Keep variables
-keep parent_key HHID_panel egoid HHID2010 householdid2020 villageid villagearea jatis caste INDID INDID_total INDID_former INDID_new INDID_left egoid name sex age edulevel submissiondate livinghome lefthomereason lefthomedestination relationshiptohead relationshiptoheadother maritalstatus maritalstatusdate dummycastespouse comefromspouse dummyreligionspouse castespouse otheroriginspouse religion everattendedschool reasonneverattendedschool reasondropping currentlyatschool marriedlist_ marriedname peoplewedding husbandwifecaste marriagetype marriageblood marriagearranged marriagedecision marriagespousefamily marriagedowry engagementtotalcost engagementhusbandcost engagementwifecost marriagetotalcost marriagehusbandcost marriagewifecost howpaymarriage marriageloannb marriagefinance_count setofmarriagefinance marriageexpenses dummymarriagegift marriagegiftsource marriagegift_count setofmarriagegift marriagedate marriagesomeoneelse old_marriedid dummy_marriageindivnew schemeslist schemeslist_ cashassistancemarriagegroup_coun setofcashassistancemarriagegroup setofgoldmarriagegroup schemerecipientlist3 schemerecipientlist3_ schemerecipientlist4 schemerecipientlist4_ schemeyearbenefited7 schemeyearbenefited8 schemeamount7 schemeamount8 semiformal_indiv formal_indiv economic_indiv current_indiv humancap_indiv social_indiv house_indiv incomegen_indiv noincomegen_indiv economic_amount_indiv current_amount_indiv humancap_amount_indiv social_amount_indiv house_amount_indiv incomegen_amount_indiv noincomegen_amount_indiv informal_amount_indiv formal_amount_indiv semiformal_amount_indiv marriageloan_indiv marriageloanamount_indiv marriageloan_mar_indiv marriageloanamount_mar_indiv marriageloan_fin_indiv marriageloanamount_fin_indiv dummyproblemtorepay_indiv dummyhelptosettleloan_indiv dummyinterest_indiv loans_indiv loanamount_indiv loanbalance_indiv imp1_ds_tot_HH imp1_is_tot_HH informal_HH semiformal_HH formal_HH economic_HH current_HH humancap_HH social_HH house_HH incomegen_HH noincomegen_HH economic_amount_HH current_amount_HH humancap_amount_HH social_amount_HH house_amount_HH incomegen_amount_HH noincomegen_amount_HH informal_amount_HH formal_amount_HH semiformal_amount_HH marriageloan_HH marriageloanamount_HH marriageloan_mar_HH marriageloanamount_mar_HH marriageloan_fin_HH marriageloanamount_fin_HH dummyproblemtorepay_HH dummyhelptosettleloan_HH dummyinterest_HH loans_HH loanamount_HH loanbalance_HH mainoccupation_hours_indiv mainoccupation_income_indiv mainoccupation_indiv mainoccupationname_indiv totalincome_indiv nboccupation_indiv mainoccupation_HH totalincome_HH nboccupation_HH setofmarriagegroup setofmarriagegroup_new marriedid old_marriedid assets assets_noland
-egen INDID2010=concat(HHID2010 INDID), p(/)
-save"$directory\NEEMSIS2\NEEMSIS2-HH_v15_temp.dta", replace
-
-
-
+/*
 ********** Marriage "panel"
 preserve
 keep if husbandwifecaste!=.
 save"$directory\complet\NEEMSIS2-marriage_v1.dta", replace
 save"$directory\NEEMSIS2\NEEMSIS2-marriage_v1.dta", replace
 restore
-
-
-
-
-
-
+*/
 
 
 
 ********* Merge gift
 use "$directory\NEEMSIS2\NEEMSIS_APPEND-marriagegift.dta", clear
+* Clean
 rename parent_key setofmarriagegroup
+split key,p(/)
+rename key1 parent_key
+drop key2 key3 key
+drop if parent_key=="uuid:2cca6f5f-3ecb-4088-b73f-1ecd9586690d"
+drop if parent_key=="uuid:1ea7523b-cad1-44da-9afa-8c4f96189433"
+drop if parent_key=="uuid:b283cb62-a316-418a-80b5-b8fe86585ef8"
+drop if parent_key=="uuid:5a19b036-4004-4c71-9e2a-b4efd3572cf3"
+drop if parent_key=="uuid:7fc65842-447f-4b1d-806a-863556d03ed3"
+drop if parent_key=="uuid:9b931ac2-ef49-43e9-90cd-33ae0bf1928f"
+drop if parent_key=="uuid:d0cd220f-bec1-49b8-a3ff-d70f82a3b231"
 keep if marriagegiftsourcenb!=.
-merge m:m setofmarriagegroup using "$directory\NEEMSIS2\NEEMSIS2-marriage_v1.dta", keepusing(INDID2010 age sex egoid caste jatis marriagedate marriedid setofmarriagegroup_new)
+* Merge
+merge m:m setofmarriagegroup using "$directory\NEEMSIS2\NEEMSIS2-marriage.dta", keepusing(INDID2010 householdid2020 INDID age sex egoid caste jatis marriagedate marriedid setofmarriagegroup_new)
 drop if _merge==2
 drop _merge
+* CLeaning
+egen INDID2020=concat(householdid2020 INDID), p(/)
 rename marriagegifttype_1 marriagegifttype_gold
 rename marriagegifttype_2 marriagegifttype_cash
 rename marriagegifttype_3 marriagegifttype_clothes
@@ -172,27 +108,28 @@ destring marriagegiftsourceid, gen(marriagegiftsource)
 label define giftsource 1"WKP" 2"Relatives" 3"Employer" 4"Maistry" 5"Colleague" 6"Paw broker" 7"Shop keeper" 8"Finance" 9"Friends" 10"SHG" 11"Banks" 12"Coop bank" 13"Sugar mill loan" 14"Group finance"
 label values marriagegiftsource giftsource
 drop marriagegiftsourceid
-order INDID2010 egoid jatis sex age caste married marriagedate marriagegiftsource marriagegiftsourcenb marriagegifttype marriagegifttype_gold marriagegifttype_cash marriagegifttype_clothes marriagegifttype_furniture marriagegifttype_vessels marriagegifttype_other marriagegiftamount marriagegoldquantityasgift, first
-drop setofmarriagegift key forauto
+order householdid2020 INDID INDID2020 INDID2010 egoid jatis sex age caste married marriagedate marriagegiftsource marriagegiftsourcenb marriagegifttype marriagegifttype_gold marriagegifttype_cash marriagegifttype_clothes marriagegifttype_furniture marriagegifttype_vessels marriagegifttype_other marriagegiftamount marriagegoldquantityasgift, first
+drop setofmarriagegift forauto
 
 save"$directory\NEEMSIS2\NEEMSIS_APPEND-marriagegift_v2.dta", replace
 *Indiv level
-preserve
-bysort INDID2010: egen totalmarriagegiftamount=sum(marriagegiftamount)
-bysort INDID2010: gen n=_n
+bysort INDID2020: egen totalmarriagegiftamount=sum(marriagegiftamount)
+bysort INDID2020: gen n=_n
 keep if n==1
-keep INDID2010 totalmarriagegiftamount
+keep INDID2020 totalmarriagegiftamount
 save"$directory\NEEMSIS2\NEEMSIS_APPEND-marriagegift_v2_indiv.dta", replace
-restore
 
-use"$directory\NEEMSIS2\NEEMSIS2-marriage_v1.dta", clear
-merge 1:m INDID2010 using "$directory\NEEMSIS2\NEEMSIS_APPEND-marriagegift_v2_indiv.dta"
+
+use"$directory\NEEMSIS2\NEEMSIS2-marriage.dta", clear
+egen INDID2020=concat(householdid2020 INDID), p(/)
+
+merge 1:m INDID2020 using "$directory\NEEMSIS2\NEEMSIS_APPEND-marriagegift_v2_indiv.dta"
 drop if _merge==2
 drop _merge
 
 
-save"$directory\NEEMSIS2\NEEMSIS2-marriage_v3.dta", replace
-save"$directory\complet\NEEMSIS2-marriage_v3.dta", replace
+save"$directory\NEEMSIS2\NEEMSIS2-marriage_v2.dta", replace
+*save"$directory\complet\NEEMSIS2-marriage_v3.dta", replace
 ****************************************
 * END
 
@@ -213,7 +150,7 @@ save"$directory\complet\NEEMSIS2-marriage_v3.dta", replace
 ****************************************
 * Cleaning
 ****************************************
-use"$directory\NEEMSIS2\NEEMSIS2-marriage_v3.dta", clear
+use"$directory\NEEMSIS2\NEEMSIS2-marriage_v2.dta", clear
 
 ********** Husband wife caste
 tab husbandwifecaste
@@ -333,7 +270,7 @@ fre marriagedecision_cat
 
 
 
-save"$directory\NEEMSIS2\NEEMSIS2-marriage_v4.dta", replace
+save"$directory\NEEMSIS2\NEEMSIS2-marriage_v3.dta", replace
 ****************************************
 * END
 
@@ -365,7 +302,7 @@ save"$directory\NEEMSIS2\NEEMSIS2-marriage_v4.dta", replace
 ****************************************
 * Coherence
 ****************************************
-use"$directory\NEEMSIS2\NEEMSIS2-marriage_v4.dta", clear
+use"$directory\NEEMSIS2\NEEMSIS2-marriage_v3.dta", clear
 drop INDID2010
 egen INDID2010=concat(HHID2010 INDID), p(/)
 
@@ -538,7 +475,7 @@ gen husbandwifeenga=engagementtotalcost-(engagementwifecost+engagementhusbandcos
 tab husbandwifeenga
 drop husbandwifeenga
 
-save"$directory\NEEMSIS2\NEEMSIS2-marriage_v5.dta", replace
+save"$directory\NEEMSIS2\NEEMSIS2-marriage_v4.dta", replace
 ****************************************
 * END
 
@@ -546,6 +483,29 @@ save"$directory\NEEMSIS2\NEEMSIS2-marriage_v5.dta", replace
 
 
 
+
+****************************************
+* Network for marriage
+****************************************
+use"$directory\NEEMSIS2\NEEMSIS2-marriage_v4.dta", clear
+
+********** Egoid var
+preserve
+keep if egoid>0
+keep assodegreeparticip_shg assodegreeparticip_trade assodegreeparticip_farmer assodegreeparticip_village assodegreeparticip_politic assodegreeparticip_profess assodegreeparticip_hobby assodegreeparticip_other assosize_shg assosize_trade assosize_farmer assosize_village assosize_politic assosize_profess assosize_hobby assosize_other nbcontact_headbusiness nbcontact_policeman nbcontact_civilserv nbcontact_bankemployee nbcontact_panchayatcommittee nbcontact_peoplecouncil nbcontact_recruiter nbcontact_headunion nbercontactphone nberpersonfamilyevent dummycontactleaders contactleaders parent_key egoid
+reshape wide assodegreeparticip_shg assodegreeparticip_trade assodegreeparticip_farmer assodegreeparticip_village assodegreeparticip_politic assodegreeparticip_profess assodegreeparticip_hobby assodegreeparticip_other assosize_shg assosize_trade assosize_farmer assosize_village assosize_politic assosize_profess assosize_hobby assosize_other nbcontact_headbusiness nbcontact_policeman nbcontact_civilserv nbcontact_bankemployee nbcontact_panchayatcommittee nbcontact_peoplecouncil nbcontact_recruiter nbcontact_headunion nbercontactphone nberpersonfamilyevent dummycontactleaders contactleaders, i(parent_key) j(egoid)
+save"$directory\NEEMSIS2\NEEMSIS2-asso_contact_HH.dta", replace
+restore
+
+merge m:1 parent_key using "$directory\NEEMSIS2\NEEMSIS2-asso_contact_HH.dta"
+keep if _merge==3
+drop _merge
+keep if husbandwifecaste!=.
+dropmiss, force
+
+save"$directory\NEEMSIS2\NEEMSIS2-marriage_v5.dta", replace
+****************************************
+* END
 
 
 
@@ -561,6 +521,7 @@ save"$directory\NEEMSIS2\NEEMSIS2-marriage_v5.dta", replace
 * Creation
 ****************************************
 use"$directory\NEEMSIS2\NEEMSIS2-marriage_v5.dta", clear
+
 
 ********* 1000 var
 foreach x in marriagedowry engagementtotalcost engagementhusbandcost engagementwifecost marriagetotalcost marriagehusbandcost marriagewifecost marriageexpenses{
@@ -753,16 +714,6 @@ save"$directory\NEEMSIS2\NEEMSIS2-marriage_v6.dta", replace
 
 
 
-
-
-
-
-
-
-
-
-
-
 ****************************************
 * Preliminary analysis
 ****************************************
@@ -903,7 +854,7 @@ twoway (scatter marriagetotalcost marriagedate, legend(off))
 
 
 ********** Type of marriage
-tabstat marriagetotalcost1000, stat(min p50 max)
+tabstat marriagetotalcost1000, stat(n min p50 max)
 
 stripplot marriagetotalcost1000, over(marriagearranged) separate(caste) ///
 cumul cumprob box centre refline vertical /// 
@@ -911,9 +862,7 @@ xsize(3) xtitle("") xlabel(,angle())  ///
 ylabel(0(100)1800) ymtick(0(50)1800) ytitle() ///
 msymbol(oh oh oh) mcolor(plr1 ply1 plg1) 
 
-
-
-
+save"$directory\NEEMSIS2\NEEMSIS2-marriage_v7.dta", replace
 ****************************************
 * END
 
@@ -927,6 +876,106 @@ msymbol(oh oh oh) mcolor(plr1 ply1 plg1)
 
 
 
+****************************************
+* Network
+****************************************
+use"$directory\NEEMSIS2\NEEMSIS2-marriage_v7.dta", clear
+
+********** Cleaning formal network
+gen dummyassopolitic=0
+replace dummyassopolitic=1 if assodegreeparticip_politic1!=""
+*replace dummyassopolitic=1 if assodegreeparticip_politic2!=""
+
+gen dummyassoprofess=0
+replace dummyassoprofess=1 if assodegreeparticip_profess1!=""
+*replace dummyassoprofess=1 if assodegreeparticip_profess2!=""
+*replace dummyassoprofess=1 if assodegreeparticip_profess3!="" 
+
+gen dummyassoshg=0
+replace dummyassoshg=1 if assodegreeparticip_shg1!=""
+*replace dummyassoshg=1 if assodegreeparticip_shg2!=""
+*replace dummyassoshg=1 if assodegreeparticip_shg3!=""
+
+gen dummyassofarmer=0
+replace dummyassofarmer=1 if assodegreeparticip_farmer1!=""
+
+gen dummyassohobby=0
+*replace dummyassohobby=1 if assodegreeparticip_hobby2!=""
+
+gen dummyassoother=0
+*replace dummyassoother=1 if assodegreeparticip_other2!=""
+
+gen dummyassovillage=0
+*replace dummyassovillage=1 if assodegreeparticip_village2!=""
+
+tab1 dummyassopolitic dummyassoprofess dummyassoshg dummyassofarmer dummyassohobby dummyassoother dummyassovillage
+
+egen dummyasso=rowtotal(dummyassopolitic dummyassoprofess dummyassoshg dummyassofarmer dummyassohobby dummyassoother dummyassovillage)
+replace dummyasso=1 if dummyasso>1
+
+
+
+********** Cleaning size network & qualityt
+tab1 nbercontactphone1 nbercontactphone2 nbercontactphone3
+fre nbercontactphone1
+
+gen contactphone=. 
+replace contactphone=1 if nbercontactphone1==7
+replace contactphone=2 if nbercontactphone1==1
+replace contactphone=2 if nbercontactphone1==2
+replace contactphone=3 if nbercontactphone1==3
+replace contactphone=4 if nbercontactphone1==4
+replace contactphone=4 if nbercontactphone1==5
+tab nbercontactphone1 contactphone
+
+*Quality
+tab1 dummycontactleaders1 dummycontactleaders2 dummycontactleaders3
+tab contactleaders1
+gen leaders=0
+replace leaders=1 if contactleaders1=="ADMK"
+replace leaders=1 if contactleaders1=="Admk"
+replace leaders=1 if contactleaders1=="Politician of ADMK"
+replace leaders=2 if contactleaders1=="Village panchayat"
+replace leaders=3 if contactleaders1=="Babu"
+replace leaders=3 if contactleaders1=="DPI"
+tab leaders
+
+********** Analysis with asso
+tab dummyasso sex
+tab dummyasso caste, row nofreq
+
+tabstat peoplewedding netbenefitsmarriage1000 totalmarriagegiftamount1000, stat(n mean sd p50 max) by(dummyasso)
+
+stripplot totalmarriagegiftamount1000, over(dummyasso) separate(sex) ///
+cumul cumprob box centre refline vertical /// 
+xsize(3) xtitle("") xlabel(,angle())  ///
+ylabel(0(100)800) ymtick(0(50)800) ytitle() ///
+msymbol(oh oh oh) mcolor(plr1 ply1 plg1) 
+*A cause d'un extreme ?
+
+*Voyons sans
+stripplot totalmarriagegiftamount1000 if totalmarriagegiftamount1000<600, over(dummyasso) separate(sex) ///
+cumul cumprob box centre refline vertical /// 
+xsize(3) xtitle("") xlabel(,angle())  ///
+ylabel(0(100)800) ymtick(0(50)800) ytitle() ///
+msymbol(oh oh oh) mcolor(plr1 ply1 plg1) 
+*Ok, quand asso, il y a plus de gift
+
+
+
+
+********** Analysis with nbercontact & leaders
+*Nbercontact
+tab contactphone sex, row nofreq
+tabstat peoplewedding netbenefitsmarriage1000 totalmarriagegiftamount1000, stat(n mean sd p50 max) by(contactphone)
+
+*Leaders
+tab dummycontactleaders1 sex
+tabstat peoplewedding netbenefitsmarriage1000 totalmarriagegiftamount1000, stat(n mean sd p50 max) by(dummycontactleaders1)
+
+save"$directory\NEEMSIS2\NEEMSIS2-marriage_v8.dta", replace
+****************************************
+* END
 
 
 
@@ -937,18 +986,17 @@ msymbol(oh oh oh) mcolor(plr1 ply1 plg1)
 ****************************************
 * Loans verif
 ****************************************
-use"$directory\NEEMSIS2\NEEMSIS2-loans_v12.dta", clear
+use"$directory\NEEMSIS2\NEEMSIS2-loans_v13.dta", clear
 
 
 ********** Check les HH who face one marriage since 2016
 preserve
-use"$directory\NEEMSIS2\NEEMSIS2-HH_v15.dta", clear
-keep HHID2010 dummymarriage
+use"$directory\NEEMSIS2\NEEMSIS2-HH_v16.dta", clear
+keep parent_key dummymarriage
 duplicates drop
-save"$directory\NEEMSIS2\NEEMSIS2-HH_marriage.dta", replace
+save"$directory\NEEMSIS2\NEEMSIS2-HH_marriage_HH.dta", replace
 restore
-merge m:1 HHID2010 using "$directory\NEEMSIS2\NEEMSIS2-HH_marriage.dta", nogen keep(3)
-
+merge m:1 parent_key using "$directory\NEEMSIS2\NEEMSIS2-HH_marriage_HH.dta", nogen keep(3)
 
 
 **********  Amount of reason
@@ -957,7 +1005,49 @@ gen loanbalance1000=loanbalance/1000
 
 tabstat loanamount1000, stat(n mean sd q) by(loanreasongiven)
 tab loanlender if loanreasongiven==8
-tabstat loanbalance1000, stat(n mean sd q) by(loanreasongiven)
+
+
+
+
+********** Reason and lender
+tab loanreasongiven caste
+*surtout les dalits
+tab loanlender caste if loanreasongiven==8
+*wkp et relatives
+
+/*
+The sense of debt as something immoral also depends upon the hierarchical positions of the
+lender and the borrower. On the borrower’s side, the norm is to contract loans from someone
+from an equal or higher caste." They do not take water from us, do you think they would take
+money?" is something the low castes often said to us. On the creditor side, some upper castes
+refuse to lend to castes who are too low in the hierarchy in comparison to them, stating that it
+would be degrading for them to go and claim their due. To ask an upper caste whether he is
+indebted to a lower caste can be considered as an insult.
+*/
+tab lenderscaste caste if loanreasongiven==8
+*à recoder
+
+
+
+
+********* Debt and cost (cost=monthly interest rate in %) for WKP
+/*
+“Bad” debts are rarely the most expensive, financially speaking, but those that tarnish
+the reputation of the family and jeopardize its future, especially children’s marriages. Bad
+debts serve to reveal that a household is unable to maintain its position in the social hierarchy.
+
+Distinguer le cout des WKP par raison de l'endettement
+*/
+gen yratepaid=interestpaid*100/loanamount if loanduration<=365
+
+gen _yratepaid=interestpaid*365/loanduration if loanduration>365
+gen _loanamount=loanamount*365/loanduration if loanduration>365
+
+replace yratepaid=_yratepaid*100/_loanamount if loanduration>365
+drop _loanamount _yratepaid
+
+tabstat yratepaid, stat(n mean sd p50) by(loanlender)
+tabstat yratepaid if loanlender==1, stat(n mean sd p50) by(loanreasongiven)
 
 
 
@@ -975,9 +1065,9 @@ replace reason13=1 if loanreasongiven==77
 
 preserve 
 forvalues i=1(1)13{
-bysort HHID2010: egen reasonHH_`i'=max(reason`i')
+bysort parent_key: egen reasonHH_`i'=max(reason`i')
 } 
-bysort HHID2010: gen n=_n
+bysort parent_key: gen n=_n
 keep if n==1
 forvalues i=1(1)13{
 tab reasonHH_`i', m
@@ -985,19 +1075,30 @@ tab reasonHH_`i', m
 restore
 
 
-********** Source of marriage loan
-tab loanlender if loanreasongiven==8
 
 
 ********** % in total loaned
 gen loanamountmarriage=loanamount if loanreasongiven==8
-bysort HHID2010: egen totalloanamount=sum(loanamount)
-bysort HHID2010: egen totalmarriageloanamount=sum(loanamountmarriage)
+bysort parent_key: egen totalloanamount=sum(loanamount)
+bysort parent_key: egen totalmarriageloanamount=sum(loanamountmarriage)
 gen marriageintotalloaned=totalmarriageloanamount/totalloanamount
+bysort parent_key: gen n=_n
 
 *For whom who faced marriage
 tabstat marriageintotalloaned if n==1 & dummymarriage==1, stat(n mean sd p50) by(caste)
 
+
+
+********** Price of debt
+/*
+Guérin et al. (2014) : Honouring reciprocity in ceremonies has always been a source of
+permanent pressure. Many interviewees make clear that they prefer going into debt outside
+the family circle to meet their own needs. This is a matter of freedom, as kin support calls
+for constant justification (niyayapadthanum). Some say they borrow from their kin only for
+"justified" reasons, which are mainly ceremony, housing and health costs. The obligation of
+reciprocity (tiruppu) is also a burden. Not only should the debt be repaid, but the debtor should
+be able to lend in return when the creditor is in need
+*/
 
 ****************************************
 * END
