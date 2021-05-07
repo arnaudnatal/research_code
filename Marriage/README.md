@@ -30,6 +30,8 @@ Le mariage est une question de pouvoir, d'aspiration et de mobilité.
 
 ## Draft
   - 1. Dowry
+    - i. absolut and relative amount
+    - ii. dowry and aspiration 
   - 2. Other costs
   - 3. Burden of marriage debt
   - 4. Gift and profits for marriage
