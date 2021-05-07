@@ -11,6 +11,7 @@
   - [ ] Husband employment
   - [ ] Correlation between assets/income and dowry
   - [ ] Correlation and table between dowry, assets and jatis for aspiration
+  - [ ] Raisonnement à la moyenne pour regarder les différences de dot sur les assets
 ## Debt
   - [ ] Ratios with 2020
   - [ ] Descriptive 2010 - 2016 - 2020
