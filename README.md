@@ -18,6 +18,10 @@
 ## Personality
   - [ ] Check stabilty
   - [ ] Check factor analysis
+  - [ ] Organiser les différents Y
+  - [ ] Ségmentation par sexe et caste ou interactive ?
+  - [ ] Échelle individuelle ou ménage ?
+  - [ ] 
 ## Labor
   - [ ] Read Michiels, Nordman, Seetahul for mobility
   - [ ] Test correlation
@@ -28,15 +32,15 @@
 
 ### Debt and personality
 
-  - [ ] Faire sauter les corrected pour l'EFA dans la mesure où le corrected est pertinent dans le cadre des Big-5, or ici je veux justemment sortir de ce cadre
-  - [ ] Envoyer un message à Anne Hilger pour parler de la stabilité et du biais d'acquiesence
-  - [ ] Faire une partie du papier sur la non stabilité en comparant par age avec un seuil à 30, 35, 40 ans en 2016
-  - [ ] Se focaliser sur ce papier pour le finir rapidement
-  - [ ] Si ce n'est pas stable, tant pis, tant que je ne fais pas cet hypothèse ça ne pose pas de problème
-  - [ ] Je vais donc regarder les compétences cognitives en t sur l'endettement / la négociation de la dette / la variation de l'endettement en t+1
-  - [ ] Une deuxième étape intéressante peut se trouver dans l'effet de la variation de l'endettement sur le changement de personnalité
-  - [ ] Le tout est de bien tenir compte des castes, car cela conditionne les conditions de vies des gens, notamment sur la question du changement de personnalité, le genre aussi conditionne cela : déterminisme socio-économique
-  - [ ] Éric a évoqué la question des aspirations et de la personnalité, en citant un récent papier : https://doi.org/10.1080/13600818.2020.1864312 et voir la distance aux aspirations moyennes ou un truc comme ça..
+  - Faire sauter les corrected pour l'EFA dans la mesure où le corrected est pertinent dans le cadre des Big-5, or ici je veux justemment sortir de ce cadre
+  - Envoyer un message à Anne Hilger pour parler de la stabilité et du biais d'acquiesence
+  - Faire une partie du papier sur la non stabilité en comparant par age avec un seuil à 30, 35, 40 ans en 2016
+  - Se focaliser sur ce papier pour le finir rapidement
+  - Si ce n'est pas stable, tant pis, tant que je ne fais pas cet hypothèse ça ne pose pas de problème
+  - Je vais donc regarder les compétences cognitives en t sur l'endettement / la négociation de la dette / la variation de l'endettement en t+1
+  - Une deuxième étape intéressante peut se trouver dans l'effet de la variation de l'endettement sur le changement de personnalité
+  - Le tout est de bien tenir compte des castes, car cela conditionne les conditions de vies des gens, notamment sur la question du changement de personnalité, le genre aussi conditionne cela : déterminisme socio-économique
+  - Éric a évoqué la question des aspirations et de la personnalité, en citant un récent papier : https://doi.org/10.1080/13600818.2020.1864312 et voir la distance aux aspirations moyennes ou un truc comme ça..
 
 
 ### Marriage and debt
