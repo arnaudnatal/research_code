@@ -21,7 +21,6 @@
   - [ ] Organiser les différents Y
   - [ ] Ségmentation par sexe et caste ou interactive ?
   - [ ] Échelle individuelle ou ménage ?
-  - [ ] 
 ## Labor
   - [ ] Read Michiels, Nordman, Seetahul for mobility
   - [ ] Test correlation
