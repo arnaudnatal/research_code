@@ -28,14 +28,18 @@ use "$directory\Data\RUME-HH_v8.dta", clear
 bysort HHID_panel: gen n=_n
 keep if n==1
 rename year year2010
-keep HHID_panel year2010
+rename caste caste2010
+rename jatis jatis2010
+keep HHID_panel year2010 caste2010 jatis2010
 save"$directory\_paneldata\RUME-HH.dta", replace
 
 use "$directory\Data\NEEMSIS1-HH_v7.dta", clear
 bysort HHID_panel: gen n=_n
 keep if n==1
 gen year2016=2016
-keep HHID_panel year2016
+rename caste caste2016
+rename jatis jatis2016
+keep HHID_panel year2016 caste2016 jatis2016
 save"$directory\_paneldata\NEEMSIS1-HH.dta", replace
 
 use "$directory\Data\NEEMSIS2-HH_v17.dta", clear
@@ -44,7 +48,9 @@ bysort HHID_panel: gen n=_n
 keep if n==1
 tab version_HH
 gen year2020=2020
-keep HHID_panel year2020
+rename caste caste2020
+rename jatis jatis2020
+keep HHID_panel year2020 caste2020 jatis2020
 save"$directory\_paneldata\NEEMSIS2-HH.dta", replace
 
 use"$directory\_paneldata\RUME-HH.dta", clear
@@ -172,13 +178,66 @@ save"$directory\_paneldata\panel-all_loans.dta", replace
 ****************************************
 use"$directory\_paneldata\panel-all_loans.dta", clear
 
+drop caste jatis
+
 *Merge les HH en panel
 merge m:1 HHID_panel using"$directory\_paneldata\panel_comp.dta"
 drop _merge
 
+gen jatis=.
+replace jatis=jatis2010 if jatis2010!=.
+replace jatis=jatis2016 if jatis2016!=.
+replace jatis=jatis2020 if jatis2020!=.
+
+gen caste=.
+replace caste=caste2010 if caste2010!=.
+replace caste=caste2016 if caste2016!=.
+replace caste=caste2020 if caste2020!=.
+
+label define jatis 1"Vanniyar" 2"SC" 3"Arunthathiyar" 4"Rediyar" 5"Gramani" 6"Naidu" 7"Navithar" 8"Asarai" 9"Settu" 10"Nattar" 11"Mudaliar" 12"Kulalar" 13"Chettiyar" 14"Marwari" 15"Muslims" 16"Padayachi" 17"Other", replace
+label values jatis jatis
+
+label define caste 1"Dalit" 2"Middle" 3"Upper", replace
+label values caste caste
+
+drop jatis2010 jatis2016 jatis2020
+drop caste2010 caste2016 caste2020 
+
 order HHID_panel, first
 
-tab loansettled
+tab loansettled year, m
+*349 pawn broker de 2016
+
+*Deflateur
+foreach x in loanamount loanbalance totalrepaid totalrepaid2 totalrepaid2_wm interestpaid interestpaid2 interestpaid2_wm principalpaid principalpaid2 economic_amount current_amount humancap_amount social_amount house_amount incomegen_amount noincomegen_amount informal_amount formal_amount semiformal_amount economic_amount_HH current_amount_HH humancap_amount_HH social_amount_HH house_amount_HH incomegen_amount_HH noincomegen_amount_HH informal_amount_HH formal_amount_HH semiformal_amount_HH economic_amount_indiv current_amount_indiv humancap_amount_indiv social_amount_indiv house_amount_indiv incomegen_amount_indiv noincomegen_amount_indiv informal_amount_indiv formal_amount_indiv semiformal_amount_indiv imp1_interest imp1_totalrepaid_year imp1_debt_service imp1_interest_service imp1_ds_tot_HH imp1_is_tot_HH imp1_debt_service_wm imp1_interest_service_wm imp1_ds_tot_indiv imp1_is_tot_indiv imp1_ds_tot_wm_indiv imp1_is_tot_wm_indiv imp1_ds_tot_wm_HH imp1_is_tot_wm_HH {
+gen def_`x'=.
+}
+foreach x in loanamount loanbalance totalrepaid totalrepaid2 totalrepaid2_wm interestpaid interestpaid2 interestpaid2_wm principalpaid principalpaid2 economic_amount current_amount humancap_amount social_amount house_amount incomegen_amount noincomegen_amount informal_amount formal_amount semiformal_amount economic_amount_HH current_amount_HH humancap_amount_HH social_amount_HH house_amount_HH incomegen_amount_HH noincomegen_amount_HH informal_amount_HH formal_amount_HH semiformal_amount_HH economic_amount_indiv current_amount_indiv humancap_amount_indiv social_amount_indiv house_amount_indiv incomegen_amount_indiv noincomegen_amount_indiv informal_amount_indiv formal_amount_indiv semiformal_amount_indiv imp1_interest imp1_totalrepaid_year imp1_debt_service imp1_interest_service imp1_ds_tot_HH imp1_is_tot_HH imp1_debt_service_wm imp1_interest_service_wm imp1_ds_tot_indiv imp1_is_tot_indiv imp1_ds_tot_wm_indiv imp1_is_tot_wm_indiv imp1_ds_tot_wm_HH imp1_is_tot_wm_HH {
+replace def_`x'=`x' if year==2010
+replace def_`x'=`x'*0.645161 if year==2016
+replace def_`x'=`x'*0.555556 if year==2020
+}
+
+*1000 var
+gen def_loanamount1000=def_loanamount/1000
+gen loanamount1000=loanamount/1000
+
+*Label
+tab loanreasongiven
+label define loanreasongiven 1"Agriculture" 2"Family exp" 3"Health exp" 4"Repay previous loan" 5"House exp" 6"Investment" 7"Ceremonies" 8"Marriage" 9"Education" 10"Relatives exp" 11"Death exp" 12"No reason" 77"Other", replace
+label values loanreasongiven loanreasongiven
+
+tab loanlender
+label define loanlender 1"WKP" 2"Relatives" 3"Employer" 4"Maistry" 5"Colleague" 6"Pawn broker" 7"Shop keeper" 8"Finance" 9"Friends" 10"SHG" 11"Banks" 12"Coop banks" 13"Sugar mill loan" 14"Group finance", replace
+label values loanlender loanlender
+
+*Gen id for main loans
+gen mainloan=0
+replace mainloan=1 if lendername!="" & year==2010
+replace mainloan=1 if lendersex!=. & year==2016
+replace mainloan=1 if lenderfirsttime!=. & year==2020
+
+tab mainloan year
 
 save"$directory\_paneldata\panel-all_loans_v2.dta", replace
 ****************************************
@@ -218,7 +277,8 @@ mainoccupation_HH annualincome_HH nboccupation_HH imp1_ds_tot_HH imp1_is_tot_HH 
 jatis caste religion house howbuyhouse housevalue housetitle housetype ///
 landowndry landownwet amountownlanddry amountownlandwet amountownland ///
 assets assets_noland hhsize goldquantity goldquantityamount electricity water ///
-panel_2016_2020 panel_2010_2020 panel_2010_2016_2020 panel_2010_2016
+panel_2016_2020 panel_2010_2020 panel_2010_2016_2020 panel_2010_2016 ///
+dummysavingaccount dummychitfund dummyinsurance
 foreach x in *{
 rename `x' `x'_2010
 }
@@ -253,7 +313,8 @@ mainoccupation_HH annualincome_HH nboccupation_HH imp1_ds_tot_HH imp1_is_tot_HH 
 jatis caste religion house howbuyhouse housevalue housetitle housetype ///
 sizeownland ownland landpurchasedhowbuy landpurchasedamount landpurchasedacres landpurchased landlostreason landlost drywetownland amountownlandwet amountownlanddry amountownland ///
 assets assets_noland hhsize goldquantity goldquantityamount electricity water ///
-panel_2016_2020 panel_2010_2020 panel_2010_2016_2020 panel_2010_2016 dummydemonetisation dummynewHH loanamount_wm_HH
+panel_2016_2020 panel_2010_2020 panel_2010_2016_2020 panel_2010_2016 dummydemonetisation dummynewHH loanamount_wm_HH ///
+dummysavingaccount dummychitfund dummyinsurance
 foreach x in *{
 rename `x' `x'_2016
 }
@@ -285,9 +346,10 @@ keep HHID_panel address villageid villagearea comefrom ///
 head_* ///
 mainoccupation_HH annualincome_HH nboccupation_HH imp1_ds_tot_HH imp1_is_tot_HH informal_HH semiformal_HH formal_HH economic_HH current_HH humancap_HH social_HH house_HH incomegen_HH noincomegen_HH economic_amount_HH current_amount_HH humancap_amount_HH social_amount_HH house_amount_HH incomegen_amount_HH noincomegen_amount_HH informal_amount_HH formal_amount_HH semiformal_amount_HH marriageloan_HH marriageloanamount_HH dummyproblemtorepay_HH dummyinterest_HH loans_HH loanamount_HH loanbalance_HH mean_yratepaid_HH mean_monthlyinterestrate_HH ///
 jatis caste religion house howbuyhouse housevalue housetitle housetype ///
-covsellland ownland sizeownland landpurchased landpurchasedacres landpurchasedamount landpurchasedhowbuy landlost landlostreason sizedryownland sizewetownland amountownlanddry amountownlandwet amountownland ///
+covsellland ownland sizeownland landpurchased landpurchasedacres landpurchasedamount landpurchasedhowbuy landlost landlostreason sizedryownland sizewetownland amountownlanddry amountownlandwet amountownland ownland ///
 assets assets_noland hhsize goldquantity goldquantityamount electricity water ///
-panel_2016_2020 panel_2010_2020 panel_2010_2016_2020 panel_2010_2016
+panel_2016_2020 panel_2010_2020 panel_2010_2016_2020 panel_2010_2016 ///
+dummysavingaccount dummychitfund dummyinsurance
 foreach x in *{
 rename `x' `x'_2020
 }
@@ -318,6 +380,13 @@ save"$directory\_paneldata\RUME-NEEMSIS-HH.dta", replace
 
 
 
+
+
+
+
+
+
+
 ****************************************
 * Preli
 ****************************************
@@ -332,14 +401,119 @@ fsum DAR_2010 DAR_2016 DAR_2020, stat(p1 p5 p10 p25 p50 p75 p90 p95 p99)
 fsum DSR_2010 DSR_2016 DSR_2020, stat(p1 p5 p10 p25 p50 p75 p90 p95 p99)
 fsum ISR_2010 ISR_2016 ISR_2020, stat(p1 p5 p10 p25 p50 p75 p90 p95 p99)
 
-********** Land issue
+********** Cleaning
 * 2010
 tab1 landowndry_2010 landownwet_2010 amountownlanddry_2010 amountownlandwet_2010 amountownland_2010
 rename landowndry_2010 sizedryownland_2010
 rename landownwet_2010 sizewetownland_2010
 gen sizeownland_2010=sizedryownland_2010+sizewetownland_2010
+*1000 var
+foreach x in assets assets_noland loanamount_HH annualincome_HH amountownland housevalue imp1_ds_tot_HH imp1_is_tot_HH{
+foreach i in 2010 2016 2020 {
+gen `x'1000_`i'=`x'_`i'/1000
+}
+}
+*caste
+gen caste=caste_2020
+replace caste=caste_2010 if caste==.
+replace caste=caste_2016 if caste==.
+tab caste
 
-foreach x in DAR DSR ISR loanamount_HH imp1_ds_tot_HH imp1_is_tot_HH annualincome_HH assets assets_noland loans_HH nboccupation_HH sizeownland amountownland amountownlanddry amountownlandwet {
+*jatis
+gen jatis=jatis_2020
+replace jatis=jatis_2010 if jatis==.
+replace jatis=jatis_2016 if jatis==.
+tab jatis
+
+*dummyownland
+tab sizeownland_2010
+gen dummyownland_2010=0 if assets_2010!=.
+replace dummyownland_2010=1 if sizeownland_2010>0 & sizeownland_2010!=. & assets_2010!=.
+tab dummyownland_2010
+recode sizeownland_2010 (0=.)
+tab sizeownland_2010
+
+
+tab sizeownland_2016
+gen dummyownland_2016=0 if assets_2016!=.
+replace dummyownland_2016=1 if sizeownland_2016>0 & sizeownland_2016!=. & assets_2016!=.
+tab dummyownland_2016
+recode sizeownland_2016 (0=.)
+tab sizeownland_2016
+
+tab sizeownland_2020
+gen dummyownland_2020=0 if assets_2020!=.
+replace dummyownland_2020=1 if sizeownland_2020>0 & sizeownland_2020!=. & assets_2020!=.
+tab dummyownland_2020
+recode sizeownland_2020 (0=.)
+tab sizeownland_2020
+
+drop ownland_2016 ownland_2020
+
+*panel
+gen panel_comp=panel_2010_2016_2020_2010
+replace panel_comp=panel_2010_2016_2020_2016 if panel_comp==.
+replace panel_comp=panel_2010_2016_2020_2020 if panel_comp==.
+tab panel_comp
+
+gen panel_1620=panel_2016_2020_2016
+replace panel_1620=panel_2016_2020_2020 if panel_1620==.
+
+gen panel_1016=panel_2010_2016_2010
+replace panel_1016=panel_2010_2016_2016 if panel_1016
+
+gen panel_1020=panel_2010_2020_2010
+replace panel_1020=panel_2010_2020_2020 if panel_1020
+
+recode panel_comp panel_1620 panel_1016 panel_1020 (.=0)
+
+drop panel_2010_2016_2010 panel_2010_2020_2010 panel_2016_2020_2010 panel_2010_2016_2020_2010 panel_2010_2016_2016 panel_2010_2020_2016 panel_2016_2020_2016 panel_2010_2016_2020_2016 panel_2010_2016_2020 panel_2010_2020_2020 panel_2016_2020_2020 panel_2010_2016_2020_2020
+
+tab1 panel_comp panel_1620 panel_1016 panel_1020
+
+*house
+replace housevalue_2010=. if house_2010>=3
+replace housevalue1000_2010=. if house_2010>=3
+tabstat housevalue_2010, stat(n mean sd p50) by(caste)
+
+*HH in debt
+foreach x in 2010 2016 2020 {
+gen debt_HH_`x'=0 if assets_`x'!=.
+}
+foreach x in 2010 2016 2020 {
+replace debt_HH_`x'=1 if loanamount_HH_`x'!=. & loanamount_HH_`x'>0 & loanamount_HH_`x'!=0
+}
+
+/*
+foreach x in DAR DSR ISR loanamount_HH imp1_ds_tot_HH imp1_is_tot_HH{
+foreach i in 2010 2016 2020{
+replace `x'_`i'=1.000001 if `x'_`i'==0 & debt_HH_`i'==1
+}
+}
+*/
+
+
+*Deflateur
+foreach x in housevalue_2010 annualincome_HH_2010 goldquantityamount_2010 amountownlanddry_2010 amountownlandwet_2010 amountownland_2010 assets_2010 assets_noland_2010 imp1_ds_tot_HH_2010 imp1_is_tot_HH_2010 economic_amount_HH_2010 current_amount_HH_2010 humancap_amount_HH_2010 social_amount_HH_2010 house_amount_HH_2010 incomegen_amount_HH_2010 noincomegen_amount_HH_2010 informal_amount_HH_2010 formal_amount_HH_2010 semiformal_amount_HH_2010 marriageloanamount_HH_2010 loanamount_HH_2010 loanbalance_HH_2010 assets1000_2010 assets_noland1000_2010 loanamount_HH1000_2010 annualincome_HH1000_2010 amountownland1000_2010 housevalue1000_2010 imp1_ds_tot_HH1000_2010 imp1_is_tot_HH1000_2010{
+gen def_`x'=`x'*1
+}
+foreach x in housevalue_2016 annualincome_HH_2016 goldquantityamount_2016 amountownlanddry_2016 amountownlandwet_2016 amountownland_2016 assets_2016 assets_noland_2016 imp1_ds_tot_HH_2016 imp1_is_tot_HH_2016 economic_amount_HH_2016 current_amount_HH_2016 humancap_amount_HH_2016 social_amount_HH_2016 house_amount_HH_2016 incomegen_amount_HH_2016 noincomegen_amount_HH_2016 informal_amount_HH_2016 formal_amount_HH_2016 semiformal_amount_HH_2016 marriageloanamount_HH_2016 loanamount_HH_2016 loanbalance_HH_2016 loanamount_wm_HH_2016 assets1000_2016 assets_noland1000_2016 loanamount_HH1000_2016 annualincome_HH1000_2016 amountownland1000_2016 housevalue1000_2016 imp1_ds_tot_HH1000_2016 imp1_is_tot_HH1000_2016{
+gen def_`x'=`x'*0.645161
+}
+foreach x in housevalue_2020 annualincome_HH_2020 goldquantityamount_2020 amountownlanddry_2020 amountownlandwet_2020 amountownland_2020 assets_2020 assets_noland_2020 imp1_ds_tot_HH_2020 imp1_is_tot_HH_2020 economic_amount_HH_2020 current_amount_HH_2020 humancap_amount_HH_2020 social_amount_HH_2020 house_amount_HH_2020 incomegen_amount_HH_2020 noincomegen_amount_HH_2020 informal_amount_HH_2020 formal_amount_HH_2020 semiformal_amount_HH_2020 marriageloanamount_HH_2020 loanamount_HH_2020 loanbalance_HH_2020 assets1000_2020 assets_noland1000_2020 loanamount_HH1000_2020 annualincome_HH1000_2020 amountownland1000_2020 housevalue1000_2020 imp1_ds_tot_HH1000_2020 imp1_is_tot_HH1000_2020{
+gen def_`x'=`x'*0.555556
+}
+
+
+*Delta
+foreach x in DAR DSR ISR  loans_HH nboccupation_HH sizeownland  {
+gen d1_`x'=(`x'_2016-`x'_2010)*100/`x'_2010
+gen d2_`x'=(`x'_2020-`x'_2016)*100/`x'_2016
+gen dg_`x'=(`x'_2020-`x'_2010)*100/`x'_2010
+}
+
+
+foreach x in def_loanamount_HH def_imp1_ds_tot_HH def_imp1_is_tot_HH def_annualincome_HH def_assets def_assets_noland def_amountownland def_amountownlanddry def_amountownlandwet {
 gen d1_`x'=(`x'_2016-`x'_2010)*100/`x'_2010
 gen d2_`x'=(`x'_2020-`x'_2016)*100/`x'_2016
 gen dg_`x'=(`x'_2020-`x'_2010)*100/`x'_2010
@@ -351,11 +525,25 @@ gen dg_`x'=(`x'_2020-`x'_2010)*100/`x'_2010
 }
 
 
+foreach x in DAR DSR ISR def_loanamount_HH def_imp1_ds_tot_HH def_imp1_is_tot_HH{
+foreach i in 2010 2016 2020{
+replace `x'_`i'=0 if `x'_`i'==1.000001 & debt_HH_`i'==1
+}
+}
 
-*Mini verif
-tabstat DAR_2010 DAR_2016 DAR_2020, stat(n mean sd p50) by(caste_2016)
 
-tabstat d1_DAR d2_DAR dg_DAR, stat(n mean sd p50) by(caste_2010)
+*Recoder augmentation
+label define cat 1"Decrease" 2"Stable" 3"Increase"
+foreach x in d1_def_loanamount_HH d1_def_imp1_ds_tot_HH d1_def_imp1_is_tot_HH d1_def_annualincome_HH d1_def_assets d1_def_assets_noland d1_def_amountownland d2_def_loanamount_HH d2_def_imp1_ds_tot_HH d2_def_imp1_is_tot_HH d2_def_annualincome_HH d2_def_assets d2_def_assets_noland d2_def_amountownland dg_def_loanamount_HH dg_def_imp1_ds_tot_HH dg_def_imp1_is_tot_HH dg_def_annualincome_HH dg_def_assets dg_def_assets_noland dg_def_amountownland d1_DAR d1_DSR d2_DAR d2_DSR dg_DAR dg_DSR{
+gen cat_`x'=.
+}
+
+foreach x in d1_def_loanamount_HH d1_def_imp1_ds_tot_HH d1_def_imp1_is_tot_HH d1_def_annualincome_HH d1_def_assets d1_def_assets_noland d1_def_amountownland d2_def_loanamount_HH d2_def_imp1_ds_tot_HH d2_def_imp1_is_tot_HH d2_def_annualincome_HH d2_def_assets d2_def_assets_noland d2_def_amountownland dg_def_loanamount_HH dg_def_imp1_ds_tot_HH dg_def_imp1_is_tot_HH dg_def_annualincome_HH dg_def_assets dg_def_assets_noland dg_def_amountownland d1_DAR d1_DSR d2_DAR d2_DSR dg_DAR dg_DSR{
+replace cat_`x'=1 if `x'<=-5 & `x'!=.
+replace cat_`x'=2 if `x'>-5 & `x'<5 & `x'!=. 
+replace cat_`x'=3 if `x'>=5 & `x'!=.
+label values cat_`x' cat
+}
 
 save"$directory\_paneldata\RUME-NEEMSIS-HH_v2.dta", replace
 ****************************************
