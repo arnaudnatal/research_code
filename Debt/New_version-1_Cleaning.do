@@ -271,6 +271,11 @@ drop _head_`x'
 }
 keep if livinghome==1
 bysort HHID_panel: egen hhsize=sum(1)
+
+foreach x in agri coolie agricoolie nregs investment employee selfemp pension nooccup {
+rename labourincome_indiv_`x' li_indiv_`x'
+rename labourincome_HH_`x' li_HH_`x'
+}
 keep HHID_panel address villageid villagearea comefrom ///
 head_* ///
 mainoccupation_HH annualincome_HH nboccupation_HH imp1_ds_tot_HH imp1_is_tot_HH informal_HH semiformal_HH formal_HH economic_HH current_HH humancap_HH social_HH house_HH incomegen_HH noincomegen_HH economic_amount_HH current_amount_HH humancap_amount_HH social_amount_HH house_amount_HH incomegen_amount_HH noincomegen_amount_HH informal_amount_HH formal_amount_HH semiformal_amount_HH marriageloan_HH marriageloanamount_HH dummyproblemtorepay_HH dummyinterest_HH loans_HH loanamount_HH loanbalance_HH mean_yratepaid_HH mean_monthlyinterestrate_HH ///
@@ -278,7 +283,8 @@ jatis caste religion house howbuyhouse housevalue housetitle housetype ///
 landowndry landownwet amountownlanddry amountownlandwet amountownland ///
 assets assets_noland hhsize goldquantity goldquantityamount electricity water ///
 panel_2016_2020 panel_2010_2020 panel_2010_2016_2020 panel_2010_2016 ///
-dummysavingaccount dummychitfund dummyinsurance
+dummysavingaccount dummychitfund dummyinsurance ///
+li_indiv_agri li_indiv_coolie li_indiv_agricoolie li_indiv_nregs li_indiv_investment li_indiv_employee li_indiv_selfemp li_indiv_pension li_indiv_nooccup li_HH_agri li_HH_coolie li_HH_agricoolie li_HH_nregs li_HH_investment li_HH_employee li_HH_selfemp li_HH_pension li_HH_nooccup
 foreach x in *{
 rename `x' `x'_2010
 }
@@ -307,6 +313,10 @@ drop _head_`x'
 }
 keep if livinghome==1 | livinghome==2
 bysort HHID_panel: egen hhsize=sum(1)
+foreach x in agri selfemp sjagri sjnonagri uwhhnonagri uwnonagri uwhhagri uwagri {
+rename labourincome_indiv_`x' li_indiv_`x'
+rename labourincome_HH_`x' li_HH_`x'
+}
 keep HHID_panel address villageid villagearea comefrom ///
 head_* ///
 mainoccupation_HH annualincome_HH nboccupation_HH imp1_ds_tot_HH imp1_is_tot_HH informal_HH semiformal_HH formal_HH economic_HH current_HH humancap_HH social_HH house_HH incomegen_HH noincomegen_HH economic_amount_HH current_amount_HH humancap_amount_HH social_amount_HH house_amount_HH incomegen_amount_HH noincomegen_amount_HH informal_amount_HH formal_amount_HH semiformal_amount_HH marriageloan_HH marriageloanamount_HH dummyproblemtorepay_HH dummyinterest_HH loans_HH loanamount_HH loanbalance_HH mean_yratepaid_HH mean_monthlyinterestrate_HH ///
@@ -314,7 +324,8 @@ jatis caste religion house howbuyhouse housevalue housetitle housetype ///
 sizeownland ownland landpurchasedhowbuy landpurchasedamount landpurchasedacres landpurchased landlostreason landlost drywetownland amountownlandwet amountownlanddry amountownland ///
 assets assets_noland hhsize goldquantity goldquantityamount electricity water ///
 panel_2016_2020 panel_2010_2020 panel_2010_2016_2020 panel_2010_2016 dummydemonetisation dummynewHH loanamount_wm_HH ///
-dummysavingaccount dummychitfund dummyinsurance
+dummysavingaccount dummychitfund dummyinsurance ///
+li_indiv_agri li_indiv_selfemp li_indiv_sjagri li_indiv_sjnonagri li_indiv_uwhhnonagri li_indiv_uwnonagri li_indiv_uwhhagri li_indiv_uwagri li_HH_agri li_HH_selfemp li_HH_sjagri li_HH_sjnonagri li_HH_uwhhnonagri li_HH_uwnonagri li_HH_uwhhagri li_HH_uwagri
 foreach x in *{
 rename `x' `x'_2016
 }
@@ -342,6 +353,10 @@ drop _head_`x'
 }
 keep if livinghome==1 | livinghome==2
 bysort HHID_panel: egen hhsize=sum(1)
+foreach x in agri selfemp sjagri sjnonagri uwhhnonagri uwnonagri uwhhagri uwagri {
+rename labourincome_indiv_`x' li_indiv_`x'
+rename labourincome_HH_`x' li_HH_`x'
+}
 keep HHID_panel address villageid villagearea comefrom ///
 head_* ///
 mainoccupation_HH annualincome_HH nboccupation_HH imp1_ds_tot_HH imp1_is_tot_HH informal_HH semiformal_HH formal_HH economic_HH current_HH humancap_HH social_HH house_HH incomegen_HH noincomegen_HH economic_amount_HH current_amount_HH humancap_amount_HH social_amount_HH house_amount_HH incomegen_amount_HH noincomegen_amount_HH informal_amount_HH formal_amount_HH semiformal_amount_HH marriageloan_HH marriageloanamount_HH dummyproblemtorepay_HH dummyinterest_HH loans_HH loanamount_HH loanbalance_HH mean_yratepaid_HH mean_monthlyinterestrate_HH ///
@@ -349,7 +364,8 @@ jatis caste religion house howbuyhouse housevalue housetitle housetype ///
 covsellland ownland sizeownland landpurchased landpurchasedacres landpurchasedamount landpurchasedhowbuy landlost landlostreason sizedryownland sizewetownland amountownlanddry amountownlandwet amountownland ownland ///
 assets assets_noland hhsize goldquantity goldquantityamount electricity water ///
 panel_2016_2020 panel_2010_2020 panel_2010_2016_2020 panel_2010_2016 ///
-dummysavingaccount dummychitfund dummyinsurance
+dummysavingaccount dummychitfund dummyinsurance ///
+li_indiv_agri li_indiv_selfemp li_indiv_sjagri li_indiv_sjnonagri li_indiv_uwhhnonagri li_indiv_uwnonagri li_indiv_uwhhagri li_indiv_uwagri li_HH_agri li_HH_selfemp li_HH_sjagri li_HH_sjnonagri li_HH_uwhhnonagri li_HH_uwnonagri li_HH_uwhhagri li_HH_uwagri
 foreach x in *{
 rename `x' `x'_2020
 }
@@ -494,16 +510,70 @@ replace `x'_`i'=1.000001 if `x'_`i'==0 & debt_HH_`i'==1
 
 
 *Deflateur
-foreach x in housevalue_2010 annualincome_HH_2010 goldquantityamount_2010 amountownlanddry_2010 amountownlandwet_2010 amountownland_2010 assets_2010 assets_noland_2010 imp1_ds_tot_HH_2010 imp1_is_tot_HH_2010 economic_amount_HH_2010 current_amount_HH_2010 humancap_amount_HH_2010 social_amount_HH_2010 house_amount_HH_2010 incomegen_amount_HH_2010 noincomegen_amount_HH_2010 informal_amount_HH_2010 formal_amount_HH_2010 semiformal_amount_HH_2010 marriageloanamount_HH_2010 loanamount_HH_2010 loanbalance_HH_2010 assets1000_2010 assets_noland1000_2010 loanamount_HH1000_2010 annualincome_HH1000_2010 amountownland1000_2010 housevalue1000_2010 imp1_ds_tot_HH1000_2010 imp1_is_tot_HH1000_2010{
+foreach x in housevalue_2010 annualincome_HH_2010 goldquantityamount_2010 amountownlanddry_2010 amountownlandwet_2010 amountownland_2010 assets_2010 assets_noland_2010 imp1_ds_tot_HH_2010 imp1_is_tot_HH_2010 economic_amount_HH_2010 current_amount_HH_2010 humancap_amount_HH_2010 social_amount_HH_2010 house_amount_HH_2010 incomegen_amount_HH_2010 noincomegen_amount_HH_2010 informal_amount_HH_2010 formal_amount_HH_2010 semiformal_amount_HH_2010 marriageloanamount_HH_2010 loanamount_HH_2010 loanbalance_HH_2010 assets1000_2010 assets_noland1000_2010 loanamount_HH1000_2010 annualincome_HH1000_2010 amountownland1000_2010 housevalue1000_2010 imp1_ds_tot_HH1000_2010 imp1_is_tot_HH1000_2010 li_indiv_agri_2010 li_indiv_coolie_2010 li_indiv_agricoolie_2010 li_indiv_nregs_2010 li_indiv_investment_2010 li_indiv_employee_2010 li_indiv_selfemp_2010 li_indiv_pension_2010 li_indiv_nooccup_2010 li_HH_agri_2010 li_HH_coolie_2010 li_HH_agricoolie_2010 li_HH_nregs_2010 li_HH_investment_2010 li_HH_employee_2010 li_HH_selfemp_2010 li_HH_pension_2010 li_HH_nooccup_2010 {
 gen def_`x'=`x'*1
 }
-foreach x in housevalue_2016 annualincome_HH_2016 goldquantityamount_2016 amountownlanddry_2016 amountownlandwet_2016 amountownland_2016 assets_2016 assets_noland_2016 imp1_ds_tot_HH_2016 imp1_is_tot_HH_2016 economic_amount_HH_2016 current_amount_HH_2016 humancap_amount_HH_2016 social_amount_HH_2016 house_amount_HH_2016 incomegen_amount_HH_2016 noincomegen_amount_HH_2016 informal_amount_HH_2016 formal_amount_HH_2016 semiformal_amount_HH_2016 marriageloanamount_HH_2016 loanamount_HH_2016 loanbalance_HH_2016 loanamount_wm_HH_2016 assets1000_2016 assets_noland1000_2016 loanamount_HH1000_2016 annualincome_HH1000_2016 amountownland1000_2016 housevalue1000_2016 imp1_ds_tot_HH1000_2016 imp1_is_tot_HH1000_2016{
-gen def_`x'=`x'*0.645161
+foreach x in housevalue_2016 annualincome_HH_2016 goldquantityamount_2016 amountownlanddry_2016 amountownlandwet_2016 amountownland_2016 assets_2016 assets_noland_2016 imp1_ds_tot_HH_2016 imp1_is_tot_HH_2016 economic_amount_HH_2016 current_amount_HH_2016 humancap_amount_HH_2016 social_amount_HH_2016 house_amount_HH_2016 incomegen_amount_HH_2016 noincomegen_amount_HH_2016 informal_amount_HH_2016 formal_amount_HH_2016 semiformal_amount_HH_2016 marriageloanamount_HH_2016 loanamount_HH_2016 loanbalance_HH_2016 loanamount_wm_HH_2016 assets1000_2016 assets_noland1000_2016 loanamount_HH1000_2016 annualincome_HH1000_2016 amountownland1000_2016 housevalue1000_2016 imp1_ds_tot_HH1000_2016 imp1_is_tot_HH1000_2016 li_indiv_agri_2016 li_indiv_selfemp_2016 li_indiv_sjagri_2016 li_indiv_sjnonagri_2016 li_indiv_uwhhnonagri_2016 li_indiv_uwnonagri_2016 li_indiv_uwhhagri_2016 li_indiv_uwagri_2016 li_HH_agri_2016 li_HH_selfemp_2016 li_HH_sjagri_2016 li_HH_sjnonagri_2016 li_HH_uwhhnonagri_2016 li_HH_uwnonagri_2016 li_HH_uwhhagri_2016 li_HH_uwagri_2016{
+gen def_`x'=`x'*(100/155)
 }
-foreach x in housevalue_2020 annualincome_HH_2020 goldquantityamount_2020 amountownlanddry_2020 amountownlandwet_2020 amountownland_2020 assets_2020 assets_noland_2020 imp1_ds_tot_HH_2020 imp1_is_tot_HH_2020 economic_amount_HH_2020 current_amount_HH_2020 humancap_amount_HH_2020 social_amount_HH_2020 house_amount_HH_2020 incomegen_amount_HH_2020 noincomegen_amount_HH_2020 informal_amount_HH_2020 formal_amount_HH_2020 semiformal_amount_HH_2020 marriageloanamount_HH_2020 loanamount_HH_2020 loanbalance_HH_2020 assets1000_2020 assets_noland1000_2020 loanamount_HH1000_2020 annualincome_HH1000_2020 amountownland1000_2020 housevalue1000_2020 imp1_ds_tot_HH1000_2020 imp1_is_tot_HH1000_2020{
-gen def_`x'=`x'*0.555556
+foreach x in housevalue_2020 annualincome_HH_2020 goldquantityamount_2020 amountownlanddry_2020 amountownlandwet_2020 amountownland_2020 assets_2020 assets_noland_2020 imp1_ds_tot_HH_2020 imp1_is_tot_HH_2020 economic_amount_HH_2020 current_amount_HH_2020 humancap_amount_HH_2020 social_amount_HH_2020 house_amount_HH_2020 incomegen_amount_HH_2020 noincomegen_amount_HH_2020 informal_amount_HH_2020 formal_amount_HH_2020 semiformal_amount_HH_2020 marriageloanamount_HH_2020 loanamount_HH_2020 loanbalance_HH_2020 assets1000_2020 assets_noland1000_2020 loanamount_HH1000_2020 annualincome_HH1000_2020 amountownland1000_2020 housevalue1000_2020 imp1_ds_tot_HH1000_2020 imp1_is_tot_HH1000_2020 li_indiv_agri_2020 li_indiv_selfemp_2020 li_indiv_sjagri_2020 li_indiv_sjnonagri_2020 li_indiv_uwhhnonagri_2020 li_indiv_uwnonagri_2020 li_indiv_uwhhagri_2020 li_indiv_uwagri_2020 li_HH_agri_2020 li_HH_selfemp_2020 li_HH_sjagri_2020 li_HH_sjnonagri_2020 li_HH_uwhhnonagri_2020 li_HH_uwnonagri_2020 li_HH_uwhhagri_2020 li_HH_uwagri_2020{
+gen def_`x'=`x'*(100/180)
 }
 
+
+********** Verif total annual income
+preserve 
+duplicates drop HHID_panel, force
+egen verif_income_2010=rowtotal(def_li_HH_agri_2010 def_li_HH_coolie_2010 def_li_HH_agricoolie_2010 def_li_HH_nregs_2010 def_li_HH_investment_2010 def_li_HH_employee_2010 def_li_HH_selfemp_2010 def_li_HH_pension_2010 def_li_HH_nooccup_2010)
+egen verif_income_2016=rowtotal(def_li_HH_agri_2016 def_li_HH_selfemp_2016 def_li_HH_sjagri_2016 def_li_HH_sjnonagri_2016 def_li_HH_uwhhnonagri_2016 def_li_HH_uwnonagri_2016 def_li_HH_uwhhagri_2016 def_li_HH_uwagri_2016)
+egen verif_income_2020=rowtotal(def_li_HH_agri_2020 def_li_HH_selfemp_2020 def_li_HH_sjagri_2020 def_li_HH_sjnonagri_2020 def_li_HH_uwhhnonagri_2020 def_li_HH_uwnonagri_2020 def_li_HH_uwhhagri_2020 def_li_HH_uwagri_2020)
+gen test_2010=def_annualincome_HH_2010-verif_income_2010
+gen test_2016=def_annualincome_HH_2016-verif_income_2016
+gen test_2020=def_annualincome_HH_2020-verif_income_2020
+tab1 test_2010 test_2016 test_2020
+restore
+
+
+********** Income agri vs income non agri?
+egen def_incomeagri_HH_2010=rowtotal(def_li_HH_agri_2010 def_li_HH_agricoolie_2010)
+egen def_incomenonagri_HH_2010=rowtotal(def_li_HH_coolie_2010 def_li_HH_nregs_2010 def_li_HH_investment_2010 def_li_HH_employee_2010 def_li_HH_selfemp_2010 def_li_HH_pension_2010 def_li_HH_nooccup_2010)
+
+egen def_incomeonlyagri_HH_2010=rowtotal(def_li_HH_agri_2010)
+egen def_incomenononlyagri_HH_2010=rowtotal(def_li_HH_coolie_2010 def_li_HH_agricoolie_2010 def_li_HH_nregs_2010 def_li_HH_investment_2010 def_li_HH_employee_2010 def_li_HH_selfemp_2010 def_li_HH_pension_2010 def_li_HH_nooccup_2010)
+
+
+egen def_incomeagri_HH_2016=rowtotal(def_li_HH_agri_2016 def_li_HH_sjagri_2016 def_li_HH_uwhhagri_2016 def_li_HH_uwagri_2016)
+egen def_incomenonagri_HH_2016=rowtotal(def_li_HH_selfemp_2016 def_li_HH_sjnonagri_2016 def_li_HH_uwhhnonagri_2016 def_li_HH_uwnonagri_2016)
+
+egen def_incomeonlyagri_HH_2016=rowtotal(def_li_HH_agri_2016)
+egen def_incomenononlyagri_HH_2016=rowtotal(def_li_HH_sjagri_2016 def_li_HH_uwhhagri_2016 def_li_HH_uwagri_2016 def_li_HH_selfemp_2016 def_li_HH_sjnonagri_2016 def_li_HH_uwhhnonagri_2016 def_li_HH_uwnonagri_2016)
+
+
+egen def_incomeagri_HH_2020=rowtotal(def_li_HH_agri_2020 def_li_HH_sjagri_2020 def_li_HH_uwhhagri_2020 def_li_HH_uwagri_2020)
+egen def_incomenonagri_HH_2020=rowtotal(def_li_HH_selfemp_2020 def_li_HH_sjnonagri_2020 def_li_HH_uwhhnonagri_2020 def_li_HH_uwnonagri_2020)
+
+egen def_incomeonlyagri_HH_2020=rowtotal(def_li_HH_agri_2020)
+egen def_incomenononlyagri_HH_2020=rowtotal(def_li_HH_sjagri_2020 def_li_HH_uwhhagri_2020 def_li_HH_uwagri_2020 def_li_HH_selfemp_2020 def_li_HH_sjnonagri_2020 def_li_HH_uwhhnonagri_2020 def_li_HH_uwnonagri_2020)
+
+gen test1_10=(def_incomeagri_HH_2010+def_incomenonagri_HH_2010)-def_annualincome_HH_2010
+gen test2_10=(def_incomeonlyagri_HH_2010+def_incomenononlyagri_HH_2010)-def_annualincome_HH_2010
+
+gen test1_16=(def_incomeagri_HH_2016+def_incomenonagri_HH_2016)-def_annualincome_HH_2016
+gen test2_16=(def_incomeonlyagri_HH_2016+def_incomenononlyagri_HH_2016)-def_annualincome_HH_2016
+
+gen test1_20=(def_incomeagri_HH_2020+def_incomenonagri_HH_2020)-def_annualincome_HH_2020
+gen test2_20=(def_incomeonlyagri_HH_2020+def_incomenononlyagri_HH_2020)-def_annualincome_HH_2020
+
+tab1 test1_10 test2_10 test1_16 test2_16 test1_20 test2_20  // ok
+drop test1_10 test2_10 test1_16 test2_16 test1_20 test2_20
+
+/*
+foreach x in def_incomeagri_HH def_incomenonagri_HH def_incomeonlyagri_HH def_incomenononlyagri_HH {
+replace `x'_2010=1.000001 if `x'_2010==0
+replace `x'_2016=1.000001 if `x'_2016==0
+replace `x'_2020=1.000001 if `x'_2020==0
+}
+*/
 
 *Delta
 foreach x in DAR DSR ISR  loans_HH nboccupation_HH sizeownland  {
@@ -512,18 +582,29 @@ gen d2_`x'=(`x'_2020-`x'_2016)*100/`x'_2016
 gen dg_`x'=(`x'_2020-`x'_2010)*100/`x'_2010
 }
 
-
 foreach x in def_loanamount_HH def_imp1_ds_tot_HH def_imp1_is_tot_HH def_annualincome_HH def_assets def_assets_noland def_amountownland def_amountownlanddry def_amountownlandwet {
 gen d1_`x'=(`x'_2016-`x'_2010)*100/`x'_2010
 gen d2_`x'=(`x'_2020-`x'_2016)*100/`x'_2016
 gen dg_`x'=(`x'_2020-`x'_2010)*100/`x'_2010
 }
 
+foreach x in def_incomeagri_HH def_incomenonagri_HH def_incomeonlyagri_HH def_incomenononlyagri_HH {
+gen d1_`x'=(`x'_2016-`x'_2010)*100/`x'_2010
+gen d2_`x'=(`x'_2020-`x'_2016)*100/`x'_2016
+gen dg_`x'=(`x'_2020-`x'_2010)*100/`x'_2010
+}
 
 foreach x in sizedryownland sizewetownland {
 gen dg_`x'=(`x'_2020-`x'_2010)*100/`x'_2010
 }
 
+/*
+foreach x in def_incomeagri_HH def_incomenonagri_HH def_incomeonlyagri_HH def_incomenononlyagri_HH {
+replace `x'_2010=0 if `x'_2010==1.000001
+replace `x'_2016=0 if `x'_2016==1.000001
+replace `x'_2020=0 if `x'_2020==1.000001
+}
+*/
 
 foreach x in DAR DSR ISR def_loanamount_HH def_imp1_ds_tot_HH def_imp1_is_tot_HH{
 foreach i in 2010 2016 2020{
@@ -538,12 +619,55 @@ foreach x in d1_def_loanamount_HH d1_def_imp1_ds_tot_HH d1_def_imp1_is_tot_HH d1
 gen cat_`x'=.
 }
 
+foreach x in d1_def_incomeagri_HH d2_def_incomeagri_HH dg_def_incomeagri_HH d1_def_incomenonagri_HH d2_def_incomenonagri_HH dg_def_incomenonagri_HH d1_def_incomeonlyagri_HH d2_def_incomeonlyagri_HH dg_def_incomeonlyagri_HH d1_def_incomenononlyagri_HH d2_def_incomenononlyagri_HH dg_def_incomenononlyagri_HH{
+gen cat_`x'=.
+}
+
+
 foreach x in d1_def_loanamount_HH d1_def_imp1_ds_tot_HH d1_def_imp1_is_tot_HH d1_def_annualincome_HH d1_def_assets d1_def_assets_noland d1_def_amountownland d2_def_loanamount_HH d2_def_imp1_ds_tot_HH d2_def_imp1_is_tot_HH d2_def_annualincome_HH d2_def_assets d2_def_assets_noland d2_def_amountownland dg_def_loanamount_HH dg_def_imp1_ds_tot_HH dg_def_imp1_is_tot_HH dg_def_annualincome_HH dg_def_assets dg_def_assets_noland dg_def_amountownland d1_DAR d1_DSR d2_DAR d2_DSR dg_DAR dg_DSR{
 replace cat_`x'=1 if `x'<=-5 & `x'!=.
 replace cat_`x'=2 if `x'>-5 & `x'<5 & `x'!=. 
 replace cat_`x'=3 if `x'>=5 & `x'!=.
 label values cat_`x' cat
 }
+
+foreach x in d1_def_incomeagri_HH d2_def_incomeagri_HH dg_def_incomeagri_HH d1_def_incomenonagri_HH d2_def_incomenonagri_HH dg_def_incomenonagri_HH d1_def_incomeonlyagri_HH d2_def_incomeonlyagri_HH dg_def_incomeonlyagri_HH d1_def_incomenononlyagri_HH d2_def_incomenononlyagri_HH dg_def_incomenononlyagri_HH{
+replace cat_`x'=1 if `x'<=-5 & `x'!=.
+replace cat_`x'=2 if `x'>-5 & `x'<5 & `x'!=. 
+replace cat_`x'=3 if `x'>=5 & `x'!=.
+label values cat_`x' cat
+}
+
+
+foreach x in 2010 2016 2020 {
+gen share_agri_`x'=def_incomeagri_HH_`x'*100/def_annualincome_HH_`x'
+gen share_nonagri_`x'=def_incomenonagri_HH_`x'*100/def_annualincome_HH_`x'
+gen share_onlyagri_`x'=def_incomeonlyagri_HH_`x'*100/def_annualincome_HH_`x'
+gen share_nononlyagri_`x'=def_incomenononlyagri_HH_`x'*100/def_annualincome_HH_`x'
+}
+
+
+********** Increasing in share?
+
+foreach x in share_agri share_nonagri share_onlyagri share_nononlyagri {
+gen d1_`x'=(`x'_2016-`x'_2010)*100/`x'_2010
+gen d2_`x'=(`x'_2020-`x'_2016)*100/`x'_2016
+gen dg_`x'=(`x'_2020-`x'_2010)*100/`x'_2010
+}
+
+
+foreach x in d1_share_agri d2_share_agri dg_share_agri d1_share_nonagri d2_share_nonagri dg_share_nonagri d1_share_onlyagri d2_share_onlyagri dg_share_onlyagri d1_share_nononlyagri d2_share_nononlyagri dg_share_nononlyagri {
+gen cat_`x'=.
+}
+
+
+foreach x in d1_share_agri d2_share_agri dg_share_agri d1_share_nonagri d2_share_nonagri dg_share_nonagri d1_share_onlyagri d2_share_onlyagri dg_share_onlyagri d1_share_nononlyagri d2_share_nononlyagri dg_share_nononlyagri {
+replace cat_`x'=1 if `x'<=-5 & `x'!=.
+replace cat_`x'=2 if `x'>-5 & `x'<5 & `x'!=. 
+replace cat_`x'=3 if `x'>=5 & `x'!=.
+label values cat_`x' cat
+}
+
 
 save"$directory\_paneldata\RUME-NEEMSIS-HH_v2.dta", replace
 ****************************************
