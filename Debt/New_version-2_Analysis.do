@@ -13,7 +13,8 @@ TITLE: ANALYSIS OVERINDEBTEDNESS
 
 clear all
 global name "Arnaud"
-set scheme plottig
+*set scheme plottig
+set scheme plotplain
 
 global directory "D:\Documents\_Thesis\Research-Overindebtedness\New_version_with2020"
 cd"$directory"
@@ -102,7 +103,7 @@ stripplot DAR2_2010 DAR2_2016 DAR2_2020, over() separate(caste) ///
 cumul cumprob box centre refline vertical /// 
 xsize(3) xtitle("") xlabel(,angle())  ///
 ylabel(0(100)800) ymtick(0(50)800) ytitle() ///
-msymbol(oh oh oh) mcolor(plr1 ply1 plg1) 
+msymbol(oh oh oh) mcolor(plr1   plg1) 
 
 twoway (kdensity DAR_2010 if DAR_2010<450)(kdensity DAR_2016 if DAR_2016<450) (kdensity DAR_2020 if DAR_2020<450)
 
@@ -122,7 +123,7 @@ stripplot DSR_2010 DSR_2016 DSR_2020, over() separate(caste) ///
 cumul cumprob box centre refline vertical /// 
 xsize(3) xtitle("") xlabel(,angle())  ///
 ylabel(0(50)580) ymtick(0(10)580) ytitle() ///
-msymbol(oh oh oh) mcolor(plr1 ply1 plg1)
+msymbol(oh oh oh) mcolor(plr1   plg1)
 
 twoway (kdensity DSR_2010 if DSR_2010<300)(kdensity DSR_2016 if DSR_2016<300) (kdensity DSR_2020 if DSR_2020<300)
 
@@ -249,21 +250,22 @@ label var c1_DAR "Δ[2010-2016] Debt/assets ratio"
 label var c2_def_loanamount "Δ[2016-2020] Loan amount"
 label var c2_DAR "Δ[2016-2020] Debt/assets ratio"
 
+/*
 twoway ///
-(connected c1_def_assets n, msymbol(o) mcolor(plb1) color(plb1)) ///
-(connected c2_def_assets n, msymbol(d) mcolor(plb3) color(plb3)) ///
-(connected c1_def_annualincome_HH n, msymbol(o) mcolor(ply1) color(ply1)) ///
-(connected c2_def_annualincome_HH n, msymbol(d) mcolor(ply3) color(ply3)), ///
+(connected c1_def_assets n, msymbol() mcolor() color()) ///
+(connected c2_def_assets n, msymbol() mcolor() color()) ///
+(connected c1_def_annualincome_HH n, msymbol() mcolor() color()) ///
+(connected c2_def_annualincome_HH n, msymbol() mcolor() color()), ///
 xlabel(0(10)100) xmtick(0(5)100) xtitle("% of population") ///
 ylabel(-100(100)1200) ymtick(-100(50)1200) ytitle("Variation rate (%)") yline(0) ///
 title("") legend(pos(6) cols(2)) name(fin1, replace)
 graph export "Delta_fin.svg", as(svg) name(fin1) replace
 
 twoway ///
-(connected c1_def_assets_noland n, msymbol(o) mcolor(plb1) color(plb1)) ///
-(connected c2_def_assets_noland n, msymbol(d) mcolor(plb3) color(plb3)) ///
-(connected c1_def_annualincome_HH n, msymbol(o) mcolor(ply1) color(ply1)) ///
-(connected c2_def_annualincome_HH n, msymbol(d) mcolor(ply3) color(ply3)), ///
+(connected c1_def_assets_noland n, msymbol() mcolor( ) color( )) ///
+(connected c2_def_assets_noland n, msymbol() mcolor( ) color( )) ///
+(connected c1_def_annualincome_HH n, msymbol() mcolor( ) color( )) ///
+(connected c2_def_annualincome_HH n, msymbol() mcolor( ) color( )), ///
 xlabel(0(10)100) xmtick(0(5)100) xtitle("% of population") ///
 ylabel(-100(100)1200) ymtick(-100(50)1200) ytitle("Variation rate (%)") yline(0) ///
 title("") legend(pos(6) cols(2)) name(fin1, replace)
@@ -271,15 +273,15 @@ graph export "Delta_fin_bis.svg", as(svg) name(fin1) replace
 
 *Debt
 twoway ///
-(connected c1_def_loanamount n, msymbol(o) mcolor(plb1) color(plb1)) ///
-(connected c2_def_loanamount n, msymbol(d) mcolor(plb3) color(plb3)) ///
-(connected c1_DAR n if c1_DAR<2000, msymbol(o) mcolor(ply1) color(ply1)) ///
-(connected c2_DAR n, msymbol(d) mcolor(ply3) color(ply3)), ///
+(connected c1_def_loanamount n, msymbol() mcolor( ) color( )) ///
+(connected c2_def_loanamount n, msymbol() mcolor( ) color( )) ///
+(connected c1_DAR n if c1_DAR<2000, msymbol() mcolor( ) color( )) ///
+(connected c2_DAR n, msymbol() mcolor( ) color( )), ///
 xlabel(0(10)100) xmtick(0(5)100) xtitle("% of population") ///
 ylabel(-100(100)1600) ymtick(-100(50)1600) ytitle("Variation rate (%)") yline(0) ///
 title("") legend(pos(6) cols(2)) name(debt, replace)
 graph export "Delta_debt.svg", as(svg) name(debt) replace
-
+*/
 set graph on
 
 
@@ -322,7 +324,7 @@ stripplot DAR2_2010 DAR2_2016 DAR2_2020, over() separate(caste) ///
 cumul cumprob box centre refline vertical /// 
 xsize(3) xtitle("") xlabel(1"2010" 2"2016" 3"2020",angle())  ///
 ylabel(0(100)700) ymtick(0(50)700) ytitle("Debt to assets ratio") ///
-msymbol(oh oh oh) mcolor(plr1 ply1 plg1) name(debt, replace)
+msymbol(oh oh oh) mcolor(plr1   plg1) name(debt, replace)
 graph export "Box_DAR.svg", as(svg) name(debt)
 
 *DSR
@@ -340,7 +342,7 @@ stripplot def_loanamount_HH1000_2010 def_loanamount_HH1000_2016 def_loanamount_H
 cumul cumprob box centre refline vertical /// 
 xsize(3) xtitle("") xlabel(1"2010" 2"2016" 3"2020",angle())  ///
 ylabel(0(100)1200) ymtick(0(50)1200) ytitle("Loan amount (1,000 INR)") ///
-msymbol(oh oh oh) mcolor(plr1 ply1 plg1) name(debt, replace)
+msymbol(oh oh oh) mcolor(plr1   plg1) name(debt, replace)
 graph export "Box_Loan.svg", as(svg) name(debt)
 */
 
@@ -360,14 +362,148 @@ tab dummysavingaccount_2020 caste
 
 
 ********** Insurance
-tab dummysinsurance_2010 caste
-tab dummysinsurance_2016 caste
-tab dummysinsurance_2020 caste
+tab dummyinsurance_2010 caste
+tab dummyinsurance_2016 caste
+tab dummyinsurance_2020 caste
 
 
 
-********** Quantile
 
+
+
+********** Non agri income vs income agri?
+/*
+tabstat def_incomeagri_HH_2010 def_incomeagri_HH_2016 def_incomeagri_HH_2020 def_incomenonagri_HH_2010 def_incomenonagri_HH_2016 def_incomenonagri_HH_2020, stat(n mean sd p50) by(caste)
+
+tabstat def_incomeonlyagri_HH_2010 def_incomeonlyagri_HH_2016 def_incomeonlyagri_HH_2020 def_incomenononlyagri_HH_2010 def_incomenononlyagri_HH_2016 def_incomenononlyagri_HH_2020, stat(n mean sd p50) by(caste)
+
+tabstat d1_def_incomeagri_HH d2_def_incomeagri_HH d1_def_incomenonagri_HH d2_def_incomenonagri_HH, stat(n mean sd p50) by(caste)
+
+tabstat d1_def_incomeonlyagri_HH d2_def_incomeonlyagri_HH d1_def_incomenononlyagri_HH d2_def_incomenononlyagri_HH, stat(n mean sd p50) by(caste)
+*/
+
+tabstat share_agri_2010 share_agri_2016 share_agri_2020, stat(n mean sd p50) by(caste)
+tabstat share_nonagri_2010 share_nonagri_2016 share_nonagri_2020, stat(n mean sd p50) by(caste)
+tabstat share_onlyagri_2010 share_onlyagri_2016 share_onlyagri_2020, stat(n mean sd p50) by(caste)
+tabstat share_nononlyagri_2010 share_nononlyagri_2016 share_nononlyagri_2020, stat(n mean sd p50) by(caste)
+
+label define caste 1"Dalits" 2"Middle" 3"Upper", replace
+label values caste caste
+
+set graph off
+/*
+** Not only
+stripplot share_agri_2010 share_agri_2016 share_agri_2020, over() separate(caste) ///
+cumul cumprob box centre refline vertical /// 
+xsize(3) xtitle("Agri. income") xlabel(1"2010" 2"2016" 3"2020",angle(45))  ///
+ylabel(0(10)100) ymtick(-0(5)100) ytitle("Share of total income of HH") ///
+msymbol(oh oh oh) mcolor(plr1 plg1 ply1) name(agri1, replace) leg(col(3))
+
+
+stripplot share_nonagri_2010 share_nonagri_2016 share_nonagri_2020, over() separate(caste) ///
+cumul cumprob box centre refline vertical /// 
+xsize(3) xtitle("Non-agri. income") xlabel(1"2010" 2"2016" 3"2020",angle(45))  ///
+ylabel(0(10)100) ymtick(-0(5)100) ytitle("Share of total income of HH") ///
+msymbol(oh oh oh) mcolor(plr1 plg1 ply1) name(nonagri1, replace)
+
+grc1leg agri1 nonagri1, name(share1, replace)
+graph export "Shareincome1.svg", as(svg) name(share1) replace
+
+**Only
+stripplot share_onlyagri_2010 share_onlyagri_2016 share_onlyagri_2020, over() separate(caste) ///
+cumul cumprob box centre refline vertical /// 
+xsize(3) xtitle("Only agri. income") xlabel(1"2010" 2"2016" 3"2020",angle(45))  ///
+ylabel(0(10)100) ymtick(-0(5)100) ytitle("Share of total income of HH") ///
+msymbol(oh oh oh) mcolor(plr1 plg1 ply1) name(agri1, replace) leg(col(3))
+
+
+stripplot share_nononlyagri_2010 share_nononlyagri_2016 share_nononlyagri_2020, over() separate(caste) ///
+cumul cumprob box centre refline vertical /// 
+xsize(3) xtitle("Only non-agri. income") xlabel(1"2010" 2"2016" 3"2020",angle(45))  ///
+ylabel(0(10)100) ymtick(-0(5)100) ytitle("Share of total income of HH") ///
+msymbol(oh oh oh) mcolor(plr1 plg1 ply1) name(nonagri1, replace)
+
+grc1leg agri1 nonagri1, name(share1, replace)
+graph export "Shareincome2.svg", as(svg) name(share1) replace
+*/
+set graph on
+
+
+********** Evolution
+cls
+tab cat_d1_share_agri caste, col nofreq
+tab cat_d2_share_agri caste, col nofreq
+
+tab cat_d1_share_nonagri caste, col nofreq
+tab cat_d2_share_nonagri caste, col nofreq
+
+tab cat_d1_share_onlyagri caste, col nofreq
+tab cat_d2_share_onlyagri caste, col nofreq
+
+tab cat_d1_share_nononlyagri caste, col nofreq
+tab cat_d2_share_nononlyagri caste, col nofreq
+
+
+pctile c1_share_agri=d1_share_agri, nq(20)
+pctile c2_share_agri=d2_share_agri, nq(20)
+label var c1_share_agri "Δ 2010-2016/17"
+label var c2_share_agri "Δ 2016/17-2020/21"
+
+pctile c1_share_nonagri=d1_share_nonagri, nq(20)
+pctile c2_share_nonagri=d2_share_nonagri, nq(20)
+label var c1_share_nonagri "Δ 2010-2016/17"
+label var c2_share_nonagri "Δ 2016/17-2020/21"
+
+pctile c1_share_onlyagri=d1_share_onlyagri, nq(20)
+pctile c2_share_onlyagri=d2_share_onlyagri, nq(20)
+label var c1_share_onlyagri "Δ 2010-2016/17"
+label var c2_share_onlyagri "Δ 2016/17-2020/21"
+
+pctile c1_share_nononlyagri=d1_share_nononlyagri, nq(20)
+pctile c2_share_nononlyagri=d2_share_nononlyagri, nq(20)
+label var c1_share_nononlyagri "Δ 2010-2016/17"
+label var c2_share_nononlyagri "Δ 2016/17-2020/21"
+
+tabstat c1_share_agri c2_share_agri c1_share_nonagri c2_share_nonagri, stat(n mean sd min p1 p5 p10 q p90 p95 p99 max)
+tabstat c1_share_onlyagri c2_share_onlyagri c1_share_nononlyagri c2_share_nononlyagri, stat(n mean sd min p1 p5 p10 q p90 p95 p99 max)
+
+set graph off
+
+twoway ///
+(connected c1_share_agri n, msymbol() mcolor() color()) ///
+(connected c2_share_agri n, msymbol() mcolor() color()), ///
+xlabel(0(10)100) xmtick(0(5)100) xtitle("% of population") ///
+ylabel(-100(100)1000) ymtick(-100(50)1000) ytitle("Variation rate (%)") yline(0) ///
+title("Agri income") legend(pos(6) cols(2)) name(fin1, replace)
+
+twoway ///
+(connected c1_share_nonagri n if c1_share_nonagri<100000, msymbol() mcolor() color()) ///
+(connected c2_share_nonagri n if c2_share_nonagri<100000, msymbol() mcolor() color()), ///
+xlabel(0(10)100) xmtick(0(5)100) xtitle("% of population") ///
+ylabel(-100(100)1100) ymtick(-100(50)1100) ytitle("Variation rate (%)") yline(0) ///
+title("Non-agri income") legend(pos(6) cols(2)) name(fin2, replace)
+
+grc1leg fin1 fin2, name(evo,replace)
+graph export "Delta_share1.svg", as(svg)
+
+twoway ///
+(connected c1_share_onlyagri n, msymbol() mcolor() color()) ///
+(connected c2_share_onlyagri n, msymbol() mcolor() color()), ///
+xlabel(0(10)100) xmtick(0(5)100) xtitle("% of population") ///
+ylabel(-100(100)600) ymtick(-100(50)600) ytitle("Variation rate (%)") yline(0) ///
+title("Only agri income") legend(pos(6) cols(2)) name(fin1, replace)
+
+twoway ///
+(connected c1_share_nononlyagri n if c1_share_nonagri<100000, msymbol() mcolor() color()) ///
+(connected c2_share_nononlyagri n if c2_share_nonagri<100000, msymbol() mcolor() color()), ///
+xlabel(0(10)100) xmtick(0(5)100) xtitle("% of population") ///
+ylabel(-100(50)300) ymtick(-100(10)350) ytitle("Variation rate (%)") yline(0) ///
+title("Only non-agri income") legend(pos(6) cols(2)) name(fin2, replace)
+
+grc1leg fin1 fin2, name(evo,replace)
+graph export "Delta_share2.svg", as(svg)
+
+set graph on
 
 
 ****************************************
@@ -392,36 +528,38 @@ tab dummysinsurance_2020 caste
 ****************************************
 * STATS 2020 : loss in assets
 ****************************************
-use"$directory\_paneldata\NEEMSIS2-HH.dta", clear
+use"$directory\Data\NEEMSIS2-HH_v17.dta", clear
+merge m:1 HHID_panel using "$directory\_paneldata\panel_comp.dta"
+keep if _merge==3
+drop _merge
 
-
+sort HHID_panel INDID
 bysort HHID_panel : gen n=_n
 keep if n==1
 dropmiss, force
+tab orga_HHagri
 keep if orga_HHagri==3
+tab panel_2010_2016_2020
+sort HHID_panel
 
-**********Loan at HH with refusal
+
+********** Loans
 tab covrefusalloan caste, col nofreq
 
-**********Agri
+
+
+********** Loss
 *Land
 destring covsellland, replace
 recode covsellland (66=0) (2=0)
-tab covsellland caste, col nofreq
-
-*Crops
-/*
-tab1 covsubsistence covsubsistencereason covsubsistencesize covsubsistencenext covsubsistencereasonother covharvest covselfconsumption covharvestquantity covharvestprices
-*/
-
+tab covsellland caste, col 
 *Livestock
 foreach x in covselllivestock_cow covselllivestock_goat covselllivestock_chicken covselllivestock_bullock covselllivestock_bullforploughin covselllivestock_none {
 tab `x' caste, col nofreq
 }
 egen covselllivestock_total=rowtotal(covselllivestock_cow covselllivestock_goat covselllivestock_chicken covselllivestock_bullock covselllivestock_bullforploughin)
 replace covselllivestock_total=1 if covselllivestock_total>=1
-tab covselllivestock_total caste, col nofreq
-
+tab covselllivestock_total caste, col 
 *Equipment
 foreach x in covsellequipment_tractor covsellequipment_bullockcar covsellequipment_harvester covsellequipment_plowingmac covsellequipment_none {
 tab `x' caste, col nofreq
@@ -429,25 +567,14 @@ tab `x' caste, col nofreq
 egen covsellequipment_total=rowtotal(covsellequipment_tractor covsellequipment_bullockcar covsellequipment_harvester covsellequipment_plowingmac)
 replace covsellequipment_total=1 if covsellequipment_total>=1
 tab covsellequipment_total caste, col nofreq
-
-
-*Food
-/*
-tab1 covfoodenough covfoodquality covgenexpenses covexpensesdecrease covexpensesincrease covexpensesstable covplacepurchase covsick 
-*/
-
-
-**********Goods
+*Goods
 foreach x in covsellgoods_car covsellgoods_bike covsellgoods_fridge covsellgoods_furniture covsellgoods_tailormach covsellgoods_phone covsellgoods_landline covsellgoods_DVD covsellgoods_camera covsellgoods_cookgas covsellgoods_computer covsellgoods_antenna covsellgoods_other covsellgoods_none {
 tab `x' caste, col nofreq
 }
 egen covsellgoods_total=rowtotal(covsellgoods_car covsellgoods_bike covsellgoods_fridge covsellgoods_furniture covsellgoods_tailormach covsellgoods_phone covsellgoods_landline covsellgoods_DVD covsellgoods_camera covsellgoods_cookgas covsellgoods_computer covsellgoods_antenna covsellgoods_other)
 replace covsellgoods_total=1 if covsellgoods_total>=1
 tab covsellgoods_total caste, col nofreq
-
-
-
-**********House
+*House
 destring covsellhouse, replace
 recode covsellhouse (66=0) (2=0)
 tab covsellhouse caste, col nofreq
@@ -456,17 +583,102 @@ destring covsellplot, replace
 recode covsellplot (66=0) (2=0)
 tab covsellplot caste, col nofreq
 
-
-**********Gold
+*Gold
 destring covsoldgold, replace
-tab covsoldgold caste, col nofreq
+tab covsoldgold caste, col
+tabstat covsoldgoldquantity, stat(n mean sd p50) by(caste)
+tab covlostgold caste, col
 
-**********Total
+*Total
 recode covsellland covselllivestock_total covsellequipment_total covsellgoods_total covsellhouse covsellplot covsoldgold (.=0)
 egen covsell_total=rowtotal(covsellland covselllivestock_total covsellequipment_total covsellgoods_total covsellhouse covsellplot covsoldgold)
 replace covsell_total=1 if covsell_total>1
 
 tab covsell_total caste, col
+
+
+
+
+********** SC vs subsistence
+tab dummyeverhadland caste, col
+tab ownland caste, col
+tab covsubsistence caste, col
+tab covsubsistencenext caste, col
+
+
+
+**************
+****** INDIVIDUAL SCALE
+use"$directory\Data\NEEMSIS2-HH_v17.dta", clear
+merge m:1 HHID_panel using "$directory\_paneldata\panel_comp.dta"
+keep if _merge==3
+drop _merge
+
+dropmiss, force
+tab orga_HHagri
+keep if orga_HHagri==3
+fre livinghome
+drop if livinghome==3
+drop if livinghome==4
+tab panel_2010_2016_2020
+sort caste
+drop if caste==.
+sort HHID_panel INDID
+
+********** Lending
+gen lendingindiv=0
+replace lendingindiv=1 if borrowerscaste!=.
+tab lendingindiv caste, col
+replace covlendrepayment=2 if covlendrepayment==. & lendingindiv==1
+tab covlendrepayment caste, col
+tab covlending caste, col
+
+
+
+
+********** Chitfunds, saving, gold
+*Chitfund
+tab chitfundbelongerid_ caste, col
+tab nbchitfunds caste, col
+destring covchitfundstop1 covchitfundstop2 covchitfundstop3, replace
+egen covchitfundstop=rowtotal(covchitfundstop1 covchitfundstop2 covchitfundstop3)
+replace covchitfundstop=1 if covchitfundstop>1
+replace covchitfundstop=. if chitfundbelongerid_==. | chitfundbelongerid_==0
+tab covchitfundstop caste, col
+
+replace covchitfundreturn1="0" if covchitfundstop1!=. & covchitfundreturn1==""
+replace covchitfundreturn2="0" if covchitfundstop2!=. & covchitfundreturn2==""
+destring covchitfundreturn1 covchitfundreturn2, replace
+egen covchitfundreturn=rowtotal(covchitfundreturn1 covchitfundreturn2)
+replace covchitfundreturn=1 if covchitfundreturn>1
+replace covchitfundreturn=. if chitfundbelongerid_==. | chitfundbelongerid_==0
+tab covchitfundreturn caste, col
+
+*Saving
+recode savingsownerid_ (.=0)
+tab savingsownerid_ caste, col
+tab nbsavingaccounts caste, col nofreq
+destring covsavinguse1 covsavinguse2 covsavinguse3 covsavinguse4, replace
+egen covsavinguse=rowtotal(covsavinguse1 covsavinguse2 covsavinguse3 covsavinguse4)
+replace covsavinguse=1 if covsavinguse>1
+replace covsavinguse=. if savingsownerid_==. | savingsownerid_==0
+tab covsavinguse caste, col nofreq
+
+egen covsavinguseamount=rowtotal(covsavinguseamount1 covsavinguseamount2 covsavinguseamount3)
+replace covsavinguseamount=. if savingsownerid_==. | savingsownerid_==0
+replace covsavinguseamount=. if covsavinguse==. | covsavinguse==0
+tabstat covsavinguseamount, stat(n mean sd p50) by(caste)
+
+*Gold pledge
+tab dummygoldpledged caste, col
+gen goldamountpledge1000=goldamountpledge/1000
+tabstat goldquantitypledge goldamountpledge1000, stat(n mean sd p50) by(caste)
+tabstat covgoldpledged, stat(n mean sd min p1 p5 p10 q p90 p95 p99 max) by(caste)
+gen covratio=covgoldpledged*100/goldquantitypledge
+tabstat covratio, stat(n mean sd p50) by(caste)
+drop covratio
+
+
 ****************************************
 * END
 
@@ -482,11 +694,202 @@ tab covsell_total caste, col
 
 
 
+
+
+
 ****************************************
-* STATS
+* STATS 2020 : loss in assets for BALANCED PANEL ONLY
+****************************************
+cls
+use"$directory\Data\NEEMSIS2-HH_v17.dta", clear
+merge m:1 HHID_panel using "$directory\_paneldata\panel_comp.dta"
+keep if _merge==3
+drop _merge
+
+sort HHID_panel INDID
+bysort HHID_panel : gen n=_n
+keep if n==1
+dropmiss, force
+tab orga_HHagri
+keep if orga_HHagri==3
+tab panel_2010_2016_2020
+keep if panel_2010_2016_2020==1
+sort HHID_panel
+
+
+********** Loans
+tab covrefusalloan caste, col nofreq
+
+
+
+********** Loss
+*Land
+destring covsellland, replace
+recode covsellland (66=0) (2=0)
+tab covsellland caste, col 
+*Livestock
+foreach x in covselllivestock_cow covselllivestock_goat covselllivestock_chicken covselllivestock_bullock covselllivestock_bullforploughin covselllivestock_none {
+tab `x' caste, col nofreq
+}
+egen covselllivestock_total=rowtotal(covselllivestock_cow covselllivestock_goat covselllivestock_chicken covselllivestock_bullock covselllivestock_bullforploughin)
+replace covselllivestock_total=1 if covselllivestock_total>=1
+tab covselllivestock_total caste, col 
+*Equipment
+foreach x in covsellequipment_tractor covsellequipment_bullockcar covsellequipment_harvester covsellequipment_plowingmac covsellequipment_none {
+tab `x' caste, col nofreq
+}
+egen covsellequipment_total=rowtotal(covsellequipment_tractor covsellequipment_bullockcar covsellequipment_harvester covsellequipment_plowingmac)
+replace covsellequipment_total=1 if covsellequipment_total>=1
+tab covsellequipment_total caste, col nofreq
+*Goods
+foreach x in covsellgoods_car covsellgoods_bike covsellgoods_fridge covsellgoods_furniture covsellgoods_tailormach covsellgoods_phone covsellgoods_landline covsellgoods_DVD covsellgoods_camera covsellgoods_cookgas covsellgoods_computer covsellgoods_antenna covsellgoods_other covsellgoods_none {
+tab `x' caste, col nofreq
+}
+egen covsellgoods_total=rowtotal(covsellgoods_car covsellgoods_bike covsellgoods_fridge covsellgoods_furniture covsellgoods_tailormach covsellgoods_phone covsellgoods_landline covsellgoods_DVD covsellgoods_camera covsellgoods_cookgas covsellgoods_computer covsellgoods_antenna covsellgoods_other)
+replace covsellgoods_total=1 if covsellgoods_total>=1
+tab covsellgoods_total caste, col nofreq
+*House
+destring covsellhouse, replace
+recode covsellhouse (66=0) (2=0)
+tab covsellhouse caste, col nofreq
+
+destring covsellplot, replace
+recode covsellplot (66=0) (2=0)
+tab covsellplot caste, col nofreq
+
+*Gold
+destring covsoldgold, replace
+tab covsoldgold caste, col
+tabstat covsoldgoldquantity, stat(n mean sd p50) by(caste)
+tab covlostgold caste, col
+
+*Total
+recode covsellland covselllivestock_total covsellequipment_total covsellgoods_total covsellhouse covsellplot covsoldgold (.=0)
+egen covsell_total=rowtotal(covsellland covselllivestock_total covsellequipment_total covsellgoods_total covsellhouse covsellplot covsoldgold)
+replace covsell_total=1 if covsell_total>1
+
+tab covsell_total caste, col
+
+
+
+********** SC vs subsistence
+tab dummyeverhadland caste, col
+tab ownland caste, col
+tab covsubsistence caste, col
+tab covsubsistencenext caste, col
+
+
+
+
+**************
+****** INDIVIDUAL SCALE
+use"$directory\Data\NEEMSIS2-HH_v17.dta", clear
+merge m:1 HHID_panel using "$directory\_paneldata\panel_comp.dta"
+keep if _merge==3
+drop _merge
+
+dropmiss, force
+tab orga_HHagri
+keep if orga_HHagri==3
+fre livinghome
+drop if livinghome==3
+drop if livinghome==4
+tab panel_2010_2016_2020
+keep if panel_2010_2016_2020==1
+sort caste
+drop if caste==.
+sort HHID_panel INDID
+cls
+
+********** Lending
+gen lendingindiv=0
+replace lendingindiv=1 if borrowerscaste!=.
+tab lendingindiv caste, col
+replace covlendrepayment=2 if covlendrepayment==. & lendingindiv==1
+tab covlendrepayment caste, col
+tab covlending caste, col
+
+
+
+
+********** Chitfunds, saving, gold
+*Chitfund
+tab chitfundbelongerid_ caste, col
+tab nbchitfunds caste, col
+destring covchitfundstop1 covchitfundstop2 covchitfundstop3, replace
+egen covchitfundstop=rowtotal(covchitfundstop1 covchitfundstop2 covchitfundstop3)
+replace covchitfundstop=1 if covchitfundstop>1
+replace covchitfundstop=. if chitfundbelongerid_==. | chitfundbelongerid_==0
+tab covchitfundstop caste, col
+
+replace covchitfundreturn1="0" if covchitfundstop1!=. & covchitfundreturn1==""
+replace covchitfundreturn2="0" if covchitfundstop2!=. & covchitfundreturn2==""
+destring covchitfundreturn1 covchitfundreturn2, replace
+egen covchitfundreturn=rowtotal(covchitfundreturn1 covchitfundreturn2)
+replace covchitfundreturn=1 if covchitfundreturn>1
+replace covchitfundreturn=. if chitfundbelongerid_==. | chitfundbelongerid_==0
+tab covchitfundreturn caste, col
+
+*Saving
+recode savingsownerid_ (.=0)
+tab savingsownerid_ caste, col
+tab nbsavingaccounts caste, col nofreq
+destring covsavinguse1 covsavinguse2 covsavinguse3 covsavinguse4, replace
+egen covsavinguse=rowtotal(covsavinguse1 covsavinguse2 covsavinguse3 covsavinguse4)
+replace covsavinguse=1 if covsavinguse>1
+replace covsavinguse=. if savingsownerid_==. | savingsownerid_==0
+tab covsavinguse caste, col nofreq
+
+egen covsavinguseamount=rowtotal(covsavinguseamount1 covsavinguseamount2 covsavinguseamount3)
+replace covsavinguseamount=. if savingsownerid_==. | savingsownerid_==0
+replace covsavinguseamount=. if covsavinguse==. | covsavinguse==0
+tabstat covsavinguseamount, stat(n mean sd p50) by(caste)
+
+*Gold pledge
+tab dummygoldpledged caste, col
+gen goldamountpledge1000=goldamountpledge/1000
+tabstat goldquantitypledge goldamountpledge1000, stat(n mean sd p50) by(caste)
+tabstat covgoldpledged, stat(n mean sd min p1 p5 p10 q p90 p95 p99 max) by(caste)
+gen covratio=covgoldpledged*100/goldquantitypledge
+tabstat covratio, stat(n mean sd p50) by(caste)
+drop covratio
+
+
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* STATS for loans
 ****************************************
 cls
 use"$directory\_paneldata\panel-all_loans_v2.dta", clear
+
+
+********** Number of loans, ML and data base
+tab mainloan caste if year==2010
+tab mainloan caste if year==2016
+tab mainloan caste if year==2020
+
+tab loan_database year
+
+
 
 ********** Amount and number
 foreach x in 2010 2016 2020 {
@@ -905,12 +1308,6 @@ tab termsofrepayment caste if year==2020, col nofreq
 
 
 
-********** Nb of mains loans
-tab mainloan caste if year==2010
-tab mainloan caste if year==2016
-tab mainloan caste if year==2020
-
-
 ********** Guarantor & recommendation
 cls
 tab dummyguarantor caste if year==2010, col nofreq
@@ -920,8 +1317,54 @@ tab dummyguarantor caste if year==2020, col nofreq
 tab dummyrecommendation caste if year==2010, col nofreq
 tab dummyrecommendation caste if year==2016, col nofreq
 tab dummyrecommendation caste if year==2020, col nofreq
+****************************************
+* END
 
 
+
+
+
+
+
+
+
+****************************************
+* STATS for loans and COVID
+****************************************
+cls
+use"$directory\Data\NEEMSIS2-loans_v13_new.dta", clear
+keep if loansettled==0
+
+********** Date
+tab loandate
+gen lockdown_loan=1 if loandate<td(25mar2020)
+replace lockdown_loan=2 if loandate>=td(25mar2020) & loandate<td(1jun2020)
+replace lockdown_loan=3 if loandate>=td(1jun2020) & loandate<td(1sep2020)
+replace lockdown_loan=4 if loandate>=td(1sep2020)
+
+label define lock 1"Before lockdown" 2"During lockdown" 3"Lockdown + 3 months" 4"After lockdown", replace
+label values lockdown_loan lock
+
+tab lockdown_loan caste, col nofreq
+
+********** COVID
+tab caste
+preserve
+duplicates drop HHID_panel INDID, force
+tab caste
+duplicates drop HHID_panel, force
+tab caste
+restore
+
+tab loan_database caste
+
+tab dummyinterest caste
+
+tab covfrequencyinterest caste, col nofreq
+tab covamountinterest caste, col nofreq
+
+tab covfrequencyrepayment caste, col nofreq
+tab covrepaymentstop caste, col nofreq
 
 
 ****************************************
