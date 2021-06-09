@@ -38,7 +38,7 @@ global wave3 "NEEMSIS2-HH_v17"
 ****************************************
 
 ********** 
-use"$wave3", clear
+use"C:\Users\Arnaud\Dropbox\RUME-NEEMSIS\NEEMSIS2\NEEMSIS2-HH_v17", clear
 
 merge m:1 HHID_panel using "panel", nogen keep(3)
 *keep if egoid>0
@@ -130,7 +130,7 @@ save"$wave3~efa", replace
 ****************************************
 
 ********** 
-use"$wave2", clear
+use"C:\Users\Arnaud\Dropbox\RUME-NEEMSIS\NEEMSIS1\NEEMSIS1-HH_v7", clear
 
 ********** Imputation for non corrected one
 global big5 ///
@@ -162,11 +162,38 @@ global big5imwithout im_curious im_interestedbyart im_repetitivetasks im_inventi
 
 * no corr. all without
 minap $big5imwithout
+fsum $big5imwithout, stat(n mean sd)
 factor $big5imwithout, pcf fa(5) // 5-56
 rotate, promax
 *putexcel set "EFA_2016.xlsx", modify sheet(ncorr_without_all)
 *putexcel (E2)=matrix(e(r_L))
 predict nocorrf1 nocorrf2 nocorrf3 nocorrf4 nocorrf5
+
+
+*Correlation with big-5 and cronbach
+estpost correlate cr_OP cr_EX cr_ES cr_CO cr_AG nocorrf1 nocorrf2 nocorrf3 nocorrf4 nocorrf5, matrix listwise
+esttab , unstack not noobs compress starlevels(* 0.10 ** 0.05 *** 0.01) replace
+
+*F1 at .6
+alpha im_expressingthoughts im_talktomanypeople im_liketothink im_sharefeelings im_activeimagination im_curious im_managestress im_newideas
+
+*F2 at 0.5
+alpha im_completeduties im_enthusiastic im_appointmentontime im_makeplans im_organized im_workhard im_workwithother
+
+
+*F3 at 0.4
+alpha im_changemood im_easilydistracted im_putoffduties im_nervous im_staycalm im_rudetoother
+
+
+*F4 at 0.3
+alpha im_worryalot im_feeldepressed im_easilyupset im_nervous im_shywithpeople
+
+
+*F5 at 0.1
+alpha im_forgiveother im_toleratefaults im_helpfulwithothers im_trustingofother im_workwithother 
+
+
+
 
 
 
@@ -234,7 +261,7 @@ bysort HHID_panel: egen nbmale=sum(male)
 
 
 ********** New HH level var: savings, chitfunds, lending, gold, insurance, land purchased, livestockexpenses (livestockspent), equipmentyear 
-sort HHID_panel INDID
+sort HHID_panel INDID_panel
 
 *Savings
 egen savingsamount_temp_HH=rowtotal(savingsamount1 savingsamount2 savingsamount3 savingsamount4)
@@ -319,7 +346,7 @@ global expenses savingsamount_HH educationexpenses_HH productexpenses_HH busines
 
 global all $charactindiv $characthh $wealthindiv $wealthhh $debtindiv $debthh $perso $expenses
 
-keep $all HHID_panel INDID egoid
+keep $all HHID_panel INDID_panel egoid
 
 merge m:1 HHID_panel using"$wave2~efa_ego.dta"
 drop _merge
@@ -331,7 +358,7 @@ rename `x' `x'_1
 
 
 
-order HHID_panel INDID dummyeverhadland_1 ownland_1
+order HHID_panel INDID_panel dummyeverhadland_1 ownland_1
 
 save"$wave2~panel", replace
 ****************************************
@@ -384,7 +411,7 @@ bysort HHID_panel: egen nbmale=sum(male)
 
 
 ********** New HH level var: savings, chitfunds, lending, gold, insurance, land purchased, livestockexpenses (livestockspent), equipmentyear 
-sort HHID_panel INDID
+sort HHID_panel INDID_panel
 
 *Savings
 egen savingsamount_temp_HH=rowtotal(savingsamount1 savingsamount2 savingsamount3 savingsamount4)
@@ -473,7 +500,7 @@ global expenses savingsamount_HH educationexpenses_HH productexpenses_HH busines
 
 global all $charactindiv $characthh $wealthindiv $wealthhh $debtindiv $debthh $perso $expenses
 
-keep $all HHID_panel INDID egoid
+keep $all HHID_panel INDID_panel egoid
 
 merge m:1 HHID_panel using"$wave3~efa_ego.dta"
 drop _merge
@@ -484,7 +511,7 @@ rename `x' `x'_2
 }
 
 
-order HHID_panel INDID 
+order HHID_panel INDID_panel
 
 save"$wave3~panel", replace
 ****************************************
@@ -510,7 +537,7 @@ save"$wave3~panel", replace
 
 **********
 use"$wave2~panel", clear
-merge 1:1 HHID_panel INDID using "$wave3~panel"
+merge 1:1 HHID_panel INDID_panel using "$wave3~panel"
 keep if _merge==3
 drop _merge
 
@@ -522,7 +549,7 @@ destring ownland_2, replace
 destring house_2, replace
 rename villageid_1 villageid
 rename villageid_new_1 villageid_new
-egen HHINDID=concat(HHID_panel INDID), p(/)
+egen HHINDID=concat(HHID_panel INDID_panel), p(/)
 encode HHINDID, gen(panelvar)
 encode HHID_panel, gen(HHFE)
 encode villageid_new, gen(villagenewFE)
@@ -620,10 +647,10 @@ gen FormR_HH_`i'=(formal_amount_HH_`i'/loanamount_HH_`i')*100
 gen InformR_HH_`i'=(informal_amount_HH_`i'/loanamount_HH_`i')*100
 gen SemiformR_HH_`i'=(semiformal_amount_HH_`i'/loanamount_HH_`i')*100
 
-gen IncogenR_indiv_`i'=(incomegen_indiv_`i'/loanamount_indiv_`i')*100
-gen NoincogenR_indiv_`i'=(noincomegen_indiv_`i'/loanamount_indiv_`i')*100
-gen IncogenR_HH_`i'=(incomegen_HH_`i'/loanamount_HH_`i')*100
-gen NoincogenR_HH_`i'=(noincomegen_HH_`i'/loanamount_HH_`i')*100
+gen IncogenR_indiv_`i'=(incomegen_amount_indiv_`i'/loanamount_indiv_`i')*100
+gen NoincogenR_indiv_`i'=(noincomegen_amount_indiv_`i'/loanamount_indiv_`i')*100
+gen IncogenR_HH_`i'=(incomegen_amount_HH_`i'/loanamount_HH_`i')*100
+gen NoincogenR_HH_`i'=(noincomegen_amount_HH_`i'/loanamount_HH_`i')*100
 
 gen debtshare_`i'=loanamount_indiv_`i'*100/loanamount_HH_`i'
 }
@@ -850,12 +877,37 @@ tab cat_mainoccupation_indiv_1
 tab cat_mainoccupation_indiv_2
 
 *EFA+Big-5
+cls
 foreach x in base_nocorrf1 base_nocorrf2 base_nocorrf3 base_nocorrf4 base_nocorrf5 {
 rename `x' `x'_raw
 qui reg `x' age_1
+est store reg_`x'
 predict `x', residuals
 egen `x'_std=std(`x')
 }
+
+esttab reg_* using "_std.csv", ///
+	cells(b(star fmt(3)) /// 
+	se(par fmt(2))) ///
+	drop(_cons) ///
+	legend label varlabels(_cons constant) ///
+	stats(N mss df_m rss df_r r2 r2_a F, fmt(0 3 3 3 3 3 3 3)) starlevels(* 0.10 ** 0.05 *** 0.01) ///
+	replace
+estimates clear
+preserve
+import delimited "_std.csv", delimiter(",") varnames(nonames) clear
+qui des
+sca def k=r(k)
+forvalues i=1(1)`=scalar(k)'{
+replace v`i'=substr(v`i',3,.)
+replace v`i'=substr(v`i',1,strlen(v`i')-1)
+}
+export excel using "Stat_desc.xlsx", sheet("EFA_std", replace)
+restore
+
+
+
+
 
 foreach x in base_cr_OP base_cr_CO base_cr_EX base_cr_AG base_cr_ES base_cr_Grit {
 rename `x' `x'_raw
