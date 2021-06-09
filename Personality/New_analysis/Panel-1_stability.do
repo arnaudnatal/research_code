@@ -34,19 +34,19 @@ global wave3 "NEEMSIS2-HH_v17"
 ****************************************
 * PANEL
 ***************************************
-use"$wave1", clear
+use"C:\Users\Arnaud\Dropbox\RUME-NEEMSIS\RUME\RUME-HH_v8", clear
 duplicates drop HHID_panel, force
 keep HHID_panel year
 rename year year2010
 save"$wave1~hh", replace
 
-use"$wave2", clear
+use"C:\Users\Arnaud\Dropbox\RUME-NEEMSIS\NEEMSIS1\NEEMSIS1-HH_v7", clear
 duplicates drop HHID_panel, force
 keep HHID_panel year
 rename year year2016
 save"$wave2~hh", replace
 
-use"$wave3", clear
+use"C:\Users\Arnaud\Dropbox\RUME-NEEMSIS\NEEMSIS2\NEEMSIS2-HH_v17", clear
 duplicates drop HHID_panel, force
 duplicates drop HHID_panel, force
 keep HHID_panel year
@@ -82,16 +82,19 @@ save"panel", replace
 ****************************************
 
 ********** 2016 prépa
-use "$wave2", clear
+use "C:\Users\Arnaud\Dropbox\RUME-NEEMSIS\NEEMSIS1\NEEMSIS1-HH_v7", clear
 keep if egoid>0
-egen HHINDID=concat(HHID_panel INDID), p(/)
+egen HHINDID=concat(HHID_panel INDID_panel), p(/)
 duplicates tag HHINDID, gen(tag)
 tab tag
+
+sort lit_tt
+
 save"$wave2~ego", replace
 
 
 ********** 
-use"$wave3", clear
+use"C:\Users\Arnaud\Dropbox\RUME-NEEMSIS\NEEMSIS2\NEEMSIS2-HH_v17", clear
 global big5 ///
 curious interestedbyart repetitivetasks inventive liketothink newideas activeimagination ///
 organized  makeplans workhard appointmentontime putoffduties easilydistracted completeduties ///
@@ -111,7 +114,7 @@ rename `x' `x'_2020
 }
 
 ********** Merge with 2016 values
-merge 1:1 HHID_panel INDID using "$wave2~ego", keepusing (cr_OP cr_CO cr_EX cr_AG cr_ES cr_Grit OP CO EX AG ES Grit lit_tt num_tt raven_tt age)
+merge 1:1 HHID_panel INDID_panel using "$wave2~ego", keepusing (cr_OP cr_CO cr_EX cr_AG cr_ES cr_Grit OP CO EX AG ES Grit lit_tt num_tt raven_tt age)
 *Gen diff
 foreach x in cr_OP cr_CO cr_EX cr_AG cr_ES cr_Grit OP CO EX AG ES Grit{
 gen diff_`x'=`x'_2020 - `x'
@@ -131,7 +134,6 @@ gen delta2_`x'=((`x'_2020-`x')*100/`x')
 foreach x in cr_OP cr_CO cr_EX cr_AG cr_ES cr_Grit OP CO EX AG ES Grit{
 replace delta2_`x'=100 if delta2_`x'>100 & delta2_`x'!=.
 replace delta2_`x'=-60 if delta2_`x'<-60 & delta2_`x'!=.
-
 }
 
 *Verif age
