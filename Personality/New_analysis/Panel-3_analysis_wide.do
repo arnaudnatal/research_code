@@ -591,6 +591,10 @@ restore
 
 
 
+********* Type de Y
+fsum indebt_indiv_2 loans_indiv_2 loanamount_indiv1000_2 DSR_indiv_2 debtshare_2 dummyproblemtorepay_indiv_2 over30_indiv_2 over40_indiv_2 FormR_indiv_2 InformR_indiv_2 IncogenR_indiv_2 NoincogenR_indiv_2
+
+
 
 
 
