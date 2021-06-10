@@ -193,8 +193,39 @@ alpha im_worryalot im_feeldepressed im_easilyupset im_nervous im_shywithpeople
 alpha im_forgiveother im_toleratefaults im_helpfulwithothers im_trustingofother im_workwithother 
 
 
+********** Alpha for traits
+**Alpha
+drop if egoid==0
+cls
+
+*OP
+alpha curious 		interested~t   repetitive~s inventive liketothink newideas activeimag~n
+alpha cr_curious cr_interested~t   cr_repetitive~s cr_inventive cr_liketothink cr_newideas cr_activeimag~n
+omega cr_curious cr_interested~t   cr_repetitive~s cr_inventive cr_liketothink cr_newideas cr_activeimag~n
 
 
+*CO
+alpha organized  makeplans workhard appointmen~e putoffduties easilydist~d completedu~s
+alpha cr_organized  cr_makeplans cr_workhard cr_appointmen~e cr_putoffduties cr_easilydist~d cr_completedu~s
+omega cr_organized  cr_makeplans cr_workhard cr_appointmen~e cr_putoffduties cr_easilydist~d cr_completedu~s
+	
+	
+*EX	
+alpha enjoypeople sharefeeli~s shywithpeo~e  enthusiastic  talktomany~e  talkative expressing~s 
+alpha cr_enjoypeople cr_sharefeeli~s cr_shywithpeo~e  cr_enthusiastic  cr_talktomany~e  cr_talkative cr_expressing~s
+omega cr_enjoypeople cr_sharefeeli~s cr_shywithpeo~e  cr_enthusiastic  cr_talktomany~e  cr_talkative cr_expressing~s
+	
+	
+*AG	
+alpha workwithot~r   understand~g trustingof~r rudetoother toleratefa~s  forgiveother  helpfulwit~s
+alpha cr_workwithot~r   cr_understand~g cr_trustingof~r cr_rudetoother cr_toleratefa~s  cr_forgiveother  cr_helpfulwit~s 
+omega cr_workwithot~r   cr_understand~g cr_trustingof~r cr_rudetoother cr_toleratefa~s  cr_forgiveother  cr_helpfulwit~s 
+
+	
+*ES	
+alpha managestress  nervous  changemood feeldepres~d easilyupset worryalot  staycalm 
+alpha cr_managestress  cr_nervous  cr_changemood cr_feeldepres~d cr_easilyupset cr_worryalot  cr_staycalm
+omega cr_managestress  cr_nervous  cr_changemood cr_feeldepres~d cr_easilyupset cr_worryalot  cr_staycalm
 
 
 ********** Corrected
