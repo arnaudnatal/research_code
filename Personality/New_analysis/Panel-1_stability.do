@@ -225,26 +225,17 @@ tab `x' agecat3 if _merge==3, col nofreq
 tabstat cr_OP_2020 delta_cr_OP, stat(p95 p99 max)
 
 set graph off
-kdensity delta2_cr_OP, bwidth(0.1) xline(-5 5) xlabel(-60(20)100) xmtick(-60(5)100) note("") lcolor(black) title("") xtitle("Δ OP corr.") name(g1, replace) 
-kdensity delta2_cr_CO, bwidth(0.1) xline(-5 5) xlabel(-60(20)100) xmtick(-60(5)100) note("") lcolor(black) title("") xtitle("Δ CO corr.") name(g2, replace) 
-kdensity delta2_cr_EX, bwidth(0.1) xline(-5 5) xlabel(-60(20)100) xmtick(-60(5)100) note("") lcolor(plr1) title("") xtitle("Δ EX corr.") name(g3, replace) 
-kdensity delta2_cr_AG, bwidth(0.1) xline(-5 5) xlabel(-60(20)100) xmtick(-60(5)100) note("") lcolor(ply1) title("") xtitle("Δ AG corr.") name(g4, replace) 
-kdensity delta2_cr_ES, bwidth(0.1) xline(-5 5) xlabel(-60(20)100) xmtick(-60(5)100) note("") lcolor(plg1) title("") xtitle("Δ ES corr.") name(g5, replace) 
-kdensity delta2_cr_Grit, bwidth(0.1) xline(-5 5) xlabel(-60(20)100) xmtick(-60(5)100) note("") lcolor(plb1) title("") xtitle("Δ Grit corr.") name(g6, replace)
-graph combine g1 g2 g3 g4 g5 g6, ycommon note("epanechnikov kernel; bandwidth=0.1") name(combined, replace)
+kdensity delta2_cr_OP, bwidth(0.1) xline(-5 5) xlabel(-60(20)100) xmtick(-60(5)100) note("") lcolor(black) lpattern(solid) title("") xtitle("Δ Openness", size(medsmall)) ytitle("Kernel density", size(small)) name(g1, replace) 
+kdensity delta2_cr_CO, bwidth(0.1) xline(-5 5) xlabel(-60(20)100) xmtick(-60(5)100) note("") lcolor(black) lpattern(solid) title("") xtitle("Δ Conscientiousness", size(medsmall)) ytitle("Kernel density", size(small)) name(g2, replace) 
+kdensity delta2_cr_EX, bwidth(0.1) xline(-5 5) xlabel(-60(20)100) xmtick(-60(5)100) note("") lcolor(black) lpattern(solid) title("") xtitle("Δ Extraversion", size(medsmall)) ytitle("Kernel density", size(small)) name(g3, replace) 
+kdensity delta2_cr_AG, bwidth(0.1) xline(-5 5) xlabel(-60(20)100) xmtick(-60(5)100) note("") lcolor(black) lpattern(solid) title("") xtitle("Δ Agreeableness", size(medsmall)) ytitle("Kernel density", size(small)) name(g4, replace) 
+kdensity delta2_cr_ES, bwidth(0.1) xline(-5 5) xlabel(-60(20)100) xmtick(-60(5)100) note("") lcolor(black) lpattern(solid) title("") xtitle("Δ Emotional stability", size(medsmall)) ytitle("Kernel density", size(small)) name(g5, replace) 
+*kdensity delta2_cr_Grit, bwidth(0.1) xline(-5 5) xlabel(-60(20)100) xmtick(-60(5)100) note("") lcolor(plb1) title("") xtitle("Δ Grit corr.") name(g6, replace)
+*graph combine g1 g2 g3 g4 g5 g6, ycommon note("epanechnikov kernel; bandwidth=0.1") name(combined, replace)
+graph combine g1 g2 g3 g4 g5, ycommon note("Kernel: Epanechnikov;" "Bandwidth: 0.1;" "All traits are corrected from acquiescence bias.", size(vsmall)) name(combined, replace)
 set graph on 
-graph export "Stabcorr.svg", as(svg) replace
+graph export "Stabcorr.pdf", as(pdf) replace
 
-set graph off
-kdensity delta2_OP, bwidth(0.1) xline(-5 5) xlabel(-60(20)100) xmtick(-60(5)100) note("") lcolor(black) title("") xtitle("Δ OP corr.") name(g1, replace) 
-kdensity delta2_CO, bwidth(0.1) xline(-5 5) xlabel(-60(20)100) xmtick(-60(5)100) note("") lcolor(black) title("") xtitle("Δ CO corr.") name(g2, replace) 
-kdensity delta2_EX, bwidth(0.1) xline(-5 5) xlabel(-60(20)100) xmtick(-60(5)100) note("") lcolor(plr1) title("") xtitle("Δ EX corr.") name(g3, replace) 
-kdensity delta2_AG, bwidth(0.1) xline(-5 5) xlabel(-60(20)100) xmtick(-60(5)100) note("") lcolor(ply1) title("") xtitle("Δ AG corr.") name(g4, replace) 
-kdensity delta2_ES, bwidth(0.1) xline(-5 5) xlabel(-60(20)100) xmtick(-60(5)100) note("") lcolor(plg1) title("") xtitle("Δ ES corr.") name(g5, replace) 
-kdensity delta2_Grit, bwidth(0.1) xline(-5 5) xlabel(-60(20)100) xmtick(-60(5)100) note("") lcolor(plb1) title("") xtitle("Δ Grit corr.") name(g6, replace)
-graph combine g1 g2 g3 g4 g5 g6, ycommon note("epanechnikov kernel; bandwidth=0.1") name(combined, replace)
-set graph on 
-graph export "Stab.svg", as(svg) replace
 
 ****************************************
 * END
