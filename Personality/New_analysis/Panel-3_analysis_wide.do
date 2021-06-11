@@ -402,6 +402,17 @@ recode dummysuppwhenever (3=1) (2=1)
 
 tab1 dummysuppwhenever dummyhelptosettleloan_indiv_2 dummyproblemtorepay_indiv_2
 
+*Clonevar
+fre dummyproblemtorepay_indiv_1 dummyproblemtorepay_indiv_2
+foreach x in dummyproblemtorepay_indiv_1 dummyproblemtorepay_indiv_2{
+clonevar n_`x'=`x'
+recode n_`x' (.=0)
+}
+
+fre dummyproblemtorepay_indiv_1 n_dummyproblemtorepay_indiv_1 dummyproblemtorepay_indiv_2 n_dummyproblemtorepay_indiv_2
+
+
+
 save"panel_wide_v3.dta", replace
 ****************************************
 * END
@@ -425,8 +436,27 @@ use"panel_wide_v3.dta", clear
 
 
 
-********** Personality
+********** HH characteristics
+global hhcontrol4 assets1000_1 sexratiocat_1_1 sexratiocat_1_2 sexratiocat_1_3 hhsize_1 shock_1 incomeHH1000_1
+global villagesFE near_panruti near_villupur near_tirup near_chengal near_kanchip near_chennai
 
+preserve
+duplicates drop HHID_panel, force
+
+
+
+restore
+
+
+********** Indiv characteristics
+
+global indivcontrol age_1 agesq_1 dummyhead cat_mainoccupation_indiv_1_1 cat_mainoccupation_indiv_1_2 cat_mainoccupation_indiv_1_3 cat_mainoccupation_indiv_1_4 cat_mainoccupation_indiv_1_5 dummyedulevel maritalstatus2_1 dummymultipleoccupation_indiv_1
+
+
+
+
+
+********** Personality
 set graph off
 forvalues i=1(1)5{
 twoway ///
@@ -471,115 +501,64 @@ graph export "Kernel_perso2.pdf", as(pdf) name(perso) replace
 set graph on
 
 
+* ANOVA for personality
+tabstat base_nocorrf1_std base_nocorrf2_std base_nocorrf3_std base_nocorrf4_std base_nocorrf5_std, stat(n mean sd p50) by(segmana)
+cls
+forvalues i=1(1)5{
+oneway base_nocorrf`i'_std segmana //, tab
+*pwmean base_nocorrf`i'_std, over(segmana) mcompare(tukey) effects
+}
+
+cls
+oneway base_raven_tt segmana
+oneway base_num_tt segmana
+oneway base_lit_tt segmana
+
+
+
 
 
 
 
 ********** Debt
-*Global
-tab debtpath
-tab caste debtpath, col row nofreq
-tab female debtpath, col row  nofreq
+global varok indebt_indiv_2 loans_indiv_2 loanamount_indiv1000_2 DSR_indiv_2 debtshare_2 dummyproblemtorepay_indiv_2 n_dummyproblemtorepay_indiv_2 over30_indiv_2 over40_indiv_2 FormR_indiv_2 InformR_indiv_2 IncogenR_indiv_2 NoincogenR_indiv_2
 
-*Debt
-tabstat loanamount_indiv1000_1 loanamount_indiv1000_2 if debtpath>0, stat(n min p1 p5 p10 q p90 p95 p99 max) by(female)
-tabstat loanamount_indiv1000_1 loanamount_indiv1000_2 if debtpath>0, stat(n  min p1 p5 p10 q p90 p95 p99 max) by(caste)
+fsum $varok, stat(n mean sd p50 min max)
 
-*Recoder extremums
-/*
-order loanamount_indiv_1 loanamount_indiv_2 delta_loanamount_indiv delta2_loanamount_indiv delta3_loanamount_indiv, last
-sort delta2_loanamount_indiv
-*/
+global varokok indebt_indiv_2 loans_indiv_2 loanamount_indiv1000_2 DSR_indiv_2 debtshare_2 over30_indiv_2 over40_indiv_2 InformR_indiv_2 NoincogenR_indiv_2
 
+tabstat $varokok, stat(n mean sd p50 min max) by(segmana)
 
-
-
-********** Test de moyenne et p50 pour perso par path
+* ANOVA for debt
 cls
-qui reg base_nocorrf1_std i.debtpath
-est store res1
-qui reg base_nocorrf2_std i.debtpath
-est store res2
-qui reg base_nocorrf3_std i.debtpath
-est store res3
-qui reg base_nocorrf4_std i.debtpath
-est store res4
-qui reg base_nocorrf5_std i.debtpath
-est store res5
-qui reg base_raven_tt i.debtpath
-est store res6
-qui reg base_num_tt i.debtpath
-est store res7
-qui reg base_lit_tt i.debtpath
-est store res8
-esttab res* using "_reg.csv", ///
-	cells(b(star fmt(3)) /// 
-	se(par fmt(2))) ///
-	drop(_cons ) ///
-	legend label varlabels(_cons constant) ///
-	stats(N r2 r2_a F, fmt(0 3 3 3)) starlevels(* 0.10 ** 0.05 *** 0.01) ///
-	replace
-estimates clear
-preserve
-import delimited "_reg.csv", delimiter(",") varnames(nonames) clear
-qui des
-sca def k=r(k)
-forvalues i=1(1)`=scalar(k)'{
-replace v`i'=substr(v`i',3,.)
-replace v`i'=substr(v`i',1,strlen(v`i')-1)
-}
-*export excel using "Stat_desc.xlsx", sheet(, replace)
-restore
-
-
-
-
-
-
-
-
-********** Anova for different personality through my 4 groups
-tabstat base_nocorrf1_std base_nocorrf2_std base_nocorrf3_std base_nocorrf4_std base_nocorrf5_std, stat(n mean sd p50) by(segmana)
-cls
-forvalues i=1(1)5{
-oneway base_nocorrf`i'_std segmana, tab
-pwmean base_nocorrf`i'_std, over(segmana) mcompare(tukey) effects
-}
-
-oneway base_raven_tt segmana, tab
-oneway base_num_tt segmana, tab
-oneway base_lit_tt segmana, tab
-
-
-
-********** Stat descriptives var explicatives
-global varok indebt_indiv_2 loans_indiv_2 loanamount_indiv1000_2 DSR_indiv_2 debtshare_2 ISR_indiv_2 InformR_indiv_2 NoincogenR_indiv_2 savingsamount_2 goldquantity_2 annualincome_indiv_2
-
-tabstat $varok, stat(mean sd p50) by(segmana)
-cls
-foreach x in $varok{
+foreach x in $varokok{
 oneway `x' segmana
 }
- oneway loanamount_indiv1000_2 segmana
+
+tab indebt_indiv_2 segmana, nofreq chi2
+tab over30_indiv_2 segmana, nofreq chi2
+tab over40_indiv_2 segmana, nofreq chi2
+
+*cls
+*foreach x in $varokok{
+*kwallis `x', by(segmana)
+*}
 
  
- 
-********** Stat descriptive variables de contrôles & caractéristiques du ménages
 
 
 
 
-
-********** Croisons de façon descriptive personnalité et variables d'intérêts
-
+********** CORR personality - debt
 forvalues i=1(1)4{
-estpost correlate base_nocorrf1_std base_nocorrf2_std base_nocorrf3_std base_nocorrf4_std base_nocorrf5_std base_raven_tt base_num_tt base_lit_tt $varok if segmana==`i', matrix listwise
-esttab using corr.csv, unstack not noobs compress starlevels(* 0.10 ** 0.05 *** 0.01) replace
+estpost correlate base_nocorrf1_std base_nocorrf2_std base_nocorrf3_std base_nocorrf4_std base_nocorrf5_std base_raven_tt base_num_tt base_lit_tt $varokok if segmana==`i', matrix listwise
+esttab using corr.csv, unstack not noobs compress starlevels(* 0.10 ** 0.05 *** 0.01) replace cells(b(star fmt(2)))
+
 preserve
 import delimited "corr.csv", delimiter(",") varnames(nonames) clear
 gen n=_n
 drop if n<=11
-drop v10 v11 v12 v13 v14 v15 v16 v17 v18 v19 v20 
+drop v10 v11 v12 v13 v14 v15 v16 v17 v18
 drop n
 forvalues j=2(1)9{
 replace v`j'=substr(v`j',3,strlen(v`j')) if substr(v`j',strlen(v`j')-1,1)!="*"
@@ -589,16 +568,26 @@ export excel using "Stat_desc.xlsx", sheet("corr_segmana_`i'", replace)
 restore
 }
 
-
-
-********* Type de Y
-fsum indebt_indiv_2 loans_indiv_2 loanamount_indiv1000_2 DSR_indiv_2 debtshare_2 dummyproblemtorepay_indiv_2 over30_indiv_2 over40_indiv_2 FormR_indiv_2 InformR_indiv_2 IncogenR_indiv_2 NoincogenR_indiv_2
-
+****************************************
+* END
 
 
 
 
-*Analysis
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Descriptive statistics for loans
+****************************************
 use"NEEMSIS2-loans_v13~desc", clear
 
 gen loanamount1000=loanamount/1000
@@ -653,10 +642,13 @@ tab lendersHH_`i', m
 restore
 drop lenders_1 lenders_2 lenders_3 lenders_4 lenders_5 lenders_6 lenders_7 lenders_8 lenders_9 lenders_10 lenders_11 lenders_12 lenders_13 lenders_14 lenders_15
 
-
-
 ****************************************
 * END
+
+
+
+
+
 
 
 
@@ -685,7 +677,7 @@ global big5 base_cr_OP_std base_cr_CO_std base_cr_EX_std base_cr_AG_std base_cr_
 ********** 1.
 ********** Proba of being in debt, or overindebted, interest in t+1
 
-foreach var in indebt_indiv over30_indiv over40_indiv dummyproblemtorepay_indiv {
+foreach var in indebt_indiv over30_indiv over40_indiv {
  
 *foreach var in dummyproblemtorepay_indiv {
 foreach cat in 1 2 3 4 {
@@ -772,7 +764,7 @@ restore
 ********** 3.
 ********** Level of debt in t+1
 
-foreach var in debtshare InformR_indiv FormR_indiv NoincogenR_indiv IncogenR_indiv {
+foreach var in debtshare InformR_indiv NoincogenR_indiv {
 
 foreach cat in 1 2 3 4 {
 qui glm `var'_2 `var'_1 $efa $cog if segmana==`cat', fam(bin) link(logit) vce(cluster HHvar)
@@ -813,7 +805,7 @@ restore
 ********** 4.
 ********** Level of debt in t+1
 
-foreach var in loans_indiv dummyinterest_indiv {
+foreach var in loans_indiv {
 
 foreach cat in 1 2 3 4 {
 qui poisson `var'_2 `var'_1 $efa $cog if segmana==`cat', vce(cluster HHvar)
