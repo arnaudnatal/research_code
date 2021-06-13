@@ -434,6 +434,7 @@ save"panel_wide_v3.dta", replace
 ****************************************
 use"panel_wide_v3.dta", clear
 
+tab segmana
 
 
 ********** HH characteristics
@@ -442,6 +443,9 @@ global villagesFE near_panruti near_villupur near_tirup near_chengal near_kanchi
 
 preserve
 duplicates drop HHID_panel, force
+*473 HH, in panel, 835 egos
+tabstat hhsize_1, stat(n mean) by(caste)
+tabstat assets1000_1, stat(mean sd p50) by(caste)
 
 
 
