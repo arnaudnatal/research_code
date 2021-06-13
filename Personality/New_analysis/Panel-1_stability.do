@@ -35,18 +35,21 @@ global wave3 "NEEMSIS2-HH_v17"
 * PANEL
 ***************************************
 use"C:\Users\Arnaud\Dropbox\RUME-NEEMSIS\RUME\RUME-HH_v8", clear
+save"$wave1", replace
 duplicates drop HHID_panel, force
 keep HHID_panel year
 rename year year2010
 save"$wave1~hh", replace
 
 use"C:\Users\Arnaud\Dropbox\RUME-NEEMSIS\NEEMSIS1\NEEMSIS1-HH_v7", clear
+save"$wave2", replace
 duplicates drop HHID_panel, force
 keep HHID_panel year
 rename year year2016
 save"$wave2~hh", replace
 
 use"C:\Users\Arnaud\Dropbox\RUME-NEEMSIS\NEEMSIS2\NEEMSIS2-HH_v17", clear
+save"$wave3", replace
 duplicates drop HHID_panel, force
 duplicates drop HHID_panel, force
 keep HHID_panel year
@@ -67,6 +70,25 @@ replace panel=1 if year2010!=. & year2016!=. & year2020!=.
 tab panel
 
 keep HHID_panel year2010 year2016 year2020 panel
+
+foreach x in 2010 2016 2020{
+recode year`x' (.=0) (`x'=1)
+}
+
+cls
+tab year2010
+tab year2016
+tab year2020
+tab year2010 year2016
+tab year2010 year2020  // 392 en panel 2010-2020
+tab year2016 year2020   // 485 en panel 2016-2020
+
+tab year2016 year2020 if year2010==0
+tab year2016 year2020 if year2010==1
+
+
+
+
 save"panel", replace
 ****************************************
 * END
@@ -82,7 +104,7 @@ save"panel", replace
 ****************************************
 
 ********** 2016 prépa
-use "C:\Users\Arnaud\Dropbox\RUME-NEEMSIS\NEEMSIS1\NEEMSIS1-HH_v7", clear
+use "$wave2", clear
 keep if egoid>0
 egen HHINDID=concat(HHID_panel INDID_panel), p(/)
 duplicates tag HHINDID, gen(tag)
@@ -94,7 +116,7 @@ save"$wave2~ego", replace
 
 
 ********** 
-use"C:\Users\Arnaud\Dropbox\RUME-NEEMSIS\NEEMSIS2\NEEMSIS2-HH_v17", clear
+use"$wave3", clear
 global big5 ///
 curious interestedbyart repetitivetasks inventive liketothink newideas activeimagination ///
 organized  makeplans workhard appointmentontime putoffduties easilydistracted completeduties ///
