@@ -32,7 +32,7 @@ global wave3 "NEEMSIS2-HH_v17"
 
 
 
-
+/*
 ****************************************
 * EFA: 2020
 ****************************************
@@ -119,299 +119,13 @@ save"$wave3~efa", replace
 
 
 
-
-
-
-
-
-
-****************************************
-* EFA 2016
-****************************************
-
-********** 
-use"C:\Users\Arnaud\Dropbox\RUME-NEEMSIS\NEEMSIS1\NEEMSIS1-HH_v7", clear
-
-********** Imputation for non corrected one
-global big5 ///
-curious interestedbyart repetitivetasks inventive liketothink newideas activeimagination ///
-organized  makeplans workhard appointmentontime putoffduties easilydistracted completeduties ///
-enjoypeople sharefeelings shywithpeople enthusiastic talktomanypeople  talkative expressingthoughts  ///
-workwithother  understandotherfeeling trustingofother rudetoother toleratefaults  forgiveother  helpfulwithothers ///
-managestress  nervous  changemood feeldepressed easilyupset worryalot  staycalm ///
-tryhard  stickwithgoals   goaftergoal finishwhatbegin finishtasks  keepworking
-foreach x in $big5{
-gen im_`x'=`x'
-}
-global big5im im_curious im_interestedbyart im_repetitivetasks im_inventive im_liketothink im_newideas im_activeimagination im_organized im_makeplans im_workhard im_appointmentontime im_putoffduties im_easilydistracted im_completeduties im_enjoypeople im_sharefeelings im_shywithpeople im_enthusiastic im_talktomanypeople im_talkative im_expressingthoughts im_workwithother im_understandotherfeeling im_trustingofother im_rudetoother im_toleratefaults im_forgiveother im_helpfulwithothers im_managestress im_nervous im_changemood im_feeldepressed im_easilyupset im_worryalot im_staycalm ///
-im_tryhard im_stickwithgoals im_goaftergoal im_finishwhatbegin im_finishtasks im_keepworking
-
-forvalues j=1(1)3{
-forvalues i=1(1)2{
-foreach x in $big5im{
-sum `x' if sex==`i' & caste==`j' & egoid!=0 & egoid!=.
-replace `x'=r(mean) if `x'==. & sex==`i' & caste==`j' & egoid!=0 & egoid!=.
-}
-}
-}
-
-global big5imwithout im_curious im_interestedbyart im_repetitivetasks im_inventive im_liketothink im_newideas im_activeimagination im_organized im_makeplans im_workhard im_appointmentontime im_putoffduties im_easilydistracted im_completeduties im_enjoypeople im_sharefeelings im_shywithpeople im_enthusiastic im_talktomanypeople im_talkative im_expressingthoughts im_workwithother im_understandotherfeeling im_trustingofother im_rudetoother im_toleratefaults im_forgiveother im_helpfulwithothers im_managestress im_nervous im_changemood im_feeldepressed im_easilyupset im_worryalot im_staycalm
-
-
-********** No corrected
-
-* no corr. all without
-minap $big5imwithout
-fsum $big5imwithout, stat(n mean sd)
-factor $big5imwithout, pcf fa(5) // 5-56
-rotate, promax
-*putexcel set "EFA_2016.xlsx", modify sheet(ncorr_without_all)
-*putexcel (E2)=matrix(e(r_L))
-predict nocorrf1 nocorrf2 nocorrf3 nocorrf4 nocorrf5
-
-
-*Correlation with big-5 and cronbach
-estpost correlate cr_OP cr_EX cr_ES cr_CO cr_AG nocorrf1 nocorrf2 nocorrf3 nocorrf4 nocorrf5, matrix listwise
-esttab , unstack not noobs compress starlevels(* 0.10 ** 0.05 *** 0.01) replace
-
-*F1 at .6
-alpha im_expressingthoughts im_talktomanypeople im_liketothink im_sharefeelings im_activeimagination im_curious im_managestress im_newideas
-
-*F2 at 0.5
-alpha im_completeduties im_enthusiastic im_appointmentontime im_makeplans im_organized im_workhard im_workwithother
-
-
-*F3 at 0.4
-alpha im_changemood im_easilydistracted im_putoffduties im_nervous im_staycalm im_rudetoother
-
-
-*F4 at 0.3
-alpha im_worryalot im_feeldepressed im_easilyupset im_nervous im_shywithpeople
-
-
-*F5 at 0.1
-alpha im_forgiveother im_toleratefaults im_helpfulwithothers im_trustingofother im_workwithother 
-
-
-********** Alpha for traits
-**Alpha
-drop if egoid==0
-cls
-
-*OP
-alpha curious 		interested~t   repetitive~s inventive liketothink newideas activeimag~n
-alpha cr_curious cr_interested~t   cr_repetitive~s cr_inventive cr_liketothink cr_newideas cr_activeimag~n
-omega cr_curious cr_interested~t   cr_repetitive~s cr_inventive cr_liketothink cr_newideas cr_activeimag~n
-
-
-*CO
-alpha organized  makeplans workhard appointmen~e putoffduties easilydist~d completedu~s
-alpha cr_organized  cr_makeplans cr_workhard cr_appointmen~e cr_putoffduties cr_easilydist~d cr_completedu~s
-omega cr_organized  cr_makeplans cr_workhard cr_appointmen~e cr_putoffduties cr_easilydist~d cr_completedu~s
-	
-	
-*EX	
-alpha enjoypeople sharefeeli~s shywithpeo~e  enthusiastic  talktomany~e  talkative expressing~s 
-alpha cr_enjoypeople cr_sharefeeli~s cr_shywithpeo~e  cr_enthusiastic  cr_talktomany~e  cr_talkative cr_expressing~s
-omega cr_enjoypeople cr_sharefeeli~s cr_shywithpeo~e  cr_enthusiastic  cr_talktomany~e  cr_talkative cr_expressing~s
-	
-	
-*AG	
-alpha workwithot~r   understand~g trustingof~r rudetoother toleratefa~s  forgiveother  helpfulwit~s
-alpha cr_workwithot~r   cr_understand~g cr_trustingof~r cr_rudetoother cr_toleratefa~s  cr_forgiveother  cr_helpfulwit~s 
-omega cr_workwithot~r   cr_understand~g cr_trustingof~r cr_rudetoother cr_toleratefa~s  cr_forgiveother  cr_helpfulwit~s 
-
-	
-*ES	
-alpha managestress  nervous  changemood feeldepres~d easilyupset worryalot  staycalm 
-alpha cr_managestress  cr_nervous  cr_changemood cr_feeldepres~d cr_easilyupset cr_worryalot  cr_staycalm
-omega cr_managestress  cr_nervous  cr_changemood cr_feeldepres~d cr_easilyupset cr_worryalot  cr_staycalm
-
-
-********** Corrected
-/*
-* corr. all without
-minap $big5crwithout
-factor $big5crwithout, pcf fa(5) // 5-54
-rotate, promax
-*putexcel set "EFA_2016.xlsx", modify sheet(corr_without_all)
-*putexcel (E2)=matrix(e(r_L))
-predict corrf1 corrf2 corrf3 corrf4 corrf5
-*/
-
-
-
-save "$wave2~efa", replace
-****************************************
-* END
-
-
-
-
-
-
-
-
-
-
-
-****************************************
-* Prépa 2016
-****************************************
-
-********** 
-use"$wave2~efa", clear
-
-*HH size
-keep if livinghome==1 | livinghome==2
-bysort HHID_panel: gen hhsize=_N
-
-*Reshape ego
-preserve
-drop if egoid==0
-keep nocorrf1 nocorrf2 nocorrf3 nocorrf4 nocorrf5 egoid HHID_panel maritalstatus edulevel relationshiptohead sex age readystartjob methodfindjob jobpreference moveoutsideforjob moveoutsideforjobreason aspirationminimumwage dummyaspirationmorehours aspirationminimumwage2 name num_tt raven_tt lit_tt OP CO EX AG ES Grit cr_OP cr_CO cr_EX cr_AG cr_ES cr_Grit
-rename aspirationminimumwage2 aspirationminimumwageTWO
-reshape wide nocorrf1 nocorrf2 nocorrf3 nocorrf4 nocorrf5 maritalstatus edulevel relationshiptohead sex age readystartjob methodfindjob jobpreference moveoutsideforjob moveoutsideforjobreason aspirationminimumwage  aspirationminimumwageTWO dummyaspirationmorehours  name num_tt raven_tt lit_tt OP CO EX AG ES Grit cr_OP cr_CO cr_EX cr_AG cr_ES cr_Grit, i(HHID_panel) j(egoid)
-save"$wave2~efa_ego.dta", replace
-restore
-
-
-
-*Nb children
-gen child=0
-replace child=1 if age<=14
-bysort HHID_panel: egen nbchild=sum(child)
-
-*Sex ratio
-gen female=0
-gen male=0
-replace female=1 if sex==2
-replace male=1 if sex==1
-bysort HHID_panel: egen nbfemale=sum(female)
-bysort HHID_panel: egen nbmale=sum(male)
-
-
-********** New HH level var: savings, chitfunds, lending, gold, insurance, land purchased, livestockexpenses (livestockspent), equipmentyear 
-sort HHID_panel INDID_panel
-
-*Savings
-egen savingsamount_temp_HH=rowtotal(savingsamount1 savingsamount2 savingsamount3 savingsamount4)
-bysort HHID_panel: egen savingsamount_HH=sum(savingsamount_temp_HH)
-
-*Expenses
-bysort HHID_panel: egen educationexpenses_HH=sum(educationexpenses)
-egen productexpenses_HH=rowtotal(productexpenses_paddy productexpenses_ragi productexpenses_millets productexpenses_tapioca productexpenses_cotton productexpenses_sugarca productexpenses_savukku productexpenses_guava productexpenses_groundnut)
-bysort HHID_panel: egen businessexpenses_HH=sum(businessexpenses)
-gen foodexpenses_HH=foodexpenses*52
-gen healthexpenses_HH=healthexpenses
-gen ceremoniesexpenses_HH=ceremoniesexpenses
-gen deathexpenses_HH=deathexpenses
-egen livestockexpenses_HH=rowtotal(livestockspent_cow livestockspent_goat livestockspent_chicken livestockspent_bullock)
-
-*Chitfunds
-egen chitfundpaymentamount_temp_HH=rowmean(chitfundpaymentamount1 chitfundpaymentamount2)
-egen chitfundamount_temp_HH=rowmean(chitfundamount1 chitfundamount2)
-egen chitfundamounttot_temp_HH=rowtotal(chitfundamount1 chitfundamount2)
-bysort HHID_panel: egen chitfundpaymentamount_HH=mean(chitfundpaymentamount_temp_HH)
-bysort HHID_panel: egen chitfundamount_HH=mean(chitfundamount_temp_HH)
-bysort HHID_panel: egen chitfundamounttot_HH=sum(chitfundamounttot_temp_HH)
-bysort HHID_panel: egen nbchitfunds_HH=sum(nbchitfunds)
-
-*Lending
-bysort HHID_panel: egen amountlent_HH=sum(amountlent)
-bysort HHID_panel: egen interestlending_HH=mean(interestlending)
-bysort HHID_panel: egen problemrepayment_HH=sum(problemrepayment)
-
-*Gold
-bysort HHID_panel: egen goldquantity_HH=sum(goldquantity)
-bysort HHID_panel: egen goldquantitypledge_HH=sum(goldquantitypledge)
-
-*Insurance
-bysort HHID_panel: egen nbinsurance_HH=sum(nbinsurance)
-egen insuranceamount=rowtotal(insuranceamount1 insuranceamount2)
-egen insuranceamountm=rowmean(insuranceamount1 insuranceamount2)
-bysort HHID_panel: egen insuranceamount_HH=mean(insuranceamountm)
-bysort HHID_panel: egen insuranceamounttot_HH=sum(insuranceamount)
-bysort HHID_panel: egen insurancebenefitamount_HH=mean(insurancebenefitamount)
-bysort HHID_panel: egen insurancebenefitamounttot_HH=sum(insurancebenefitamount)
-
-*Land purchased as investment
-tab landpurchased
-tab landpurchasedacres
-tab landpurchasedamount
-tab landpurchasedhowbuy
-
-*Equipment
-foreach x in tractor bullockcart ploughmach {
-gen investequip_`x'=.
-}
-foreach x in tractor bullockcart ploughmach {
-replace investequip_`x'=equiowncost_`x' if equiownyear_`x'>=2010
-}
-egen investequiptot_HH=rowtotal(investequip_tractor investequip_bullockcart investequip_ploughmach)
-
-
-
-*Only ego
-fre egoid
-drop if egoid==0
-
-
-*Macro for rename
-
-global charactindiv maritalstatus edulevel relationshiptohead sex age readystartjob methodfindjob jobpreference moveoutsideforjob moveoutsideforjobreason aspirationminimumwage dummyaspirationmorehours aspirationminimumwage2 name
- 
-global characthh villageid villageid_new assets ownland house jatis caste dummymarriage hhsize nbchild nbfemale nbmale dummydemonetisation interviewplace address religion dummyeverhadland
-
-global wealthindiv annualincome_indiv totalincome_indiv mainoccupation_hours_indiv mainoccupation_income_indiv mainoccupation_indiv mainoccupationname_indiv nboccupation_indiv
-
-global wealthhh annualincome_HH totalincome_HH mainoccupation_HH nboccupation_HH foodexpenses healthexpenses ceremoniesexpenses ceremoniesrelativesexpenses deathexpenses marriageexpenses businessexpenses
-
-global debtindiv imp1_ds_tot_indiv imp1_is_tot_indiv semiformal_indiv formal_indiv economic_indiv current_indiv humancap_indiv social_indiv house_indiv incomegen_indiv noincomegen_indiv economic_amount_indiv current_amount_indiv humancap_amount_indiv social_amount_indiv house_amount_indiv incomegen_amount_indiv noincomegen_amount_indiv informal_amount_indiv formal_amount_indiv semiformal_amount_indiv loanamount_indiv loanamount_wm_indiv dummyproblemtorepay_indiv dummyhelptosettleloan_indiv dummyinterest_indiv loans_indiv loanbalance_indiv marriageloanamount_indiv mean_yratepaid_indiv mean_monthlyinterestrate_indiv nbsavingaccounts savingsamount1 savingsamount2 savingsamount3 savingsamount4 dummydebitcard1 dummydebitcard2 dummydebitcard3 dummydebitcard4 datedebitcard1 datedebitcard2 datedebitcard3 datedebitcard4 dummychitfund amountlent interestlending goldquantity goldquantitypledge nbinsurance dummycreditcard1 dummycreditcard2 dummycreditcard3 dummycreditcard4 nbchitfunds chitfundamount1 chitfundamount2 marriageloan_indiv
-
-global debthh imp1_ds_tot_HH imp1_is_tot_HH informal_HH semiformal_HH formal_HH economic_HH current_HH humancap_HH social_HH house_HH incomegen_HH noincomegen_HH economic_amount_HH current_amount_HH humancap_amount_HH social_amount_HH house_amount_HH incomegen_amount_HH noincomegen_amount_HH informal_amount_HH formal_amount_HH semiformal_amount_HH marriageloanamount_HH loanamount_HH loanamount_wm_HH dummyproblemtorepay_HH dummyhelptosettleloan_HH dummyinterest_HH loans_HH loanbalance_HH mean_yratepaid_HH mean_monthlyinterestrate_HH marriageloan_HH
-
-global perso nocorrf1 nocorrf2 nocorrf3 nocorrf4 nocorrf5 cr_OP cr_CO cr_EX cr_AG cr_ES cr_Grit OP CO EX AG ES Grit raven_tt num_tt lit_tt
-
-global expenses savingsamount_HH educationexpenses_HH productexpenses_HH businessexpenses_HH foodexpenses_HH healthexpenses_HH ceremoniesexpenses_HH deathexpenses_HH livestockexpenses_HH chitfundpaymentamount_HH chitfundamount_HH chitfundamounttot_HH nbchitfunds_HH amountlent_HH interestlending_HH problemrepayment_HH goldquantity_HH goldquantitypledge_HH nbinsurance_HH insuranceamount_HH insuranceamounttot_HH insurancebenefitamount_HH insurancebenefitamounttot_HH landpurchased investequiptot_HH 
-
-global all $charactindiv $characthh $wealthindiv $wealthhh $debtindiv $debthh $perso $expenses
-
-keep $all HHID_panel INDID_panel egoid
-
-merge m:1 HHID_panel using"$wave2~efa_ego.dta"
-drop _merge
-
-*Rename
-foreach x in $all {
-rename `x' `x'_1
-}
-
-
-
-order HHID_panel INDID_panel dummyeverhadland_1 ownland_1
-
-save"$wave2~panel", replace
-****************************************
-* END
-
-
-
-
-
-
-
-
-
-
-
 ****************************************
 * Prépa 2020
 ****************************************
 
 ********** 
-use"$wave3~efa", clear
-
+use"C:\Users\Arnaud\Dropbox\RUME-NEEMSIS\NEEMSIS2\NEEMSIS2-HH_v17", clear
+sav"$wave3", replace
 *HH size
 keep if livinghome==1 | livinghome==2
 bysort HHID_panel: gen hhsize=_N
@@ -541,12 +255,246 @@ foreach x in $all {
 rename `x' `x'_2
 }
 
-
 order HHID_panel INDID_panel
+
+preserve
+duplicates drop HHID_panel, force
+tab caste_2
+*Tous les HH ont un égo donc je suis censé en avoir plus car 485 HH en panel avec un peu de chance, 483 sinon minimum !
+restore
 
 save"$wave3~panel", replace
 ****************************************
 * END
+
+*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Prepa 2016
+****************************************
+
+********** 
+use"$wave2", clear
+
+********** Imputation for non corrected one
+global big5 ///
+curious interestedbyart repetitivetasks inventive liketothink newideas activeimagination ///
+organized  makeplans workhard appointmentontime putoffduties easilydistracted completeduties ///
+enjoypeople sharefeelings shywithpeople enthusiastic talktomanypeople  talkative expressingthoughts  ///
+workwithother  understandotherfeeling trustingofother rudetoother toleratefaults  forgiveother  helpfulwithothers ///
+managestress  nervous  changemood feeldepressed easilyupset worryalot  staycalm ///
+tryhard  stickwithgoals   goaftergoal finishwhatbegin finishtasks  keepworking
+foreach x in $big5{
+gen im_`x'=`x'
+}
+global big5im im_curious im_interestedbyart im_repetitivetasks im_inventive im_liketothink im_newideas im_activeimagination im_organized im_makeplans im_workhard im_appointmentontime im_putoffduties im_easilydistracted im_completeduties im_enjoypeople im_sharefeelings im_shywithpeople im_enthusiastic im_talktomanypeople im_talkative im_expressingthoughts im_workwithother im_understandotherfeeling im_trustingofother im_rudetoother im_toleratefaults im_forgiveother im_helpfulwithothers im_managestress im_nervous im_changemood im_feeldepressed im_easilyupset im_worryalot im_staycalm ///
+im_tryhard im_stickwithgoals im_goaftergoal im_finishwhatbegin im_finishtasks im_keepworking
+
+forvalues j=1(1)3{
+forvalues i=1(1)2{
+foreach x in $big5im{
+sum `x' if sex==`i' & caste==`j' & egoid!=0 & egoid!=.
+replace `x'=r(mean) if `x'==. & sex==`i' & caste==`j' & egoid!=0 & egoid!=.
+}
+}
+}
+
+global big5imwithout im_curious im_interestedbyart im_repetitivetasks im_inventive im_liketothink im_newideas im_activeimagination im_organized im_makeplans im_workhard im_appointmentontime im_putoffduties im_easilydistracted im_completeduties im_enjoypeople im_sharefeelings im_shywithpeople im_enthusiastic im_talktomanypeople im_talkative im_expressingthoughts im_workwithother im_understandotherfeeling im_trustingofother im_rudetoother im_toleratefaults im_forgiveother im_helpfulwithothers im_managestress im_nervous im_changemood im_feeldepressed im_easilyupset im_worryalot im_staycalm
+
+
+********** No corrected
+
+* no corr. all without
+minap $big5imwithout
+fsum $big5imwithout, stat(n mean sd)
+factor $big5imwithout, pcf fa(5) // 5-56
+rotate, promax
+*putexcel set "EFA_2016.xlsx", modify sheet(ncorr_without_all)
+*putexcel (E2)=matrix(e(r_L))
+predict nocorrf1 nocorrf2 nocorrf3 nocorrf4 nocorrf5
+
+
+*Correlation with big-5 and cronbach
+estpost correlate cr_OP cr_EX cr_ES cr_CO cr_AG nocorrf1 nocorrf2 nocorrf3 nocorrf4 nocorrf5, matrix listwise
+esttab , unstack not noobs compress starlevels(* 0.10 ** 0.05 *** 0.01) replace
+
+
+********** Alpha for traits
+**Alpha
+*drop if egoid==0
+cls
+
+*OP
+alpha curious 		interested~t   repetitive~s inventive liketothink newideas activeimag~n
+alpha cr_curious cr_interested~t   cr_repetitive~s cr_inventive cr_liketothink cr_newideas cr_activeimag~n
+omega cr_curious cr_interested~t   cr_repetitive~s cr_inventive cr_liketothink cr_newideas cr_activeimag~n
+
+
+*CO
+alpha organized  makeplans workhard appointmen~e putoffduties easilydist~d completedu~s
+alpha cr_organized  cr_makeplans cr_workhard cr_appointmen~e cr_putoffduties cr_easilydist~d cr_completedu~s
+omega cr_organized  cr_makeplans cr_workhard cr_appointmen~e cr_putoffduties cr_easilydist~d cr_completedu~s
+	
+	
+*EX	
+alpha enjoypeople sharefeeli~s shywithpeo~e  enthusiastic  talktomany~e  talkative expressing~s 
+alpha cr_enjoypeople cr_sharefeeli~s cr_shywithpeo~e  cr_enthusiastic  cr_talktomany~e  cr_talkative cr_expressing~s
+omega cr_enjoypeople cr_sharefeeli~s cr_shywithpeo~e  cr_enthusiastic  cr_talktomany~e  cr_talkative cr_expressing~s
+	
+	
+*AG	
+alpha workwithot~r   understand~g trustingof~r rudetoother toleratefa~s  forgiveother  helpfulwit~s
+alpha cr_workwithot~r   cr_understand~g cr_trustingof~r cr_rudetoother cr_toleratefa~s  cr_forgiveother  cr_helpfulwit~s 
+omega cr_workwithot~r   cr_understand~g cr_trustingof~r cr_rudetoother cr_toleratefa~s  cr_forgiveother  cr_helpfulwit~s 
+
+	
+*ES	
+alpha managestress  nervous  changemood feeldepres~d easilyupset worryalot  staycalm 
+alpha cr_managestress  cr_nervous  cr_changemood cr_feeldepres~d cr_easilyupset cr_worryalot  cr_staycalm
+omega cr_managestress  cr_nervous  cr_changemood cr_feeldepres~d cr_easilyupset cr_worryalot  cr_staycalm
+
+
+********** Other variables
+*HH size
+keep if livinghome==1 | livinghome==2
+bysort HHID_panel: gen hhsize=_N
+
+ta hhsize
+
+*Nb children
+gen child=0
+replace child=1 if age<=14
+bysort HHID_panel: egen nbchild=sum(child)
+
+*Sex ratio
+gen female=0
+gen male=0
+replace female=1 if sex==2
+replace male=1 if sex==1
+bysort HHID_panel: egen nbfemale=sum(female)
+bysort HHID_panel: egen nbmale=sum(male)
+
+*Savings
+egen savingsamount_temp_HH=rowtotal(savingsamount1 savingsamount2 savingsamount3 savingsamount4)
+bysort HHID_panel: egen savingsamount_HH=sum(savingsamount_temp_HH)
+
+*Expenses
+bysort HHID_panel: egen educationexpenses_HH=sum(educationexpenses)
+egen productexpenses_HH=rowtotal(productexpenses_paddy productexpenses_ragi productexpenses_millets productexpenses_tapioca productexpenses_cotton productexpenses_sugarca productexpenses_savukku productexpenses_guava productexpenses_groundnut)
+bysort HHID_panel: egen businessexpenses_HH=sum(businessexpenses)
+gen foodexpenses_HH=foodexpenses*52
+gen healthexpenses_HH=healthexpenses
+gen ceremoniesexpenses_HH=ceremoniesexpenses
+gen deathexpenses_HH=deathexpenses
+egen livestockexpenses_HH=rowtotal(livestockspent_cow livestockspent_goat livestockspent_chicken livestockspent_bullock)
+
+*Chitfunds
+egen chitfundpaymentamount_temp_HH=rowmean(chitfundpaymentamount1 chitfundpaymentamount2)
+egen chitfundamount_temp_HH=rowmean(chitfundamount1 chitfundamount2)
+egen chitfundamounttot_temp_HH=rowtotal(chitfundamount1 chitfundamount2)
+bysort HHID_panel: egen chitfundpaymentamount_HH=mean(chitfundpaymentamount_temp_HH)
+bysort HHID_panel: egen chitfundamount_HH=mean(chitfundamount_temp_HH)
+bysort HHID_panel: egen chitfundamounttot_HH=sum(chitfundamounttot_temp_HH)
+bysort HHID_panel: egen nbchitfunds_HH=sum(nbchitfunds)
+
+*Lending
+bysort HHID_panel: egen amountlent_HH=sum(amountlent)
+bysort HHID_panel: egen interestlending_HH=mean(interestlending)
+bysort HHID_panel: egen problemrepayment_HH=sum(problemrepayment)
+
+*Gold
+bysort HHID_panel: egen goldquantity_HH=sum(goldquantity)
+bysort HHID_panel: egen goldquantitypledge_HH=sum(goldquantitypledge)
+
+*Insurance
+bysort HHID_panel: egen nbinsurance_HH=sum(nbinsurance)
+egen insuranceamount=rowtotal(insuranceamount1 insuranceamount2)
+egen insuranceamountm=rowmean(insuranceamount1 insuranceamount2)
+bysort HHID_panel: egen insuranceamount_HH=mean(insuranceamountm)
+bysort HHID_panel: egen insuranceamounttot_HH=sum(insuranceamount)
+bysort HHID_panel: egen insurancebenefitamount_HH=mean(insurancebenefitamount)
+bysort HHID_panel: egen insurancebenefitamounttot_HH=sum(insurancebenefitamount)
+
+*Land purchased as investment
+tab landpurchased
+tab landpurchasedacres
+tab landpurchasedamount
+tab landpurchasedhowbuy
+
+*Equipment
+foreach x in tractor bullockcart ploughmach {
+gen investequip_`x'=.
+}
+foreach x in tractor bullockcart ploughmach {
+replace investequip_`x'=equiowncost_`x' if equiownyear_`x'>=2010
+}
+egen investequiptot_HH=rowtotal(investequip_tractor investequip_bullockcart investequip_ploughmach)
+
+
+********** Keep my sample
+fre egoid
+drop if egoid==0
+
+*Macro for rename
+
+global charactindiv maritalstatus edulevel relationshiptohead sex age readystartjob methodfindjob jobpreference moveoutsideforjob moveoutsideforjobreason aspirationminimumwage dummyaspirationmorehours aspirationminimumwage2 name
+ 
+global characthh villageid villageid_new assets ownland house jatis caste dummymarriage hhsize nbchild nbfemale nbmale dummydemonetisation interviewplace address religion dummyeverhadland
+
+global wealthindiv annualincome_indiv totalincome_indiv mainoccupation_hours_indiv mainoccupation_income_indiv mainoccupation_indiv mainoccupationname_indiv nboccupation_indiv
+
+global wealthhh annualincome_HH totalincome_HH mainoccupation_HH nboccupation_HH foodexpenses healthexpenses ceremoniesexpenses ceremoniesrelativesexpenses deathexpenses marriageexpenses businessexpenses
+
+global debtindiv imp1_ds_tot_indiv imp1_is_tot_indiv semiformal_indiv formal_indiv economic_indiv current_indiv humancap_indiv social_indiv house_indiv incomegen_indiv noincomegen_indiv economic_amount_indiv current_amount_indiv humancap_amount_indiv social_amount_indiv house_amount_indiv incomegen_amount_indiv noincomegen_amount_indiv informal_amount_indiv formal_amount_indiv semiformal_amount_indiv loanamount_indiv loanamount_wm_indiv dummyproblemtorepay_indiv dummyhelptosettleloan_indiv dummyinterest_indiv loans_indiv loanbalance_indiv marriageloanamount_indiv mean_yratepaid_indiv mean_monthlyinterestrate_indiv nbsavingaccounts savingsamount1 savingsamount2 savingsamount3 savingsamount4 dummydebitcard1 dummydebitcard2 dummydebitcard3 dummydebitcard4 datedebitcard1 datedebitcard2 datedebitcard3 datedebitcard4 dummychitfund amountlent interestlending goldquantity goldquantitypledge nbinsurance dummycreditcard1 dummycreditcard2 dummycreditcard3 dummycreditcard4 nbchitfunds chitfundamount1 chitfundamount2 marriageloan_indiv
+
+global debthh imp1_ds_tot_HH imp1_is_tot_HH informal_HH semiformal_HH formal_HH economic_HH current_HH humancap_HH social_HH house_HH incomegen_HH noincomegen_HH economic_amount_HH current_amount_HH humancap_amount_HH social_amount_HH house_amount_HH incomegen_amount_HH noincomegen_amount_HH informal_amount_HH formal_amount_HH semiformal_amount_HH marriageloanamount_HH loanamount_HH loanamount_wm_HH dummyproblemtorepay_HH dummyhelptosettleloan_HH dummyinterest_HH loans_HH loanbalance_HH mean_yratepaid_HH mean_monthlyinterestrate_HH marriageloan_HH
+
+global perso nocorrf1 nocorrf2 nocorrf3 nocorrf4 nocorrf5 cr_OP cr_CO cr_EX cr_AG cr_ES cr_Grit OP CO EX AG ES Grit raven_tt num_tt lit_tt
+
+global expenses savingsamount_HH educationexpenses_HH productexpenses_HH businessexpenses_HH foodexpenses_HH healthexpenses_HH ceremoniesexpenses_HH deathexpenses_HH livestockexpenses_HH chitfundpaymentamount_HH chitfundamount_HH chitfundamounttot_HH nbchitfunds_HH amountlent_HH interestlending_HH problemrepayment_HH goldquantity_HH goldquantitypledge_HH nbinsurance_HH insuranceamount_HH insuranceamounttot_HH insurancebenefitamount_HH insurancebenefitamounttot_HH landpurchased investequiptot_HH 
+
+global all $charactindiv $characthh $wealthindiv $wealthhh $debtindiv $debthh $perso $expenses
+
+keep $all HHID_panel INDID_panel egoid
+
+*merge m:1 HHID_panel using"$wave2~efa_ego.dta"
+*drop _merge
+
+*Rename
+foreach x in $all {
+rename `x' `x'_1
+}
+
+order HHID_panel INDID_panel dummyeverhadland_1 ownland_1
+
+preserve
+duplicates drop HHID_panel, force
+tab caste_1
+*2 HH sans égos donc 490 là
+restore
+
+
+save"$wave2~panel", replace
+****************************************
+* END
+
+
 
 
 
@@ -568,7 +516,157 @@ save"$wave3~panel", replace
 
 **********
 use"$wave2~panel", clear
+rename egoid egoid_1
+tab egoid
+
+preserve
+duplicates drop HHID_panel, force
+tab caste_1
+restore
+*490
+
 merge 1:1 HHID_panel INDID_panel using "$wave3~panel"
+rename egoid egoid_2
+tab egoid_1 egoid_2, m
+
+order HHID_panel INDID_panel name_1 name_2 _merge
+sort HHID_panel INDID_panel
+
+*Verif le merging avec les noms car il y en a peu qui ont effectivement merge
+preserve
+*Garder que ceux pour qui il y a des gens que là en 2016 et que là en 2020
+gen ok=1 if _merge==1
+gen ok2=1 if _merge==2
+bysort HHID_panel: egen sum_ok=sum(ok)
+bysort HHID_panel: egen sum_ok2=sum(ok2)
+replace sum_ok=1 if sum_ok>1
+replace sum_ok2=1 if sum_ok2>1
+gen todrop=sum_ok+sum_ok2
+drop ok ok2 sum_ok sum_ok2
+keep if todrop>1
+*Virer ceux qui ont au moins 1 mb qui colle
+gen ok=1 if name_1!="" & name_2!=""
+bysort HHID_panel: egen sum_ok=sum(ok)
+*br
+restore
+
+/*
+**********
+use"panel_indiv_2010_2016_2020_wide", replace
+/*
+Sur la base panel indiv vérifier les dix HH concernés: ceux où les égos ont changés
+GOV13-19-20-28-33
+MANAM16-9
+ORA25
+SEM37-50
+*/
+preserve
+gen tokeep=0
+replace tokeep=1 if HHID_panel=="GOV33"
+replace tokeep=1 if HHID_panel=="GOV28"
+replace tokeep=1 if HHID_panel=="GOV20"
+replace tokeep=1 if HHID_panel=="GOV19"
+replace tokeep=1 if HHID_panel=="GOV13"
+replace tokeep=1 if HHID_panel=="MANAM16"
+replace tokeep=1 if HHID_panel=="MANAM9"
+replace tokeep=1 if HHID_panel=="ORA25"
+replace tokeep=1 if HHID_panel=="SEM37"
+replace tokeep=1 if HHID_panel=="SEM50"
+
+keep if tokeep==1
+sort HHID_panel INDID_panel
+order HHID_panel INDID_panel INDID2016 INDID2020 name2016 name2020 egoid2016 egoid2020
+
+/*
+Les egos ne collent pas entre les deux dates.
+Exprés ? ou pas ?
+Vérifier dans les bases HH2016 & HH2020
+
+Ce sont des gens qui sont parti entre 2016 et 2020.
+Peut-être faire un petit tableau pour expliquer
+*/
+restore
+
+merge 1:1 HHID_panel INDID_panel using "$wave3~efa", keepusing(INDID_left livinghome)
+gen pan=1 if name2016!="" & name2020!=""
+keep if pan==1
+preserve
+keep if INDID_left!=.
+tab egoid2016
+restore
+drop if INDID_left!=.
+tab egoid2016  // 454+387=841 sauf que j'en ai 835 moi
+tab livinghome
+drop if livinghome==3 
+tab egoid2016  // 1 qui est leftpermanently donc 601
+drop if livinghome==4
+tab egoid2016
+drop if egoid2016==0
+order HHID_panel INDID_panel INDID2016 INDID2020 name2016 name2020 egoid2016 egoid2020
+
+
+preserve
+*Maybe diff in ego nb?
+gen test=0
+replace test=1 if egoid2016==egoid2020
+drop if test==1
+restore
+
+preserve
+keep HHID_panel INDID_panel
+gen explication=1
+save"temp_explication", replace
+restore
+**********
+*/
+
+/*
+use"$wave2~panel", clear
+rename egoid egoid_1
+tab egoid
+
+preserve
+use"$wave2~efa", clear
+duplicates drop HHID_panel, force
+tab caste_1
+restore
+*490
+
+*Qui sont les deux HH?
+preserve
+use"C:\Users\Arnaud\Dropbox\RUME-NEEMSIS\NEEMSIS1\NEEMSIS1-HH_v7", clear
+bysort HHID_panel: egen sum_ego=sum(egoid)
+tab sum_ego
+keep if sum_ego==0
+tab HHID_panel
+*MANAM18 & MANAM6
+restore
+
+merge 1:1 HHID_panel INDID_panel using "$wave3~panel"
+keep if _merge==3
+drop _merge
+merge 1:1 HHID_panel INDID_panel using "temp_explication"
+list HHID_panel INDID_panel if _merge==2, clean noobs
+/*
+  HHID_panel      INDID_panel  
+        GOV3      Ind_3    --> Muthaiyyan d'après NEEMSIS1
+								C'est égo 1 en 2016
+								Pas égo en 2020
+      MANAM9      Ind_2    --> Cauvery@gowri
+								C'est égo 1 en 2016
+								Pas égo en 2020
+       ORA12      Ind_3    --> Veeran S/o Mannu
+   								C'est égo 1 en 2016
+								Pas égo en 2020
+       ORA18      Ind_8    --> Chithra
+								C'est égo 2 en 2016
+								Pas égo en 2020
+       ORA41      Ind_4    --> Annamalai
+								C'est égo 2 en 2016
+								Pas égo en 2020
+*/
+*/
+
 keep if _merge==3
 drop _merge
 
@@ -598,7 +696,6 @@ clonevar base_`x'=`x'_1
 
 
 ********** Déflater
-
 global amount aspirationminimumwage2_2 aspirationminimumwage_2 businessexpenses_2 amountlent_2 chitfundamount1_2 chitfundamount2_2 chitfundamount3_2 savingsamount1_2 savingsamount2_2 savingsamount3_2 savingsamount4_2 marriageexpenses_2 foodexpenses_2 healthexpenses_2  ceremoniesexpenses_2 ceremoniesrelativesexpenses_2 deathexpenses_2 mainoccupation_income_indiv_2 annualincome_indiv_2 annualincome_HH_2 assets_2 totalincome_indiv_2 totalincome_HH_2 imp1_ds_tot_indiv_2 imp1_is_tot_indiv_2 economic_amount_indiv_2 current_amount_indiv_2 humancap_amount_indiv_2 social_amount_indiv_2 house_amount_indiv_2 incomegen_amount_indiv_2 noincomegen_amount_indiv_2 informal_amount_indiv_2 formal_amount_indiv_2 semiformal_amount_indiv_2 marriageloanamount_indiv_2 loanamount_indiv_2 loanbalance_indiv_2 imp1_ds_tot_HH_2 imp1_is_tot_HH_2 economic_amount_HH_2 current_amount_HH_2 humancap_amount_HH_2 social_amount_HH_2 house_amount_HH_2 incomegen_amount_HH_2 noincomegen_amount_HH_2 informal_amount_HH_2 formal_amount_HH_2 semiformal_amount_HH_2 marriageloanamount_HH_2 loanamount_HH_2 loanbalance_HH_2
 
 foreach x in $amount {
