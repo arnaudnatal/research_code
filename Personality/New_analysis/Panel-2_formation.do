@@ -32,13 +32,13 @@ global wave3 "NEEMSIS2-HH_v17"
 
 
 
-/*
+
 ****************************************
 * EFA: 2020
 ****************************************
 
 ********** 
-use"C:\Users\Arnaud\Dropbox\RUME-NEEMSIS\NEEMSIS2\NEEMSIS2-HH_v17", clear
+use"$wave3", clear
 
 merge m:1 HHID_panel using "panel", nogen keep(3)
 *keep if egoid>0
@@ -110,26 +110,14 @@ rotate, promax
 *putexcel (E2)=matrix(e(r_L))
 predict f1_2020 f2_2020 f3_2020 f4_2020 f5_2020
 
-save"$wave3~efa", replace
-
-****************************************
-* END
 
 
-
-
-
-****************************************
-* Prépa 2020
-****************************************
-
-********** 
-use"C:\Users\Arnaud\Dropbox\RUME-NEEMSIS\NEEMSIS2\NEEMSIS2-HH_v17", clear
-sav"$wave3", replace
 *HH size
+drop if INDID_left!=.
 keep if livinghome==1 | livinghome==2
 bysort HHID_panel: gen hhsize=_N
 
+/*
 *Reshape ego
 preserve
 drop if egoid==0
@@ -139,7 +127,7 @@ rename aspirationminimumwage2 aspirationminimumwageTWO
 reshape wide f1_2020 f2_2020 f3_2020 f4_2020 f5_2020 maritalstatus edulevel relationshiptohead sex age readystartjob methodfindjob jobpreference moveoutsideforjob moveoutsideforjobreason aspirationminimumwage  aspirationminimumwageTWO dummyaspirationmorehours  name num_tt raven_tt lit_tt OP CO EX AG ES Grit cr_OP cr_CO cr_EX cr_AG cr_ES cr_Grit, i(HHID_panel) j(egoid)
 save"$wave3~efa_ego.dta", replace
 restore
-
+*/
 
 *Nb children
 gen child=0
@@ -247,8 +235,8 @@ global all $charactindiv $characthh $wealthindiv $wealthhh $debtindiv $debthh $p
 
 keep $all HHID_panel INDID_panel egoid
 
-merge m:1 HHID_panel using"$wave3~efa_ego.dta"
-drop _merge
+*merge m:1 HHID_panel using"$wave3~efa_ego.dta"
+*drop _merge
 
 *Rename
 foreach x in $all {
@@ -266,8 +254,6 @@ restore
 save"$wave3~panel", replace
 ****************************************
 * END
-
-*/
 
 
 
