@@ -436,73 +436,120 @@ use"panel_wide_v3.dta", clear
 
 tab segmana
 
+gen incomeHH1000_pc_1=incomeHH1000_1/hhsize_1
+gen incomeHH1000_pc_2=incomeHH1000_2/hhsize_2
+
 
 ********** HH characteristics
-global hhcontrol4 assets1000_1 sexratiocat_1_1 sexratiocat_1_2 sexratiocat_1_3 hhsize_1 shock_1 incomeHH1000_1
-global villagesFE near_panruti near_villupur near_tirup near_chengal near_kanchip near_chennai
-
 preserve
+recode caste (3=2)
+bysort HHID_panel: egen nbego=sum(1)
 duplicates drop HHID_panel, force
 *473 HH, in panel, 835 egos
-tabstat hhsize_1, stat(n mean) by(caste)
+tabstat hhsize_1 nbego, stat(n mean) by(caste)
+tab nbego caste, col nofreq
+tab sexratiocat_1_1 caste, col nofreq 
+tab sexratiocat_1_2 caste, col nofreq 
+tab  sexratiocat_1_3 caste, col nofreq
 tabstat assets1000_1, stat(mean sd p50) by(caste)
-
-
-
+tab shock_1 caste, col nofreq
+tabstat annualincome_HH1000_1 incomeHH1000_1 incomeHH1000_pc_1, stat(n mean sd p50) by(caste)
+tab indebt_HH_1 caste, col nofreq
+cls
+foreach x in near_panruti near_villupur near_tirup near_chengal near_kanchip near_chennai {
+tab `x' caste, col nofreq
+}
+*Test
+cls
+ttest hhsize_1, by(caste)
+tab sexratiocat_1 caste, nofreq chi2
+ttest assets1000_1, by(caste)
+ttest incomeHH1000_1, by(caste)
+tab shock_1 caste, nofreq chi2
+tab indebt_HH_1 caste, nofreq chi2
 restore
 
 
 ********** Indiv characteristics
+cls
+tabstat age_1, stat(n mean) by(segmana)
 
-global indivcontrol age_1 agesq_1 dummyhead cat_mainoccupation_indiv_1_1 cat_mainoccupation_indiv_1_2 cat_mainoccupation_indiv_1_3 cat_mainoccupation_indiv_1_4 cat_mainoccupation_indiv_1_5 dummyedulevel maritalstatus2_1 dummymultipleoccupation_indiv_1
+tab dummyhead segmana, col nofreq
+tab relationshiptohead_1 segmana, col nofreq
+
+tab cat_mainoccupation_indiv_1 segmana, col nofreq
+tab mainoccupation_indiv_1 segmana, col nofreq
+
+tab dummyedulevel segmana, col nofreq
+tab edulevel_1 segmana, col nofreq
+
+tab maritalstatus_1 segmana, col nofreq
+tab maritalstatus2_1 segmana, col nofreq
+
+tab dummymultipleoccupation_indiv_1 segmana, col nofreq
+
+tabstat annualincome_indiv1000_1, stat(mean sd p50) by(segmana)
+
+
+*Test
+cls
+oneway age_1 segmana
+
+foreach x in dummyhead cat_mainoccupation_indiv_1 dummyedulevel maritalstatus2_1 dummymultipleoccupation_indiv_1 {
+tab `x' segmana, nofreq chi2
+}
+
+oneway annualincome_indiv1000_1 segmana
 
 
 
 
 
 ********** Personality
+/*
 set graph off
 forvalues i=1(1)5{
 twoway ///
-(kdensity base_nocorrf`i'_std if segmana==1, bwidth(0.2585) lpattern(solid) lcolor(ply1)) ///
-(kdensity base_nocorrf`i'_std if segmana==2, bwidth(0.2585) lpattern(solid) lcolor(plg1)) ///
-(kdensity base_nocorrf`i'_std if segmana==3, bwidth(0.2585) lpattern(solid) lcolor(plr1)) ///
-(kdensity base_nocorrf`i'_std if segmana==4, bwidth(0.2585) lpattern(solid) lcolor(plb1)), ///
-xsize() xtitle("Factor `i' (std.) score", size(medsmall)) xlabel(,angle() labsize(small))  ///
+(kdensity base_nocorrf`i'_std if segmana==1, bwidth(0.32) lpattern(solid) lcolor(gs4)) ///
+(kdensity base_nocorrf`i'_std if segmana==2, bwidth(0.32) lpattern(shortdash) lcolor(gs0)) ///
+(kdensity base_nocorrf`i'_std if segmana==3, bwidth(0.32) lpattern(dash) lcolor(gs9)) ///
+(kdensity base_nocorrf`i'_std if segmana==4, bwidth(0.32) lpattern(solid) lcolor(gs12)), ///
+xsize() xtitle("Factor `i' (std.)", size(medsmall)) xlabel(,angle() labsize(small))  ///
 ylabel(,labsize(small)) ymtick() ytitle("Kernel density", size(small)) ///
 legend(position(6) col(2) order(1 "Dalits women" 2 "Dalits men" 3 "MU caste women" 4 "MU caste men") off) name(f`i', replace)
 }
 
 twoway ///
-(kdensity base_raven_tt if segmana==1, bwidth(1.5) lpattern(solid) lcolor(ply1)) ///
-(kdensity base_raven_tt if segmana==2, bwidth(1.5) lpattern(solid) lcolor(plg1)) ///
-(kdensity base_raven_tt if segmana==3, bwidth(1.5) lpattern(solid) lcolor(plr1)) ///
-(kdensity base_raven_tt if segmana==4, bwidth(1.5) lpattern(solid) lcolor(plb1)), ///
-xsize() xtitle("Raven test score", size(medsmall)) xlabel(,angle() labsize(small))  ///
+(kdensity base_raven_tt if segmana==1, bwidth(3) lpattern(solid) lcolor(gs4)) ///
+(kdensity base_raven_tt if segmana==2, bwidth(3) lpattern(shortdash) lcolor(gs0)) ///
+(kdensity base_raven_tt if segmana==3, bwidth(3) lpattern(dash) lcolor(gs9)) ///
+(kdensity base_raven_tt if segmana==4, bwidth(3) lpattern(solid) lcolor(gs12)), ///
+xsize() xtitle("Raven test", size(medsmall)) xlabel(,angle() labsize(small))  ///
 ylabel(,labsize(small)) ymtick() ytitle("Kernel density", size(small)) ///
 legend(position(6) col(2) order(1 "Male" 2 "Female") off) name(f6, replace)
 
 twoway ///
-(kdensity base_num_tt if segmana==1, bwidth(1) lpattern(solid) lcolor(ply1)) ///
-(kdensity base_num_tt if segmana==2, bwidth(1) lpattern(solid) lcolor(plg1)) ///
-(kdensity base_num_tt if segmana==3, bwidth(1) lpattern(solid) lcolor(plr1)) ///
-(kdensity base_num_tt if segmana==4, bwidth(1) lpattern(solid) lcolor(plb1)), ///
-xsize() xtitle("Numeracy test score", size(medsmall)) xlabel(,angle() labsize(small))  ///
+(kdensity base_num_tt if segmana==1, bwidth(1.5) lpattern(solid) lcolor(gs4)) ///
+(kdensity base_num_tt if segmana==2, bwidth(1.5) lpattern(shortdash) lcolor(gs0)) ///
+(kdensity base_num_tt if segmana==3, bwidth(1.5) lpattern(dash) lcolor(gs9)) ///
+(kdensity base_num_tt if segmana==4, bwidth(1.5) lpattern(solid) lcolor(gs12)), ///
+xsize() xtitle("Numeracy test", size(medsmall)) xlabel(,angle() labsize(small))  ///
 ylabel(,labsize(small)) ymtick() ytitle("Kernel density", size(small)) ///
 legend(position(6) col(2) order(1 "Male" 2 "Female") off) name(f7, replace)
 
 twoway ///
-(kdensity base_lit_tt if segmana==1, bwidth(1.5) lpattern(solid) lcolor(ply1)) ///
-(kdensity base_lit_tt if segmana==2, bwidth(1.5) lpattern(solid) lcolor(plg1)) ///
-(kdensity base_lit_tt if segmana==3, bwidth(1.5) lpattern(solid) lcolor(plr1)) ///
-(kdensity base_lit_tt if segmana==4, bwidth(1.5) lpattern(solid) lcolor(plb1)), ///
-xsize() xtitle("Literacy test score", size(medsmall)) xlabel(,angle() labsize(small))  ///
+(kdensity base_lit_tt if segmana==1, bwidth(1.7) lpattern(solid) lcolor(gs4)) ///
+(kdensity base_lit_tt if segmana==2, bwidth(1.7) lpattern(shortdash) lcolor(gs0)) ///
+(kdensity base_lit_tt if segmana==3, bwidth(1.7) lpattern(dash) lcolor(gs9)) ///
+(kdensity base_lit_tt if segmana==4, bwidth(1.7) lpattern(solid) lcolor(gs12)), ///
+xsize() xtitle("Literacy test", size(medsmall)) xlabel(,angle() labsize(small))  ///
 ylabel(,labsize(small)) ymtick() ytitle("Kernel density", size(small)) ///
 legend(position(6) col(2) order(1 "Male" 2 "Female") off) name(f8, replace)
 
-grc1leg f1 f2 f3 f4 f5 f6 f7 f8, cols(4) note("Kernel: Epanechnikov;" "Bandwidth: 0.2585 for factors, 1.5 for raven & lit., 1 for num.", size(vsmall)) name(perso, replace)
-graph export "Kernel_perso2.pdf", as(pdf) name(perso) replace
 set graph on
+
+grc1leg f1 f2 f3 f4 f5 f6 f7 f8, cols(4) note("Kernel: Epanechnikov;" "Bandwidth: 0.32 for factors, 3 for raven, 1.5 for literacy, 1 for numeracy.", size(vsmall)) name(perso, replace)
+graph export "Kernel_perso2.pdf", as(pdf) name(perso) replace
 
 
 * ANOVA for personality
@@ -517,7 +564,7 @@ cls
 oneway base_raven_tt segmana
 oneway base_num_tt segmana
 oneway base_lit_tt segmana
-
+*/
 
 
 
@@ -525,17 +572,39 @@ oneway base_lit_tt segmana
 
 
 ********** Debt
-global varok indebt_indiv_2 loans_indiv_2 loanamount_indiv1000_2 DSR_indiv_2 debtshare_2 dummyproblemtorepay_indiv_2 n_dummyproblemtorepay_indiv_2 over30_indiv_2 over40_indiv_2 FormR_indiv_2 InformR_indiv_2 IncogenR_indiv_2 NoincogenR_indiv_2
+tabstat loans_indiv_2 loanamount_indiv1000_2 DSR_indiv_2 debtshare_2  InformR_indiv_2 NoincogenR_indiv_2, stat(mean sd p50) by(segmana)
 
-fsum $varok, stat(n mean sd p50 min max)
+tabstat indebt_indiv_2 over30_indiv_2 over40_indiv_2, stat(mean) by(segmana)
 
-global varokok indebt_indiv_2 loans_indiv_2 loanamount_indiv1000_2 DSR_indiv_2 debtshare_2 over30_indiv_2 over40_indiv_2 InformR_indiv_2 NoincogenR_indiv_2
+/*
+*Recode pour ne pas écraser la boite
+clonevar DSR_indiv_2_2=DSR_indiv_2
+replace DSR_indiv_2_2=300 if DSR_indiv_2_2>300
 
-tabstat $varokok, stat(n mean sd p50 min max) by(segmana)
+tabstat DSR_indiv_2 DSR_indiv_2_2, stat(n mean sd q) by(segmana)
+
+stripplot DSR_indiv_2_2 , over(segmana) separate() ///
+cumul cumprob box centre vertical refline /// 
+xsize(4) xtitle("") xlabel(1 "Dalits women" 2 "Dalits men" 3 "MUC women" 4 "MUC men",angle(0))  ///
+ylabel(0(100)300) ymtick(0(50)300) ytitle("") ///
+title("DSR (%)") ///
+msymbol(oh) mcolor(gs8) name(y1, replace) ///
+legend(order(1 "Mean"  4 "Dalits women" 5 "Dalits men" 6 "MUC women" 7 "MUC men") col(4) pos(6))
+
+stripplot debtshare_2, over(segmana) separate() ///
+cumul cumprob box centre vertical refline /// 
+xsize(4) xtitle("") xlabel(1 "Dalits women" 2 "Dalits men" 3 "MUC women" 4 "MUC men",angle(0))  ///
+ylabel(0(0.1)1) ymtick(0(.05)1) ytitle("") ///
+title("Share of HH debt (%)") ///
+msymbol(oh) mcolor(gs8) name(y1, replace) ///
+legend(order(1 "Mean"  4 "Dalits women" 5 "Dalits men" 6 "MUC women" 7 "MUC men") col(4) pos(6))
+*/
+
+
 
 * ANOVA for debt
 cls
-foreach x in $varokok{
+foreach x in loans_indiv_2 loanamount_indiv1000_2 DSR_indiv_2 debtshare_2  InformR_indiv_2 NoincogenR_indiv_2{
 oneway `x' segmana
 }
 
@@ -555,22 +624,25 @@ tab over40_indiv_2 segmana, nofreq chi2
 
 ********** CORR personality - debt
 forvalues i=1(1)4{
-estpost correlate base_nocorrf1_std base_nocorrf2_std base_nocorrf3_std base_nocorrf4_std base_nocorrf5_std base_raven_tt base_num_tt base_lit_tt $varokok if segmana==`i', matrix listwise
-esttab using corr.csv, unstack not noobs compress starlevels(* 0.10 ** 0.05 *** 0.01) replace cells(b(star fmt(2)))
+estpost correlate base_nocorrf1_std base_nocorrf2_std base_nocorrf3_std base_nocorrf4_std base_nocorrf5_std base_raven_tt base_num_tt base_lit_tt indebt_indiv_2 loans_indiv_2 loanamount_indiv1000_2 DSR_indiv_2 debtshare_2 over30_indiv_2 over40_indiv_2 InformR_indiv_2 NoincogenR_indiv_2 if segmana==`i', matrix listwise
+esttab using corr.csv, unstack not noobs compress starlevels(* 0.10 ** 0.05 *** 0.01) replace cells(b(fmt(2)))
 
 preserve
 import delimited "corr.csv", delimiter(",") varnames(nonames) clear
 gen n=_n
-drop if n<=11
+drop if n<=12
 drop v10 v11 v12 v13 v14 v15 v16 v17 v18
 drop n
 forvalues j=2(1)9{
 replace v`j'=substr(v`j',3,strlen(v`j')) if substr(v`j',strlen(v`j')-1,1)!="*"
 replace v`j'=substr(v`j',1,strlen(v`j')-1) if substr(v`j',strlen(v`j')-1,1)!="*"
 }
+destring v2 v3 v4 v5 v6 v7 v8 v9, replace
 export excel using "Stat_desc.xlsx", sheet("corr_segmana_`i'", replace)
 restore
 }
+
+*cells(b(star fmt(2)))
 
 ****************************************
 * END
@@ -677,13 +749,67 @@ global villagesFE near_panruti near_villupur near_tirup near_chengal near_kanchi
 global big5 base_cr_OP_std base_cr_CO_std base_cr_EX_std base_cr_AG_std base_cr_ES_std
 
 
+/*
+*Test effet de selection?
+foreach x in over30_indiv over40_indiv loanamount_indiv1000 DSR_indiv debtshare InformR_indiv NoincogenR_indiv loans_indiv {
+replace `x'_2=. if indebt_indiv_2==0
+}
+*/
+
+*Quelle stat affichée ?
+*reg loanamount_indiv1000_2 loanamount_indiv1000_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE if segmana==3, vce(cluster HHvar)
+*matlist r(table)
+
 
 ********** 1.
 ********** Proba of being in debt, or overindebted, interest in t+1
+foreach cat in 1 2 3 4 {
+qui probit indebt_indiv_2 indebt_indiv_1 $efa $cog if segmana==`cat', vce(cluster HHvar)
+est store res_`cat'1
 
-foreach var in indebt_indiv over30_indiv over40_indiv {
- 
-*foreach var in dummyproblemtorepay_indiv {
+qui probit indebt_indiv_2 indebt_indiv_1 $efa $cog $indivcontrol if segmana==`cat', vce(cluster HHvar)
+est store res_`cat'2
+
+qui probit indebt_indiv_2 indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE if segmana==`cat', vce(cluster HHvar)
+est store res_`cat'3
+
+predict probitxb_`cat', xb
+ge pdf_`cat'=normalden(probitxb_`cat')
+ge cdf_`cat'=normal(probitxb_`cat')
+ge imr_`cat'=pdf_`cat'/cdf_`cat'
+}
+
+esttab res_* using "_reg.csv", ///
+	cells(b(star fmt(3)) /// 
+	se(par fmt(2))) ///
+	drop() ///
+	legend label varlabels(_cons constant) ///
+	stats(N r2_p ll chi2 p, fmt(0 3 3 3 3)) starlevels(* 0.10 ** 0.05 *** 0.01) ///
+	replace
+estimates clear
+preserve
+import delimited "_reg.csv", delimiter(",") varnames(nonames) clear
+qui des
+sca def k=r(k)
+forvalues i=1(1)`=scalar(k)'{
+replace v`i'=substr(v`i',3,.)
+replace v`i'=substr(v`i',1,strlen(v`i')-1)
+}
+export excel using "Probit_indebt.xlsx", sheet("`var'", replace)
+restore
+
+
+
+********** Effet de selection pour ceux pas endettés
+drop if indebt_indiv_2==0
+tab segmana
+
+
+
+
+********** 2.
+********** Proba of being overindebted, interest in t+1
+foreach var in over30_indiv over40_indiv {
 foreach cat in 1 2 3 4 {
 qui probit `var'_2 `var'_1 $efa $cog if segmana==`cat', vce(cluster HHvar)
 est store res_`cat'1
@@ -718,9 +844,7 @@ restore
 
 
 
-
-
-********** 2.
+********** 3.
 ********** Level of debt in t+1
  
 foreach var in loanamount_indiv1000 DSR_indiv {
@@ -765,7 +889,7 @@ restore
 
 
 
-********** 3.
+********** 4.
 ********** Level of debt in t+1
 
 foreach var in debtshare InformR_indiv NoincogenR_indiv {
@@ -806,7 +930,7 @@ restore
 
 
 
-********** 4.
+********** 5.
 ********** Level of debt in t+1
 
 foreach var in loans_indiv {
