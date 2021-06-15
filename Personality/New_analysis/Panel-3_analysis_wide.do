@@ -428,6 +428,8 @@ replace dichotomyinterest_indiv_2=1 if indebt_indiv_2==1 & dummyinterest_indiv_2
 tab1 dummyhelptosettleloan_indiv_1 dummyhelptosettleloan_indiv_2
 tab dummyhelptosettleloan_indiv_2 segmana
 
+
+
 save"panel_wide_v3.dta", replace
 ****************************************
 * END
@@ -657,7 +659,34 @@ export excel using "Stat_desc.xlsx", sheet("corr_segmana_`i'", replace)
 restore
 }
 
-*cells(b(star fmt(2)))
+* new Y
+tab1 sum_borrowerservices_1_r_2 sum_borrowerservices_2_r_2 sum_borrowerservices_3_r_2 sum_borrowerservices_4_r_2
+/*
+Ok pour 1 2 3
+1 free service
+2 work for less wage
+3 provide support whenever he need
+*/
+
+tab1 sum_plantorepay_1_r_2 sum_plantorepay_2_r_2 sum_plantorepay_3_r_2 sum_plantorepay_4_r_2 sum_plantorepay_5_r_2 sum_plantorepay_6_r_2 
+/*
+Ok pour 6
+6 borrowing elsewhere
+*/
+
+tab1 sum_settleloanstrategy_1_r_2 sum_settleloanstrategy_2_r_2 sum_settleloanstrategy_3_r_2 sum_settleloanstrategy_4_r_2 sum_settleloanstrategy_5_r_2 sum_settleloanstrategy_6_r_2 sum_settleloanstrategy_7_r_2 sum_settleloanstrategy_8_r_2 sum_settleloanstrategy_9_r_2 sum_settleloanstrategy_10_r_2
+/*
+Ok pour 3 4 6 7 8
+3 borrowing elsewhere
+4 selling something which was not planned
+6 consumption reduction
+7 take an additional job
+8 work more
+*/
+
+tab1 sum_borrowerservices_1_r_2 sum_borrowerservices_2_r_2 sum_borrowerservices_3_r_2 sum_plantorepay_6_r_2 sum_settleloanstrategy_3_r_2 sum_settleloanstrategy_4_r_2 sum_settleloanstrategy_6_r_2 sum_settleloanstrategy_7_r_2 sum_settleloanstrategy_8_r_2
+
+tab sum_plantorepay_6_r_2 sum_settleloanstrategy_3_r_2
 
 ****************************************
 * END
@@ -883,10 +912,10 @@ restore
 
 
 
-
 ********** 2.
 ********** Proba of being overindebted, interest in t+1
-foreach var in over30_indiv over40_indiv dummyproblemtorepay_indiv {
+foreach var in over30_indiv over40_indiv dummyproblemtorepay_indiv dummyhelptosettleloan_indiv sum_settleloanstrategy_3_r sum_settleloanstrategy_7_r sum_settleloanstrategy_8_r sum_plantorepay_6_r {
+
 foreach cat in 1 2 3 4 {
 qui probit `var'_2 indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE if segmana==`cat', vce(cluster HHvar)
 est store res_`cat'1
@@ -924,6 +953,33 @@ export excel using "Probit_indebt.xlsx", sheet("`var'", replace)
 restore
 }
 
+foreach var in sum_borrowerservices_1_r sum_borrowerservices_2_r sum_borrowerservices_3_r {
+
+foreach cat in 1 2 3 4 {
+qui probit `var'_2 indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE if segmana==`cat', vce(cluster HHvar)
+est store res_`cat'1
+
+}
+
+esttab res_* using "_reg.csv", ///
+	cells(b(star fmt(3)) /// 
+	se(par fmt(2))) ///
+	drop() ///
+	legend label varlabels(_cons constant) ///
+	stats(N r2_p ll chi2 p, fmt(0 3 3 3 3)) starlevels(* 0.10 ** 0.05 *** 0.01) ///
+	replace
+estimates clear
+preserve
+import delimited "_reg.csv", delimiter(",") varnames(nonames) clear
+qui des
+sca def k=r(k)
+forvalues i=1(1)`=scalar(k)'{
+replace v`i'=substr(v`i',3,.)
+replace v`i'=substr(v`i',1,strlen(v`i')-1)
+}
+export excel using "Probit_indebt.xlsx", sheet("`var'", replace)
+restore
+}
 
 
 
