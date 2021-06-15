@@ -412,6 +412,21 @@ recode n_`x' (.=0)
 fre dummyproblemtorepay_indiv_1 n_dummyproblemtorepay_indiv_1 dummyproblemtorepay_indiv_2 n_dummyproblemtorepay_indiv_2
 
 
+*Gen dummy for interest
+tab1 dummyinterest_indiv_1 dummyinterest_indiv_2
+tab1 dichotomyinterest_indiv_1 dichotomyinterest_indiv_2
+drop dichotomyinterest_indiv_1 dichotomyinterest_indiv_2
+
+forvalues i=1(1)2 {
+gen dichotomyinterest_indiv_`i'=0 if indebt_indiv_`i'==1
+}
+
+replace dichotomyinterest_indiv_1=1 if indebt_indiv_1==1 & dummyinterest_indiv_1>0
+replace dichotomyinterest_indiv_2=1 if indebt_indiv_2==1 & dummyinterest_indiv_2>0
+
+*verif
+tab1 dummyhelptosettleloan_indiv_1 dummyhelptosettleloan_indiv_2
+tab dummyhelptosettleloan_indiv_2 segmana
 
 save"panel_wide_v3.dta", replace
 ****************************************
@@ -741,20 +756,94 @@ drop lenders_1 lenders_2 lenders_3 lenders_4 lenders_5 lenders_6 lenders_7 lende
 ****************************************
 use"panel_wide_v3.dta", clear
 
+
+
 global efa base_nocorrf1_std base_nocorrf2_std base_nocorrf3_std base_nocorrf4_std base_nocorrf5_std
 global cog base_raven_tt base_num_tt base_lit_tt
 global indivcontrol age_1 agesq_1 dummyhead cat_mainoccupation_indiv_1_1 cat_mainoccupation_indiv_1_2 cat_mainoccupation_indiv_1_3 cat_mainoccupation_indiv_1_4 cat_mainoccupation_indiv_1_5 dummyedulevel maritalstatus2_1 dummymultipleoccupation_indiv_1
+*global indivcontrol age_1 dummyhead cat_n_mainoccupation_indiv_1_1 cat_n_mainoccupation_indiv_1_2 cat_n_mainoccupation_indiv_1_3 dummyedulevel maritalstatus2_1
+
+
 global hhcontrol4 assets1000_1 sexratiocat_1_1 sexratiocat_1_2 sexratiocat_1_3 hhsize_1 shock_1 incomeHH1000_1
+*global hhcontrol4 assets1000_1 shock_1 incomeHH1000_percapita
 global villagesFE near_panruti near_villupur near_tirup near_chengal near_kanchip near_chennai
 global big5 base_cr_OP_std base_cr_CO_std base_cr_EX_std base_cr_AG_std base_cr_ES_std
 
 
 /*
-*Test effet de selection?
-foreach x in over30_indiv over40_indiv loanamount_indiv1000 DSR_indiv debtshare InformR_indiv NoincogenR_indiv loans_indiv {
-replace `x'_2=. if indebt_indiv_2==0
+*** Faible puissance statistique quand segmentation+double dette, combien de égos par HH ?
+tab indebt_indiv_1 indebt_indiv_2
+tab segmana 
+tab segmana if  indebt_indiv_2==1
+tab segmana if  indebt_indiv_2==1 & indebt_indiv_1==1
+*Total at 835
+preserve
+gen dw=1 if segmana==1
+gen dm=1 if segmana==2
+gen mucw=1 if segmana==3
+gen mucm=1 if segmana==4
+foreach x in dw dm mucw mucm {
+bysort HHID_panel: egen sum_`x'=sum(`x')
 }
+duplicates drop HHID_panel, force
+tab1 sum_dw sum_dm sum_mucw sum_mucm
+restore
+
+*Total at 606
+preserve
+gen dw=1 if indebt_indiv_2==1 & segmana==1
+gen dm=1 if indebt_indiv_2==1 & segmana==2
+gen mucw=1 if indebt_indiv_2==1 & segmana==3
+gen mucm=1 if indebt_indiv_2==1 & segmana==4
+foreach x in dw dm mucw mucm {
+bysort HHID_panel: egen sum_`x'=sum(`x')
+}
+duplicates drop HHID_panel, force
+tab1 sum_dw sum_dm sum_mucw sum_mucm
+restore
+
+preserve
+keep if indebt_indiv_2==1
+duplicates drop HHID_panel, force
+restore
+
+*Total at 516
+preserve
+gen dw=1 if indebt_indiv_2==1 & indebt_indiv_1==1 & segmana==1
+gen dm=1 if indebt_indiv_2==1 & indebt_indiv_1==1 & segmana==2
+gen mucw=1 if indebt_indiv_2==1 & indebt_indiv_1==1 & segmana==3
+gen mucm=1 if indebt_indiv_2==1 & indebt_indiv_1==1 & segmana==4
+foreach x in dw dm mucw mucm {
+bysort HHID_panel: egen sum_`x'=sum(`x')
+}
+duplicates drop HHID_panel, force
+tab1 sum_dw sum_dm sum_mucw sum_mucm
+list HHID_panel if sum_dw==2 | sum_dm==2 | sum_mucw==2 | sum_mucm==2, clean noobs
+restore
+
+preserve
+keep if indebt_indiv_2==1 & indebt_indiv_1==1
+duplicates drop HHID_panel, force
+tab caste
+restore
+/*
+KOR1	 
+NAT36	 
+ORA22	 
+ORA7	 
+SEM45
 */
+*/
+
+
+
+/*
+predict probitxb_`cat', xb
+ge pdf_`cat'=normalden(probitxb_`cat')
+ge cdf_`cat'=normal(probitxb_`cat')
+ge imr_`cat'=pdf_`cat'/cdf_`cat'
+*/
+
 
 *Quelle stat affichée ?
 *reg loanamount_indiv1000_2 loanamount_indiv1000_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE if segmana==3, vce(cluster HHvar)
@@ -764,12 +853,6 @@ replace `x'_2=. if indebt_indiv_2==0
 ********** 1.
 ********** Proba of being in debt, or overindebted, interest in t+1
 foreach cat in 1 2 3 4 {
-qui probit indebt_indiv_2 indebt_indiv_1 $efa $cog if segmana==`cat', vce(cluster HHvar)
-est store res_`cat'1
-
-qui probit indebt_indiv_2 indebt_indiv_1 $efa $cog $indivcontrol if segmana==`cat', vce(cluster HHvar)
-est store res_`cat'2
-
 qui probit indebt_indiv_2 indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE if segmana==`cat', vce(cluster HHvar)
 est store res_`cat'3
 
@@ -795,30 +878,30 @@ forvalues i=1(1)`=scalar(k)'{
 replace v`i'=substr(v`i',3,.)
 replace v`i'=substr(v`i',1,strlen(v`i')-1)
 }
-export excel using "Probit_indebt.xlsx", sheet("`var'", replace)
+export excel using "Probit_indebt.xlsx", sheet("Indebt", replace)
 restore
-
-
-
-********** Effet de selection pour ceux pas endettés
-drop if indebt_indiv_2==0
-tab segmana
 
 
 
 
 ********** 2.
 ********** Proba of being overindebted, interest in t+1
-foreach var in over30_indiv over40_indiv {
+foreach var in over30_indiv over40_indiv dummyproblemtorepay_indiv {
 foreach cat in 1 2 3 4 {
-qui probit `var'_2 `var'_1 $efa $cog if segmana==`cat', vce(cluster HHvar)
+qui probit `var'_2 indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE if segmana==`cat', vce(cluster HHvar)
 est store res_`cat'1
 
-qui probit `var'_2 `var'_1 $efa $cog $indivcontrol if segmana==`cat', vce(cluster HHvar)
+qui probit `var'_2 indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE if segmana==`cat' & indebt_indiv_2==1, vce(cluster HHvar)
 est store res_`cat'2
 
-qui probit `var'_2 `var'_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE if segmana==`cat', vce(cluster HHvar)
+qui probit `var'_2 indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE if segmana==`cat' & indebt_indiv_2==1
 est store res_`cat'3
+
+qui probit `var'_2 `var'_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE if segmana==`cat' & indebt_indiv_2==1 & indebt_indiv_1==1
+est store res_`cat'4
+
+qui probit `var'_2 `var'_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE if segmana==`cat' & indebt_indiv_2==1 & indebt_indiv_1==1, vce(cluster HHvar)
+est store res_`cat'5
 }
 
 esttab res_* using "_reg.csv", ///
@@ -844,20 +927,28 @@ restore
 
 
 
+
 ********** 3.
 ********** Level of debt in t+1
  
 foreach var in loanamount_indiv1000 DSR_indiv {
 
 foreach cat in 1 2 3 4 {
-qui reg `var'_2 `var'_1 $efa $cog if segmana==`cat', vce(cluster HHvar)
+qui reg `var'_2 indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE if segmana==`cat', vce(cluster HHvar)
 est store res_`cat'1
 
-qui reg `var'_2 `var'_1 $efa $cog $indivcontrol if segmana==`cat', vce(cluster HHvar)
+qui reg `var'_2 indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE if segmana==`cat' & indebt_indiv_2==1, vce(cluster HHvar)
 est store res_`cat'2
 
-qui reg `var'_2 `var'_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE if segmana==`cat', vce(cluster HHvar)
+qui reg `var'_2 indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE if segmana==`cat' & indebt_indiv_2==1
 est store res_`cat'3
+
+qui reg `var'_2 `var'_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE if segmana==`cat' & indebt_indiv_2==1 & indebt_indiv_1==1
+est store res_`cat'4
+
+qui reg `var'_2 `var'_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE if segmana==`cat' & indebt_indiv_2==1 & indebt_indiv_1==1, vce(cluster HHvar)
+est store res_`cat'5
+
 }
 
 esttab res_* using "_reg.csv", ///
@@ -895,14 +986,21 @@ restore
 foreach var in debtshare InformR_indiv NoincogenR_indiv {
 
 foreach cat in 1 2 3 4 {
-qui glm `var'_2 `var'_1 $efa $cog if segmana==`cat', fam(bin) link(logit) vce(cluster HHvar)
+qui glm `var'_2 indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE if segmana==`cat', fam(bin) link(logit) vce(cluster HHvar)
 est store res_`cat'1
 
-qui glm `var'_2 `var'_1 $efa $cog $indivcontrol if segmana==`cat', fam(bin) link(logit) vce(cluster HHvar)
+qui glm `var'_2 indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE if segmana==`cat' & indebt_indiv_2==1, fam(bin) link(logit) vce(cluster HHvar)
 est store res_`cat'2
 
-qui glm `var'_2 `var'_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE if segmana==`cat', fam(bin) link(logit) vce(cluster HHvar)
+qui glm `var'_2 indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE if segmana==`cat' & indebt_indiv_2==1, fam(bin) link(logit)
 est store res_`cat'3
+
+qui glm `var'_2 `var'_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE if segmana==`cat' & indebt_indiv_2==1 & indebt_indiv_1==1, fam(bin) link(logit)
+est store res_`cat'4
+
+qui glm `var'_2 `var'_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE if segmana==`cat' & indebt_indiv_2==1 & indebt_indiv_1==1, fam(bin) link(logit) vce(cluster HHvar)
+est store res_`cat'5
+
 }
 
 esttab res_* using "_reg.csv", ///
@@ -930,20 +1028,28 @@ restore
 
 
 
+
 ********** 5.
 ********** Level of debt in t+1
 
-foreach var in loans_indiv {
+foreach var in loans_indiv dummyinterest_indiv {
 
 foreach cat in 1 2 3 4 {
-qui poisson `var'_2 `var'_1 $efa $cog if segmana==`cat', vce(cluster HHvar)
+qui poisson `var'_2 indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE if segmana==`cat', vce(cluster HHvar)
 est store res_`cat'1
 
-qui poisson `var'_2 `var'_1 $efa $cog $indivcontrol if segmana==`cat', vce(cluster HHvar)
+qui poisson `var'_2 indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE if segmana==`cat' & indebt_indiv_2==1, vce(cluster HHvar)
 est store res_`cat'2
 
-qui poisson `var'_2 `var'_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE if segmana==`cat', vce(cluster HHvar)
+qui poisson `var'_2 indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE if segmana==`cat' & indebt_indiv_2==1
 est store res_`cat'3
+
+qui poisson `var'_2 `var'_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE if segmana==`cat' & indebt_indiv_2==1  & indebt_indiv_1==1
+est store res_`cat'4
+
+qui poisson `var'_2 `var'_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE if segmana==`cat' & indebt_indiv_2==1  & indebt_indiv_1==1, vce(cluster HHvar)
+est store res_`cat'5
+
 }
 
 esttab res_* using "_reg.csv", ///
@@ -965,4 +1071,3 @@ replace v`i'=substr(v`i',1,strlen(v`i')-1)
 export excel using "Poisson_indebt.xlsx", sheet("`var'", replace)
 restore
 }
-
