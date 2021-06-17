@@ -325,11 +325,14 @@ rotate, promax
 *putexcel set "EFA_2016.xlsx", modify sheet(ncorr_without_all)
 *putexcel (E2)=matrix(e(r_L))
 predict nocorrf1 nocorrf2 nocorrf3 nocorrf4 nocorrf5
+estpost correlate nocorrf1 nocorrf2 nocorrf3 nocorrf4 nocorrf5 $big5imwithout, matrix listwise
+*esttab using "_corr.csv", unstack not noobs compress cells(b(star fmt(2))) starlevels(* 0.05 ** 0.01 *** 0.001) replace
 
 
 *Correlation with big-5 and cronbach
 estpost correlate cr_OP cr_EX cr_ES cr_CO cr_AG nocorrf1 nocorrf2 nocorrf3 nocorrf4 nocorrf5, matrix listwise
-esttab , unstack not noobs compress starlevels(* 0.10 ** 0.05 *** 0.01) replace
+esttab , unstack not noobs compress cells(b(star fmt(2))) starlevels(* 0.10 ** 0.05 *** 0.01) replace
+
 
 
 ********** Alpha for traits
@@ -338,33 +341,52 @@ esttab , unstack not noobs compress starlevels(* 0.10 ** 0.05 *** 0.01) replace
 cls
 
 *OP
-alpha curious 		interested~t   repetitive~s inventive liketothink newideas activeimag~n
-alpha cr_curious cr_interested~t   cr_repetitive~s cr_inventive cr_liketothink cr_newideas cr_activeimag~n
+*alpha curious 		interested~t   repetitive~s inventive liketothink newideas activeimag~n
+*alpha cr_curious cr_interested~t   cr_repetitive~s cr_inventive cr_liketothink cr_newideas cr_activeimag~n
 omega cr_curious cr_interested~t   cr_repetitive~s cr_inventive cr_liketothink cr_newideas cr_activeimag~n
 
 
 *CO
-alpha organized  makeplans workhard appointmen~e putoffduties easilydist~d completedu~s
-alpha cr_organized  cr_makeplans cr_workhard cr_appointmen~e cr_putoffduties cr_easilydist~d cr_completedu~s
+*alpha organized  makeplans workhard appointmen~e putoffduties easilydist~d completedu~s
+*alpha cr_organized  cr_makeplans cr_workhard cr_appointmen~e cr_putoffduties cr_easilydist~d cr_completedu~s
 omega cr_organized  cr_makeplans cr_workhard cr_appointmen~e cr_putoffduties cr_easilydist~d cr_completedu~s
 	
 	
 *EX	
-alpha enjoypeople sharefeeli~s shywithpeo~e  enthusiastic  talktomany~e  talkative expressing~s 
-alpha cr_enjoypeople cr_sharefeeli~s cr_shywithpeo~e  cr_enthusiastic  cr_talktomany~e  cr_talkative cr_expressing~s
+*alpha enjoypeople sharefeeli~s shywithpeo~e  enthusiastic  talktomany~e  talkative expressing~s 
+*alpha cr_enjoypeople cr_sharefeeli~s cr_shywithpeo~e  cr_enthusiastic  cr_talktomany~e  cr_talkative cr_expressing~s
 omega cr_enjoypeople cr_sharefeeli~s cr_shywithpeo~e  cr_enthusiastic  cr_talktomany~e  cr_talkative cr_expressing~s
 	
 	
 *AG	
-alpha workwithot~r   understand~g trustingof~r rudetoother toleratefa~s  forgiveother  helpfulwit~s
-alpha cr_workwithot~r   cr_understand~g cr_trustingof~r cr_rudetoother cr_toleratefa~s  cr_forgiveother  cr_helpfulwit~s 
+*alpha workwithot~r   understand~g trustingof~r rudetoother toleratefa~s  forgiveother  helpfulwit~s
+*alpha cr_workwithot~r   cr_understand~g cr_trustingof~r cr_rudetoother cr_toleratefa~s  cr_forgiveother  cr_helpfulwit~s 
 omega cr_workwithot~r   cr_understand~g cr_trustingof~r cr_rudetoother cr_toleratefa~s  cr_forgiveother  cr_helpfulwit~s 
 
 	
 *ES	
-alpha managestress  nervous  changemood feeldepres~d easilyupset worryalot  staycalm 
-alpha cr_managestress  cr_nervous  cr_changemood cr_feeldepres~d cr_easilyupset cr_worryalot  cr_staycalm
+*alpha managestress  nervous  changemood feeldepres~d easilyupset worryalot  staycalm 
+*alpha cr_managestress  cr_nervous  cr_changemood cr_feeldepres~d cr_easilyupset cr_worryalot  cr_staycalm
 omega cr_managestress  cr_nervous  cr_changemood cr_feeldepres~d cr_easilyupset cr_worryalot  cr_staycalm
+
+
+
+**********Correlation + omega
+*Factor 1
+omega im_expressingthoughts im_liketothink im_talktomanypeople im_activeimagination im_sharefeelings im_newideas im_curious im_inventive
+
+*Factor 2
+omega im_completeduties im_appointmentontime im_enthusiastic im_makeplans im_workhard im_workwithother im_organized
+
+
+*Factor 3
+omega im_changemood im_easilydistracted im_putoffduties im_staycalm im_nervous im_rudetoother im_managestress
+
+*Factor 4
+omega im_worryalot im_easilyupset im_feeldepressed im_nervous im_shywithpeople im_easilydistracted im_changemood
+
+*Factor 5
+omega im_forgiveother im_toleratefaults im_helpfulwithothers im_trustingofother im_talkative im_workwithother im_changemood im_understandotherfeeling im_curious im_repetitivetasks im_interestedbyart im_staycalm im_shywithpeople im_completeduties
 
 
 ********** Other variables
@@ -1028,7 +1050,7 @@ esttab reg_* using "_std.csv", ///
 	se(par fmt(2))) ///
 	drop(_cons) ///
 	legend label varlabels(_cons constant) ///
-	stats(N mss df_m rss df_r r2 r2_a F, fmt(0 3 3 3 3 3 3 3)) starlevels(* 0.10 ** 0.05 *** 0.01) ///
+	stats(N mss df_m rss df_r r2 F p, fmt(0 3 3 3 3 3 3 3)) starlevels(* 0.10 ** 0.05 *** 0.01) ///
 	replace
 estimates clear
 preserve
