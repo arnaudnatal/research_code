@@ -77,7 +77,22 @@ gen threeway_`x'=`x'*female*dalits
 }
 gen femXdal=female*dalits
 
+drop over30_indiv_2 over40_indiv_2
 
+gen over30_indiv_2=0
+replace over30_indiv_2=1 if DSR_indiv_2>=30
+
+gen over40_indiv_2=0
+replace over40_indiv_2=1 if DSR_indiv_2>=40
+
+gen over50_indiv_2=0
+replace over50_indiv_2=1 if DSR_indiv_2>=50
+
+tab over30_indiv_2 if indebt_indiv_2==1
+tab over40_indiv_2 if indebt_indiv_2==1
+tab over50_indiv_2 if indebt_indiv_2==1
+
+tab DSR_indiv_2
 
 tab segmana
 
@@ -99,114 +114,9 @@ global villagesFE near_panruti near_villupur near_tirup near_chengal near_kanchi
 global big5 base_cr_OP_std base_cr_CO_std base_cr_EX_std base_cr_AG_std base_cr_ES_std
 
 
-********** 1.
-********** Proba of being in debt, or overindebted, interest in t+1
 
-qui probit indebt_indiv_2 indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits, vce(cluster HHvar)
-est store res_`cat'1
-
-qui probit indebt_indiv_2 indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits $intfem, vce(cluster HHvar)
-est store res_`cat'2
-
-qui probit indebt_indiv_2 indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits $intdal, vce(cluster HHvar)
-est store res_`cat'3
-
-qui probit indebt_indiv_2 indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits $intfem $intdal, vce(cluster HHvar)
-est store res_`cat'4
-
-qui probit indebt_indiv_2 indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits femXdal $intfem $intdal $three, vce(cluster HHvar)
-est store res_`cat'5
-
-qui probit indebt_indiv_2 indebt_indiv_1 $indivcontrol $hhcontrol4 $villagesFE i.segmana##c.base_nocorrf1_std i.segmana##c.base_nocorrf2_std i.segmana##c.base_nocorrf3_std i.segmana##c.base_nocorrf4_std i.segmana##c.base_nocorrf5_std i.segmana##c.base_raven_tt i.segmana##c.base_num_tt i.segmana##c.base_lit_tt, vce(cluster HHvar)
-est store res_`cat'6
-
-esttab res_* using "_reg.csv", ///
-	cells(b(star fmt(3)) /// 
-	se(par fmt(2))) ///
-	drop($indivcontrol $hhcontrol4 $villagesFE) ///
-	legend label varlabels(_cons constant) ///
-	stats(N r2_p ll chi2 p, fmt(0 3 3 3 3)) starlevels(* 0.10 ** 0.05 *** 0.01) ///
-	replace
-estimates clear
-preserve
-import delimited "_reg.csv", delimiter(",") varnames(nonames) clear
-qui des
-sca def k=r(k)
-forvalues i=1(1)`=scalar(k)'{
-replace v`i'=substr(v`i',3,.)
-replace v`i'=substr(v`i',1,strlen(v`i')-1)
-}
-export excel using "Probit_indebt.xlsx", sheet("Indebt", replace)
-restore
-
-
-
-
-
-
-********** 2.
-********** Proba of being overindebted, interest in t+1
-foreach var in dummyproblemtorepay_indiv dummyhelptosettleloan_indiv sum_settleloanstrategy_3_r sum_settleloanstrategy_7_r sum_settleloanstrategy_8_r sum_plantorepay_6_r sum_borrowerservices_3_r {
-
-qui probit `var'_2 indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits if indebt_indiv_2==1, vce(cluster HHvar)
-est store res_`cat'1
-
-qui probit `var'_2 indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits $intfem if indebt_indiv_2==1, vce(cluster HHvar)
-est store res_`cat'2
-
-qui probit `var'_2 indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits $intdal if indebt_indiv_2==1, vce(cluster HHvar)
-est store res_`cat'3
-
-qui probit `var'_2 indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits $intfem $intdal if indebt_indiv_2==1, vce(cluster HHvar)
-est store res_`cat'4
-
-qui probit `var'_2 indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits femXdal $intfem $intdal $three if indebt_indiv_2==1, vce(cluster HHvar)
-est store res_`cat'5
-
-**************************
-qui probit `var'_2 `var'_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits if indebt_indiv_2==1 & indebt_indiv_1==1, vce(cluster HHvar)
-est store res_`cat'6
-
-qui probit `var'_2 `var'_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits $intfem if indebt_indiv_2==1 & indebt_indiv_1==1, vce(cluster HHvar)
-est store res_`cat'7
-
-qui probit `var'_2 `var'_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits $intdal if indebt_indiv_2==1 & indebt_indiv_1==1, vce(cluster HHvar)
-est store res_`cat'8
-
-qui probit `var'_2 `var'_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits $intfem $intdal if indebt_indiv_2==1 & indebt_indiv_1==1, vce(cluster HHvar)
-est store res_`cat'9
-
-qui probit `var'_2 `var'_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits femXdal $intfem $intdal $three if indebt_indiv_2==1 & indebt_indiv_1==1, vce(cluster HHvar)
-est store res_`cat'10
-
-
-esttab res_* using "_reg.csv", ///
-	cells(b(star fmt(3)) /// 
-	se(par fmt(2))) ///
-	drop($indivcontrol $hhcontrol4 $villagesFE) ///
-	legend label varlabels(_cons constant) ///
-	stats(N r2_p ll chi2 p, fmt(0 3 3 3 3)) starlevels(* 0.10 ** 0.05 *** 0.01) ///
-	replace
-estimates clear
-preserve
-import delimited "_reg.csv", delimiter(",") varnames(nonames) clear
-qui des
-sca def k=r(k)
-forvalues i=1(1)`=scalar(k)'{
-replace v`i'=substr(v`i',3,.)
-replace v`i'=substr(v`i',1,strlen(v`i')-1)
-}
-export excel using "Probit_indebt.xlsx", sheet("`var'", replace)
-restore
-}
-
-
-
-********** Three way test
-reg loanamount_indiv1000_2 indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits femXdal $intfem $intdal $three if indebt_indiv_2==1, vce(cluster HHvar)
-
-
-reg loanamount_indiv1000_2 indebt_indiv_1 $indivcontrol $hhcontrol4 $villagesFE c.base_nocorrf1_std##i.dalits##i.female c.base_nocorrf2_std##i.dalits##i.female c.base_nocorrf3_std##i.dalits##i.female c.base_nocorrf4_std##i.dalits##i.female c.base_nocorrf5_std##i.dalits##i.female c.base_raven_tt##i.dalits##i.female c.base_num_tt##i.dalits##i.female c.base_lit_tt##i.dalits##i.female if indebt_indiv_2==1, vce(cluster HHvar) // allbaselevels
+********** Choix des Y finaux: 
+/*
 
 *Type 2
 margins, dydx(base_nocorrf1_std) at(dalits=(0 1) female=(0 1))
@@ -233,44 +143,74 @@ margins, at(dalits=(0 1) female=(0 1)base_nocorrf1_std=(-3 3) )
 
 marginsplot, yline(0)
 
-
-
-
-reg loanamount_indiv1000_2 indebt_indiv_1 $indivcontrol $hhcontrol4 $villagesFE c.base_nocorrf1_std##i.dalits##i.female c.base_nocorrf2_std##i.dalits##i.female c.base_nocorrf3_std##i.dalits##i.female c.base_nocorrf4_std##i.dalits##i.female c.base_nocorrf5_std##i.dalits##i.female c.base_raven_tt##i.dalits##i.female c.base_num_tt##i.dalits##i.female c.base_lit_tt##i.dalits##i.female if indebt_indiv_2==1, vce(cluster HHvar) // allbaselevels
-
-
-
-
-/*
-valeurs de Y pour tel groupe
 */
 
-reg loanamount_indiv1000_2 indebt_indiv_1 $indivcontrol $hhcontrol4 $villagesFE i.female c.base_nocorrf1_std##i.dalits c.base_nocorrf2_std##i.dalits c.base_nocorrf3_std##i.dalits c.base_nocorrf4_std##i.dalits c.base_nocorrf5_std##i.dalits c.base_raven_tt##i.dalits c.base_num_tt##i.dalits c.base_lit_tt##i.dalits if indebt_indiv_2==1, vce(cluster HHvar) // allbaselevels
-
-margins, dydx(base_nocorrf1_std) at(dalits=(0 1))
-margins, dydx(base_nocorrf1_std) at(dalits=(0 1) female=(0 1))
-
-
-
-probit dummyproblemtorepay_indiv_2 indebt_indiv_1 $indivcontrol $hhcontrol4 $villagesFE i.female c.base_nocorrf1_std##i.dalits c.base_nocorrf2_std##i.dalits c.base_nocorrf3_std##i.dalits c.base_nocorrf4_std##i.dalits c.base_nocorrf5_std##i.dalits c.base_raven_tt##i.dalits c.base_num_tt##i.dalits c.base_lit_tt##i.dalits c.base_nocorrf1_std##i.female c.base_nocorrf2_std##i.female c.base_nocorrf3_std##i.female c.base_nocorrf4_std##i.female c.base_nocorrf5_std##i.female c.base_raven_tt##i.female c.base_num_tt##i.female c.base_lit_tt##i.female if indebt_indiv_2==1, vce(cluster HHvar) // allbaselevels
-
-margins, dydx(base_nocorrf1_std) at(dalits=(0 1) female=(0 1))
-margins, dydx(base_nocorrf2_std) at(dalits=(0 1) female=(0 1))
-margins, dydx(base_nocorrf3_std) at(dalits=(0 1) female=(0 1))
-margins, dydx(base_nocorrf4_std) at(dalits=(0 1) female=(0 1))
-margins, dydx(base_nocorrf5_std) at(dalits=(0 1) female=(0 1))
-margins, dydx(base_raven_tt) at(dalits=(0 1) female=(0 1))
-margins, dydx(base_num_tt) at(dalits=(0 1) female=(0 1))
-margins, dydx(base_lit_tt) at(dalits=(0 1) female=(0 1))
+/*
+- Incidence de la dette avec la proba d'être endetté (1)
+- Profondeur de la dette avec le loan amount & le DSR / SHDI (2)
+- Fardeau de la dette avec le pb to repay, help to settle, services, repayment (4)
+*/
 
 
+********** 1.
+********** Proba of being in debt, or overindebted, interest in t+1
+
+qui probit indebt_indiv_2 indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits, vce(cluster HHvar)
+est store res_1
+
+qui probit indebt_indiv_2 indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits $intfem, vce(cluster HHvar)
+est store res_2
+
+qui probit indebt_indiv_2 indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits $intdal, vce(cluster HHvar)
+est store res_3
+
+qui probit indebt_indiv_2 indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits $intfem $intdal, vce(cluster HHvar)
+est store res_4
+
+qui probit indebt_indiv_2 indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits femXdal $intfem $intdal $three, vce(cluster HHvar)
+est store res_5
+
+esttab res_* using "_reg.csv", ///
+	cells(b(star fmt(3)) /// 
+	se(par fmt(2))) ///
+	drop($indivcontrol $hhcontrol4 $villagesFE) ///
+	legend label varlabels(_cons constant) ///
+	stats(N r2_p ll chi2 p, fmt(0 3 3 3 3)) starlevels(* 0.10 ** 0.05 *** 0.01) ///
+	replace
+estimates clear
+preserve
+import delimited "_reg.csv", delimiter(",") varnames(nonames) clear
+qui des
+sca def k=r(k)
+forvalues i=1(1)`=scalar(k)'{
+replace v`i'=substr(v`i',3,.)
+replace v`i'=substr(v`i',1,strlen(v`i')-1)
+}
+export excel using "Probit_indebt.xlsx", sheet("Indebt", replace)
+restore
+
+*********** Marges
+foreach x in indebt_indiv {
+
+qui probit `x'_2 indebt_indiv_1 $indivcontrol $hhcontrol4 $villagesFE c.base_nocorrf1_std##i.female##i.dalits c.base_nocorrf2_std##i.female##i.dalits c.base_nocorrf3_std##i.female##i.dalits c.base_nocorrf4_std##i.female##i.dalits c.base_nocorrf5_std##i.female##i.dalits c.base_raven_tt##i.female##i.dalits c.base_num_tt##i.female##i.dalits c.base_lit_tt##i.female##i.dalits, vce(cluster HHvar)
+est store res_6
+
+*dy/dx
+margins, dydx(base_nocorrf1_std base_nocorrf2_std base_nocorrf3_std base_nocorrf4_std base_nocorrf5_std base_raven_tt base_num_tt base_lit_tt) at(dalits=(0 1) female=(0 1))  saving(margin_`x', replace)
+}
+
+*margins
+*margins, at(base_nocorrf1_std=(-3 3) dalits=(0 1) female=(0 1))
+*marginsplot
 
 
 
-********** 3.
+
+
+********** 2.
 ********** Level of debt in t+1
  
-foreach var in loanamount_indiv1000 {
+foreach var in loanamount_indiv1000 DSR_indiv {
 
 qui reg `var'_2 indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits if indebt_indiv_2==1, vce(cluster HHvar)
 est store res_`cat'1
@@ -284,24 +224,8 @@ est store res_`cat'3
 qui reg `var'_2 indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits $intfem $intdal if indebt_indiv_2==1, vce(cluster HHvar)
 est store res_`cat'4
 
-qui reg `var'_2 indebt_indiv_1 $indivcontrol $hhcontrol4 $villagesFE c.base_nocorrf1##i.dalits##i.female c.base_nocorrf2##i.dalits##i.female c.base_nocorrf3##i.dalits##i.female c.base_nocorrf4##i.dalits##i.female c.base_nocorrf5##i.dalits##i.female c.base_raven_tt##i.dalits##i.female c.base_num_tt##i.dalits##i.female c.base_lit_tt##i.dalits##i.female if indebt_indiv_2==1, vce(cluster HHvar)
+qui reg `var'_2 indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits femXdal $intfem $intdal $three if indebt_indiv_2==1, vce(cluster HHvar)
 est store res_`cat'5
-
-**************************
-qui reg `var'_2 `var'_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits if indebt_indiv_2==1 & indebt_indiv_1==1, vce(cluster HHvar)
-est store res_`cat'6
-
-qui reg `var'_2 `var'_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits $intfem if indebt_indiv_2==1 & indebt_indiv_1==1, vce(cluster HHvar)
-est store res_`cat'7
-
-qui reg `var'_2 `var'_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits $intdal if indebt_indiv_2==1 & indebt_indiv_1==1, vce(cluster HHvar)
-est store res_`cat'8
-
-qui reg `var'_2 `var'_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits $intfem $intdal if indebt_indiv_2==1 & indebt_indiv_1==1, vce(cluster HHvar)
-est store res_`cat'9
-
-qui reg `var'_2 `var'_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits femXdal $intfem $intdal $three if indebt_indiv_2==1 & indebt_indiv_1==1, vce(cluster HHvar)
-est store res_`cat'10
 
 esttab res_* using "_reg.csv", ///
 	cells(b(star fmt(3)) /// 
@@ -322,19 +246,29 @@ replace v`i'=substr(v`i',1,strlen(v`i')-1)
 export excel using "OLS_indebt.xlsx", sheet("`var'", replace)
 restore
 
+********** Margins
+qui reg `x'_2 indebt_indiv_1 $indivcontrol $hhcontrol4 $villagesFE c.base_nocorrf1_std##i.female##i.dalits c.base_nocorrf2_std##i.female##i.dalits c.base_nocorrf3_std##i.female##i.dalits c.base_nocorrf4_std##i.female##i.dalits c.base_nocorrf5_std##i.female##i.dalits c.base_raven_tt##i.female##i.dalits c.base_num_tt##i.female##i.dalits c.base_lit_tt##i.female##i.dalits if indebt_indiv_2==1, vce(cluster HHvar)
+
+*dy/dx
+qui margins, dydx(base_nocorrf1_std base_nocorrf2_std base_nocorrf3_std base_nocorrf4_std base_nocorrf5_std base_raven_tt base_num_tt base_lit_tt) at(dalits=(0 1) female=(0 1)) saving(margin_`x', replace)
 }
 
+*margins
+*margins, at(base_nocorrf1_std=(-3 3) dalits=(0 1) female=(0 1))
+*marginsplot
 
 
 
 
+ 
 
 
 
-********** 4.
+
+********** 2.
 ********** Level of debt in t+1
 
-foreach var in debtshare InformR_indiv NoincogenR_indiv {
+foreach var in debtshare {
 
 qui glm `var'_2 indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits if indebt_indiv_2==1, fam(bin) link(logit) vce(cluster HHvar)
 est store res_`cat'1
@@ -350,22 +284,6 @@ est store res_`cat'4
 
 qui glm `var'_2 indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits femXdal $intfem $intdal $three if indebt_indiv_2==1, fam(bin) link(logit) vce(cluster HHvar)
 est store res_`cat'5
-
-**************************
-qui glm `var'_2 `var'_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits if indebt_indiv_2==1 & indebt_indiv_1==1, fam(bin) link(logit) vce(cluster HHvar)
-est store res_`cat'6
-
-qui glm `var'_2 `var'_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits $intfem if indebt_indiv_2==1 & indebt_indiv_1==1, fam(bin) link(logit) vce(cluster HHvar)
-est store res_`cat'7
-
-qui glm `var'_2 `var'_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits $intdal if indebt_indiv_2==1 & indebt_indiv_1==1, fam(bin) link(logit) vce(cluster HHvar)
-est store res_`cat'8
-
-qui glm `var'_2 `var'_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits $intfem $intdal if indebt_indiv_2==1 & indebt_indiv_1==1, fam(bin) link(logit) vce(cluster HHvar)
-est store res_`cat'9
-
-qui glm `var'_2 `var'_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits femXdal $intfem $intdal $three if indebt_indiv_2==1 & indebt_indiv_1==1, fam(bin) link(logit) vce(cluster HHvar)
-est store res_`cat'10
 
 esttab res_* using "_reg.csv", ///
 	cells(b(star fmt(3)) /// 
@@ -386,6 +304,99 @@ replace v`i'=substr(v`i',1,strlen(v`i')-1)
 export excel using "GLM_indebt.xlsx", sheet("`var'", replace)
 restore
 
+********** Margins
+glm `x'_2 indebt_indiv_1 $indivcontrol $hhcontrol4 $villagesFE c.base_nocorrf1_std##i.dalits##i.female c.base_nocorrf2_std##i.dalits##i.female c.base_nocorrf3_std##i.dalits##i.female c.base_nocorrf4_std##i.dalits##i.female c.base_nocorrf5_std##i.dalits##i.female c.base_raven_tt##i.dalits##i.female c.base_num_tt##i.dalits##i.female c.base_lit_tt##i.dalits##i.female if indebt_indiv_2==1, fam(bin) link(logit) vce(cluster HHvar)
+
+*dy/dx
+qui margins, dydx(base_nocorrf1_std base_nocorrf2_std base_nocorrf3_std base_nocorrf4_std base_nocorrf5_std base_raven_tt base_num_tt base_lit_tt) at(dalits=(0 1) female=(0 1)) saving(margin_`x', replace)
+}
+*margins
+*margins, at(base_nocorrf1_std=(-3 3) dalits=(0 1) female=(0 1))
+*marginsplot
+
+
+
+
+
+********** 3.
+********** Proba of being overindebted, interest in t+1
+foreach var in dummyproblemtorepay_indiv dummyhelptosettleloan_indiv sum_settleloanstrategy_3_r sum_settleloanstrategy_7_r sum_settleloanstrategy_8_r sum_plantorepay_6_r sum_borrowerservices_3_r {
+
+qui probit `var'_2 indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits if indebt_indiv_2==1, vce(cluster HHvar)
+est store res_`cat'1
+
+qui probit `var'_2 indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits $intfem if indebt_indiv_2==1, vce(cluster HHvar)
+est store res_`cat'2
+
+qui probit `var'_2 indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits $intdal if indebt_indiv_2==1, vce(cluster HHvar)
+est store res_`cat'3
+
+qui probit `var'_2 indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits $intfem $intdal if indebt_indiv_2==1, vce(cluster HHvar)
+est store res_`cat'4
+
+qui probit `var'_2 indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits femXdal $intfem $intdal $three if indebt_indiv_2==1, vce(cluster HHvar)
+est store res_`cat'5
+
+esttab res_* using "_reg.csv", ///
+	cells(b(star fmt(3)) /// 
+	se(par fmt(2))) ///
+	drop($indivcontrol $hhcontrol4 $villagesFE) ///
+	legend label varlabels(_cons constant) ///
+	stats(N r2_p ll chi2 p, fmt(0 3 3 3 3)) starlevels(* 0.10 ** 0.05 *** 0.01) ///
+	replace
+estimates clear
+preserve
+import delimited "_reg.csv", delimiter(",") varnames(nonames) clear
+qui des
+sca def k=r(k)
+forvalues i=1(1)`=scalar(k)'{
+replace v`i'=substr(v`i',3,.)
+replace v`i'=substr(v`i',1,strlen(v`i')-1)
+}
+export excel using "Probit_indebt.xlsx", sheet("`var'", replace)
+restore
+
+********** Margins
+probit `x'_2 indebt_indiv_1 $indivcontrol $hhcontrol4 $villagesFE c.base_nocorrf1_std##i.dalits##i.female c.base_nocorrf2_std##i.dalits##i.female c.base_nocorrf3_std##i.dalits##i.female c.base_nocorrf4_std##i.dalits##i.female c.base_nocorrf5_std##i.dalits##i.female c.base_raven_tt##i.dalits##i.female c.base_num_tt##i.dalits##i.female c.base_lit_tt##i.dalits##i.female if indebt_indiv_2==1, vce(cluster HHvar)
+
+*dy/dx
+qui margins, dydx(base_nocorrf1_std base_nocorrf2_std base_nocorrf3_std base_nocorrf4_std base_nocorrf5_std base_raven_tt base_num_tt base_lit_tt) at(dalits=(0 1) female=(0 1)) saving(margin_`x', replace)
+}
+*margins
+*margins, at(base_nocorrf1_std=(-3 3) dalits=(0 1) female=(0 1))
+*marginsplot
+
+
+**********Margin excel
+foreach x in indebt_indiv loanamount_indiv1000 DSR_indiv debtshare dummyproblemtorepay_indiv dummyhelptosettleloan_indiv sum_settleloanstrategy_3_r sum_settleloanstrategy_7_r sum_settleloanstrategy_8_r sum_plantorepay_6_r sum_borrowerservices_3_r {
+preserve
+use"margin_`x'", clear
+*keep if _pvalue<=0.1
+label define cog 1"Factor 1 (std)" 2"Factor 2 (std)" 3"Factor 3 (std)" 4"Factor 4 (std)" 5"Factor 5 (std)" 6"Raven" 7"Numeracy" 8"Literacy", replace
+label values _deriv cog
+decode _deriv, gen(deriv)
+tostring _at, gen(at)
+replace at="Middle-upper male" if at=="1"
+replace at="Dalits male" if at=="2"
+replace at="Middle-upper female" if at=="3"
+replace at="Dalits female" if at=="4"
+keep _deriv at _margin _se _statistic _pvalue _ci_lb _ci_ub
+foreach y in margin se statistic pvalue ci_lb ci_ub {
+gen `y'=round(_`y',.001)
+}
+keep _deriv at margin se statistic pvalue ci_lb ci_ub
+order _deriv at margin se statistic pvalue ci_lb ci_ub
+label var _deriv "Independent variable"
+label var at "Sample"
+label var margin "dy/dx"
+label var se "SE"
+label var statistic "t-stat"
+label var pvalue "p-value"
+label var ci_lb "[95% Conf."
+label var ci_ub "Interval]"
+save"margin_`x'_v2", replace
+export excel using "margins.xlsx", sheet("`x'", replace) firstrow(varlabels)
+restore 
 }
 
 
@@ -393,6 +404,7 @@ restore
 
 
 
+/*
 ********** 5.
 ********** Level of debt in t+1
 
@@ -449,7 +461,7 @@ replace v`i'=substr(v`i',1,strlen(v`i')-1)
 export excel using "Poisson_indebt.xlsx", sheet("`var'", replace)
 restore
 }
-
+*/
 ****************************************
 * END
 
@@ -465,45 +477,7 @@ restore
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+/*
 ****************************************
 * Analysis : debt with sub sample
 ****************************************
