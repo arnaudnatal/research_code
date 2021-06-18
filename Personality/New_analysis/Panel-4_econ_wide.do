@@ -204,6 +204,24 @@ margins, dydx(base_nocorrf1_std base_nocorrf2_std base_nocorrf3_std base_nocorrf
 *marginsplot
 
 
+********** Modèle
+*1. Estimation
+probit indebt_indiv_2 indebt_indiv_1 $indivcontrol $hhcontrol4 $villagesFE c.base_nocorrf1_std##i.female##i.dalits c.base_nocorrf2_std##i.female##i.dalits c.base_nocorrf3_std##i.female##i.dalits c.base_nocorrf4_std##i.female##i.dalits c.base_nocorrf5_std##i.female##i.dalits c.base_raven_tt##i.female##i.dalits c.base_num_tt##i.female##i.dalits c.base_lit_tt##i.female##i.dalits, vce(cluster HHvar)
+
+*2. Voir les pentes de mes var d'int en fonction des groupes (dalits, female)
+qui margins, at(dalits=(0 1) female=(0 1) base_nocorrf1_std=(-3 3))  
+marginsplot
+
+*3. Coef des pentes pour mes var
+margins, dydx(base_nocorrf1_std base_nocorrf2_std base_nocorrf3_std base_nocorrf4_std base_nocorrf5_std base_raven_tt base_num_tt base_lit_tt) at(dalits=(0 1) female=(0 1))  saving(margin_indebt_indiv, replace) post
+
+*4. Tester égalités ou pas des coef
+margins, coeflegend
+test _b[base_nocorrf1_std:1bn._at]=_b[base_nocorrf1_std:2._at]=_b[base_nocorrf1_std:3._at]=_b[base_nocorrf1_std:4._at]
+
+*test (_b[base_nocorrf1_std:1bn._at]=_b[base_nocorrf1_std:2._at]) ()
+
+
 
 
 
