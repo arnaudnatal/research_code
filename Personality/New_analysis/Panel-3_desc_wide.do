@@ -315,6 +315,16 @@ fsum $efa $cog $indivcontrol $hhcontrol4 $villagesFE
 
 label var dummymultipleoccupation_indiv_1 "Multiple occupation (=1)"
 
+*Combien de prêts sans services de la part du prêteur 1?
+tab1  sum_otherlenderservices_5_2
+
+gen sharenoservices_1=sum_otherlenderservices_5_1/loans_indiv_1
+gen sharenoservices_2=sum_otherlenderservices_5_2/loans_indiv_2
+
+tab sharenoservices_1
+tab sharenoservices_2
+
+
 save"panel_wide_v2", replace
 ****************************************
 * END
