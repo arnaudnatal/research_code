@@ -33,8 +33,19 @@ global wave3 "NEEMSIS2-HH_v17"
 
 
 
+
+
+
+
+
+
+
+
+
+
+
 ****************************************
-* EFA: 2020
+* Prépa 2020
 ****************************************
 
 ********** 
@@ -116,6 +127,10 @@ predict f1_2020 f2_2020 f3_2020 f4_2020 f5_2020
 drop if INDID_left!=.
 keep if livinghome==1 | livinghome==2
 bysort HHID_panel: gen hhsize=_N
+
+*
+sum sum_borrowerservices_3 sum_plantorepay_6 sum_settleloanstrategy_8
+sum loanamount_indiv
 
 /*
 *Reshape ego
@@ -220,8 +235,10 @@ clonevar `x'_r=`x'
 }
 
 foreach x in $newvar{
-replace `x'_r=1 if `x'>=1
+replace `x'_r=1 if `x'>=1 & `x'!=.
 }
+
+tab1 sum_borrowerservices_1_r sum_borrowerservices_2_r sum_borrowerservices_3_r sum_borrowerservices_4_r sum_plantorepay_1_r sum_plantorepay_2_r sum_plantorepay_3_r sum_plantorepay_4_r sum_plantorepay_5_r sum_plantorepay_6_r sum_settleloanstrategy_1_r sum_settleloanstrategy_2_r sum_settleloanstrategy_3_r sum_settleloanstrategy_4_r sum_settleloanstrategy_5_r sum_settleloanstrategy_6_r sum_settleloanstrategy_7_r sum_settleloanstrategy_8_r sum_settleloanstrategy_9_r sum_settleloanstrategy_10_r
 
 
 *Macro for rename
@@ -390,6 +407,10 @@ omega im_forgiveother im_toleratefaults im_helpfulwithothers im_trustingofother 
 
 
 ********** Other variables
+*Y
+sum sum_borrowerservices_3 sum_plantorepay_6 sum_settleloanstrategy_8
+sum loanamount_indiv
+
 *HH size
 keep if livinghome==1 | livinghome==2
 bysort HHID_panel: gen hhsize=_N
@@ -478,7 +499,7 @@ clonevar `x'_r=`x'
 }
 
 foreach x in $newvar{
-replace `x'_r=1 if `x'>=1
+replace `x'_r=1 if `x'>=1 & `x'!=.
 }
 
 
