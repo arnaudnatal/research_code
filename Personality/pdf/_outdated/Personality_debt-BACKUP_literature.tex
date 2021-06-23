@@ -1,0 +1,988 @@
+\documentclass[a4paper, 11pt, onecolumn]{article} 
+
+% arara: pdflatex 
+% arara: bibtex
+% arara: pdflatex
+% arara: pdflatex
+% arara: clean: {extensions: [ aux, bbl, out, toc, blg, thm ]}
+
+\input{Preamble}
+
+\usepackage{import}
+
+\usepackage[
+singlelinecheck=false % <-- important
+]{caption}
+
+\usepackage{upgreek}
+
+\newcommand{\ie}{\textit{i.e.}}
+
+
+% *****************************************************************
+% Interlignes et marges
+% *****************************************************************
+\setstretch{1.5}
+%\geometry{hmargin=3cm,vmargin=3cm}
+%\geometry{hmargin=3cm,vmargin=1.5cm}
+\geometry{%
+%vmargin=2.5cm,
+%hmargin=2.5cm,
+left=2.5cm,
+right=2.5cm,
+top=2.5cm,
+bottom=2.5cm,
+%includefoot,
+%headsep=1cm,
+%footskip=1cm
+}%
+
+% *****************************************************************
+% Page de garde
+% *****************************************************************
+\title{{Determinants of Debt in Rural South India: The Contribution of Cognitive Skills and Personnality Traits}}
+\author{Arnaud Natal \thanks{Univ. Bordeaux, CNRS, GREThA, UMR 5113, F-33600 \textsc{Pessac, France} - \email{arnaud.natal@u-bordeaux.fr}}}
+\date{\today}
+\renewcommand\maketitlehookc{%
+  \begin{center}
+    %\textsuperscript{1}{\small Université de Bordeaux}
+	\textsuperscript{}{\small University of Bordeaux}
+  \end{center}}
+
+% ******************************************************************
+\begin{document}
+\maketitle
+
+\hrule 
+\vspace{0.3cm}
+
+\begin{resab}{Abstract}
+
+I study the impact of cognitive skills and personnality traits on indebtedness among rural households in India, specifically examining whether there is a heterogeneous impact according to gender and economic and social level.
+In addition, the contribution of the article lies in investigating the extent to which personnality traits mediate the impact on debt, 
+
+The empirical analyses are based on unique data base including the total population of Finland from 2010 to 2016-17. 
+As an identification strategy, the exact timing of cancer diagnosis is used. 
+The results are based on correlated random effect estimations. 
+
+Results 
+
+\end{resab}
+
+\begin{motkey}{Keywords}
+Cognitive skills, debt, rural India, correlated-random-effect, caste, gender.
+\end{motkey}
+
+
+\hrule
+%\linenumbers
+% ******************************
+% \section*{Introduction (3 pages)}
+% \addcontentsline{toc}{section}{Introduction (3 pages)}
+% \label{Introduction}
+% % ******************************
+
+% \paragraph{Accroche}
+
+
+% Les récentes crises économiques en Inde (démonétisation de 2016, \textit{lockdown de 2020}) ont révélé l'importance de s'intéresser à la situation financière des ménages.
+% Conclusion du papier sur le lockdown \citep{Guerin2020}
+
+% Plus largement, ce " nouveau\footnote{Inscrit au \textit{Journal of Economic Literature (JEL) Classification Codes Guide} de l'\textit{American Economic Association} en 2019 sous le code G5 - \textit{Household Finance}} " champs de l'économie connaît un regain d'intérêt depuis les années 2010.
+% \cite{Guiso2013} avancent plusieurs (Trois ?) arguments.
+% Premièrement, les ménages sont de plus en plus impliqués dans des décisions financières, notamment à travers la privatisation des systèmes de pensions, la libéralisation du marché des prêts et l'augmentation des achats à crédit, et ces décisions financières sont de plus en plus complexes grâce à l'innovation financière.
+% Deuxièmement, avec la montée en puissance de l'approche empirique, les techniques de récolte de données se sont améliorées, et nous assistons depuis 1990 à un accroissement du nombre [et de la qualité] de bases disponibles, rendant possible l'application de méthodes statistiques.
+% Enfin (troisièmement), le regain d'intérêt de l'étude des finances des ménages s'explique par un facteur d'héritage culturel \citep{Guiso2013}.
+% En effet, traditionnellement, l'étude de l'entreprise était bien distincte de celle des individus et des ménages.
+% Tandis que les grandes universités urbaines et élitistes étudiées principalement le fonctionnement des entreprises, l'étude des ménages était reléguée aux petites universités rurales.
+% Pour cette raison, 
+
+
+% Pourquoi un nouveau champ ?
+% \begin{itemize}[label=--]
+% \item The size of industry
+% \item Household specificities
+% \item Relevance of institutional environment
+% \item Financial sophistication
+% \end{itemize}
+
+% \paragraph{Motivation(s) politique(s)}
+% De plus en plus de ménage sont financially " included " avec aussi une augmentation des middle class \citep{Badarinza2019}.
+% Il est donc important, dans les PED et notamment en Inde, d'améliorer la compréhension globale
+% Politique d'inclusion financière
+% Finance des ménages aussi épargne et rôle macro de l'épargne = investissement
+
+% Portée politique avec \cite{Bowles2001} : \cite{Fong2001} a constaté, par exemple, que les chocs de revenus négatifs augmentent le sentiment de fatalisme des individus, ce qui suggère qu'un faible sentiment d'efficacité peut contribuer à de faibles revenus qui renforcent alors un faible sentiment d'efficacité.
+
+% \paragraph{Problématique(s)}
+
+% \begin{itemize}[label=--]
+% \item Quel est le rôle de la structure du ménage sur sa situation financière ? 
+% \item Quel est la relation entre personnalité et structure ?
+% \item Quel est le rôle des compétences cognitives et non cognitives sur la situation financière des ménages/individus ?
+% \end{itemize}
+
+% \paragraph{Hypothèses}	
+% \begin{itemize}[label=--]
+% \item Normalement caste, genre, niveau d'actifs jouent sur l'endettement des ménages
+% \item Normalement personnalité joue aussi sur endettement (dans les pays du nord du moins).
+% \end{itemize}
+
+% \paragraph{Plan}
+
+
+
+\newpage
+% ******************************
+\section{A brief review}
+% ******************************
+
+\paragraph{Définition de finance des ménages}
+Gros tournant avec:
+\cite{Campbell2006} est le premier chercheur à parler de finance des ménages dans un article adressé à la présidence des États-Unis d'Amérique (EUA).
+Il définit ce terme comme le " champ de l'économie s'intéressant à la façon dont les ménages utilisent les outils financiers pour atteindre leurs objectifs ".
+
+Mais début avec:
+\cite{Avery1984} parlent alors de finance des consommateurs (\textit{consumer finance}) qu'ils définissent comme l'analyse de la situation financière nette des familles, leur recours aux institutions financières, leurs avoirs en divers types d'actifs, ainsi que la structure et les sources de leurs dettes.
+\cite{Tufano2009} va élargir cette définition en incluant le rôle fondamental des institutions. 
+La \textit{consumer finance} se définit ainsi comme " l'étude de la manière dont les institutions fournissent des biens et des services pour satisfaire les fonctions financières des ménages, la manière dont les consommateurs prennent des décisions financières et la manière dont l'action des pouvoirs publics affecte la fourniture de services financiers. " \citep{Tufano2009}.
+
+Alors que les économistes parleront de finance des ménages, les chercheurs en sciences de l'entreprise et de la consommation utiliseront le terme de finance des consommateurs \citep{Xiao2020}.
+Une définition proposée par \cite{Xiao2020} semble désormais pouvoir faire consensus dans la littérature en liant les deux sphères (économique et entrepreneuriale/commerciale) : la finance des ménages (ou finance des consommateurs) est un " domaine de recherche visant à étudier comment les institutions financières fournissent des produits et des services pour répondre aux besoins financiers des consommateurs, comment les consommateurs prennent des décisions financières, comment les agences gouvernementales réglementent les institutions financières et protègent les consommateurs de services financiers et comment la science et la technologie contribuent à optimiser l'efficacité des marchés du financement des consommateurs et à améliorer le bien-être social. "
+
+
+\subsection{Household finance in India: à raboter !}
+
+ \paragraph{Spécificités par rapport aux autres pays}
+ La situation financière des ménages en Inde [bien que très hétéroclite pour parler d'une unique situation] est très différente des autres pays en développement.
+
+% Tout d'abord, le bilan financier est aux antipodes des autres pays en développement, notamment à cause du rôle de l'or, de la propriété foncière et des biens de consommation durables.
+ L'or joue un rôle très important dans les finances des ménages en tant que réserve de valeur.
+ En effet, \cite{Badarinza2016b} indiquent que ce métal représente en moyenne 11 \% du total des actifs détenus par les ménages en Inde alors que cette part n'est que de 0.4~\% en Chine.
+ \dev{Dire qu'au TN c'est la même : } L'or est la première forme d'épargne d'après \cite{Roesch2008} (un article d'Isabelle en parle aussi, mais je ne me souviens plus duquel, anciennement Guerin2012b) puis on trouve aussi les tontines ou chit funds.
+ De plus, en Inde, plus des trois quarts des actifs détenus par les ménages sont des bâtiments résidentiels, des bâtiments utilisés pour l'activité agricole et non agricole, des constructions pour le loisir, des terres rurales et urbaines (62 \% en Chine).
+ Enfin, les biens de consommation durables tels que les véhicules, le cheptel ou les équipements agricoles et non agricoles représentent seulement 7 \% des actifs totaux détenus contre 28 \% en Chine.
+ Ainsi, les actifs financiers ne représentent qu'une très faible part du total des actifs détenus par les ménages (5 \%)\footnote{En Chine, cette part est presque multipliée par deux (9 \%) d'après \cite{Badarinza2016b}.} \citep{Badarinza2016b}.
+
+% Comme dans beaucoup de pays émergents, en Inde, le système de pension de retraite est peu efficient dans la mesure où près de 90 \% du travail est informel\footnote{Au sens d'absence d'assurance sociale.} et 85 \% de la force de travail non agricole est informel\footnote{\cite{Mehrotra2019} note que l'Inde figure comme un \textit{outlier} parmis les \textit{low-middle-income countries}.} \citep{Mehrotra2019}.
+ Ce système ne peut donc permettre de financer des pensions de retraite classiques\footnote{Dans ce type de situation, l'épargne est souvent utilisée pour lisser la consommation dans le temps (voir sous-section précédente, paragraphe sur Keynes).}.
+ \cite{Badarinza2016b} notent également le très faible taux de participation aux prêts hypothécaires et la forte dépendance des ménages indiens à l'égard des dettes non institutionnelles.
+ \dev{Cette dette est la première forme de gestion des risque} \cite{Roesch2008}
+
+% La concordance de l'Inde avec la théorie classique du cycle de vie de \cite{Modigliani1963} est aussi particulière.
+ En effet, la part de propriétaires terriens augmente avec l'âge et ne diminue pas avec la retraite. 
+ \cite{Badarinza2016b} avancent l'idée selon laquelle cela peut provenir de la " prédominance des ménages multigénérationnels, dans lesquels les terres et les propriétés résidentielles constituent une part importante des legs ". 
+ De plus, 4 \% des ménages dont le chef a moins de 35 ans ont un prêt hypothécaire, ce qui est nettement inférieur à la situation des autres pays émergents comme la Chine \citep{Badarinza2016b}. 
+ %Le taux de participation des ménages âgées est similaire à celui de l'Australie et du RU. 
+ Ces deux points laissent penser qu'en Inde, les ménages âgées ont des charges financières relativement plus élevées, reflétant probablement les transferts intergénérationnels \citep{Badarinza2016b}. 
+ La mise en perspective de l'endettement formel et informel avec le cycle de vie est aussi particulière.
+ En effet, peu de jeunes s'endettent formellement pour financer des actifs durables contrairement aux pays développés \citep{Badarinza2016b}.
+
+
+ \paragraph{Une segmentation intranationale}
+ De [très] fortes inégalités persistent dans les bilans financiers des ménages indiens, notamment entre les zones d'habitations (rurale ou urbaine), les niveaux de richesse ou les caractéristiques du ménage (sexe et niveau d'éducation du chef de ménage, nombre d'enfants) \citep{Badarinza2016b}.
+ En effet, les ménages urbains détiennent en moyenne plus d'actifs financiers et d'or que les ménages ruraux.
+ \cite{Badarinza2016b} laissent penser que cela pourrait provenir de l'augmentation relative de l'immobilier en ville et du développement des contrats de location.
+ De plus, les ménages les plus aisés\footnote{Ceux ayant au moins 136~000 INR USD ? d'actifs} sont ceux ayant connu l'augmentation du ratio non financier\footnote{\dev{Préciser de quoi il s'agit.}} la plus importante : " la financiarisation de l'actif du bilan des ménages " ne semble donc pas enclenchée pour les ménages les plus aisés.
+ Enfin, la probabilité de contracter une dette informelle se réduit avec le niveau d'éducation : " [l]es ménages dont au moins un membre a fait des études supérieures ou des études de troisième cycle ont une dette hypothécaire supérieure de 15,1 \% par rapport au groupe des personnes peu instruites et une part de dette non institutionnelle inférieure de 28,7 \% " \citep{Badarinza2016b}. 
+
+% Après le contrôle de leurs régressions par ces variables [déterminantes], \cite{Badarinza2016b} identifient toujours une hétérogénéité en matière de bilan financier en Inde.
+ Pour tenter de comprendre ces inégalités, les auteurs proposent trois pistes de réponses.
+ Premièrement, en explorant la piste\footnote{Alors même que la Chine connaît une période de forte croissance économique, les ménages ont d'une part, un taux d'épargne élevé et d'autre part, un taux d'endettement faible, afin de se prémunir contre un potentiel choc de revenu.} de \cite{Chamon2010}, les auteurs\footnote{Ils partent du postulat bien connu que l'or est une couverture contre l'inflation et cherchent à vérifier " comment l'ampleur de l'incertitude de l'inflation vécue par les ménages dans différentes régions de l'Inde affecte leurs décisions d'allocation " \citep{Badarinza2016b}.} trouvent qu'il existe un effet de substitution\footnote{" Real estate has lower liquidity when compared with gold, and if liquidity needs are correlated with inflation volatility, gold better serves the purpose than real estate. Gold as a non-financial asset also has additional properties that are not provided for by real estate, such as a high collateral value and physical verifiability. " \citep{Badarinza2016b}.} entre l'or et l'immobilier, pouvant s'expliquer par " l'ampleur de l'incertitude inflationniste dans différentes régions " \citep{Badarinza2016b}.
+ Deuxièmement, l'hétérogénéité entre les États au niveau des comptes retraites pourrait provenir\footnote{\cite{Badarinza2016b} utilisent la part de résidents d'un État qui travaillent dans le secteur public comme proxy de la population engagée dans le secteur organisé d'un État.} de la part de l'emploi public dans la mesure où en Inde, les plans d'épargne-retraite sont obligatoires dans le secteur \textit{organized}\footnote{Cela suggère que les ménages accordent beaucoup plus d'importance aux besoins économiques immédiats plutôt qu'à l'épargne de long terme \citep{Badarinza2016b}.}.
+ Enfin, \cite{Badarinza2016b} complètent et confirment \cite{Burgess2005} en montrant que les États ayant un taux de pénétration bancaire élevé sont ceux où les ménages sont les moins dépendants de l'endettement non institutionnel.
+
+% Comme nous venons de le voir, beaucoup de travaux ont cherché à caractériser la situation financière des ménages, mais très peu ont cherché à l'analyser sous un angle différent [de celui de la caractérisation].
+
+% Un récent pan de la littérature tente d'analyser le rôle que joue certaines caractéristiques individuelles propres telles que la personnalité, le niveau de langue, le niveau de mathématique sur un certain nombre d'\textit{ouputs} économiques (notamment en lien avec le marché du travail\footnote{Voir \cite{Heckman2006} par exemple.}).
+ Globalement, peu d'articles se sont concentrés sur les effets des compétences cognitives et non cognitives (la personnalité principalement) sur la situation financière des ménages et aucun d'entre eux ne s'est intéressé au cas de l'Inde alors même que l'étude de ces compétences se développe de façon rapide en économie\footnote{En 2000 Scopus (Elsevier) recense 8 articles scientifiques en économie ayant les termes " cognitive skills" ou " personality traits " dans leur titre, résumé, ou mots-clés. Ce chiffre passe à 25 en 2010, 59 en 2012, 77 en 2014, 96 en 2016, 120 en 2018 et 154 en 2019.}.
+
+
+
+
+	% % ***********************************
+	% \subsection{Finance des ménages : l'approche par les compétences cognitives et la personnalité}
+	% % ***********************************
+% %Quelques chercheurs se sont intéressés à la relation entre finance des ménages et compétences [cognitives et non cognitives].
+
+% %\dev{Pour chaque article : Quel est le Y (1) ? Quels sont les X (2) ? Terrain (3) ? Méthode(s) employée(s) (4) ? Résultats (5) ?}
+
+% Comme nous venons de le voir, beaucoup de travaux ont mêlés les compétences cognitives et la personnalité avec des \textit{outcomes} relatifs au marché du travail ou à l'éducation, mais beaucoup moins se sont intéressé aux finances des ménages.
+% %Ceux l'ayant fait se sont principalement intéréssé à la litteratie financière
+
+% La notion --hybride-- de littératie financière est bon liant dans la littérature.
+% En effet, il s'agit de " la capacité à utiliser ses connaissances et ses compétences pour gérer efficacement ses ressources financières dans l'optique d'une sécurité financière à vie " d'après \textit{Jump\$tart}\footnote{}. 
+% Comme l'indiquent \cite{Hastings2013}, dans la littérature académique, cette notion est utilisé d'une part pour faire référence à la connaissance des produits et des concepts financiers et d'autre part, elle désigne le niveau de mathématique nécessaire à la prise de décisions financière et le niveau d'engagement dans des activités de planification financière.
+% Plus généralement, c'est la " capacité à appliquer le raisonnement lors de la prise de décisions concernant l'utilisation de ressources rares " \cite{Varum2014}.
+
+% Aux Pays-Bas, \cite{Pinjisakikool2017} trouve [par les MCO] que les individus ayant un \textit{intellect} élevé et ceux ayant un \textit{locus of control} internent sont plus susceptibles d'avoir un niveau élevé de littératie financière.
+% \cite{Gaurav2012} présentent des résultats similaires [en utilisant des logit ordonnées à la Maddala, 1983] en Inde avec les compétences cognitives : ces dernières prédisent bien le niveau de \textit{debt literacy} et celui de \textit{financial aptitude}. 
+% Cependant, \cite{Hastings2013} soulèvent l'ambivalence de la littératie financière.
+% En effet, d'après les auteurs, \dev{développer pour conclure sur la financial literacy}.
+
+% D'autres chercheurs se sont intéressé à la prise de risque dans les décisions financières et plus généralement à décision d'investissement.
+% \cite{Nga2013} montre que la conscientiosité, l'ouverture à l'expérience et l'agréabilité sont de bons prédicteurs de l'aversion au risque, des biais cognitifs et de la socially responsibilty des jeunes \textit{undergraduate} [en licence] en Malaisie. \dev{À développer}
+% \cite{Pinjisakikool2017b} obtient des résultats semblablent aux Pays-Bas en matière de conscientiosité et d'agréabilité et trouve que l'extraversion, la stabilité émotionnelle et l'intellect prédisent bien la tolérance au risque\footnote{Mesuré par trois ratios complémentaires : le ratio d’épargne (faible risque), le ratio de fonds communs de placement (risque moyen) et le ratio d’actions (haut risque). "  Calculé comme le montant de l'épargne, des obligations et des fonds communs de placement, ou des capitaux propres, divisé par le montant total des actifs financiers (la somme de toutes les catégories) " \citep{Pinjisakikool2017b}.}. \dev{L'auteur utilise des régressions linéaires multiples ainsi que des \textit{tobit}.}
+% Utilisés comme des instruments, ces cinq traits de personnalité prédisent indirectement le comportement financier des ménages. \dev{À développer}
+% En regardant la valeur des actions financières, la part que celles-ci représentent dans le total des actifs détenus, \cite{Bucciol2017} trouvent [avec des probit (Papke \& Wooldridge (1996) estimated with Bernoulli quasi-maximum likelihood and standard errors robust to heteroskedasticity] qu'aux EUA l'agréabilité, l'hostilité cynique et l'anxiété sont négativement corrélés à la prise de risque financière.
+% Enfin, \cite{Agarwal2013} s'intéressent aux compétences cognitives aux EUA et constatent grâce à des MCO " que les consommateurs ayant des scores globaux plus élevés aux tests, et en particulier ceux dont les scores en mathématiques sont plus élevés, sont nettement moins susceptibles de faire une erreur financière. " 
+% \dev{Phrase de conclusion sur le risque.}
+
+% Concernant le rôle de la personnalité et des compétences cognitives sur l'épargne, \cite{CobbClark2016} montrent [avec des unconditional quantile regression et une inversion hyperbolic sine transformation] que les ménages australiens ayant un locus de contrôle interne [l'individu référent du ménage] ont un niveau d'épargne plus élevé [et parfois une part relative à leurs revenus] que ceux ayant un locus externe.
+% De plus, ces derniers (les ménages ayant un locus interne) sont plus susceptibles d'épargner sous des formes " difficile d'accès " comme les \textit{pension wealth} \citep{CobbClark2016}.
+% \cite{Gerhard2018} au RU, constatent que la relation entre le \textit{Big Five} et l'épargne diffère entre les ménages \textit{stiving} (en difficultés ?) et ceux bien \textit{established} [grâce à un Finite Mixture Model in a one-step maximum likelihood]. \dev{À développer}
+
+% Enfin, un pan de la littérature s'interèsse aux compétences cognitives et non cognitives et à l'endettement.
+% À partir de données portant sur quatre pays européens (Espagne, Roumanie, Pologne et Italie), \cite{Forlicz2019} montrent avec des $\tilde{\chi}^2$ qu'il existe des différences significatives en termes de conscientiosité, honnêteté et d'attitude envers l'argent et les achctes entre les individus endettés et non endettés. \dev{Qui a quoi ?}
+% En s'intéressant uniquement aux compétences cognitives (niveau de mathématique), \cite{Silva2018} montrent [avec des MCO], qu'en Allemagne, que " la dette ne peut plus être expliquée par une mauvaise réflexion cognitive [...], les consommateurs à revenu élevé considèrent la dette comme un simple levier ".
+% \cite{Brown2014} trouvent [avec un des tobit et des probit] qu'au RU l'extraversion est fortement corrélé au niveau d'endettement et d'actifs financiers détenus.
+% De plus, les auteurs trouvent qu'en terme de portefeuille, " l'association entre les traits de personnalité et les finances des ménages diffèrent selon les divers types de dette et d'actifs détenus ".
+
+
+		% % ***********************************
+		% \subsubsection{Contribution à la littérature}
+		% % ***********************************
+% La plupart des articles mélant compétences et situation financière des ménages ont été effectué dans les pays du Nord (principalement RU, Pays-bas et Allemagne).
+% Cette recherche permet donc de compléter le peu d'analyses effectués dans les pays du sud \dev{dire} et notamment en Inde \cite{Gaurav2012} tout en élargissant la question de recherche.
+% En effet, à la différence de \dev{dire}, nous allons, ici, nous intéresser à plusieurs aspects des finances des ménages (ceux citer par \cite{Badarinza2016b} : l'épargne, la dette, le type de dette, etc.)
+% Cet article diffère de la littérature sur x points (j'énumère les différences en mettant en avant l'avantage de mon truc par rapport aux autres et je cite les autres) !
+
+
+
+% Bien décrire la façon dont les données sur le Big Five ont été collectées par \cite{Laajaj2019} mettent en garde : 
+% As warned by Laajaj and Macours (2017) and Laajaj et al. (2019), Big-5 taxonomy might not emerge in developing countries. 
+% The major issue is that in developing economies, non-cognitive skills are assessed thanks to face-to-face surveys while they are mostly assessed on computers in developed economies. 
+% Biases in responses might especially arise in face-to-face surveys in developing countries because of interactions between respondents and interviewers, items’ translations and lower Educational levels that can make questions more difficult to understand. 
+% Specifically, acquiescence bias (tendency to agree with every statements, even when they are contradictory) might be more common. 
+% To check whether the Big-five taxonomy emerges in our data, we conducted a factorial analysis, after correcting for acquiescence bias, on our respondents’ answers to the 116 items aimed at measuring non-cognitive skills. 
+% The personality traits that emerge from the factorial analysis are slightly different from the Big-five taxonomy
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+% %\begin{enumerate}
+% %\item Définir la finance des ménages avec \cite{Campbell2006, Xiao2020, Avery1984} : consumer finance vs HH finance; vision normative vs positive, dire pourquoi c'est important d'étudier ça !!!
+% %\item État des lieux des HH finance dans le monde : débuter RAPIDEMENT par les pays riches avec \cite{Badarinza2016}, puis les PED \cite{Badarinza2019}
+% %\item Enclencher les finances ménages en Inde avec la vision large de \cite{Badarinza2019} et zoomer sur le terrain d'étude avec \cite{Guerin2012a, Guerin2020} en rappelant pourquoi le terrain est particulier et rend l'étude des HH finance intéressant !
+% %Regarder l'endettement général, le niveau de vie des ménages, le degré d'inclusion financière (microfinance)
+% %\item Personne dans la zone d'étude ne s'est intéressé au rôle que jouent les compétences cognitives et la personnalité sur la situation financière des ménages.
+% %Pourtant il s'agit d'un thème de recherche qui se développe rapidement en économie, notamment par le biais du marché du travail.
+% %Nous savons que la situation financière du ménage est directement liée au travail, notre question de recherche est donc totalement justifiée.
+% %\item Rapidement évoquer le fait que ça vient de la psychologie et un peu mieux développé en note de bas de page histoire de pouvoir sortir ça si jamais ça n'apporte rien.
+% %\item Origines de l'étude des cognitive skills in economics avec les marxistes dans les années 70 : \cite{Bowles1976}, et vrai décollage au début des années 2000 avec \cite{Bowles2001}. Ils s'intéressent au marché du travail, la santé, le crime \cite{Heckman2006, Almlund2011}. Dire pourquoi c'est important d'étudier ça aussi !!
+% %\item Dans le même dans la personnalité gagne aussi du terrain en économie avec le modèle du big five \citep{Goldberg1981, McCrae1987, Goldberg1990}
+% %J'utilise la revue de \cite{Bowles2001} et \cite{Borghans2008} avec articles importants : \cite{Cawley2001} et \cite{Heckman1995} qui va expliquer (en faisant abstraction du racialisme et de l’eugénisme) le bouquin de \cite{Herrnstein1994}
+% %\item Nous nous rendons compte que cognitive and non cognitive skills in economics sont étroitement lié au niveau d'éducation (surtout cognitive skills). On retrouve donc les premiers travaux sur la question avec la théorie du capital humain de Becker. Regarder exactement ce qu'il a fait pour espérer trouver un petit quelque chose sur éducation et situation financière des ménages
+% %\item On commence enfin à lier deux choses importantes : cognitive and non cognitive skills avec household finance
+% %\cite{CobbClark2016, Gerhard2018, Forlicz2019, Gerhard2018, Brown2015, Nga2013, Pinjisakikool2017,Pinjisakikool2017a} (personnalité)
+% %\cite{Agarwal2013} \cite{Cawley2001} \cite{Agarwal2017} \cite{Silva2018} (compétences cognitives)
+% %Mais surtout \cite{Brown2014} (que je réplique), \cite{Xu2015}, \cite{Parise2019} (le seul papier à tenter l'étude de la causalité), \cite{Bucciol2017} et \cite{Bertoni2019}
+% %\item Du coup je vais essayer de lier deux choses importantes (rappeler pourquoi) dans un contexte intéressant (rappeler pourquoi) et rappeler qu'aucun papier ne s'est intéressé à l'Inde.
+% %\end{enumerate}
+
+
+	% % ******************************
+	% \subsection{Finance des ménages}
+	% % ******************************
+	
+		% % ******************************
+		% \subsubsection{Définition}
+		% % ******************************
+
+% \cite{Campbell2006} est le premier chercheur à parler de finance des ménages dans un article adressé à la présidence des États-Unis d'Amérique (EUA).
+% Il définit ce terme comme le " champ de l'économie s'intéressant à la façon dont les ménages utilisent les outils financiers pour atteindre leurs objectifs ".
+% \dev{Développer un peu la définition}
+
+% Cependant, c'est dans les années 1980 que les premiers chercheurs ce sont intéressés à la situation financière des ménages en mettant en place la \textit{Survey of Consumer Finances} (SCF) aux EUA.
+% Il s'agit d'une enquête transversale triennale s'intéressant aux bilans, pensions, revenus et caractéristiques démographiques de familles nord-américaines\footnote{Pour plus de détails, voir \url{https://www.federalreserve.gov/scf/scf.htm}}.
+% \cite{Avery1984}\footnote{Robert B. Avery, Gregory E. Elliehausen et Glenn B. Canner sont au conseil d'administration de la \textit{Division of Research and Statistics} et Thomas A. Gustafson est au \textit{U.S. Departement of Health and Human Services}. Ce sont les deux organismes en charge de la SCF.} parlent alors de finance des consommateurs (\textit{consumer finance}) qu'ils définissent comme l'analyse de la situation financière nette des familles, leur recours aux institutions financières, leurs avoirs en divers types d'actifs, ainsi que la structure et les sources de leurs dettes.
+% \cite{Tufano2009} va élargir cette définition en incluant le rôle fondamental des institutions. 
+% La \textit{consumer finance} se définit ainsi comme " l'étude de la manière dont les institutions fournissent des biens et des services pour satisfaire les fonctions financières des ménages, la manière dont les consommateurs prennent des décisions financières et la manière dont l'action des pouvoirs publics affecte la fourniture de services financiers. " \citep{Tufano2009}.
+
+% \textit{Household finance} et \textit{consumer finance} sont aujourd'hui largement utilisés dans la littérature\footnote{Le nombre d'articles scientifiques publiés ayant dans le titre, dans le résumé ou dans les mots-clés le terme \textit{household finance} ou \textit{consumer finance} augmente chaque année : 14 en 1996, 31 en 2006 et 175 en 2020 d'après Scopus (Elsevier -- \url{https://www.scopus.com/home.uri}).} et la différence entre les deux termes n'est que de l'ordre du domaine de recherche : alors que les économistes parleront de finance des ménages, les chercheurs en sciences de l'entreprise et de la consommation utiliseront le terme de finance des consommateurs \citep{Xiao2020}.
+% Une définition proposée par \cite{Xiao2020} semble désormais pouvoir faire consensus dans la littérature en liant les deux sphères (économique et entrepreneuriale/commerciale) : la finance des ménages (ou finance des consommateurs) est un " domaine de recherche visant à étudier comment les institutions financières fournissent des produits et des services pour répondre aux besoins financiers des consommateurs, comment les consommateurs prennent des décisions financières, comment les agences gouvernementales réglementent les institutions financières et protègent les consommateurs de services financiers et comment la science et la technologie contribuent à optimiser l'efficacité des marchés du financement des consommateurs et à améliorer le bien-être social. "
+
+% %Cette définition peut s'implanter dans deux paradigmes économiques distincts : la recherche dite positive et celle dite normative.
+% %Il s'agit respectivement de la recherche décrivant le comportement réel des agents économiques et de celle décrivant le comportement hypothétique. 
+% %Comme le souligne \cite{Campbell2006}, les économistes acceptent souvent l'hypothèse selon laquelle le comportement réel et celui idéal des acteurs économiques concordés ou alors qu'ils peuvent concorder " par le sélection d'un modèle suffisamment riche de croyances et de préférences des agents ".
+% %Citer Auguste Comte, fondateur de la recherche positive
+
+
+		% % ***********************************
+		% \subsubsection{L'étude des \textit{household finances} dans le monde}
+		% % ***********************************
+
+% \paragraph{Pays développés}
+% Les premiers travaux traitant des finances des ménages ont été réalisés dans les pays du Nord, notamment aux EUA à travers la SCF dès 1983.
+% Depuis, les recherche se sont développées dans le monde entier, mais les pays développés sont toujours des terraisn privilégiées dans l'étude des finances des ménages. 
+% En \citeyear{Badarinza2016}, \citeauthor{Badarinza2016} ont cherché à mettre en relief l'ambivalence de la situation financière des ménages entre différents pays développés.
+% Cette étude portant sur treize pays (Allemagne, Australie, Canada, Espagne, États-Unis, Finlande, France, Grèce, Italie, Pays-Bas, Royaume-Uni, Slovaquie et Slovénie) a premièrement révélé certains points de convergences.
+% Les ménages ayant un niveau d'éducation, un revenu et une richesse globale relativement élevée, se rapprochent plus des prédictions standard des théories économique\footnote{Homo œconomicus de la théorie néoclassique.} et financière et tendent à être plus actif sur les marchés financiers formels que les autres (ceux ayant un niveau d'éducation, un revenu et une richesse globale plus faible).
+% De plus, les comptes de dépôts bancaires et de transactions s'avèrent être les actifs financiers les plus détenus, tout comme la voiture et la propriété foncière sont les actifs non financiers majoritaires (sauf en Allemagne où la propriété privée n'est pas aussi importante que dans d'autres pays, la location étant beaucoup plus courante) \citep{Badarinza2016}.
+% Quant aux divergences inter pays, elles se retrouvent principalement au niveau du portefeuille d'actifs détenus (en particulier au niveau des \textit{directly held stocks} et des \textit{mutual funds} où \cite{Badarinza2016} observent les plus grandes différences entre les treize pays) et au niveau du taux d'endettement.
+% Alors qu'aux EUA 75~\% des ménages sont endettés\footnote{Un ménage est endetté à partir du moment où ce dernier est engagé dans au moins une dette.}, ils ne sont " que " 50 \% en France, en Espagne et en Allemagne et 25~\% en Italie (le Canada, l'Australie, le Royaume-Uni et les Pays-Bas ont un taux légèrement inférieur à celui des EUA).
+% En reprenant \cite{Guiso2006} et \cite{Bover2016}, \cite{Badarinza2016} expliquent ces différences internationales par 6 aspects : la différence de taxation des paiements hypothécaires (i), l'histoire régionale de la réglementation financière (ii), la compétitivité du secteur bancaire (iii), l'efficacité du système juridique (iv), la culture financière des ménages (v) et les différences culturelles dans l'acceptation sociale de l'endettement (vi).
+
+% %Enfin, en Grèce et en Slovaquie, le financement de court terme (financement d'un véhicule, prêt étudiant) est très peu utilisé par rapport aux pays d'Europe du Nord comme la Finlande \citep{Badarinza2016}.
+% %Les différences de comportement s'expliquent par des différences culturels. Les migrants gardent les habitudes financières de leur pays d'origine \citep{Haliassos2017}. 
+% %\cite{Badarinza2016} supposent aussi que les expériences historiques du pays conditionnent de nombreuses différences.
+
+
+% \paragraph{Pays en développement}
+% C'est grâce à l'émergence des analyses empiriques que l'étude des \textit{household finances} s'est développée dans le monde.
+% Le cas des pays en développement n'a été traité que tard dans la littérature, notamment à cause de la difficile collecte des données [en partie liés aux problèmes d'infrastructures].
+% Aujourd'hui encore, la plupart des travaux en finance des ménages prennent appui sur les pays développés \citep{Campbell2006, Badarinza2016, Tufano2009, Xiao2020}.
+% Cependant, \cite{Badarinza2019} avancent plusieurs raisons laissant penser que les pays en développement devraient être mieux pris en compte dans les analyses.
+% Premièrement, la plupart des connaissances dans ce domaine concernent les pays développés or, les six pays en développement (Afrique du Sud, Bangladesh, Chine, Inde, Philippines et Thaïlande) étudiés par \cite{Badarinza2019}, concentrent près de 45 \% de la population mondiale et 58 \% de la population des pays émergents.
+% La recherche de validité externe des résultats statistiques peut donc potentiellement être renforcée en étudiant de nouveaux terrains.
+% Deuxièmement, certains comportements en matière de gestion financière restent incompris, en partie, à cause de la diversité des risques auxquels les populations locales font face \citep{WB2013}.
+% Enfin, ce sont dans ces pays que nous trouvons le plus de jeunes ménages accédant pour la première fois au marché financier.
+% \cite{Badarinza2019} insistent donc sur le fait qu'il paraît important de bien veiller à les accompagner, " compte tenu des preuves de plus en plus nombreuses des effets durables de l'expérience sur le comportement économique " \citep{Malmendier2011, Anagol2020}.
+
+% \cite{Badarinza2019} soulèvent certaines tendances des pays en développement en matière de finance des ménages, très différentes des pays développés.
+% Dans les PED, les ménages les plus aisés détiennent la plupart de leur richesse sous forme d'actifs tangibles tels que des biens immobiliers ou de l'or plutôt que sous forme d'actifs financiers.
+% Cependant, peu de ménages participent au marché hypothécaire, ce qui n'est pas en accord avec la théorie financière standard (les ménages doivent emprunter pour lisser leur consommation tout au long du cycle de vie) \citep{Ramadorai2017}.
+
+% De plus, en Chine et en Thaïlande les dettes non garanties [servant de fonds d'urgence dans 40 \% des cas] sont monnaie courante comparées à la dette classique garantie effectuée par les ménages des pays du Nord (cela est moins vrai en Afrique du Sud).
+% Bien que l'accès aux actifs financiers soit largement développé dans ces pays (environ 80 \% des ménages disposent d'un compte épargne), très peu les utilisent (moins d'un ménage sur deux) \citep{Badarinza2019}.
+% Ce double constat présente un " tableau inquiétant ", car le manque d'assurance peut entraîner des dettes informelles à taux élevés et comme le disent \cite{Badarinza2019}, le " fardeau de la dette qui en résulte peut souvent être aussi paralysant que l'urgence initiale pour les ménages pauvres. "
+
+% Une autre source d'hétérogénéité entre pays développés et pays en développement se trouve dans le cycle de vie\footnote{Pour tous les aspects théoriques, voir \cite{Modigliani1963}.}.
+% Alors que les ménages les plus âgées (\textit{elderly household}) des pays émergents ont une faible part d'actifs liquides dans leur bilan financier, ce même type de ménages dans les pays développés en a une part plus importante \citep{Badarinza2019}.
+% De plus, la détention de prêts hypothécaires dans les pays en développement ne suit pas le schéma des pays développés, car les personnes âgées détiennent plus de prêts hypothécaires que les jeunes (plutôt que les ménages empruntent le plus aux âges moyens et que cela décline avec la vieillesse).
+% Cette situation est d'autant plus préoccupante lorsque nous la mettons en perspective avec le faible niveau des pensions retraites dans ces régions du monde \citep{Badarinza2019}.
+
+% Enfin, une autre spécificité des pays en développement réside dans les comportements d'épargne. 
+% De nombreuses barrières telles que le manque de confiance dans les institutions financières \citep{Guiso2009, Guiso2008}, l'embarras face à la demande de conseils \citep{Chandrasekhar2018, Breza2019} et le manque d'accès physiques aux établissements financiers en zones rurales \citep{Badarinza2019}) réduisent la probabilité d'épargne chez les ménages des pays en voie de développement, alors même que cette épargne joue un rôle clé dans l'économie nationale.
+% En effet, \citeauthor{Keynes1936} dans \textit{The General Theory of Employment, Interest, and Money} de \citeyear{Keynes1936} indique que l'épargne sert à " constituer une réserve pour faire face aux imprévus [...], prévoir un rapport futur entre les revenus et les besoins de l'individu [...], jouir d'une dépense qui augmente progressivement [...], jouir d'un sentiment d'indépendance et de pouvoir de faire des choses, mais sans avoir une idée claire de l'intention précise d'une action spécifique [...], s'assurer une masse de manœuvre pour réaliser des projets spéculatifs ou commerciaux [...], léguer une fortune [...], satisfaire la pure misère, c'est-à-dire inhibitions déraisonnables, mais insistantes contre les actes de dépense en tant que tels [...], accumuler des dépôts pour acheter des maisons, des voitures et d'autres biens durables [...] ".
+% Les deux premiers aspects paraissent d'autant plus vrais dans des pays où les populations font face à de nombreux risques, comme les pays en développement\footnote{Pour nuancer, les pays émergents sont aussi les pays disposant des taux de croissance les plus élevés, or d'après l'hypothèse du revenu permamenent, le taux d'épargner devrait donc être relativement faible : les ménages espérant un revenu plus élevé dans le futur, devraient emprunter sur la base de leurs revenus futurs \citep{Friedman1957}.} \citep{WB2013}.
+% Cette nécessité théorique d'épargner se retrouve aussi chez les néoclassiques où l'épargne des ménages permet l'investissement des entreprises\footnote{Il s'agit de l'épargne formelle des ménages \citep{Dupas2018, Dupas2013, Prina2015}.}, investissement apparaissant comme un des moteurs de la croissance économique et du développement\footnote{Voir les modèles de croissance économique comme \cite{Solow1956};  }.
+
+
+		% % ***********************************
+		% \subsubsection{Les finances des ménages en Inde}
+		% % ***********************************
+		
+% \paragraph{Spécificités par rapport aux autres pays}
+% La situation financière des ménages en Inde [bien que très hétéroclite pour parler d'une unique situation] est très différente des autres pays en développement.
+
+% Tout d'abord, le bilan financier est aux antipodes des autres pays en développement, notamment à cause du rôle de l'or, de la propriété foncière et des biens de consommation durables.
+% L'or joue un rôle très important dans les finances des ménages en tant que réserve de valeur.
+% En effet, \cite{Badarinza2016b} indiquent que ce métal représente en moyenne 11 \% du total des actifs détenus par les ménages en Inde alors que cette part n'est que de 0.4~\% en Chine.
+% \dev{Dire qu'au TN c'est la même : } L'or est la première forme d'épargne d'après \cite{Roesch2008} (un article d'Isabelle en parle aussi, mais je ne me souviens plus duquel, anciennement Guerin2012b) puis on trouve aussi les tontines ou chit funds.
+% De plus, en Inde, plus des trois quarts des actifs détenus par les ménages sont des bâtiments résidentiels, des bâtiments utilisés pour l'activité agricole et non agricole, des constructions pour le loisir, des terres rurales et urbaines (62 \% en Chine).
+% Enfin, les biens de consommation durables tels que les véhicules, le cheptel ou les équipements agricoles et non agricoles représentent seulement 7 \% des actifs totaux détenus contre 28 \% en Chine.
+% Ainsi, les actifs financiers ne représentent qu'une très faible part du total des actifs détenus par les ménages (5 \%)\footnote{En Chine, cette part est presque multipliée par deux (9 \%) d'après \cite{Badarinza2016b}.} \citep{Badarinza2016b}.
+
+% Comme dans beaucoup de pays émergents, en Inde, le système de pension de retraite est peu efficient dans la mesure où près de 90 \% du travail est informel\footnote{Au sens d'absence d'assurance sociale.} et 85 \% de la force de travail non agricole est informel\footnote{\cite{Mehrotra2019} note que l'Inde figure comme un \textit{outlier} parmis les \textit{low-middle-income countries}.} \citep{Mehrotra2019}.
+% Ce système ne peut donc permettre de financer des pensions de retraite classiques\footnote{Dans ce type de situation, l'épargne est souvent utilisée pour lisser la consommation dans le temps (voir sous-section précédente, paragraphe sur Keynes).}.
+% \cite{Badarinza2016b} notent également le très faible taux de participation aux prêts hypothécaires et la forte dépendance des ménages indiens à l'égard des dettes non institutionnelles.
+% \dev{Cette dette est la première forme de gestion des risque} \cite{Roesch2008}
+
+% La concordance de l'Inde avec la théorie classique du cycle de vie de \cite{Modigliani1963} est aussi particulière.
+% En effet, la part de propriétaires terriens augmente avec l'âge et ne diminue pas avec la retraite. 
+% \cite{Badarinza2016b} avancent l'idée selon laquelle cela peut provenir de la " prédominance des ménages multigénérationnels, dans lesquels les terres et les propriétés résidentielles constituent une part importante des legs ". 
+% De plus, 4 \% des ménages dont le chef a moins de 35 ans ont un prêt hypothécaire, ce qui est nettement inférieur à la situation des autres pays émergents comme la Chine \citep{Badarinza2016b}. 
+% %Le taux de participation des ménages âgées est similaire à celui de l'Australie et du RU. 
+% Ces deux points laissent penser qu'en Inde, les ménages âgées ont des charges financières relativement plus élevées, reflétant probablement les transferts intergénérationnels \citep{Badarinza2016b}. 
+% La mise en perspective de l'endettement formel et informel avec le cycle de vie est aussi particulière.
+% En effet, peu de jeunes s'endettent formellement pour financer des actifs durables contrairement aux pays développés \citep{Badarinza2016b}.
+
+
+% \paragraph{Une segmentation intranationale}
+% De [très] fortes inégalités persistent dans les bilans financiers des ménages indiens, notamment entre les zones d'habitations (rurale ou urbaine), les niveaux de richesse ou les caractéristiques du ménage (sexe et niveau d'éducation du chef de ménage, nombre d'enfants) \citep{Badarinza2016b}.
+% En effet, les ménages urbains détiennent en moyenne plus d'actifs financiers et d'or que les ménages ruraux.
+% \cite{Badarinza2016b} laissent penser que cela pourrait provenir de l'augmentation relative de l'immobilier en ville et du développement des contrats de location.
+% De plus, les ménages les plus aisés\footnote{Ceux ayant au moins 136~000 INR USD ? d'actifs} sont ceux ayant connu l'augmentation du ratio non financier\footnote{\dev{Préciser de quoi il s'agit.}} la plus importante : " la financiarisation de l'actif du bilan des ménages " ne semble donc pas enclenchée pour les ménages les plus aisés.
+% Enfin, la probabilité de contracter une dette informelle se réduit avec le niveau d'éducation : " [l]es ménages dont au moins un membre a fait des études supérieures ou des études de troisième cycle ont une dette hypothécaire supérieure de 15,1 \% par rapport au groupe des personnes peu instruites et une part de dette non institutionnelle inférieure de 28,7 \% " \citep{Badarinza2016b}. 
+
+% Après le contrôle de leurs régressions par ces variables [déterminantes], \cite{Badarinza2016b} identifient toujours une hétérogénéité en matière de bilan financier en Inde.
+% Pour tenter de comprendre ces inégalités, les auteurs proposent trois pistes de réponses.
+% Premièrement, en explorant la piste\footnote{Alors même que la Chine connaît une période de forte croissance économique, les ménages ont d'une part, un taux d'épargne élevé et d'autre part, un taux d'endettement faible, afin de se prémunir contre un potentiel choc de revenu.} de \cite{Chamon2010}, les auteurs\footnote{Ils partent du postulat bien connu que l'or est une couverture contre l'inflation et cherchent à vérifier " comment l'ampleur de l'incertitude de l'inflation vécue par les ménages dans différentes régions de l'Inde affecte leurs décisions d'allocation " \citep{Badarinza2016b}.} trouvent qu'il existe un effet de substitution\footnote{" Real estate has lower liquidity when compared with gold, and if liquidity needs are correlated with inflation volatility, gold better serves the purpose than real estate. Gold as a non-financial asset also has additional properties that are not provided for by real estate, such as a high collateral value and physical verifiability. " \citep{Badarinza2016b}.} entre l'or et l'immobilier, pouvant s'expliquer par " l'ampleur de l'incertitude inflationniste dans différentes régions " \citep{Badarinza2016b}.
+% Deuxièmement, l'hétérogénéité entre les États au niveau des comptes retraites pourrait provenir\footnote{\cite{Badarinza2016b} utilisent la part de résidents d'un État qui travaillent dans le secteur public comme proxy de la population engagée dans le secteur organisé d'un État.} de la part de l'emploi public dans la mesure où en Inde, les plans d'épargne-retraite sont obligatoires dans le secteur \textit{organized}\footnote{Cela suggère que les ménages accordent beaucoup plus d'importance aux besoins économiques immédiats plutôt qu'à l'épargne de long terme \citep{Badarinza2016b}.}.
+% Enfin, \cite{Badarinza2016b} complètent et confirment \cite{Burgess2005} en montrant que les États ayant un taux de pénétration bancaire élevé sont ceux où les ménages sont les moins dépendants de l'endettement non institutionnel.
+
+% Comme nous venons de le voir, beaucoup de travaux ont cherché à caractériser la situation financière des ménages, mais très peu ont cherché à l'analyser sous un angle différent [de celui de la caractérisation].
+
+% Un récent pan de la littérature tente d'analyser le rôle que joue certaines caractéristiques individuelles propres telles que la personnalité, le niveau de langue, le niveau de mathématique sur un certain nombre d'\textit{ouputs} économiques (notamment en lien avec le marché du travail\footnote{Voir \cite{Heckman2006} par exemple.}).
+% Globalement, peu d'articles se sont concentrés sur les effets des compétences cognitives et non cognitives (la personnalité principalement) sur la situation financière des ménages et aucun d'entre eux ne s'est intéressé au cas de l'Inde alors même que l'étude de ces compétences se développe de façon rapide en économie\footnote{En 2000 Scopus (Elsevier) recense 8 articles scientifiques en économie ayant les termes " cognitive skills" ou " personality traits " dans leur titre, résumé, ou mots-clés. Ce chiffre passe à 25 en 2010, 59 en 2012, 77 en 2014, 96 en 2016, 120 en 2018 et 154 en 2019.}.
+
+
+	% % ***********************************
+	% \subsection{Compétences cognitives et traits de personnalité}
+	% % ***********************************
+
+		% % ***********************************
+		% \subsubsection{Définition}
+		% % ***********************************
+
+% \paragraph{Compétences cognitives}
+% L'étude des compétences cognitives s'est développée dans les années 1950-60 avec les travaux fondateurs de \citeauthor{Bruner1956} et de \citeauthor{7Miller1956} [et \citeauthor{Miller1960}], psychologues à l'université Harvard (EUA).
+% Ces derniers ont cherché " à mettre en évidence les stratégies mentales de sujets confrontés à une tâche (classer des cartes par exemple) " au lieu de " s'intéresser aux seuls comportements observables des sujets " comme l'ont fait [et le font toujours] les behavioristes\footnote{Le béhaviorisme est une approche en psychologie qui " met l'accent sur l'étude du comportement observable et du rôle de l'environnement en tant que déterminant du comportement " \citep{Tavris2014}.} \citep{Dortier2014}.
+% Marquée par de nombreuses controverses et évolutions depuis les années 1950, l'étude de la cognitive peut, aujourd'hui, se définir comme  " un terme général [la cognition] qui fait référence aux processus mentaux impliqués dans l'acquisition de connaissances, la manipulation d'informations et le raisonnement. Les fonctions cognitives comprennent les domaines de la perception, de la mémoire, de l'apprentissage, de l'attention, de la prise de décision et des aptitudes linguistiques [...] " selon \cite{Kiely2014}.
+% %\cite{Dortier2014} : cognition = acte de connaître
+
+% \paragraph{Traits de personnalité [comme compétence non cognitive]}
+% En \citeyear{Allport1961} dans \textit{Pattern and Growth in Personality}, \citeauthor{Allport1961} défini la personnalité comme " l'organisation dynamique, au sein de l'individu, des systèmes psychophysiques qui déterminent son comportement et sa pensée caractéristiques ". 
+% Cette définition biophysique de la personnalité se distingue de la conception biosociale par le fait qu'elle s'intéresse à ce " qu'est l'individu indépendamment des autres, de la manière dont ils perçoivent les qualités, sans tenir compte également de la façon dont les mécanismes sous-jacents se structurent au sein de l'individu " plutôt que de s'intéresser à " des caractéristiques plus externes à l'individu, comme [...] le rôle de la personne ou sa place dans la société, son apparence physique ainsi que les réactions des autres vis-à-vis de l'individu considéré " \citep{Demont2009}.
+% \cite{Demont2009} propose donc une définition mixte en mêlant les deux conceptions : " la personnalité c'est l'ensemble des attributs, qualités et caractéristiques qui distinguent le comportement, les pensées et les sentiments des individus ".
+% \cite{Almlund2011} l'interprètent comme " a strategy function for responding to life situation. "
+% Au cours du XX\textsuperscript{e} siècle, plusieurs théories de la personnalité se sont développées (théorie des types, théorie des traits, etc.) et l'une d'entre elles a cherché à s'intéresser aux traits de personnalités, qui se définissent comme des schémas habituels de comportement, de pensée et d'émotion des individus \citep{Kassin2003}.
+% Aujourd'hui, plusieurs modèles descriptifs des traits de personnalité coexistent, mais l'un d'entre eux constitue un réel repère pour l'étude théorique de la personnalité: le modèle des \textit{Big Five}.
+
+% \dev{Trouver un endroit pour évoquer le locus of control}
+
+% \paragraph{Le modèle des \textit{Big Five}}
+% Ce modèle puise ses origines dans les études de \cite{Cattell1943, Cattell1947} avec le \textit{Sixteen Personality Factor Questionnaire} (16PF) : un test de personnalité par autodéclaration\footnote{Trois grands types de tests existent : les tests par autodéclaration, les tests d'évaluation par les paires et les inférences basées sur des comportements observables \cite{Hilger2017}.} identifiant, à partir d'une analyse factorielle, seize facteurs de personnalité : stabilité émotionnelle, dominance, vivacité, conscienciosité, sensibilité, vigilance, abstractivité, intimité, appréhension, ouverture au changement, autonomie, perfectionnisme, tension, cordialité, raisonnement, audace sociale.
+
+% Quelques années plus tard, \cite{Norman1963} réplique cette analyse et réduit à cinq le nombre de facteurs, permettant la mise en lumière de cinq traits principaux de personnalité : \textit{surgency} (degré d'affetcs positifs), agréabilité, conscienciosité, stabilité émotionnelle, et culture (sophistication culturelle, les connaissances, etc.).
+% L'étude de \cite{Goldberg1981} identifie elle aussi cinq traits (assertivité, tolérance, conscienciosité, confiance en soi et rationalité) tout en ayant changé d'échantillon (classification de 475 termes en 131 clusters) et de technique d'analyse factorielle (rotation orthogonale plutôt qu'oblique).
+% C'est à partir de ces nombreux travaux que \citeauthor{McCrae1985} développeront dans les années 1980 (en \citeyear{McCrae1985}, \citeyear{McCrae1987} et \citeyear{McCrae1990} principalement) le modèle des \textit{Big Five}\footnote{Personality traits were identified in an analysis of 738 peer ratings of 275 adults subjects.} : un modèle identifiant cinq facteurs [ou traits] centraux  de personnalité : l'ouverture à l'expérience (\textit{openness to experience}), la conscienciosité (\textit{conscientiousness}), l'extraversion (\textit{extraversion}), l'agréabilité (\textit{agreeableness}) et le névrosisme (\textit{neuroticism}).
+% Plus précisément \citep{Piedmont2014, Costa1992} : 
+% \begin{itemize}[label=--]
+% \item Le névrosisme (ou stabilité émotionnelle) fait référence à la capacité à ressentir des émotions négatives comme l'anxiété et une faible estime de soi.
+% \item L'extraversion, à la capacité à ressentir des émotions positives comme la joie, la gaieté, ou " l'expérience de son propre rythme (par exemple, la domination, l'énergie). "
+% \item L'ouverture à l'expérience (ou \textit{intellect}, \textit{culture}) est l'opposition entre la capacité à être créatif et " unstructured " et celle à avoir besoin d'une structure et de clarté.
+% \item L'agréabilité fait référence à la capacité d'être attentionnée, compatissant et altruiste plutôt qu'être manipulateur, égocentrique.
+% \item La conscienciosité oppose l'autodiscipline, la réalisation et l'ordre, à une faible maîtrise de soi, une gratification immédiate et de l'égocentrisme.
+% \end{itemize}
+
+% Ces différents tests (16PF, \textit{Big Five} ou même Q.I.,~etc.) reposent sur le principe que pour différencier les individus en termes de personnalité, il faut mettre en relief les principales différences individuelles.
+% L'hypothèse implicite est donc que " [l]es différences individuelles qui sont les plus importantes dans les transactions quotidiennes des personnes entre elles finiront par être codées dans leur langue [...] ", impliquant que " [p]lus une différence individuelle est importante dans les transactions humaines, plus les langues auront un terme pour la désigner. [...] Nous devrions donc trouver un ordre universel d'émergence des différences individuelles encodées dans l'ensemble des langues du monde." \citep{Goldberg1981}.
+
+
+		% % ***********************************
+		% \subsubsection{Analyses économiques}
+		% % ***********************************
+% De nombreux travaux en économie se sont intéressés aux compétences [cognitives et non cognitives], cependant, en faire une revue exhaustive relève d'une mission impossible pour trois raisons principales \citep{Almlund2011}.
+% Tout d'abord, il n'y a pas de consensus quant à la mesure de la personnalité et des compétences cognitives dans la littérature (les mesures diffèrent selon les études).
+% De plus, les différentes études n'utilisent pas la même \textit{puissance prédictive} : la plupart ne regardent que des corrélations ou des \textit{standardized régression coefficients}, ce qui ne permet pas d'identifier une relation claire, voir une causalité, entre personnalité et certains résultats économiques. 
+% Enfin, la plupart des articles scientifiques ne s'intéressent qu'à des corrélations, ce qui limite les réflexions en termes de politiques publiques et causalité inverse.
+
+% L'étude des compétences cognitives en économie a débuté dans les années 1970 avec les travaux pionniers [marxistes] de \cite{Bowles1976}.
+% Ces derniers trouvent dans les compétences cognitives, de bons prédicteurs du succès économique des individus, notamment à travers les \textit{earnings}. 
+% \dev{Mettre plus de détail}.
+
+% Un réel changement s'opère au début des années 2000 et nous assistons au rapide développement du champ, grâce à \cite{Bowles2001} et aux différents travaux d'Heckman\footnote{\cite{Heckman2000, Cawley2001, Heckman2006}.}.
+% À partir d'une revue de la littérature \cite{Bowles2001} tirent trois conclusions importantes.
+% Premièrement, une partie de la variance de la fonction de rémunération standard\footnote{À voir ce qu'ils entendent.} est due aux différences entre les individus au niveau des traits de personnalité récompensés sur le marché du travail\footnote{Préciser pour savoir de quels traits ils parlent.}.
+% Ces traits ne sont habituellement pas captés par les mesures classiques du niveau d'éducation, de l'expérience professionnelle et de la cognition.
+% Deuxièmement, les " comportements d'amélioration des revenus " expliquent une partie de la contribution du niveau d'éducation et du statut socioéconomique des parents aux revenus de l'individu.
+% Enfin, le fait de bien s'occuper du ménage et d'avoir une silhouette élancée (\textit{slim figures}) semblent expliquer une partie de la variance de variables relatives aux revenus du travail.
+% \cite{Bowles2001} en déduisent qu'une bonne maîtrise de soi et de son ménage sont des comportements recherchés par les employeurs.
+
+% C'est ce que confirment \citeauthor{Heckman2006} dans un article de \citeyear{Heckman2006}.
+% Les auteurs trouvent\footnote{Ils utilisent " the effects of percentile changes in cognitive and personality measures on a variety of outcomes over the full range of estimated relationships, relaxing traditional normality or linearity assumptions and not relying directly on measures of variance explained. " \dev{à rédiger}} que les capacités cognitives et non cognitives\footnote{Respectivement mesuré par \dev{à développer} } sont de bons prédicteurs de la réussite sociale et économique et ce au même niveau\footnote{La part de la variance des \textit{Y} expliquée par les compétences non cognitives et sensiblement le même que celle expliquée par les compétences cognitives.}.
+
+% Un important travail de revue de la littérature est effectué par \citeauthor{Almlund2011} en \citeyear{Almlund2011}.
+% Avant tout, les auteurs constatent que parmi les cinq (5) traits du \textit{Big Five}, la conscienciosité et le névrosisme prédisent bien un grand nombre d'\textit{outcomes}, notamment ceux en rapport avec l'éducation (la conscienciosité explique assez bien l'\textit{attainment} et \textit{achievement} à l'école).
+% L'ouverture à l'expérience prédit, elle, assez bien la \textit{course difficulty selected} et l'\textit{attendance}.
+% De plus, les \textit{Big Five} expliquent bien un grand nombre d'\textit{outcomes} relatif au marché du travail \citep{Almlund2011}.
+% La conscienciosité est le trait des \textit{Big Five} prédisant le mieux la performance au travail de façon générale \citep{Nyhus2005, Salgado1997, Hogan2003, Barrick1991}.
+% À la différence du quotient intellectuel (Q.I.), ce trait de personnalité ne varie pas avec la complexité du travail effectué, laissant penser que la conscienciosité concerne un plus large éventail d'emplois \citep{Almlund2011, Barrick1991}.
+% En effet, les professeurs, les scientifiques et les cadres supérieurs ont en général de meilleurs résultats en matière de compétences cognitives par rapport à des travailleurs non qualifiés \citep{Almlund2011, Schmidt2004}.
+% Le névrosisme explique aussi beaucoup d'\textit{outcomes} en lien avec le marché du travail comme la recherche d'emploi.
+% \cite{CobbClark2011} trouvent que le degré d'agréabilité a une relation négative avec la probabilité d'être un \textit{manager} et d'être un professionnel des affaires (\textit{business professional}).
+% Le pouvoir prédicteur des traits de personnalité du \textit{Big Five} sur des \textit{outcomes} relatifs au marché du travail dépend grandement des professions : En citant \cite{Cattan2011}, \cite{Almlund2011} indiquent qu'une augmentation d'un écart-type de l'extraversion (mesuré par le niveau de sociabilité pendant l'adolescence), accroit de 7 \% le salaire d'un \textit{manager}, de 4 \% celui d'un travailleur de la vente et des services, réduit de 2 \% celui d'un \textit{professionnals} et ne modifie pas celui d'un ouvrier ou d'un employé de bureau. 
+% Lorsque les variables expliquées sont en rapport avec la santé, la conscienciosité est le meilleur prédicteur pour la longévité de vie (plus que l'intelligence et le \textit{background}) \citep{Almlund2011}.
+% Enfin, lorsque les auteurs s'intéressent à la littérature sur la criminalité, ces derniers relèvent que la conscienciosité et l'agréabilité en sont de bons prédicteurs \citep{Almlund2011}.
+
+
+
+% %Un défi particulier est le programme GED, où le titre de compétences (le test GED) transmet de multiples signaux contradictoires. 
+% %Les bénéficiaires du GED sont plus intelligents que les autres élèves ayant abandonné l'école secondaire, mais ils ont moins de compétences non cognitives. 
+% %Cela viole la propriété de croisement unique standard utilisée dans la théorie conventionnelle de la signalisation et nécessite une reformulation substantielle de cette théorie (voir Araujo et al. 2004).
+
+% Parler de Laajaj et Macours pour mettre en garde sur la mesure du Big Five pour des non weird people.
+
+	% % ***********************************
+	% \subsection{Finance des ménages : l'approche par les compétences cognitives et la personnalité}
+	% % ***********************************
+% %Quelques chercheurs se sont intéressés à la relation entre finance des ménages et compétences [cognitives et non cognitives].
+
+% %\dev{Pour chaque article : Quel est le Y (1) ? Quels sont les X (2) ? Terrain (3) ? Méthode(s) employée(s) (4) ? Résultats (5) ?}
+
+% Comme nous venons de le voir, beaucoup de travaux ont mêlés les compétences cognitives et la personnalité avec des \textit{outcomes} relatifs au marché du travail ou à l'éducation, mais beaucoup moins se sont intéressé aux finances des ménages.
+% %Ceux l'ayant fait se sont principalement intéréssé à la litteratie financière
+
+% La notion --hybride-- de littératie financière est bon liant dans la littérature.
+% En effet, il s'agit de " la capacité à utiliser ses connaissances et ses compétences pour gérer efficacement ses ressources financières dans l'optique d'une sécurité financière à vie " d'après \textit{Jump\$tart}\footnote{}. 
+% Comme l'indiquent \cite{Hastings2013}, dans la littérature académique, cette notion est utilisé d'une part pour faire référence à la connaissance des produits et des concepts financiers et d'autre part, elle désigne le niveau de mathématique nécessaire à la prise de décisions financière et le niveau d'engagement dans des activités de planification financière.
+% Plus généralement, c'est la " capacité à appliquer le raisonnement lors de la prise de décisions concernant l'utilisation de ressources rares " \cite{Varum2014}.
+
+% Aux Pays-Bas, \cite{Pinjisakikool2017} trouve [par les MCO] que les individus ayant un \textit{intellect} élevé et ceux ayant un \textit{locus of control} internent sont plus susceptibles d'avoir un niveau élevé de littératie financière.
+% \cite{Gaurav2012} présentent des résultats similaires [en utilisant des logit ordonnées à la Maddala, 1983] en Inde avec les compétences cognitives : ces dernières prédisent bien le niveau de \textit{debt literacy} et celui de \textit{financial aptitude}. 
+% Cependant, \cite{Hastings2013} soulèvent l'ambivalence de la littératie financière.
+% En effet, d'après les auteurs, \dev{développer pour conclure sur la financial literacy}.
+
+% D'autres chercheurs se sont intéressé à la prise de risque dans les décisions financières et plus généralement à décision d'investissement.
+% \cite{Nga2013} montre que la conscientiosité, l'ouverture à l'expérience et l'agréabilité sont de bons prédicteurs de l'aversion au risque, des biais cognitifs et de la socially responsibilty des jeunes \textit{undergraduate} [en licence] en Malaisie. \dev{À développer}
+% \cite{Pinjisakikool2017b} obtient des résultats semblablent aux Pays-Bas en matière de conscientiosité et d'agréabilité et trouve que l'extraversion, la stabilité émotionnelle et l'intellect prédisent bien la tolérance au risque\footnote{Mesuré par trois ratios complémentaires : le ratio d’épargne (faible risque), le ratio de fonds communs de placement (risque moyen) et le ratio d’actions (haut risque). "  Calculé comme le montant de l'épargne, des obligations et des fonds communs de placement, ou des capitaux propres, divisé par le montant total des actifs financiers (la somme de toutes les catégories) " \citep{Pinjisakikool2017b}.}. \dev{L'auteur utilise des régressions linéaires multiples ainsi que des \textit{tobit}.}
+% Utilisés comme des instruments, ces cinq traits de personnalité prédisent indirectement le comportement financier des ménages. \dev{À développer}
+% En regardant la valeur des actions financières, la part que celles-ci représentent dans le total des actifs détenus, \cite{Bucciol2017} trouvent [avec des probit (Papke \& Wooldridge (1996) estimated with Bernoulli quasi-maximum likelihood and standard errors robust to heteroskedasticity] qu'aux EUA l'agréabilité, l'hostilité cynique et l'anxiété sont négativement corrélés à la prise de risque financière.
+% Enfin, \cite{Agarwal2013} s'intéressent aux compétences cognitives aux EUA et constatent grâce à des MCO " que les consommateurs ayant des scores globaux plus élevés aux tests, et en particulier ceux dont les scores en mathématiques sont plus élevés, sont nettement moins susceptibles de faire une erreur financière. " 
+% \dev{Phrase de conclusion sur le risque.}
+
+% Concernant le rôle de la personnalité et des compétences cognitives sur l'épargne, \cite{CobbClark2016} montrent [avec des unconditional quantile regression et une inversion hyperbolic sine transformation] que les ménages australiens ayant un locus de contrôle interne [l'individu référent du ménage] ont un niveau d'épargne plus élevé [et parfois une part relative à leurs revenus] que ceux ayant un locus externe.
+% De plus, ces derniers (les ménages ayant un locus interne) sont plus susceptibles d'épargner sous des formes " difficile d'accès " comme les \textit{pension wealth} \citep{CobbClark2016}.
+% \cite{Gerhard2018} au RU, constatent que la relation entre le \textit{Big Five} et l'épargne diffère entre les ménages \textit{stiving} (en difficultés ?) et ceux bien \textit{established} [grâce à un Finite Mixture Model in a one-step maximum likelihood]. \dev{À développer}
+
+% Enfin, un pan de la littérature s'interèsse aux compétences cognitives et non cognitives et à l'endettement.
+% À partir de données portant sur quatre pays européens (Espagne, Roumanie, Pologne et Italie), \cite{Forlicz2019} montrent avec des $\tilde{\chi}^2$ qu'il existe des différences significatives en termes de conscientiosité, honnêteté et d'attitude envers l'argent et les achctes entre les individus endettés et non endettés. \dev{Qui a quoi ?}
+% En s'intéressant uniquement aux compétences cognitives (niveau de mathématique), \cite{Silva2018} montrent [avec des MCO], qu'en Allemagne, que " la dette ne peut plus être expliquée par une mauvaise réflexion cognitive [...], les consommateurs à revenu élevé considèrent la dette comme un simple levier ".
+% \cite{Brown2014} trouvent [avec un des tobit et des probit] qu'au RU l'extraversion est fortement corrélé au niveau d'endettement et d'actifs financiers détenus.
+% De plus, les auteurs trouvent qu'en terme de portefeuille, " l'association entre les traits de personnalité et les finances des ménages diffèrent selon les divers types de dette et d'actifs détenus ".
+
+
+		% % ***********************************
+		% \subsubsection{Contribution à la littérature}
+		% % ***********************************
+% La plupart des articles mélant compétences et situation financière des ménages ont été effectué dans les pays du Nord (principalement RU, Pays-bas et Allemagne).
+% Cette recherche permet donc de compléter le peu d'analyses effectués dans les pays du sud \dev{dire} et notamment en Inde \cite{Gaurav2012} tout en élargissant la question de recherche.
+% En effet, à la différence de \dev{dire}, nous allons, ici, nous intéresser à plusieurs aspects des finances des ménages (ceux citer par \cite{Badarinza2016b} : l'épargne, la dette, le type de dette, etc.)
+% Cet article diffère de la littérature sur x points (j'énumère les différences en mettant en avant l'avantage de mon truc par rapport aux autres et je cite les autres) !
+
+
+
+% Bien décrire la façon dont les données sur le Big Five ont été collectées par \cite{Laajaj2019} mettent en garde : 
+% As warned by Laajaj and Macours (2017) and Laajaj et al. (2019), Big-5 taxonomy might not emerge in developing countries. 
+% The major issue is that in developing economies, non-cognitive skills are assessed thanks to face-to-face surveys while they are mostly assessed on computers in developed economies. 
+% Biases in responses might especially arise in face-to-face surveys in developing countries because of interactions between respondents and interviewers, items’ translations and lower Educational levels that can make questions more difficult to understand. 
+% Specifically, acquiescence bias (tendency to agree with every statements, even when they are contradictory) might be more common. 
+% To check whether the Big-five taxonomy emerges in our data, we conducted a factorial analysis, after correcting for acquiescence bias, on our respondents’ answers to the 116 items aimed at measuring non-cognitive skills. 
+% The personality traits that emerge from the factorial analysis are slightly different from the Big-five taxonomy
+
+
+
+
+
+% %\begin{itemize}[label=--]
+% %\item \cite{Pinjisakikool2017} 
+% %	\begin{enumerate}
+% %	\item Financial literacy
+% %	\item Big Five + Locus of control
+% %	\item Pays Bas
+% %	\item MCO
+% %	\item il trouve que les gens intellect et internal locus tend to have higher level of financial literacy que les autres
+% %	\end{enumerate} 
+% %\item \cite{Gaurav2012} 
+% %	\begin{enumerate}
+% %	\item Financial literacy
+% %	\item Compétences cognitives
+% %	\item Inde, Gujarat
+% %	\item Ordered Logit Regression (Maddala, 1983)
+% %	\item les compétences cognitives prédisent bien la financial aptitude et la debt literacy
+% %	\end{enumerate} 
+% %\item \cite{Hastings2013} : rôle de la financial literacy ambivalent
+% %\end{itemize}
+% %\begin{itemize}[label=--]
+% %\item \cite{Nga2013}
+% %	\begin{enumerate}
+% %	\item Aversion au risque; biais cognitif et socially responsible investing
+% %	\item Big Five adapté
+% %	\item Undergraduate en Malaisie
+% %	\item Multiple Linear Regression method
+% %	\item Conscientiousness, openness and agreeableness were found to have a significant influence on risk aversion, cognitive biaises and SRI respectively
+% %	\end{enumerate}
+% %\item \cite{Pinjisakikool2017b} 
+% %	\begin{enumerate}
+% %	\item HH financial risk tolerance à travers 3 ratios : the low-risk ‘savings ratio’, medium-risk ‘bonds and mutual fund ratio’ and high-risk ‘equity ratio’. Calculated as the amount of savings, bonds and mutual funds, or equity, divided by the total amount of financial assets (the sum of all categories). These three ratios need modification as they are not normally distributed and have outliers, such as negative values caused by negative financial assets (a negative asset value is due to, for instance, negative checking account amounts). I solve these problems by replacing negative values with zero and winsorizing values higher than one at one.
+% %	\item Big Five
+% %	\item Pays-Bas
+% %	\item OLS + tobit
+% %	\item Extraversion, agreeableness, conscientiousness, emotional stability and intellect significantly predict financial risk tolerance. Additionally, these personality traits as instrumental variables can also indirectly predict the financial behaviour of households.
+% %	\end{enumerate}
+% %\item \cite{Agarwal2013} 
+% %	\begin{enumerate}
+% %	\item The optimal use of credit cards for convenience transactions after a balance transfer and the second involves a financial mistake on a home equity loan application : financial decision making
+% %	\item Cognitive ability standardisé
+% %	\item EUA
+% %	\item OLS
+% %	\item We find that consumers with higher overall test scores, and specifically those with higher math scores, are substantially less likely to make a financial mistake. These mistakes are generally not associated with nonmath test scores.
+% %	\end{enumerate}
+% %\item \cite{Bucciol2017} 
+% %	\begin{enumerate}
+% %	\item Stock asset holding; stock asset share and upward market trend
+% %	\item Big Five
+% %	\item EUA sur des gens de 50 ans
+% %	\item Probit à la Papke and Wooldridge (1996) estimated with Bernoulli quasi-maximum likelihood and standard errors robust to heteroskedasticity
+% %	\item Three personality traits have a significant negative correlation with financial risk taking, as measured by the holding and the amount of stock as- sets: Agreeableness, Cynical Hostility and Anxiety.
+% %	\end{enumerate}
+% %\end{itemize}
+% %\begin{itemize}[label=--]
+% %\item \cite{CobbClark2016} 
+% %	\begin{enumerate}
+% %	\item accumulation de richesse, taux d'épargne et \textit{portfolio choices}
+% %	\item Locus of control
+% %	\item Australie
+% %	\item Wealth accumulation (understand the heterogeneity in savings associated with couples’ control perceptions : With few exceptions, researchers interested in the determinants of wealth typically estimate marginal effects only at the mean of the wealth distribution. We go beyond this, however, to also consider the potential for locus of control to have differential effects on the savings behavior of poor versus wealthy households.) : partant de là, le classique est conditional quantile regression estimator de Koenker \& Bassett (1978), mais their estimated marginal effects can only be interpreted with respect to the distribution of Y conditional on X (only among individuaks with the same X) donc is often the case, their conditional quantil results are difficult to interpret and may be irrelevant from a policy perspective (see Ker, 2011; Borah \& Bassu, 2013). DONC : unconditional quantile regression in order to estimate marginal effects at various quantiles of the overall wealth distribution. We use the method recently developed by Firpo et al. (2009), which relies on a “recentered influence function” to essentially reweight the dependent variable so that the mean of the reweighted variable corresponds to the quantile of interest. This then allows OLS to be applied directly to the reweighted dependent variable.21 In addition to allowing us to estimate marginal effects at various points of the overall wealth distribution, unconditional quantile regression retains the advantages of quantile regression more generally. Specifically, unlike standard OLS estimation, quantile regression is not sensitive to outliers and non-normality (Baum, 2013) – both of which are highly likely in the wealth context. Distribution quantiles are also invariant to monotonic transformations of the dependent variable, e.g. log transformations (Koenker, 2005), while data censoring is unproblematic in quantile regression (Powell, 1986). 
+% %	Asset portfolios : we simultaneously analyze five mutually exclusive and exhaustive components of net wealth: (1) financial wealth, (2) business equity, (3) real estate equity, (4) vehicles, and (5) pensions. Our simultaneous asset model requires estimation of marginal effects at the mean of the distribution, leaving the results sensitive to outliers and non-normality. The standard approach in this situation would be to take a log transformation of the dependent variable. However, while less than two percent of households have negative net worth overall, it is not uncommon for households to hold zero (or negative) amounts of individual assets. Thus, we need an estimation strategy that can account for non-positive asset holdings. We therefore adopt an inverse hyperbolic sine transformation denoted as sinh 1 , which is also defined for zero or negative values (Cobb-Clark \& Hildebrand, 2006, 2009). This function is similar to a log transformation as it is essentially the log transformation for positive values and a negative log transformation for negative values (Burbidge et al., 1988).
+% %	\item HH with internal reference person save more in terms of levels and, in some cases, as a percentage of their permanent income. HH with an internal are in a better position to save in forms that are harder to access (such as pension wealth) than otherwise similar households with an external reference person.
+% %	\end{enumerate}
+% %\item \cite{Gerhard2018} 
+% %	\begin{enumerate}
+% %	\item Savings
+% %	\item Big Five
+% %	\item RU
+% %	\item Finite Mixture Model in a one-step ML: Finite mixture models are employed to classify observations; adjust for clustering; and model unobserved heterogeneity (for a detailed review of these models, see McLachlan and Peel, 2000). In finite mixture modeling, the observed data are presumed to belong to unobserved subpopulations named classes, and mixtures of regression models are utilized to model the outcome of interest, which in our study is total household savings. Using finite mixture models, it is possible to estimate a class membership model and a behavioral model of the classes jointly.
+% %	\item We find that the relationship between psychological characteristics and savings behavior differs across these two classes, demonstrating the importance of accounting for latent heterogeneity when studying the drivers of savings behavior. Our results have implications for policymakers attempting to improve household savings behavior
+% %	\end{enumerate}
+% %\end{itemize}
+% %\begin{itemize}[label=--]
+% %\item \cite{Forlicz2019} 
+% %	\begin{enumerate}
+% %	\item Proba d'avoir déjà eu des arrears donc d'avoir déjà été surendetté
+% %	\item Traits de personnalité : dutifulness, conscientiousness, optimism, perception of future, compulsive shopping, attitude towards shopping, the style of managing money
+% %	\item Spain, Romania, Poland and Italy
+% %	\item Khi 2
+% %	\item The statistical analysis found that for most of these countries there existed significant differences between debtors and debt-free individuals regarding the level of conscientiousness, honesty, attitude towards money and shopping
+% %	\end{enumerate}
+% %\item \cite{Silva2018} 
+% %	\begin{enumerate}
+% %	\item Dummy in debt + indiscriminate debt + overall debt in the follow-up
+% %	\item Cognitive skills (math)
+% %	\item Allemagne
+% %	\item OLS
+% %	\item debt can no longer be explained by poor cognitive reflection. Apparently, high-income consumers treat debt as mere leverage, as companies do.
+% %	\end{enumerate}
+% %\item \cite{Brown2014} 
+% %	\begin{enumerate}
+% %	\item Unsecured debt + financial assets 
+% %	\item Big Five : We explore personality traits at the individual level and also within couples, specifically the personality traits of the head of household and personality traits averaged across the couple
+% %	\item RU
+% %	\item Following Bertaut and Starr-McCluer (2002), we employ a censored regression approach to ascertain the determinants of lnðaitÞ and lnðditÞ, which allows for the truncation of the dependent variables. We denote by ln(a*) and ln(d*) the corresponding untruncated latent variables, which theoretically can have negative values. We model ln(a) and ln(d) via a univariate tobit specification with Mundlak fixed effects for each dependent variable as follows. = tobit + probit
+% %	\item We find that certain personality traits such as extraversion are generally significantly associated with household finances in terms of the levels of debt and assets held and the correlation is often relatively large. The results also suggest that the magnitude and statistical significance of the association between personality traits and household finances differs across the various types of debt and assets held in the household portfolio.
+% %	\end{enumerate}
+% %\end{itemize}
+% %Brown2014
+% %Ils sont en panel et font l'hypothèse que la personnalité est stable. Ils citent deux papiers. Ils mettent aussi en garde : si c'est effectivement stable dans le temps, alors on n’a pas de problème d'endogénéité, sauf que c'est à prendre avec des pincettes parce que même en psycho, ils ne sont pas d'accord pour savoir si c'est stable ou non. Du coup, ils ne regardent qu'une corrélation. C'est ce que \cite{Parise2019} soulèvent. Du coup \cite{Parise2019} vont plus loin en regardant une causalité. Ils instrumentent conscientiousness and neuroticism avec une binaire pour savoir si les individus ont eu un choc psychologique pendant l'enfance.
+% %Par rapport aux compétences non cognitives, ils font un petit tour de passe-passe provenant de \cite{Nyhus2005} et de \cite{Groves2005} : 
+% %In order to mitigate against the potential problem of life cycle effects influencing personality traits and the subsequent measurement error this might induce, in both the couples and singles samples, we condition each personality trait $T_j$ (i.e. one of the Big Five $j=1,...,5$) on a polynomial in age $A$, i.e. $T_j=\theta_jA+\epsilon_j$ . The resulting residuals, i.e. $Z_j=\hat{\epsilon}_j=\hat{\theta}_jA$ , are standardised (zero mean and unit standard deviation) and used as indicators of personality net of life cycle influences \citep{Nyhus2005, Groves2005}.
+% %Ils ont deux grands Y : amount of unsecured debt ($d_{it}$) et total value of financial assets held ($a_{it}$).
+% %Ils suivent \cite{Bertaut2002} en employant des régressions censurées : we employ a censored regression approach to ascertain the determinants of $ln(a_{it})$ and $ln(d_{it})$, which allow for the truncation of the dependent variables (in order to deal with the zero values of unsecured debt and financial assets, following the standard approach in the existing literature, we add one to each series).
+% %Ils ont ensuite plusieurs autres Y, des dummies pour un peu explorer/expliquer les résultats des montants précédents. Ils sont 5 dummies pour la dette (hire purchase agreement (1); personal loans from banks, building societies or other financial institutions (2); credit cards (3); loans from private individuals (4); other debt including catalogue or mail purchase agreements, student loans, and overdrafts (5)) et 5 pour les actifs financiers (national savings certificates, national savings, building society and insurance bonds (1); premium bonds (2); unit/investment trusts (3); personal equity plans (4); shares (5)).
+% %Au niveau des contrôles ils prennent : genre, éthnie, age (cat.), éducation, self-assessed health status, labour force status (ils ont : employed, SE, unemployed, retired, maternity leave, family care, long term sick or disabled, government training scheme, unclassified) du HH head. Puis l'income (quartile dummy variables for total HH income relative to the sample mean), housing tenure, number of children in the HH et enfin " to proxy family background and wealth, two binary indicators for whether the mother and/or father of the head of household were in paid employment when the individual was aged 14. "
+
+% The main objective of this paper is to analyze the role of cognitive and non-cognitive skills on indebtedness in a context where structural variable are decisive.
+
+
+
+
+
+
+
+
+
+\newpage
+% ***********************************
+\section{Hypothesis, data and econometric framework (10 pages)}
+% ***********************************
+
+	% ***********************************
+	\subsection{Hypothesis}
+	% ***********************************
+
+As we already note, the goal of this paper is to analyze the role of cognitive skills and personality traits on indebtedness in a context where contextualvariable are decisive.
+To try to achieve this goal we, firstly, check the contextualdeterminants of debt.
+Then, we add Big-Five personnality traits and cognitive skills in the analysis to answer our first question: is cognitive skills and personality traits plays a significant role on indebtedness situation of households ?
+Following literature, we can make this first hypothesis:
+\begin{hyp}[H\ref{hyp:stability}] \label{hyp:stability}
+Conscientiousness and neuroticism play significant role on household indebtedness.
+\end{hyp}
+Indeed, concerning conscientiousness, \cite{Donnelly2012} state that `'highly conscientious individuals manage their money more because they have positive financial attitudes as well as a future orientation''.
+\cite{Brown2014, Nyhus2001} find similar results: conscientious individuals are less likely to have ever been in debt and conscientiousness is negatively related to the amount of unsecured debt.
+\cite{Nga2013} find that conscientiousness have a significant influence on risk aversion in Malaysia.
+\cite{Forlicz2019} find that for most of these countries there existed significant differences between debtors and debt-free individuals regarding the level of conscientiousness
+For neuroticism, \cite{Pinjisakikool2017b} find that emotional stability (inverse of neuroticism) significantly predict financial risk tolerance.
+
+To understand the phenomenon more in depth, we also analyze the \cite{Agarwal2013} and \cite{Gaurav2012} results who respectively finds that `'consumers with higher math scores, are substantially less likely to make a financial mistake'' and that cognitive skills significantly predict the financial aptitude and debt literacy for rural farmer in Gujarat\footnote{Indian state on the western coast.}. 
+Moreover, as warned by \cite{Laajaj2017} and \cite{Laajaj2019}, the Big-Five personality traits is difficult to validate in developing countries because of non-WEIRD\footnote{Western, Educated, Industrialized, Rich, and Democratic (WEIRD).} people.
+Thus, we can formulate H\ref{hyp:poorer} hypothesis imagining that personality traits can play a significant role from a certain level of wealth.
+\begin{hyp}[H\ref{hyp:poorer}] \label{hyp:poorer}
+Personality traits are good predictor from a certain level of income, below it is cognitive skills that play significant role on financial situation. 
+\end{hyp}
+
+Another important aspect are in the gender question.
+Indeed, as \cite{Reboul2020} stated: `'[w]omen in the poorest households, despite meager incomes, have the highest borrowing responsibilities, shouldering the highest shares of household debt. [...] Their larger role in household debt management may be linked to their greater mobility and lower restrictions on social interactions, notably with men, which would underpin both their greater income shares and their access to credit relations. ''
+Thus, we can easily imagine the H\ref{hyp:women} hypothesis.
+\begin{hyp}[H\ref{hyp:women}] \label{hyp:women}
+When ego is a woman, her personnal characteristics (cognitive skills and personnality traits) play a bigger role in household finances than when ego is a man.
+\end{hyp}
+
+Last, we explore the source and use of debt by focusing on the dichotomy formal--informal and income generator--non-income generator of debt.
+\begin{hyp}[H\ref{hyp:filr}] \label{hyp:filr}
+Score élevé cognitif joue beaucoup sur income generator, tandis que personnalité joue sur non income generator je pense: rationnalité vs pas rationnalité
+Pour formal informal, aucune idée..
+\end{hyp}
+
+
+To try to verify our hypotheses, we use original data set from rural south India.
+
+
+% The impact of teacher subject knowledge on student achievement: Evidence from within-teacher within-student variation :
+% "The model setup with correlated random effects allows us to test the overidentification restrictions implicit in conventional fixed-effects models, which are nested within the unrestricted correlated random effects model (see Ashenfelter and Zimmerman 1997).
+% Ashenfelter, Orley, David J. Zimmerman (1997). Estimates of the Returns to Schooling from Sibling Data: Fathers, Sons, and Brothers. Review of Economics and Statistics 79 (1), pp. 1–9.
+% Only if these overidentification restrictions cannot be rejected, we can also specify correlated random effects models that restrict the β and η coefficients to be the same across subjects"
+
+	% ***********************************
+	\subsection{Data}
+	% ***********************************
+
+Our empirical analysis is based on the RUME-NEEMSIS survey\footnote{See chapter 1 of this thesis.}.
+As we mentioned earlier, we benefit from panel data for 388 households.
+Thanks to the NEEMSIS's methodology, we obtain 387 ego 1 and 368 ego 2\footnote{Describe why we have some missings: } for 2016-17 using panel data.
+
+% For ego 1
+% Due to several reason\footnote{Explain why.}, eight ego 1 interviewed in 2016 and fourty ego 2 is household member that does not interviewed in 2010 (new household member ?).
+% To fully explore the role of personality in household indebtedness, we create pseudo ego 1.
+% To construct pseudo ego 1 profil, we use ego 1 data for the 378 household which is available in panel dimension and we complete with the ego 2 data\footnote{Les ménages ne bénéficiant pas de données de panel concernant égo 1 (8) disposent, en revanche des données concernant égo 2.}. 
+
+
+
+	% ***********************************
+	\subsection{Methodology} \label{subsection:methodology}
+	% ***********************************
+
+To verify hypotheses H\ref{hyp:stability} to H\ref{hyp:women} and study the relationship between cognitive skills/personality traits and indebtedness among rural households in India, we use correlated random effect (CRE)\footnote{Also called Mundlak Fixed Effect.}, that allows for time-invariant exogenous variables and at the same time delivers the fixed effect esimates on the time-varying covariates \citep{Mundlak1978, Wooldridge2010, Wooldridge2013, Schunck2013}.
+Unlike \cite{Brown2014}\footnote{Ils utilisent un probit car ils disent que leurs variables sont censurés}, we do not use tobit model because the data are not censored, but defined on $\mathbb{R}^{+}$ \citep{Maddala1991}.
+We also do not use zero-inflated beta model as \cite{Cook2008} recommends because of the panel nature of our data.
+Thus, we estimates a random effect model\footnote{Following \cite{Schunck2013, Wooldridge2013}, we use Generalised Least Square (GLS).} with Mundlak fixed effect for each time-variant variable:
+\begin{equation}\label{eq:CRE}
+\begin{split}
+Y_{it}~=~\upalpha~+~X'_i\upbeta~+~Z'_{it}\upgamma~+~\overline{Z'}_{it}\uppi~+~a_i~+~u_{it}
+\end{split}
+\end{equation}
+
+%Where $Y_{it}$ represent the vector of endogenous variables; $X'_i$ a vector of time-invariant observed variables; $Z'_{it}$ a vector of variables that changes across individual $i$ and time $t$; and $\overline{Z'}_{it}$ represent the Mundlak fixed effect (the mean over time of $Z'_{it}$).
+%The CRE relaxes the assumption\footnote{This assumption avoid the omitted variables biases.} of no correlation between the time-invariant error ($a_i$) and the time-variant variables ($z_{it}$).
+%As \cite{Schunck2013} note, CRE ``allows us to estimate the effect of level 2 variables [individual level] while providing effect estimates of level 1 variables that are unbiased by a possible correlation with the level 2 error''.
+
+The $Y_{i,t}$ vector of endogenous variables is compose by 3 groups of indebtedness measure: 
+\begin{enumerate}
+\item The 4 main measure of indebtedness: the debt service (i), which represent the total amount of debt owed in one year; The interest service (ii), which represent the total amount of debt interest owed in one year; The debt service ratio (DSR) (iii), which represent the debt service compared to annual household income\footnote{For 2016-17 only: (i) To calculate this ratio (and ISR), we impute the average of loan interest for microcredit and loan from moneylender to loans from the same sources for which we do not have the value of interest because they do not represent one of the three main loans. (ii) For marriage loan (some loans not belonging to the financial practices module), we calcultate the average duration of marriage loan that belong to financial practice module and we impute to other marriage loan (upper bounds at 35 months). Then, we impute the average share of total repaid on loan amount (lower bound at 60\%) to others marriage loan. With this two imputations we are able to calculate the loan service for all marriage loans.}; The interest service ratio (ISR) (iv), which represent the interest service compared to annual household income.
+
+\item The 3 robustness measure of indebtedness: The total amount of non-settled loans in the household (i); The debt to assets ratio (DAR) (ii), which represent the total amount of non-settled loans in the household compared to the monetary value of assets; The debt to income ratio (DIR) (iii), which represent the total amount of non-settled loans in the household compared to the annual income.
+
+\item The 4 measure of type of debt: The informal debt to total debt ratio (IDR) (i), which represents the total amount of informal non-setlled loans compared to the total amount of non-settled loans in the household; The formal debt to total debt ratio (FDR) (ii), which represents the total amount of formal non-setlled loans compared to the total amount of non-settled loans in the household; The income generator debt ratio (IGDR) (iii), which represents the total amount of income generator debt compared to the total amount of non-settled loans in the household; The non-income generator debt ratio (NIGDR) (iv), which represents the total amount of non-income generator debt compared to the total amount of non-settled loans in the household.
+\end{enumerate}
+
+
+%In our context the interest service could refers to the bargaining power of the borrower over the lender.
+%Indeed (trouver la littérature sur ça puis dire qu'il y a beaucoup de prêt informel).
+Despite the no conceptual consensus on what constitutes indebtedness and how it ought to be measured, the first two ratios (DSR and ISR) represents the most use ratio in the literature \citep{Chichaibelu2017, DAlessio2013, OXERA2004}. 
+DSR considers both annual interest payment and principal repayment while ISR only considers annual interest payment.
+The last two ratios (DAR and DIR) \citep{Disney2008, Rio2008} is also ``usually adopted by both public and private institutions in unpublished reports to government bodies, on-line central bank publications or business briefings'' as \cite{Betti2007} note.
+In order to explore the indebtedness situation of household, we consider all ratios (DSR, ISR, DAR, DIR) as continuous variables so as not to limit ourselves to an over-simplifying analysis by considering only the dichotomy over-indebted household\footnote{Starting from DSR, the threshold of 0.4 -- 0.5 in DSR is commonly use in the literature to differentiate over-indebted household from an "simple" indebted household:  when household debt service represent more than 40--50\% of his annual income.} or non-over-indebted household (we still explore this dichotomy in appendix).
+The fourth last ratios (IDR, FDR, IGDR, NIGDR)
+
+Our variables of interest (cognitive skills and personality traits) belong to the vector $X'_i$ 
+Indeed, as \cite{Almlund2011} note, most psychologist accept the notion of a stable over time personality \cite{Mischel1995, Mischel2008}.
+Moreover, the literature considers that personality traits do not change after the age of 25 \citep{CobbClark2012}, which has also been shown in surveys \citep{CobbClark2011}.
+Thus, [and like many papers in economics] we assume the stability over time of personnality traits in our analysis \citep{Nyhus2005, Brown2014, Heineck2010}. 
+
+
+For cognitive skills and personality traits and to mitigate against the potential problem of life-cycle events\footnote{That might induce endogeneity with measurement error.}, we run univariate OLS regression (see equations i and ii below) with  cognitive skills $S_k$ (where $k=1, 2, 3$ for raven, literacy, numeracy) and personality traits $P_k$ (where $k=1,...,5$ for Big-Five personality traits) as endogenous variables and age $A$ as exogenous variable.
+We standardised the resulting residuals $\hat{\upvarepsilon_j}$ of equations $S_k=\upphi A+\upvarepsilon_j$ (eq. i) and $P_k=\upphi A+\upvarepsilon_j$ (eq. ii) and use cognitive and non-cognitive measure net of life cycle influences as \cite{Nyhus2005, Brown2014}.
+
+We draw on the existing literature to specify the vector $Z'_{it}$ which represents the contextualdeterminants of indebtedness that varies over individual and time: house ownership, agricultural land ownership, monetary value of assets, caste, gender (sex ratio in categorical: majority of women in the household; majority of men in the household; same number) \citep{Guerin2012a, Guerin2013a, Guerin2014, Reboul2020}.
+The monetary value of assets includes the monetary value of: gold; land; house; livestock; agricultural equipment and consumption good such as car, computer, cookgas, phone, etc.
+
+Our control variables are based on \cite{Reboul2020, Brown2014, Chichaibelu2017} which take the existing classic controls. 
+We use two vector of variables where one is for time-variant variables ($C'_{1,it}$) and another one for time-invariant variables ($C'_{2,i}$) 
+The first one ($C'_{1,it}$) includes ego controles as: age, age square, main occupation\footnote{Define as the most income-generating activity.} (self-employed agriculture; casual agriculture; casual non-agriculture; regular non-agriculture; self-employed non-agriculture; other) and the place in the household (head; wife; other).
+It also includes households controles variables as: annual income, dependency ratio in categorical (majority of active member; majority of inactive member; same number); household size; number of children (individual under 16 years old); shock exposure (one dummy variable if the household has experienced the marriage of at least one of its members between 2010 and 2016-17 and one dummy variable if the household was interviewed after the demonetisation); main occupation\footnote{Define as the most income-generating activity.} (self-employed agriculture; casual agriculture; casual non-agriculture; regular non-qualified non-agriculture; regular qualified non-agriculture; self-employed non-agriculture; national public scheme (NREGA))
+The last vector ($C'_{2,i}$) includes also ego and household characteristics: caste (dalits; middle; upper), ego gender (female), ego education level (primary; high-school; secondary or more).
+Following our estimator CRE, we add to the specification the mean over-time $\overline{C'}_{1,it}$ of control variables that are time-variant ($C_{1,it}$).
+
+Thus, we estimates the following equation:
+\begin{equation}\label{eq:CREfinal}
+\begin{split}
+Y_{it}~=~\upalpha~+~X'_i\upbeta~+~Z'_{ij}\upgamma~+~C'_{1,it}\upzeta~+~C'_{2,i}\upeta~+~\overline{Z'}_{ij}\updelta~+~\overline{C'}_{1,it}\uptheta~+~a_i~+~u_{it}
+\end{split}
+\end{equation}
+
+\paragraph{Caveat}
+An important caveat to acknowledge is the fact that this paper does not claim to seek causality. 
+Although we assume that personality traits are exogenous regressor, there is no consensus among psychologist as we note earlier.
+Indeed, as many other paper \citep{Brown2014, Bucciol2017, Pinjisakikool2017a, Pinjisakikool2017b, CobbClark2016, Bertoni2019}, our empirical analysis relate to correlation because of we cannot rule out the possibility of reverse causality between our endogenous variables and our supposed exogenous personality traits.
+At the time of writing, only \cite{Parise2019} deal with reverse causality issue.
+They use exposure to shock during childhood to instrument conscientiousness and neuroticism.
+
+
+	% ***********************************
+	\subsection{Descriptive analysis}
+	% ***********************************
+
+		% ***********************************
+		\subsubsection{Study population}
+		% ***********************************
+		
+\subimport{INPUT}{table_HHcharact.tex}
+From table \ref{table:HHcharact} [and as we mentioned earlier], our balanced sample contains 388 households from 15 villages.
+Almost half of housholds are dalits\footnote{\jati{s} (description) affiliation has been clubbed in three categories: dalits (or SC/ST composed of Paraiyars and Arunthathiyars), middle (Vanniyars, Kulalars and Nattars)(48\%) and upper caste (Mudaliyars, Rediyars, Naidus, Chettiyars and Yathavars).}, 38\% are middle caste and the local upper caste represents 14\%  of our sample.
+On average, we find between 4 and 5 individuals per household [and between 1 and 2 childrens per household] in 2010 and 2016-17 and we do not note any significant difference between caste group [except for the upper caste who have on average less than one children per household].
+Whatever the caste, for almost half of households, men outnumber (to check the word) women. 
+We note, however, that this share tends to decrease between 2010 and 2016-17.
+
+For work and financial situation, we observe the fact all households (whatever the caste) faced a loss of assets.
+In 2010, 50\% of households have 681,000 INR of assets while they have 380,470 INR in 2016-17 and the average has decreased by more than 26 \%.
+This loss of assets is largely explained by the fall of agriculture.
+Indeed, as \cite{Guerin} note: (trouver de la littérature sur le fait que les castes les plus élevés ont quitté l'agricultre pour aller travailler en ville, je crois qu'Isabelle en parle dans ses papiers).
+This is what we find here: the share of self-employed agriculture and casual agriculture tend to decrease for all caste and espacially for middle and upper caste; the share of landowner is almost divided by 2 for all caste.
+Regarding the income, they have improved over the period considered, increasing on average by at least 50 \%.
+Finally, more and more households have a worker composition ratio above 1 (more active members than non-active members).
+
+		% ***********************************
+		\subsubsection{Who is ego?}
+		% ***********************************
+		
+\input{INPUT/table_EGOcharact.tex}
+The balanced sample contains 387 ego 1 and 73\% are men who is, on average, 45 years old [40 years old for women] in 2010\footnote{As noted in subsection \ref{subsection:methodology}, the stability over time of personality traits is, thus, tenable.} (table \ref{table:EGOcharact}).
+About half of egos have no education (less than primary), but we observe a large difference between men and women: 61\% of men are educated (primary of more) while women are only 37\%.
+Dispersal between caste is the same for men than for household but we note the fact that for women, dalits are overrepresented compered to upper caste that are underrepresented.
+The majority of men are the head of household and this share increased between 2010 and 2016-17 because of for some households, the head in 2016-17 is the son in 2010 (other cat.).
+The same observation is true for women: the wife in 2010 become the mother of 2016-17.
+Moreover, despite the small share, it is important to note that more than 20\% of women are the head of household in our sample.
+Finally, womens are more enrolled in non stable activity as casual agriculture and NREGA programs (Other) than men.
+Indeed, most men get the majority of their income from self-employed agriculture, non-agricol regular work or self-employed.
+
+\begin{figure}[ht]
+\raggedright
+\includegraphics[width=\textwidth]{INPUT/k_persoEGO1}
+\caption{Distribution of cognitive skills and personality traits -- The resulting cognitive score and personality trait is based on the standardised residual from univariate OLS regression with age as exogenous variable. This is the cognitive score and personality trait purged from life-cycle effects. kernel~=~epanechnikov, bandwidth~=~0.3}
+\sourcefig{NEEMSIS (2016-17); author's calculations.}
+\label{figure:EGOscore}
+\end{figure}
+Concerning the cognitive skills, on figure \ref{figure:EGOscore} we observe several differences between men and women insofar as men have higher score than women for the three measures.
+It is also the men who are more educated so we can easily say that is the effect of school (vérifier la littérature dessus car si ca se trouve ce n'est pas du tout le cas).
+For the Big-Five personality traits note several differences between men and women in terms of score.
+For extraversion where the distribution of men are more oblique to the right, which means that they have higher extraversion score.
+This is the inverse for women for conscientiousness: the distribution is oblique to the left compared to men, which means that they have lower conscientiousness score.
+For the emotional stability, the distribution is more leptokurtique for women than for men, which means that the men are more evenly distributed in terms of score than women.
+Finally, we do not note differences in terms of openness and agreeableness between men and women.
+
+		% ***********************************
+		\subsubsection{Indebtedness trend}
+		% ***********************************
+
+\begin{figure}[ht]
+\raggedright
+\includegraphics[width=\textwidth]{INPUT/box_main}
+\caption{Box plot over year for main indebtedness indicators}
+\sourcefig{RUME (2010) and NEEMSIS (2016-17); author's calculations.}
+\label{figure:debttrendmain}
+\end{figure}
+Figure \ref{figure:debttrendmain} shows the explosion of indebtedness between 2010 and 2016-17.
+In terms of absolute debt service (the total amount of debt owed in one year) the box plot is much more extended upwards in 2016-17 than in 2010.
+The value of the median has increased from about 18,000 INR to 38,000 INR and the average debt service as increase of 50\% (from about 30,000 INR to 54,000 INR).
+By controlling through income, the trend is the same: in 2010, the value of the third quartile has increase from 54\% to 76\%.
+Looking at interests, the conclusions still the same.
+
+
+\begin{figure}[ht]
+\raggedright
+\includegraphics[width=\textwidth]{INPUT/box_rob}
+\caption{Box plot over year for other indebtedness indicators}
+\sourcefig{RUME (2010) and NEEMSIS (2016-17); author's calculations.}
+\label{figure:debttrendrob}
+\end{figure}
+
+
+
+
+
+% \clearpage
+% \newpage
+% % ***********************************
+% \section{Results (15 pages)}
+% % ***********************************
+
+
+
+
+
+
+
+
+
+
+
+
+
+% %Beaucoup de résultats se confirment dans les structure : les upper sont les propriétaires terriens et ont des concrete house.
+% %Je vais montrer ca avec des statistiques descriptives.
+% %Je dois aussi regarder la relation entre structure et personnalité pour adapter mon interpretation :
+% %\begin{itemize}[label=--]
+% %\item Si il n'y a pas de relation, les individus se différencient entre eux, quelque soit la structure.
+% %\item Si il y a une relation, certaines structure ont plus ce type là de personne
+% %\end{itemize}
+
+% % Est-ce que dans ces gros groupes, il n'y a pas des individus qui se démarquent avec leurs caractéristiques individuelles ? Je peux faire un premier jet descriptif avec des kdensity de la distribution des traits de personnalité selon les différentes modalités d'une variable institutionnelle. Sur un graphique, mettre la distribution du score d'agréabilité des dalits, des middle et des uppers. Faire ça pour les cinq traits et pour presque toutes les variables institutionnelles. Dans le même genre, je peux faire des ttest de score entre les sous groupes.
+
+
+
+% \clearpage
+% \newpage
+% \section{Conclusion (3 pages)}
+
+% \section{Pistes en réflexions}
+% %\begin{itemize}[label=--]
+% %\item Quel est le score de l'\textit{homo oeconomicus} en termes de \textit{Big Five} ? \citep{Lopez2020}
+% %\item À partir de là, on peut chercher à voir si les autoentrepreneurs sont des \textit{homo oeconomicus} ou s'ils sont \textit{schumpeterien} ou \textit{coasien}.
+% %\item Analyse \textit{schumpeterienne} : \url{https://doi.org/10.4000/interventionseconomiques.1481}
+% %\item Regarder les articles de \cite{Gong2020} et de \cite{Srinivasan2005}
+% %\item Voir Occupational Attainment and Earnings in Southeast Asia: The Role of Non-cognitive Skills de Labour Economics, 2020
+% %\item salaire (y) = perso (x) -> OK; salaire (y) = perso (x) + educ (x) -> pas OK; perso passe par educ
+% %\item soulèvent; pointent; surlignent; mettent en évidence
+% %\item \cite{Yilmazer2005} + \cite{Poterba2001} + \cite{King1982}
+% %\end{itemize}
+% %
+% %\clearpage
+\newpage
+%-------------------------------------------------------------------------------%
+%\begin{nolinenumbers}
+\addcontentsline{toc}{section}{Références}
+\bibliography{Ref_Arnaud}
+%\nocite{*}
+
+
+\newpage
+%-------------------------------------------------------------------------------%
+\setcounter{tocdepth}5
+\tableofcontents
+
+%\end{nolinenumbers}
+\end{document}
