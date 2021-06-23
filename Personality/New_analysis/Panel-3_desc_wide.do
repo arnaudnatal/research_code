@@ -52,10 +52,45 @@ global wave3 "NEEMSIS2-HH_v16"
 **********
 use"panel_wide", clear
 
-*Recode
+
+********** Groups creation
 gen female=0 if sex_1==1
 replace female=1 if sex_1==2
 label var female "Female (=1)"
+
+
+gen segmana=.
+replace segmana=1 if caste==1 & female==1  // female dalits (DJ)
+replace segmana=2 if caste==1 & female==0  // male dalits
+replace segmana=3 if (caste==2 | caste==3) & female==1  // female midup
+replace segmana=4 if (caste==2 | caste==3) & female==0  // male midup
+
+label define segmana 1"Dalit women" 2"Dalit men" 3"MU caste women" 4"MU caste men"
+label values segmana segmana
+
+tab segmana
+
+*Verif les Y
+cls
+tab1 sum_borrowerservices_1_r_2 sum_borrowerservices_2_r_2 sum_borrowerservices_3_r_2 sum_borrowerservices_4_r_2 sum_plantorepay_1_r_2 sum_plantorepay_2_r_2 sum_plantorepay_3_r_2 sum_plantorepay_4_r_2 sum_plantorepay_5_r_2 sum_plantorepay_6_r_2 sum_settleloanstrategy_1_r_2 sum_settleloanstrategy_2_r_2 sum_settleloanstrategy_3_r_2 sum_settleloanstrategy_4_r_2 sum_settleloanstrategy_5_r_2 sum_settleloanstrategy_6_r_2 sum_settleloanstrategy_7_r_2 sum_settleloanstrategy_8_r_2 sum_settleloanstrategy_9_r_2 sum_settleloanstrategy_10_r_2
+
+cls
+tab segmana sum_borrowerservices_3_r_2, row
+
+tab segmana sum_plantorepay_2_r_2, row
+tab segmana sum_plantorepay_5_r_2, row
+tab segmana sum_plantorepay_6_r_2, row
+
+tab segmana sum_settleloanstrategy_1_r_2, row
+tab segmana sum_settleloanstrategy_3_r_2, row
+tab segmana sum_settleloanstrategy_8_r_2, row
+
+
+
+*pour le moment: sum_settleloanstrategy_8_r sum_plantorepay_6_r sum_borrowerservices_3_r
+
+
+*Recode
 
 gen agesq_1=age_1*age_1
 gen agesq_2=age_2*age_2
@@ -253,19 +288,6 @@ recode caste2 (3=2)
 tab caste2 female
 
 
-********** Groups creation
-gen segmana=.
-replace segmana=1 if caste==1 & female==1  // female dalits (DJ)
-replace segmana=2 if caste==1 & female==0  // male dalits
-replace segmana=3 if (caste==2 | caste==3) & female==1  // female midup
-replace segmana=4 if (caste==2 | caste==3) & female==0  // male midup
-
-label define segmana 1"Dalit women" 2"Dalit men" 3"MU caste women" 4"MU caste men"
-label values segmana segmana
-
-tab segmana
-
-
 *HHFE
 encode HHID_panel, gen(HHvar)
 fre HHvar
@@ -439,6 +461,32 @@ tab1 dummyhelptosettleloan_indiv_1 dummyhelptosettleloan_indiv_2
 tab dummyhelptosettleloan_indiv_2 segmana
 
 
+*Dummy for formal
+tab FormR_indiv_2
+gen dummyformal_2=1 	if FormR_indiv_2>0 & FormR_indiv_2!=.
+replace dummyformal_2=0 if FormR_indiv_2==0 & FormR_indiv_2!=.
+replace dummyformal_2=. if indebt_indiv_2==0
+tab dummyformal_2
+
+tab InformR_indiv_2
+gen dummyinformal_2=1 	if InformR_indiv_2>0 & InformR_indiv_2!=.
+replace dummyinformal_2=0 if InformR_indiv_2==0 & InformR_indiv_2!=.
+replace dummyinformal_2=. if indebt_indiv_2==0
+tab dummyinformal_2
+
+tab IncogenR_indiv_2
+gen dummyincomegen_2=1 	if IncogenR_indiv_2>0 & IncogenR_indiv_2!=.
+replace dummyincomegen_2=0 if IncogenR_indiv_2==0 & IncogenR_indiv_2!=.
+replace dummyincomegen_2=. if indebt_indiv_2==0
+tab dummyincomegen_2
+
+tab NoincogenR_indiv_2
+gen dummynoincomegen_2=1 	if NoincogenR_indiv_2>0 & NoincogenR_indiv_2!=.
+replace dummynoincomegen_2=0 if NoincogenR_indiv_2==0 & NoincogenR_indiv_2!=.
+replace dummynoincomegen_2=. if indebt_indiv_2==0
+tab dummynoincomegen_2
+
+tab1 dummyformal_2 dummyinformal_2 dummyincomegen_2 dummynoincomegen_2
 
 save"panel_wide_v3.dta", replace
 ****************************************
@@ -461,11 +509,7 @@ save"panel_wide_v3.dta", replace
 ****************************************
 use"panel_wide_v3.dta", clear
 
-tab segmana
-
-gen incomeHH1000_pc_1=incomeHH1000_1/hhsize_1
-gen incomeHH1000_pc_2=incomeHH1000_2/hhsize_2
-
+tab segmana 
 
 ********** HH characteristics
 preserve
@@ -480,7 +524,7 @@ tab sexratiocat_1_2 caste, col nofreq
 tab  sexratiocat_1_3 caste, col nofreq
 tabstat assets1000_1, stat(mean sd p50) by(caste)
 tab shock_1 caste, col nofreq
-tabstat annualincome_HH1000_1 incomeHH1000_1 incomeHH1000_pc_1, stat(n mean sd p50) by(caste)
+tabstat annualincome_HH1000_1 incomeHH1000_1, stat(n mean sd p50) by(caste)
 tab indebt_HH_1 caste, col nofreq
 cls
 foreach x in near_panruti near_villupur near_tirup near_chengal near_kanchip near_chennai {
@@ -648,26 +692,18 @@ tab over40_indiv_2 segmana, nofreq chi2
 
 
 
-
 ********** CORR personality - debt
-forvalues i=1(1)4{
-estpost correlate base_nocorrf1_std base_nocorrf2_std base_nocorrf3_std base_nocorrf4_std base_nocorrf5_std base_raven_tt base_num_tt base_lit_tt indebt_indiv_2 loans_indiv_2 loanamount_indiv1000_2 DSR_indiv_2 debtshare_2 over30_indiv_2 over40_indiv_2 InformR_indiv_2 NoincogenR_indiv_2 if segmana==`i', matrix listwise
-esttab using corr.csv, unstack not noobs compress starlevels(* 0.10 ** 0.05 *** 0.01) replace cells(b(fmt(2)))
 
-preserve
-import delimited "corr.csv", delimiter(",") varnames(nonames) clear
-gen n=_n
-drop if n<=12
-drop v10 v11 v12 v13 v14 v15 v16 v17 v18
-drop n
-forvalues j=2(1)9{
-replace v`j'=substr(v`j',3,strlen(v`j')) if substr(v`j',strlen(v`j')-1,1)!="*"
-replace v`j'=substr(v`j',1,strlen(v`j')-1) if substr(v`j',strlen(v`j')-1,1)!="*"
+forvalues i=1(1)4{
+cpcorr  loanamount_indiv1000_2 loans_indiv_2 DSR_indiv_2 over40_indiv_2 \ base_nocorrf1_std base_nocorrf2_std base_nocorrf3_std base_nocorrf4_std base_nocorrf5_std base_raven_tt base_num_tt base_lit_tt if segmana==`i', f(%5.2f)
+matrix list r(C)
+matrix list r(p)
+
+cpcorr indebt_indiv_2 \ base_nocorrf1_std base_nocorrf2_std base_nocorrf3_std base_nocorrf4_std base_nocorrf5_std base_raven_tt base_num_tt base_lit_tt if segmana==`i', f(%4.2f)
+matrix list r(C)
+matrix list r(p)
 }
-destring v2 v3 v4 v5 v6 v7 v8 v9, replace
-export excel using "Stat_desc.xlsx", sheet("corr_segmana_`i'", replace)
-restore
-}
+
 
 * new Y
 tab1 sum_borrowerservices_1_r_2 sum_borrowerservices_2_r_2 sum_borrowerservices_3_r_2 sum_borrowerservices_4_r_2
@@ -698,10 +734,24 @@ tab1 sum_borrowerservices_1_r_2 sum_borrowerservices_2_r_2 sum_borrowerservices_
 
 tab sum_plantorepay_6_r_2 sum_settleloanstrategy_3_r_2
 
+tabstat sum_borrowerservices_3_r_2 dummyhelptosettleloan_indiv_2 sum_settleloanstrategy_8_r_2 sum_plantorepay_6_r_2 if indebt_indiv_2==1 , stat(n mean) by(segmana)
+
+tabstat loans_indiv_2 debtshare_2 ISR_indiv_2 FormR_indiv_2 InformR_indiv_2 if indebt_indiv_2==1, stat(n mean sd p50) by(segmana)
+
+oneway loans_indiv_2 segmana
+
+tabstat over40_indiv_2 if indebt_indiv_2==1, stat(n mean) by(segmana)
+
+oneway over40_indiv_2 segmana
+tab over40_indiv_2 segmana, chi2 nofreq
+
+
 ****************************************
 * END
 
 
+tab sum_borrowerservices_3_r_2 indebt_indiv_2
+tabstat sum_borrowerservices_3_r_2 if indebt_indiv_2==1, stat(n mean) by(segmana)
 
 
 
