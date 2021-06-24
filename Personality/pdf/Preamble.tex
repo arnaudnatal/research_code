@@ -231,6 +231,7 @@ xleftmargin=0.5cm
 %\renewcommand{\citep}[1]{\textcolor{teal}{\citep{#1}}}
 %\renewcommand{\cite}[1]{\textcolor{teal}{\cite{#1}}}
 \usepackage{xcolor}
+\usepackage{colortbl}
 
 \hypersetup{colorlinks,linkcolor={red},citecolor={teal},urlcolor={blue}}
 %\newcommand{\ypenser}[1]{\textcolor[purple]{#1}}
@@ -271,6 +272,10 @@ xleftmargin=0.5cm
 % Encadré
 % *****************************************************************
 \usepackage{tikz}
+
+% Thick
+\def\checkmark{\tikz\fill[scale=0.4](0,.35) -- (.25,0) -- (1,.7) -- (.25,.15) -- cycle;} 
+
 \newcommand{\titlebox}[2]{%
 \tikzstyle{titlebox}=[rectangle,inner sep=10pt,inner ysep=10pt,draw]%
 \tikzstyle{title}=[fill=white]%
