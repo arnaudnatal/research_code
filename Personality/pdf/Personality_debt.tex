@@ -20,7 +20,8 @@ singlelinecheck=false % <-- important
 
 \newcommand{\ie}{\textit{i.e.}}
 
-\DeclareCaptionLabelFormat{AppendixTables}{A.#2}
+% \renewcommand*\thetable{\Alph{section}.\arabic{table}}
+% \renewcommand*\thefigure{\Alph{section}.\arabic{figure}}
 
 
 % *****************************************************************
@@ -69,14 +70,12 @@ Gender, caste,
 %\linenumbers
 
 % ******************************
-\section*{Introduction}
-\addcontentsline{toc}{section}{Introduction}
+\section{Introduction}
+% \addcontentsline{toc}{section}{Introduction}
 \label{Introduction}
 % ******************************
 
-		% ******************************
-		\subsubsection{Accroche}
-		% ******************************
+
 Despite the recent economic growth\footnote{World Bank Data -- \url{https://data.worldbank.org/indicator/NY.GDP.MKTP.KD?locations=IN}. Accessed June 21, 2021.} and the improvement in education and health, social disparities subsist in India, especially through the caste system and gender.
 Historically, caste --or \jati, represent an hierarchical and endogamous group of individuals based on occupation.
 With gender, it represent the major sources of inequality in terms of education \citep{Munshi2006, Hasan2006, Saha2013}, labour \citep{Madheswaran2007, Mohanty2006, Das2012}, wealth and poverty \citep{Borooah2005b, Zacharias2011, Deshpande2000, EsteveVolart2004} or marriage \citep{Banerjee2009, Chacko2003}.
@@ -306,7 +305,7 @@ Les premiers travaux qui lie skills et hh finance ont moins de 10 ans et s'inté
 	% ******************************
 %Microfinance a ciblé les femmes car plus souple et plus facile à ménacer = dimension psychologique très importante? 
 
-Dans un environnement contraint par sa caste et son sexe, est-ce que les individus arrivent à se distinguer par leur personnalité en termes de dette ?
+
 
 C'est d'autant plus intéressant que la dette est omniprésente \cite{Guerin2013, Guerin2020}
 
@@ -314,16 +313,10 @@ Try to capture the role of cognitive skills and personality traits thus allows t
 %Consumption expenses represent almost a third of loans in 2010 and 2016-17 --this is the most common loan reason-- and the average amount of one loan is 9,920 INR in 2010 and 24,780 INR in 2016-17.
 
 
-
-The main objective of this paper is to analyse the role of cognitive skills and personality traits on indebtedness in a context where contextual determinants variable are decisive.
-\begin{enumerate}
-\item à travers ce papier on cherche tout d'abord à mieux comprendre l'endettement 
-\item puis on cherche à concilier deux gros pan de la littérature: structurel vs individualiste
-\end{enumerate}
+\dev{Est-ce qu'il y a un lien entre compétences cognitives et endettement ?}
+\dev{Plus particulierement, est-ce qu'à l'intérieur des carcans, des individus se différencient par leurs compétences cognitives ?}
 
 
-% \cite{Fong2001} suggest that a weak efficacy feeling can contribute to low income which increase the feeling of weak efficacy \citep{Bowles2001}. 
-% Applied in indebtedness, understand the role of cognitive skills and personality traits can allow us to break 
 
 
 
@@ -405,18 +398,9 @@ Following this path, \cite{Ardelt2000} state that ``personality can change over 
 % Unfortunately it is generally not known when these unexpected changes in the social environment will occur; therefore studies of this kind will require a large budget to follow a diverse segment of society over a long period.
 
 Our data allow us to examine stability over time of Big-5 personality traits for 835 individuals of rural India.
-Calculating variation rate between 2016-17 and 2020-21 of each traits, results show a stability for minor part of the population (see Table \ref{fig:stab}).
+Calculating variation rate between 2016-17 and 2020-21 of each traits, results show a stability for minor part of the population (see Table \ref{fig:stab} of Appendix \ref{section:stab_big5}).
 
 Thus, in order to limit endogeneity --through reverse causality, we investigate the role of personality traits and cognitive skills (and all others independents variables) in 2016-17 on 2020-21 debt.
-
-
-\begin{figure}[htpb]
-\raggedright
-\includegraphics[width=\textwidth]{INPUT/Stabcorr}
-\caption{Stability over time of Big-5 personality traits -- Distribution of variation rate between 2016-17 and 2020-21 for Big-5 personality traits corrected from acquiescence biais for 835 individuals from rural Tamil Nadu, India.}
-\sourcefig{NEEMSIS-1 (2016-17) \& NEEMSIS-2 (2020-21); author's calculations.}
-\label{fig:stab}
-\end{figure}
 
 
 
@@ -430,7 +414,7 @@ In our dataset, acquiesence bias is measure with a set of inverse questions that
 This assumption is true only in the context of Big-5 model. 
 In another context, the questions can, perhaps, have a different meaning.
 
-The resulting factors are relatively similar to the Big-5 personality traits (see Appendix \ref{section:efa_big5}) with satisfactory \citeauthor{McDonald1999}'s $\upomega$: Factor 1 as Extraversion-Openness ($\upomega=0.91)$; Factor 2 as Conscientiousness ($\upomega=0.87)$; Factor 3 as Emotional stability-Conscientiousness ($\upomega=0.76)$; Factor 4 as Emotional stability ($\upomega=0.81)$ and Factor 5 as Agreeableness ($\upomega=0.64)$.
+The resulting factors are relatively similar to the Big-5 personality traits (see Table \ref{tab:corrbig5efa}) with satisfactory \citeauthor{McDonald1999}'s $\upomega$: Factor 1 as Extraversion-Openness ($\upomega=0.91)$; Factor 2 as Conscientiousness ($\upomega=0.87)$; Factor 3 as Emotional stability-Conscientiousness ($\upomega=0.76)$; Factor 4 as Emotional stability ($\upomega=0.81)$ and Factor 5 as Agreeableness ($\upomega=0.64)$.
 
 \paragraph{Life-cycle effects}
 To mitigate against the potential problem of life-cycle events --that might induce endogeneity through measurement error, we run univariate OLS regression with cognitive skills and personality traits as endogenous variables and age as exogenous variable (see Appendix \ref{section:efa_big5}).
@@ -443,6 +427,7 @@ We standardised the resulting residuals and use it as cognitive and personality 
 % residual $\hat{\upvarepsilon_j}$ 
 
 
+\subimport{INPUT}{corrBig5EFA.tex}
 
 
 
@@ -725,10 +710,14 @@ Last, for non-dalits male, Factor 1 pulls debt in opposite directions depending 
 % ***********************************
 \section{Results}
 % ***********************************
+%As stated by \cite{Amrhein2019, Wasserstein2019, Wasserstein2016} reported confidence interval
 
-As stated by \cite{Amrhein2019, Wasserstein2019, Wasserstein2016} reported confidence interval
 
 \subimport{INPUT}{AME_indebt.tex}
+\subimport{INPUT}{AME_loans.tex}
+\subimport{INPUT}{AME_loanamount.tex}
+\subimport{INPUT}{AME_IDSR.tex}
+\subimport{INPUT}{AME_over40.tex}
 
 
 
@@ -763,7 +752,7 @@ As stated by \cite{Amrhein2019, Wasserstein2019, Wasserstein2016} reported confi
 % ***********************************
 
 Les programmes de MC qui essayent de cibler les plus pauvres ne sont pas super efficient car même chez eux, il y a beaucoup de situation différentes en termes de dette.
-
+Pose la question de l'inclusion financière
 
 
 \clearpage
@@ -780,34 +769,49 @@ Les programmes de MC qui essayent de cibler les plus pauvres ne sont pas super e
 %-------------------------------------------------------------------------------%
 \appendix
 
-\captionsetup{labelformat=AppendixTables}
 
+
+
+
+% \numberwithin{table}{section}
+% \numberwithin{figure}{section}
+
+\section*{Appendix}
+\label{app:APP}
 
 \section{Data description}
 \label{app:data}
 
 In 2016-17, 492 households, 2,696 individuals, 953 egos.
-\begin{itemize}
-\item[] \textit{But, 2 households without egos.}
-\end{itemize}
+But, 2 households without egos.
 So we have 490 households and 953 egos.
 NEEMSIS2 (2020-21) recovered 485 households, 2,635 individuals.
-\begin{itemize}
-\item[] \textit{But, 600+1 individuals have left their households between the two wave, whose 98 egos.}
-\end{itemize}
+But, 600+1 individuals have left their households between the two wave, whose 98 egos.
 Which mean that we have 485 housholds and 2,034 individuals.
-\begin{itemize}
-\item[] \textit{But, we always have our two households without egos in 2016-17 that we can not compare.}
-\end{itemize}
+But, we always have our two households without egos in 2016-17 that we can not compare.
 Thus, we have 483 households.
-\begin{itemize}
-\item[] \textit{But, for 10 households all egos have changed between 2016-17 and 2020-21.
-Egos of 2016-17 are still here in 2020-21, but \dev{--due to technical issue?--} they do not be selected as egos.}  
-\end{itemize}
+But, for 10 households all egos have changed between 2016-17 and 2020-21.
+Egos of 2016-17 are still here in 2020-21, but they do not be selected as egos. 
 Finally, our sample is constitute from 835 egos represented 473 households.
 
 
+\clearpage
+\newpage
+\section{Stability of Big-5 personality traits over time}
+\label{section:stab_big5}
 
+\begin{figure}[htpb]
+\raggedright
+\includegraphics[width=\textwidth]{INPUT/Stabcorr}
+\caption{Stability over time of Big-5 personality traits -- Distribution of variation rate between 2016-17 and 2020-21 for Big-5 personality traits corrected from acquiescence biais for 835 individuals from rural Tamil Nadu, India.}
+\sourcefig{NEEMSIS-1 (2016-17) \& NEEMSIS-2 (2020-21); author's calculations.}
+\label{fig:stab}
+\end{figure}
+
+
+
+\clearpage
+\newpage
 \section{Factor analysis for personality traits}
 \label{section:efa_big5}
 
