@@ -18,7 +18,7 @@ Personality traits: EFA + panel
 clear all
 macro drop _all
 ********** Path to folder "data" folder.
-global directory = "D:\Documents\_Thesis\Research-Skills_and_debt\New_analysis"
+global directory = "D:\Documents\_Thesis\Research-Skills_and_debt\Analysis"
 cd"$directory"
 
 ********** Name of the NEEMSIS2 questionnaire version to clean
@@ -342,13 +342,17 @@ rotate, promax
 *putexcel set "EFA_2016.xlsx", modify sheet(ncorr_without_all)
 *putexcel (E2)=matrix(e(r_L))
 predict nocorrf1 nocorrf2 nocorrf3 nocorrf4 nocorrf5
-estpost correlate nocorrf1 nocorrf2 nocorrf3 nocorrf4 nocorrf5 $big5imwithout, matrix listwise
+cpcorr $big5imwithout\ nocorrf1 nocorrf2 nocorrf3 nocorrf4 nocorrf5
+matrix list r(C)
+matrix list r(p)
+
 *esttab using "_corr.csv", unstack not noobs compress cells(b(star fmt(2))) starlevels(* 0.05 ** 0.01 *** 0.001) replace
 
 
 *Correlation with big-5 and cronbach
-estpost correlate cr_OP cr_EX cr_ES cr_CO cr_AG nocorrf1 nocorrf2 nocorrf3 nocorrf4 nocorrf5, matrix listwise
-esttab , unstack not noobs compress cells(b(star fmt(2))) starlevels(* 0.10 ** 0.05 *** 0.01) replace
+cpcorr cr_OP cr_EX cr_ES cr_CO cr_AG nocorrf1 nocorrf2 nocorrf3 nocorrf4 nocorrf5
+matrix list r(C)
+matrix list r(p)
 
 
 
@@ -1060,7 +1064,8 @@ tab cat_mainoccupation_indiv_2
 cls
 foreach x in base_nocorrf1 base_nocorrf2 base_nocorrf3 base_nocorrf4 base_nocorrf5 {
 rename `x' `x'_raw
-qui reg `x' age_1
+reg `x' age_1
+dis _b[age_1]/_se[age_1]
 est store reg_`x'
 predict `x', residuals
 egen `x'_std=std(`x')
