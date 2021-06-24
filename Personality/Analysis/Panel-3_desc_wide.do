@@ -22,7 +22,7 @@ clear all
 macro drop _all
 set scheme plotplain
 ********** Path to folder "data" folder.
-global directory = "D:\Documents\_Thesis\Research-Skills_and_debt\New_analysis"
+global directory = "D:\Documents\_Thesis\Research-Skills_and_debt\Analysis"
 cd"$directory"
 
 ********** Name of the NEEMSIS2 questionnaire version to clean
