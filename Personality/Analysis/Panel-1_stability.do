@@ -254,8 +254,8 @@ kdensity delta2_cr_AG, bwidth(0.1) xline(-5 5) xlabel(-60(20)100) xmtick(-60(5)1
 kdensity delta2_cr_ES, bwidth(0.1) xline(-5 5) xlabel(-60(20)100) xmtick(-60(5)100) note("") lcolor(black) lpattern(solid) title("") xtitle("Δ Emotional stability", size(medsmall)) ytitle("Kernel density", size(small)) name(g5, replace) 
 *kdensity delta2_cr_Grit, bwidth(0.1) xline(-5 5) xlabel(-60(20)100) xmtick(-60(5)100) note("") lcolor(plb1) title("") xtitle("Δ Grit corr.") name(g6, replace)
 *graph combine g1 g2 g3 g4 g5 g6, ycommon note("epanechnikov kernel; bandwidth=0.1") name(combined, replace)
-graph combine g1 g2 g3 g4 g5, ycommon note("Kernel: Epanechnikov;" "Bandwidth: 0.1;" "All traits are corrected from acquiescence bias.", size(vsmall)) name(combined, replace)
 set graph on 
+graph combine g1 g2 g3 g4 g5, ycommon note("Kernel: Epanechnikov;" "Bandwidth: 0.1;" "All traits are corrected from acquiescence bias.", size(vsmall)) name(combined, replace)
 graph export "Stabcorr.pdf", as(pdf) replace
 
 
