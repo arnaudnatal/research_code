@@ -16,11 +16,18 @@
   - [ ] Ratios with 2020
   - [ ] Descriptive 2010 - 2016 - 2020
 ## Personality
-  - [ ] Check stabilty
-  - [ ] Check factor analysis
-  - [ ] Organiser les différents Y
-  - [ ] Ségmentation par sexe et caste ou interactive ?
-  - [ ] Échelle individuelle ou ménage ?
+  - [x] Check stabilty
+  - [x] Check factor analysis
+  - [x] Organiser les différents Y
+  - [x] Ségmentation par sexe et caste ou interactive ?
+  - [x] Échelle individuelle ou ménage ?
+  - [ ] Regarder évolution perso et contrôler par la dette de 2016
+  - [ ] Regarder score personnalité avant/après la démonétisation
+  - [ ] Construire la variable de locus of control
+  - [ ] Littérature sur la stabilité du locus
+  - [ ] Mettre au propre les regressions PT&CS sur variation de la dette
+  - [ ] Faire des regressions FE entre personnalité (Big-5) et dette
+  - [ ] Essayer de jouer avec le panel finalement
 ## Labor
   - [ ] Read Michiels, Nordman, Seetahul for mobility
   - [ ] Test correlation
