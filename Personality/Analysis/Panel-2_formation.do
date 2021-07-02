@@ -18,8 +18,13 @@ Personality traits: EFA + panel
 clear all
 macro drop _all
 ********** Path to folder "data" folder.
-global directory = "D:\Documents\_Thesis\Research-Skills_and_debt\Analysis"
-cd"$directory"
+* global directory = "D:\Documents\_Thesis\Research-Skills_and_debt\Analysis"
+* cd"$directory"
+
+
+********** Fac folder
+cd "C:\Users\anatal\Downloads\Personality\Analysis\Matos"
+
 
 ********** Name of the NEEMSIS2 questionnaire version to clean
 global wave1 "RUME-HH_v8"

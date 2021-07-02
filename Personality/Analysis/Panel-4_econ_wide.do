@@ -151,7 +151,7 @@ foreach x in OP CO ES EX AG {
 twoway (histogram delta2_`x' if age_1<30, width(2) percent color(black)) (histogram delta2_`x' if age_1>=30, width(2) color(plb1%50) percent xlabel(-50(10)100) xmtick(-50(5)100) legend(position(6) col(2) order(1 "Less than 30" 2 "30 or more") off)), name(g`x', replace)
 }
 set graph on
-grc1leg gOP gCO gES gEX gAG, ycommon cols(2) 
+*grc1leg gOP gCO gES gEX gAG, ycommon cols(2) 
 
 
 
@@ -259,6 +259,8 @@ X dich = Etre ça plutôt que ça augmente/diminue la proba d'être endetté de 
 ********** Deter of evolution of PTCS
 cls
 
+encode villageid_new, gen(village2016)
+fre village2016
 
 
 log using c:evoperso.log, replace
@@ -274,7 +276,7 @@ tab username cat_evo5_`x', row nofreq
 }
 *
 foreach x in CO OP EX ES AG {
-reg delta_`x' c.age_1 i.sex_1 i.username i.villageid
+reg delta_`x' c.age_1 i.sex_1 ib(freq).username ib(freq).village2016 ib(freq).caste, baselevels
 }
 *
 foreach x in CO OP EX ES AG {
@@ -284,6 +286,10 @@ reg delta_`x' c.age_1 i.sex_1 i.username i.villageid if age_1>=30
 
 log close
 
+foreach x in CO OP EX ES AG {
+tab cat_evo5_`x' cat_evo10_`x' if sex_2==1
+tab cat_evo5_`x' cat_evo10_`x' if sex_2==2
+}
 
 
 
@@ -351,7 +357,7 @@ qui probit `x'_2 indebt_indiv_1 $indivcontrol $hhcontrol4 $villagesFE c.base_noc
 est store res_6
 
 *dy/dx
-qui margins, dydx(base_nocorrf1_std base_nocorrf2_std base_nocorrf3_std base_nocorrf4_std base_nocorrf5_std base_raven_tt base_num_tt base_lit_tt)  saving(margin_`x'1, replace)
+qui margins, dydx(base_nocorrf1_std base_nocorrf2_std base_nocorrf3_std base_nocorrf4_std base_nocorrf5_std base_raven_tt base_num_tt base_lit_tt) atmeans saving(margin_`x'1, replace)
 
 
 *** Female
@@ -359,7 +365,7 @@ qui probit `x'_2 indebt_indiv_1 $indivcontrol $hhcontrol4 $villagesFE c.base_noc
 est store res_6
 
 *dy/dx
-qui margins, dydx(base_nocorrf1_std base_nocorrf2_std base_nocorrf3_std base_nocorrf4_std base_nocorrf5_std base_raven_tt base_num_tt base_lit_tt) at(female=(0 1))  saving(margin_`x'2, replace)
+qui margins, dydx(base_nocorrf1_std base_nocorrf2_std base_nocorrf3_std base_nocorrf4_std base_nocorrf5_std base_raven_tt base_num_tt base_lit_tt) at(female=(0 1)) atmeans saving(margin_`x'2, replace)
 
 
 
@@ -368,7 +374,7 @@ qui probit `x'_2 indebt_indiv_1 $indivcontrol $hhcontrol4 $villagesFE c.base_noc
 est store res_6
 
 *dy/dx
-qui margins, dydx(base_nocorrf1_std base_nocorrf2_std base_nocorrf3_std base_nocorrf4_std base_nocorrf5_std base_raven_tt base_num_tt base_lit_tt) at(dalits=(0 1))  saving(margin_`x'3, replace)
+qui margins, dydx(base_nocorrf1_std base_nocorrf2_std base_nocorrf3_std base_nocorrf4_std base_nocorrf5_std base_raven_tt base_num_tt base_lit_tt) at(dalits=(0 1)) atmeans saving(margin_`x'3, replace)
 
 
 
@@ -377,16 +383,14 @@ qui probit `x'_2 indebt_indiv_1 $indivcontrol $hhcontrol4 $villagesFE c.base_noc
 est store res_6
 
 *dy/dx
-qui margins, dydx(base_nocorrf1_std base_nocorrf2_std base_nocorrf3_std base_nocorrf4_std base_nocorrf5_std base_raven_tt base_num_tt base_lit_tt) at(dalits=(0 1) female=(0 1))  saving(margin_`x'4, replace)
+qui margins, dydx(base_nocorrf1_std base_nocorrf2_std base_nocorrf3_std base_nocorrf4_std base_nocorrf5_std base_raven_tt base_num_tt base_lit_tt) at(dalits=(0 1) female=(0 1)) atmeans saving(margin_`x'4, replace)
 }
 
 
-probit indebt_indiv_2 indebt_indiv_1 $indivcontrol $hhcontrol4 $villagesFE c.base_nocorrf1_std##i.female##i.dalits c.base_nocorrf2_std##i.female##i.dalits c.base_nocorrf3_std##i.female##i.dalits c.base_nocorrf4_std##i.female##i.dalits c.base_nocorrf5_std##i.female##i.dalits c.base_raven_tt##i.female##i.dalits c.base_num_tt##i.female##i.dalits c.base_lit_tt##i.female##i.dalits, vce(cluster HHvar)
+qui probit indebt_indiv_2 indebt_indiv_1 $indivcontrol $hhcontrol4 $villagesFE c.base_nocorrf1_std##i.female##i.dalits c.base_nocorrf2_std##i.female##i.dalits c.base_nocorrf3_std##i.female##i.dalits c.base_nocorrf4_std##i.female##i.dalits c.base_nocorrf5_std##i.female##i.dalits c.base_raven_tt##i.female##i.dalits c.base_num_tt##i.female##i.dalits c.base_lit_tt##i.female##i.dalits, vce(cluster HHvar)
 
 *dy/dx
-margins, dydx(base_nocorrf1_std base_nocorrf2_std base_nocorrf3_std base_nocorrf4_std base_nocorrf5_std base_raven_tt base_num_tt base_lit_tt) at(dalits=(0 1) female=(0 1))
-qui margins, at(base_nocorrf1_std=(-3 (0.1) 3) dalits=(0 1) female=(0 1))
-marginsplot, yline(0) noci
+margins, dydx(base_nocorrf1_std base_nocorrf2_std base_nocorrf3_std base_nocorrf4_std base_nocorrf5_std base_raven_tt base_num_tt base_lit_tt) at(dalits=(0 1) female=(0 1)) atmeans
 
 
 
@@ -456,14 +460,14 @@ qui reg `var'_2 indebt_indiv_1 $indivcontrol $hhcontrol4 $villagesFE c.base_noco
 est store res_6
 
 *dy/dx
-qui margins, dydx(base_nocorrf1_std base_nocorrf2_std base_nocorrf3_std base_nocorrf4_std base_nocorrf5_std base_raven_tt base_num_tt base_lit_tt)   saving(margin_`var'1, replace)
+qui margins, dydx(base_nocorrf1_std base_nocorrf2_std base_nocorrf3_std base_nocorrf4_std base_nocorrf5_std base_raven_tt base_num_tt base_lit_tt) atmeans  saving(margin_`var'1, replace)
 
 *** Female
 qui reg `var'_2 indebt_indiv_1 $indivcontrol $hhcontrol4 $villagesFE c.base_nocorrf1_std##i.female c.base_nocorrf2_std##i.female c.base_nocorrf3_std##i.female c.base_nocorrf4_std##i.female c.base_nocorrf5_std##i.female c.base_raven_tt##i.female c.base_num_tt##i.female c.base_lit_tt##i.female dalits if indebt_indiv_2==1, vce(cluster HHvar)
 est store res_6
 
 *dy/dx
-qui margins, dydx(base_nocorrf1_std base_nocorrf2_std base_nocorrf3_std base_nocorrf4_std base_nocorrf5_std base_raven_tt base_num_tt base_lit_tt) at(female=(0 1))  saving(margin_`var'2, replace)
+qui margins, dydx(base_nocorrf1_std base_nocorrf2_std base_nocorrf3_std base_nocorrf4_std base_nocorrf5_std base_raven_tt base_num_tt base_lit_tt) at(female=(0 1)) atmeans saving(margin_`var'2, replace)
 
 
 
@@ -472,7 +476,7 @@ qui reg `var'_2 indebt_indiv_1 $indivcontrol $hhcontrol4 $villagesFE c.base_noco
 est store res_6
 
 *dy/dx
-qui margins, dydx(base_nocorrf1_std base_nocorrf2_std base_nocorrf3_std base_nocorrf4_std base_nocorrf5_std base_raven_tt base_num_tt base_lit_tt) at(dalits=(0 1))  saving(margin_`var'3, replace)
+qui margins, dydx(base_nocorrf1_std base_nocorrf2_std base_nocorrf3_std base_nocorrf4_std base_nocorrf5_std base_raven_tt base_num_tt base_lit_tt) at(dalits=(0 1)) atmeans saving(margin_`var'3, replace)
 
 
 
@@ -481,7 +485,7 @@ qui reg `var'_2 indebt_indiv_1 $indivcontrol $hhcontrol4 $villagesFE c.base_noco
 est store res_6
 
 *dy/dx
-qui margins, dydx(base_nocorrf1_std base_nocorrf2_std base_nocorrf3_std base_nocorrf4_std base_nocorrf5_std base_raven_tt base_num_tt base_lit_tt) at(dalits=(0 1) female=(0 1))  saving(margin_`var'4, replace)
+qui margins, dydx(base_nocorrf1_std base_nocorrf2_std base_nocorrf3_std base_nocorrf4_std base_nocorrf5_std base_raven_tt base_num_tt base_lit_tt) at(dalits=(0 1) female=(0 1)) atmeans saving(margin_`var'4, replace)
 }
 
 
@@ -588,14 +592,14 @@ qui probit `var'_2 indebt_indiv_1 $indivcontrol $hhcontrol4 $villagesFE c.base_n
 est store res_6
 
 *dy/dx
-qui margins, dydx(base_nocorrf1_std base_nocorrf2_std base_nocorrf3_std base_nocorrf4_std base_nocorrf5_std base_raven_tt base_num_tt base_lit_tt)   saving(margin_`var'1, replace)
+qui margins, dydx(base_nocorrf1_std base_nocorrf2_std base_nocorrf3_std base_nocorrf4_std base_nocorrf5_std base_raven_tt base_num_tt base_lit_tt) atmeans saving(margin_`var'1, replace)
 
 *** Female
 qui probit `var'_2 indebt_indiv_1 $indivcontrol $hhcontrol4 $villagesFE c.base_nocorrf1_std##i.female c.base_nocorrf2_std##i.female c.base_nocorrf3_std##i.female c.base_nocorrf4_std##i.female c.base_nocorrf5_std##i.female c.base_raven_tt##i.female c.base_num_tt##i.female c.base_lit_tt##i.female dalits if indebt_indiv_2==1, vce(cluster HHvar)
 est store res_6
 
 *dy/dx
-qui margins, dydx(base_nocorrf1_std base_nocorrf2_std base_nocorrf3_std base_nocorrf4_std base_nocorrf5_std base_raven_tt base_num_tt base_lit_tt) at(female=(0 1))  saving(margin_`var'2, replace)
+qui margins, dydx(base_nocorrf1_std base_nocorrf2_std base_nocorrf3_std base_nocorrf4_std base_nocorrf5_std base_raven_tt base_num_tt base_lit_tt) at(female=(0 1)) atmeans saving(margin_`var'2, replace)
 
 
 
@@ -604,7 +608,7 @@ qui probit `var'_2 indebt_indiv_1 $indivcontrol $hhcontrol4 $villagesFE c.base_n
 est store res_6
 
 *dy/dx
-qui margins, dydx(base_nocorrf1_std base_nocorrf2_std base_nocorrf3_std base_nocorrf4_std base_nocorrf5_std base_raven_tt base_num_tt base_lit_tt) at(dalits=(0 1))  saving(margin_`var'3, replace)
+qui margins, dydx(base_nocorrf1_std base_nocorrf2_std base_nocorrf3_std base_nocorrf4_std base_nocorrf5_std base_raven_tt base_num_tt base_lit_tt) at(dalits=(0 1)) atmeans saving(margin_`var'3, replace)
 
 
 
@@ -613,7 +617,7 @@ qui probit `var'_2 indebt_indiv_1 $indivcontrol $hhcontrol4 $villagesFE c.base_n
 est store res_6
 
 *dy/dx
-qui margins, dydx(base_nocorrf1_std base_nocorrf2_std base_nocorrf3_std base_nocorrf4_std base_nocorrf5_std base_raven_tt base_num_tt base_lit_tt) at(dalits=(0 1) female=(0 1))  saving(margin_`var'4, replace)
+qui margins, dydx(base_nocorrf1_std base_nocorrf2_std base_nocorrf3_std base_nocorrf4_std base_nocorrf5_std base_raven_tt base_num_tt base_lit_tt) at(dalits=(0 1) female=(0 1)) atmeans saving(margin_`var'4, replace)
 }
 
 
@@ -663,14 +667,14 @@ qui poisson `var'_2 indebt_indiv_1 $indivcontrol $hhcontrol4 $villagesFE c.base_
 est store res_6
 
 *dy/dx
-qui margins, dydx(base_nocorrf1_std base_nocorrf2_std base_nocorrf3_std base_nocorrf4_std base_nocorrf5_std base_raven_tt base_num_tt base_lit_tt)   saving(margin_`var'1, replace)
+qui margins, dydx(base_nocorrf1_std base_nocorrf2_std base_nocorrf3_std base_nocorrf4_std base_nocorrf5_std base_raven_tt base_num_tt base_lit_tt) atmeans saving(margin_`var'1, replace)
 
 *** Female
 qui poisson `var'_2 indebt_indiv_1 $indivcontrol $hhcontrol4 $villagesFE c.base_nocorrf1_std##i.female c.base_nocorrf2_std##i.female c.base_nocorrf3_std##i.female c.base_nocorrf4_std##i.female c.base_nocorrf5_std##i.female c.base_raven_tt##i.female c.base_num_tt##i.female c.base_lit_tt##i.female dalits if indebt_indiv_2==1, vce(cluster HHvar)
 est store res_6
 
 *dy/dx
-qui margins, dydx(base_nocorrf1_std base_nocorrf2_std base_nocorrf3_std base_nocorrf4_std base_nocorrf5_std base_raven_tt base_num_tt base_lit_tt) at(female=(0 1))  saving(margin_`var'2, replace)
+qui margins, dydx(base_nocorrf1_std base_nocorrf2_std base_nocorrf3_std base_nocorrf4_std base_nocorrf5_std base_raven_tt base_num_tt base_lit_tt) at(female=(0 1)) atmeans saving(margin_`var'2, replace)
 
 
 
@@ -679,7 +683,7 @@ qui poisson `var'_2 indebt_indiv_1 $indivcontrol $hhcontrol4 $villagesFE c.base_
 est store res_6
 
 *dy/dx
-qui margins, dydx(base_nocorrf1_std base_nocorrf2_std base_nocorrf3_std base_nocorrf4_std base_nocorrf5_std base_raven_tt base_num_tt base_lit_tt) at(dalits=(0 1))  saving(margin_`var'3, replace)
+qui margins, dydx(base_nocorrf1_std base_nocorrf2_std base_nocorrf3_std base_nocorrf4_std base_nocorrf5_std base_raven_tt base_num_tt base_lit_tt) at(dalits=(0 1)) atmeans saving(margin_`var'3, replace)
 
 
 
@@ -688,7 +692,7 @@ qui poisson `var'_2 indebt_indiv_1 $indivcontrol $hhcontrol4 $villagesFE c.base_
 est store res_6
 
 *dy/dx
-qui margins, dydx(base_nocorrf1_std base_nocorrf2_std base_nocorrf3_std base_nocorrf4_std base_nocorrf5_std base_raven_tt base_num_tt base_lit_tt) at(dalits=(0 1) female=(0 1))  saving(margin_`var'4, replace)
+qui margins, dydx(base_nocorrf1_std base_nocorrf2_std base_nocorrf3_std base_nocorrf4_std base_nocorrf5_std base_raven_tt base_num_tt base_lit_tt) at(dalits=(0 1) female=(0 1)) atmeans saving(margin_`var'4, replace)
 }
 
 
