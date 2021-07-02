@@ -28,6 +28,7 @@
   - [ ] Mettre au propre les regressions PT&CS sur variation de la dette
   - [ ] Faire des regressions FE entre personnalité (Big-5) et dette
   - [ ] Essayer de jouer avec le panel finalement
+  - [ ] Caste & Gender = Social Identity
 ## Labor
   - [ ] Read Michiels, Nordman, Seetahul for mobility
   - [ ] Test correlation
