@@ -18,12 +18,12 @@ Personality traits: EFA + panel
 clear all
 macro drop _all
 ********** Path to folder "data" folder.
-* global directory = "D:\Documents\_Thesis\Research-Skills_and_debt\Analysis"
-* cd"$directory"
+ global directory = "D:\Documents\_Thesis\Research-Skills_and_debt\Analysis"
+ cd"$directory"
 
 
 ********** Fac folder
-cd "C:\Users\anatal\Downloads\Personality\Analysis\Matos"
+*cd "C:\Users\anatal\Downloads\Personality\Analysis\Matos"
 
 
 ********** Name of the NEEMSIS2 questionnaire version to clean
@@ -77,6 +77,13 @@ gen im_`x'=`x'
 global big5im im_curious im_interestedbyart im_repetitivetasks im_inventive im_liketothink im_newideas im_activeimagination im_organized im_makeplans im_workhard im_appointmentontime im_putoffduties im_easilydistracted im_completeduties im_enjoypeople im_sharefeelings im_shywithpeople im_enthusiastic im_talktomanypeople im_talkative im_expressingthoughts im_workwithother im_understandotherfeeling im_trustingofother im_rudetoother im_toleratefaults im_forgiveother im_helpfulwithothers im_managestress im_nervous im_changemood im_feeldepressed im_easilyupset im_worryalot im_staycalm ///
 im_tryhard im_stickwithgoals im_goaftergoal im_finishwhatbegin im_finishtasks im_keepworking
 
+
+**********
+/*
+Il faut que je refasse l'anlayse factorielle avec les variables raw_ au début car celles ci ne tiennent pas compte de la classification avec le système des variables inversées
+*/
+
+
 forvalues j=1(1)3{
 forvalues i=1(1)2{
 foreach x in $big5im{
@@ -91,40 +98,74 @@ im_tryhard im_stickwithgoals im_goaftergoal im_finishwhatbegin im_finishtasks im
 
 global big5imwithout im_curious im_interestedbyart im_repetitivetasks im_inventive im_liketothink im_newideas im_activeimagination im_organized im_makeplans im_workhard im_appointmentontime im_putoffduties im_easilydistracted im_completeduties im_enjoypeople im_sharefeelings im_shywithpeople im_enthusiastic im_talktomanypeople im_talkative im_expressingthoughts im_workwithother im_understandotherfeeling im_trustingofother im_rudetoother im_toleratefaults im_forgiveother im_helpfulwithothers im_managestress im_nervous im_changemood im_feeldepressed im_easilyupset im_worryalot im_staycalm
 
-/*
-minap $big5imwith if sex==1
-factor $big5imwith if sex==1, pcf fa(9)  // 6-43
-rotate, promax 
-putexcel set "EFA_2020.xlsx", modify sheet(with_male)
-putexcel (E2)=matrix(e(r_L))
-minap $big5imwith if sex==2
-factor $big5imwith if sex==2, pcf fa(8)  // 6-44
-rotate, promax
-putexcel set "EFA_2020.xlsx", modify sheet(with_female)
-putexcel (E2)=matrix(e(r_L))
-minap $big5imwith
-factor $big5imwith, pcf fa(7)  // 6-43
-rotate, promax
-putexcel set "EFA_2020.xlsx", modify sheet(with_all)
-putexcel (E2)=matrix(e(r_L))
 
-minap $big5imwithout if sex==1
-factor $big5imwithout if sex==1, pcf fa(8)  // 5-42
-rotate, promax
-putexcel set "EFA_2020.xlsx", modify sheet(without_male)
-putexcel (E2)=matrix(e(r_L))
-minap $big5imwithout if sex==2
-factor $big5imwithout if sex==2, pcf fa(6)  // 5-43
-rotate, promax
-putexcel set "EFA_2020.xlsx", modify sheet(without_female)
-putexcel (E2)=matrix(e(r_L))
-*/
+* no corr. all without
 minap $big5imwithout
+fsum $big5imwithout, stat(n mean sd)
 factor $big5imwithout, pcf fa(5)  // 5-42
 rotate, promax
-*putexcel set "EFA_2020.xlsx", modify sheet(without_all)
-*putexcel (E2)=matrix(e(r_L))
-predict f1_2020 f2_2020 f3_2020 f4_2020 f5_2020
+putexcel set "EFA_2020.xlsx", modify sheet(without_all)
+putexcel (E2)=matrix(e(r_L))
+
+predict nocorrf1 nocorrf2 nocorrf3 nocorrf4 nocorrf5
+cpcorr $big5imwithout\ nocorrf1 nocorrf2 nocorrf3 nocorrf4 nocorrf5
+matrix list r(C)
+matrix list r(p)
+
+*esttab using "_corr.csv", unstack not noobs compress cells(b(star fmt(2))) starlevels(* 0.05 ** 0.01 *** 0.001) replace
+
+
+*Correlation with big-5 and cronbach
+cpcorr cr_OP cr_EX cr_ES cr_CO cr_AG nocorrf1 nocorrf2 nocorrf3 nocorrf4 nocorrf5
+matrix list r(C)
+matrix list r(p)
+
+
+********** Alpha for traits
+**Alpha
+*drop if egoid==0
+cls
+
+*OP: 0.39 (cr) vs 0.77
+omega cr_curious cr_interested~t   cr_repetitive~s cr_inventive cr_liketothink cr_newideas cr_activeimag~n
+omega curious interested~t   repetitive~s inventive liketothink newideas activeimag~n
+
+*CO: 0.38 (cr) vs 0.72
+omega cr_organized  cr_makeplans cr_workhard cr_appointmen~e cr_putoffduties cr_easilydist~d cr_completedu~s	
+omega organized  makeplans workhard appointmen~e putoffduties easilydist~d completedu~s
+
+*EX: 0.46 (cr) vs 0.66
+omega cr_enjoypeople cr_sharefeeli~s cr_shywithpeo~e  cr_enthusiastic  cr_talktomany~e  cr_talkative cr_expressing~s
+omega enjoypeople sharefeeli~s shywithpeo~e  enthusiastic  talktomany~e  talkative expressing~s
+		
+*AG: 0.31 (cr) vs 0.61
+omega cr_workwithot~r   cr_understand~g cr_trustingof~r cr_rudetoother cr_toleratefa~s  cr_forgiveother  cr_helpfulwit~s 
+omega workwithot~r   understand~g trustingof~r rudetoother toleratefa~s  forgiveother  helpfulwit~s 
+
+	
+*ES: 0.79 (cr) vs 0.72
+omega cr_managestress  cr_nervous  cr_changemood cr_feeldepres~d cr_easilyupset cr_worryalot  cr_staycalm
+omega managestress  nervous  changemood feeldepres~d easilyupset worryalot  staycalm
+
+
+
+**********Correlation + omega
+*Factor 1
+omega im_expressingthoughts im_liketothink im_talktomanypeople im_activeimagination im_sharefeelings im_newideas im_curious im_inventive
+
+*Factor 2
+omega im_completeduties im_appointmentontime im_enthusiastic im_makeplans im_workhard im_workwithother im_organized
+
+
+*Factor 3
+omega im_changemood im_easilydistracted im_putoffduties im_staycalm im_nervous im_rudetoother im_managestress
+
+*Factor 4
+omega im_worryalot im_easilyupset im_feeldepressed im_nervous im_shywithpeople im_easilydistracted im_changemood
+
+*Factor 5
+omega im_forgiveother im_toleratefaults im_helpfulwithothers im_trustingofother im_talkative im_workwithother im_changemood im_understandotherfeeling im_curious im_repetitivetasks im_interestedbyart im_staycalm im_shywithpeople im_completeduties
+
 
 
 
@@ -227,6 +268,36 @@ replace investequip_plowingmach=equipmentcost_plowingmach if equipementyear4>="2
 egen investequiptot_HH=rowtotal(investequip_tractor investequip_bullockcart investequip_plowingmach)
 
 
+* Ratio de dépendance à la dette : 
+gen debtor=0
+replace debtor=1 if loanamount_indiv>0 & loanamount_indiv!=.
+gen nondebtor=0
+replace nondebtor=1 if debtor==0 & debtor!=.
+
+gen worker=0
+replace worker=1 if annualincome_indiv>0 & annualincome_indiv!=.
+gen nonworker=0
+replace nonworker=1 if worker==0 & worker!=.
+
+foreach x in debtor nondebtor worker nonworker {
+bysort HHID_panel: egen `x'_HH=sum(`x')
+}
+
+gen debtorratio=debtor_HH/nondebtor_HH
+clonevar debtorratio2=debtorratio
+replace debtorratio2=debtor_HH if debtorratio==.
+
+gen workerratio=worker_HH/nonworker_HH
+clonevar workerratio2=workerratio
+replace workerratio2=worker_HH if workerratio==.
+
+preserve
+duplicates drop HHID_panel, force
+fre debtorratio debtorratio2
+fre workerratio workerratio2
+restore
+
+
 *Only ego
 fre egoid
 drop if egoid==0
@@ -258,7 +329,7 @@ global wealthhh annualincome_HH totalincome_HH mainoccupation_HH nboccupation_HH
 
 global debtindiv imp1_ds_tot_indiv imp1_is_tot_indiv semiformal_indiv formal_indiv economic_indiv current_indiv humancap_indiv social_indiv house_indiv incomegen_indiv noincomegen_indiv economic_amount_indiv current_amount_indiv humancap_amount_indiv social_amount_indiv house_amount_indiv incomegen_amount_indiv noincomegen_amount_indiv informal_amount_indiv formal_amount_indiv semiformal_amount_indiv loanamount_indiv dummyproblemtorepay_indiv dummyhelptosettleloan_indiv dummyinterest_indiv loans_indiv loanbalance_indiv marriageloanamount_indiv mean_yratepaid_indiv mean_monthlyinterestrate_indiv nbsavingaccounts savingsamount1 savingsamount2 savingsamount3 savingsamount4 dummydebitcard1 dummydebitcard2 dummydebitcard3 dummydebitcard4 datedebitcard1 datedebitcard2 datedebitcard3 datedebitcard4 dummychitfund amountlent interestlending goldquantity goldquantitypledge nbinsurance dummycreditcard1 dummycreditcard2 dummycreditcard3 dummycreditcard4 nbchitfunds chitfundamount1 chitfundamount2 chitfundamount3 marriageloan_indiv sum_borrowerservices_1_r sum_borrowerservices_2_r sum_borrowerservices_3_r sum_borrowerservices_4_r sum_plantorepay_1_r sum_plantorepay_2_r sum_plantorepay_3_r sum_plantorepay_4_r sum_plantorepay_5_r sum_plantorepay_6_r sum_settleloanstrategy_1_r sum_settleloanstrategy_2_r sum_settleloanstrategy_3_r sum_settleloanstrategy_4_r sum_settleloanstrategy_5_r sum_settleloanstrategy_6_r sum_settleloanstrategy_7_r sum_settleloanstrategy_8_r sum_settleloanstrategy_9_r sum_settleloanstrategy_10_r sum_otherlenderservices_1 sum_otherlenderservices_2 sum_otherlenderservices_3 sum_otherlenderservices_4 sum_otherlenderservices_5 sum_debtrelation_shame
 
-global debthh imp1_ds_tot_HH imp1_is_tot_HH informal_HH semiformal_HH formal_HH economic_HH current_HH humancap_HH social_HH house_HH incomegen_HH noincomegen_HH economic_amount_HH current_amount_HH humancap_amount_HH social_amount_HH house_amount_HH incomegen_amount_HH noincomegen_amount_HH informal_amount_HH formal_amount_HH semiformal_amount_HH marriageloanamount_HH loanamount_HH dummyproblemtorepay_HH dummyhelptosettleloan_HH dummyinterest_HH loans_HH loanbalance_HH mean_yratepaid_HH mean_monthlyinterestrate_HH marriageloan_HH
+global debthh imp1_ds_tot_HH imp1_is_tot_HH informal_HH semiformal_HH formal_HH economic_HH current_HH humancap_HH social_HH house_HH incomegen_HH noincomegen_HH economic_amount_HH current_amount_HH humancap_amount_HH social_amount_HH house_amount_HH incomegen_amount_HH noincomegen_amount_HH informal_amount_HH formal_amount_HH semiformal_amount_HH marriageloanamount_HH loanamount_HH dummyproblemtorepay_HH dummyhelptosettleloan_HH dummyinterest_HH loans_HH loanbalance_HH mean_yratepaid_HH mean_monthlyinterestrate_HH marriageloan_HH debtorratio workerratio debtorratio2 workerratio2
 
 global perso f1_2020 f2_2020 f3_2020 f4_2020 f5_2020 cr_OP cr_CO cr_EX cr_AG cr_ES cr_Grit OP CO EX AG ES Grit raven_tt num_tt lit_tt
 
@@ -366,34 +437,26 @@ matrix list r(p)
 *drop if egoid==0
 cls
 
-*OP
-*alpha curious 		interested~t   repetitive~s inventive liketothink newideas activeimag~n
-*alpha cr_curious cr_interested~t   cr_repetitive~s cr_inventive cr_liketothink cr_newideas cr_activeimag~n
+*OP: 0.81 (cr) vs 0.87
 omega cr_curious cr_interested~t   cr_repetitive~s cr_inventive cr_liketothink cr_newideas cr_activeimag~n
+omega curious interested~t   repetitive~s inventive liketothink newideas activeimag~n
 
+*CO: 0.86 (cr) vs 0.85
+omega cr_organized  cr_makeplans cr_workhard cr_appointmen~e cr_putoffduties cr_easilydist~d cr_completedu~s	
+omega organized  makeplans workhard appointmen~e putoffduties easilydist~d completedu~s
 
-*CO
-*alpha organized  makeplans workhard appointmen~e putoffduties easilydist~d completedu~s
-*alpha cr_organized  cr_makeplans cr_workhard cr_appointmen~e cr_putoffduties cr_easilydist~d cr_completedu~s
-omega cr_organized  cr_makeplans cr_workhard cr_appointmen~e cr_putoffduties cr_easilydist~d cr_completedu~s
-	
-	
-*EX	
-*alpha enjoypeople sharefeeli~s shywithpeo~e  enthusiastic  talktomany~e  talkative expressing~s 
-*alpha cr_enjoypeople cr_sharefeeli~s cr_shywithpeo~e  cr_enthusiastic  cr_talktomany~e  cr_talkative cr_expressing~s
+*EX: 0.59 (cr) vs 0.73
 omega cr_enjoypeople cr_sharefeeli~s cr_shywithpeo~e  cr_enthusiastic  cr_talktomany~e  cr_talkative cr_expressing~s
-	
-	
-*AG	
-*alpha workwithot~r   understand~g trustingof~r rudetoother toleratefa~s  forgiveother  helpfulwit~s
-*alpha cr_workwithot~r   cr_understand~g cr_trustingof~r cr_rudetoother cr_toleratefa~s  cr_forgiveother  cr_helpfulwit~s 
+omega enjoypeople sharefeeli~s shywithpeo~e  enthusiastic  talktomany~e  talkative expressing~s
+		
+*AG: 0.60 (cr) vs 0.51
 omega cr_workwithot~r   cr_understand~g cr_trustingof~r cr_rudetoother cr_toleratefa~s  cr_forgiveother  cr_helpfulwit~s 
+omega workwithot~r   understand~g trustingof~r rudetoother toleratefa~s  forgiveother  helpfulwit~s 
 
 	
-*ES	
-*alpha managestress  nervous  changemood feeldepres~d easilyupset worryalot  staycalm 
-*alpha cr_managestress  cr_nervous  cr_changemood cr_feeldepres~d cr_easilyupset cr_worryalot  cr_staycalm
+*ES: 0.80 (cr) vs 0.48
 omega cr_managestress  cr_nervous  cr_changemood cr_feeldepres~d cr_easilyupset cr_worryalot  cr_staycalm
+omega managestress  nervous  changemood feeldepres~d easilyupset worryalot  staycalm
 
 
 
@@ -495,6 +558,36 @@ replace investequip_`x'=equiowncost_`x' if equiownyear_`x'>=2010
 }
 egen investequiptot_HH=rowtotal(investequip_tractor investequip_bullockcart investequip_ploughmach)
 
+* Ratio de dépendance à la dette : 
+gen debtor=0
+replace debtor=1 if loanamount_indiv>0 & loanamount_indiv!=.
+gen nondebtor=0
+replace nondebtor=1 if debtor==0 & debtor!=.
+
+gen worker=0
+replace worker=1 if annualincome_indiv>0 & annualincome_indiv!=.
+gen nonworker=0
+replace nonworker=1 if worker==0 & worker!=.
+
+foreach x in debtor nondebtor worker nonworker {
+bysort HHID_panel: egen `x'_HH=sum(`x')
+}
+
+gen debtorratio=debtor_HH/nondebtor_HH
+clonevar debtorratio2=debtorratio
+replace debtorratio2=debtor_HH if debtorratio==.
+
+gen workerratio=worker_HH/nonworker_HH
+clonevar workerratio2=workerratio
+replace workerratio2=worker_HH if workerratio==.
+
+preserve
+duplicates drop HHID_panel, force
+fre debtorratio debtorratio2
+fre workerratio workerratio2
+restore
+
+
 
 ********** Keep my sample
 fre egoid
@@ -511,7 +604,6 @@ foreach x in $newvar{
 replace `x'_r=1 if `x'>=1 & `x'!=.
 }
 
-
 *Macro for rename
 
 global charactindiv maritalstatus edulevel relationshiptohead sex age readystartjob methodfindjob jobpreference moveoutsideforjob moveoutsideforjobreason aspirationminimumwage dummyaspirationmorehours aspirationminimumwage2 name
@@ -524,7 +616,7 @@ global wealthhh annualincome_HH totalincome_HH mainoccupation_HH nboccupation_HH
 
 global debtindiv imp1_ds_tot_indiv imp1_is_tot_indiv semiformal_indiv formal_indiv economic_indiv current_indiv humancap_indiv social_indiv house_indiv incomegen_indiv noincomegen_indiv economic_amount_indiv current_amount_indiv humancap_amount_indiv social_amount_indiv house_amount_indiv incomegen_amount_indiv noincomegen_amount_indiv informal_amount_indiv formal_amount_indiv semiformal_amount_indiv loanamount_indiv loanamount_wm_indiv dummyproblemtorepay_indiv dummyhelptosettleloan_indiv dummyinterest_indiv loans_indiv loanbalance_indiv marriageloanamount_indiv mean_yratepaid_indiv mean_monthlyinterestrate_indiv nbsavingaccounts savingsamount1 savingsamount2 savingsamount3 savingsamount4 dummydebitcard1 dummydebitcard2 dummydebitcard3 dummydebitcard4 datedebitcard1 datedebitcard2 datedebitcard3 datedebitcard4 dummychitfund amountlent interestlending goldquantity goldquantitypledge nbinsurance dummycreditcard1 dummycreditcard2 dummycreditcard3 dummycreditcard4 nbchitfunds chitfundamount1 chitfundamount2 marriageloan_indiv sum_borrowerservices_1_r sum_borrowerservices_2_r sum_borrowerservices_3_r sum_borrowerservices_4_r sum_plantorepay_1_r sum_plantorepay_2_r sum_plantorepay_3_r sum_plantorepay_4_r sum_plantorepay_5_r sum_plantorepay_6_r sum_settleloanstrategy_1_r sum_settleloanstrategy_2_r sum_settleloanstrategy_3_r sum_settleloanstrategy_4_r sum_settleloanstrategy_5_r sum_settleloanstrategy_6_r sum_settleloanstrategy_7_r sum_settleloanstrategy_8_r sum_settleloanstrategy_9_r sum_settleloanstrategy_10_r sum_otherlenderservices_1 sum_otherlenderservices_2 sum_otherlenderservices_3 sum_otherlenderservices_4 sum_otherlenderservices_5
 
-global debthh imp1_ds_tot_HH imp1_is_tot_HH informal_HH semiformal_HH formal_HH economic_HH current_HH humancap_HH social_HH house_HH incomegen_HH noincomegen_HH economic_amount_HH current_amount_HH humancap_amount_HH social_amount_HH house_amount_HH incomegen_amount_HH noincomegen_amount_HH informal_amount_HH formal_amount_HH semiformal_amount_HH marriageloanamount_HH loanamount_HH loanamount_wm_HH dummyproblemtorepay_HH dummyhelptosettleloan_HH dummyinterest_HH loans_HH loanbalance_HH mean_yratepaid_HH mean_monthlyinterestrate_HH marriageloan_HH
+global debthh imp1_ds_tot_HH imp1_is_tot_HH informal_HH semiformal_HH formal_HH economic_HH current_HH humancap_HH social_HH house_HH incomegen_HH noincomegen_HH economic_amount_HH current_amount_HH humancap_amount_HH social_amount_HH house_amount_HH incomegen_amount_HH noincomegen_amount_HH informal_amount_HH formal_amount_HH semiformal_amount_HH marriageloanamount_HH loanamount_HH loanamount_wm_HH dummyproblemtorepay_HH dummyhelptosettleloan_HH dummyinterest_HH loans_HH loanbalance_HH mean_yratepaid_HH mean_monthlyinterestrate_HH marriageloan_HH debtorratio workerratio debtorratio2 workerratio2
 
 global perso nocorrf1 nocorrf2 nocorrf3 nocorrf4 nocorrf5 cr_OP cr_CO cr_EX cr_AG cr_ES cr_Grit OP CO EX AG ES Grit raven_tt num_tt lit_tt
 
