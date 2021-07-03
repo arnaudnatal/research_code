@@ -22,12 +22,12 @@ clear all
 macro drop _all
 set scheme plotplain
 ********** Path to folder "data" folder.
-*global directory = "D:\Documents\_Thesis\Research-Skills_and_debt\Analysis"
-*cd"$directory"
+global directory = "D:\Documents\_Thesis\Research-Skills_and_debt\Analysis"
+cd"$directory"
 
 
 ********** Fac folder
-cd "C:\Users\anatal\Downloads\Personality\Analysis\Matos"
+*cd "C:\Users\anatal\Downloads\Personality\Analysis\Matos"
 
 
 ********** Name of the NEEMSIS2 questionnaire version to clean
@@ -91,12 +91,29 @@ gen dummyinsurance_2=0 if nbinsurance_2==0
 replace dummyinsurance_2=1 if nbinsurance_2>0
 tab dummyinsurance segmana, col
 
-/*
-predict probitxb_`cat', xb
-ge pdf_`cat'=normalden(probitxb_`cat')
-ge cdf_`cat'=normal(probitxb_`cat')
-ge imr_`cat'=pdf_`cat'/cdf_`cat'
-*/
+* Verif l'instrument debtorratio_1
+tabstat debtorratio2_1 debtorratio2_2, stat(n mean sd p50) by(caste_1)
+fre debtorratio2_1
+
+*Y1
+*Added , at graph (comma)
+twoway (scatter loanamount_indiv1000_2 debtorratio2_1 if indebt_indiv_2==1), xtitle("Debtor ratio in 2016-17", size(small)) xlabel(0(1)5, labsize(small)) xmtick(0(0.2)5) ytitle("Total loan amount (1,000 INR)", size(small)) ylabel(0(500)2500, labsize(small)) ymtick(0(100)2600)
+twoway (scatter DSR_indiv_2 debtorratio2_1 if indebt_indiv_2==1)
+twoway (scatter over40_indiv_2 debtorratio2_1 if indebt_indiv_2==1)
+twoway (scatter loans_indiv_2 debtorratio2_1 if indebt_indiv_2==1)
+
+
+forvalues i=1(1)5{
+twoway ///
+(kdensity base_nocorrf`i'_std if segmana==1, bwidth(0.32) lpattern(solid) lcolor(gs4)) ///
+(kdensity base_nocorrf`i'_std if segmana==2, bwidth(0.32) lpattern(shortdash) lcolor(gs0)) ///
+(kdensity base_nocorrf`i'_std if segmana==3, bwidth(0.32) lpattern(dash) lcolor(gs9)) ///
+(kdensity base_nocorrf`i'_std if segmana==4, bwidth(0.32) lpattern(solid) lcolor(gs12)), ///
+xsize() xtitle("Factor `i' (std.)", size(medsmall)) xlabel(,angle() labsize(small))  ///
+ylabel(,labsize(small)) ymtick() ytitle("Kernel density", size(small)) ///
+legend(position(6) col(2) order(1 "Dalits women" 2 "Dalits men" 3 "MU caste women" 4 "MU caste men") off) name(f`i', replace)
+
+
 
 
 ********** Tx de var + diff 
@@ -145,7 +162,7 @@ kdensity delta2_ES, bwidth(0.1) xline(-5 5) xlabel(-60(20)100) xmtick(-60(5)100)
 graph combine g1 g2 g3 g4 g5, ycommon note("Kernel: Epanechnikov;" "Bandwidth: 0.1;" "All traits are corrected from acquiescence bias.", size(vsmall)) name(combined, replace)
 set graph on 
 
-set scheme plottig
+*set scheme plottig
 set graph off
 foreach x in OP CO ES EX AG {
 twoway (histogram delta2_`x' if age_1<30, width(2) percent color(black)) (histogram delta2_`x' if age_1>=30, width(2) color(plb1%50) percent xlabel(-50(10)100) xmtick(-50(5)100) legend(position(6) col(2) order(1 "Less than 30" 2 "30 or more") off)), name(g`x', replace)
@@ -263,7 +280,7 @@ encode villageid_new, gen(village2016)
 fre village2016
 
 
-log using c:evoperso.log, replace
+*log using c:evoperso.log, replace
 *
 foreach x in CO OP EX ES AG {
 tab cat_evo5_`x' cat_evo10_`x'
@@ -284,7 +301,7 @@ reg delta_`x' c.age_1 i.sex_1 i.username i.villageid if age_1<30
 reg delta_`x' c.age_1 i.sex_1 i.username i.villageid if age_1>=30
 }
 
-log close
+*log close
 
 foreach x in CO OP EX ES AG {
 tab cat_evo5_`x' cat_evo10_`x' if sex_2==1
@@ -304,31 +321,48 @@ pctile `x'_p=`x',n(10)
 }
 gen n=_n 
 replace n=. if n>9
-twoway (line delta_loanamount_indiv_p n if delta_loanamount_indiv_p>-200 & delta_loanamount_indiv_p<600, yline(0)) (line delta_DSR_indiv_p n) (line delta_ISR_indiv_p n) (line delta_loans_indiv_p n)
+* twoway (line delta_loanamount_indiv_p n if delta_loanamount_indiv_p>-200 & delta_loanamount_indiv_p<600, yline(0)) (line delta_DSR_indiv_p n) (line delta_ISR_indiv_p n) (line delta_loans_indiv_p n)
 cls
-log using c:delta.log, replace
+*log using c:delta.log, replace
 foreach x in delta_loanamount_indiv delta_DSR_indiv delta_ISR_indiv delta_loans_indiv {
 reg `x' $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits femXdal $intfem $intdal $three, vce(cluster HHvar)
 qui reg `x' $indivcontrol $hhcontrol4 $villagesFE c.base_nocorrf1_std##i.female##i.dalits c.base_nocorrf2_std##i.female##i.dalits c.base_nocorrf3_std##i.female##i.dalits c.base_nocorrf4_std##i.female##i.dalits c.base_nocorrf5_std##i.female##i.dalits c.base_raven_tt##i.female##i.dalits c.base_num_tt##i.female##i.dalits c.base_lit_tt##i.female##i.dalits, vce(cluster HHvar)
 margins, dydx(base_nocorrf1_std base_nocorrf2_std base_nocorrf3_std base_nocorrf4_std base_nocorrf5_std base_raven_tt base_num_tt base_lit_tt) at(dalits=(0 1) female=(0 1)) 
 }
-log close
+*log close
 
 
 ********** 1.
 ********** Proba of being in debt, or overindebted, interest in t+1
 
-qui probit indebt_indiv_2 indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits, vce(cluster HHvar)
+probit indebt_indiv_2 indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits debtorratio2_1, vce(cluster HHvar)
 est store res_1
+predict probitxb_noint, xb
+ge pdf_noint=normalden(probitxb_noint)
+ge cdf_noint=normal(probitxb_noint)
+ge imr_noint=pdf_noint/cdf_noint
 
-qui probit indebt_indiv_2 indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits $intfem, vce(cluster HHvar)
+probit indebt_indiv_2 indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits $intfem debtorratio2_1, vce(cluster HHvar)
 est store res_2
+predict probitxb_intfem, xb
+ge pdf_intfem=normalden(probitxb_intfem)
+ge cdf_intfem=normal(probitxb_intfem)
+ge imr_intfem=pdf_intfem/cdf_intfem
 
-qui probit indebt_indiv_2 indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits $intdal, vce(cluster HHvar)
+probit indebt_indiv_2 indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits $intdal debtorratio2_1, vce(cluster HHvar)
 est store res_3
+predict probitxb_intdal, xb
+ge pdf_intdal=normalden(probitxb_intdal)
+ge cdf_intdal=normal(probitxb_intdal)
+ge imr_intdal=pdf_intdal/cdf_intdal
 
-qui probit indebt_indiv_2 indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits femXdal $intfem $intdal $three, vce(cluster HHvar)
+probit indebt_indiv_2 indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits femXdal $intfem $intdal $three debtorratio2_1, vce(cluster HHvar)
 est store res_5
+predict probitxb_three, xb
+ge pdf_three=normalden(probitxb_three)
+ge cdf_three=normal(probitxb_three)
+ge imr_three=pdf_three/cdf_three
+
 
 esttab res_1 res_2 res_3 res_5 using "_reg.csv", ///
 	cells(b(star fmt(3)) /// 
