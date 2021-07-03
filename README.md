@@ -29,8 +29,10 @@
   - [ ] Faire des regressions FE entre personnalité (Big-5) et dette
   - [ ] Essayer de jouer avec le panel finalement
   - [ ] Caste & Gender = Social Identity
+  - [ ] Relancer analyse factorielle avec les variables raw pour 2016 et pour 2020
+  - [ ] Faire mes regressions avec Big-5 normal
 ## Labor
-  - [ ] Read Michiels, Nordman, Seetahul for mobility
+  - [x] Read Michiels, Nordman, Seetahul for mobility
   - [ ] Test correlation
 
 # Réunion direction
