@@ -18,7 +18,7 @@ singlelinecheck=false % <-- important
 
 \usepackage{upgreek}
 
-\newcommand{\ie}{\textit{i.e.}}
+\newcommand{\ie}{i.e.}
 
 % \renewcommand*\thetable{\Alph{section}.\arabic{table}}
 % \renewcommand*\thefigure{\Alph{section}.\arabic{figure}}
@@ -93,115 +93,79 @@ Gender, caste,
 % \end{itemize}
 
 
-% ******************************
-\subsection{Recent spotlight}
-% ******************************
-	
 
-
-Since a decade, there has been increasing interest in psychology in economics literature\footnote{Scopus data}, especially through personality traits and cognitive skills (PT\&CS).
+Since a decade, there has been increasing interest in psychology in economics literature\footnote{In 2020, we find more than 200 articles in economics with ``Cognitive skills'' or ``Personality traits'' in the title, asbtract or keywords while there are less than 40 in 2009 -- Scopus data. Accessed June 29, 2021.}, especially through personality traits and cognitive skills (PT\&CS).
 Institutions --such as World Bank, are more and more interesting in collecting data on skills because it enable a ``better understanding of skill requirements in the labor market, backward linkages between skills acquisition and educational achievement, personality, and social background, and forward linkages between skills acquisition and living standards, reductions in inequality and poverty, social inclusion, and economic growth'' \citep{STEP2014}.
 
+In the literature, \cite{Hanushek2008} for Cognitive skills and \cite{Almlund2011, Borghans2008, Heckman2011} for Personality traits
+
+\paragraph*{Definition}
 Cognitive skills can be defined as a ``term that refers to mental processes involved in the acquisition of knowledge, manipulation of information, and reasoning [that] include the domains of perception, memory, learning, attention, decision making, and language abilities'' \citep{Kiely2014}.
 While ``personality is the dynamic organization within the individual of those psychophysical systems that determine his characteristics behavior and thought'' \citep{Allport1961}.
 Among the theories of personality, the traits can be defined as thought, emotion and habitual patterns of behavior \citep{Kassin2003}.
-The Big-Five model --or Five Factor model (FFM)-- constitute the main personality trait taxonomy.
-Based on \cite{Goldberg1981} and \cite{McCrae1987} works, this taxonomy identify five dimensions of personality from factor analysis [on specific questionnaires]: neuroticism (i), \ie~the capacity to experience negative emotions (anxiety, anger, depression, etc); extraversion (ii), \ie~the energy, the capacity to experience positive emotions, the tendency to seek stimulation and company from others; openness to experience (iii), \ie~``one’s capacity to be creative and unstructured versus one’s tendency to need structure and clarity'' \citep{Piedmont2014}; agreeableness (iv), \ie~``perceptions of others that are caring, compassionate, and altruistic versus manipulative, self-serving, and antagonistic'' \citep{Piedmont2014}; conscientiousness (v), \ie~the capacity to display self-discipline, act dutifully, and strive for achievement against measures or outside expectations.	
-	
-%\footnote{Themselves inspired by the work of \cite{Cattell1943, Cattell1947} and \cite{Norman1963}.}
-	
-% ******************************
-\subsection{Studies in economics}
-% ******************************
+The Big-5 model constitute the main personality trait taxonomy.
+Based on \cite{Goldberg1981} and \cite{McCrae1987} works, it identify five dimensions of personality: neuroticism (or emotional stability), \ie~the capacity to experience negative emotions; extraversion, \ie~the capacity to experience positive emotions, the tendency to seek stimulation and company from others; openness to experience, \ie~``one’s capacity to be creative and unstructured versus one’s tendency to need structure and clarity'' \citep{Piedmont2014}; agreeableness, \ie~``perceptions of others that are caring, compassionate, and altruistic versus manipulative, self-serving, and antagonistic'' \citep{Piedmont2014}; conscientiousness, \ie~the capacity to display self-discipline, act dutifully, and strive for achievement against measures or outside expectations.	
 
-Researchers focused\footnote{For a comprehensive review, see \cite{Almlund2011}.} on the role of skills on labour market and especially on income gap, performance at work and type of work.
+\paragraph*{Skills in economics}
+Studies in economics\footnote{For a comprehensive review, see \cite{Almlund2011}.} focuses on the role of skills on labour market and especially on income gap, performance at work and type of work or education through  educational attainment, course grades or standardized achievment test (SAT) scores but few researcher have been interested in the relationship with household finances while it is a growing area of interest\footnote{This renewed interest led the Journal of Economic Literature (JEL) to create a field in its own right under the code G5.}.
+[Indeed] Household are more implicated in financial decision such as privatization of retirement pension, liberalization of loan market, increase in credit purchase, which are more complicated because of financial innovation \citep{Guiso2013}.
 
-\begin{itemize}
-\item Income gap: \citep{Bowles2001} \citep{Heckman2006}  \citep{Cawley2001}
-\item Performance at work: la consciensiocité est le trait qui prédit le mieux la performance au travail de facon générale: \citep{Nyhus2005} \citep{Salgado1997} \citep{Hogan2003} \citep{Barrick1991}
-\item Type of work: À la différence du quotient intellectuel (Q.I.), ce trait de personnalité ne varie pas avec la complexité du travail effectué, laissant penser que la conscienciosité concerne un plus large éventail d’emplois. En effet, les professeurs, les scientifiques et les cadres supérieurs ont en général de meilleurs résultats en matière de compétences cognitives par rapport à des travailleurs non qualifiés \citep{Schmidt2004} \citep{Almlund2011} \citep{Barrick1991}. + \citep{CobbClark2011} trouvent que le degré d’agréabilité a une relation négative avec la probabilité d’être un manager et d’être un professionnel des affaires (business professional).
-\end{itemize}
+The few studies that have focused on household finance mainly investigate four outcomes: risk aversion, financial distress, savings and debt.
+\cite{Nga2013} show that conscientiousness, openness to experience and agreeableness are correlated with risk aversion, cognitive biases and socially responsible investing for undergraduate students of Malaysia.
+For 4,026 individuals from Netherland, \cite{Pinjisakikool2017} shows that all the Big-5 personality traits are good predictor of financial risk tolerance as \cite{Bucciol2017} that shows that agreeableness, cynical hostility and anxiety are good predictor of financial risk taking for 10,641 individuals from USA (negative correlation).
+In terms of financial distress, \cite{Agarwal2013} shows that individuals with high math scores are less likely to make financial distress in USA.
+\cite{Parise2019} are one of the first who deal with causality instead of correlation.
+Using instrumental variable method\footnote{They instruments conscientiousness and emotional stability with shock during childhood \dev{à vérifier}.} on Dutch dataset, they shows that people in the bottom quintile of personality traits are 10 times more likely to experience financial distress than those in the top quintile.
+Concerning saving behaviour, \cite{Gerhard2018} decompose 3,382 individuals from United-Kingdom in two groups (striving and established) and find that agreeableness is negatively correlated with total household savings for both groups and the effect is stronger for the striving than for the established.
+\cite{Nyhus2001} shows that extraversion is negatively correlated with savings for 1,266 individuals from Netherland and in interesting in debt, they shows that emotional stability is positively correlated with debt.
+Still with debt, \cite{Brown2014} shows that extraversion and agreeableness are positively associated with the level of debt held while conscientiousness is negatively correlated with the level of unsecured debt for 10,000 individuals of United-Kingdom and \cite{Forlicz2019} shows differences between debtors and debt-free individuals in terms of conscientiousness, honesty, attittude towards money and shoppping for 3,711 individuals from Poland, Spain, Romania and Italy.
 
-Others studies focuses on the link with education.
-\cite{Almlund2011} : Avant tout, les auteurs constatent que parmi les cinq (5) traits du Big Five, la conscienciosité et le névrosisme prédisent bien un grand nombre d’outcomes, notamment ceux en rapport avec l’éducation (la conscienciosité explique assez bien l’attainment et achievement à l’école). L’ouverture à l’expérience prédit, elle, assez bien la course difficulty selected et l’attendance.
+Other research build a bridge between household finance and individual skills through the notion of financial literacy\footnote{Financial literacy measure ``how well an individual can understand and use personal finance-related information'' \citep{Huston2010}.} \citep{Hastings2013} \citep{Gaurav2012} \citep{Klapper2012}
+\dev{Developper ? Pas sûr}
 
-% Santé: Lorsque les variables expliquées sont en rapport avec la santé, la conscienciosité est le meilleur prédicateur pour la longévité de vie (plus que l’intelligence et le background) \citep{Almlund2011}
-% Crime: Enfin, lorsque les auteurs s’intéressent à la littérature sur la criminalité, ces derniers relèvent que la conscienciosité et l’agréabilité sont d’importants prédicteurs de la criminalité \citep{Almlund2011} 
+\paragraph*{Indebtedness in India}
+To our knowledge, no articles has looked at personality traits and cognitive skills on debt in India\footnote{\cite{Michiels2021} intersting in the role of personality traits on labour mobility in rural Tamil Nadu.} (nor even in developing countries) while the indian context is unique in terms of household finance.
+Since the 80's, the incidence of indebtedness increase for rural and urban households (respectively from 19 to 32\% and from 17 to 22\%) with an increasing in the share of household indebted to formal (or institutional) sources (11 to 17\%) and informal sources\footnote{In part due to the economic and financial sector reforms of 1991: \url{http://indiabefore91.in/1991-economic-reforms}.} (10 to 19\%) \citep{Rajakumar2019}.
+As we discuss in section \ref{subsection:data}, this number is largely under-estimate \citep{Jones1994} and micro-level studies indicates incidence of debt around 80-90\% \citep{Guerin2013a, Jones1994, Dreze1997, Reboul2021}.
+The average amount of debt per household strongly increased between 1951 and 2012 (from 83 INR to 32,522 INR) with an increasing in the share of formal debt (from 7 to 56\% for rural households) [and, thus, a decreasing in the share of traditional informal debt (from 93 to 43\% for rural households)] \citep{Rajakumar2019}.
 
+% Farmers suicid : \citep{Nair2011, Sriram2010}
 
+% Why majo of informel ? \cite{Badarinza2016b}
+% 1. car les terres et les maisons s'héritent : \citep{Badarinza2016b} avancent que cela peut provenir de la « prédominance des ménages multigénérationnels, dans lesquels les terres et les propriétés résidentielles constituent une part importante des legs » donc pas beaucoup besoin d'emprunt formel. 4\% des ménages dont le chef a moins de 35 ans ont un prêt hypothécaire ce qui est nettement inférieur à la situation des autres pays émergents comme la Chine \citep{Badarinza2016b}.
+% 2. Pénétration bancaire très hétérogène : \citep{Badarinza2016b} et \citep{Burgess2005} : les États ayant un taux de pénétration bancaire élevé sont ceux où les ménages sont les moins dépendants de l’endettement non institutionnel.
 
-
-% ******************************
-\subsection{Skills and household finances}
-% ******************************
-
-Few researcher have been interested in the relationship with household finances while \dev{Pq HH fin impt ?} \citep{Campbell2006}.
-
-% ``it is apparent that personality traits may influence financial decision-making at the individual and household level'' \citep{Brown2014}.
-
-\paragraph{PTCS}
-\begin{itemize}
-\item Investment decision and financial distress: \citep{Nga2013} \citep{Pinjisakikool2017b} \citep{Bucciol2017} \citep{Agarwal2013} \citep{Parise2019}
-\item Saving: \citep{CobbClark2016} \citep{Gerhard2018}
-\item Debt: \citep{Forlicz2019} \citep{Silva2018} \citep{Brown2014}
-\end{itemize}
-
-
-\paragraph{Financial literacy}
-Other studies focuses on financial literacy\footnote{Financial literacy measure ``how well an individual can understand and use personal finance-related information'' \citep{Huston2010}.} \citep{Hastings2013} \citep{Gaurav2012} \citep{Klapper2012}
-
-
-
-
-
-% Despite the recent economic growth\footnote{World Bank Data -- \url{https://data.worldbank.org/indicator/NY.GDP.MKTP.KD?locations=IN}. Accessed June 21, 2021.} and the improvement in education and health, social disparities subsist in India, especially through the caste system and gender.
-% Historically, caste --or \jati, represent an hierarchical and endogamous group of individuals based on occupation.
-% With gender, it represent the major sources of inequality in terms of education \citep{Munshi2006, Hasan2006, Saha2013}, labour \citep{Madheswaran2007, Mohanty2006, Das2012}, wealth and poverty \citep{Borooah2005b, Zacharias2011, Deshpande2000, EsteveVolart2004} or marriage \citep{Banerjee2009, Chacko2003}.
-
-
-
-% ******************************
-\subsection{Debt in rural India}
-% ******************************
-
-
-
-Aucun articles ne s’est intéressé à ça en Inde (ni même dans les PED) (en Inde il y a \citep{Michiels2021} qui regardent cognitive sur labour mobility) alors que l’endettement des ménages est colossal et que c’est un sujet super chaud: literature		
-
-	% ******************************
-	\subsubsection{Incidence of debt and disparities}
-	% ******************************
-
-The Indian context is unique in terms of household finance \citep{Badarinza2016b}.
-
-\% HH concerned and amount with \cite{NSSO2014}
-The largest part of households debt is informal in rural India \citep{Badarinza2016b}.
-\begin{itemize}
-\item car les terres et les maisons s'héritent : \citep{Badarinza2016b} avancent que cela peut provenir de la « prédominance des ménages multigénérationnels, dans lesquels les terres et les propriétés résidentielles constituent une part importante des legs » donc pas beaucoup besoin d'emprunt formel. 4\% des ménages dont le chef a moins de 35 ans ont un prêt hypothécaire ce qui est nettement inférieur à la situation des autres pays émergents comme la Chine \citep{Badarinza2016b}.
-\item Pénétration bancaire très hétérogène : \citep{Badarinza2016b} et \citep{Burgess2005} : les États ayant un taux de pénétration bancaire élevé sont ceux où les ménages sont les moins dépendants de l’endettement non institutionnel.
-\end{itemize}
 %D'après \citep{Badarinza2016b}, la proba de contracter une dette informelle se réduit avec le niveau d'éducation: [l]es ménages dont au moins un membre a fait des études supérieures ou des études de troisième cycle ont une dette hypothécaire supérieure de 15,1\% par rapport au groupe des personnes peu instruites et une part de dette non institutionnelle inférieure de 28,7\%.
 
-Paysage financier de \cite{Guerin2012a} for informal debt and reasons of debt: beaucoup de cérémonies, beaucoup de survie quotidienne.
+%Paysage financier de \cite{Guerin2012a} for informal debt and reasons of debt: beaucoup de cérémonies, beaucoup de survie quotidienne.
 
-%Determinants?  \citep{Datta2018, Pandey2016}
+Added to this is a high level of inequalities in terms of indebtedness.
+\cite{Guerin2013a} show that the caste affect borrowing strategies as amount, type and source of debt in rural Tamil Nadu, India.
+Dalits (ex-intouchable, the most persecuted group?), have higher incidence of indebtedness but borrow smaller amounts and more frequently from ambulant lenders \citep{Guerin2013a}.
+They borrow less for economic reason than non-dalits (middle and upper caste) but more for household expenditures \citep{Guerin2013a, Guerin2014a}.
+Finally, they have the lower access\footnote{In part, because of they does not have necessary guarantee (i) such as good land (irrigated one and good location), specific know-how (ii), or because they self-excluded themselves because dalits are persuaded to fail \citep{Guerin2013a}.} to bank loans while it offer ``the best conditions financially speaking'' (low interest rate, higher amounts, long duration) \citep{Guerin2013a, Chavan2007}.
 
-\dev{OK, on voit que beaucoup de monde est concernés, avec tel montant, tel type de dette et telle raison, mais many disparities.}
-Disparities 
-\begin{itemize}
-\item \cite{Guerin2013a} show that caste affect borrowing strategies as amount, type and source of debt in rural India.
-Moreover, they show that debt is a ``social transaction which inscribes debtors and creditors into local system of hierarchies''.
-\item \cite{Reboul2021} find an interest in the gender perspective.
-\item Debt bondage for dalits \citep{Guerin2020a}
-\item The case of microfinance for womens \citep{Guerin2020b}
-\item  Castes, sex, moc, etc.  \citep{Guerin2012a} \citep{Guerin2013a} \citep{Guerin2014} \citep{Reboul2021}
-\end{itemize}
+Disparities is also important through the gender.
+\cite{Reboul2021} show that the relative amount of debt is higher for female than for male while male earn much more.
+Moreover, female in the poorest households have the highest borrowing responsibilities and dalit female tend to face higher debt burdens than non-dalit one.
+In terms of use, male borrow more for economic investment while female more for daily survival and debt repayment \citep{Reboul2021}.
+\dev{Add details?}
+
+
+% \begin{itemize}
+% \item \cite{Guerin2013a} show that caste affect borrowing strategies as amount, type and source of debt in rural India.
+% Moreover, they show that debt is a ``social transaction which inscribes debtors and creditors into local system of hierarchies''.
+% \item \cite{Reboul2021} find an interest in the gender perspective.
+% \item Debt bondage for dalits \citep{Guerin2020a}
+% \item The case of microfinance for womens \citep{Guerin2020b}
+% \item  Castes, sex, moc, etc.  \citep{Guerin2012a} \citep{Guerin2013a} \citep{Guerin2014} \citep{Reboul2021}
+% \end{itemize}
 
 %Failures for repayment, violence, overindebtedness, microcredit \citep{Sedai2021}
 
 
 	% ******************************
-	\subsubsection{``Social meaning of debt''}
+	\subsubsection{Social meaning of debt}
 	% ******************************
 \begin{itemize}
 \item Question de la confiance très présente dans la dette :
@@ -272,6 +236,8 @@ Financial indicators are certainly useful (and will be used here) to quantify th
 	\subsubsection{Individual debt and public policies}
 	% ******************************
 
+\citep{GuerinDemo2017, Guerin2020}
+
 \begin{itemize}
 \item Financial inclusion : more and more HH are financial included \citep{Badarinza2019}, especially in India \citep{Chakravartya2013}. \dev{Literature Isabelle}
 \item Secondly, on a vue que quasi tout le monde est concernés par la dette et especially to consume which is an determinants of global wealth (expenditures approach of GDP).
@@ -323,7 +289,9 @@ Aspirations limitée par notre caste et notre sexe.
 
 
 
-C'est d'autant plus intéressant que la dette est omniprésente \cite{Guerin2013, Guerin2020}
+C'est d'autant plus intéressant que la dette est omniprésente \cite{Guerin2013a, Guerin2020}
+
+Les crises récentes en Inde rendent la chose encore plus pertinente: demonetisation \cite{GuerinDemo2017} and lockdown \cite{Guerin2020}
 
 Try to capture the role of cognitive skills and personality traits thus allows to better understand the determinants of indebtedness in India, which is an important vector of wealth through consumption. 
 %Consumption expenses represent almost a third of loans in 2010 and 2016-17 --this is the most common loan reason-- and the average amount of one loan is 9,920 INR in 2010 and 24,780 INR in 2016-17.
@@ -349,6 +317,7 @@ Try to capture the role of cognitive skills and personality traits thus allows t
 
 	% ******************************
 	\subsection{Data}
+	\label{subsection:data}
 	% ******************************
 
 Our empirical analysis is based on the NEEMSIS-1 \& NEEMSIS-2 (Networks, Employment, dEbt, Mobilities and Skills in India Survey) surveys carried out respectively in 2016-17, and 2020-21 \citep{NEEMSISreport, NEEMSIS2017}.
@@ -547,6 +516,7 @@ Thus, we clustered error by households to take into account the fact that observ
 
 \paragraph{Estimators see Table \ref{tab:econ_desc}}
 
+Heckman procedure ? \cite{}
 
 First, to estimates dummy variables, we use probit modele with maximum likelihood (ML) estimation and we clusterize the error at household level.
 Same estimator for over-indebtedness because dummy variable too. 
@@ -584,7 +554,18 @@ P(Y=y)=\frac{e^{-\uplambda}\uplambda^{y}}{y!}
 
 \subimport{INPUT}{Econ_desc.tex}
 
-
+Interpretation with \cite{Williams2012} : marginal effect at representative values for gender and caste and at means for others
+\begin{itemize}
+\item L'individu moyen
+\item La female moyenne
+\item Le male moyen
+\item Le dalit moyen
+\item Le muc moyen
+\item La femme dalit moyenne
+\item L'homme dalit moyen
+\item La femme muc moyenne
+\item L'homme muc moyen
+\end{itemize}
 
 \paragraph{Control variables}
 Our control variables are based on \cite{Reboul2021, Brown2014, Chichaibelu2017} which take the existing classic controls. 
@@ -614,11 +595,6 @@ Finally, we added villages fixed effects.
 % ***********************************
 \section{Descriptive statistics}
 % ***********************************
-
-
-	% ***********************************
-	\subsection{Study population}
-	% ***********************************
 
 \paragraph{Household unit in Table \ref{tab:descHH}}
 Our final sample consists of 835 individuals from 473 households and almost half are dalits.
@@ -693,6 +669,7 @@ IDSR, share of income for principal and interest repayment can represent the bur
 
 Female more over-indebted than male :
 
+Female more loans but amount smaller than male => indebtedness for daily expenditures female and investment for male
 
 \subimport{INPUT}{desc_Y.tex}
 
@@ -709,15 +686,7 @@ Last, for non-dalits male, Factor 1 pulls debt in opposite directions depending 
 \dev{Peut-être car les gens très F1 ont peu de prêts mais des montants élevés, ca semble cohérent avec les hommes qui empruntent plus pour un besoin économique, donc besoin d'être EXOP alors que Femme petits prêts mais beaucoup : il n'y a que voir les montants avec les stat descriptives précédents}
 
 
-
-
-
-
-
 \subimport{INPUT}{desc_XY.tex}
-
-
-
 
 
 
@@ -728,55 +697,175 @@ Last, for non-dalits male, Factor 1 pulls debt in opposite directions depending 
 % ***********************************
 %As stated by \cite{Amrhein2019, Wasserstein2019, Wasserstein2016} reported confidence interval
 
+\begin{itemize}
+\item[F1] Extraversion-Openness
+	\begin{itemize}
+	\item Do you like to think a lot, and reflect about ideas? OP
+	\item Are you comfortable expressing your thoughts and opinions to others? EX
+	\item Do you have an active imagination? OP
+	\item Do you easily share your thoughts and feelings with other people? EX
+	\item Do you come up with original or new ideas? OP
+	\item Are you curious, interested in learning new things? OP
+	\item Are you inventive, and discover new ways of doing things? OP
+	\item In social gatherings, do you like to talk to many people? EX
+	\end{itemize}
+\item[F2] Conscientiousness
+	\begin{itemize}
+	\item Do you get to work and appointments on time? CO
+	\item Are you enthusiastic and full of energy? EX
+	\item Do you make plans and stick to them? CO
+	\item Do you complete your duties on time? CO
+	\item Do you work hard to do things well and on time? CO
+	\item Are you organized? CO
+	\end{itemize}
+\item[F3] Emotional stability-Conscientiousness
+	\begin{enumerate}
+	\item Do you have sudden changes in your mood? ES
+	\item Do you get easily distracted? CO
+	\item Do you put off your duties in order to relax? CO
+	\item Do you get nervous easily? ES
+	\item Do you stay calm in tense or stressful situations? ES
+	\item Do you tend to be rude to other people? AG
+	\end{enumerate}
+\item[F4] Emotional stability
+	\begin{enumerate}
+	\item Do you worry a lot? ES
+	\item Do you get easily upset? ES
+	\item Do you feel sad, depressed? ES
+	\item Do you get nervous easily? ES
+	\item Are you shy with people? EX
+	\end{enumerate}
+\item[F5] Agreeableness
+	\begin{enumerate}
+	\item Do you tolerate faults in other people? AG
+	\item Do you forgive other people easily?  AG
+	\item Do you stay calm in tense or stressful situations? ES
+	\item Are you generally trusting of other people? AG
+	\item Do you manage stress well? ES
+	\item Are you helpful with others? AG
+	\end{enumerate}
+\end{itemize}
+
+
+\subsubsection*{Probability being in debt in 2020-21}
+Table \ref{tab:ame_indebt} presents the results from the multivariate probit analysis of the determinents of the probability of being in debt, where the marginal effects at representative values (MERs) on the predicted value of the PT\&CS are reported.
+
+
 
 \subimport{INPUT}{AME_indebt.tex}
+
+\begin{itemize}
+\item All else being equal, one more point on the EXOP score reduces the probability of being in debt by 2.7 percentage points (pp).
+\item For a female, all else being equal, one more point on the EXOP score reduces the probability of being in debt by 3.7 pp.
+\item For a non-dalit individual, all else being equal, one more point on the EXOP score reduces the probability of being in debt by 6.5 pp.
+\item For a non-dalit female, all else being equal, one more point on the EXOP score reduces the probability of being in debt by 8.5 pp.
+\item[----]
+\item For a female, all else being equal, one more point on the Conscientiousness score, reduces the probability of being in debt by 3.8 pp.
+\item For a non-dalit male, all else being equal, one more point on the Conscientiousness score, increases the probability of being in debt by 6.9 pp.
+\item For a non-dalit female, all else being equal, one more point on the Conscientiousness score, reduces the probability of being in debt by 6.4 pp.
+\item[----]
+\item For a non-dalit female, all else being equal, one more point on the ESCO, increases the probability of being in debt by 6.9 pp.
+\item[----] 
+\item For a dalit male, all else being equal, one more point on the Emotional Stability score, increases the probability of being in debt by 4.9 pp.
+\item[----]
+\item For a non-dalit individual, all else being equal, one more point on the Agreeableness score, reduces the probability of being in debt by 3.8 pp.
+\item[----]
+\item For a female, all else being equal, one more point at the Literacy test, increases the probability of being in debt by 3.8 pp.
+\end{itemize}
+
+Other things equal, among non-dalit female, those with higher EXOP have a lower probability of being in debt and those with higher Conscientiousness too (and the effect of EXOP is higher than the effect of Conscientiousness -- 2.1 pp more). 
+However, non-dalit female with higher ESCO are more likely to be in debt than other non-dalit female.
+
+
+
+
+
+\clearpage
+\newpage
+\paragraph*{Number of loans in 2020-21 -- Table \ref{tab:ame_loans}}
+
 \subimport{INPUT}{AME_loans.tex}
+
+\begin{itemize}
+\item An individual with one more point at the Numeracy test is predicted to have 0.206 less loans, other things equal.
+\item[----]
+\item All else being equal, a male with one more point on the ESCO score is predicted to have 0.330 loans in more.
+\item[----] 
+\item All else being equal, a female with one more point on the EXOP score have 0.265 loans in more.
+\item All else being equal, a female with one more point on the Emotional stability score have 0.276 loans in less (0.276 less loans).
+\item All else being equal, a female with one more point at the Numeracy test is predicted to have 0.462 loans in less.
+\item[----] 
+\item Other things equal, a middle-upper caste individual with one more point on the ESCO score is predicted to have 0.233 loans in more.
+\item[----] 
+\end{itemize}
+
+
+
+\clearpage
+\newpage
+\paragraph*{Total loan amount in 2020-21 -- Table \ref{tab:ame_loanamount}}
+
 \subimport{INPUT}{AME_loanamount.tex}
+
+\begin{itemize}
+\item All else being equal, an individual with one more point on the EXOP score is predicted to have 15,365 INR of debt in more.
+\item AEBE, a female with one more point on the EXOP score is predicted to have 11,151 INR of debt in more.
+\item AEBE, a middle-upper caste individual with one more point on the EXOP score is predicted to have 32,393 INR of debt in more.
+\item AEBE, a middle-upper caste male with one more point on the EXOP score is predicted to have 47,340 INR of debt in more.
+\item[----]
+\
+\end{itemize}
+
+
+
+\clearpage
+\newpage
+\paragraph*{Debt service ratio in 2020-21 -- Table \ref{tab:ame_idsr}}
+
 \subimport{INPUT}{AME_IDSR.tex}
+
+
+
+
+
+\clearpage
+\newpage
+\paragraph*{Probability being over-indebted in 2020-21 -- Table \ref{tab:ame_over40}}
+
 \subimport{INPUT}{AME_over40.tex}
 
 
 
 
+%Turning to the amount of debt, 
 
 
-
-
-%https://www.jwe.cc/2012/03/stata-latex-tables-estout/
-% \begin{table}[htpb]
-% \centering
-% \begin{threeparttable}
-% \caption{Total sample and first part of main variables}
-% \label{econ:all_global_p1}
-% \estauto{INPUT/econ_all_global_p1}{8}{S S S S S S S S}
-% %\starnote
-% \fignote{$\sym{*}~~p<0.10, \sym{**}~~~p<0.05, \sym{***}~~~~~p<0.01$. $\ssymbol{2}$ for 1,000 INR. $\ssymbol{3}$ Owner.}
-% \sourcetab{RUME (2010) and NEEMSIS (2016-17); author's calculations.}
-% \end{threeparttable}
-% \end{table}	
-
-
-
-
-
-
-\newpage
+% \newpage
 % ***********************************
-\section*{Conclusion}
-\addcontentsline{toc}{section}{Conclusion}
+\section{Discussion}
+% ***********************************
+
+Homo oeconomicus rationel, comprendre le comportement d'endettement, etc
+
+
+% \newpage
+% ***********************************
+\section{Conclusion}
+%\addcontentsline{toc}{section}{Conclusion}
 \label{Conclusion}
 % ***********************************
 
-Les programmes de MC qui essayent de cibler les plus pauvres ne sont pas super efficient car même chez eux, il y a beaucoup de situation différentes en termes de dette.
-Pose la question de l'inclusion financière
+% Les programmes de MC qui essayent de cibler les plus pauvres ne sont pas super efficient car même chez eux, il y a beaucoup de situation différentes en termes de dette.
+% Pose la question de l'inclusion financière
 
 
-\clearpage
-\newpage
+% \clearpage
+% \newpage
 %-------------------------------------------------------------------------------%
 %\begin{nolinenumbers}
 \addcontentsline{toc}{section}{Références}
 \bibliography{C:/Users/Arnaud/Dropbox/Arnaud/Ref_Arnaud}
+%\bibliography{Ref_Arnaud}
 %\nocite{*}
 
 
@@ -825,12 +914,15 @@ Finally, our sample is constitute from 835 egos represented 473 households.
 \end{figure}
 
 
+Paragraph on non-stability with \cite{Almlund2011}, Chapter (section) 8.
+
 
 \clearpage
 \newpage
 \section{Factor analysis for personality traits}
 \label{section:efa_big5}
 
+\subimport{INPUT}{EFAres.tex}
 \subimport{INPUT}{Factor1.tex}
 \subimport{INPUT}{Factor2.tex}
 \subimport{INPUT}{Factor3.tex}
