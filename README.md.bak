@@ -21,7 +21,7 @@
   - [x] Organiser les différents Y
   - [x] Ségmentation par sexe et caste ou interactive ?
   - [x] Échelle individuelle ou ménage ?
-  - [ ] Regarder évolution perso et contrôler par la dette de 2016
+  - [x] Regarder évolution perso et contrôler par la dette de 2016
   - [ ] Regarder score personnalité avant/après la démonétisation
   - [ ] Construire la variable de locus of control
   - [ ] Littérature sur la stabilité du locus
@@ -29,8 +29,9 @@
   - [ ] Faire des regressions FE entre personnalité (Big-5) et dette
   - [ ] Essayer de jouer avec le panel finalement
   - [ ] Caste & Gender = Social Identity
-  - [ ] Relancer analyse factorielle avec les variables raw pour 2016 et pour 2020
-  - [ ] 
+  - [x] Relancer analyse factorielle avec les variables raw pour 2016 et pour 2020
+  - [ ] Faire mes regressions avec Big-5 normal
+  - [x] Graph évolution Big-5
 ## Labor
   - [x] Read Michiels, Nordman, Seetahul for mobility
   - [ ] Test correlation
