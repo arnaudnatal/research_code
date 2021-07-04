@@ -71,81 +71,57 @@ enjoypeople sharefeelings shywithpeople enthusiastic talktomanypeople  talkative
 workwithother  understandotherfeeling trustingofother rudetoother toleratefaults  forgiveother  helpfulwithothers ///
 managestress  nervous  changemood feeldepressed easilyupset worryalot  staycalm ///
 tryhard  stickwithgoals   goaftergoal finishwhatbegin finishtasks  keepworking
-foreach x in $big5{
+
+global big5raw raw_curious raw_interestedbyart raw_repetitivetasks raw_inventive raw_liketothink raw_newideas raw_activeimagination raw_organized raw_makeplans raw_workhard raw_appointmentontime raw_putoffduties raw_easilydistracted raw_completeduties raw_enjoypeople raw_sharefeelings raw_shywithpeople raw_enthusiastic raw_talktomanypeople raw_talkative raw_expressingthoughts raw_workwithother raw_understandotherfeeling raw_trustingofother raw_rudetoother raw_toleratefaults raw_forgiveother raw_helpfulwithothers raw_managestress raw_nervous raw_changemood raw_feeldepressed raw_easilyupset raw_worryalot raw_staycalm raw_tryhard raw_stickwithgoals raw_goaftergoal raw_finishwhatbegin raw_finishtasks raw_keepworking
+
+global big5cor cr_curious cr_interestedbyart cr_repetitivetasks cr_inventive cr_liketothink cr_newideas cr_activeimagination cr_organized cr_makeplans cr_workhard cr_appointmentontime cr_putoffduties cr_easilydistracted cr_completeduties cr_enjoypeople cr_sharefeelings cr_shywithpeople cr_enthusiastic cr_talktomanypeople cr_talkative cr_expressingthoughts cr_workwithother cr_understandotherfeeling cr_trustingofother cr_rudetoother cr_toleratefaults cr_forgiveother cr_helpfulwithothers cr_managestress cr_nervous cr_changemood cr_feeldepressed cr_easilyupset cr_worryalot cr_staycalm cr_tryhard cr_stickwithgoals cr_goaftergoal cr_finishwhatbegin cr_finishtasks cr_keepworking
+
+foreach x in $big5 $big5raw $big5cor{
 gen im_`x'=`x'
 }
-global big5im im_curious im_interestedbyart im_repetitivetasks im_inventive im_liketothink im_newideas im_activeimagination im_organized im_makeplans im_workhard im_appointmentontime im_putoffduties im_easilydistracted im_completeduties im_enjoypeople im_sharefeelings im_shywithpeople im_enthusiastic im_talktomanypeople im_talkative im_expressingthoughts im_workwithother im_understandotherfeeling im_trustingofother im_rudetoother im_toleratefaults im_forgiveother im_helpfulwithothers im_managestress im_nervous im_changemood im_feeldepressed im_easilyupset im_worryalot im_staycalm ///
-im_tryhard im_stickwithgoals im_goaftergoal im_finishwhatbegin im_finishtasks im_keepworking
-
-
-**********
-/*
-Il faut que je refasse l'anlayse factorielle avec les variables raw_ au début car celles ci ne tiennent pas compte de la classification avec le système des variables inversées
-*/
 
 
 forvalues j=1(1)3{
 forvalues i=1(1)2{
-foreach x in $big5im{
-sum `x' if sex==`i' & caste==`j' & egoid!=0 & egoid!=.
-replace `x'=r(mean) if `x'==. & sex==`i' & caste==`j' & egoid!=0 & egoid!=.
+foreach x in $big5 $big5raw $big5cor{
+sum im_`x' if sex==`i' & caste==`j' & egoid!=0 & egoid!=.
+replace im_`x'=r(mean) if im_`x'==. & sex==`i' & caste==`j' & egoid!=0 & egoid!=.
 }
 }
 }
 
-global big5imwith im_curious im_interestedbyart im_repetitivetasks im_inventive im_liketothink im_newideas im_activeimagination im_organized im_makeplans im_workhard im_appointmentontime im_putoffduties im_easilydistracted im_completeduties im_enjoypeople im_sharefeelings im_shywithpeople im_enthusiastic im_talktomanypeople im_talkative im_expressingthoughts im_workwithother im_understandotherfeeling im_trustingofother im_rudetoother im_toleratefaults im_forgiveother im_helpfulwithothers im_managestress im_nervous im_changemood im_feeldepressed im_easilyupset im_worryalot im_staycalm ///
-im_tryhard im_stickwithgoals im_goaftergoal im_finishwhatbegin im_finishtasks im_keepworking
+global big5imcor im_cr_curious im_cr_interestedbyart im_cr_repetitivetasks im_cr_inventive im_cr_liketothink im_cr_newideas im_cr_activeimagination im_cr_organized im_cr_makeplans im_cr_workhard im_cr_appointmentontime im_cr_putoffduties im_cr_easilydistracted im_cr_completeduties im_cr_enjoypeople im_cr_sharefeelings im_cr_shywithpeople im_cr_enthusiastic im_cr_talktomanypeople im_cr_talkative im_cr_expressingthoughts im_cr_workwithother im_cr_understandotherfeeling im_cr_trustingofother im_cr_rudetoother im_cr_toleratefaults im_cr_forgiveother im_cr_helpfulwithothers im_cr_managestress im_cr_nervous im_cr_changemood im_cr_feeldepressed im_cr_easilyupset im_cr_worryalot im_cr_staycalm // im_cr_tryhard im_cr_stickwithgoals im_cr_goaftergoal im_cr_finishwhatbegin im_cr_finishtasks im_cr_keepworking
 
-global big5imwithout im_curious im_interestedbyart im_repetitivetasks im_inventive im_liketothink im_newideas im_activeimagination im_organized im_makeplans im_workhard im_appointmentontime im_putoffduties im_easilydistracted im_completeduties im_enjoypeople im_sharefeelings im_shywithpeople im_enthusiastic im_talktomanypeople im_talkative im_expressingthoughts im_workwithother im_understandotherfeeling im_trustingofother im_rudetoother im_toleratefaults im_forgiveother im_helpfulwithothers im_managestress im_nervous im_changemood im_feeldepressed im_easilyupset im_worryalot im_staycalm
+global big5imraw im_raw_curious im_raw_interestedbyart im_raw_repetitivetasks im_raw_inventive im_raw_liketothink im_raw_newideas im_raw_activeimagination im_raw_organized im_raw_makeplans im_raw_workhard im_raw_appointmentontime im_raw_putoffduties im_raw_easilydistracted im_raw_completeduties im_raw_enjoypeople im_raw_sharefeelings im_raw_shywithpeople im_raw_enthusiastic im_raw_talktomanypeople im_raw_talkative im_raw_expressingthoughts im_raw_workwithother im_raw_understandotherfeeling im_raw_trustingofother im_raw_rudetoother im_raw_toleratefaults im_raw_forgiveother im_raw_helpfulwithothers im_raw_managestress im_raw_nervous im_raw_changemood im_raw_feeldepressed im_raw_easilyupset im_raw_worryalot im_raw_staycalm // im_raw_tryhard im_raw_stickwithgoals im_raw_goaftergoal im_raw_finishwhatbegin im_raw_finishtasks im_raw_keepworking
+
 
 
 * no corr. all without
-minap $big5imwithout
-fsum $big5imwithout, stat(n mean sd)
-factor $big5imwithout, pcf fa(5)  // 5-42
+minap $big5imcor
+minap $big5imraw
+*fsum $big5imwithout, stat(n mean sd)
+
+factor $big5imcor, pcf fa(5) // 5-42
 rotate, promax
-putexcel set "EFA_2020.xlsx", modify sheet(without_all)
-putexcel (E2)=matrix(e(r_L))
+*putexcel set "EFA_2020.xlsx", modify sheet(cor_5)
+*putexcel (E2)=matrix(e(r_L))
+
+factor $big5imraw, pcf fa(5) // 5-42
+rotate, promax
+*putexcel set "EFA_2020.xlsx", modify sheet(raw_5)
+*putexcel (E2)=matrix(e(r_L))
+
 
 predict nocorrf1 nocorrf2 nocorrf3 nocorrf4 nocorrf5
 cpcorr $big5imwithout\ nocorrf1 nocorrf2 nocorrf3 nocorrf4 nocorrf5
 matrix list r(C)
 matrix list r(p)
 
-*esttab using "_corr.csv", unstack not noobs compress cells(b(star fmt(2))) starlevels(* 0.05 ** 0.01 *** 0.001) replace
-
-
 *Correlation with big-5 and cronbach
 cpcorr cr_OP cr_EX cr_ES cr_CO cr_AG nocorrf1 nocorrf2 nocorrf3 nocorrf4 nocorrf5
 matrix list r(C)
 matrix list r(p)
 
-
-********** Alpha for traits
-**Alpha
-*drop if egoid==0
-cls
-
-*OP: 0.39 (cr) vs 0.77
-omega cr_curious cr_interested~t   cr_repetitive~s cr_inventive cr_liketothink cr_newideas cr_activeimag~n
-omega curious interested~t   repetitive~s inventive liketothink newideas activeimag~n
-
-*CO: 0.38 (cr) vs 0.72
-omega cr_organized  cr_makeplans cr_workhard cr_appointmen~e cr_putoffduties cr_easilydist~d cr_completedu~s	
-omega organized  makeplans workhard appointmen~e putoffduties easilydist~d completedu~s
-
-*EX: 0.46 (cr) vs 0.66
-omega cr_enjoypeople cr_sharefeeli~s cr_shywithpeo~e  cr_enthusiastic  cr_talktomany~e  cr_talkative cr_expressing~s
-omega enjoypeople sharefeeli~s shywithpeo~e  enthusiastic  talktomany~e  talkative expressing~s
-		
-*AG: 0.31 (cr) vs 0.61
-omega cr_workwithot~r   cr_understand~g cr_trustingof~r cr_rudetoother cr_toleratefa~s  cr_forgiveother  cr_helpfulwit~s 
-omega workwithot~r   understand~g trustingof~r rudetoother toleratefa~s  forgiveother  helpfulwit~s 
-
-	
-*ES: 0.79 (cr) vs 0.72
-omega cr_managestress  cr_nervous  cr_changemood cr_feeldepres~d cr_easilyupset cr_worryalot  cr_staycalm
-omega managestress  nervous  changemood feeldepres~d easilyupset worryalot  staycalm
 
 
 
@@ -382,6 +358,7 @@ save"$wave3~panel", replace
 ********** 
 use"$wave2", clear
 
+
 ********** Imputation for non corrected one
 global big5 ///
 curious interestedbyart repetitivetasks inventive liketothink newideas activeimagination ///
@@ -390,25 +367,46 @@ enjoypeople sharefeelings shywithpeople enthusiastic talktomanypeople  talkative
 workwithother  understandotherfeeling trustingofother rudetoother toleratefaults  forgiveother  helpfulwithothers ///
 managestress  nervous  changemood feeldepressed easilyupset worryalot  staycalm ///
 tryhard  stickwithgoals   goaftergoal finishwhatbegin finishtasks  keepworking
-foreach x in $big5{
+
+global big5raw raw_curious raw_interestedbyart raw_repetitivetasks raw_inventive raw_liketothink raw_newideas raw_activeimagination raw_organized raw_makeplans raw_workhard raw_appointmentontime raw_putoffduties raw_easilydistracted raw_completeduties raw_enjoypeople raw_sharefeelings raw_shywithpeople raw_enthusiastic raw_talktomanypeople raw_talkative raw_expressingthoughts raw_workwithother raw_understandotherfeeling raw_trustingofother raw_rudetoother raw_toleratefaults raw_forgiveother raw_helpfulwithothers raw_managestress raw_nervous raw_changemood raw_feeldepressed raw_easilyupset raw_worryalot raw_staycalm raw_tryhard raw_stickwithgoals raw_goaftergoal raw_finishwhatbegin raw_finishtasks raw_keepworking
+
+global big5cor cr_curious cr_interestedbyart cr_repetitivetasks cr_inventive cr_liketothink cr_newideas cr_activeimagination cr_organized cr_makeplans cr_workhard cr_appointmentontime cr_putoffduties cr_easilydistracted cr_completeduties cr_enjoypeople cr_sharefeelings cr_shywithpeople cr_enthusiastic cr_talktomanypeople cr_talkative cr_expressingthoughts cr_workwithother cr_understandotherfeeling cr_trustingofother cr_rudetoother cr_toleratefaults cr_forgiveother cr_helpfulwithothers cr_managestress cr_nervous cr_changemood cr_feeldepressed cr_easilyupset cr_worryalot cr_staycalm cr_tryhard cr_stickwithgoals cr_goaftergoal cr_finishwhatbegin cr_finishtasks cr_keepworking
+
+foreach x in $big5 $big5raw $big5cor{
 gen im_`x'=`x'
 }
-global big5im im_curious im_interestedbyart im_repetitivetasks im_inventive im_liketothink im_newideas im_activeimagination im_organized im_makeplans im_workhard im_appointmentontime im_putoffduties im_easilydistracted im_completeduties im_enjoypeople im_sharefeelings im_shywithpeople im_enthusiastic im_talktomanypeople im_talkative im_expressingthoughts im_workwithother im_understandotherfeeling im_trustingofother im_rudetoother im_toleratefaults im_forgiveother im_helpfulwithothers im_managestress im_nervous im_changemood im_feeldepressed im_easilyupset im_worryalot im_staycalm ///
-im_tryhard im_stickwithgoals im_goaftergoal im_finishwhatbegin im_finishtasks im_keepworking
+
 
 forvalues j=1(1)3{
 forvalues i=1(1)2{
-foreach x in $big5im{
-sum `x' if sex==`i' & caste==`j' & egoid!=0 & egoid!=.
-replace `x'=r(mean) if `x'==. & sex==`i' & caste==`j' & egoid!=0 & egoid!=.
+foreach x in $big5 $big5raw $big5cor{
+sum im_`x' if sex==`i' & caste==`j' & egoid!=0 & egoid!=.
+replace im_`x'=r(mean) if im_`x'==. & sex==`i' & caste==`j' & egoid!=0 & egoid!=.
 }
 }
 }
 
-global big5imwithout im_curious im_interestedbyart im_repetitivetasks im_inventive im_liketothink im_newideas im_activeimagination im_organized im_makeplans im_workhard im_appointmentontime im_putoffduties im_easilydistracted im_completeduties im_enjoypeople im_sharefeelings im_shywithpeople im_enthusiastic im_talktomanypeople im_talkative im_expressingthoughts im_workwithother im_understandotherfeeling im_trustingofother im_rudetoother im_toleratefaults im_forgiveother im_helpfulwithothers im_managestress im_nervous im_changemood im_feeldepressed im_easilyupset im_worryalot im_staycalm
+
+global big5imcor im_cr_curious im_cr_interestedbyart im_cr_repetitivetasks im_cr_inventive im_cr_liketothink im_cr_newideas im_cr_activeimagination im_cr_organized im_cr_makeplans im_cr_workhard im_cr_appointmentontime im_cr_putoffduties im_cr_easilydistracted im_cr_completeduties im_cr_enjoypeople im_cr_sharefeelings im_cr_shywithpeople im_cr_enthusiastic im_cr_talktomanypeople im_cr_talkative im_cr_expressingthoughts im_cr_workwithother im_cr_understandotherfeeling im_cr_trustingofother im_cr_rudetoother im_cr_toleratefaults im_cr_forgiveother im_cr_helpfulwithothers im_cr_managestress im_cr_nervous im_cr_changemood im_cr_feeldepressed im_cr_easilyupset im_cr_worryalot im_cr_staycalm // im_cr_tryhard im_cr_stickwithgoals im_cr_goaftergoal im_cr_finishwhatbegin im_cr_finishtasks im_cr_keepworking
+
+global big5imraw im_raw_curious im_raw_interestedbyart im_raw_repetitivetasks im_raw_inventive im_raw_liketothink im_raw_newideas im_raw_activeimagination im_raw_organized im_raw_makeplans im_raw_workhard im_raw_appointmentontime im_raw_putoffduties im_raw_easilydistracted im_raw_completeduties im_raw_enjoypeople im_raw_sharefeelings im_raw_shywithpeople im_raw_enthusiastic im_raw_talktomanypeople im_raw_talkative im_raw_expressingthoughts im_raw_workwithother im_raw_understandotherfeeling im_raw_trustingofother im_raw_rudetoother im_raw_toleratefaults im_raw_forgiveother im_raw_helpfulwithothers im_raw_managestress im_raw_nervous im_raw_changemood im_raw_feeldepressed im_raw_easilyupset im_raw_worryalot im_raw_staycalm // im_raw_tryhard im_raw_stickwithgoals im_raw_goaftergoal im_raw_finishwhatbegin im_raw_finishtasks im_raw_keepworking
+
+* no corr. all without
+minap $big5imcor
+minap $big5imraw
+*fsum $big5imwithout, stat(n mean sd)
+
+factor $big5imcor, pcf fa(5) // 5-42
+rotate, promax
+putexcel set "EFA_2016.xlsx", modify sheet(cor_all_5)
+putexcel (E2)=matrix(e(r_L))
 
 
-********** No corrected
+factor $big5imraw, pcf fa(5) // 5-42
+rotate, promax
+putexcel set "EFA_2016.xlsx", modify sheet(raw_all_5)
+putexcel (E2)=matrix(e(r_L))
+
 
 * no corr. all without
 minap $big5imwithout
@@ -421,8 +419,6 @@ predict nocorrf1 nocorrf2 nocorrf3 nocorrf4 nocorrf5
 cpcorr $big5imwithout\ nocorrf1 nocorrf2 nocorrf3 nocorrf4 nocorrf5
 matrix list r(C)
 matrix list r(p)
-
-*esttab using "_corr.csv", unstack not noobs compress cells(b(star fmt(2))) starlevels(* 0.05 ** 0.01 *** 0.001) replace
 
 
 *Correlation with big-5 and cronbach
