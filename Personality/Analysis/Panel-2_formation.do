@@ -1395,6 +1395,16 @@ predict `x', residuals
 egen `x'_std=std(`x')
 }
 
+forvalues i=1(1)2 {
+foreach x in cr_OP cr_CO cr_ES cr_AG cr_EX cr_Grit OP CO ES AG EX Grit {
+qui reg `x'_`i' age_`i'
+predict res_`x'_`i', residuals
+egen std_`x'_`i'=std(`x'_`i')
+}
+}
+
+
+
 /*
 label var base_nocorrf1 "Factor 1"
 label var base_nocorrf2 "Factor 2"
