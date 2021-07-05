@@ -11,6 +11,8 @@ Personality traits: EFA + panel
 -------------------------
 */
 
+*ssc install catplot
+*ssc install sencode
 
 ****************************************
 * INITIALIZATION
@@ -18,12 +20,18 @@ Personality traits: EFA + panel
 clear all
 macro drop _all
 ********** Path to folder "data" folder.
- global directory = "D:\Documents\_Thesis\Research-Skills_and_debt\Analysis"
- cd"$directory"
+*global directory = "D:\Documents\_Thesis\Research-Skills_and_debt\Analysis"
+*cd"$directory"
 
 
-********** Fac folder
-*cd "C:\Users\anatal\Downloads\Personality\Analysis\Matos"
+*Fac
+cd "C:\Users\anatal\Downloads\_Thesis\Research-Skills_and_debt\Analysis"
+set scheme plotplain
+
+global git "C:\Users\anatal\Downloads\GitHub"
+global dropbox "C:\Users\anatal\Downloads\Dropbox"
+global thesis "C:\Users\anatal\Downloads\_Thesis\Research-Skills_and_debt\Analysis"
+
 
 
 ********** Name of the NEEMSIS2 questionnaire version to clean
@@ -99,21 +107,19 @@ global imcor im_cr_curious im_cr_interestedbyart im_cr_repetitivetasks im_cr_inv
 global imraw im_raw_curious im_raw_interestedbyart im_raw_repetitivetasks im_raw_inventive im_raw_liketothink im_raw_newideas im_raw_activeimagination im_raw_organized im_raw_makeplans im_raw_workhard im_raw_appointmentontime im_raw_putoffduties im_raw_easilydistracted im_raw_completeduties im_raw_enjoypeople im_raw_sharefeelings im_raw_shywithpeople im_raw_enthusiastic im_raw_talktomanypeople im_raw_talkative im_raw_expressingthoughts im_raw_workwithother im_raw_understandotherfeeling im_raw_trustingofother im_raw_rudetoother im_raw_toleratefaults im_raw_forgiveother im_raw_helpfulwithothers im_raw_managestress im_raw_nervous im_raw_changemood im_raw_feeldepressed im_raw_easilyupset im_raw_worryalot im_raw_staycalm 
 
 foreach x in imcorwith imrawwith {
-minap $`x'
-fsum $`x', stat(n mean sd)
-factor $`x', pcf fa(6) 
+*minap $`x'
+*fsum $`x', stat(n mean sd)
+qui factor $`x', pcf fa(6) 
 rotate, promax
 *putexcel set "EFA_2020.xlsx", modify sheet(`x')
 *putexcel (E2)=matrix(e(r_L))
 
 predict factor_`x'_1 factor_`x'_2 factor_`x'_3 factor_`x'_4 factor_`x'_5 factor_`x'_6
 cpcorr $`x' \ factor_`x'_1 factor_`x'_2 factor_`x'_3 factor_`x'_4 factor_`x'_5 factor_`x'_6
-matrix list r(C)
 matrix list r(p)
 
 *Correlation with big-5 and cronbach
 cpcorr cr_OP cr_EX cr_ES cr_CO cr_AG cr_Grit OP EX ES CO AG Grit factor_`x'_1 factor_`x'_2 factor_`x'_3 factor_`x'_4 factor_`x'_5 factor_`x'_6
-matrix list r(C)
 matrix list r(p)
 }
 
@@ -121,22 +127,112 @@ matrix list r(p)
 foreach x in imcor imraw {
 minap $`x'
 fsum $`x', stat(n mean sd)
-factor $`x', pcf fa(5) 
+qui factor $`x', pcf fa(5) 
 rotate, promax
 *putexcel set "EFA_2020.xlsx", modify sheet(`x')
 *putexcel (E2)=matrix(e(r_L))
 
 predict factor_`x'_1 factor_`x'_2 factor_`x'_3 factor_`x'_4 factor_`x'_5
 cpcorr $`x' \ factor_`x'_1 factor_`x'_2 factor_`x'_3 factor_`x'_4 factor_`x'_5
-matrix list r(C)
 matrix list r(p)
 
 *Correlation with big-5 and cronbach
 cpcorr cr_OP cr_EX cr_ES cr_CO cr_AG cr_Grit OP EX ES CO AG Grit factor_`x'_1 factor_`x'_2 factor_`x'_3 factor_`x'_4 factor_`x'_5
-matrix list r(C)
 matrix list r(p)
 }
 
+
+********** Graph rpz
+preserve
+import delimited "factor2020.csv", delimiter(";") clear
+drop v46
+gen n=_n
+drop if n==42
+order n var
+gen threshold=0.05
+*Clean
+forvalues i=1(1)6{
+rename factor_imcrwith_`i' factor_Corrwith_`i'
+rename pvalue_imcrwith_`i' pvalue_Corrwith_`i'
+rename factor_imrawwith_`i' factor_Rawwith_`i'
+rename pvalue_imrawwith_`i' pvalue_Rawwith_`i'
+}
+
+forvalues i=1(1)5{
+rename factor_imcr_`i' factor_Corr_`i'
+rename pvalue_imcr_`i' pvalue_Corr_`i'
+rename factor_imraw_`i' factor_Raw_`i'
+rename pvalue_imraw_`i' pvalue_Raw_`i'
+}
+gen big5=""
+replace big5="Openness" if n>=1 & n<=7
+replace big5="Conscientiousness" if n>=8 & n<=14
+replace big5="Extraversion" if n>=15 & n<=21
+replace big5="Agreeableness" if n>=22 & n<=28
+replace big5="Emotional stability / Neuroticism" if n>=29 & n<=35
+replace big5="Grit" if n>=36 & n<=41
+order n var big5
+save"factor2020.dta", replace
+
+use"factor2020.dta", clear
+
+set graph off
+* With
+foreach x in Raw Corr {
+forvalues i=1(1)6{
+*Sort
+gsort - factor_`x'with_`i'
+sencode var, gen(var_factor_`x'with_`i') gsort(factor_`x'with_`i')
+replace factor_`x'with_`i'=round(factor_`x'with_`i', 0.01)
+*Graph
+twoway ///
+(bar factor_`x'with_`i' var_factor_`x'with_`i', barw(0.6) yline(0, lcolor(gs10) lpattern(solid) lwidth(*0.8))) ///
+(scatter factor_`x'with_`i' var_factor_`x'with_`i', mlabel(factor_`x'with_`i') mlabposition(12) mlabsize(*0.3) mlabangle(0) msymbol(i)) ///
+(scatter pvalue_`x'with_`i' var_factor_`x'with_`i', msymbol(o) mcolor(gs1) msize(*0.2)) ///
+(line threshold var_factor_`x'with_`i', lcolor(gs1) lpattern(solid) lwidth(*0.2)), ///
+xlabel(1(1)41, valuelabel labsize(tiny) angle(45) nogrid) xtitle("")  ///
+ylabel(, labsize(tiny)) ///
+title("Factor `i'", size(small)) ///
+legend(order(1 "Correlation with factor" 3 "p-value" 4 ".05 threshold") pos(6) col(3) size(vsmall) off) ///
+name(g_`x'_`i', replace)
+drop var_factor_`x'with_`i'
+sort n
+}
+grc1leg g_`x'_1 g_`x'_2 g_`x'_3 g_`x'_4 g_`x'_5 g_`x'_6, note("`x' items with NEEMSIS-2 (2020-21) data.", size(tiny)) name(comb_`x'_with, replace)
+graph save "$git\Analysis\Personality\Big-5\factor2020_`x'_with.gph", replace
+graph export "$git\Analysis\Personality\Big-5\factor2020_`x'_with.svg", as(svg) replace
+graph export "$git\Analysis\Personality\Big-5\factor2020_`x'_with.pdf", as(pdf) replace
+}
+
+* Without
+drop if n>=36
+foreach x in Raw Corr {
+forvalues i=1(1)5{
+*Sort
+gsort - factor_`x'_`i'
+sencode var, gen(var_factor_`x'_`i') gsort(factor_`x'_`i')
+replace factor_`x'_`i'=round(factor_`x'_`i', 0.01)
+*Graph
+twoway ///
+(bar factor_`x'_`i' var_factor_`x'_`i', barw(0.6) yline(0, lcolor(gs10) lpattern(solid) lwidth(*0.8))) ///
+(scatter factor_`x'_`i' var_factor_`x'_`i', mlabel(factor_`x'_`i') mlabposition(12) mlabsize(*0.3) mlabangle(0) msymbol(i)) ///
+(scatter pvalue_`x'_`i' var_factor_`x'_`i', msymbol(o) mcolor(gs1) msize(*0.2)) ///
+(line threshold var_factor_`x'_`i', lcolor(gs1) lpattern(solid) lwidth(*0.2)), ///
+xlabel(1(1)35,valuelabel labsize(tiny) angle(45) nogrid) xtitle("")  ///
+ylabel(,labsize(tiny)) ///
+title("Factor `i'", size(small)) ///
+legend(order(1 "Correlation with factor" 3 "p-value" 4 ".05 threshold") pos(6) col(3) size(vsmall) off) ///
+name(g_`x'_`i', replace)
+drop var_factor_`x'_`i'
+sort n
+}
+grc1leg g_`x'_1 g_`x'_2 g_`x'_3 g_`x'_4 g_`x'_5, note("`x' items with NEEMSIS-2 (2020-21) data.", size(tiny)) name(comb_`x', replace)
+graph save "$git\Analysis\Personality\Big-5\factor2020_`x'.gph", replace
+graph export "$git\Analysis\Personality\Big-5\factor2020_`x'.svg", as(svg) replace
+graph export "$git\Analysis\Personality\Big-5\factor2020_`x'.pdf", as(pdf) replace
+}
+restore
+set graph on
 
 
 **********Correlation + omega
@@ -409,44 +505,158 @@ global imcor im_cr_curious im_cr_interestedbyart im_cr_repetitivetasks im_cr_inv
 
 global imraw im_raw_curious im_raw_interestedbyart im_raw_repetitivetasks im_raw_inventive im_raw_liketothink im_raw_newideas im_raw_activeimagination im_raw_organized im_raw_makeplans im_raw_workhard im_raw_appointmentontime im_raw_putoffduties im_raw_easilydistracted im_raw_completeduties im_raw_enjoypeople im_raw_sharefeelings im_raw_shywithpeople im_raw_enthusiastic im_raw_talktomanypeople im_raw_talkative im_raw_expressingthoughts im_raw_workwithother im_raw_understandotherfeeling im_raw_trustingofother im_raw_rudetoother im_raw_toleratefaults im_raw_forgiveother im_raw_helpfulwithothers im_raw_managestress im_raw_nervous im_raw_changemood im_raw_feeldepressed im_raw_easilyupset im_raw_worryalot im_raw_staycalm 
 
+cls
 foreach x in imcorwith imrawwith {
-minap $`x'
-fsum $`x', stat(n mean sd)
-factor $`x', pcf fa(6) 
+*minap $`x'
+*fsum $`x', stat(n mean sd)
+qui factor $`x', pcf fa(6) 
 rotate, promax
 *putexcel set "EFA_2016.xlsx", modify sheet(`x')
 *putexcel (E2)=matrix(e(r_L))
 
 predict factor_`x'_1 factor_`x'_2 factor_`x'_3 factor_`x'_4 factor_`x'_5 factor_`x'_6
 cpcorr $`x' \ factor_`x'_1 factor_`x'_2 factor_`x'_3 factor_`x'_4 factor_`x'_5 factor_`x'_6
-matrix list r(C)
 matrix list r(p)
 
 *Correlation with big-5 and cronbach
 cpcorr cr_OP cr_EX cr_ES cr_CO cr_AG cr_Grit OP EX ES CO AG Grit factor_`x'_1 factor_`x'_2 factor_`x'_3 factor_`x'_4 factor_`x'_5 factor_`x'_6
-matrix list r(C)
 matrix list r(p)
 }
 
-
+cls
 foreach x in imcor imraw {
-minap $`x'
-fsum $`x', stat(n mean sd)
-factor $`x', pcf fa(5) 
+*minap $`x'
+*fsum $`x', stat(n mean sd)
+qui factor $`x', pcf fa(5) 
 rotate, promax
 *putexcel set "EFA_2016.xlsx", modify sheet(`x')
 *putexcel (E2)=matrix(e(r_L))
 
 predict factor_`x'_1 factor_`x'_2 factor_`x'_3 factor_`x'_4 factor_`x'_5
 cpcorr $`x' \ factor_`x'_1 factor_`x'_2 factor_`x'_3 factor_`x'_4 factor_`x'_5
-matrix list r(C)
 matrix list r(p)
 
 *Correlation with big-5 and cronbach
 cpcorr cr_OP cr_EX cr_ES cr_CO cr_AG cr_Grit OP EX ES CO AG Grit factor_`x'_1 factor_`x'_2 factor_`x'_3 factor_`x'_4 factor_`x'_5
-matrix list r(C)
 matrix list r(p)
 }
+
+
+
+********** Graph rpz
+preserve
+import delimited "factor2016.csv", delimiter(";") clear
+gen n=_n
+drop if n==42
+order n var
+gen threshold=0.05
+*Clean
+forvalues i=1(1)6{
+rename factor_imcrwith_`i' factor_Corrwith_`i'
+rename pvalue_imcrwith_`i' pvalue_Corrwith_`i'
+rename factor_imrawwith_`i' factor_Rawwith_`i'
+rename pvalue_imrawwith_`i' pvalue_Rawwith_`i'
+}
+
+forvalues i=1(1)5{
+rename factor_imcr_`i' factor_Corr_`i'
+rename pvalue_imcr_`i' pvalue_Corr_`i'
+rename factor_imraw_`i' factor_Raw_`i'
+rename pvalue_imraw_`i' pvalue_Raw_`i'
+}
+gen big5=""
+replace big5="Openness" if n>=1 & n<=7
+replace big5="Conscientiousness" if n>=8 & n<=14
+replace big5="Extraversion" if n>=15 & n<=21
+replace big5="Agreeableness" if n>=22 & n<=28
+replace big5="Emotional stability / Neuroticism" if n>=29 & n<=35
+replace big5="Grit" if n>=36 & n<=41
+order n var big5
+
+*Interpretation
+*F1
+gsort - factor_Raw_1
+list n var big5 factor_Raw_1, clean noobs
+*F2
+gsort - factor_Raw_2
+list n var big5 factor_Raw_2, clean noobs
+*F3
+gsort - factor_Raw_3
+list n var big5 factor_Raw_3, clean noobs
+*F4
+gsort - factor_Raw_4
+list n var big5 factor_Raw_4, clean noobs
+*F5
+gsort - factor_Raw_5
+list n var big5 factor_Raw_5, clean noobs
+
+save"factor2016.dta", replace
+
+use"factor2016.dta", clear
+
+set graph off
+* With
+foreach x in Raw Corr {
+forvalues i=1(1)6{
+*Sort
+gsort - factor_`x'with_`i'
+sencode var, gen(var_factor_`x'with_`i') gsort(factor_`x'with_`i')
+replace factor_`x'with_`i'=round(factor_`x'with_`i', 0.01)
+*Graph
+twoway ///
+(bar factor_`x'with_`i' var_factor_`x'with_`i', barw(0.6) yline(0, lcolor(gs10) lpattern(solid) lwidth(*0.8))) ///
+(scatter factor_`x'with_`i' var_factor_`x'with_`i', mlabel(factor_`x'with_`i') mlabposition(12) mlabsize(*0.3) mlabangle(0) msymbol(i)) ///
+(scatter pvalue_`x'with_`i' var_factor_`x'with_`i', msymbol(o) mcolor(gs1) msize(*0.2)) ///
+(line threshold var_factor_`x'with_`i', lcolor(gs1) lpattern(solid) lwidth(*0.2)), ///
+xlabel(1(1)41, valuelabel labsize(tiny) angle(45) nogrid) xtitle("")  ///
+ylabel(, labsize(tiny)) ///
+title("Factor `i'", size(small)) ///
+legend(order(1 "Correlation with factor" 3 "p-value" 4 ".05 threshold") pos(6) col(3) size(vsmall) off) ///
+name(g_`x'_`i', replace)
+drop var_factor_`x'with_`i'
+sort n
+}
+grc1leg g_`x'_1 g_`x'_2 g_`x'_3 g_`x'_4 g_`x'_5 g_`x'_6, note("`x' items with NEEMSIS-1 (2016-17) data.", size(tiny)) name(comb_`x'_with, replace)
+graph save "$git\Analysis\Personality\Big-5\factor2016_`x'_with.gph", replace
+graph export "$git\Analysis\Personality\Big-5\factor2016_`x'_with.svg", as(svg) replace
+graph export "$git\Analysis\Personality\Big-5\factor2016_`x'_with.pdf", as(pdf) replace
+}
+
+* Without
+drop if n>=36
+foreach x in Raw Corr {
+forvalues i=1(1)5{
+*Sort
+gsort - factor_`x'_`i'
+sencode var, gen(var_factor_`x'_`i') gsort(factor_`x'_`i')
+replace factor_`x'_`i'=round(factor_`x'_`i', 0.01)
+*Graph
+twoway ///
+(bar factor_`x'_`i' var_factor_`x'_`i', barw(0.6) yline(0, lcolor(gs10) lpattern(solid) lwidth(*0.8))) ///
+(scatter factor_`x'_`i' var_factor_`x'_`i', mlabel(factor_`x'_`i') mlabposition(12) mlabsize(*0.3) mlabangle(0) msymbol(i)) ///
+(scatter pvalue_`x'_`i' var_factor_`x'_`i', msymbol(o) mcolor(gs1) msize(*0.2)) ///
+(line threshold var_factor_`x'_`i', lcolor(gs1) lpattern(solid) lwidth(*0.2)), ///
+xlabel(1(1)35,valuelabel labsize(tiny) angle(45) nogrid) xtitle("")  ///
+ylabel(,labsize(tiny)) ///
+title("Factor `i'", size(small)) ///
+legend(order(1 "Correlation with factor" 3 "p-value" 4 ".05 threshold") pos(6) col(3) size(vsmall) off) ///
+name(g_`x'_`i', replace)
+drop var_factor_`x'_`i'
+sort n
+}
+grc1leg g_`x'_1 g_`x'_2 g_`x'_3 g_`x'_4 g_`x'_5, note("`x' items with NEEMSIS-1 (2016-17) data.", size(tiny)) name(comb_`x', replace)
+graph save "$git\Analysis\Personality\Big-5\factor2016_`x'.gph", replace
+graph export "$git\Analysis\Personality\Big-5\factor2016_`x'.svg", as(svg) replace
+graph export "$git\Analysis\Personality\Big-5\factor2016_`x'.pdf", as(pdf) replace
+}
+restore
+set graph on
+
+
+
+
+
+
 
 
 **********Correlation + omega
@@ -1149,7 +1359,7 @@ tab cat_mainoccupation_indiv_2
 
 *EFA+Big-5
 cls
-foreach x in base_factor_imcor_1 base_factor_imcor_2 base_factor_imcor_3 base_factor_imcor_4 base_factor_imcor_5 base_factor_imcorwith_1 base_factor_imcorwith_2 base_factor_imcorwith_3 base_factor_imcorwith_4 base_factor_imcorwith_5 base_factor_imcorwith_6 base_factor_imraw_1 base_factor_imraw_2 base_factor_imraw_3 base_factor_imraw_4 base_factor_imraw_5 base_factor_imrawwith_1 base_factor_imrawwith_2 base_factor_imrawwith_3 base_factor_imrawwith_4 base_factor_imrawwith_5 base_factor_imrawwith_6 {
+foreach x in base_factor_imcor_1 base_factor_imcor_2 base_factor_imcor_3 base_factor_imcor_4 base_factor_imcor_5 base_factor_imcorwith_1 base_factor_imcorwith_2 base_factor_imcorwith_3 base_factor_imcorwith_4 base_factor_imcorwith_5 base_factor_imcorwith_6 base_factor_imraw_1 base_factor_imraw_2 base_factor_imraw_3 base_factor_imraw_4 base_factor_imraw_5 base_factor_imrawwith_1 base_factor_imrawwith_2 base_factor_imrawwith_3 base_factor_imrawwith_4 base_factor_imrawwith_5 base_factor_imrawwith_6  {
 rename `x' `x'_raw
 reg `x' age_1
 dis _b[age_1]/_se[age_1]
