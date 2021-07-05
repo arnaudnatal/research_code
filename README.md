@@ -26,7 +26,7 @@
   - [ ] Regarder score personnalité avant/après la démonétisation
   - [ ] Construire la variable de locus of control
   - [ ] Littérature sur la stabilité du locus
-  - [ ] Mettre au propre les regressions PT&CS sur variation de la dette
+  - [x] Mettre au propre les regressions PT&CS sur variation de la dette
   - [ ] Faire des regressions FE entre personnalité (Big-5) et dette
   - [x] Caste & Gender = Social Identity
   - [x] Relancer analyse factorielle avec les variables raw pour 2016 et pour 2020
