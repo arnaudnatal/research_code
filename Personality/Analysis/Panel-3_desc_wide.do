@@ -656,6 +656,7 @@ dummycreditcard_ ///
 chitfundamount_ ///
 ownhouse_ ///
 sexratio_ ///
+sexratiocat_ ///
 shock_ ///
 cat_mainoccupation_indiv_ ///
 agesq_ ///
@@ -944,6 +945,7 @@ dummycreditcard_ ///
 chitfundamount_ ///
 ownhouse_ ///
 sexratio_ ///
+sexratiocat_ ///
 shock_ ///
 cat_mainoccupation_indiv_ ///
 agesq_ ///
