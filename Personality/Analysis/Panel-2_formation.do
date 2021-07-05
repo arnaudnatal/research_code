@@ -12,7 +12,7 @@ Personality traits: EFA + panel
 */
 
 *ssc install catplot
-*ssc install sencode
+ssc install sencode
 
 ****************************************
 * INITIALIZATION
@@ -20,17 +20,17 @@ Personality traits: EFA + panel
 clear all
 macro drop _all
 ********** Path to folder "data" folder.
-*global directory = "D:\Documents\_Thesis\Research-Skills_and_debt\Analysis"
-*cd"$directory"
+global directory = "D:\Documents\_Thesis\Research-Skills_and_debt\Analysis"
+cd"$directory"
 
 
 *Fac
-cd "C:\Users\anatal\Downloads\_Thesis\Research-Skills_and_debt\Analysis"
+*cd "C:\Users\anatal\Downloads\_Thesis\Research-Skills_and_debt\Analysis"
 set scheme plotplain
 
-global git "C:\Users\anatal\Downloads\GitHub"
-global dropbox "C:\Users\anatal\Downloads\Dropbox"
-global thesis "C:\Users\anatal\Downloads\_Thesis\Research-Skills_and_debt\Analysis"
+*global git "C:\Users\anatal\Downloads\GitHub"
+*global dropbox "C:\Users\anatal\Downloads\Dropbox"
+*global thesis "C:\Users\anatal\Downloads\_Thesis\Research-Skills_and_debt\Analysis"
 
 
 
@@ -143,6 +143,7 @@ matrix list r(p)
 
 
 ********** Graph rpz
+/*
 preserve
 import delimited "factor2020.csv", delimiter(";") clear
 drop v46
@@ -233,7 +234,7 @@ graph export "$git\Analysis\Personality\Big-5\factor2020_`x'.pdf", as(pdf) repla
 }
 restore
 set graph on
-
+*/
 
 **********Correlation + omega
 /*
@@ -544,6 +545,7 @@ matrix list r(p)
 
 
 ********** Graph rpz
+/*
 preserve
 import delimited "factor2016.csv", delimiter(";") clear
 gen n=_n
@@ -651,7 +653,7 @@ graph export "$git\Analysis\Personality\Big-5\factor2016_`x'.pdf", as(pdf) repla
 }
 restore
 set graph on
-
+*/
 
 
 

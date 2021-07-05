@@ -22,17 +22,17 @@ clear all
 macro drop _all
 set scheme plotplain
 ********** Path to folder "data" folder.
-*global directory = "D:\Documents\_Thesis\Research-Skills_and_debt\Analysis"
-*cd"$directory"
+global directory = "D:\Documents\_Thesis\Research-Skills_and_debt\Analysis"
+cd"$directory"
 
 
 *Fac
-cd "C:\Users\anatal\Downloads\_Thesis\Research-Skills_and_debt\Analysis"
-set scheme plotplain
+*cd "C:\Users\anatal\Downloads\_Thesis\Research-Skills_and_debt\Analysis"
+*set scheme plotplain
 
-global git "C:\Users\anatal\Downloads\GitHub"
-global dropbox "C:\Users\anatal\Downloads\Dropbox"
-global thesis "C:\Users\anatal\Downloads\_Thesis\Research-Skills_and_debt\Analysis"
+*global git "C:\Users\anatal\Downloads\GitHub"
+*global dropbox "C:\Users\anatal\Downloads\Dropbox"
+*global thesis "C:\Users\anatal\Downloads\_Thesis\Research-Skills_and_debt\Analysis"
 
 
 ********** Name of the NEEMSIS2 questionnaire version to clean
@@ -463,6 +463,30 @@ EX_ ///
 AG_ ///
 ES_ ///
 Grit_ ///
+res_cr_OP_ ///
+res_cr_CO_ ///
+res_cr_EX_ ///
+res_cr_AG_ ///
+res_cr_ES_ ///
+res_cr_Grit_ ///
+res_OP_ ///
+res_CO_ ///
+res_EX_ ///
+res_AG_ ///
+res_ES_ ///
+res_Grit_ ///
+std_cr_OP_ ///
+std_cr_CO_ ///
+std_cr_EX_ ///
+std_cr_AG_ ///
+std_cr_ES_ ///
+std_cr_Grit_ ///
+std_OP_ ///
+std_CO_ ///
+std_EX_ ///
+std_AG_ ///
+std_ES_ ///
+std_Grit_ ///
 imp1_ds_tot_indiv_ ///
 imp1_is_tot_indiv_ ///
 semiformal_indiv_ ///
@@ -961,8 +985,8 @@ save"panel_long_v1.dta", replace
 
 
 
-
-
+*Pas besoin de le lancer à chaque fois car je n'y touche quasi jamais
+/*
 ****************************************
 * Cleaning loans database
 ****************************************
@@ -1111,7 +1135,7 @@ tab segmana dummyinterestratio_2, row nofreq
 save"panel_wide_v3.dta", replace
 ****************************************
 * END
-
+*/
 
 
 
@@ -1193,6 +1217,7 @@ tab `x' segmana, nofreq chi2
 oneway annualincome_indiv1000_1 segmana
 
 ********** Personality
+/*
 set graph off
 forvalues i=1(1)5{
 twoway ///
@@ -1237,7 +1262,7 @@ set graph on
 grc1leg f1 f2 f3 f4 f5 f6 f7 f8, cols(4) note("Kernel: Epanechnikov;" "Bandwidth: 0.32 for factors, 3 for raven, 1.5 for literacy, 1 for numeracy.", size(vsmall)) name(perso, replace)
 graph save "Kernel_perso2.gph", replace
 graph export "Kernel_perso2.pdf", as(pdf) name(perso) replace
-
+*/
 
 * ANOVA for personality
 tabstat base_factor_imraw_1_std base_factor_imraw_2_std base_factor_imraw_3_std base_factor_imraw_4_std base_factor_imraw_5_std, stat(n mean sd p50) by(segmana)
