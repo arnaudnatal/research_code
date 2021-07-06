@@ -1013,7 +1013,7 @@ save"panel_long_v1.dta", replace
 
 
 *Pas besoin de le lancer à chaque fois car je n'y touche quasi jamais
-/*
+
 ****************************************
 * Cleaning loans database
 ****************************************
@@ -1162,7 +1162,7 @@ tab segmana dummyinterestratio_2, row nofreq
 save"panel_wide_v3.dta", replace
 ****************************************
 * END
-*/
+
 
 
 

@@ -69,7 +69,8 @@ i=3 --> at=1 (middle-upper male) at=2 (dalits male) at=3 (middle-upper female) a
 */
 
 *cap ssc inst sxpose
-foreach x in indebt_indiv loans_indiv over40_indiv DSR_indiv heck_DSR_indiv loanamount_indiv1000 heck_loanamount_indiv1000 delta2_DSR_indiv delta2_loanamount_indiv delta2_loans_indiv FE_loanamount_indiv1000 FE_DSR_indiv {
+*foreach x in indebt_indiv loans_indiv over40_indiv DSR_indiv heck_DSR_indiv loanamount_indiv1000 heck_loanamount_indiv1000 delta2_DSR_indiv delta2_loanamount_indiv delta2_loans_indiv FE_loanamount_indiv1000 FE_DSR_indiv {
+foreach x in b5_delta2_DSR_indiv b5_delta2_loanamount_indiv b5_delta2_loans_indiv b5_DSR_indiv b5_heck_DSR_indiv b5_heck_loanamount_indiv1000 b5_indebt_indiv b5_loanamount_indiv1000 b5_loans_indiv b5_over40_indiv {
 forvalues i=1(1)4{
 preserve
 use"margin_`x'`i'", clear
