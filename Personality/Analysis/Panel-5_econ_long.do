@@ -67,96 +67,46 @@ xtset panelvar year
 
 
 
-
-
 ********** Macro
-*global intfem fem_base_factor_imraw_1_std fem_base_factor_imraw_2_std fem_base_factor_imraw_3_std fem_base_factor_imraw_4_std fem_base_factor_imraw_5_std fem_base_raven_tt fem_base_num_tt fem_base_lit_tt
+global big5raw std_OP std_CO std_EX std_AG std_ES 
+global intfemraw fem_std_OP fem_std_CO fem_std_EX fem_std_AG fem_std_ES fem_raven_tt fem_lit_tt fem_num_tt
+global intdalraw dal_std_OP dal_std_CO dal_std_EX dal_std_AG dal_std_ES dal_raven_tt dal_lit_tt dal_num_tt
+global threeraw threeway_std_OP threeway_std_CO threeway_std_EX threeway_std_AG threeway_std_ES threeway_raven_tt threeway_lit_tt threeway_num_tt
 
-*global intdal dal_base_factor_imraw_1_std dal_base_factor_imraw_2_std dal_base_factor_imraw_3_std dal_base_factor_imraw_4_std dal_base_factor_imraw_5_std dal_base_raven_tt dal_base_num_tt dal_base_lit_tt
+global big5cor std_cr_OP std_cr_CO std_cr_EX std_cr_AG std_cr_ES
+global intfemcor fem_std_cr_OP fem_std_cr_CO fem_std_cr_EX fem_std_cr_AG fem_std_cr_ES fem_raven_tt fem_lit_tt fem_num_tt
+global intdalcor dal_std_cr_OP dal_std_cr_CO dal_std_cr_EX dal_std_cr_AG dal_std_cr_ES dal_raven_tt dal_lit_tt dal_num_tt
+global threecor threeway_std_cr_OP threeway_std_cr_CO threeway_std_cr_EX threeway_std_cr_AG threeway_std_cr_ES threeway_raven_tt threeway_lit_tt threeway_num_tt
 
-*global three threeway_base_factor_imraw_1_std threeway_base_factor_imraw_2_std threeway_base_factor_imraw_3_std threeway_base_factor_imraw_4_std threeway_base_factor_imraw_5_std threeway_base_raven_tt threeway_base_num_tt threeway_base_lit_tt
+global cog raven_tt num_tt lit_tt
 
-*global efa base_factor_imraw_1_std base_factor_imraw_2_std base_factor_imraw_3_std base_factor_imraw_4_std base_factor_imraw_5_std
-*global cog base_raven_tt base_num_tt base_lit_tt
-global indivcontrol age_1 agesq_1 dummyhead cat_mainoccupation_indiv_1_1 cat_mainoccupation_indiv_1_2 cat_mainoccupation_indiv_1_3 cat_mainoccupation_indiv_1_4 cat_mainoccupation_indiv_1_5 dummyedulevel maritalstatus2_1 dummymultipleoccupation_indiv_1
-*global indivcontrol age_1 dummyhead cat_n_mainoccupation_indiv_1_1 cat_n_mainoccupation_indiv_1_2 cat_n_mainoccupation_indiv_1_3 dummyedulevel maritalstatus2_1
-
-
-global hhcontrol4 assets1000_1 sexratiocat_1_1 sexratiocat_1_2 sexratiocat_1_3 hhsize_1 shock_1 incomeHH1000_1
-*global hhcontrol4 assets1000_1 shock_1 incomeHH1000_percapita
+global indivcontrol age agesq dummyhead cat_mainoccupation_indiv_1 cat_mainoccupation_indiv_2 cat_mainoccupation_indiv_3 cat_mainoccupation_indiv_4 cat_mainoccupation_indiv_5 dummyedulevel maritalstatus2 dummymultipleoccupation_indiv
+global hhcontrol4 assets1000 sexratiocat_1 sexratiocat_2 sexratiocat_3 hhsize shock incomeHH1000
 global villagesFE near_panruti near_villupur near_tirup near_chengal near_kanchip near_chennai
-global big5 base_cr_OP_std base_cr_CO_std base_cr_EX_std base_cr_AG_std base_cr_ES_std
 
 
 
-********** Interpretation
+
+********** Interaction terms and margin with FE model:
 /*
+** Interaction: https://stats.stackexchange.com/questions/151284/interaction-between-time-variant-and-time-invariant-variable-in-fe-model
 
-*Type 2
-margins, dydx(base_factor_imraw_1_std) at(dalits=(0 1) female=(0 1))
-/*
------------------------------------------------------------------------------------
-                  |            Delta-method
-                  |      dy/dx   Std. Err.      t    P>|t|     [95% Conf. Interval]
-------------------+----------------------------------------------------------------
-base_factor_imraw_1_std |
-              _at |
-            MUCM  |   47.33951   21.54482     2.20   0.029     4.994621     89.6844
-            MUCW  |   13.23904   11.95436     1.11   0.269    -10.25645    36.73453
-         DalitsM  |  -7.209672   11.91426    -0.61   0.545    -30.62635    16.20701
-         DalitsW  |   13.08039   6.689882     1.96   0.051    -.0681177    26.22891
------------------------------------------------------------------------------------
-valeur du coefficient 
+	I want to estimate the effect of several variables x1,it, x2,it, … on yit. All of these variables vary across countries i and time t. I use OLS to estimate a model with country and year dummies Di and Dt:
+	yit=β1x1,it+β2x2,it+γiDi+δtDt+ϵit
+	Additionally, I am interested in the moderating effect of a time-invariant variable zi on the relationship between x1,it and yit.
+	My intuition is to include ηx1,itzi in the above estimation. While zi does not vary across time, x1,it does and η should pick up the effect of interest.
+	Is this intuition correct? If so, are there any caveats? If not, what am I overlooking?
+
+	Your intuition is fine. When you take the partial derivative with respect to x1,it, then you get exactly what you were looking for.
+	∂yit∂x1,it=β1+ηzi
+	This is particularly convenient if zi is a dummy variable. Wooldridge (2010) "Econometric Analysis of Cross Section and Panel Data" has a similar example where he interacts a time-invariant female dummy with time dummies. So even though one cannot estimate the female coefficient directly, its interaction with the time dummies still has a meaning as it shows the increase in the gender wage gap over time. So what you propose is perfectly valid under the usual assumptions, e.g. zi and x1,it are uncorrelated with the error ϵit.
+
+	
+** Margins: https://www.statalist.org/forums/forum/general-stata-discussion/general/1572618-margins-not-estimable-using-fixed-effects
+
+	The predictive margins are, in fact, mathematically not estimable following a fixed-effects regression. That's because fixed-effects regression estimates within-panel effects, and the predictive margins would be between-panel effects. However, the marginal effects are estimable, although Stata does not seem to recognize that. If you add the -noestimcheck- option to the command shown in #6, you will get correct results.
+	Do not, however, in other work, indiscriminately use -noestimcheck- whenever Stata says things are not estimable. Stata is usually right when it says that. Use -noestimcheck- only in circumstances, like this one (marginal effects after fixed-effects regression), where the parameters in question really can be estimated. Otherwise, you will get meaningless answers.
 */
-marginsplot
-
-*Type 3
-set scheme plottig
-margins, at(base_factor_imraw_1_std=(-3 (0.25) 3) dalits=(0 1) female=(0 1))
-marginsplot, yline(0)
-
-*/
-
-/*
-- Incidence de la dette avec la proba d'être endetté (1)
-- Profondeur de la dette avec le loan amount & le DSR / SHDI (2)
-- Fardeau de la dette avec le pb to repay, help to settle, services, repayment (4)
-*/
-
-/*
-Margins dydx
-OLS:
-Slope, as B coefficient
-Quand la personality/le score au raven, etc. augmente d'1 point, l'endettement varie de coef points.
-
-Probit:
-X cont = Quand la personality augmente d'un point, la proba d'être endetté augmente/diminue de coef*100 percentage points.
-X dich = Etre ça plutôt que ça augmente/diminue la proba d'être endetté de coef*100 pp
-*/
-
-
-
-/*
-********** Modèle
-*1. Estimation
-probit indebt_indiv_2 indebt_indiv_1 $indivcontrol $hhcontrol4 $villagesFE c.base_factor_imraw_1_std##i.female##i.dalits c.base_factor_imraw_2_std##i.female##i.dalits c.base_factor_imraw_3_std##i.female##i.dalits c.base_factor_imraw_4_std##i.female##i.dalits c.base_factor_imraw_5_std##i.female##i.dalits c.base_raven_tt##i.female##i.dalits c.base_num_tt##i.female##i.dalits c.base_lit_tt##i.female##i.dalits, vce(cluster HHvar)
-
-*2. Voir les pentes de mes var d'int en fonction des groupes (dalits, female)
-qui margins, at(dalits=(0 1) female=(0 1) base_factor_imraw_1_std=(-3 3))  
-marginsplot
-
-*3. Coef des pentes pour mes var
-margins, dydx(base_factor_imraw_1_std base_factor_imraw_2_std base_factor_imraw_3_std base_factor_imraw_4_std base_factor_imraw_5_std base_raven_tt base_num_tt base_lit_tt) at(dalits=(0 1) female=(0 1))  saving(margin_indebt_indiv, replace) post
-
-*4. Tester égalités ou pas des coef
-margins, coeflegend
-test _b[base_factor_imraw_1_std:1bn._at]=_b[base_factor_imraw_1_std:2._at]=_b[base_factor_imraw_1_std:3._at]=_b[base_factor_imraw_1_std:4._at]
-
-*test (_b[base_factor_imraw_1_std:1bn._at]=_b[base_factor_imraw_1_std:2._at]) ()
-*/
-
-********** 01.
-********** Deter of evolution of PTCS
 
 
 ****************************************
@@ -164,22 +114,78 @@ test _b[base_factor_imraw_1_std:1bn._at]=_b[base_factor_imraw_1_std:2._at]=_b[ba
 
 
 
-
-
-
-
-
 ****************************************
-* FE
+* 
 ****************************************
 ********** 01.
 ********** Not interaction
-cls
-xtreg loanamount_indiv std_cr_OP std_cr_CO std_cr_EX std_cr_ES std_cr_AG , fe vce(cluster HHFE)
-xtreg loanamount_indiv std_OP std_CO std_EX std_ES std_AG , fe vce(cluster HHFE)
+
+foreach var in loanamount_indiv1000 DSR_indiv {
+xtreg `var' $big5raw $cog $indivcontrol $hhcontrol female dalits, fe vce(cluster HHFE)
+est store res_1
+xtreg `var' $big5raw $cog $indivcontrol $hhcontrol female dalits $intfemraw, fe vce(cluster HHFE)
+est store res_2
+xtreg `var' $big5raw $cog $indivcontrol $hhcontrol female dalits $intdalraw, fe vce(cluster HHFE)
+est store res_3
+xtreg `var' $big5raw $cog $indivcontrol $hhcontrol female dalits $threeraw, fe vce(cluster HHFE)
+est store res_4
 
 
-margins, dydx(std_cr_OP) at(dalit=(0 1) female=(0 1)) noestimcheck
+esttab res_1 res_2 res_3 res_4 using "_reg.csv", ///
+	cells(b(star fmt(3)) /// 
+	se(par fmt(2))) ///
+	drop() ///
+	legend label varlabels(_cons constant) ///
+	stats(N N_g corr rho r2 r2_a r2_w r2_o r2_b ll F p F_f p_f, fmt(0 0 3 3 3 3 3 3 3 3 3 3 3 3)) starlevels(* 0.10 ** 0.05 *** 0.01) ///
+	replace
+estimates clear
+preserve
+import delimited "_reg.csv", delimiter(",") varnames(nonames) clear
+qui des
+sca def k=r(k)
+forvalues i=1(1)`=scalar(k)'{
+replace v`i'=substr(v`i',3,.)
+replace v`i'=substr(v`i',1,strlen(v`i')-1)
+}
+export excel using "FE_indebt.xlsx", sheet("`var'", replace)
+restore
+
+
+********** Margins
+
+*** No int
+qui xtreg `var' $big5raw $cog $indivcontrol $hhcontrol dalit female, vce(cluster HHFE)
+
+*dy/dx
+margins, dydx($big5raw $cog) atmeans noestimcheck saving(margin_FE_`var'1, replace) 
+
+*** Female
+qui xtreg `var' $big5raw $cog $indivcontrol $hhcontrol c.std_OP##i.female c.std_CO##i.female c.std_EX##i.female c.std_AG##i.female c.std_ES##i.female c.raven_tt##i.female c.num_tt##i.female c.lit_tt##i.female, vce(cluster HHFE)
+
+*dy/dx
+margins, dydx($big5raw $cog) at(female=(0 1)) atmeans noestimcheck saving(margin_FE_`var'2, replace)
+
+*** Dalits
+qui xtreg `var' $big5raw $cog $indivcontrol $hhcontrol c.std_OP##i.dalits c.std_CO##i.dalits c.std_EX##i.dalits c.std_AG##i.dalits c.std_ES##i.dalits c.raven_tt##i.dalits c.num_tt##i.dalits c.lit_tt##i.dalits , vce(cluster HHFE)
+
+*dy/dx
+margins, dydx($big5raw $cog) at(dalits=(0 1)) atmeans noestimcheck saving(margin_FE_`var'3, replace)
+
+*** Three
+qui xtreg `var' $big5raw $cog $indivcontrol $hhcontrol c.std_OP##i.female##i.dalits c.std_CO##i.female##i.dalits c.std_EX##i.female##i.dalits c.std_AG##i.female##i.dalits c.std_ES##i.female##i.dalits c.raven_tt##i.female##i.dalits c.num_tt##i.female##i.dalits c.lit_tt##i.female##i.dalits , vce(cluster HHFE)
+
+*dy/dx
+margins, dydx($big5raw $cog) at(dalits=(0 1) female=(0 1)) atmeans noestimcheck saving(margin_FE_`var'4, replace)
+}
+
+
+
+
+
+
+
+
+
 
 
 

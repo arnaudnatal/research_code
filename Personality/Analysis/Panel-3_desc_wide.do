@@ -343,7 +343,7 @@ tab dalits female
 label var dalits "Dalits (=1)"
 
 
-foreach x in base_factor_imraw_1_std base_factor_imraw_2_std base_factor_imraw_3_std base_factor_imraw_4_std base_factor_imraw_5_std base_raven_tt base_num_tt base_lit_tt {
+foreach x in base_factor_imraw_1_std base_factor_imraw_2_std base_factor_imraw_3_std base_factor_imraw_4_std base_factor_imraw_5_std base_raven_tt base_num_tt base_lit_tt base_cr_OP_std base_cr_CO_std base_cr_EX_std base_cr_AG_std base_cr_ES_std base_OP_std base_CO_std base_EX_std base_AG_std base_ES_std {
 gen fem_`x'=`x'*female
 gen dal_`x'=`x'*dalits
 gen threeway_`x'=`x'*female*dalits
@@ -977,6 +977,28 @@ rename `x' `y'
 *** Recode year
 replace year=2016 if year==1
 replace year=2020 if year==2
+
+*** Interaction
+fre female dalits
+foreach x in std_cr_OP std_cr_CO std_cr_EX std_cr_AG std_cr_ES std_OP std_CO std_EX std_AG std_ES raven_tt lit_tt num_tt {
+gen fem_`x'=`x'*female
+gen dal_`x'=`x'*dalits
+gen threeway_`x'=`x'*female*dalits
+}
+
+
+*** Occupation
+tab cat_mainoccupation_indiv, gen(cat_mainoccupation_indiv_)
+
+*** Head?
+drop dummyhead
+tab relationshiptohead
+gen dummyhead=0
+replace dummyhead=1 if relationshiptohead==1
+
+*** Sexratio
+drop sexratiocat_1_1 sexratiocat_1_2 sexratiocat_1_3
+tab sexratiocat, gen(sexratiocat_)
 
 
 save"panel_long_v1.dta", replace

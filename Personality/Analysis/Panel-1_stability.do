@@ -18,8 +18,17 @@ Stability over time of personality traits
 clear all
 macro drop _all
 ********** Path to folder "data" folder.
-global directory = "D:\Documents\_Thesis\Research-Skills_and_debt\Analysis"
-cd"$directory"
+*global directory = "D:\Documents\_Thesis\Research-Skills_and_debt\Analysis"
+*cd"$directory"
+
+*Fac
+cd "C:\Users\anatal\Downloads\_Thesis\Research-Skills_and_debt\Analysis"
+set scheme plotplain
+
+global git "C:\Users\anatal\Downloads\GitHub"
+global dropbox "C:\Users\anatal\Downloads\Dropbox"
+global thesis "C:\Users\anatal\Downloads\_Thesis\Research-Skills_and_debt\Analysis"
+
 
 ********** Name of the NEEMSIS2 questionnaire version to clean
 global wave1 "RUME-HH_v8"
@@ -175,7 +184,7 @@ tab1 cat_delta_cr_OP cat_delta_cr_CO cat_delta_cr_EX cat_delta_cr_AG cat_delta_c
 ********* Age
 gen agecat1=0 		if age_2020<=34
 replace agecat1=1 	if age_2020>34 & age_2020!=.
-label define age 0"]30;] 2016-17" 1"]30;[ 2016-17"
+label define age 0"];30] 2016-17" 1"]30;[ 2016-17"
 label values agecat1 age
 
 
@@ -186,9 +195,9 @@ twoway ///
 (kdensity ars3, bwidth(0.15)) ///
 (kdensity ars3_2020, bwidth(0.15)) ///
 , xtitle("Acquiesence bias", size(small)) xlabel(0(0.25)1.75, labsize(vsmall)) legend(order(1 "2016-17" 2 "2020-21") pos(6) col(2)) ytitle("Density", size(small)) ylabel(,labsize(small)) note("Kernel epanechnikov with bandwidth=0.15", size(tiny))
-graph save "C:\Users\Arnaud\Documents\GitHub\Analysis\Personality\Big-5\kernel_ars.gph", replace
-graph export "C:\Users\Arnaud\Documents\GitHub\RUME-NEEMSIS\Big-5\kernel_ars.svg", as(svg) replace
-graph export "C:\Users\Arnaud\Documents\GitHub\Analysis\Personality\Big-5\kernel_ars.pdf", as(pdf) replace
+graph save "$git\Analysis\Personality\Big-5\kernel_ars.gph", replace
+graph export "$git\RUME-NEEMSIS\Big-5\kernel_ars.svg", as(svg) replace
+graph export "$git\Analysis\Personality\Big-5\kernel_ars.pdf", as(pdf) replace
 set graph on
 
 *** Kernel over sex caste and age per year
@@ -204,18 +213,18 @@ twoway (kdensity ars3_2020 if caste==1, bwidth(0.15)) (kdensity ars3_2020 if cas
 , xtitle("Acquiesence bias", size(small)) xlabel(0(0.25)1.75, labsize(vsmall)) legend(order(1 "Dalits" 2 "Middle" 3 "Upper") pos(6) col(1)) ytitle("Density", size(small)) ylabel(,labsize(small)) name(g4, replace)
 
 twoway (kdensity ars3 if caste==1, bwidth(0.15)) (kdensity ars3 if caste==2, bwidth(0.15)) ///
-, xtitle("Acquiesence bias", size(small)) xlabel(0(0.25)1.75, labsize(vsmall)) legend(order(1 "]30;] 2016-17" 2 "]30;[ 2016-17") pos(6) col(1) off) ytitle("Density", size(small)) ylabel(,labsize(small)) name(g5, replace)
+, xtitle("Acquiesence bias", size(small)) xlabel(0(0.25)1.75, labsize(vsmall)) legend(order(1 "];30] 2016-17" 2 "]30;[ 2016-17") pos(6) col(1) off) ytitle("Density", size(small)) ylabel(,labsize(small)) name(g5, replace)
 twoway (kdensity ars3_2020 if agecat1==0, bwidth(0.15)) (kdensity ars3_2020 if agecat1==1, bwidth(0.15)) ///
-, xtitle("Acquiesence bias", size(small)) xlabel(0(0.25)1.75, labsize(vsmall)) legend(order(1 "]30;] 2016-17" 2 "]30;[ 2016-17") pos(6) col(1)) ytitle("Density", size(small)) ylabel(,labsize(small)) name(g6, replace)
+, xtitle("Acquiesence bias", size(small)) xlabel(0(0.25)1.75, labsize(vsmall)) legend(order(1 "];30] 2016-17" 2 "]30;[ 2016-17") pos(6) col(1)) ytitle("Density", size(small)) ylabel(,labsize(small)) name(g6, replace)
 
 grc1leg g1 g2, name(comb1, replace) pos(3)
 grc1leg g3 g4, name(comb2, replace) pos(3)
 grc1leg g5 g6, name(comb3, replace) pos(3)
 
 graph combine comb1 comb2 comb3, col(1) xcommon note("Kernel epanechnikov with bandwidth=0.15", size(tiny))
-graph save "C:\Users\Arnaud\Documents\GitHub\Analysis\Personality\Big-5\kernel_ars_sub.gph", replace
-graph export "C:\Users\Arnaud\Documents\GitHub\RUME-NEEMSIS\Big-5\kernel_ars_sub.svg", as(svg) replace
-graph export "C:\Users\Arnaud\Documents\GitHub\Analysis\Personality\Big-5\kernel_ars_sub.pdf", as(pdf) replace
+graph save "$git\Analysis\Personality\Big-5\kernel_ars_sub.gph", replace
+graph export "$git\RUME-NEEMSIS\Big-5\kernel_ars_sub.svg", as(svg) replace
+graph export "$git\Analysis\Personality\Big-5\kernel_ars_sub.pdf", as(pdf) replace
 set graph on
 
 
@@ -227,9 +236,9 @@ replace n=. if n>100
 
 set graph off
 twoway (line ars3_p n) (line ars3_2020_p n), xtitle("Percentage of population", size(small)) xlabel(0(10)100, labsize(vsmall)) xmtick(0(5)100) legend(order(1 "2016-17" 2 "2020-21") pos(6) col(2)) ytitle("Acquiesence bias", size(small)) ylabel(0(0.1)1.1, labsize(vsmall)) ymtick(0(0.05)1.1)
-graph save "C:\Users\Arnaud\Documents\GitHub\Analysis\Personality\Big-5\curve_ars.gph", replace
-graph export "C:\Users\Arnaud\Documents\GitHub\RUME-NEEMSIS\Big-5\curve_ars.svg", as(svg) replace
-graph export "C:\Users\Arnaud\Documents\GitHub\Analysis\Personality\Big-5\curve_ars.pdf", as(pdf) replace
+graph save "$git\Analysis\Personality\Big-5\curve_ars.gph", replace
+graph export "$git\RUME-NEEMSIS\Big-5\curve_ars.svg", as(svg) replace
+graph export "$git\Analysis\Personality\Big-5\curve_ars.pdf", as(pdf) replace
 set graph on
 
 drop n ars3_p ars3_2020_p
@@ -262,9 +271,9 @@ var2opts(label(labsize(vsmall) angle(45))) ///
 name(g3, replace) legend(col(2) pos(6) size(vsmall)) blabel(bar, format(%4.1f) size(tiny) angle(45))
 
 graph combine g1 g2 g3, col(3) note("Acquiesence bias", size(tiny))
-graph save "C:\Users\Arnaud\Documents\GitHub\Analysis\Personality\Big-5\path_ars.gph", replace
-graph export "C:\Users\Arnaud\Documents\GitHub\RUME-NEEMSIS\Big-5\path_ars.svg", as(svg) replace
-graph export "C:\Users\Arnaud\Documents\GitHub\Analysis\Personality\Big-5\path_ars.pdf", as(pdf) replace
+graph save "$git\Analysis\Personality\Big-5\path_ars.gph", replace
+graph export "$git\RUME-NEEMSIS\Big-5\path_ars.svg", as(svg) replace
+graph export "$git\Analysis\Personality\Big-5\path_ars.pdf", as(pdf) replace
 set graph on
 
 
