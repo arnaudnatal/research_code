@@ -187,7 +187,7 @@ twoway ///
 (kdensity ars3_2020, bwidth(0.15)) ///
 , xtitle("Acquiesence bias", size(small)) xlabel(0(0.25)1.75, labsize(vsmall)) legend(order(1 "2016-17" 2 "2020-21") pos(6) col(2)) ytitle("Density", size(small)) ylabel(,labsize(small)) note("Kernel epanechnikov with bandwidth=0.15", size(tiny))
 graph save "C:\Users\Arnaud\Documents\GitHub\Analysis\Personality\Big-5\kernel_ars.gph", replace
-graph export "C:\Users\Arnaud\Documents\GitHub\Analysis\Personality\Big-5\kernel_ars.svg", as(svg) replace
+graph export "C:\Users\Arnaud\Documents\GitHub\RUME-NEEMSIS\Big-5\kernel_ars.svg", as(svg) replace
 graph export "C:\Users\Arnaud\Documents\GitHub\Analysis\Personality\Big-5\kernel_ars.pdf", as(pdf) replace
 set graph on
 
@@ -214,7 +214,7 @@ grc1leg g5 g6, name(comb3, replace) pos(3)
 
 graph combine comb1 comb2 comb3, col(1) xcommon note("Kernel epanechnikov with bandwidth=0.15", size(tiny))
 graph save "C:\Users\Arnaud\Documents\GitHub\Analysis\Personality\Big-5\kernel_ars_sub.gph", replace
-graph export "C:\Users\Arnaud\Documents\GitHub\Analysis\Personality\Big-5\kernel_ars_sub.svg", as(svg) replace
+graph export "C:\Users\Arnaud\Documents\GitHub\RUME-NEEMSIS\Big-5\kernel_ars_sub.svg", as(svg) replace
 graph export "C:\Users\Arnaud\Documents\GitHub\Analysis\Personality\Big-5\kernel_ars_sub.pdf", as(pdf) replace
 set graph on
 
@@ -228,7 +228,7 @@ replace n=. if n>100
 set graph off
 twoway (line ars3_p n) (line ars3_2020_p n), xtitle("Percentage of population", size(small)) xlabel(0(10)100, labsize(vsmall)) xmtick(0(5)100) legend(order(1 "2016-17" 2 "2020-21") pos(6) col(2)) ytitle("Acquiesence bias", size(small)) ylabel(0(0.1)1.1, labsize(vsmall)) ymtick(0(0.05)1.1)
 graph save "C:\Users\Arnaud\Documents\GitHub\Analysis\Personality\Big-5\curve_ars.gph", replace
-graph export "C:\Users\Arnaud\Documents\GitHub\Analysis\Personality\Big-5\curve_ars.svg", as(svg) replace
+graph export "C:\Users\Arnaud\Documents\GitHub\RUME-NEEMSIS\Big-5\curve_ars.svg", as(svg) replace
 graph export "C:\Users\Arnaud\Documents\GitHub\Analysis\Personality\Big-5\curve_ars.pdf", as(pdf) replace
 set graph on
 
@@ -263,7 +263,7 @@ name(g3, replace) legend(col(2) pos(6) size(vsmall)) blabel(bar, format(%4.1f) s
 
 graph combine g1 g2 g3, col(3) note("Acquiesence bias", size(tiny))
 graph save "C:\Users\Arnaud\Documents\GitHub\Analysis\Personality\Big-5\path_ars.gph", replace
-graph export "C:\Users\Arnaud\Documents\GitHub\Analysis\Personality\Big-5\path_ars.svg", as(svg) replace
+graph export "C:\Users\Arnaud\Documents\GitHub\RUME-NEEMSIS\Big-5\path_ars.svg", as(svg) replace
 graph export "C:\Users\Arnaud\Documents\GitHub\Analysis\Personality\Big-5\path_ars.pdf", as(pdf) replace
 set graph on
 
@@ -282,7 +282,7 @@ name(g_`x', replace) legend(col(2) size(vsmall)) blabel(bar, format(%4.1f) size(
 grc1leg g_OP g_CO g_EX g_AG g_ES, cols(2) name(combage, replace) legend(g_OP) pos(6) note("Traits corrected from acquiesence bias.", size(tiny))
 set graph on
 graph save "C:\Users\Arnaud\Documents\GitHub\Analysis\Personality\Big-5\delta_gender_cor.gph", replace
-graph export "C:\Users\Arnaud\Documents\GitHub\Analysis\Personality\Big-5\delta_gender_cor.svg", as(svg) replace
+graph export "C:\Users\Arnaud\Documents\GitHub\RUME-NEEMSIS\Big-5\delta_gender_cor.svg", as(svg) replace
 graph export "C:\Users\Arnaud\Documents\GitHub\Analysis\Personality\Big-5\delta_gender_cor.pdf", as(pdf) replace
 
 *Caste
@@ -297,7 +297,7 @@ name(g_`x', replace) legend(col(3) size(vsmall)) blabel(bar, format(%4.1f) size(
 grc1leg g_OP g_CO g_EX g_AG g_ES, cols(2) name(combage, replace) legend(g_OP) pos(6) note("Traits corrected from acquiesence bias.", size(tiny))
 set graph on
 graph save "C:\Users\Arnaud\Documents\GitHub\Analysis\Personality\Big-5\delta_caste_cor.gph", replace
-graph export "C:\Users\Arnaud\Documents\GitHub\Analysis\Personality\Big-5\delta_caste_cor.svg", as(svg) replace
+graph export "C:\Users\Arnaud\Documents\GitHub\RUME-NEEMSIS\Big-5\delta_caste_cor.svg", as(svg) replace
 graph export "C:\Users\Arnaud\Documents\GitHub\Analysis\Personality\Big-5\delta_caste_cor.pdf", as(pdf) replace
 
 *Age
@@ -312,7 +312,7 @@ name(g_`x', replace) legend(col(2) size(vsmall)) blabel(bar, format(%4.1f) size(
 grc1leg g_OP g_CO g_EX g_AG g_ES, cols(2) name(combage, replace) legend(g_OP) pos(6) note("Traits corrected from acquiesence bias.", size(tiny))
 set graph on
 graph save "C:\Users\Arnaud\Documents\GitHub\Analysis\Personality\Big-5\delta_age_cor.gph", replace
-graph export "C:\Users\Arnaud\Documents\GitHub\Analysis\Personality\Big-5\delta_age_cor.svg", as(svg) replace
+graph export "C:\Users\Arnaud\Documents\GitHub\RUME-NEEMSIS\Big-5\delta_age_cor.svg", as(svg) replace
 graph export "C:\Users\Arnaud\Documents\GitHub\Analysis\Personality\Big-5\delta_age_cor.pdf", as(pdf) replace
 
 
@@ -330,7 +330,7 @@ name(g_`x', replace) legend(col(2) size(vsmall)) blabel(bar, format(%4.1f) size(
 grc1leg g_OP g_CO g_EX g_AG g_ES, cols(2) name(combage, replace) legend(g_OP) pos(6) note("Raw traits (non-corrected from acquiesence bias).", size(tiny))
 set graph on
 graph save "C:\Users\Arnaud\Documents\GitHub\Analysis\Personality\Big-5\delta_gender_raw.gph", replace
-graph export "C:\Users\Arnaud\Documents\GitHub\Analysis\Personality\Big-5\delta_gender_raw.svg", as(svg) replace
+graph export "C:\Users\Arnaud\Documents\GitHub\RUME-NEEMSIS\Big-5\delta_gender_raw.svg", as(svg) replace
 graph export "C:\Users\Arnaud\Documents\GitHub\Analysis\Personality\Big-5\delta_gender_raw.pdf", as(pdf) replace
 
 *Caste
@@ -345,7 +345,7 @@ name(g_`x', replace) legend(col(3) size(vsmall)) blabel(bar, format(%4.1f) size(
 grc1leg g_OP g_CO g_EX g_AG g_ES, cols(2) name(combage, replace) legend(g_OP) pos(6) note("Raw traits (non-corrected from acquiesence bias).", size(tiny))
 set graph on
 graph save "C:\Users\Arnaud\Documents\GitHub\Analysis\Personality\Big-5\delta_caste_raw.gph", replace
-graph export "C:\Users\Arnaud\Documents\GitHub\Analysis\Personality\Big-5\delta_caste_raw.svg", as(svg) replace
+graph export "C:\Users\Arnaud\Documents\GitHub\RUME-NEEMSIS\Big-5\delta_caste_raw.svg", as(svg) replace
 graph export "C:\Users\Arnaud\Documents\GitHub\Analysis\Personality\Big-5\delta_caste_raw.pdf", as(pdf) replace
 
 *Age
@@ -360,7 +360,7 @@ name(g_`x', replace) legend(col(2) size(vsmall)) blabel(bar, format(%4.1f) size(
 grc1leg g_OP g_CO g_EX g_AG g_ES, cols(2) name(combage, replace) legend(g_OP) pos(6) note("Raw traits (non-corrected from acquiesence bias).", size(tiny))
 set graph on
 graph save "C:\Users\Arnaud\Documents\GitHub\Analysis\Personality\Big-5\delta_age_raw.gph", replace
-graph export "C:\Users\Arnaud\Documents\GitHub\Analysis\Personality\Big-5\delta_age_raw.svg", as(svg) replace
+graph export "C:\Users\Arnaud\Documents\GitHub\RUME-NEEMSIS\Big-5\delta_age_raw.svg", as(svg) replace
 graph export "C:\Users\Arnaud\Documents\GitHub\Analysis\Personality\Big-5\delta_age_raw.pdf", as(pdf) replace
 
 
@@ -394,7 +394,7 @@ twoway ///
 *Combine
 grc1leg g1 g2 g3 g4 g5 line2, cols(3) leg(line2) pos(6) note("Raw traits (non-corrected from acquiesence bias)." "Density: kernel epanechnikov with bandwidth=0.1", size(tiny))
 graph save "C:\Users\Arnaud\Documents\GitHub\Analysis\Personality\Big-5\deltacont_raw.gph", replace
-graph export "C:\Users\Arnaud\Documents\GitHub\Analysis\Personality\Big-5\deltacont_raw.svg", as(svg) replace
+graph export "C:\Users\Arnaud\Documents\GitHub\RUME-NEEMSIS\Big-5\deltacont_raw.svg", as(svg) replace
 graph export "C:\Users\Arnaud\Documents\GitHub\Analysis\Personality\Big-5\deltacont_raw.pdf", as(pdf) replace
 set graph on 
 
@@ -419,7 +419,7 @@ twoway ///
 *Combine
 grc1leg g1 g2 g3 g4 g5 line2, cols(3) leg(line2) pos(6) note("Traits corrected from acquiesence bias." "Density: kernel epanechnikov with bandwidth=0.1", size(tiny))
 graph save "C:\Users\Arnaud\Documents\GitHub\Analysis\Personality\Big-5\deltacont_cor.gph", replace
-graph export "C:\Users\Arnaud\Documents\GitHub\Analysis\Personality\Big-5\deltacont_cor.svg", as(svg) replace
+graph export "C:\Users\Arnaud\Documents\GitHub\RUME-NEEMSIS\Big-5\deltacont_cor.svg", as(svg) replace
 graph export "C:\Users\Arnaud\Documents\GitHub\Analysis\Personality\Big-5\deltacont_cor.pdf", as(pdf) replace
 set graph on 
 
@@ -439,7 +439,7 @@ gen delta2020=(cor2020-raw2020)*100/raw2020
 set graph off
 graph bar raw2016 cor2016 raw2020 cor2020, over(traits) blabel(bar, format(%4.2f) size(tiny)) legend(pos(6) col(4) order(1 "Non-cor. 2016-17" 2 "Corr. 2016-17" 3 "Non-cor. 2020-21" 4 "Corr. 2020-21")) name(g1, replace) note("McDonald's Ω", size(tiny))
 graph save "C:\Users\Arnaud\Documents\GitHub\Analysis\Personality\Big-5\omega.gph", replace
-graph export "C:\Users\Arnaud\Documents\GitHub\Analysis\Personality\Big-5\omega.svg", as(svg) replace
+graph export "C:\Users\Arnaud\Documents\GitHub\RUME-NEEMSIS\Big-5\omega.svg", as(svg) replace
 graph export "C:\Users\Arnaud\Documents\GitHub\Analysis\Personality\Big-5\omega.pdf", as(pdf) replace
 
 
@@ -447,7 +447,7 @@ graph bar deltaraw deltacor, over(traits) ylabel(-70(10)80) ymtick(-65(5)75) bla
 graph bar delta2016 delta2020, over(traits) ylabel(-70(10)80) blabel(bar, format(%4.2f) size(tiny)) legend(pos(6) col(2) order(1 "2016-17" 2 "2020-21")) title("Variation over correction (Non-cor. / Corr.)", size(small)) name(g3, replace)
 graph combine g2 g3, col(3) note("Variation rate of McDonald's Ω", size(tiny))
 graph save "C:\Users\Arnaud\Documents\GitHub\Analysis\Personality\Big-5\omega_delta.gph", replace
-graph export "C:\Users\Arnaud\Documents\GitHub\Analysis\Personality\Big-5\omega_delta.svg", as(svg) replace
+graph export "C:\Users\Arnaud\Documents\GitHub\RUME-NEEMSIS\Big-5\omega_delta.svg", as(svg) replace
 graph export "C:\Users\Arnaud\Documents\GitHub\Analysis\Personality\Big-5\omega_delta.pdf", as(pdf) replace
 set graph on
 

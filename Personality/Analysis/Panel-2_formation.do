@@ -20,17 +20,17 @@ ssc install sencode
 clear all
 macro drop _all
 ********** Path to folder "data" folder.
-global directory = "D:\Documents\_Thesis\Research-Skills_and_debt\Analysis"
-cd"$directory"
+*global directory = "D:\Documents\_Thesis\Research-Skills_and_debt\Analysis"
+*cd"$directory"
 
 
 *Fac
-*cd "C:\Users\anatal\Downloads\_Thesis\Research-Skills_and_debt\Analysis"
+cd "C:\Users\anatal\Downloads\_Thesis\Research-Skills_and_debt\Analysis"
 set scheme plotplain
 
-*global git "C:\Users\anatal\Downloads\GitHub"
-*global dropbox "C:\Users\anatal\Downloads\Dropbox"
-*global thesis "C:\Users\anatal\Downloads\_Thesis\Research-Skills_and_debt\Analysis"
+global git "C:\Users\anatal\Downloads\GitHub"
+global dropbox "C:\Users\anatal\Downloads\Dropbox"
+global thesis "C:\Users\anatal\Downloads\_Thesis\Research-Skills_and_debt\Analysis"
 
 
 
@@ -201,7 +201,7 @@ sort n
 }
 grc1leg g_`x'_1 g_`x'_2 g_`x'_3 g_`x'_4 g_`x'_5 g_`x'_6, note("`x' items with NEEMSIS-2 (2020-21) data.", size(tiny)) name(comb_`x'_with, replace)
 graph save "$git\Analysis\Personality\Big-5\factor2020_`x'_with.gph", replace
-graph export "$git\Analysis\Personality\Big-5\factor2020_`x'_with.svg", as(svg) replace
+graph export "$git\RUME-NEEMSIS\Big-5\factor2020_`x'_with.svg", as(svg) replace
 graph export "$git\Analysis\Personality\Big-5\factor2020_`x'_with.pdf", as(pdf) replace
 }
 
@@ -229,7 +229,7 @@ sort n
 }
 grc1leg g_`x'_1 g_`x'_2 g_`x'_3 g_`x'_4 g_`x'_5, note("`x' items with NEEMSIS-2 (2020-21) data.", size(tiny)) name(comb_`x', replace)
 graph save "$git\Analysis\Personality\Big-5\factor2020_`x'.gph", replace
-graph export "$git\Analysis\Personality\Big-5\factor2020_`x'.svg", as(svg) replace
+graph export "$git\RUME-NEEMSIS\Big-5\factor2020_`x'.svg", as(svg) replace
 graph export "$git\Analysis\Personality\Big-5\factor2020_`x'.pdf", as(pdf) replace
 }
 restore
@@ -620,7 +620,7 @@ sort n
 }
 grc1leg g_`x'_1 g_`x'_2 g_`x'_3 g_`x'_4 g_`x'_5 g_`x'_6, note("`x' items with NEEMSIS-1 (2016-17) data.", size(tiny)) name(comb_`x'_with, replace)
 graph save "$git\Analysis\Personality\Big-5\factor2016_`x'_with.gph", replace
-graph export "$git\Analysis\Personality\Big-5\factor2016_`x'_with.svg", as(svg) replace
+graph export "$git\RUME-NEEMSIS\Big-5\factor2016_`x'_with.svg", as(svg) replace
 graph export "$git\Analysis\Personality\Big-5\factor2016_`x'_with.pdf", as(pdf) replace
 }
 
@@ -648,7 +648,7 @@ sort n
 }
 grc1leg g_`x'_1 g_`x'_2 g_`x'_3 g_`x'_4 g_`x'_5, note("`x' items with NEEMSIS-1 (2016-17) data.", size(tiny)) name(comb_`x', replace)
 graph save "$git\Analysis\Personality\Big-5\factor2016_`x'.gph", replace
-graph export "$git\Analysis\Personality\Big-5\factor2016_`x'.svg", as(svg) replace
+graph export "$git\RUME-NEEMSIS\Big-5\factor2016_`x'.svg", as(svg) replace
 graph export "$git\Analysis\Personality\Big-5\factor2016_`x'.pdf", as(pdf) replace
 }
 restore

@@ -22,17 +22,17 @@ clear all
 macro drop _all
 set scheme plotplain
 ********** Path to folder "data" folder.
-global directory = "D:\Documents\_Thesis\Research-Skills_and_debt\Analysis"
-cd"$directory"
+*global directory = "D:\Documents\_Thesis\Research-Skills_and_debt\Analysis"
+*cd"$directory"
 
 
 *Fac
-*cd "C:\Users\anatal\Downloads\_Thesis\Research-Skills_and_debt\Analysis"
-*set scheme plotplain
+cd "C:\Users\anatal\Downloads\_Thesis\Research-Skills_and_debt\Analysis"
+set scheme plotplain
 
-*global git "C:\Users\anatal\Downloads\GitHub"
-*global dropbox "C:\Users\anatal\Downloads\Dropbox"
-*global thesis "C:\Users\anatal\Downloads\_Thesis\Research-Skills_and_debt\Analysis"
+global git "C:\Users\anatal\Downloads\GitHub"
+global dropbox "C:\Users\anatal\Downloads\Dropbox"
+global thesis "C:\Users\anatal\Downloads\_Thesis\Research-Skills_and_debt\Analysis"
 
 
 ********** Name of the NEEMSIS2 questionnaire version to clean
@@ -145,7 +145,6 @@ label var nboccupation_3 "Nb occ: 2"
 label var nboccupation_4 "Nb occ: 3 or more"
 tab1 nboccupation_1 nboccupation_2 nboccupation_3 nboccupation_4
 
-tab HHID_panel, gen(HHFE_)
 
 label var dummyedulevel "School educ (=1)"
 
@@ -174,6 +173,14 @@ label var base_factor_imraw_`i'_std "Factor `i' (std)"
 }
 
 
+********** gen FE
+*Indiv
+encode HHINDID, gen(indivFE)
+*Villages
+fre villageid  villages2016
+drop villageid_new
+encode villages2016, gen(villageid2016FE)
+fre villageid villages2016 villageid2016FE
 
 
 
@@ -277,9 +284,7 @@ recode caste2 (3=2)
 tab caste2 female
 
 
-********** HHFE
-encode HHID_panel, gen(HHvar)
-fre HHvar
+
 
 
 **********Dummy for multiple occupation
@@ -357,9 +362,7 @@ gen over50_indiv_2=0
 replace over50_indiv_2=1 if DSR_indiv_2>=50
 
 
-********** Villages
-encode villageid_new, gen(village2016)
-
+	
 
 preserve
 use "NEEMSIS2-HH_v17", clear

@@ -22,17 +22,17 @@ clear all
 macro drop _all
 set scheme plotplain
 ********** Path to folder "data" folder.
-global directory = "D:\Documents\_Thesis\Research-Skills_and_debt\Analysis"
-cd"$directory"
+*global directory = "D:\Documents\_Thesis\Research-Skills_and_debt\Analysis"
+*cd"$directory"
 
 
 *Fac
-*cd "C:\Users\anatal\Downloads\_Thesis\Research-Skills_and_debt\Analysis"
-*set scheme plotplain
+cd "C:\Users\anatal\Downloads\_Thesis\Research-Skills_and_debt\Analysis"
+set scheme plotplain, perm
 
-*global git "C:\Users\anatal\Downloads\GitHub"
-*global dropbox "C:\Users\anatal\Downloads\Dropbox"
-*global thesis "C:\Users\anatal\Downloads\_Thesis\Research-Skills_and_debt\Analysis"
+global git "C:\Users\anatal\Downloads\GitHub"
+global dropbox "C:\Users\anatal\Downloads\Dropbox"
+global thesis "C:\Users\anatal\Downloads\_Thesis\Research-Skills_and_debt\Analysis"
 
 
 
@@ -64,6 +64,8 @@ use"panel_long_v1.dta", clear
 
 ********** Déclaration du panel
 xtset panelvar year
+
+
 
 
 
@@ -153,10 +155,12 @@ test _b[base_factor_imraw_1_std:1bn._at]=_b[base_factor_imraw_1_std:2._at]=_b[ba
 *test (_b[base_factor_imraw_1_std:1bn._at]=_b[base_factor_imraw_1_std:2._at]) ()
 */
 
+********** 01.
+********** Deter of evolution of PTCS
+
+
 ****************************************
 * END
-
-
 
 
 
@@ -168,15 +172,15 @@ test _b[base_factor_imraw_1_std:1bn._at]=_b[base_factor_imraw_1_std:2._at]=_b[ba
 ****************************************
 * FE
 ****************************************
-
 ********** 01.
-********** Deter of evolution of PTCS
+********** Not interaction
+cls
+xtreg loanamount_indiv std_cr_OP std_cr_CO std_cr_EX std_cr_ES std_cr_AG , fe vce(cluster HHFE)
+xtreg loanamount_indiv std_OP std_CO std_EX std_ES std_AG , fe vce(cluster HHFE)
 
 
+margins, dydx(std_cr_OP) at(dalit=(0 1) female=(0 1)) noestimcheck
 
 
-xtreg loanamount_indiv c.std_cr_OP##i.female std_cr_CO std_cr_EX std_cr_AG std_cr_ES lit_tt num_tt raven_tt age agesq i.cat_mainoccupation_indiv maritalstatus2 dummymultipleoccupation_indiv assets1000 sexratiocat hhsize shock incomeHH1000 i.relationshiptohead, fe
-
-xtreg loanamount_indiv std_OP std_CO std_EX std_AG std_ES lit_tt num_tt raven_tt age agesq i.cat_mainoccupation_indiv maritalstatus2 dummymultipleoccupation_indiv assets1000 sexratiocat hhsize shock incomeHH1000 i.relationshiptohead, fe
 
 
