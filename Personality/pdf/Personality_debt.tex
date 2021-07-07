@@ -385,19 +385,19 @@ Following this path, \cite{Ardelt2000} state that ``personality can change over 
 Our data allow us to examine stability over time of Big-5 personality traits for 835 individuals of rural India.
 Calculating variation rate between 2016-17 and 2020-21 of each traits, results show a stability for minor part of the population (see Table \ref{fig:stab} of Appendix \ref{section:stab_big5}).
 
-Thus, in order to limit endogeneity --through reverse causality, we investigate the role of personality traits and cognitive skills (and all others independents variables) in 2016-17 on 2020-21 debt.
+
+% Thus, in order to limit endogeneity --through reverse causality, we investigate the role of personality traits and cognitive skills (and all others independents variables) in 2016-17 on 2020-21 debt.
 
 
 
 \paragraph{Factor analysis}
-As warned by \cite{Laajaj2019}, the Big-Five taxonomy is limited in developing countries for several reasons: the enumerator-respondent interactions (i) in face-to-face survey can induce a bias; the low education levels (ii) can make questions more difficult to understand and can induce a systematic response patterns, especially the acquiescence bias (iii).
+As warned by \cite{Laajaj2019}, the Big-Five taxonomy is limited in developing countries for several reasons: the enumerator-respondent interactions in face-to-face survey can induce a bias; the low education levels can make questions more difficult to understand and can induce a systematic response patterns, especially the acquiescence bias.
 
-The very good knownledge of the field allow us to collect data of high quality and avoid a bias due to misunderstanding of questions.
-Moreover, we implement our own factor analysis of the 41 questions by principal component with promax rotation.
-To avoid a bias in factor analysis, we do not corrected for acquiescence bias.
-In our dataset, acquiesence bias is measure with a set of inverse questions that are supposed to measure the same aspect of personality. 
-This assumption is true only in the context of Big-5 model. 
-In another context, the questions can, perhaps, have a different meaning.
+The very good knownledge of the field\footnote{More than 20 years.} allow us to collect data of high quality and avoid a bias due to misunderstanding of questions.
+Moreover, we implement our own factor analysis of the 35 questions by principal component with promax rotation.
+To avoid a bias in factor analysis, we do not corrected for acquiescence bias. % because it suppose that one reverse questions have the same meaning as one question.
+In our dataset, acquiesence bias is measure with a set of reverse questions that are supposed perfectly opposed to another set of questions. 
+However, the assumption of opposition is supportable only in the Big-5 taxonomy, in another layout pairs of questions can measure different aspects of personality.
 
 The resulting factors are relatively similar to the Big-5 personality traits (see Table \ref{tab:corrbig5efa}) with satisfactory \citeauthor{McDonald1999}'s $\upomega$: Factor 1 as Extraversion-Openness ($\upomega=0.91)$; Factor 2 as Conscientiousness ($\upomega=0.87)$; Factor 3 as Emotional stability-Conscientiousness ($\upomega=0.76)$; Factor 4 as Emotional stability ($\upomega=0.81)$ and Factor 5 as Agreeableness ($\upomega=0.64)$.
 
@@ -440,28 +440,11 @@ In order to best measure the debt, we could combine objective and subjective mea
 It is recommended to analyse indebtedness at household level because generally income is grouped between household members \citep{European2010}.
 However, in order to explore the role of individual characteristics such as personality and cognitive skills on indebtedness, we focus on three types of individual objective measures allowing us to understand the debt from three angles.
 
-First, we wish to understand the role of personality traits \& cognitive skills on the incidence of individual debt --through the probability of being in debt\footnote{Dummy variable equal to 1 if the individual has some unsettled debt taken out in her own name, 0 otherwise.} in 2020-21.
-
-Second, we investigate the size/breadth of the individual debt through an absolut and a relative objective measure of debt. 
-We use the total amount of individual debt taken out in her own name and the number of loans taken by an individual as absolut measure of debt.
-Our relative measure of debt is the individual debt service ratio\footnote{$\frac{Individual~Debt~service}{Individual~Annual~Income}$ which represent the share of income required to cover the repayment of interest and principal on a debt for one year.}.
-Then, to measure over-indebtedness, we dichotomize IDSR at 0.4 and 0.5 threshold.
-An individual is considered to be over-indebted when it is annual debt represent more than 40-50\% of his annual income \citep{Chichaibelu2017, DAlessio2013}.
-
-% Last, we analyse personality traits \& cognitive skills on the burden of debt repayment \dev{(vérifier le terme avec Isabelle)}
-% While, in our context debt is considered as a burden depends on the nature of the debt and the nature of the relationship \citep{Guerin2014}, we analyse aspect of burden through four dummies varibles:
-% \begin{itemize}
-% \item Need to provide support whenever the lender need to obtain the loan (=1)
-% \item Need help to settle loan (=1)
-% \item Need to work more to settle the loan (=1)
-% \item Need to borrowing elsewhere to repay (=1)
-% \end{itemize}
-
-%Despite the no conceptual consensus on what constitutes indebtedness and how it ought to be measured, DSR represents the most use ratio in the literature \citep{Chichaibelu2017, DAlessio2013}.
+First, we investigate the size of the individual debt with the total amount of individual debt taken out in her own name.
+Second, we investigate the burden of debt repayment with the individual debt service ratio\footnote{$DSR=\frac{Debt~service}{Annual~Income}$ which represent the share of income required to cover the repayment of interest and principal on a debt for one year.} (DSR).
 
 
-
-
+% First, we wish to understand the role of personality traits \& cognitive skills on the incidence of individual debt --through the probability of being in debt\footnote{Dummy variable equal to 1 if the individual has some unsettled debt taken out in her own name, 0 otherwise.} in 2020-21.
 
 
 	% ******************************
@@ -480,44 +463,24 @@ An individual is considered to be over-indebted when it is annual debt represent
 % Pour l'interpretation, tel trait de personnalité joue d'autant plus que l'individus est une femme dalit
 %Pourquoi je croise par ca ? car on sait que ca 
 
+To analyse the relationship between personality traits and individual indebtedness, we proceed in two stages in order to better understand the relationship.
+
+\subsubsection{Role of skills on future debt}
+
+In a first step, we use the lagged personality traits on individual debt (the role of personnality traits in $t$ on the individual debt in $t+1$).
+It allow us to understand 
 
 
-\paragraph{Selected sample}
-
-In order to understand the relationship between personality traits \& cognitive skills in $t$ and indebtedness situation in $t+1$ in a constraint environement and to deal with sample size issue and with constraint environment (through caste and gender), we use interaction variable strategy.
-Although the best strategy is to use sub-sample (allow different coefficient for all variables), we use interactions variables to satisfy the assumption of $N->+\infty$.
 
 
-\paragraph{Data structure and clustering}
-As mention earlier, in our data, individual questionnaire concerned two individuals ``egos'' of each household.
-In analyzing debt at individual scale here, we investigate the role of personality traits \& cognitive skills for all ``egos''.
-\dev{Cluster car plusieurs indiv par HH = non indépendants en stat et dans la lit avec allocation of ressources:}
-Question of the allocation of ressources within household is, obviously, essential in this configuration.
-Indeed, \citep{Lazear1988}
-\citep{Bonke2015} We find that in most households the income distribution is correlated with the sharing of consumption—the economic approach—and that this holds true even if the household pools its resources—the economic psychology approach, implying that there is no strong relationship between the two approaches.
-
-Thus, we clustered error by households to take into account the fact that observations within each household are not independently and identically distributed.
-
-%As stated by \cite{Reboul2021} about intra-household cooperation over debt repayment:
-% The fact that women are considerably more deeply indebted than men, and mostly to help make ends meet, obviously raises questions about how men assist financially, and more generally about intra-household cooperation. 
-% Further research is needed on this critical issue. 
-% While our data is limited, it suggests that fully pooling and sharing the household debt burden is not the norm.
-% Whether debtors had assistance with repayments is only recorded in our data for a subsample of the loans: 52\% of the total in frequency. 
-% Those were the loans that respondents highlighted as the most critical to repay, with a maximum of three per household.
-% This subsample of ‘‘main loans” is therefore not representative; yet since their settlement is seen as critical, it seems quite probable that the potential bias would be towards overstating intra-household cooperation.
-% As it turned out, debtors declared not to receive any help for the vast majority of the main loans (Table 5).
-% While female main loans clearly more often benefit from help than male ones, female debtors still have to contend with two thirds (64\%) of their main loans on their own.
-% Overall, these descriptive statistics suggest that while women and men seem to have a similar propensity to borrow, women get into debt far more heavily in relation to their incomes. 
-% Furthermore, they predominantly and more frequently than men borrow for non-productive purposes, to smooth consumption and to ensure household reproduction. 
-% They also more often put their loans towards repaying other loans.
-% Microcredit clients, who are more deeply indebted, follow this pattern. 
-% Last, women seem to have greater financial responsibilities in poorer and Dalit households, two categories that substantially overlap. 
+Our analysis faces sample selection issues because of the nature of our dependent variables: the sample is restricted to those who declared a non-zero and non-missing debt.
+We therefore do not account for entry and exit in debt by only considering total loan amount and debt service ratio.
+To overcome this sample selection issue, we use a \cite{Heckman1976} model to estimate the effect of PT\&CS on indebtedness.
+The household debt dependency ratios, defined as the number of indebtedness individuals divided by the total number of household members, in 2016-17 are used as exclusion restriction variables, allowing to compute an Inverse Mill’s Ratios to correct for selection in our equations of interest.
 
 
-\paragraph{Estimators see Table \ref{tab:econ_desc}}
+\cite{Puhani2000}
 
-Heckman procedure ? \cite{Puhani2000}
-\cite{Heckman1976}
 
 First, to estimates dummy variables, we use probit modele with maximum likelihood (ML) estimation and we clusterize the error at household level.
 Same estimator for over-indebtedness because dummy variable too. 
@@ -537,21 +500,40 @@ Y_{i}~=~\upalpha~+~X'_i\upbeta~+~Z'_{i}\upgamma~+~\upepsilon_i
 \end{equation}
 
 
-Last, for count data as the number of loans, we use Poisson regression.
-\begin{equation}\label{eq:poisson}
-\begin{split}
-P(Y=y)=\frac{e^{-\uplambda}\uplambda^{y}}{y!}
-\end{split}
-\end{equation}
-
-% pour $\uplambda =$ parametre de la loi de Poisson
 
 
+\paragraph{Data structure and clustering}
+As mention earlier, in our data, individual questionnaire concerned two individuals ``egos'' of each household.
+In analyzing debt at individual scale here, we investigate the role of personality traits \& cognitive skills for all ``egos''.
+\dev{Cluster car plusieurs indiv par HH = non indépendants en stat et dans la lit avec allocation of ressources:}
+Question of the allocation of ressources within household is, obviously, essential in this configuration.
+Indeed, \citep{Lazear1988}
+\citep{Bonke2015} We find that in most households the income distribution is correlated with the sharing of consumption—the economic approach—and that this holds true even if the household pools its resources—the economic psychology approach, implying that there is no strong relationship between the two approaches.
+
+Thus, we clustered error by households to take into account the fact that observations within each household are not independently and identically distributed.
+
+
+interaction variable
 
 
 
-% GLM with a binomial distribution and a logit link function proposed by \cite{Papke1996}
-% The bounded nature of the dependent variable makes indeed a linear regression inappropriate (Cox, 1996; Papke \& Wooldridge, 2008)
+
+\subsubsection{Fixed effects}
+In a second step, we fully accept the non-stability of personnality traits by using the variation of Big-5 personality traits through time with fixed effect model. 
+
+
+Non corrected traits because, de facon globale, meilleure internal consistancy
+
+
+
+
+
+
+
+ 
+
+
+
 
 \subimport{INPUT}{Econ_desc.tex}
 
@@ -649,12 +631,35 @@ In terms of cognitive skills, male tends to have higher score.
 
 \begin{figure}[ht]
 \raggedright
-\includegraphics[width=\textwidth]{INPUT/Kernel_perso}
-\caption{Distribution of cognitive skills and personality traits -- The resulting cognitive score and personality trait is based on the standardised residual from univariate OLS regression with age as exogenous variable. This is the cognitive score and personality trait purged from life-cycle effects}
-\sourcefig{NEEMSIS (2016-17); author's calculations.}
-\label{fig:EGOscore}
+\includegraphics[width=\textwidth]{INPUT/Kernel_efa}
+\caption{Distribution of personality traits (from exploratory factor analysis) -- The resulting personality trait are based on the standardised residual from univariate OLS regression with age as exogenous variable. This is the personality trait purged from life-cycle effects}
+\sourcefig{NEEMSIS-1 (2016-17); author's calculations.}
+\label{fig:efascore}
 \end{figure}
 
+\begin{figure}[ht]
+\raggedright
+\includegraphics[width=\textwidth]{INPUT/Kernel_cog}
+\caption{Distribution of cognitive skills score}
+\sourcefig{NEEMSIS-1 (2016-17) \& NEEMSIS-2 (2020-21); author's calculations.}
+\label{fig:cogscore}
+\end{figure}
+
+\begin{figure}[ht]
+\raggedright
+\includegraphics[width=\textwidth]{INPUT/Kernel_b5raw16}
+\caption{Distribution of Big-5 personality traits in 2016-17 -- The resulting personality trait are non-corrected from acquiescence bias and are based on the standardised residual from univariate OLS regression with age as exogenous variable. This is the personality trait purged from life-cycle effects}
+\sourcefig{NEEMSIS-1 (2016-17); author's calculations.}
+\label{fig:efascore}
+\end{figure}
+
+\begin{figure}[ht]
+\raggedright
+\includegraphics[width=\textwidth]{INPUT/Kernel_b5raw20}
+\caption{Distribution of Big-5 personality traits in 2020-21 -- The resulting personality trait are non-corrected from acquiescence bias and are based on the standardised residual from univariate OLS regression with age as exogenous variable. This is the personality trait purged from life-cycle effects}
+\sourcefig{NEEMSIS-1 (2020-21); author's calculations.}
+\label{fig:efascore}
+\end{figure}
 
 
 \paragraph{Individual debt with Table \ref{tab:descY} and \ref{tab:descXY}}
@@ -672,7 +677,6 @@ Female more over-indebted than male :
 
 Female more loans but amount smaller than male => indebtedness for daily expenditures female and investment for male
 
-\subimport{INPUT}{desc_Y.tex}
 
 Table \ref{tab:descXY} shows correlation test between personality traits \& cognitive skills and individual indebtedness measures.
 For dalits, cognitive skills sems to be more correlated with debt than personality traits.
@@ -783,27 +787,6 @@ However, non-dalit female with higher ESCO are more likely to be in debt than ot
 
 \clearpage
 \newpage
-\paragraph*{Number of loans in 2020-21 -- Table \ref{tab:ame_loans}}
-
-\subimport{INPUT}{AME_loans.tex}
-
-\begin{itemize}
-\item An individual with one more point at the Numeracy test is predicted to have 0.206 less loans, other things equal.
-\item[----]
-\item All else being equal, a male with one more point on the ESCO score is predicted to have 0.330 loans in more.
-\item[----] 
-\item All else being equal, a female with one more point on the EXOP score have 0.265 loans in more.
-\item All else being equal, a female with one more point on the Emotional stability score have 0.276 loans in less (0.276 less loans).
-\item All else being equal, a female with one more point at the Numeracy test is predicted to have 0.462 loans in less.
-\item[----] 
-\item Other things equal, a middle-upper caste individual with one more point on the ESCO score is predicted to have 0.233 loans in more.
-\item[----] 
-\end{itemize}
-
-
-
-\clearpage
-\newpage
 \paragraph*{Total loan amount in 2020-21 -- Table \ref{tab:ame_loanamount}}
 
 \subimport{INPUT}{AME_loanamount.tex}
@@ -826,14 +809,6 @@ However, non-dalit female with higher ESCO are more likely to be in debt than ot
 \subimport{INPUT}{AME_IDSR.tex}
 
 
-
-
-
-\clearpage
-\newpage
-\paragraph*{Probability being over-indebted in 2020-21 -- Table \ref{tab:ame_over40}}
-
-\subimport{INPUT}{AME_over40.tex}
 
 
 
@@ -906,12 +881,39 @@ Finally, our sample is constitute from 835 egos represented 473 households.
 \section{Stability of Big-5 personality traits over time}
 \label{section:stab_big5}
 
+
 \begin{figure}[htpb]
 \raggedright
-\includegraphics[width=\textwidth]{INPUT/Stabcorr}
-\caption{Stability over time of Big-5 personality traits -- Distribution of variation rate between 2016-17 and 2020-21 for Big-5 personality traits corrected from acquiescence biais for 835 individuals from rural Tamil Nadu, India.}
+\includegraphics[scale=0.75]{INPUT/kernel_ars}
+\caption{Acquiescence biais in 2016-17 and in 2020-21 -- Distribution of acquiescence biais for 953 individuals in 2016-17 and 1,316 in 2020-21 from rural Tamil Nadu, India.}
 \sourcefig{NEEMSIS-1 (2016-17) \& NEEMSIS-2 (2020-21); author's calculations.}
-\label{fig:stab}
+\label{fig:ars}
+\end{figure}
+
+
+\begin{figure}[htpb]
+\raggedright
+\includegraphics[scale=0.75]{INPUT/omega}
+\caption{Internal consistency of Big-5 personality traits -- Distribution of \citeauthor{McDonald1999}'s $\upomega$ through time and correction for 953 individuals in 2016-17 and 1,316 in 2020-21 from rural Tamil Nadu, India.}
+\sourcefig{NEEMSIS-1 (2016-17) \& NEEMSIS-2 (2020-21); author's calculations.}
+\label{fig:omega}
+\end{figure}
+
+\begin{figure}[htpb]
+\raggedright
+\includegraphics[width=\textwidth]{INPUT/deltacont_raw}
+\caption{Stability over time of Big-5 personality traits non-correted from acquiescence bias -- Distribution of variation rate between 2016-17 and 2020-21 for Big-5 personality traits non-corrected from acquiescence biais for 835 individuals from rural Tamil Nadu, India.}
+\sourcefig{NEEMSIS-1 (2016-17) \& NEEMSIS-2 (2020-21); author's calculations.}
+\label{fig:stabraw}
+\end{figure}
+
+
+\begin{figure}[htpb]
+\raggedright
+\includegraphics[width=\textwidth]{INPUT/deltacont_cor}
+\caption{Stability over time of Big-5 personality traits correted from acquiescence bias -- Distribution of variation rate between 2016-17 and 2020-21 for Big-5 personality traits corrected from acquiescence biais for 835 individuals from rural Tamil Nadu, India.}
+\sourcefig{NEEMSIS-1 (2016-17) \& NEEMSIS-2 (2020-21); author's calculations.}
+\label{fig:stabcor}
 \end{figure}
 
 
@@ -924,15 +926,19 @@ Paragraph on non-stability with \cite{Almlund2011}, Chapter (section) 8.
 \label{section:efa_big5}
 
 \subimport{INPUT}{EFAres.tex}
-\subimport{INPUT}{Factor1.tex}
-\subimport{INPUT}{Factor2.tex}
-\subimport{INPUT}{Factor3.tex}
-\subimport{INPUT}{Factor4.tex}
-\subimport{INPUT}{Factor5.tex}
+\subimport{INPUT}{Big5.tex}
 
-\subimport{INPUT}{Stdfactor.tex}
+\begin{figure}[htpb]
+\raggedright
+\includegraphics[width=\textwidth, angle=0]{INPUT/factor2016_Raw}
+\caption{Results on factor of exploratory factor analysis}
+\sourcefig{NEEMSIS-1 (2016-17); author's calculations.}
+\label{fig:stab}
+\end{figure}
 
-\subimport{INPUT}{anova_perso.tex}
+%\subimport{INPUT}{Stdfactor.tex}
+
+%\subimport{INPUT}{anova_perso.tex}
 
 
 
