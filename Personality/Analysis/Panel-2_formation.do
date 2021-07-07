@@ -227,7 +227,7 @@ name(g_`x'_`i', replace)
 drop var_factor_`x'_`i'
 sort n
 }
-grc1leg g_`x'_1 g_`x'_2 g_`x'_3 g_`x'_4 g_`x'_5, note("`x' items with NEEMSIS-2 (2020-21) data.", size(tiny)) name(comb_`x', replace)
+grc1leg g_`x'_1 g_`x'_2 g_`x'_3 g_`x'_4 g_`x'_5, note("`x' items with NEEMSIS-2 (2020-21) data.", size(tiny)) col(2) name(comb_`x', replace)
 graph save "$git\Analysis\Personality\Big-5\factor2020_`x'.gph", replace
 graph export "$git\RUME-NEEMSIS\Big-5\factor2020_`x'.svg", as(svg) replace
 graph export "$git\Analysis\Personality\Big-5\factor2020_`x'.pdf", as(pdf) replace
@@ -235,6 +235,8 @@ graph export "$git\Analysis\Personality\Big-5\factor2020_`x'.pdf", as(pdf) repla
 restore
 set graph on
 */
+
+
 
 **********Correlation + omega
 /*
@@ -543,6 +545,11 @@ matrix list r(p)
 }
 
 
+********** Sum traits
+fsum im_raw_curious im_raw_interestedbyart im_raw_repetitivetasks im_raw_inventive im_raw_liketothink im_raw_newideas im_raw_activeimagination im_raw_organized im_raw_makeplans im_raw_workhard im_raw_appointmentontime im_raw_putoffduties im_raw_easilydistracted im_raw_completeduties im_raw_enjoypeople im_raw_sharefeelings im_raw_shywithpeople im_raw_enthusiastic im_raw_talktomanypeople im_raw_talkative im_raw_expressingthoughts im_raw_workwithother im_raw_understandotherfeeling im_raw_trustingofother im_raw_rudetoother im_raw_toleratefaults im_raw_forgiveother im_raw_helpfulwithothers im_raw_managestress im_raw_nervous im_raw_changemood im_raw_feeldepressed im_raw_easilyupset im_raw_worryalot im_raw_staycalm 
+
+
+
 
 ********** Graph rpz
 /*
@@ -618,7 +625,7 @@ name(g_`x'_`i', replace)
 drop var_factor_`x'with_`i'
 sort n
 }
-grc1leg g_`x'_1 g_`x'_2 g_`x'_3 g_`x'_4 g_`x'_5 g_`x'_6, note("`x' items with NEEMSIS-1 (2016-17) data.", size(tiny)) name(comb_`x'_with, replace)
+grc1leg g_`x'_1 g_`x'_2 g_`x'_3 g_`x'_4 g_`x'_5 g_`x'_6, note("`x' items with NEEMSIS-1 (2016-17) data.", size(tiny)) col(2) name(comb_`x'_with, replace)
 graph save "$git\Analysis\Personality\Big-5\factor2016_`x'_with.gph", replace
 graph export "$git\RUME-NEEMSIS\Big-5\factor2016_`x'_with.svg", as(svg) replace
 graph export "$git\Analysis\Personality\Big-5\factor2016_`x'_with.pdf", as(pdf) replace
@@ -646,7 +653,7 @@ name(g_`x'_`i', replace)
 drop var_factor_`x'_`i'
 sort n
 }
-grc1leg g_`x'_1 g_`x'_2 g_`x'_3 g_`x'_4 g_`x'_5, note("`x' items with NEEMSIS-1 (2016-17) data.", size(tiny)) name(comb_`x', replace)
+grc1leg g_`x'_1 g_`x'_2 g_`x'_3 g_`x'_4 g_`x'_5, note("`x' items with NEEMSIS-1 (2016-17) data.", size(tiny)) col(2) name(comb_`x', replace)
 graph save "$git\Analysis\Personality\Big-5\factor2016_`x'.gph", replace
 graph export "$git\RUME-NEEMSIS\Big-5\factor2016_`x'.svg", as(svg) replace
 graph export "$git\Analysis\Personality\Big-5\factor2016_`x'.pdf", as(pdf) replace
@@ -1048,6 +1055,8 @@ clonevar base_`x'=`x'_1
 }
 
 
+*global indivcontrol age agesq dummyhead cat_mainoccupation_indiv_1 cat_mainoccupation_indiv_2 cat_mainoccupation_indiv_3 cat_mainoccupation_indiv_4 cat_mainoccupation_indiv_5 dummyedulevel maritalstatus2 dummymultipleoccupation_indiv
+*global hhcontrol4 assets1000 sexratiocat_1 sexratiocat_2 sexratiocat_3 hhsize shock incomeHH1000
 
 
 ********** Déflater
@@ -1176,6 +1185,7 @@ annualincome_HH totalincome_HH dummyproblemtorepay_HH dummyhelptosettleloan_HH d
 *Then the variation rate
 foreach x in $toclean {
 recode `x'_2 (.=0)
+gen del_`x'=(`x'_2-`x'_1)*100/`x'_1
 gen delta_`x'=(`x'_2-`x'_1)*100/`x'_1
 replace delta_`x'=`x'_2 if `x'_1==0
 replace delta_`x'=-(`x'_1) if `x'_2==0
@@ -1364,18 +1374,18 @@ cls
 foreach x in base_factor_imcor_1 base_factor_imcor_2 base_factor_imcor_3 base_factor_imcor_4 base_factor_imcor_5 base_factor_imcorwith_1 base_factor_imcorwith_2 base_factor_imcorwith_3 base_factor_imcorwith_4 base_factor_imcorwith_5 base_factor_imcorwith_6 base_factor_imraw_1 base_factor_imraw_2 base_factor_imraw_3 base_factor_imraw_4 base_factor_imraw_5 base_factor_imrawwith_1 base_factor_imrawwith_2 base_factor_imrawwith_3 base_factor_imrawwith_4 base_factor_imrawwith_5 base_factor_imrawwith_6  {
 rename `x' `x'_raw
 reg `x' age_1
-dis _b[age_1]/_se[age_1]
 est store reg_`x'
 predict `x', residuals
 egen `x'_std=std(`x')
 }
 
-esttab reg_* using "_std.csv", ///
-	cells(b(star fmt(3)) /// 
-	se(par fmt(2))) ///
+/*
+esttab reg_base_factor_imraw_1 reg_base_factor_imraw_2 reg_base_factor_imraw_3 reg_base_factor_imraw_4 reg_base_factor_imraw_5 using "_std.csv", ///
+	cells(b(fmt(3)) /// 
+	t(par fmt(3))) ///
 	drop(_cons) ///
 	legend label varlabels(_cons constant) ///
-	stats(N mss df_m rss df_r r2 F p, fmt(0 3 3 3 3 3 3 3)) starlevels(* 0.10 ** 0.05 *** 0.01) ///
+	stats(N r2 r2_a F p, fmt(0 3 3 3 3)) ///
 	replace
 estimates clear
 preserve
@@ -1386,13 +1396,14 @@ forvalues i=1(1)`=scalar(k)'{
 replace v`i'=substr(v`i',3,.)
 replace v`i'=substr(v`i',1,strlen(v`i')-1)
 }
-*export excel using "Stat_desc.xlsx", sheet("EFA_std", replace)
+export excel using "Stat_desc.xlsx", sheet("EFA_std", replace)
 restore
-
+*/
 
 foreach x in base_cr_OP base_cr_CO base_cr_EX base_cr_AG base_cr_ES base_cr_Grit base_OP base_CO base_EX base_AG base_ES base_Grit {
 rename `x' `x'_raw
 qui reg `x' age_1
+est store reg_`x'
 predict `x', residuals
 egen `x'_std=std(`x')
 }
@@ -1400,10 +1411,34 @@ egen `x'_std=std(`x')
 forvalues i=1(1)2 {
 foreach x in cr_OP cr_CO cr_ES cr_AG cr_EX cr_Grit OP CO ES AG EX Grit {
 qui reg `x'_`i' age_`i'
+est store reg_`x'`i'
 predict res_`x'_`i', residuals
 egen std_`x'_`i'=std(`x'_`i')
 }
 }
+
+/*
+esttab reg_OP1 reg_CO1 reg_ES1 reg_AG1 reg_EX1 reg_OP2 reg_CO2 reg_ES2 reg_AG2 reg_EX2 reg_base_cr_OP reg_base_cr_CO reg_base_cr_EX reg_base_cr_AG reg_base_cr_ES reg_base_OP reg_base_CO reg_base_EX reg_base_AG reg_base_ES using "_std.csv", ///
+	cells(b(fmt(3)) /// 
+	t(par fmt(3))) ///
+	drop(_cons) ///
+	legend label varlabels(_cons constant) ///
+	stats(N r2 r2_a F p, fmt(0 3 3 3 3)) ///
+	replace
+estimates clear
+preserve
+import delimited "_std.csv", delimiter(",") varnames(nonames) clear
+qui des
+sca def k=r(k)
+forvalues i=1(1)`=scalar(k)'{
+replace v`i'=substr(v`i',3,.)
+replace v`i'=substr(v`i',1,strlen(v`i')-1)
+}
+export excel using "Stat_desc.xlsx", sheet("Big5_std", replace)
+restore
+*/
+
+
 
 
 

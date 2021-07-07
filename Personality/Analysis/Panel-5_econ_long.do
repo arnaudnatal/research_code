@@ -67,6 +67,18 @@ xtset panelvar year
 
 
 
+********** Year
+label var year "Year"
+
+gen year2016=0
+gen year2020=0
+replace year2016=1 if year==2016
+replace year2020=1 if year==2020
+tab1 year
+tab year2016 year2020
+
+
+
 ********** Macro
 global big5raw std_OP std_CO std_EX std_AG std_ES 
 global intfemraw fem_std_OP fem_std_CO fem_std_EX fem_std_AG fem_std_ES fem_raven_tt fem_lit_tt fem_num_tt
@@ -81,7 +93,7 @@ global threecor threeway_std_cr_OP threeway_std_cr_CO threeway_std_cr_EX threewa
 global cog raven_tt num_tt lit_tt
 
 global indivcontrol age agesq dummyhead cat_mainoccupation_indiv_1 cat_mainoccupation_indiv_2 cat_mainoccupation_indiv_3 cat_mainoccupation_indiv_4 cat_mainoccupation_indiv_5 dummyedulevel maritalstatus2 dummymultipleoccupation_indiv
-global hhcontrol4 assets1000 sexratiocat_1 sexratiocat_2 sexratiocat_3 hhsize shock incomeHH1000
+global hhcontrol4 assets1000 sexratiocat_1 sexratiocat_2 sexratiocat_3 hhsize shock incomeHH1000 year2020
 global villagesFE near_panruti near_villupur near_tirup near_chengal near_kanchip near_chennai
 
 

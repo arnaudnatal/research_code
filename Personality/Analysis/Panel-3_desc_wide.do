@@ -102,9 +102,12 @@ label var cat_mainoccupation_indiv_1_4 "MO: SJ non-agri"
 label var cat_mainoccupation_indiv_1_5 "MO: UW or NW"
 
 fre relationshiptohead_1
-gen dummyhead=0
-replace dummyhead=1 if relationshiptohead_1==1
-label var dummyhead "HH head (=1)"
+gen dummyhead_1=0
+replace dummyhead_1=1 if relationshiptohead_1==1
+gen dummyhead_2=0
+replace dummyhead_2=1 if relationshiptohead_2==1
+label var dummyhead_1 "HH head (=1)"
+label var dummyhead_2 "HH head (=1)"
 
 
 tab sexratiocat_1, gen(sexratiocat_1_)
@@ -363,7 +366,7 @@ replace over50_indiv_2=1 if DSR_indiv_2>=50
 
 
 	
-
+********** Username
 preserve
 use "NEEMSIS2-HH_v17", clear
 duplicates drop HHID_panel, force
@@ -375,29 +378,18 @@ merge m:1 HHID_panel using "NEEMSIS2-username"
 drop if _merge==2
 drop _merge
 
-
-
-********** Username
-
-
-
 save"panel_wide_v2", replace
 
 
 
 ********** Reshape la base pour FE
 use"panel_wide_v2", clear
-global toresh name_1 dummyeverhadland_1 ownland_1 egoid_1 interviewplace_1 address_1 sex_1 age_1 relationshiptohead_1 maritalstatus_1 amountlent_1 interestlending_1 dummychitfund_1 nbchitfunds_1 nbsavingaccounts_1 datedebitcard1_1 datedebitcard2_1 datedebitcard3_1 datedebitcard4_1 goldquantity_1 goldquantitypledge_1 nbinsurance_1 landpurchased_1 foodexpenses_1 healthexpenses_1 ceremoniesexpenses_1 ceremoniesrelativesexpenses_1 deathexpenses_1 dummymarriage_1 marriageexpenses_1 house_1 readystartjob_1 methodfindjob_1 jobpreference_1 moveoutsideforjob_1 moveoutsideforjobreason_1 aspirationminimumwage_1 businessexpenses_1 dummyaspirationmorehours_1 aspirationminimumwage2_1 mainoccupation_hours_indiv_1 mainoccupation_income_indiv_1 mainoccupation_indiv_1 mainoccupationname_indiv_1 annualincome_indiv_1 nboccupation_indiv_1 mainoccupation_HH_1 annualincome_HH_1 nboccupation_HH_1 edulevel_1 assets_1 totalincome_indiv_1 totalincome_HH_1 raven_tt_1 num_tt_1 lit_tt_1 cr_OP_1 cr_CO_1 cr_EX_1 cr_AG_1 cr_ES_1 cr_Grit_1 OP_1 CO_1 EX_1 AG_1 ES_1 Grit_1 imp1_ds_tot_indiv_1 imp1_is_tot_indiv_1 semiformal_indiv_1 formal_indiv_1 economic_indiv_1 current_indiv_1 humancap_indiv_1 social_indiv_1 house_indiv_1 incomegen_indiv_1 noincomegen_indiv_1 economic_amount_indiv_1 current_amount_indiv_1 humancap_amount_indiv_1 social_amount_indiv_1 house_amount_indiv_1 incomegen_amount_indiv_1 noincomegen_amount_indiv_1 informal_amount_indiv_1 formal_amount_indiv_1 semiformal_amount_indiv_1 marriageloan_indiv_1 marriageloanamount_indiv_1 dummyproblemtorepay_indiv_1 dummyhelptosettleloan_indiv_1 dummyinterest_indiv_1 loans_indiv_1 loanamount_indiv_1 loanbalance_indiv_1 loanamount_wm_indiv_1 mean_yratepaid_indiv_1 mean_monthly_indiv_1 sum_otherlenderservices_1_1 sum_otherlenderservices_2_1 sum_otherlenderservices_3_1 sum_otherlenderservices_4_1 sum_otherlenderservices_5_1 imp1_ds_tot_HH_1 imp1_is_tot_HH_1 informal_HH_1 semiformal_HH_1 formal_HH_1 economic_HH_1 current_HH_1 humancap_HH_1 social_HH_1 house_HH_1 incomegen_HH_1 noincomegen_HH_1 economic_amount_HH_1 current_amount_HH_1 humancap_amount_HH_1 social_amount_HH_1 house_amount_HH_1 incomegen_amount_HH_1 noincomegen_amount_HH_1 informal_amount_HH_1 formal_amount_HH_1 semiformal_amount_HH_1 marriageloan_HH_1 marriageloanamount_HH_1 dummyproblemtorepay_HH_1 dummyhelptosettleloan_HH_1 dummyinterest_HH_1 loans_HH_1 loanamount_HH_1 loanbalance_HH_1 loanamount_wm_HH_1 mean_yratepaid_HH_1 mean_monthlyinterestrate_HH_1 factor_imcorwith_1_1 factor_imcorwith_2_1 factor_imcorwith_3_1 factor_imcorwith_4_1 factor_imcorwith_5_1 factor_imcorwith_6_1 factor_imrawwith_1_1 factor_imrawwith_2_1 factor_imrawwith_3_1 factor_imrawwith_4_1 factor_imrawwith_5_1 factor_imrawwith_6_1 factor_imcor_1_1 factor_imcor_2_1 factor_imcor_3_1 factor_imcor_4_1 factor_imcor_5_1 factor_imraw_1_1 factor_imraw_2_1 factor_imraw_3_1 factor_imraw_4_1 factor_imraw_5_1 hhsize_1 nbchild_1 nbfemale_1 nbmale_1 savingsamount_HH_1 educationexpenses_HH_1 productexpenses_HH_1 businessexpenses_HH_1 foodexpenses_HH_1 healthexpenses_HH_1 ceremoniesexpenses_HH_1 deathexpenses_HH_1 livestockexpenses_HH_1 chitfundpaymentamount_HH_1 chitfundamount_HH_1 chitfundamounttot_HH_1 nbchitfunds_HH_1 amountlent_HH_1 interestlending_HH_1 problemrepayment_HH_1 goldquantity_HH_1 goldquantitypledge_HH_1 nbinsurance_HH_1 insuranceamount_HH_1 insuranceamounttot_HH_1 insurancebenefitamount_HH_1 insurancebenefitamounttot_HH_1 investequiptot_HH_1 debtorratio_1 debtorratio2_1 workerratio_1 workerratio2_1 sum_borrowerservices_1_r_1 sum_borrowerservices_2_r_1 sum_borrowerservices_3_r_1 sum_borrowerservices_4_r_1 sum_plantorepay_1_r_1 sum_plantorepay_2_r_1 sum_plantorepay_3_r_1 sum_plantorepay_4_r_1 sum_plantorepay_5_r_1 sum_plantorepay_6_r_1 sum_settleloanstrategy_1_r_1 sum_settleloanstrategy_2_r_1 sum_settleloanstrategy_3_r_1 sum_settleloanstrategy_4_r_1 sum_settleloanstrategy_5_r_1 sum_settleloanstrategy_6_r_1 sum_settleloanstrategy_7_r_1 sum_settleloanstrategy_8_r_1 sum_settleloanstrategy_9_r_1 sum_settleloanstrategy_10_r_1 indebt_indiv_1 indebt_HH_1 DSR_indiv_1 DSR_HH_1 ISR_indiv_1 ISR_HH_1 DAR_indiv_1 DAR_HH_1 FormR_indiv_1 InformR_indiv_1 SemiformR_indiv_1 FormR_HH_1 InformR_HH_1 SemiformR_HH_1 IncogenR_indiv_1 NoincogenR_indiv_1 IncogenR_HH_1 NoincogenR_HH_1 debtshare_1 savingsamount_1 dummydebitcard_1 dummycreditcard_1 chitfundamount_1 ownhouse_1 sexratio_1 sexratiocat_1 shock_1 cat_mainoccupation_indiv_1 agesq_1 maritalstatus2_1 nboccupation_1 assets1000_1 incomeHH1000_1 q_assets1000_1 loanamount_indiv1000_1 loanamount_HH1000_1 imp1_ds_tot_indiv1000_1 imp1_ds_tot_HH1000_1 imp1_is_tot_indiv1000_1 imp1_is_tot_HH1000_1 savingsamount1000_1 annualincome_indiv1000_1 annualincome_HH1000_1 totalincome_indiv1000_1 over30_indiv_1 over40_indiv_1 dichotomyinterest_indiv_1 dummymultipleoccupation_indiv_1 sharenoservices_1
 
-cls
-foreach x in $toresh {
-local y=substr("`x'",1,strlen("`x'")-1)
-dis "`y'" " " "///"
-}
 destring dummyeverhadland_2, replace
 destring landpurchased_2, replace
 
 reshape long ///
+dummyhead_ ///
 name_ ///
 dummyeverhadland_ ///
 ownland_ ///
@@ -688,6 +680,7 @@ sharenoservices_ ///
 
 *** Rename
 foreach x in name_ ///
+dummyhead_ ///
 dummyeverhadland_ ///
 ownland_ ///
 egoid_ ///
@@ -991,10 +984,8 @@ gen threeway_`x'=`x'*female*dalits
 tab cat_mainoccupation_indiv, gen(cat_mainoccupation_indiv_)
 
 *** Head?
-drop dummyhead
-tab relationshiptohead
-gen dummyhead=0
-replace dummyhead=1 if relationshiptohead==1
+tab relationshiptohead dummyhead, m
+replace dummyhead=0 if relationshiptohead==.
 
 *** Sexratio
 drop sexratiocat_1_1 sexratiocat_1_2 sexratiocat_1_3
@@ -1183,6 +1174,7 @@ use"panel_wide_v3.dta", clear
 tab segmana 
 
 ********** HH characteristics
+*** 2016-17
 preserve
 recode caste (3=2)
 bysort HHID_panel: egen nbego=sum(1)
@@ -1201,49 +1193,82 @@ cls
 foreach x in near_panruti near_villupur near_tirup near_chengal near_kanchip near_chennai {
 tab `x' caste, col nofreq
 }
-*Test
+restore
+
+*** 2020-21
 cls
-ttest hhsize_1, by(caste)
-tab sexratiocat_1 caste, nofreq chi2
-ttest assets1000_1, by(caste)
-ttest incomeHH1000_1, by(caste)
-tab shock_1 caste, nofreq chi2
-tab indebt_HH_1 caste, nofreq chi2
+preserve
+recode caste (3=2)
+bysort HHID_panel: egen nbego=sum(1)
+duplicates drop HHID_panel, force
+*473 HH, in panel, 835 egos
+tabstat hhsize_2 nbego, stat(n mean) by(caste)
+tab nbego caste, col nofreq
+tab sexratiocat_2 caste, col nofreq
+tabstat assets1000_2, stat(mean sd p50) by(caste)
+tab shock_2 caste, col nofreq
+tabstat annualincome_HH1000_2 incomeHH1000_2, stat(n mean sd p50) by(caste)
+tab indebt_HH_2 caste, col nofreq
+foreach x in near_panruti near_villupur near_tirup near_chengal near_kanchip near_chennai {
+tab `x' caste, col nofreq
+}
 restore
 
 
-********** Indiv characteristics
+*** Delta HH
 cls
-tabstat age_1, stat(n mean) by(segmana)
-
-tab dummyhead segmana, col nofreq
-tab relationshiptohead_1 segmana, col nofreq
-
-tab cat_mainoccupation_indiv_1 segmana, col nofreq
-tab mainoccupation_indiv_1 segmana, col nofreq
-
-tab dummyedulevel segmana, col nofreq
-tab edulevel_1 segmana, col nofreq
-
-tab maritalstatus_1 segmana, col nofreq
-tab maritalstatus2_1 segmana, col nofreq
-
-tab dummymultipleoccupation_indiv_1 segmana, col nofreq
-
-tabstat annualincome_indiv1000_1, stat(mean sd p50) by(segmana)
-
-
-*Test
-cls
-oneway age_1 segmana
-
-foreach x in dummyhead cat_mainoccupation_indiv_1 dummyedulevel maritalstatus2_1 dummymultipleoccupation_indiv_1 {
-tab `x' segmana, nofreq chi2
+preserve
+foreach x in assets1000 incomeHH1000 {
+gen delta2_`x'=(`x'_2-`x'_1)*100/`x'_1
+replace delta2_`x'=`x'_2/100 if `x'_1==0
+replace delta2_`x'=-(`x'_1)/100 if `x'_2==0
 }
 
-oneway annualincome_indiv1000_1 segmana
+fre indebt_HH_1 indebt_HH_2
 
-********** Personality
+gen debtpath_HH=0
+replace debtpath_HH=1 if indebt_HH_1==0 & indebt_HH_2==0
+replace debtpath_HH=2 if indebt_HH_1==1 & indebt_HH_2==0
+replace debtpath_HH=3 if indebt_HH_1==0 & indebt_HH_2==1
+replace debtpath_HH=4 if indebt_HH_1==1 & indebt_HH_2==1
+
+tab debtpath_HH caste2, col nofreq
+tabstat delta2_assets1000 delta2_incomeHH1000, stat(n mean sd p50) by(caste2)
+restore
+
+********** Indiv characteristics
+*** 2016-17
+cls
+tab caste2 female, col
+tabstat age_1, stat(n mean) by(female)
+tab dummyhead_1 female, col nofreq
+tab relationshiptohead_1 female, col nofreq
+tab cat_mainoccupation_indiv_1 female, col nofreq
+tab mainoccupation_indiv_1 female, col nofreq
+tab dummyedulevel female, col nofreq
+tab edulevel_1 female, col nofreq
+tab maritalstatus_1 female, col nofreq
+tab maritalstatus2_1 female, col nofreq
+tab dummymultipleoccupation_indiv_1 female, col nofreq
+tabstat annualincome_indiv1000_1, stat(mean sd p50) by(female)
+
+*** 2020-21
+cls
+tabstat age_2, stat(n mean) by(female)
+tab dummyhead_2 female, col nofreq
+tab cat_mainoccupation_indiv_2 female, col nofreq
+tab maritalstatus_2 female, col  nofreq
+tab dummymultipleoccupation_indiv_2 female, col nofreq
+tabstat annualincome_indiv1000_2, stat(mean sd p50) by(female)
+
+*** Delta income
+gen delta2_labinc=(annualincome_indiv1000_2-annualincome_indiv1000_1)*100/annualincome_indiv1000_1
+replace delta2_labinc=annualincome_indiv1000_2/100 if annualincome_indiv1000_1==0
+replace delta2_labinc=-(annualincome_indiv1000_1)/100 if annualincome_indiv1000_2==0
+
+tabstat delta2_labinc, stat(n mean sd p50) by(female)
+
+*** EFA
 /*
 set graph off
 forvalues i=1(1)5{
@@ -1252,44 +1277,102 @@ twoway ///
 (kdensity base_factor_imraw_`i'_std if segmana==2, bwidth(0.32) lpattern(shortdash) lcolor(gs0)) ///
 (kdensity base_factor_imraw_`i'_std if segmana==3, bwidth(0.32) lpattern(dash) lcolor(gs9)) ///
 (kdensity base_factor_imraw_`i'_std if segmana==4, bwidth(0.32) lpattern(solid) lcolor(gs12)), ///
-xsize() xtitle("Factor `i' (std.)", size(medsmall)) xlabel(,angle() labsize(small))  ///
+xsize() xtitle("Factor `i' (std)", size(medsmall)) xlabel(,angle() labsize(small))  ///
 ylabel(,labsize(small)) ymtick() ytitle("Density", size(small)) ///
-legend(position(6) col(2) order(1 "Dalits women" 2 "Dalits men" 3 "MU caste women" 4 "MU caste men") off) name(f`i', replace)
+legend(position(6) col(4) order(1 "Dalits women" 2 "Dalits men" 3 "MU caste women" 4 "MU caste men") off) name(f`i', replace)
 }
+set graph on
+grc1leg f1 f2 f3 f4 f5, cols(3) note("Kernel: Epanechnikov;" "Bandwidth: 0.32.", size(tiny)) name(perso, replace)
+graph save "Kernel_efa.gph", replace
+graph export "Kernel_efa.pdf", as(pdf) name(perso) replace
 
+
+*** Big-5 raw
+set graph off
+forvalues i=1(1)2{
+foreach x in OP CO EX AG ES { 
 twoway ///
-(kdensity base_raven_tt if segmana==1, bwidth(3) lpattern(solid) lcolor(gs4)) ///
-(kdensity base_raven_tt if segmana==2, bwidth(3) lpattern(shortdash) lcolor(gs0)) ///
-(kdensity base_raven_tt if segmana==3, bwidth(3) lpattern(dash) lcolor(gs9)) ///
-(kdensity base_raven_tt if segmana==4, bwidth(3) lpattern(solid) lcolor(gs12)), ///
+(kdensity std_`x'_`i' if segmana==1, bwidth(0.50) lpattern(solid) lcolor(gs4)) ///
+(kdensity std_`x'_`i' if segmana==2, bwidth(0.50) lpattern(shortdash) lcolor(gs0)) ///
+(kdensity std_`x'_`i' if segmana==3, bwidth(0.50) lpattern(dash) lcolor(gs9)) ///
+(kdensity std_`x'_`i' if segmana==4, bwidth(0.50) lpattern(solid) lcolor(gs12)), ///
+xsize() xtitle("`x'", size(medsmall)) xlabel(,angle() labsize(small))  ///
+ylabel(,labsize(small)) ymtick() ytitle("Density", size(small)) ///
+legend(position(6) col(4) order(1 "Dalits women" 2 "Dalits men" 3 "MU caste women" 4 "MU caste men") off) name(f_`x'_`i', replace)
+}
+}
+set graph on
+grc1leg f_OP_1 f_CO_1 f_EX_1 f_AG_1 f_ES_1, cols(3) note("Kernel: Epanechnikov;" "Bandwidth: 0.50" "NEEMSIS-1 (2016-17).", size(tiny)) name(big5_raw_1, replace)
+graph save "Kernel_b5raw16.gph", replace
+graph export "Kernel_b5raw16.pdf", as(pdf) replace
+grc1leg f_OP_2 f_CO_2 f_EX_2 f_AG_2 f_ES_2, cols(3) note("Kernel: Epanechnikov;" "Bandwidth: 0.50" "NEEMSIS-2 (2020-21).", size(tiny)) name(big5_raw_2, replace)
+graph save "Kernel_b5raw20.gph", replace
+graph export "Kernel_b5raw20.pdf", as(pdf) replace
+
+
+
+*** Big-5 cor
+set graph off
+forvalues i=1(1)2{
+foreach x in OP CO EX AG ES { 
+twoway ///
+(kdensity std_cr_`x'_`i' if segmana==1, bwidth(0.50) lpattern(solid) lcolor(gs4)) ///
+(kdensity std_cr_`x'_`i' if segmana==2, bwidth(0.50) lpattern(shortdash) lcolor(gs0)) ///
+(kdensity std_cr_`x'_`i' if segmana==3, bwidth(0.50) lpattern(dash) lcolor(gs9)) ///
+(kdensity std_cr_`x'_`i' if segmana==4, bwidth(0.50) lpattern(solid) lcolor(gs12)), ///
+xsize() xtitle("`x'", size(medsmall)) xlabel(,angle() labsize(small))  ///
+ylabel(,labsize(small)) ymtick() ytitle("Density", size(small)) ///
+legend(position(6) col(4) order(1 "Dalits women" 2 "Dalits men" 3 "MU caste women" 4 "MU caste men") off) name(f_`x'_`i', replace)
+}
+}
+set graph on
+grc1leg f_OP_1 f_CO_1 f_EX_1 f_AG_1 f_ES_1, cols(3) note("Kernel: Epanechnikov;" "Bandwidth: 0.50" "NEEMSIS-1 (2016-17), corrected traits.", size(tiny)) name(big5_cor_1, replace)
+graph save "Kernel_b5cor16.gph", replace
+graph export "Kernel_b5cor16.pdf", as(pdf) replace
+grc1leg f_OP_2 f_CO_2 f_EX_2 f_AG_2 f_ES_2, cols(3) note("Kernel: Epanechnikov;" "Bandwidth: 0.50" "NEEMSIS-2 (2020-21), corrected traits.", size(tiny)) name(big5_cor_2, replace)
+graph save "Kernel_b5cor20.gph", replace
+graph export "Kernel_b5cor20.pdf", as(pdf) replace
+
+
+
+*** Cog
+set graph off
+forvalues i=1(1)2{
+twoway ///
+(kdensity raven_tt_`i' if segmana==1, bwidth(3) lpattern(solid) lcolor(gs4)) ///
+(kdensity raven_tt_`i' if segmana==2, bwidth(3) lpattern(shortdash) lcolor(gs0)) ///
+(kdensity raven_tt_`i' if segmana==3, bwidth(3) lpattern(dash) lcolor(gs9)) ///
+(kdensity raven_tt_`i' if segmana==4, bwidth(3) lpattern(solid) lcolor(gs12)), ///
 xsize() xtitle("Raven test", size(medsmall)) xlabel(,angle() labsize(small))  ///
 ylabel(,labsize(small)) ymtick() ytitle("Density", size(small)) ///
-legend(position(6) col(2) order(1 "Male" 2 "Female") off) name(f6, replace)
+legend(position(6) col(4) order(1 "Dalits women" 2 "Dalits men" 3 "MU caste women" 4 "MU caste men") off) name(f_rav_`i', replace)
 
 twoway ///
-(kdensity base_num_tt if segmana==1, bwidth(1.5) lpattern(solid) lcolor(gs4)) ///
-(kdensity base_num_tt if segmana==2, bwidth(1.5) lpattern(shortdash) lcolor(gs0)) ///
-(kdensity base_num_tt if segmana==3, bwidth(1.5) lpattern(dash) lcolor(gs9)) ///
-(kdensity base_num_tt if segmana==4, bwidth(1.5) lpattern(solid) lcolor(gs12)), ///
+(kdensity num_tt_`i' if segmana==1, bwidth(1.5) lpattern(solid) lcolor(gs4)) ///
+(kdensity num_tt_`i' if segmana==2, bwidth(1.5) lpattern(shortdash) lcolor(gs0)) ///
+(kdensity num_tt_`i' if segmana==3, bwidth(1.5) lpattern(dash) lcolor(gs9)) ///
+(kdensity num_tt_`i' if segmana==4, bwidth(1.5) lpattern(solid) lcolor(gs12)), ///
 xsize() xtitle("Numeracy test", size(medsmall)) xlabel(,angle() labsize(small))  ///
 ylabel(,labsize(small)) ymtick() ytitle("Density", size(small)) ///
-legend(position(6) col(2) order(1 "Male" 2 "Female") off) name(f7, replace)
+legend(position(6) col(4) order(1 "Dalits women" 2 "Dalits men" 3 "MU caste women" 4 "MU caste men") off) name(f_num_`i', replace)
 
 twoway ///
-(kdensity base_lit_tt if segmana==1, bwidth(1.7) lpattern(solid) lcolor(gs4)) ///
-(kdensity base_lit_tt if segmana==2, bwidth(1.7) lpattern(shortdash) lcolor(gs0)) ///
-(kdensity base_lit_tt if segmana==3, bwidth(1.7) lpattern(dash) lcolor(gs9)) ///
-(kdensity base_lit_tt if segmana==4, bwidth(1.7) lpattern(solid) lcolor(gs12)), ///
+(kdensity lit_tt_`i' if segmana==1, bwidth(1.7) lpattern(solid) lcolor(gs4)) ///
+(kdensity lit_tt_`i' if segmana==2, bwidth(1.7) lpattern(shortdash) lcolor(gs0)) ///
+(kdensity lit_tt_`i' if segmana==3, bwidth(1.7) lpattern(dash) lcolor(gs9)) ///
+(kdensity lit_tt_`i' if segmana==4, bwidth(1.7) lpattern(solid) lcolor(gs12)), ///
 xsize() xtitle("Literacy test", size(medsmall)) xlabel(,angle() labsize(small))  ///
 ylabel(,labsize(small)) ymtick() ytitle("Density", size(small)) ///
-legend(position(6) col(2) order(1 "Male" 2 "Female") off) name(f8, replace)
-
+legend(position(6) col(4) order(1 "Dalits women" 2 "Dalits men" 3 "MU caste women" 4 "MU caste men") off) name(f_lit_`i', replace)
+}
+grc1leg f_rav_1 f_num_1 f_lit_1, cols(3) title("2016-17", size(small)) name(cog_1, replace)
+grc1leg f_rav_2 f_num_2 f_lit_2, cols(3) title("2020-21", size(small)) name(cog_2, replace)
 set graph on
-
-grc1leg f1 f2 f3 f4 f5 f6 f7 f8, cols(4) note("Kernel: Epanechnikov;" "Bandwidth: 0.32 for factors, 3 for raven, 1.5 for literacy, 1 for numeracy.", size(vsmall)) name(perso, replace)
-graph save "Kernel_perso2.gph", replace
-graph export "Kernel_perso2.pdf", as(pdf) name(perso) replace
+grc1leg cog_1 cog_2, cols(1) note("Kernel: Epanechnikov;" "Bandwidth: 3.0 (raven) 1.50 (numeracy) 1.70 (literacy)", size(tiny)) name(cog_1_2, replace)
+graph save "Kernel_cog.gph", replace
+graph export "Kernel_cog.pdf", as(pdf) replace
 */
+
 
 * ANOVA for personality
 tabstat base_factor_imraw_1_std base_factor_imraw_2_std base_factor_imraw_3_std base_factor_imraw_4_std base_factor_imraw_5_std, stat(n mean sd p50) by(segmana)
@@ -1307,9 +1390,18 @@ oneway base_lit_tt segmana
 
 
 ********** Debt
-tabstat loans_indiv_2 loanamount_indiv1000_2 DSR_indiv_2 debtshare_2  InformR_indiv_2 NoincogenR_indiv_2, stat(mean sd p50) by(segmana)
+cls
+tabstat indebt_indiv_1 indebt_indiv_2, stat(mean) by(female)
+forvalues i=1(1)2{
+tabstat loanamount_indiv1000_`i' DSR_indiv_`i' if indebt_indiv_`i'==1, stat(n mean sd p50) by(female)
+}
+tab debtpath female, col nofreq
 
-tabstat indebt_indiv_2 over30_indiv_2 over40_indiv_2, stat(mean) by(segmana)
+tabstat del_loanamount_indiv delta_loanamount_indiv delta2_loanamount_indiv, stat(n mean sd p50) by(female)
+tabstat del_DSR_indiv delta_DSR_indiv delta2_DSR_indiv, stat(n mean sd p50) by(female)
+
+tabstat delta2_loanamount_indiv delta2_DSR_indiv, stat(mean sd p50) by(female)
+tab debtpath female, col nofreq
 
 /*
 *Recode pour ne pas écraser la boite
