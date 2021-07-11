@@ -22,17 +22,17 @@ clear all
 macro drop _all
 set scheme plotplain
 ********** Path to folder "data" folder.
-*global directory = "D:\Documents\_Thesis\Research-Skills_and_debt\Analysis"
-*cd"$directory"
+global directory = "D:\Documents\_Thesis\Research-Skills_and_debt\Analysis"
+cd"$directory"
 
 
 *Fac
-cd "C:\Users\anatal\Downloads\_Thesis\Research-Skills_and_debt\Analysis"
+*cd "C:\Users\anatal\Downloads\_Thesis\Research-Skills_and_debt\Analysis"
 set scheme plotplain
 
-global git "C:\Users\anatal\Downloads\GitHub"
-global dropbox "C:\Users\anatal\Downloads\Dropbox"
-global thesis "C:\Users\anatal\Downloads\_Thesis\Research-Skills_and_debt\Analysis"
+*global git "C:\Users\anatal\Downloads\GitHub"
+*global dropbox "C:\Users\anatal\Downloads\Dropbox"
+*global thesis "C:\Users\anatal\Downloads\_Thesis\Research-Skills_and_debt\Analysis"
 
 
 
@@ -69,8 +69,8 @@ i=3 --> at=1 (middle-upper male) at=2 (dalits male) at=3 (middle-upper female) a
 */
 
 *cap ssc inst sxpose
-*foreach x in indebt_indiv loans_indiv over40_indiv DSR_indiv heck_DSR_indiv loanamount_indiv1000 heck_loanamount_indiv1000 delta2_DSR_indiv delta2_loanamount_indiv delta2_loans_indiv FE_loanamount_indiv1000 FE_DSR_indiv b5_delta2_DSR_indiv b5_delta2_loanamount_indiv b5_delta2_loans_indiv b5_DSR_indiv b5_heck_DSR_indiv b5_heck_loanamount_indiv1000 b5_indebt_indiv b5_loanamount_indiv1000 b5_loans_indiv b5_over40_indiv {
-foreach x in FE_loanamount_indiv1000 FE_DSR_indiv {
+foreach x in indebt_indiv { // heck_DSR_indiv heck_loanamount_indiv1000 FE_loanamount_indiv1000 FE_DSR_indiv b5_indebt_indiv b5_heck_loanamount_indiv1000 b5_heck_DSR_indiv loanamount_indiv1000 DSR_indiv b5_loanamount_indiv1000 b5_DSR_indiv delta2_loanamount_indiv delta2_DSR_indiv b5_delta2_loanamount_indiv b5_delta2_DSR_indiv  {
+*foreach x in FE_loanamount_indiv1000 FE_DSR_indiv {
 forvalues i=1(1)4{
 preserve
 use"margin_`x'`i'", clear
@@ -139,7 +139,6 @@ dropmiss, force
 save"margin_`x'`i'_new", replace
 restore 
 }
-
 use"margin_`x'1_new.dta", replace
 rename nstr All
 merge 1:1 n using "margin_`x'2_new.dta"
@@ -151,12 +150,48 @@ drop _merge
 rename nstr Midup
 rename nstr2 Dalit
 merge 1:1 n using "margin_`x'4_new.dta"
+
 drop _merge
 rename nstr Midup_male
 rename nstr2 Dalit_male
 rename nstr3 Midup_female
 rename nstr4 Dalit_female
+*drop n
+
+forvalues i=1(1)3{
+gen blank`i'=""
+}
+
+order deriv All blank1 Male Female blank2 Midup Dalit blank3 Midup_male Dalit_male Midup_female Dalit_female
+
+set obs `=_N+1'
+set obs `=_N+1'
+set obs `=_N+1'
+
+replace n=17-_n if n==.
+sort n
+
+replace All="(1)" if n==-2
+replace Male="(2)" if n==-2
+replace Midup="(3)" if n==-2
+replace Midup_male="(4)" if n==-2
+
+foreach x in All Male Female Midup Dalit Midup_male Dalit_male Midup_female Dalit_female {
+replace `x'="ME/(t-stat)" if n==-1
+}
+
+replace All="All" if n==0
+replace Male="Male" if n==0
+replace Female="Female" if n==0
+replace Midup="MUC" if n==0
+replace Dalit="Dalits" if n==0
+replace Midup_male="MUC male" if n==0
+replace Dalit_male="Dalits male" if n==0
+replace Midup_female="MUC female" if n==0
+replace Dalit_female="Dalits female" if n==0
+
+
+
 drop n
 export excel using "margins.xlsx", sheet("`x'", replace) firstrow(varlabels)
 }
-

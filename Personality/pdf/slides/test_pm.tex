@@ -1,0 +1,158 @@
+% arara: pdflatex 
+% arara: bibtex
+% arara: pdflatex
+% arara: pdflatex
+% arara: clean: {extensions: [ aux, bbl, out, toc, blg, thm ]}
+
+\documentclass[aspectratio=169]{beamer}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{tikz}
+\usetheme[darkmode, showmaxslides]{pureminimalistic}
+
+\usepackage{appendixnumberbeamer}
+\renewcommand{\appendixname}{\texorpdfstring{\translate{appendix}}{appendix}}
+
+% References
+\usepackage[doi, natbibapa]{apacite}
+\renewcommand\bibliographytypesize{\tiny}
+\let\realcitep\citep
+\renewcommand*{\citep}[1]{{\small\realcitep{#1}}}
+\let\realcite\cite
+\renewcommand*{\cite}[1]{{\small\realcite{#1}}}
+
+% Change logo
+\renewcommand{\logotitle}{\vspace*{-20mm}\hspace*{-10.1mm}\includegraphics%
+  [width=\paperwidth]{header.jpeg}}
+\renewcommand{\logoheader}{}
+\renewcommand{\logoheader}{\vspace{0em}}
+\renewcommand{\logofooter}{\includegraphics%
+  [width=.4\linewidth]{neemsis.png}}
+
+% Color text
+\definecolor{darkgreen}{RGB}{80,151,68}
+\definecolor{lightgreen}{RGB}{164,204,76}
+\definecolor{brick}{RGB}{197,102,63}
+\definecolor{lightgray}{HTML}{A9A9A9}
+\definecolor{lightgray2}{RGB}{113,113,113}
+
+% Mail address
+\usepackage{hyperref}
+\hypersetup{colorlinks,linkcolor={lightgray2},citecolor={darkgreen},urlcolor={darkgreen}}
+
+% Math
+\usepackage{graphicx}
+\usepackage{amssymb,amsmath}
+\usepackage{upgreek}
+
+% Rupee 
+\usepackage{tfrupee}
+
+% Change page word
+\renewcommand{\pageword}{}
+
+% Table
+\usepackage{array}
+\usepackage{booktabs}
+
+% Source for table
+\newcommand{\sourcetab}[1]{\vspace{1mm} \caption{{\tiny\textbf{Source}: {#1}}}}
+\newcommand{\sourcefig}[1]{\vspace{1mm} \caption{{\tiny\textbf{Source}: {#1}}}}
+
+% For shrink
+\usepackage{adjustbox}
+
+
+%\renewcommand{\beamertextcolor}{}
+%\renewcommand{\beamerbgcolor}{}
+%\renewcommand{\beamerfootertextcolor}{}
+\renewcommand{\beamertitlecolor}{brick}
+
+% *****************************************************************
+% Title
+% *****************************************************************
+\title[Skills \& Debt]{Indebtedness in Rural India: The Contribution of Cognitive Skills and Personality Traits}
+\author[A. Natal and C.J. Nordman]{%
+\begin{tabular}{ll}
+\textcolor{darkgreen}{Arnaud \href{mailto:arnaud.natal@u-bordeaux.fr}{\textbf{Natal}}} & \textcolor{lightgreen}{University of Bordeaux}    \\
+\textcolor{darkgreen}{Christophe J. \href{mailto:nordman@dial.prd}{\textbf{Nordman}}} & \textcolor{lightgreen}{IRD, UMR LEDa-DIAL, IFP}  \\
+\end{tabular}
+\begin{tabular}{r}
+{\footnotesize  | \today}  \\
+\end{tabular}
+}%
+% \institute{} 
+% \date{\today}
+
+
+% ******************************************************************
+\begin{document}
+% has to be loaded outside of a frame to work!
+\maketitle
+
+
+% Plan
+% \begin{frame}[plain, noframenumbering]{Outline}
+ %   \tableofcontents
+% \end{frame}
+
+
+% *******************
+\begin{frame}{Using vfilleditems}
+    \begin{vfilleditems}
+        \item As stated by \cite{Laajaj2019} 1,000 \rupee
+        \item Donc du coup on sait que ça = ça \citep{Brown2014}.
+    \end{vfilleditems}
+\end{frame}
+% *******************
+
+% *******************
+\begin{frame}{Figures}
+    \begin{figure}[H]
+        \centering
+        \begin{columns}[T]
+            \begin{column}{.3\linewidth}
+                \includegraphics[width=\linewidth]{example-image-a}
+                \caption{Example A}
+            \end{column}
+            \begin{column}{.3\linewidth}
+                \includegraphics[width=\linewidth]{example-image-b}
+                \caption{Example B}
+            \end{column}
+        \end{columns}
+    \end{figure}
+\end{frame}
+% *******************
+
+% *******************
+%\begin{frame}[plain, shrink=10]{Table}
+
+\begin{frame}[plain, shrink=2]{Table}
+
+\input{INPUT/AME_indebt.tex}
+
+\end{frame}
+% *******************
+
+
+% *******************
+\section{References}
+\begin{frame}[noframenumbering, allowframebreaks]{References}
+\bibliographystyle{apacite}
+\bibliography{Ref_Arnaud}
+\end{frame}
+% *******************
+
+
+\appendix % do not count the following slides for the total number
+\section*{Appendix}
+\begin{frame}[plain, noframenumbering]
+    \centering
+    \vfill
+    {\fontsize{40}{50}\selectfont Appendix}
+    \vfill
+\end{frame}
+
+
+
+\end{document}

@@ -22,17 +22,17 @@ clear all
 macro drop _all
 set scheme plotplain
 ********** Path to folder "data" folder.
-*global directory = "D:\Documents\_Thesis\Research-Skills_and_debt\Analysis"
-*cd"$directory"
+global directory = "D:\Documents\_Thesis\Research-Skills_and_debt\Analysis"
+cd"$directory"
 
 
 *Fac
-cd "C:\Users\anatal\Downloads\_Thesis\Research-Skills_and_debt\Analysis"
-set scheme plotplain
+*cd "C:\Users\anatal\Downloads\_Thesis\Research-Skills_and_debt\Analysis"
+*set scheme plotplain
 
-global git "C:\Users\anatal\Downloads\GitHub"
-global dropbox "C:\Users\anatal\Downloads\Dropbox"
-global thesis "C:\Users\anatal\Downloads\_Thesis\Research-Skills_and_debt\Analysis"
+*global git "C:\Users\anatal\Downloads\GitHub"
+*global dropbox "C:\Users\anatal\Downloads\Dropbox"
+*global thesis "C:\Users\anatal\Downloads\_Thesis\Research-Skills_and_debt\Analysis"
 
 
 ********** Name of the NEEMSIS2 questionnaire version to clean
@@ -1268,109 +1268,69 @@ replace delta2_labinc=-(annualincome_indiv1000_1)/100 if annualincome_indiv1000_
 
 tabstat delta2_labinc, stat(n mean sd p50) by(female)
 
+
 *** EFA
-/*
 set graph off
 forvalues i=1(1)5{
 twoway ///
-(kdensity base_factor_imraw_`i'_std if segmana==1, bwidth(0.32) lpattern(solid) lcolor(gs4)) ///
-(kdensity base_factor_imraw_`i'_std if segmana==2, bwidth(0.32) lpattern(shortdash) lcolor(gs0)) ///
-(kdensity base_factor_imraw_`i'_std if segmana==3, bwidth(0.32) lpattern(dash) lcolor(gs9)) ///
-(kdensity base_factor_imraw_`i'_std if segmana==4, bwidth(0.32) lpattern(solid) lcolor(gs12)), ///
+(kdensity base_factor_imraw_`i'_std if female==0, bwidth(0.32) lpattern(solid) lcolor(gs4)) ///
+(kdensity base_factor_imraw_`i'_std if female==1, bwidth(0.32) lpattern(shortdash) lcolor(gs0)), ///
 xsize() xtitle("Factor `i' (std)", size(medsmall)) xlabel(,angle() labsize(small))  ///
 ylabel(,labsize(small)) ymtick() ytitle("Density", size(small)) ///
-legend(position(6) col(4) order(1 "Dalits women" 2 "Dalits men" 3 "MU caste women" 4 "MU caste men") off) name(f`i', replace)
+legend(position(6) col(4) order(1 "Male in 2016-17" 2 "Female in 2016-17") off) name(f`i', replace) aspect(0)
 }
-set graph on
-grc1leg f1 f2 f3 f4 f5, cols(3) note("Kernel: Epanechnikov;" "Bandwidth: 0.32.", size(tiny)) name(perso, replace)
-graph save "Kernel_efa.gph", replace
-graph export "Kernel_efa.pdf", as(pdf) name(perso) replace
-
 
 *** Big-5 raw
-set graph off
-forvalues i=1(1)2{
 foreach x in OP CO EX AG ES { 
 twoway ///
-(kdensity std_`x'_`i' if segmana==1, bwidth(0.50) lpattern(solid) lcolor(gs4)) ///
-(kdensity std_`x'_`i' if segmana==2, bwidth(0.50) lpattern(shortdash) lcolor(gs0)) ///
-(kdensity std_`x'_`i' if segmana==3, bwidth(0.50) lpattern(dash) lcolor(gs9)) ///
-(kdensity std_`x'_`i' if segmana==4, bwidth(0.50) lpattern(solid) lcolor(gs12)), ///
+(kdensity std_`x'_1 if female==0, bwidth(0.50) lpattern(solid) lcolor(gs4)) ///
+(kdensity std_`x'_1 if female==1, bwidth(0.50) lpattern(shortdash) lcolor(gs0)) ///
+(kdensity std_`x'_2 if female==0, bwidth(0.50) lpattern(dash) lcolor(gs9)) ///
+(kdensity std_`x'_2 if female==1, bwidth(0.50) lpattern(solid) lcolor(gs12)), ///
 xsize() xtitle("`x'", size(medsmall)) xlabel(,angle() labsize(small))  ///
 ylabel(,labsize(small)) ymtick() ytitle("Density", size(small)) ///
-legend(position(6) col(4) order(1 "Dalits women" 2 "Dalits men" 3 "MU caste women" 4 "MU caste men") off) name(f_`x'_`i', replace)
+legend(position(6) col(4) order(1 "Male in 2016-17" 2 "Female in 2016-17" 3 "Male in 2020-21" 4 "Female in 2020-21") size(small) off) name(f_`x', replace)
 }
-}
-set graph on
-grc1leg f_OP_1 f_CO_1 f_EX_1 f_AG_1 f_ES_1, cols(3) note("Kernel: Epanechnikov;" "Bandwidth: 0.50" "NEEMSIS-1 (2016-17).", size(tiny)) name(big5_raw_1, replace)
-graph save "Kernel_b5raw16.gph", replace
-graph export "Kernel_b5raw16.pdf", as(pdf) replace
-grc1leg f_OP_2 f_CO_2 f_EX_2 f_AG_2 f_ES_2, cols(3) note("Kernel: Epanechnikov;" "Bandwidth: 0.50" "NEEMSIS-2 (2020-21).", size(tiny)) name(big5_raw_2, replace)
-graph save "Kernel_b5raw20.gph", replace
-graph export "Kernel_b5raw20.pdf", as(pdf) replace
-
-
-
-*** Big-5 cor
-set graph off
-forvalues i=1(1)2{
-foreach x in OP CO EX AG ES { 
-twoway ///
-(kdensity std_cr_`x'_`i' if segmana==1, bwidth(0.50) lpattern(solid) lcolor(gs4)) ///
-(kdensity std_cr_`x'_`i' if segmana==2, bwidth(0.50) lpattern(shortdash) lcolor(gs0)) ///
-(kdensity std_cr_`x'_`i' if segmana==3, bwidth(0.50) lpattern(dash) lcolor(gs9)) ///
-(kdensity std_cr_`x'_`i' if segmana==4, bwidth(0.50) lpattern(solid) lcolor(gs12)), ///
-xsize() xtitle("`x'", size(medsmall)) xlabel(,angle() labsize(small))  ///
-ylabel(,labsize(small)) ymtick() ytitle("Density", size(small)) ///
-legend(position(6) col(4) order(1 "Dalits women" 2 "Dalits men" 3 "MU caste women" 4 "MU caste men") off) name(f_`x'_`i', replace)
-}
-}
-set graph on
-grc1leg f_OP_1 f_CO_1 f_EX_1 f_AG_1 f_ES_1, cols(3) note("Kernel: Epanechnikov;" "Bandwidth: 0.50" "NEEMSIS-1 (2016-17), corrected traits.", size(tiny)) name(big5_cor_1, replace)
-graph save "Kernel_b5cor16.gph", replace
-graph export "Kernel_b5cor16.pdf", as(pdf) replace
-grc1leg f_OP_2 f_CO_2 f_EX_2 f_AG_2 f_ES_2, cols(3) note("Kernel: Epanechnikov;" "Bandwidth: 0.50" "NEEMSIS-2 (2020-21), corrected traits.", size(tiny)) name(big5_cor_2, replace)
-graph save "Kernel_b5cor20.gph", replace
-graph export "Kernel_b5cor20.pdf", as(pdf) replace
-
-
 
 *** Cog
-set graph off
-forvalues i=1(1)2{
 twoway ///
-(kdensity raven_tt_`i' if segmana==1, bwidth(3) lpattern(solid) lcolor(gs4)) ///
-(kdensity raven_tt_`i' if segmana==2, bwidth(3) lpattern(shortdash) lcolor(gs0)) ///
-(kdensity raven_tt_`i' if segmana==3, bwidth(3) lpattern(dash) lcolor(gs9)) ///
-(kdensity raven_tt_`i' if segmana==4, bwidth(3) lpattern(solid) lcolor(gs12)), ///
+(kdensity raven_tt_1 if female==0, bwidth(3) lpattern(solid) lcolor(gs4)) ///
+(kdensity raven_tt_1 if female==1, bwidth(3) lpattern(shortdash) lcolor(gs0)) ///
+(kdensity raven_tt_2 if female==0, bwidth(3) lpattern(dash) lcolor(gs9)) ///
+(kdensity raven_tt_2 if female==1, bwidth(3) lpattern(solid) lcolor(gs12)), ///
 xsize() xtitle("Raven test", size(medsmall)) xlabel(,angle() labsize(small))  ///
 ylabel(,labsize(small)) ymtick() ytitle("Density", size(small)) ///
-legend(position(6) col(4) order(1 "Dalits women" 2 "Dalits men" 3 "MU caste women" 4 "MU caste men") off) name(f_rav_`i', replace)
+legend(position(6) col(4) order(1 "Male in 2016-17" 2 "Female in 2016-17" 3 "Male in 2020-21" 4 "Female in 2020-21") off) name(f_rav, replace)
 
 twoway ///
-(kdensity num_tt_`i' if segmana==1, bwidth(1.5) lpattern(solid) lcolor(gs4)) ///
-(kdensity num_tt_`i' if segmana==2, bwidth(1.5) lpattern(shortdash) lcolor(gs0)) ///
-(kdensity num_tt_`i' if segmana==3, bwidth(1.5) lpattern(dash) lcolor(gs9)) ///
-(kdensity num_tt_`i' if segmana==4, bwidth(1.5) lpattern(solid) lcolor(gs12)), ///
+(kdensity num_tt_1 if female==0, bwidth(1.5) lpattern(solid) lcolor(gs4)) ///
+(kdensity num_tt_1 if female==1, bwidth(1.5) lpattern(shortdash) lcolor(gs0)) ///
+(kdensity num_tt_2 if female==0, bwidth(1.5) lpattern(dash) lcolor(gs9)) ///
+(kdensity num_tt_2 if female==1, bwidth(1.5) lpattern(solid) lcolor(gs12)), ///
 xsize() xtitle("Numeracy test", size(medsmall)) xlabel(,angle() labsize(small))  ///
 ylabel(,labsize(small)) ymtick() ytitle("Density", size(small)) ///
-legend(position(6) col(4) order(1 "Dalits women" 2 "Dalits men" 3 "MU caste women" 4 "MU caste men") off) name(f_num_`i', replace)
+legend(position(6) col(4) order(1 "Male in 2016-17" 2 "Female in 2016-17" 3 "Male in 2020-21" 4 "Female in 2020-21") off) name(f_num, replace)
 
 twoway ///
-(kdensity lit_tt_`i' if segmana==1, bwidth(1.7) lpattern(solid) lcolor(gs4)) ///
-(kdensity lit_tt_`i' if segmana==2, bwidth(1.7) lpattern(shortdash) lcolor(gs0)) ///
-(kdensity lit_tt_`i' if segmana==3, bwidth(1.7) lpattern(dash) lcolor(gs9)) ///
-(kdensity lit_tt_`i' if segmana==4, bwidth(1.7) lpattern(solid) lcolor(gs12)), ///
+(kdensity lit_tt_1 if female==0, bwidth(1.7) lpattern(solid) lcolor(gs4)) ///
+(kdensity lit_tt_1 if female==1, bwidth(1.7) lpattern(shortdash) lcolor(gs0)) ///
+(kdensity lit_tt_2 if female==0, bwidth(1.7) lpattern(dash) lcolor(gs9)) ///
+(kdensity lit_tt_2 if female==1, bwidth(1.7) lpattern(solid) lcolor(gs12)), ///
 xsize() xtitle("Literacy test", size(medsmall)) xlabel(,angle() labsize(small))  ///
 ylabel(,labsize(small)) ymtick() ytitle("Density", size(small)) ///
-legend(position(6) col(4) order(1 "Dalits women" 2 "Dalits men" 3 "MU caste women" 4 "MU caste men") off) name(f_lit_`i', replace)
-}
-grc1leg f_rav_1 f_num_1 f_lit_1, cols(3) title("2016-17", size(small)) name(cog_1, replace)
-grc1leg f_rav_2 f_num_2 f_lit_2, cols(3) title("2020-21", size(small)) name(cog_2, replace)
+legend(position(6) col(4) order(1 "Male in 2016-17" 2 "Female in 2016-17" 3 "Male in 2020-21" 4 "Female in 2020-21") off) name(f_lit, replace)
+
+*** Joint
+*Factor & Big5
+grc1leg f1 f2 f3 f4 f5 f_OP f_CO f_EX f_AG f_ES, cols(5) leg(f_OP) name(perso_raw, replace) 
+*Cog
+grc1leg f_rav f_num f_lit, cols(3) leg(f_rav) name(cog_raw, replace)
+*All
+/*
 set graph on
-grc1leg cog_1 cog_2, cols(1) note("Kernel: Epanechnikov;" "Bandwidth: 3.0 (raven) 1.50 (numeracy) 1.70 (literacy)", size(tiny)) name(cog_1_2, replace)
-graph save "Kernel_cog.gph", replace
-graph export "Kernel_cog.pdf", as(pdf) replace
+grc1leg f1 f2 f3 f4 f5 f_OP f_CO f_EX f_AG f_ES f_rav f_num f_lit, cols(5) leg(f_OP) note("Kernel: Epanechnikov" "Bandwidth: 0.32 for factors, 0.50 for Big-5, 3.00 for raven, 1.50 for numeracy and 1.70 for literacy." "Items non-corrected from acquiesence biais for factor analysis." "Big-5 traits non-corrected from acquiesence bias." "NEEMSIS-1 (2016-17) & NEEMSIS-2 (2020-21).", size(tiny))
+graph save "Kernel_PTCS_raw.gph", replace
+graph export "Kernel_PTCS_raw.pdf", as(pdf) replace
 */
 
 
@@ -1445,19 +1405,168 @@ tab over40_indiv_2 segmana, nofreq chi2
 *}
 
 
+
+********** Correlation Big5-EFA
+/*
+pwcorr cr_OP_1 cr_EX_1 cr_ES_1 cr_CO_1 cr_AG_1 cr_OP_2 cr_EX_2 cr_ES_2 cr_CO_2 cr_AG_2, sig
+pwcorr OP_1 EX_1 ES_1 CO_1 AG_1 OP_2 EX_2 ES_2 CO_2 AG_2, sig
+
+forvalues i=1(1)5 {
+forvalues j=1(1)2 {
+label var factor_imraw_`i'_`j' "Factor `i'"
+}
+}
+
+label var cr_CO_1 "CO (cor) 2016-17"
+label var cr_OP_1 "OP (cor) 2016-17"
+label var cr_EX_1 "EX (cor) 2016-17"
+label var cr_AG_1 "AG (cor) 2016-17"
+label var cr_ES_1 "ES (cor) 2016-17"
+label var cr_CO_2 "CO (cor) 2020-21"
+label var cr_OP_2 "OP (cor) 2020-21"
+label var cr_EX_2 "EX (cor) 2020-21"
+label var cr_AG_2 "AG (cor) 2020-21"
+label var cr_ES_2 "ES (cor) 2020-21"
+
+label var CO_1 "CO 2016-17"
+label var OP_1 "OP 2016-17"
+label var EX_1 "EX 2016-17"
+label var AG_1 "AG 2016-17"
+label var ES_1 "ES 2016-17"
+label var CO_2 "CO 2020-21"
+label var OP_2 "OP 2020-21"
+label var EX_2 "EX 2020-21"
+label var AG_2 "AG 2020-21"
+label var ES_2 "ES 2020-21"
+
+set graph off
+graph matrix factor_imraw_1_1 factor_imraw_2_1 factor_imraw_3_1 factor_imraw_4_1 factor_imraw_5_1 cr_OP_1 cr_EX_1 cr_ES_1 cr_CO_1 cr_AG_1, half msymbol(o) msize(*0.2)
+graph save "$git\Analysis\Personality\Big-5\matrix_b5_efa.gph", replace
+graph export "$git\RUME-NEEMSIS\Big-5\matrix_b5_efa.svg", as(svg) replace
+graph export "$git\Analysis\Personality\Big-5\matrix_b5_efa.pdf", as(pdf) replace
+
+graph matrix cr_OP_1 cr_EX_1 cr_ES_1 cr_CO_1 cr_AG_1 cr_OP_2 cr_EX_2 cr_ES_2 cr_CO_2 cr_AG_2, half msymbol(o) msize(*0.2)
+graph save "$git\Analysis\Personality\Big-5\matrix_b5_cr.gph", replace
+graph export "$git\RUME-NEEMSIS\Big-5\matrix_b5_cr.svg", as(svg) replace
+graph export "$git\Analysis\Personality\Big-5\matrix_b5_cr.pdf", as(pdf) replace
+
+graph matrix OP_1 EX_1 ES_1 CO_1 AG_1 OP_2 EX_2 ES_2 CO_2 AG_2, half msymbol(o) msize(*0.2)
+graph save "$git\Analysis\Personality\Big-5\matrix_b5.gph", replace
+graph export "$git\RUME-NEEMSIS\Big-5\matrix_b5.svg", as(svg) replace
+graph export "$git\Analysis\Personality\Big-5\matrix_b5.pdf", as(pdf) replace
+set graph on
+*/
+
+
 ********** CORR personality - debt
 
+cls
 forvalues i=1(1)4{
-cpcorr  loanamount_indiv1000_2 loans_indiv_2 DSR_indiv_2 over40_indiv_2 \ base_factor_imraw_1_std base_factor_imraw_2_std base_factor_imraw_3_std base_factor_imraw_4_std base_factor_imraw_5_std base_raven_tt base_num_tt base_lit_tt if segmana==`i', f(%5.2f)
-*matrix list r(C)
-matrix list r(p)
-
-cpcorr indebt_indiv_2 \ base_factor_imraw_1_std base_factor_imraw_2_std base_factor_imraw_3_std base_factor_imraw_4_std base_factor_imraw_5_std base_raven_tt base_num_tt base_lit_tt if segmana==`i', f(%4.2f)
-*matrix list r(C)
+cpcorr  base_factor_imraw_1_std base_factor_imraw_2_std base_factor_imraw_3_std base_factor_imraw_4_std base_factor_imraw_5_std base_raven_tt base_num_tt base_lit_tt \ loanamount_indiv1000_2  DSR_indiv_2 if segmana==`i', f(%5.2f)
+matrix list r(C)
 matrix list r(p)
 }
 
+preserve
+import delimited "corryx.csv", delimiter(";") clear
 
+gen skills_code=.
+forvalues i=1(1)5{
+replace skills_code=`i' if skills=="F`i'"
+}
+replace skills_code=6 if skills=="Raven"
+replace skills_code=7 if skills=="Num"
+replace skills_code=8 if skills=="Lit"
+
+label define skills 1"Factor 1 (std)" 2"Factor 2 (std)" 3"Factor 3 (std)" 4"Factor 5 (std)" 5"Factor 6 (std)" 6"Raven" 7"Numeracy" 8"Literacy"
+label values skills_code skills 
+label define segmana 1"Dalit female" 2"Dalit male" 3"MU female" 4"MU male"
+label values segmana segmana
+
+replace loanamount=round(loanamount,0.01)
+replace dsr=round(dsr,0.01)
+replace pvalue_loanamount=round(pvalue_loanamount,0.01)
+replace pvalue_dsr=round(pvalue_dsr,0.01)
+
+label var loanamount "Total loan amount"
+label var dsr "Debt Service Ratio"
+
+set graph off
+foreach x in loanamount dsr {
+separate `x', by(segmana)
+label var `x'1 "Dalit female"
+label var `x'2 "Dalit male"
+label var `x'3 "MU female"
+label var `x'4 "MU male"
+separate pvalue_`x', by(segmana)
+forvalues i=1(1)4{ 
+gsort - `x'`i' skills_code
+gen n=_n
+sencode skills, gen(var_`x'`i') gsort(`x'`i' skills_code)
+replace n=. if n>8
+gen threshold=.05
+replace threshold=. if n>8
+twoway ///
+(bar `x'`i' var_`x'`i', barw(0.6) yline(0, lcolor(gs10) lpattern(solid) lwidth(*0.8))) ///
+(scatter `x'`i' var_`x'`i', mlabel(`x'`i') mlabposition(12) mlabsize(*0.8) mlabangle(0) msymbol(i)) ///
+(scatter pvalue_`x'`i' var_`x'`i', msymbol(o) mcolor(gs1) msize(*0.2)) ///
+(line threshold var_`x', lcolor(gs1) lpattern(solid) lwidth(*0.2)), ///
+xlabel(1(1)8, valuelabel labsize(vsmall) angle(45) nogrid) xtitle(`:variable label `x'`i'')  ///
+ylabel(-.2(.2)1, labsize(vsmall)) ///
+title("", size(small)) ///
+legend(order(1 "Correlation" 3 "p-value" 4 ".05 threshold") pos(6) col(3) size(vsmall) off) ///
+name(g_`x'`i', replace)
+drop n
+drop `x'`i' pvalue_`x'`i' var_`x'`i'
+drop threshold
+}
+}
+grc1leg g_loanamount1 g_loanamount2 g_loanamount3 g_loanamount4, cols(4) title("Total loan amount", size(small)) name(comb_loanamount, replace)
+grc1leg g_dsr1 g_dsr2 g_dsr3 g_dsr4, cols(4) title("Debt service ratio", size(small)) name(comb_dsr, replace)
+set graph on
+grc1leg comb_loanamount comb_dsr, cols(1)
+graph save "C:\Users\Arnaud\Documents\GitHub\Analysis\Personality\Big-5\corryx.gph", replace
+graph export "C:\Users\Arnaud\Documents\GitHub\RUME-NEEMSIS\Big-5\corryx.svg", as(svg) replace
+graph export "C:\Users\Arnaud\Documents\GitHub\Analysis\Personality\Big-5\corryx.pdf", as(pdf) replace
+
+
+
+restore
+
+
+
+
+*** Matrix with different marker
+/*
+*ssc install njc_stuff
+*ssc inst sepscatter
+label var DSR_indiv_2 "DSR in 2020-21"
+label var loanamount_indiv1000_2 "Total loan amount in 2020-21"
+
+set graph off
+*Upleft
+local k = 1 
+local names
+foreach y in DSR_indiv_2 loanamount_indiv1000_2 {
+foreach x in base_raven_tt base_num_tt base_lit_tt base_factor_imraw_5_std base_factor_imraw_4_std base_factor_imraw_3_std base_factor_imraw_2_std base_factor_imraw_1_std {
+sum `x'
+local `x'_min=r(min)
+local `x'_max=r(max)
+sepscatter `y' `x' if `y'<300, sep(segmana) name(G`k', replace) legend(pos(6) col(4) size(vsmall) off) msize(*0.1) xlabel(none) xtitle("") ytitle("") xtick(``x'_min' ``x'_max') ylabel(none) ytick(0 300)
+local names   G`k' `names'
+local ++k 
+}
+}
+set graph on
+grc1leg `names', cols(8) name(upleft, replace)
+*/
+
+
+
+
+
+
+/*
 * new Y
 tab1 sum_borrowerservices_1_r_2 sum_borrowerservices_2_r_2 sum_borrowerservices_3_r_2 sum_borrowerservices_4_r_2
 /*
@@ -1509,7 +1618,7 @@ replace sum_debtrelation_shame_2=1 if sum_debtrelation_shame_2>1
 rename sum_debtrelation_shame_2 debtrelation_shame_2
 replace debtrelation_shame_2=. if indebt_indiv_2==0
 tab debtrelation_shame_2 segmana, col nofreq
-
+*/
 
 
 ****************************************

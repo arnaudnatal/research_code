@@ -12,7 +12,7 @@ Personality traits: EFA + panel
 */
 
 *ssc install catplot
-ssc install sencode
+*ssc install sencode
 
 ****************************************
 * INITIALIZATION
@@ -20,17 +20,17 @@ ssc install sencode
 clear all
 macro drop _all
 ********** Path to folder "data" folder.
-*global directory = "D:\Documents\_Thesis\Research-Skills_and_debt\Analysis"
-*cd"$directory"
+global directory = "D:\Documents\_Thesis\Research-Skills_and_debt\Analysis"
+cd"$directory"
 
 
 *Fac
-cd "C:\Users\anatal\Downloads\_Thesis\Research-Skills_and_debt\Analysis"
-set scheme plotplain
+*cd "C:\Users\anatal\Downloads\_Thesis\Research-Skills_and_debt\Analysis"
+*set scheme plotplain
 
-global git "C:\Users\anatal\Downloads\GitHub"
-global dropbox "C:\Users\anatal\Downloads\Dropbox"
-global thesis "C:\Users\anatal\Downloads\_Thesis\Research-Skills_and_debt\Analysis"
+*global git "C:\Users\anatal\Downloads\GitHub"
+*global dropbox "C:\Users\anatal\Downloads\Dropbox"
+*global thesis "C:\Users\anatal\Downloads\_Thesis\Research-Skills_and_debt\Analysis"
 
 
 
@@ -484,21 +484,80 @@ tryhard  stickwithgoals   goaftergoal finishwhatbegin finishtasks  keepworking
 
 global big5raw raw_curious raw_interestedbyart raw_repetitivetasks raw_inventive raw_liketothink raw_newideas raw_activeimagination raw_organized raw_makeplans raw_workhard raw_appointmentontime raw_putoffduties raw_easilydistracted raw_completeduties raw_enjoypeople raw_sharefeelings raw_shywithpeople raw_enthusiastic raw_talktomanypeople raw_talkative raw_expressingthoughts raw_workwithother raw_understandotherfeeling raw_trustingofother raw_rudetoother raw_toleratefaults raw_forgiveother raw_helpfulwithothers raw_managestress raw_nervous raw_changemood raw_feeldepressed raw_easilyupset raw_worryalot raw_staycalm raw_tryhard raw_stickwithgoals raw_goaftergoal raw_finishwhatbegin raw_finishtasks raw_keepworking
 
+global big5rawrec raw_rec_curious raw_rec_interestedbyart raw_rec_repetitivetasks raw_rec_inventive raw_rec_liketothink raw_rec_newideas raw_rec_activeimagination raw_rec_organized raw_rec_makeplans raw_rec_workhard raw_rec_appointmentontime raw_rec_putoffduties raw_rec_easilydistracted raw_rec_completeduties raw_rec_enjoypeople raw_rec_sharefeelings raw_rec_shywithpeople raw_rec_enthusiastic raw_rec_talktomanypeople raw_rec_talkative raw_rec_expressingthoughts raw_rec_workwithother raw_rec_understandotherfeeling raw_rec_trustingofother raw_rec_rudetoother raw_rec_toleratefaults raw_rec_forgiveother raw_rec_helpfulwithothers raw_rec_managestress raw_rec_nervous raw_rec_changemood raw_rec_feeldepressed raw_rec_easilyupset raw_rec_worryalot raw_rec_staycalm raw_rec_tryhard raw_rec_stickwithgoals raw_rec_goaftergoal raw_rec_finishwhatbegin raw_rec_finishtasks raw_rec_keepworking
+
+*** Identify the way of ES/NE questions when they are non-corrected for reverse coded & acquiesence bias
+*OP
+fre raw_curious raw_interestedbyart raw_repetitivetasks raw_inventive raw_liketothink raw_newideas raw_activeimagination
+
+*ES/NE
+fre raw_managestress raw_nervous raw_changemood raw_feeldepressed raw_easilyupset raw_worryalot raw_staycalm
+
 global big5cor cr_curious cr_interestedbyart cr_repetitivetasks cr_inventive cr_liketothink cr_newideas cr_activeimagination cr_organized cr_makeplans cr_workhard cr_appointmentontime cr_putoffduties cr_easilydistracted cr_completeduties cr_enjoypeople cr_sharefeelings cr_shywithpeople cr_enthusiastic cr_talktomanypeople cr_talkative cr_expressingthoughts cr_workwithother cr_understandotherfeeling cr_trustingofother cr_rudetoother cr_toleratefaults cr_forgiveother cr_helpfulwithothers cr_managestress cr_nervous cr_changemood cr_feeldepressed cr_easilyupset cr_worryalot cr_staycalm cr_tryhard cr_stickwithgoals cr_goaftergoal cr_finishwhatbegin cr_finishtasks cr_keepworking
 
-foreach x in $big5 $big5raw $big5cor{
+foreach x in $big5 {
+rename raw_rec_`x' rr_`x'
+}
+
+global big5rr rr_curious rr_interestedbyart rr_repetitivetasks rr_inventive rr_liketothink rr_newideas rr_activeimagination rr_organized rr_makeplans rr_workhard rr_appointmentontime rr_putoffduties rr_easilydistracted rr_completeduties rr_enjoypeople rr_sharefeelings rr_shywithpeople rr_enthusiastic rr_talktomanypeople rr_talkative rr_expressingthoughts rr_workwithother rr_understandotherfeeling rr_trustingofother rr_rudetoother rr_toleratefaults rr_forgiveother rr_helpfulwithothers rr_managestress rr_nervous rr_changemood rr_feeldepressed rr_easilyupset rr_worryalot rr_staycalm rr_tryhard rr_stickwithgoals rr_goaftergoal rr_finishwhatbegin rr_finishtasks rr_keepworking
+
+/*
+cls
+fre rr_managestress rr_nervous rr_changemood rr_feeldepressed rr_easilyupset rr_worryalot rr_staycalm
+cls
+fre raw_managestress raw_nervous raw_changemood raw_feeldepressed raw_easilyupset raw_worryalot raw_staycalm
+cls
+fre managestress  nervous  changemood feeldepressed easilyupset worryalot  staycalm 
+*/
+cls
+fre rr_curious rr_interestedbyart rr_repetitivetasks rr_inventive rr_liketothink rr_newideas rr_activeimagination
+cls
+fre raw_curious raw_interestedbyart raw_repetitivetasks raw_inventive raw_liketothink raw_newideas raw_activeimagination
+cls
+fre curious interestedbyart repetitivetasks inventive liketothink newideas activeimagination
+
+
+*****************************************************************************
+*****************************************************************************
+*****************************************************************************
+*****************************************************************************
+*****************************************************************************
+*** Recoder ES dans rr pour que tout fonctionne dans le bon sens et que pour ceux de ES ca capte ES en max et non NE comme ca fait normalement.
+*** Dans ce que j'avais fait, c'était ES et tout le reste dans l'ordre du questionnaire, donc à l'envers...
+*** rr_ et raw_ fonctionne parfaitement en sens inverse, je prends rr car 4 dans le bon sens, je recode juste NE en ES
+foreach x in rr_managestress rr_nervous rr_changemood rr_feeldepressed rr_easilyupset rr_worryalot rr_staycalm {
+recode `x' (5=1) (4=2) (3=3) (2=4) (1=5)
+}
+label define b5new 1"1 - Almost always" 2"2 - Quite often" 3"3 - Sometimes" 4"4 - Rarely" 5"5 - Almost never"
+foreach x in rr_managestress rr_nervous rr_changemood rr_feeldepressed rr_easilyupset rr_worryalot rr_staycalm {
+label values `x' b5new
+}
+cls
+fre rr_curious rr_interestedbyart rr_repetitivetasks rr_inventive rr_liketothink rr_newideas rr_activeimagination 
+fre rr_organized  rr_makeplans rr_workhard rr_appointmentontime rr_putoffduties rr_easilydistracted rr_completeduties 
+fre rr_enjoypeople rr_sharefeelings rr_shywithpeople rr_enthusiastic rr_talktomanypeople  rr_talkative rr_expressingthoughts 
+fre rr_workwithother rr_understandotherfeeling rr_trustingofother rr_rudetoother rr_toleratefaults rr_forgiveother rr_helpfulwithothers 
+fre rr_managestress  rr_nervous  rr_changemood rr_feeldepressed rr_easilyupset rr_worryalot rr_staycalm 
+
+global big5rrok rr_curious rr_interestedbyart rr_repetitivetasks rr_inventive rr_liketothink rr_newideas rr_activeimagination rr_organized rr_makeplans rr_workhard rr_appointmentontime rr_putoffduties rr_easilydistracted rr_completeduties rr_enjoypeople rr_sharefeelings rr_shywithpeople rr_enthusiastic rr_talktomanypeople rr_talkative rr_expressingthoughts rr_workwithother rr_understandotherfeeling rr_trustingofother rr_rudetoother rr_toleratefaults rr_forgiveother rr_helpfulwithothers rr_managestress rr_nervous rr_changemood rr_feeldepressed rr_easilyupset rr_worryalot rr_staycalm rr_tryhard rr_stickwithgoals rr_goaftergoal rr_finishwhatbegin rr_finishtasks rr_keepworking
+
+
+foreach x in $big5 $big5raw $big5cor $big5rrok{
 gen im_`x'=`x'
 }
 
 
 forvalues j=1(1)3{
 forvalues i=1(1)2{
-foreach x in $big5 $big5raw $big5cor{
+foreach x in $big5 $big5raw $big5cor $big5rrok{
 sum im_`x' if sex==`i' & caste==`j' & egoid!=0 & egoid!=.
 replace im_`x'=r(mean) if im_`x'==. & sex==`i' & caste==`j' & egoid!=0 & egoid!=.
 }
 }
 }
+
+*Tester le sens
+fre 
 
 global imcorwith im_cr_curious im_cr_interestedbyart im_cr_repetitivetasks im_cr_inventive im_cr_liketothink im_cr_newideas im_cr_activeimagination im_cr_organized im_cr_makeplans im_cr_workhard im_cr_appointmentontime im_cr_putoffduties im_cr_easilydistracted im_cr_completeduties im_cr_enjoypeople im_cr_sharefeelings im_cr_shywithpeople im_cr_enthusiastic im_cr_talktomanypeople im_cr_talkative im_cr_expressingthoughts im_cr_workwithother im_cr_understandotherfeeling im_cr_trustingofother im_cr_rudetoother im_cr_toleratefaults im_cr_forgiveother im_cr_helpfulwithothers im_cr_managestress im_cr_nervous im_cr_changemood im_cr_feeldepressed im_cr_easilyupset im_cr_worryalot im_cr_staycalm im_cr_tryhard im_cr_stickwithgoals im_cr_goaftergoal im_cr_finishwhatbegin im_cr_finishtasks im_cr_keepworking
 
@@ -508,6 +567,9 @@ global imcor im_cr_curious im_cr_interestedbyart im_cr_repetitivetasks im_cr_inv
 
 global imraw im_raw_curious im_raw_interestedbyart im_raw_repetitivetasks im_raw_inventive im_raw_liketothink im_raw_newideas im_raw_activeimagination im_raw_organized im_raw_makeplans im_raw_workhard im_raw_appointmentontime im_raw_putoffduties im_raw_easilydistracted im_raw_completeduties im_raw_enjoypeople im_raw_sharefeelings im_raw_shywithpeople im_raw_enthusiastic im_raw_talktomanypeople im_raw_talkative im_raw_expressingthoughts im_raw_workwithother im_raw_understandotherfeeling im_raw_trustingofother im_raw_rudetoother im_raw_toleratefaults im_raw_forgiveother im_raw_helpfulwithothers im_raw_managestress im_raw_nervous im_raw_changemood im_raw_feeldepressed im_raw_easilyupset im_raw_worryalot im_raw_staycalm 
 
+global imraw2 im_rr_curious im_rr_interestedbyart im_rr_repetitivetasks im_rr_inventive im_rr_liketothink im_rr_newideas im_rr_activeimagination im_rr_organized im_rr_makeplans im_rr_workhard im_rr_appointmentontime im_rr_putoffduties im_rr_easilydistracted im_rr_completeduties im_rr_enjoypeople im_rr_sharefeelings im_rr_shywithpeople im_rr_enthusiastic im_rr_talktomanypeople im_rr_talkative im_rr_expressingthoughts im_rr_workwithother im_rr_understandotherfeeling im_rr_trustingofother im_rr_rudetoother im_rr_toleratefaults im_rr_forgiveother im_rr_helpfulwithothers im_rr_managestress im_rr_nervous im_rr_changemood im_rr_feeldepressed im_rr_easilyupset im_rr_worryalot im_rr_staycalm
+
+/*
 cls
 foreach x in imcorwith imrawwith {
 *minap $`x'
@@ -525,9 +587,9 @@ matrix list r(p)
 cpcorr cr_OP cr_EX cr_ES cr_CO cr_AG cr_Grit OP EX ES CO AG Grit factor_`x'_1 factor_`x'_2 factor_`x'_3 factor_`x'_4 factor_`x'_5 factor_`x'_6
 matrix list r(p)
 }
-
+*/
 cls
-foreach x in imcor imraw {
+foreach x in imraw2 { //imcor imraw {
 *minap $`x'
 *fsum $`x', stat(n mean sd)
 qui factor $`x', pcf fa(5) 
@@ -544,9 +606,12 @@ cpcorr cr_OP cr_EX cr_ES cr_CO cr_AG cr_Grit OP EX ES CO AG Grit factor_`x'_1 fa
 matrix list r(p)
 }
 
+forvalues i=1(1)5 {
+rename factor_imraw2_`i' factor_imraw_`i'
+}
 
-********** Sum traits
-fsum im_raw_curious im_raw_interestedbyart im_raw_repetitivetasks im_raw_inventive im_raw_liketothink im_raw_newideas im_raw_activeimagination im_raw_organized im_raw_makeplans im_raw_workhard im_raw_appointmentontime im_raw_putoffduties im_raw_easilydistracted im_raw_completeduties im_raw_enjoypeople im_raw_sharefeelings im_raw_shywithpeople im_raw_enthusiastic im_raw_talktomanypeople im_raw_talkative im_raw_expressingthoughts im_raw_workwithother im_raw_understandotherfeeling im_raw_trustingofother im_raw_rudetoother im_raw_toleratefaults im_raw_forgiveother im_raw_helpfulwithothers im_raw_managestress im_raw_nervous im_raw_changemood im_raw_feeldepressed im_raw_easilyupset im_raw_worryalot im_raw_staycalm 
+pwcorr cr_OP cr_EX cr_ES cr_CO cr_AG cr_Grit OP EX ES CO AG Grit factor_imraw_1 factor_imraw_2 factor_imraw_3 factor_imraw_4 factor_imraw_5, star(.01)
+
 
 
 
@@ -605,6 +670,7 @@ use"factor2016.dta", clear
 
 set graph off
 * With
+/*
 foreach x in Raw Corr {
 forvalues i=1(1)6{
 *Sort
@@ -621,19 +687,23 @@ xlabel(1(1)41, valuelabel labsize(tiny) angle(45) nogrid) xtitle("")  ///
 ylabel(, labsize(tiny)) ///
 title("Factor `i'", size(small)) ///
 legend(order(1 "Correlation with factor" 3 "p-value" 4 ".05 threshold") pos(6) col(3) size(vsmall) off) ///
-name(g_`x'_`i', replace)
+name(g_`x'_`i', replace) aspectratio(0.5)
 drop var_factor_`x'with_`i'
 sort n
 }
-grc1leg g_`x'_1 g_`x'_2 g_`x'_3 g_`x'_4 g_`x'_5 g_`x'_6, note("`x' items with NEEMSIS-1 (2016-17) data.", size(tiny)) col(2) name(comb_`x'_with, replace)
+}
+set graph on
+grc1leg g_Raw_1 g_Raw_2 g_Raw_3, note("Raw items with NEEMSIS-1 (2016-17) data.", size(tiny)) col(1) name(comb_`x'_with, replace) 
+
+g_Raw_4 g_Raw_5 g_Raw_6, note("Raw items with NEEMSIS-1 (2016-17) data.", size(tiny)) col(1) name(comb_`x'_with, replace)
 graph save "$git\Analysis\Personality\Big-5\factor2016_`x'_with.gph", replace
 graph export "$git\RUME-NEEMSIS\Big-5\factor2016_`x'_with.svg", as(svg) replace
 graph export "$git\Analysis\Personality\Big-5\factor2016_`x'_with.pdf", as(pdf) replace
-}
-
+*/
 * Without
+set graph off
 drop if n>=36
-foreach x in Raw Corr {
+foreach x in Raw { // Corr {
 forvalues i=1(1)5{
 *Sort
 gsort - factor_`x'_`i'
@@ -641,23 +711,24 @@ sencode var, gen(var_factor_`x'_`i') gsort(factor_`x'_`i')
 replace factor_`x'_`i'=round(factor_`x'_`i', 0.01)
 *Graph
 twoway ///
-(bar factor_`x'_`i' var_factor_`x'_`i', barw(0.6) yline(0, lcolor(gs10) lpattern(solid) lwidth(*0.8))) ///
-(scatter factor_`x'_`i' var_factor_`x'_`i', mlabel(factor_`x'_`i') mlabposition(12) mlabsize(*0.3) mlabangle(0) msymbol(i)) ///
-(scatter pvalue_`x'_`i' var_factor_`x'_`i', msymbol(o) mcolor(gs1) msize(*0.2)) ///
-(line threshold var_factor_`x'_`i', lcolor(gs1) lpattern(solid) lwidth(*0.2)), ///
-xlabel(1(1)35,valuelabel labsize(tiny) angle(45) nogrid) xtitle("")  ///
-ylabel(,labsize(tiny)) ///
+(connected var_factor_`x'_`i' factor_`x'_`i', msymbol(o) msize(*0.2) lwidth(*0.2)) ///
+(scatter var_factor_`x'_`i' factor_`x'_`i', mlabel(factor_`x'_`i') mlabposition(3) mlabsize(*0.5) mlabangle(0) msymbol(i) xline(0.05, lpattern(solid) lcolor(gs12) lwidth(*0.5))) ///
+(scatter var_factor_`x'_`i' pvalue_`x'_`i', msymbol(X) mcolor(gs1) msize(*.5) xline(0, lpattern(solid) lcolor(gs1) lwidth(*0.5))) ///
+, ylabel(1(1)35, valuelabel labsize(tiny) angle(0)) ytitle("")  ///
+xlabel(, labsize(tiny) nogrid) xmtick() ///
 title("Factor `i'", size(small)) ///
 legend(order(1 "Correlation with factor" 3 "p-value" 4 ".05 threshold") pos(6) col(3) size(vsmall) off) ///
-name(g_`x'_`i', replace)
+name(g_`x'_`i', replace)  // aspectratio(10)
 drop var_factor_`x'_`i'
-sort n
 }
-grc1leg g_`x'_1 g_`x'_2 g_`x'_3 g_`x'_4 g_`x'_5, note("`x' items with NEEMSIS-1 (2016-17) data.", size(tiny)) col(2) name(comb_`x', replace)
-graph save "$git\Analysis\Personality\Big-5\factor2016_`x'.gph", replace
-graph export "$git\RUME-NEEMSIS\Big-5\factor2016_`x'.svg", as(svg) replace
-graph export "$git\Analysis\Personality\Big-5\factor2016_`x'.pdf", as(pdf) replace
+set graph on
+grc1leg g_Raw_1 g_Raw_2 g_Raw_3 g_Raw_4 g_Raw_5, note("Raw items with NEEMSIS-1 (2016-17) data.", size(tiny)) col(3) name(comb_`x'_with, replace) 
 }
+graph save "C:\Users\Arnaud\Documents\GitHub\Analysis\Personality\Big-5\factor2016_2.gph", replace
+graph export "C:\Users\Arnaud\Documents\GitHub\RUME-NEEMSIS\Big-5\factor2016_2.svg", as(svg) replace
+graph export "C:\Users\Arnaud\Documents\GitHub\Analysis\Personality\Big-5\factor2016_2.pdf", as(pdf) replace
+
+
 restore
 set graph on
 */
@@ -668,13 +739,18 @@ set graph on
 
 
 
+
+
+im_rr_curious im_rr_interestedbyart im_rr_repetitivetasks im_rr_inventive im_rr_liketothink im_rr_newideas im_rr_activeimagination im_rr_organized im_rr_makeplans im_rr_workhard im_rr_appointmentontime im_rr_putoffduties im_rr_easilydistracted im_rr_completeduties im_rr_enjoypeople im_rr_sharefeelings im_rr_shywithpeople im_rr_enthusiastic im_rr_talktomanypeople im_rr_talkative im_rr_expressingthoughts im_rr_workwithother im_rr_understandotherfeeling im_rr_trustingofother im_rr_rudetoother im_rr_toleratefaults im_rr_forgiveother im_rr_helpfulwithothers im_rr_managestress im_rr_nervous im_rr_changemood im_rr_feeldepressed im_rr_easilyupset im_rr_worryalot im_rr_staycalm
+
+
 **********Correlation + omega
-/*
+
 *Factor 1
-omega im_expressingthoughts im_liketothink im_talktomanypeople im_activeimagination im_sharefeelings im_newideas im_curious im_inventive
+omega im_rr_expressingthoughts im_rr_liketothink im_rr_talktomanypeople im_rr_activeimagination im_rr_sharefeelings im_rr_newideas im_rr_curious im_rr_inventive
 
 *Factor 2
-omega im_completeduties im_appointmentontime im_enthusiastic im_makeplans im_workhard im_workwithother im_organized
+omega im_rr_completeduties im_rr_appointmentontime im_rr_enthusiastic im_rr_makeplans im_rr_workhard im_rr_workwithother im_rr_organized
 
 
 *Factor 3
@@ -685,7 +761,8 @@ omega im_worryalot im_easilyupset im_feeldepressed im_nervous im_shywithpeople i
 
 *Factor 5
 omega im_forgiveother im_toleratefaults im_helpfulwithothers im_trustingofother im_talkative im_workwithother im_changemood im_understandotherfeeling im_curious im_repetitivetasks im_interestedbyart im_staycalm im_shywithpeople im_completeduties
-*/
+
+
 
 ********** Other variables
 *Y

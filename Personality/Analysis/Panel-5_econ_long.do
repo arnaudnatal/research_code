@@ -22,17 +22,17 @@ clear all
 macro drop _all
 set scheme plotplain
 ********** Path to folder "data" folder.
-*global directory = "D:\Documents\_Thesis\Research-Skills_and_debt\Analysis"
-*cd"$directory"
+global directory = "D:\Documents\_Thesis\Research-Skills_and_debt\Analysis"
+cd"$directory"
 
 
 *Fac
-cd "C:\Users\anatal\Downloads\_Thesis\Research-Skills_and_debt\Analysis"
-set scheme plotplain, perm
+*cd "C:\Users\anatal\Downloads\_Thesis\Research-Skills_and_debt\Analysis"
+*set scheme plotplain, perm
 
-global git "C:\Users\anatal\Downloads\GitHub"
-global dropbox "C:\Users\anatal\Downloads\Dropbox"
-global thesis "C:\Users\anatal\Downloads\_Thesis\Research-Skills_and_debt\Analysis"
+*global git "C:\Users\anatal\Downloads\GitHub"
+*global dropbox "C:\Users\anatal\Downloads\Dropbox"
+*global thesis "C:\Users\anatal\Downloads\_Thesis\Research-Skills_and_debt\Analysis"
 
 
 
@@ -66,6 +66,19 @@ use"panel_long_v1.dta", clear
 xtset panelvar year
 
 
+********** Recode pour ne pas biaser Heckman
+tab indebt_indiv year
+replace loanamount_indiv1000=. if indebt_indiv==0
+replace DSR_indiv=. if indebt_indiv==0
+*How much in debt in t and t+1?
+bysort HHINDID: egen sum_indebt=sum(indebt_indiv)
+tab sum_indebt
+preserve
+duplicates drop HHINDID, force
+tab sum_indebt female
+restore
+drop sum_indebt
+
 
 ********** Year
 label var year "Year"
@@ -96,7 +109,24 @@ global indivcontrol age agesq dummyhead cat_mainoccupation_indiv_1 cat_mainoccup
 global hhcontrol4 assets1000 sexratiocat_1 sexratiocat_2 sexratiocat_3 hhsize shock incomeHH1000 year2020
 global villagesFE near_panruti near_villupur near_tirup near_chengal near_kanchip near_chennai
 
-
+********** Label
+foreach x in OP CO EX AG ES {
+label var fem_std_`x' "Female X `x' (std)"
+label var dal_std_`x' "Dalit X `x' (std)"
+label var threeway_std_`x' "Dalit X Female X `x' (std)"
+}
+label var fem_raven_tt "Female X Raven"
+label var dal_raven_tt "Dalit X Raven"
+label var threeway_raven_tt "Dalit X Female X Raven"
+label var fem_num_tt "Female X Numeracy"
+label var dal_num_tt "Dalit X Numeracy"
+label var threeway_num_tt "Dalit X Female X Numeracy"
+label var fem_lit_tt "Female X Literacy"
+label var dal_lit_tt "Dalit X Literacy"
+label var threeway_lit_tt "Dalit X Female X Literacy"
+label var femXdal "Female X Dalit"
+label var debtorratio2 "Debtor ratio"
+*label var indebt_indiv_1 "Indebted (=1) in 2016-17"
 
 
 ********** Interaction terms and margin with FE model:
@@ -125,34 +155,33 @@ global villagesFE near_panruti near_villupur near_tirup near_chengal near_kanchi
 * END
 
 
-
 ****************************************
 * 
 ****************************************
 ********** 01.
 ********** Not interaction
-
-foreach var in loanamount_indiv1000 DSR_indiv {
-xtreg `var' $big5raw $cog $indivcontrol $hhcontrol female dalits, fe vce(cluster HHFE)
+cls
+foreach var in loanamount_indiv1000  DSR_indiv {
+qui xtreg `var' $big5raw $cog $indivcontrol $hhcontrol female dalits, fe vce(cluster HHFE)
 est store res_1
 xtreg `var' $big5raw $cog $indivcontrol $hhcontrol female dalits $intfemraw, fe vce(cluster HHFE)
 est store res_2
-xtreg `var' $big5raw $cog $indivcontrol $hhcontrol female dalits $intdalraw, fe vce(cluster HHFE)
+qui xtreg `var' $big5raw $cog $indivcontrol $hhcontrol female dalits $intdalraw, fe vce(cluster HHFE)
 est store res_3
-xtreg `var' $big5raw $cog $indivcontrol $hhcontrol female dalits $threeraw, fe vce(cluster HHFE)
+qui xtreg `var' $big5raw $cog $indivcontrol $hhcontrol female dalits $threeraw, fe vce(cluster HHFE)
 est store res_4
 
 
 esttab res_1 res_2 res_3 res_4 using "_reg.csv", ///
-	cells(b(star fmt(3)) /// 
-	se(par fmt(2))) ///
+	cells(b(fmt(3)) /// 
+	t(par fmt(3))) ///
 	drop() ///
 	legend label varlabels(_cons constant) ///
-	stats(N N_g corr rho r2 r2_a r2_w r2_o r2_b ll F p F_f p_f, fmt(0 0 3 3 3 3 3 3 3 3 3 3 3 3)) starlevels(* 0.10 ** 0.05 *** 0.01) ///
+	stats(N N_g rho r2_w r2_b r2_o F p, fmt(0 0 3 3 3 3 3 3) labels(`"Observations"' `"Nb of groups"' `"$\uprho$"' `"Within \$R^2$"' `"Between \$R^2$"' `"Overall \$R^2$"' `"F-stat"' `"p-value"')) ///
 	replace
 estimates clear
 preserve
-import delimited "_reg.csv", delimiter(",") varnames(nonames) clear
+import delimited "_reg.csv", delimiter(",")  clear
 qui des
 sca def k=r(k)
 forvalues i=1(1)`=scalar(k)'{
@@ -166,39 +195,26 @@ restore
 ********** Margins
 
 *** No int
-qui xtreg `var' $big5raw $cog $indivcontrol $hhcontrol dalit female, vce(cluster HHFE)
+qui xtreg `var' $big5raw $cog $indivcontrol $hhcontrol dalit female, vce(cluster HHFE) fe
 
 *dy/dx
 margins, dydx($big5raw $cog) atmeans noestimcheck saving(margin_FE_`var'1, replace) 
 
 *** Female
-qui xtreg `var' $big5raw $cog $indivcontrol $hhcontrol c.std_OP##i.female c.std_CO##i.female c.std_EX##i.female c.std_AG##i.female c.std_ES##i.female c.raven_tt##i.female c.num_tt##i.female c.lit_tt##i.female, vce(cluster HHFE)
+xtreg `var' $big5raw $cog $indivcontrol $hhcontrol c.std_OP##i.female c.std_CO##i.female c.std_EX##i.female c.std_AG##i.female c.std_ES##i.female c.raven_tt##i.female c.num_tt##i.female c.lit_tt##i.female, vce(cluster HHFE) fe
 
 *dy/dx
 margins, dydx($big5raw $cog) at(female=(0 1)) atmeans noestimcheck saving(margin_FE_`var'2, replace)
 
 *** Dalits
-qui xtreg `var' $big5raw $cog $indivcontrol $hhcontrol c.std_OP##i.dalits c.std_CO##i.dalits c.std_EX##i.dalits c.std_AG##i.dalits c.std_ES##i.dalits c.raven_tt##i.dalits c.num_tt##i.dalits c.lit_tt##i.dalits , vce(cluster HHFE)
+qui xtreg `var' $big5raw $cog $indivcontrol $hhcontrol c.std_OP##i.dalits c.std_CO##i.dalits c.std_EX##i.dalits c.std_AG##i.dalits c.std_ES##i.dalits c.raven_tt##i.dalits c.num_tt##i.dalits c.lit_tt##i.dalits , vce(cluster HHFE) fe
 
 *dy/dx
 margins, dydx($big5raw $cog) at(dalits=(0 1)) atmeans noestimcheck saving(margin_FE_`var'3, replace)
 
 *** Three
-qui xtreg `var' $big5raw $cog $indivcontrol $hhcontrol c.std_OP##i.female##i.dalits c.std_CO##i.female##i.dalits c.std_EX##i.female##i.dalits c.std_AG##i.female##i.dalits c.std_ES##i.female##i.dalits c.raven_tt##i.female##i.dalits c.num_tt##i.female##i.dalits c.lit_tt##i.female##i.dalits , vce(cluster HHFE)
+qui xtreg `var' $big5raw $cog $indivcontrol $hhcontrol c.std_OP##i.female##i.dalits c.std_CO##i.female##i.dalits c.std_EX##i.female##i.dalits c.std_AG##i.female##i.dalits c.std_ES##i.female##i.dalits c.raven_tt##i.female##i.dalits c.num_tt##i.female##i.dalits c.lit_tt##i.female##i.dalits , vce(cluster HHFE) fe
 
 *dy/dx
 margins, dydx($big5raw $cog) at(dalits=(0 1) female=(0 1)) atmeans noestimcheck saving(margin_FE_`var'4, replace)
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
