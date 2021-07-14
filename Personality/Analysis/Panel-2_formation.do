@@ -20,17 +20,17 @@ Personality traits: EFA + panel
 clear all
 macro drop _all
 ********** Path to folder "data" folder.
-global directory = "D:\Documents\_Thesis\Research-Skills_and_debt\Analysis"
-cd"$directory"
+*global directory = "D:\Documents\_Thesis\Research-Skills_and_debt\Analysis"
+*cd"$directory"
 
 
 *Fac
-*cd "C:\Users\anatal\Downloads\_Thesis\Research-Skills_and_debt\Analysis"
-*set scheme plotplain
+cd "C:\Users\anatal\Downloads\_Thesis\Research-Skills_and_debt\Analysis"
+set scheme plotplain
 
-*global git "C:\Users\anatal\Downloads\GitHub"
-*global dropbox "C:\Users\anatal\Downloads\Dropbox"
-*global thesis "C:\Users\anatal\Downloads\_Thesis\Research-Skills_and_debt\Analysis"
+global git "C:\Users\anatal\Downloads\GitHub"
+global dropbox "C:\Users\anatal\Downloads\Dropbox"
+global thesis "C:\Users\anatal\Downloads\_Thesis\Research-Skills_and_debt\Analysis"
 
 
 
@@ -445,6 +445,9 @@ tab caste_2
 *Tous les HH ont un égo donc je suis censé en avoir plus car 485 HH en panel avec un peu de chance, 483 sinon minimum !
 restore
 
+**********drop 
+drop factor_imcorwith_1_2 factor_imcorwith_2_2 factor_imcorwith_3_2 factor_imcorwith_4_2 factor_imcorwith_5_2 factor_imcorwith_6_2 factor_imrawwith_1_2 factor_imrawwith_2_2 factor_imrawwith_3_2 factor_imrawwith_4_2 factor_imrawwith_5_2 factor_imrawwith_6_2 factor_imcor_1_2 factor_imcor_2_2 factor_imcor_3_2 factor_imcor_4_2 factor_imcor_5_2 factor_imraw_1_2 factor_imraw_2_2 factor_imraw_3_2 factor_imraw_4_2 factor_imraw_5_2
+
 save"$wave3~panel", replace
 ****************************************
 * END
@@ -511,11 +514,11 @@ fre managestress  nervous  changemood feeldepressed easilyupset worryalot  stayc
 */
 cls
 fre rr_curious rr_interestedbyart rr_repetitivetasks rr_inventive rr_liketothink rr_newideas rr_activeimagination
-cls
 fre raw_curious raw_interestedbyart raw_repetitivetasks raw_inventive raw_liketothink raw_newideas raw_activeimagination
-cls
 fre curious interestedbyart repetitivetasks inventive liketothink newideas activeimagination
 
+cls
+fre rr_curious rr_interestedbyart rr_repetitivetasks rr_inventive rr_liketothink rr_newideas rr_activeimagination rr_organized rr_makeplans rr_workhard rr_appointmentontime rr_putoffduties rr_easilydistracted rr_completeduties rr_enjoypeople rr_sharefeelings rr_shywithpeople rr_enthusiastic rr_talktomanypeople rr_talkative rr_expressingthoughts rr_workwithother rr_understandotherfeeling rr_trustingofother rr_rudetoother rr_toleratefaults rr_forgiveother rr_helpfulwithothers rr_managestress rr_nervous rr_changemood rr_feeldepressed rr_easilyupset rr_worryalot rr_staycalm
 
 *****************************************************************************
 *****************************************************************************
@@ -525,13 +528,19 @@ fre curious interestedbyart repetitivetasks inventive liketothink newideas activ
 *** Recoder ES dans rr pour que tout fonctionne dans le bon sens et que pour ceux de ES ca capte ES en max et non NE comme ca fait normalement.
 *** Dans ce que j'avais fait, c'était ES et tout le reste dans l'ordre du questionnaire, donc à l'envers...
 *** rr_ et raw_ fonctionne parfaitement en sens inverse, je prends rr car 4 dans le bon sens, je recode juste NE en ES
+*** rr_ max = NE donc à recoder pour ES
+*** raw max = ES
+fre rr_managestress rr_nervous rr_changemood rr_feeldepressed rr_easilyupset rr_worryalot rr_staycalm
 foreach x in rr_managestress rr_nervous rr_changemood rr_feeldepressed rr_easilyupset rr_worryalot rr_staycalm {
 recode `x' (5=1) (4=2) (3=3) (2=4) (1=5)
 }
+fre rr_managestress rr_nervous rr_changemood rr_feeldepressed rr_easilyupset rr_worryalot rr_staycalm
 label define b5new 1"1 - Almost always" 2"2 - Quite often" 3"3 - Sometimes" 4"4 - Rarely" 5"5 - Almost never"
 foreach x in rr_managestress rr_nervous rr_changemood rr_feeldepressed rr_easilyupset rr_worryalot rr_staycalm {
 label values `x' b5new
 }
+
+fre managestress nervous changemood feeldepressed easilyupset worryalot staycalm 
 cls
 fre rr_curious rr_interestedbyart rr_repetitivetasks rr_inventive rr_liketothink rr_newideas rr_activeimagination 
 fre rr_organized  rr_makeplans rr_workhard rr_appointmentontime rr_putoffduties rr_easilydistracted rr_completeduties 
@@ -556,8 +565,7 @@ replace im_`x'=r(mean) if im_`x'==. & sex==`i' & caste==`j' & egoid!=0 & egoid!=
 }
 }
 
-*Tester le sens
-fre 
+*Tester le sens 
 
 global imcorwith im_cr_curious im_cr_interestedbyart im_cr_repetitivetasks im_cr_inventive im_cr_liketothink im_cr_newideas im_cr_activeimagination im_cr_organized im_cr_makeplans im_cr_workhard im_cr_appointmentontime im_cr_putoffduties im_cr_easilydistracted im_cr_completeduties im_cr_enjoypeople im_cr_sharefeelings im_cr_shywithpeople im_cr_enthusiastic im_cr_talktomanypeople im_cr_talkative im_cr_expressingthoughts im_cr_workwithother im_cr_understandotherfeeling im_cr_trustingofother im_cr_rudetoother im_cr_toleratefaults im_cr_forgiveother im_cr_helpfulwithothers im_cr_managestress im_cr_nervous im_cr_changemood im_cr_feeldepressed im_cr_easilyupset im_cr_worryalot im_cr_staycalm im_cr_tryhard im_cr_stickwithgoals im_cr_goaftergoal im_cr_finishwhatbegin im_cr_finishtasks im_cr_keepworking
 
@@ -569,41 +577,35 @@ global imraw im_raw_curious im_raw_interestedbyart im_raw_repetitivetasks im_raw
 
 global imraw2 im_rr_curious im_rr_interestedbyart im_rr_repetitivetasks im_rr_inventive im_rr_liketothink im_rr_newideas im_rr_activeimagination im_rr_organized im_rr_makeplans im_rr_workhard im_rr_appointmentontime im_rr_putoffduties im_rr_easilydistracted im_rr_completeduties im_rr_enjoypeople im_rr_sharefeelings im_rr_shywithpeople im_rr_enthusiastic im_rr_talktomanypeople im_rr_talkative im_rr_expressingthoughts im_rr_workwithother im_rr_understandotherfeeling im_rr_trustingofother im_rr_rudetoother im_rr_toleratefaults im_rr_forgiveother im_rr_helpfulwithothers im_rr_managestress im_rr_nervous im_rr_changemood im_rr_feeldepressed im_rr_easilyupset im_rr_worryalot im_rr_staycalm
 
-/*
+*fre $big5rrok
 cls
-foreach x in imcorwith imrawwith {
-*minap $`x'
-*fsum $`x', stat(n mean sd)
-qui factor $`x', pcf fa(6) 
-rotate, promax
-*putexcel set "EFA_2016.xlsx", modify sheet(`x')
-*putexcel (E2)=matrix(e(r_L))
-
-predict factor_`x'_1 factor_`x'_2 factor_`x'_3 factor_`x'_4 factor_`x'_5 factor_`x'_6
-cpcorr $`x' \ factor_`x'_1 factor_`x'_2 factor_`x'_3 factor_`x'_4 factor_`x'_5 factor_`x'_6
-matrix list r(p)
-
-*Correlation with big-5 and cronbach
-cpcorr cr_OP cr_EX cr_ES cr_CO cr_AG cr_Grit OP EX ES CO AG Grit factor_`x'_1 factor_`x'_2 factor_`x'_3 factor_`x'_4 factor_`x'_5 factor_`x'_6
-matrix list r(p)
+foreach x in curious interestedbyart repetitivetasks inventive liketothink newideas activeimagination organized  makeplans workhard appointmentontime putoffduties easilydistracted completeduties enjoypeople sharefeelings shywithpeople enthusiastic talktomanypeople  talkative expressingthoughts  workwithother  understandotherfeeling trustingofother rudetoother toleratefaults  forgiveother  helpfulwithothers managestress  nervous  changemood feeldepressed easilyupset worryalot  staycalm {
+label var raw_`x' "raw_`x'"
+label var rr_`x' "rr_`x'"
+tab raw_`x' rr_`x'
 }
-*/
+
+
 cls
 foreach x in imraw2 { //imcor imraw {
-*minap $`x'
-*fsum $`x', stat(n mean sd)
 qui factor $`x', pcf fa(5) 
+*loadingplot
+*scoreplot
+*screeplot
 rotate, promax
 *putexcel set "EFA_2016.xlsx", modify sheet(`x')
 *putexcel (E2)=matrix(e(r_L))
+
 
 predict factor_`x'_1 factor_`x'_2 factor_`x'_3 factor_`x'_4 factor_`x'_5
 cpcorr $`x' \ factor_`x'_1 factor_`x'_2 factor_`x'_3 factor_`x'_4 factor_`x'_5
+/*
 matrix list r(p)
 
 *Correlation with big-5 and cronbach
 cpcorr cr_OP cr_EX cr_ES cr_CO cr_AG cr_Grit OP EX ES CO AG Grit factor_`x'_1 factor_`x'_2 factor_`x'_3 factor_`x'_4 factor_`x'_5
 matrix list r(p)
+*/
 }
 
 forvalues i=1(1)5 {
@@ -625,44 +627,60 @@ drop if n==42
 order n var
 gen threshold=0.05
 *Clean
+/*
 forvalues i=1(1)6{
 rename factor_imcrwith_`i' factor_Corrwith_`i'
 rename pvalue_imcrwith_`i' pvalue_Corrwith_`i'
 rename factor_imrawwith_`i' factor_Rawwith_`i'
 rename pvalue_imrawwith_`i' pvalue_Rawwith_`i'
 }
+*/
 
 forvalues i=1(1)5{
-rename factor_imcr_`i' factor_Corr_`i'
-rename pvalue_imcr_`i' pvalue_Corr_`i'
+*rename factor_imcr_`i' factor_Corr_`i'
+*rename pvalue_imcr_`i' pvalue_Corr_`i'
 rename factor_imraw_`i' factor_Raw_`i'
 rename pvalue_imraw_`i' pvalue_Raw_`i'
 }
 gen big5=""
-replace big5="Openness" if n>=1 & n<=7
-replace big5="Conscientiousness" if n>=8 & n<=14
-replace big5="Extraversion" if n>=15 & n<=21
-replace big5="Agreeableness" if n>=22 & n<=28
-replace big5="Emotional stability / Neuroticism" if n>=29 & n<=35
-replace big5="Grit" if n>=36 & n<=41
+replace big5="max -> OP" if n>=1 & n<=7
+replace big5="max -> CO" if n>=8 & n<=14
+replace big5="max -> EX" if n>=15 & n<=21
+replace big5="max -> AG" if n>=22 & n<=28
+replace big5="max -> ES" if n>=29 & n<=35
+replace big5="max -> GR" if n>=36 & n<=41
 order n var big5
+
+
+*Identitfy reverse questions
+gen reverse=0
+foreach x in rudetoother putoffduties easilydistracted shywithpeople repetitivetasks staycalm managestress  {
+replace reverse=1 if var=="`x'"
+}
+/*
+Etant donné que j'ai changé le sens, sur les 7 questions ESNE, 5 captent au max ES (car j'ai changé le sens) et les deux autres (staycalm et managestress) captent NE au max
+*/
+
+foreach x in curious interestedbyart repetitivetasks inventive liketothink newideas activeimagination organized  makeplans workhard appointmentontime putoffduties easilydistracted completeduties enjoypeople sharefeelings shywithpeople enthusiastic talktomanypeople  talkative expressingthoughts  workwithother  understandotherfeeling trustingofother rudetoother toleratefaults  forgiveother  helpfulwithothers managestress  nervous  changemood feeldepressed easilyupset worryalot  staycalm {
+replace var="`x' (r)" if var=="`x'" & reverse==1
+}
 
 *Interpretation
 *F1
 gsort - factor_Raw_1
-list n var big5 factor_Raw_1, clean noobs
+list n var big5 reverse factor_Raw_1, clean noobs  // OPEX
 *F2
 gsort - factor_Raw_2
-list n var big5 factor_Raw_2, clean noobs
+list n var big5 reverse factor_Raw_2, clean noobs  // 
 *F3
 gsort - factor_Raw_3
-list n var big5 factor_Raw_3, clean noobs
+list n var big5 reverse factor_Raw_3, clean noobs
 *F4
 gsort - factor_Raw_4
-list n var big5 factor_Raw_4, clean noobs
+list n var big5 reverse factor_Raw_4, clean noobs
 *F5
 gsort - factor_Raw_5
-list n var big5 factor_Raw_5, clean noobs
+list n var big5 reverse factor_Raw_5, clean noobs
 
 save"factor2016.dta", replace
 
@@ -722,11 +740,11 @@ name(g_`x'_`i', replace)  // aspectratio(10)
 drop var_factor_`x'_`i'
 }
 set graph on
-grc1leg g_Raw_1 g_Raw_2 g_Raw_3 g_Raw_4 g_Raw_5, note("Raw items with NEEMSIS-1 (2016-17) data.", size(tiny)) col(3) name(comb_`x'_with, replace) 
+grc1leg g_Raw_1 g_Raw_2 g_Raw_3 g_Raw_4 g_Raw_5, note("Raw items with NEEMSIS-1 (2016-17) data." "items (r) are reverse coded according to Big-5 taxonomy.", size(tiny)) col(3) name(comb_`x'_with, replace) 
 }
-graph save "C:\Users\Arnaud\Documents\GitHub\Analysis\Personality\Big-5\factor2016_2.gph", replace
-graph export "C:\Users\Arnaud\Documents\GitHub\RUME-NEEMSIS\Big-5\factor2016_2.svg", as(svg) replace
-graph export "C:\Users\Arnaud\Documents\GitHub\Analysis\Personality\Big-5\factor2016_2.pdf", as(pdf) replace
+graph save "$git\Analysis\Personality\Big-5\factor2016_2.gph", replace
+graph export "$git\RUME-NEEMSIS\Big-5\factor2016_2.svg", as(svg) replace
+graph export "$git\Analysis\Personality\Big-5\factor2016_2.pdf", as(pdf) replace
 
 
 restore
@@ -734,34 +752,24 @@ set graph on
 */
 
 
-
-
-
-
-
-
-
-im_rr_curious im_rr_interestedbyart im_rr_repetitivetasks im_rr_inventive im_rr_liketothink im_rr_newideas im_rr_activeimagination im_rr_organized im_rr_makeplans im_rr_workhard im_rr_appointmentontime im_rr_putoffduties im_rr_easilydistracted im_rr_completeduties im_rr_enjoypeople im_rr_sharefeelings im_rr_shywithpeople im_rr_enthusiastic im_rr_talktomanypeople im_rr_talkative im_rr_expressingthoughts im_rr_workwithother im_rr_understandotherfeeling im_rr_trustingofother im_rr_rudetoother im_rr_toleratefaults im_rr_forgiveother im_rr_helpfulwithothers im_rr_managestress im_rr_nervous im_rr_changemood im_rr_feeldepressed im_rr_easilyupset im_rr_worryalot im_rr_staycalm
-
-
 **********Correlation + omega
 
-*Factor 1
-omega im_rr_expressingthoughts im_rr_liketothink im_rr_talktomanypeople im_rr_activeimagination im_rr_sharefeelings im_rr_newideas im_rr_curious im_rr_inventive
+*Factor 1 - 0.91
+omega im_rr_liketothink im_rr_expressingthoughts im_rr_activeimagination im_rr_sharefeelings im_rr_newideas im_rr_curious im_rr_inventive im_rr_talktomanypeople     
 
-*Factor 2
-omega im_rr_completeduties im_rr_appointmentontime im_rr_enthusiastic im_rr_makeplans im_rr_workhard im_rr_workwithother im_rr_organized
+*Factor 2 - 0.88
+omega im_rr_appointmentontime im_rr_enthusiastic im_rr_makeplans im_rr_completeduties im_rr_workhard im_rr_organized im_rr_repetitivetasks 
 
+*Factor 3 - 0.69
+omega im_rr_easilydistracted im_rr_putoffduties im_rr_talkative im_rr_helpfulwithothers
 
-*Factor 3
-omega im_changemood im_easilydistracted im_putoffduties im_staycalm im_nervous im_rudetoother im_managestress
+*Factor 4 - 0.78
+omega im_rr_worryalot im_rr_easilyupset im_rr_feeldepressed im_rr_nervous 
+*im_rr_staycalm
 
-*Factor 4
-omega im_worryalot im_easilyupset im_feeldepressed im_nervous im_shywithpeople im_easilydistracted im_changemood
-
-*Factor 5
-omega im_forgiveother im_toleratefaults im_helpfulwithothers im_trustingofother im_talkative im_workwithother im_changemood im_understandotherfeeling im_curious im_repetitivetasks im_interestedbyart im_staycalm im_shywithpeople im_completeduties
-
+*Factor 5 - 0.62
+omega im_rr_toleratefaults im_rr_forgiveother im_rr_repetitivetasks im_rr_trustingofother im_rr_helpfulwithothers
+*im_rr_expressingthoughts
 
 
 ********** Other variables
@@ -904,7 +912,9 @@ global debtindiv imp1_ds_tot_indiv imp1_is_tot_indiv semiformal_indiv formal_ind
 
 global debthh imp1_ds_tot_HH imp1_is_tot_HH informal_HH semiformal_HH formal_HH economic_HH current_HH humancap_HH social_HH house_HH incomegen_HH noincomegen_HH economic_amount_HH current_amount_HH humancap_amount_HH social_amount_HH house_amount_HH incomegen_amount_HH noincomegen_amount_HH informal_amount_HH formal_amount_HH semiformal_amount_HH marriageloanamount_HH loanamount_HH loanamount_wm_HH dummyproblemtorepay_HH dummyhelptosettleloan_HH dummyinterest_HH loans_HH loanbalance_HH mean_yratepaid_HH mean_monthlyinterestrate_HH marriageloan_HH debtorratio workerratio debtorratio2 workerratio2
 
-global perso factor_imcor_1 factor_imcor_2 factor_imcor_3 factor_imcor_4 factor_imcor_5 factor_imcorwith_1 factor_imcorwith_2 factor_imcorwith_3 factor_imcorwith_4 factor_imcorwith_5 factor_imcorwith_6 factor_imraw_1 factor_imraw_2 factor_imraw_3 factor_imraw_4 factor_imraw_5 factor_imrawwith_1 factor_imrawwith_2 factor_imrawwith_3 factor_imrawwith_4 factor_imrawwith_5 factor_imrawwith_6 cr_OP cr_CO cr_EX cr_AG cr_ES cr_Grit OP CO EX AG ES Grit raven_tt num_tt lit_tt
+*global perso factor_imcor_1 factor_imcor_2 factor_imcor_3 factor_imcor_4 factor_imcor_5 factor_imcorwith_1 factor_imcorwith_2 factor_imcorwith_3 factor_imcorwith_4 factor_imcorwith_5 factor_imcorwith_6 factor_imraw_1 factor_imraw_2 factor_imraw_3 factor_imraw_4 factor_imraw_5 factor_imrawwith_1 factor_imrawwith_2 factor_imrawwith_3 factor_imrawwith_4 factor_imrawwith_5 factor_imrawwith_6 cr_OP cr_CO cr_EX cr_AG cr_ES cr_Grit OP CO EX AG ES Grit raven_tt num_tt lit_tt
+global perso factor_imraw_1 factor_imraw_2 factor_imraw_3 factor_imraw_4 factor_imraw_5 cr_OP cr_CO cr_EX cr_AG cr_ES cr_Grit OP CO EX AG ES Grit raven_tt num_tt lit_tt
+
 
 global expenses savingsamount_HH educationexpenses_HH productexpenses_HH businessexpenses_HH foodexpenses_HH healthexpenses_HH ceremoniesexpenses_HH deathexpenses_HH livestockexpenses_HH chitfundpaymentamount_HH chitfundamount_HH chitfundamounttot_HH nbchitfunds_HH amountlent_HH interestlending_HH problemrepayment_HH goldquantity_HH goldquantitypledge_HH nbinsurance_HH insuranceamount_HH insuranceamounttot_HH insurancebenefitamount_HH insurancebenefitamounttot_HH landpurchased investequiptot_HH 
 
@@ -1127,7 +1137,8 @@ rename jatis_1 jatis
 drop caste_2 jatis_2
 
 
-foreach x in factor_imcor_1 factor_imcor_2 factor_imcor_3 factor_imcor_4 factor_imcor_5 factor_imcorwith_1 factor_imcorwith_2 factor_imcorwith_3 factor_imcorwith_4 factor_imcorwith_5 factor_imcorwith_6 factor_imraw_1 factor_imraw_2 factor_imraw_3 factor_imraw_4 factor_imraw_5 factor_imrawwith_1 factor_imrawwith_2 factor_imrawwith_3 factor_imrawwith_4 factor_imrawwith_5 factor_imrawwith_6 cr_OP cr_CO cr_EX cr_AG cr_ES cr_Grit OP CO EX AG ES Grit raven_tt num_tt lit_tt{
+*foreach x in factor_imcor_1 factor_imcor_2 factor_imcor_3 factor_imcor_4 factor_imcor_5 factor_imcorwith_1 factor_imcorwith_2 factor_imcorwith_3 factor_imcorwith_4 factor_imcorwith_5 factor_imcorwith_6 factor_imraw_1 factor_imraw_2 factor_imraw_3 factor_imraw_4 factor_imraw_5 factor_imrawwith_1 factor_imrawwith_2 factor_imrawwith_3 factor_imrawwith_4 factor_imrawwith_5 factor_imrawwith_6 cr_OP cr_CO cr_EX cr_AG cr_ES cr_Grit OP CO EX AG ES Grit raven_tt num_tt lit_tt{
+foreach x in factor_imraw_1 factor_imraw_2 factor_imraw_3 factor_imraw_4 factor_imraw_5 cr_OP cr_CO cr_EX cr_AG cr_ES cr_Grit OP CO EX AG ES Grit raven_tt num_tt lit_tt{
 clonevar base_`x'=`x'_1
 }
 
@@ -1448,7 +1459,8 @@ tab cat_mainoccupation_indiv_2
 
 *EFA+Big-5
 cls
-foreach x in base_factor_imcor_1 base_factor_imcor_2 base_factor_imcor_3 base_factor_imcor_4 base_factor_imcor_5 base_factor_imcorwith_1 base_factor_imcorwith_2 base_factor_imcorwith_3 base_factor_imcorwith_4 base_factor_imcorwith_5 base_factor_imcorwith_6 base_factor_imraw_1 base_factor_imraw_2 base_factor_imraw_3 base_factor_imraw_4 base_factor_imraw_5 base_factor_imrawwith_1 base_factor_imrawwith_2 base_factor_imrawwith_3 base_factor_imrawwith_4 base_factor_imrawwith_5 base_factor_imrawwith_6  {
+*foreach x in base_factor_imcor_1 base_factor_imcor_2 base_factor_imcor_3 base_factor_imcor_4 base_factor_imcor_5 base_factor_imcorwith_1 base_factor_imcorwith_2 base_factor_imcorwith_3 base_factor_imcorwith_4 base_factor_imcorwith_5 base_factor_imcorwith_6 base_factor_imraw_1 base_factor_imraw_2 base_factor_imraw_3 base_factor_imraw_4 base_factor_imraw_5 base_factor_imrawwith_1 base_factor_imrawwith_2 base_factor_imrawwith_3 base_factor_imrawwith_4 base_factor_imrawwith_5 base_factor_imrawwith_6  {
+foreach x in base_factor_imraw_1 base_factor_imraw_2 base_factor_imraw_3 base_factor_imraw_4 base_factor_imraw_5 {
 rename `x' `x'_raw
 reg `x' age_1
 est store reg_`x'

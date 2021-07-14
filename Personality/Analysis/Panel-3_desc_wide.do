@@ -22,17 +22,17 @@ clear all
 macro drop _all
 set scheme plotplain
 ********** Path to folder "data" folder.
-global directory = "D:\Documents\_Thesis\Research-Skills_and_debt\Analysis"
-cd"$directory"
+*global directory = "D:\Documents\_Thesis\Research-Skills_and_debt\Analysis"
+*cd"$directory"
 
 
 *Fac
-*cd "C:\Users\anatal\Downloads\_Thesis\Research-Skills_and_debt\Analysis"
-*set scheme plotplain
+cd "C:\Users\anatal\Downloads\_Thesis\Research-Skills_and_debt\Analysis"
+set scheme plotplain
 
-*global git "C:\Users\anatal\Downloads\GitHub"
-*global dropbox "C:\Users\anatal\Downloads\Dropbox"
-*global thesis "C:\Users\anatal\Downloads\_Thesis\Research-Skills_and_debt\Analysis"
+global git "C:\Users\anatal\Downloads\GitHub"
+global dropbox "C:\Users\anatal\Downloads\Dropbox"
+global thesis "C:\Users\anatal\Downloads\_Thesis\Research-Skills_and_debt\Analysis"
 
 
 ********** Name of the NEEMSIS2 questionnaire version to clean
@@ -552,23 +552,6 @@ loanbalance_HH_ ///
 loanamount_wm_HH_ ///
 mean_yratepaid_HH_ ///
 mean_monthlyinterestrate_HH_ ///
-factor_imcorwith_1_ ///
-factor_imcorwith_2_ ///
-factor_imcorwith_3_ ///
-factor_imcorwith_4_ ///
-factor_imcorwith_5_ ///
-factor_imcorwith_6_ ///
-factor_imrawwith_1_ ///
-factor_imrawwith_2_ ///
-factor_imrawwith_3_ ///
-factor_imrawwith_4_ ///
-factor_imrawwith_5_ ///
-factor_imrawwith_6_ ///
-factor_imcor_1_ ///
-factor_imcor_2_ ///
-factor_imcor_3_ ///
-factor_imcor_4_ ///
-factor_imcor_5_ ///
 factor_imraw_1_ ///
 factor_imraw_2_ ///
 factor_imraw_3_ ///
@@ -842,23 +825,6 @@ loanbalance_HH_ ///
 loanamount_wm_HH_ ///
 mean_yratepaid_HH_ ///
 mean_monthlyinterestrate_HH_ ///
-factor_imcorwith_1_ ///
-factor_imcorwith_2_ ///
-factor_imcorwith_3_ ///
-factor_imcorwith_4_ ///
-factor_imcorwith_5_ ///
-factor_imcorwith_6_ ///
-factor_imrawwith_1_ ///
-factor_imrawwith_2_ ///
-factor_imrawwith_3_ ///
-factor_imrawwith_4_ ///
-factor_imrawwith_5_ ///
-factor_imrawwith_6_ ///
-factor_imcor_1_ ///
-factor_imcor_2_ ///
-factor_imcor_3_ ///
-factor_imcor_4_ ///
-factor_imcor_5_ ///
 factor_imraw_1_ ///
 factor_imraw_2_ ///
 factor_imraw_3_ ///
@@ -1326,11 +1292,10 @@ grc1leg f1 f2 f3 f4 f5 f_OP f_CO f_EX f_AG f_ES, cols(5) leg(f_OP) name(perso_ra
 *Cog
 grc1leg f_rav f_num f_lit, cols(3) leg(f_rav) name(cog_raw, replace)
 *All
-/*
 set graph on
 grc1leg f1 f2 f3 f4 f5 f_OP f_CO f_EX f_AG f_ES f_rav f_num f_lit, cols(5) leg(f_OP) note("Kernel: Epanechnikov" "Bandwidth: 0.32 for factors, 0.50 for Big-5, 3.00 for raven, 1.50 for numeracy and 1.70 for literacy." "Items non-corrected from acquiesence biais for factor analysis." "Big-5 traits non-corrected from acquiesence bias." "NEEMSIS-1 (2016-17) & NEEMSIS-2 (2020-21).", size(tiny))
-graph save "Kernel_PTCS_raw.gph", replace
-graph export "Kernel_PTCS_raw.pdf", as(pdf) replace
+graph save "Kernel_PTCS_raw_new.gph", replace
+graph export "Kernel_PTCS_raw_new.pdf", as(pdf) replace
 */
 
 
@@ -1407,14 +1372,12 @@ tab over40_indiv_2 segmana, nofreq chi2
 
 
 ********** Correlation Big5-EFA
-/*
+
 pwcorr cr_OP_1 cr_EX_1 cr_ES_1 cr_CO_1 cr_AG_1 cr_OP_2 cr_EX_2 cr_ES_2 cr_CO_2 cr_AG_2, sig
 pwcorr OP_1 EX_1 ES_1 CO_1 AG_1 OP_2 EX_2 ES_2 CO_2 AG_2, sig
 
 forvalues i=1(1)5 {
-forvalues j=1(1)2 {
-label var factor_imraw_`i'_`j' "Factor `i'"
-}
+label var factor_imraw_`i'_1 "Factor `i'"
 }
 
 label var cr_CO_1 "CO (cor) 2016-17"
@@ -1455,11 +1418,11 @@ graph save "$git\Analysis\Personality\Big-5\matrix_b5.gph", replace
 graph export "$git\RUME-NEEMSIS\Big-5\matrix_b5.svg", as(svg) replace
 graph export "$git\Analysis\Personality\Big-5\matrix_b5.pdf", as(pdf) replace
 set graph on
-*/
+
 
 
 ********** CORR personality - debt
-
+/*
 cls
 forvalues i=1(1)4{
 cpcorr  base_factor_imraw_1_std base_factor_imraw_2_std base_factor_imraw_3_std base_factor_imraw_4_std base_factor_imraw_5_std base_raven_tt base_num_tt base_lit_tt \ loanamount_indiv1000_2  DSR_indiv_2 if segmana==`i', f(%5.2f)
@@ -1528,98 +1491,8 @@ grc1leg comb_loanamount comb_dsr, cols(1)
 graph save "C:\Users\Arnaud\Documents\GitHub\Analysis\Personality\Big-5\corryx.gph", replace
 graph export "C:\Users\Arnaud\Documents\GitHub\RUME-NEEMSIS\Big-5\corryx.svg", as(svg) replace
 graph export "C:\Users\Arnaud\Documents\GitHub\Analysis\Personality\Big-5\corryx.pdf", as(pdf) replace
-
-
-
 restore
-
-
-
-
-*** Matrix with different marker
-/*
-*ssc install njc_stuff
-*ssc inst sepscatter
-label var DSR_indiv_2 "DSR in 2020-21"
-label var loanamount_indiv1000_2 "Total loan amount in 2020-21"
-
-set graph off
-*Upleft
-local k = 1 
-local names
-foreach y in DSR_indiv_2 loanamount_indiv1000_2 {
-foreach x in base_raven_tt base_num_tt base_lit_tt base_factor_imraw_5_std base_factor_imraw_4_std base_factor_imraw_3_std base_factor_imraw_2_std base_factor_imraw_1_std {
-sum `x'
-local `x'_min=r(min)
-local `x'_max=r(max)
-sepscatter `y' `x' if `y'<300, sep(segmana) name(G`k', replace) legend(pos(6) col(4) size(vsmall) off) msize(*0.1) xlabel(none) xtitle("") ytitle("") xtick(``x'_min' ``x'_max') ylabel(none) ytick(0 300)
-local names   G`k' `names'
-local ++k 
-}
-}
-set graph on
-grc1leg `names', cols(8) name(upleft, replace)
 */
-
-
-
-
-
-
-/*
-* new Y
-tab1 sum_borrowerservices_1_r_2 sum_borrowerservices_2_r_2 sum_borrowerservices_3_r_2 sum_borrowerservices_4_r_2
-/*
-Ok pour 1 2 3
-1 free service
-2 work for less wage
-3 provide support whenever he need
-*/
-
-tab1 sum_plantorepay_1_r_2 sum_plantorepay_2_r_2 sum_plantorepay_3_r_2 sum_plantorepay_4_r_2 sum_plantorepay_5_r_2 sum_plantorepay_6_r_2 
-/*
-Ok pour 6
-6 borrowing elsewhere
-*/
-
-tab1 sum_settleloanstrategy_1_r_2 sum_settleloanstrategy_2_r_2 sum_settleloanstrategy_3_r_2 sum_settleloanstrategy_4_r_2 sum_settleloanstrategy_5_r_2 sum_settleloanstrategy_6_r_2 sum_settleloanstrategy_7_r_2 sum_settleloanstrategy_8_r_2 sum_settleloanstrategy_9_r_2 sum_settleloanstrategy_10_r_2
-/*
-Ok pour 3 4 6 7 8
-3 borrowing elsewhere
-4 selling something which was not planned
-6 consumption reduction
-7 take an additional job
-8 work more
-*/
-
-tab1 sum_borrowerservices_1_r_2 sum_borrowerservices_2_r_2 sum_borrowerservices_3_r_2 sum_plantorepay_6_r_2 sum_settleloanstrategy_3_r_2 sum_settleloanstrategy_4_r_2 sum_settleloanstrategy_6_r_2 sum_settleloanstrategy_7_r_2 sum_settleloanstrategy_8_r_2
-
-tab sum_plantorepay_6_r_2 sum_settleloanstrategy_3_r_2
-
-tabstat sum_borrowerservices_3_r_2 dummyhelptosettleloan_indiv_2 sum_settleloanstrategy_8_r_2 sum_plantorepay_6_r_2 if indebt_indiv_2==1 , stat(n mean) by(segmana)
-
-tabstat loans_indiv_2 debtshare_2 ISR_indiv_2 FormR_indiv_2 InformR_indiv_2 if indebt_indiv_2==1, stat(n mean sd p50) by(segmana)
-
-oneway loans_indiv_2 segmana
-
-tabstat over40_indiv_2 if indebt_indiv_2==1, stat(n mean) by(segmana)
-
-oneway over40_indiv_2 segmana
-tab over40_indiv_2 segmana, chi2 nofreq
-
-
-
-
-********** Tester nouveaux Y
-
-
-*Relation
-replace sum_debtrelation_shame_2=1 if sum_debtrelation_shame_2>1
-rename sum_debtrelation_shame_2 debtrelation_shame_2
-replace debtrelation_shame_2=. if indebt_indiv_2==0
-tab debtrelation_shame_2 segmana, col nofreq
-*/
-
 
 ****************************************
 * END

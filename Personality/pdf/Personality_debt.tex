@@ -333,7 +333,7 @@ As stated earlier, our survey allow us to construct measures of cognitive skills
 It include three score variables: literacy, numeracy, Raven\footnote{Raven test is ``a nonverbal test of mental ability consisting of abstract designs, each of which is missing one part. The participant chooses the missing component from several alternatives to complete each design.'' -- \url{https://dictionary.apa.org/ravens-progressive-matrices}. Accessed January 27, 2021.}.
 These scores are construct in adding up the correct answers of a set of four questions for literacy and numeracy (six for 2020-21) test and 36 for Raven.
 
-Concerning Big-5, on the basis of 35 questions, we averaged answers --based on a Likert scale from 1-``Almost Never'' to 5-``Almost always'', that belong to a determined trait after correcting for acquiescence bias\footnote{Acquiescence bias represent the ``tendency for survey respondents to agree with statements regardless of their content'' \citep{Lavrakas2008}.} (see Appendix \ref{section:efa_big5}).
+Concerning Big-5, on the basis of 35 questions, we averaged answers --based on a Likert scale from 1-``Almost Never'' to 5-``Almost always'', that belong to a determined trait after correcting for acquiescence bias\footnote{Acquiescence bias represent the ``tendency for survey respondents to agree with statements regardless of their content'' \citep{Lavrakas2008}.} (we also create Big-5 personality traits non-corrected from acquiesence bias)(see Appendix \ref{section:efa_big5}).
 The resulting mean represent the score on each traits.
 
 \citeauthor{McDonald1999}'s $\Upomega$\footnote{Literature on internal consistency estimators increasingly agrees that \citeauthor{Cronbach1951}'s $\upalpha$ --the most wide used estimator, is maybe not very efficient \citep{Bourque2019, TrizanoHermosilla2016}.}, a measure of internal consistency, are mostly satisfactory for 2016-17 data corrected from acquiescence bias: 0.81 for openness; 0.86 for conscientiousness; 0.59 for extraversion; 0.60 for agreeableness and 0.80 for emotional stability (see Figure \ref{fig:omega}).
@@ -350,14 +350,11 @@ We, therefore, implement our own exploratory factor analysis to identitfy person
 
 \paragraph{Factor analysis}
 As warned by \cite{Laajaj2019}, the Big-Five taxonomy is limited in developing countries for several reasons: the enumerator-respondent interactions in face-to-face survey can induce a bias; the low education levels can make questions more difficult to understand and can induce a systematic response patterns, especially the acquiescence bias.
-
 The very good knownledge of the field\footnote{More than 20 years.} allow us to collect data of high quality and avoid a bias due to misunderstanding of questions.
 Moreover, we implement our own factor analysis of the 35 questions by principal component with promax rotation.
-To avoid a bias in factor analysis, we do not corrected for acquiescence bias. % because it suppose that one reverse questions have the same meaning as one question.
-In our dataset, acquiesence bias is measure with a set of reverse questions that are supposed perfectly opposed to another set of questions. 
-However, the assumption of opposition is supportable only in the Big-5 taxonomy, in another layout pairs of questions can measure different aspects of personality.
+To avoid a bias in factor analysis, we do not recoded reverse questions beause it might force likeness with Big-5 taxonomy\footnote{In our dataset, acquiesence bias is measure with a set of reverse questions that are supposed perfectly opposed to another set of questions.  However, the assumption of opposition is supportable only in the Big-5 taxonomy, in another layout pairs of questions can measure different aspects of personality.}.
 
-The resulting factors for 2016-17 data are relatively similar to the Big-5 personality traits with satisfactory \citeauthor{McDonald1999}'s $\Upomega$: Factor 1 as Extraversion-Openness ($\Upomega=0.91)$; Factor 2 as Conscientiousness ($\Upomega=0.87)$; Factor 3 as Emotional stability-Conscientiousness ($\Upomega=0.76)$; Factor 4 as Emotional stability ($\Upomega=0.81)$ and Factor 5 as Agreeableness ($\Upomega=0.64)$ (see Appendix \ref{section:efa_big5}).
+The resulting factors for 2016-17 data are relatively similar to the Big-5 personality traits with satisfactory \citeauthor{McDonald1999}'s $\Upomega$: Factor 1 as Openness-Extraversion ($\Upomega=0.91)$; Factor 2 as Conscientiousness ($\Upomega=0.88)$; Factor 3 as (bordelique bavard vs stable) ($\Upomega=0.69)$; Factor 4 as Emotional stability ($\Upomega=0.78)$ and Factor 5 as Agreeableness ($\Upomega=0.62)$ (see Appendix \ref{section:efa_big5}).
 The resulting factors for 2020-21 data are very different to the Big-5 taxonomy and to the 2016-17 factors: Factor 1 as Sociability (); Factor 2 as Conscientiousness (); Factor 3 as Emotional stability (); Factor 4 as () and Factor 5 as ().
 
 \paragraph{Life-cycle effects}
@@ -440,7 +437,7 @@ Y_{i}=\upbeta_{0}+X'_{i}*\upbeta_{1}+C'_{i}*\upbeta_{2}+Z'_{i}*\upbeta_{3}+\upbe
 \end{split}
 \end{equation}
 
-\paragraph{How does PT\&CS variation correlate with indebtedness variation?}
+\paragraph{How PT\&CS variation is correlated with indebtedness variation?}
 In a second step, we fully accept the non-stability of personality traits by using the variation of Big-5 personality traits ($X'_{it}$) through time (2016-17 and 2020-21) on debt evolution with fixed effect regressions (eq. \ref{eq:fe}). 
 Unlike the previous approach (\textit{How PT\&CS shape individual debt?}), we do not use personality traits from factor analysis insofar as factor for 2016-17 are different from those for 2020-21. 
 We use the same debt measures as before: the total amount of debt and the individual debt service ratio ($Y_{i}$).
@@ -549,7 +546,7 @@ In terms of cognitive skills, male tends to have higher score.
 
 \begin{figure}[ht]
 \raggedright
-\includegraphics[width=\textwidth]{INPUT/Kernel_PTCS_raw}
+\includegraphics[width=\textwidth]{INPUT/Kernel_PTCS_raw_new}
 \caption{Distribution of PT\&CS -- The resulting personality trait from factor analysis and Big-5 taxonomy are based on the standardised residual from univariate OLS regression with age as exogenous variable. This is the personality trait purged from life-cycle effects.}
 \sourcefig{NEEMSIS-1 (2016-17) \& NEEMSIS-2 (2020-21); author's calculations.}
 \label{fig:PTCS}
@@ -573,60 +570,33 @@ Reminder:
 \end{itemize}
 
 \subsection{How PT\&CS shape individual debt?}
-
-
 Table \ref{tab:ame_indebt} presents the results from the multivariate probit analysis of the first stage of the Heckman procedure. 
-The marginal effects (ME) at representative values on the predicted value of the PT\&CS are reported for the four specifications (without interaction, with gender interaction, with caste interaction, with gender \& caste interaction).
-
+The marginal effects (ME) at representative values on the predicted value of the PT\&CS are reported for the four specifications (without interaction (1), with gender interaction (2), with caste interaction (3), with gender \& caste interaction (4)).
+To ensure that Heckman procedure 
 
 \subimport{INPUT}{AME_indebt.tex}
 
 \begin{itemize}
-\item All else being equal, one more point on the EXOP score reduces the probability of being in debt by 2.7 percentage points (pp).
-\item For a female, all else being equal, one more point on the EXOP score reduces the probability of being in debt by 3.7 pp.
-\item For a non-dalit individual, all else being equal, one more point on the EXOP score reduces the probability of being in debt by 6.5 pp.
-\item For a non-dalit female, all else being equal, one more point on the EXOP score reduces the probability of being in debt by 8.5 pp.
-\item[----]
-\item For a female, all else being equal, one more point on the Conscientiousness score, reduces the probability of being in debt by 3.8 pp.
-\item For a non-dalit male, all else being equal, one more point on the Conscientiousness score, increases the probability of being in debt by 6.9 pp.
-\item For a non-dalit female, all else being equal, one more point on the Conscientiousness score, reduces the probability of being in debt by 6.4 pp.
-\item[----]
-\item For a non-dalit female, all else being equal, one more point on the ESCO, increases the probability of being in debt by 6.9 pp.
-\item[----] 
-\item For a dalit male, all else being equal, one more point on the Emotional Stability score, increases the probability of being in debt by 4.9 pp.
-\item[----]
-\item For a non-dalit individual, all else being equal, one more point on the Agreeableness score, reduces the probability of being in debt by 3.8 pp.
-\item[----]
-\item For a female, all else being equal, one more point at the Literacy test, increases the probability of being in debt by 3.8 pp.
+\item All else being equal, one more point on the EXOP score reduces the probability of being in debt by 3.3 percentage points (pp).
+\item For a female, all else being equal, one more point on the EXOP score reduces the probability of being in debt by 4.8 pp.
+\item For a non-dalit individual, all else being equal, one more point on the EXOP score reduces the probability of being in debt by 8.1 pp.
+\item For a non-dalit female, all else being equal, one more point on the EXOP score reduces the probability of being in debt by 11.1 pp.
+\item For a male, all else being equal, one more point on the Conscientiousness score, increase the probability of being in debt by 4.5 pp.
+
+\item Other things equal, for the average female, one more point at the literacy test increase the probability of being in debt by 4.7 pp.
 \end{itemize}
 
-Other things equal, among non-dalit female, those with higher EXOP have a lower probability of being in debt and those with higher Conscientiousness too (and the effect of EXOP is higher than the effect of Conscientiousness -- 2.1 pp more). 
-However, non-dalit female with higher ESCO are more likely to be in debt than other non-dalit female.
 
 
 
-
-
-\clearpage
-\newpage
-\paragraph*{Total loan amount in 2020-21}
 
 \subimport{INPUT}{AME_loanamount.tex}
 
 \begin{itemize}
-\item All else being equal, an individual with one more point on the EXOP score is predicted to have 15,365 INR of debt in more.
-\item AEBE, a female with one more point on the EXOP score is predicted to have 11,151 INR of debt in more.
-\item AEBE, a middle-upper caste individual with one more point on the EXOP score is predicted to have 32,393 INR of debt in more.
-\item AEBE, a middle-upper caste male with one more point on the EXOP score is predicted to have 47,340 INR of debt in more.
-\item[----]
-\
+\item All else being equal, an individual with one more point on the EXOP score is predicted to have 16,393 INR of debt in more.
+\item AEBE, a middle-upper caste individual with one more point on the EXOP score is predicted to have 23,584 INR of debt in more.
 \end{itemize}
 
-
-
-\clearpage
-\newpage
-\paragraph*{Debt service ratio in 2020-21 -- Table \ref{tab:ame_idsr}}
 
 \subimport{INPUT}{AME_IDSR.tex}
 
@@ -635,8 +605,18 @@ However, non-dalit female with higher ESCO are more likely to be in debt than ot
 
 
 
-%Turning to the amount of debt, 
+\subsection{How PT\&CS variation is correlated with indebtedness variation?}
 
+\subimport{INPUT}{AME_FE_loanamount.tex}
+
+\subimport{INPUT}{AME_FE_IDSR.tex}
+
+
+
+%Turning to the amount of debt, 
+\subsection{How PT\&CS shape the indebtedness path?}
+
+\subimport{INPUT}{AME_debtpath.tex}
 
 
 
@@ -779,8 +759,31 @@ However, non-dalit female with higher ESCO are more likely to be in debt than ot
 \end{figure}
 
 
+\clearpage
+\newpage
+% ***********************************
+\section{Detailed tables}
+\label{app:rob}
+% ***********************************
+%\subimport{INPUT}{complet_indebt.tex}
+\subimport{INPUT}{complet_loanamount.tex}
+\subimport{INPUT}{complet_IDSR.tex}
+\subimport{INPUT}{complet_FE_loanamount.tex}
+\subimport{INPUT}{complet_FE_IDSR.tex}
 
 
+
+\clearpage
+\newpage
+% ***********************************
+\section{Robustness check}
+\label{app:rob}
+% ***********************************
+
+\subimport{INPUT}{AME_indebt_b5.tex}
+\subimport{INPUT}{AME_loanamount_b5.tex}
+\subimport{INPUT}{AME_IDSR_b5.tex}
+\subimport{INPUT}{AME_debtpath_b5.tex}
 
 
 
