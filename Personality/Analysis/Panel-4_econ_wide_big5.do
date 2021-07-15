@@ -22,17 +22,17 @@ clear all
 macro drop _all
 set scheme plotplain
 ********** Path to folder "data" folder.
-*global directory = "D:\Documents\_Thesis\Research-Skills_and_debt\Analysis"
-*cd"$directory"
+global directory = "D:\Documents\_Thesis\Research-Skills_and_debt\Analysis"
+cd"$directory"
 
 
 *Fac
-cd "C:\Users\anatal\Downloads\_Thesis\Research-Skills_and_debt\Analysis"
-set scheme plotplain
+*cd "C:\Users\anatal\Downloads\_Thesis\Research-Skills_and_debt\Analysis"
+*set scheme plotplain
 
-global git "C:\Users\anatal\Downloads\GitHub"
-global dropbox "C:\Users\anatal\Downloads\Dropbox"
-global thesis "C:\Users\anatal\Downloads\_Thesis\Research-Skills_and_debt\Analysis"
+*global git "C:\Users\anatal\Downloads\GitHub"
+*global dropbox "C:\Users\anatal\Downloads\Dropbox"
+*global thesis "C:\Users\anatal\Downloads\_Thesis\Research-Skills_and_debt\Analysis"
 
 
 

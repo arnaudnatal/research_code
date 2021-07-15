@@ -354,7 +354,7 @@ The very good knownledge of the field\footnote{More than 20 years.} allow us to 
 Moreover, we implement our own factor analysis of the 35 questions by principal component with promax rotation.
 To avoid a bias in factor analysis, we do not recoded reverse questions beause it might force likeness with Big-5 taxonomy\footnote{In our dataset, acquiesence bias is measure with a set of reverse questions that are supposed perfectly opposed to another set of questions.  However, the assumption of opposition is supportable only in the Big-5 taxonomy, in another layout pairs of questions can measure different aspects of personality.}.
 
-The resulting factors for 2016-17 data are relatively similar to the Big-5 personality traits with satisfactory \citeauthor{McDonald1999}'s $\Upomega$: Factor 1 as Openness-Extraversion ($\Upomega=0.91)$; Factor 2 as Conscientiousness ($\Upomega=0.88)$; Factor 3 as (bordelique bavard vs stable) ($\Upomega=0.69)$; Factor 4 as Emotional stability ($\Upomega=0.78)$ and Factor 5 as Agreeableness ($\Upomega=0.62)$ (see Appendix \ref{section:efa_big5}).
+The resulting factors for 2016-17 data are relatively similar to the Big-5 personality traits with satisfactory \citeauthor{McDonald1999}'s $\Upomega$: Factor 1 as Openness-Extraversion ($\Upomega=0.91)$; Factor 2 as Conscientiousness ($\Upomega=0.88)$; Factor 3 as Loquacious --easily distracted, put off duties, talkative, helpful with others-- ($\Upomega=0.69)$; Factor 4 as Emotional stability ($\Upomega=0.78)$ and Factor 5 as Agreeableness ($\Upomega=0.62)$ (see Appendix \ref{section:efa_big5}).
 The resulting factors for 2020-21 data are very different to the Big-5 taxonomy and to the 2016-17 factors: Factor 1 as Sociability (); Factor 2 as Conscientiousness (); Factor 3 as Emotional stability (); Factor 4 as () and Factor 5 as ().
 
 \paragraph{Life-cycle effects}
@@ -562,11 +562,11 @@ In terms of cognitive skills, male tends to have higher score.
 
 Reminder:
 \begin{itemize}
-\item[F1] EX-OP
+\item[F1] EX-OP (like to think, expressing thoughts, active imagination, sharefeelings, new ideas, curious, inventive, talk to many people)
 \item[F2] CO
-\item[F3] ES-CO
-\item[F4] ES (Neurotcism?)
-\item[F5] Agreeableness
+\item[F3] Loquacious (easily distracted, put off duties, talkative, helpful with others). Qui parle volontiers et abondamment.
+\item[F4] ES
+\item[F5] AG
 \end{itemize}
 
 \subsection{How PT\&CS shape individual debt?}
@@ -631,8 +631,8 @@ To ensure that Heckman procedure
 % Pose la question de l'inclusion financière
 
 
-% \clearpage
-% \newpage
+\clearpage
+\newpage
 %-------------------------------------------------------------------------------%
 %\begin{nolinenumbers}
 \addcontentsline{toc}{section}{References}
@@ -762,20 +762,6 @@ To ensure that Heckman procedure
 \clearpage
 \newpage
 % ***********************************
-\section{Detailed tables}
-\label{app:rob}
-% ***********************************
-%\subimport{INPUT}{complet_indebt.tex}
-\subimport{INPUT}{complet_loanamount.tex}
-\subimport{INPUT}{complet_IDSR.tex}
-\subimport{INPUT}{complet_FE_loanamount.tex}
-\subimport{INPUT}{complet_FE_IDSR.tex}
-
-
-
-\clearpage
-\newpage
-% ***********************************
 \section{Robustness check}
 \label{app:rob}
 % ***********************************
@@ -785,6 +771,24 @@ To ensure that Heckman procedure
 \subimport{INPUT}{AME_IDSR_b5.tex}
 \subimport{INPUT}{AME_debtpath_b5.tex}
 
+
+
+\clearpage
+\newpage
+% ***********************************
+\section{Detailed tables}
+\label{app:rob}
+% ***********************************
+\subimport{INPUT}{complet_indebt.tex}
+\clearpage
+\newpage
+\subimport{INPUT}{complet_fe.tex}
+\clearpage
+\newpage
+\subimport{INPUT}{complet_debtpath.tex}
+\clearpage
+\newpage
+\subimport{INPUT}{complet_indebt_b5.tex}
 
 
 
