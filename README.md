@@ -75,7 +75,7 @@ Sinon, Jalil peut activer son réseau en Angleterre.
 
 - [ ] Trouver une autre var ER (puis suridentification et pq pas dans les réseaux(?))
 - [x] Vérifier nb obs pour les FE et relancer en codant .=0
-- [ ] Vérifier la stabilité des compétences cognitives dans le temps
+- [x] Vérifier la stabilité des compétences cognitives dans le temps
 - [ ] Jeter un coup d'oeil au Young Live Survey pour montrer que personne dans les PED ne regarde la stabilité
-- [ ] quantile regression ok pour total sample puis male and female sample. Étant donné que les castes suivent à peu près la distribution. Ne pas mettre d'interaction, rend l'étude trop peu interprétative.
+- [x] quantile regression ok pour total sample puis male and female sample. Étant donné que les castes suivent à peu près la distribution. Ne pas mettre d'interaction, rend l'étude trop peu interprétative.
 	
