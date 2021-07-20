@@ -740,6 +740,7 @@ restore
 ****************************************
 *Nb
 tab nbdec  // 0-403; 1-297; 2-115; 3-20
+tab1 dec_raven_tt dec_num_tt dec_lit_tt
 tab dec_raven_tt if nbdec==1  // 234=78.79
 tab dec_num_tt if nbdec==1  // 37=12.46
 tab dec_lit_tt if nbdec==1  // 26=8.75
