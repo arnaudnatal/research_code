@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.22 (MiKTeX 21.6.28) (preloaded format=pdflatex 2021.7.10)  19 JUL 2021 15:38
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (MiKTeX 21.6.28) (preloaded format=pdflatex 2021.7.10)  21 JUL 2021 01:25
 entering extended mode
 **./Personality_debt.tex
 (Personality_debt.tex
@@ -1817,35 +1817,47 @@ Underfull \hbox (badness 10000) in paragraph at lines 72--73
 
 [1
 
-{C:/Users/Arnaud/AppData/Local/MiKTeX/pdftex/config/pdftex.map}] [2] [3]
-[4] [5]
+{C:/Users/Arnaud/AppData/Local/MiKTeX/pdftex/config/pdftex.map}] [2]
+
+Package natbib Warning: Citation `Guerin2020' on page 3 undefined on input line
+ 256.
+
+[3] [4] [5]
 
 pdfTeX warning: pdflatex (file ./INPUT/omega.pdf): PDF inclusion: found PDF ver
 sion <1.6>, but at most version <1.5> allowed
-<INPUT/omega.pdf, id=358, 433.62pt x 289.08pt>
+<INPUT/omega.pdf, id=354, 433.62pt x 289.08pt>
 File: INPUT/omega.pdf Graphic file (type pdf)
 <use INPUT/omega.pdf>
 Package pdftex.def Info: INPUT/omega.pdf  used on input line 357.
 (pdftex.def)             Requested size: 346.89647pt x 231.2643pt.
-[6 <./INPUT/omega.pdf>] [7] [8] [9] [10] [11] (INPUT/desc_HH.tex) [12] [13]
-(INPUT/desc_indiv.tex)
+[6 <./INPUT/omega.pdf>] [7] [8]
+
+LaTeX Warning: `!h' float specifier changed to `!ht'.
+
+[9] [10] (INPUT/desc_HH.tex) [11] [12] (INPUT/desc_indiv.tex)
 
 pdfTeX warning: pdflatex (file ./INPUT/Kernel_PTCS_raw.pdf): PDF inclusion: fou
 nd PDF version <1.6>, but at most version <1.5> allowed
-<INPUT/Kernel_PTCS_raw.pdf, id=555, 433.62pt x 289.08pt>
+<INPUT/Kernel_PTCS_raw.pdf, id=549, 433.62pt x 289.08pt>
 File: INPUT/Kernel_PTCS_raw.pdf Graphic file (type pdf)
 <use INPUT/Kernel_PTCS_raw.pdf>
-Package pdftex.def Info: INPUT/Kernel_PTCS_raw.pdf  used on input line 612.
+Package pdftex.def Info: INPUT/Kernel_PTCS_raw.pdf  used on input line 608.
 (pdftex.def)             Requested size: 455.24411pt x 303.51207pt.
-[14 <./INPUT/Kernel_PTCS_raw.pdf>] [15] (INPUT/AME_indebt.tex) [16]
-(INPUT/AME_loanamount.tex) [17] (INPUT/AME_IDSR.tex)
+[13 <./INPUT/Kernel_PTCS_raw.pdf>] [14] (INPUT/AME_indebt.tex) [15]
+(INPUT/AME_loanamount.tex) [16] (INPUT/AME_IDSR.tex)
 (INPUT/AME_FE_loanamount.tex) (INPUT/AME_FE_IDSR.tex) (INPUT/AME_debtpath.tex)
-[18] [19] [20] [21] [22
+[17] [18] [19] [20]
 
-] (Personality_debt.bbl [23
+Package natbib Warning: Citation `Guerin2020' on page 21 undefined on input lin
+e 735.
+
+[21
+
+] [22] (Personality_debt.bbl [23
 
 ]
-Underfull \hbox (badness 10000) in paragraph at lines 665--683
+Underfull \hbox (badness 10000) in paragraph at lines 699--717
 \T1/jkptt/m/n/10.95 topics / social [] -identity / caste [] -gaps [] -in [] -be
 haviour [] -and [] -personality [] -traits [] -a []
  []
@@ -1854,19 +1866,19 @@ haviour [] -and [] -personality [] -traits [] -a []
 
 pdfTeX warning: pdflatex (file ./INPUT/deltacont_raw.pdf): PDF inclusion: found
  PDF version <1.6>, but at most version <1.5> allowed
-<INPUT/deltacont_raw.pdf, id=761, 433.62pt x 289.08pt>
+<INPUT/deltacont_raw.pdf, id=768, 433.62pt x 289.08pt>
 File: INPUT/deltacont_raw.pdf Graphic file (type pdf)
 <use INPUT/deltacont_raw.pdf>
-Package pdftex.def Info: INPUT/deltacont_raw.pdf  used on input line 839.
+Package pdftex.def Info: INPUT/deltacont_raw.pdf  used on input line 855.
 (pdftex.def)             Requested size: 372.91255pt x 248.60835pt.
 
 
 pdfTeX warning: pdflatex (file ./INPUT/deltacont_cor.pdf): PDF inclusion: found
  PDF version <1.6>, but at most version <1.5> allowed
-<INPUT/deltacont_cor.pdf, id=762, 433.62pt x 289.08pt>
+<INPUT/deltacont_cor.pdf, id=769, 433.62pt x 289.08pt>
 File: INPUT/deltacont_cor.pdf Graphic file (type pdf)
 <use INPUT/deltacont_cor.pdf>
-Package pdftex.def Info: INPUT/deltacont_cor.pdf  used on input line 847.
+Package pdftex.def Info: INPUT/deltacont_cor.pdf  used on input line 863.
 (pdftex.def)             Requested size: 372.91255pt x 248.60835pt.
 [29 <./INPUT/deltacont_raw.pdf> <./INPUT/deltacont_cor.pdf>] (INPUT/Big5.tex)
 [30
@@ -1875,19 +1887,19 @@ Package pdftex.def Info: INPUT/deltacont_cor.pdf  used on input line 847.
 
 pdfTeX warning: pdflatex (file ./INPUT/factor2016_2.pdf): PDF inclusion: found 
 PDF version <1.6>, but at most version <1.5> allowed
-<INPUT/factor2016_2.pdf, id=794, 433.62pt x 289.08pt>
+<INPUT/factor2016_2.pdf, id=801, 433.62pt x 289.08pt>
 File: INPUT/factor2016_2.pdf Graphic file (type pdf)
 <use INPUT/factor2016_2.pdf>
-Package pdftex.def Info: INPUT/factor2016_2.pdf  used on input line 869.
+Package pdftex.def Info: INPUT/factor2016_2.pdf  used on input line 885.
 (pdftex.def)             Requested size: 455.24411pt x 303.51207pt.
 
 
 pdfTeX warning: pdflatex (file ./INPUT/matrix_b5_efa.pdf): PDF inclusion: found
  PDF version <1.6>, but at most version <1.5> allowed
-<INPUT/matrix_b5_efa.pdf, id=795, 433.62pt x 289.08pt>
+<INPUT/matrix_b5_efa.pdf, id=802, 433.62pt x 289.08pt>
 File: INPUT/matrix_b5_efa.pdf Graphic file (type pdf)
 <use INPUT/matrix_b5_efa.pdf>
-Package pdftex.def Info: INPUT/matrix_b5_efa.pdf  used on input line 878.
+Package pdftex.def Info: INPUT/matrix_b5_efa.pdf  used on input line 894.
 (pdftex.def)             Requested size: 368.57874pt x 245.71915pt.
 [31
 
@@ -1896,10 +1908,10 @@ Package pdftex.def Info: INPUT/matrix_b5_efa.pdf  used on input line 878.
 
 pdfTeX warning: pdflatex (file ./INPUT/imr_check.pdf): PDF inclusion: found PDF
  version <1.6>, but at most version <1.5> allowed
-<INPUT/imr_check.pdf, id=823, 433.62pt x 289.08pt>
+<INPUT/imr_check.pdf, id=830, 433.62pt x 289.08pt>
 File: INPUT/imr_check.pdf Graphic file (type pdf)
 <use INPUT/imr_check.pdf>
-Package pdftex.def Info: INPUT/imr_check.pdf  used on input line 899.
+Package pdftex.def Info: INPUT/imr_check.pdf  used on input line 915.
 (pdftex.def)             Requested size: 368.57874pt x 245.71915pt.
 [32
 
@@ -1929,6 +1941,9 @@ LaTeX Warning: Float too large for page by 10.03424pt on input line 98.
 
 
 
+Package natbib Warning: There were undefined citations.
+
+
 AED: lastpage setting LastPage
 [47]
 \tf@thm=\write6
@@ -1943,12 +1958,12 @@ Package rerunfilecheck Info: File `Personality_debt.out' has not changed.
  ) 
 Here is how much of TeX's memory you used:
  37329 strings out of 478847
- 686531 string characters out of 2847912
- 1384392 words of memory out of 3000000
+ 686536 string characters out of 2847912
+ 1384428 words of memory out of 3000000
  53568 multiletter control sequences out of 15000+600000
- 622178 words of font info for 659 fonts, out of 8000000 for 9000
+ 622127 words of font info for 659 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 89i,20n,95p,830b,1072s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 89i,20n,95p,830b,1074s stack positions out of 5000i,500n,10000p,200000b,80000s
 pdfTeX warning (dest): name{Hfootnote.30} has been referenced but does not ex
 ist, replaced by a fixed one
 
@@ -2058,9 +2073,9 @@ kpfonts/jkpsy.pfb><C:/Users/Arnaud/AppData/Local/Programs/MiKTeX/fonts/type1/pu
 blic/kpfonts/jkpsyb.pfb><C:/Users/Arnaud/AppData/Local/Programs/MiKTeX/fonts/ty
 pe1/public/kpfonts/jkpttmn8a.pfb><C:/Users/Arnaud/AppData/Local/Programs/MiKTeX
 /fonts/type1/tfrupee/tfrupee.pfb>
-Output written on Personality_debt.pdf (47 pages, 5321106 bytes).
+Output written on Personality_debt.pdf (47 pages, 5323214 bytes).
 PDF statistics:
- 1067 PDF objects out of 1200 (max. 8388607)
+ 1075 PDF objects out of 1200 (max. 8388607)
  208 named destinations out of 1000 (max. 500000)
  145632 words of extra memory for PDF output out of 154059 (max. 10000000)
 
