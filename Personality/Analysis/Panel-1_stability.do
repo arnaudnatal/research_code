@@ -399,6 +399,38 @@ set graph on
 * CAT PLOT
 ****************************************
 
+********** Corrected - Non corrected
+preserve
+foreach x in OP CO EX AG ES Grit {
+rename cat_diff_cr_`x' cat_diff_`x'2
+rename cat_diff_`x' cat_diff_`x'1
+}
+gen corr2=1
+gen corr1=0
+egen HHINDID=concat(HHID_panel INDID_panel), p(/)
+order HHINDID
+sort HHINDID
+reshape long cat_diff_OP cat_diff_CO cat_diff_EX cat_diff_AG cat_diff_ES cat_diff_Grit corr, i(HHINDID) j(n)
+order HHINDID corr cat_diff_OP cat_diff_CO cat_diff_EX cat_diff_AG cat_diff_ES cat_diff_Grit
+sort HHINDID
+*Graph
+set graph off
+foreach x in OP CO EX AG ES Grit {
+catplot corr cat_diff_`x', asyvars percent(corr) recast(bar) ///
+ylabel(, labsize(vsmall)) ytitle("Percent", size(small)) ///
+var2opts(label(labsize(vsmall) angle(45))) ///
+title("`x'", size(small)) ///
+name(g_`x', replace) legend(order(1 "Non-corrected" 2 "Corrected") col(3) size(vsmall)) blabel(bar, format(%4.1f) size(tiny) angle(45))
+}
+grc1leg g_OP g_CO g_EX g_AG g_ES, leg(g_OP) pos(6) cols(3)
+graph save "$git\Analysis\Personality\Big-5\diff_cor_ncor.gph", replace
+graph export "$git\RUME-NEEMSIS\Big-5\diff_cor_ncor.svg", as(svg) replace
+graph export "$git\Analysis\Personality\Big-5\diff_cor_ncor.pdf", as(pdf) replace
+set graph on
+restore
+
+
+
 ********** Corrected
 *ssc install catplot
 *Gender
