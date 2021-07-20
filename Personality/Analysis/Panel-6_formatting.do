@@ -28,7 +28,7 @@ cd"$directory"
 
 *Fac
 *cd "C:\Users\anatal\Downloads\_Thesis\Research-Skills_and_debt\Analysis"
-*set scheme plotplain
+set scheme plotplain
 
 *global git "C:\Users\anatal\Downloads\GitHub"
 *global dropbox "C:\Users\anatal\Downloads\Dropbox"
@@ -69,7 +69,7 @@ i=3 --> at=1 (middle-upper male) at=2 (dalits male) at=3 (middle-upper female) a
 */
 
 *cap ssc inst sxpose
-foreach x in indebt_indiv heck_DSR_indiv heck_loanamount_indiv1000 FE_loanamount_indiv1000 FE_DSR_indiv b5_indebt_indiv b5_heck_loanamount_indiv1000 b5_heck_DSR_indiv { //b5_indebt_indiv b5_heck_loanamount_indiv1000 b5_heck_DSR_indiv loanamount_indiv1000 DSR_indiv b5_loanamount_indiv1000 b5_DSR_indiv delta2_loanamount_indiv delta2_DSR_indiv b5_delta2_loanamount_indiv b5_delta2_DSR_indiv  {
+foreach x in indebt_indiv heck_loanamount_indiv1000 heck_DSR_indiv FE_loanamount_indiv1000 FE_DSR_indiv b5_indebt_indiv b5_heck_loanamount_indiv1000 b5_heck_DSR_indiv { //b5_indebt_indiv b5_heck_loanamount_indiv1000 b5_heck_DSR_indiv loanamount_indiv1000 DSR_indiv b5_loanamount_indiv1000 b5_DSR_indiv delta2_loanamount_indiv delta2_DSR_indiv b5_delta2_loanamount_indiv b5_delta2_DSR_indiv  {
 *foreach x in FE_loanamount_indiv1000 FE_DSR_indiv {
 forvalues i=1(1)4{
 *****
@@ -77,7 +77,7 @@ forvalues i=1(1)4{
 preserve
 use"margin_`x'`i'", clear
 
-label define cog 1"C-1" 2"C-2" 3"C-3" 4"C-4" 5"C-5" 6"Raven" 7"Numeracy" 8"Literacy", replace
+label define cog 1"C-1" 2"C-2" 3"C-3" 4"C-4" 5"C-5" 6"Raven (std)" 7"Numeracy (std)" 8"Literacy (std)", replace
 label values _deriv cog
 decode _deriv, gen(deriv)
 tostring _at, gen(at)
@@ -206,7 +206,7 @@ export excel using "margins.xlsx", sheet("`x'", replace) firstrow(varlabels)
 
 
 
-
+/*
 
 
 
@@ -216,17 +216,17 @@ export excel using "margins.xlsx", sheet("`x'", replace) firstrow(varlabels)
 
 
 ******* Debtpath
-foreach x in debtpath { //b5_debtpath { 
+foreach x in debtpath  b5_debtpath { 
 forvalues i=1(1)4{
 *****
 *****
 preserve
 use"margin_`x'`i'", clear
 
-label define cog 1"C-1" 2"C-2" 3"C-3" 4"C-4" 5"C-5" 6"Raven" 7"Numeracy" 8"Literacy", replace
+label define cog 1"C-1" 2"C-2" 3"C-3" 4"C-4" 5"C-5" 6"Raven (std)" 7"Numeracy (std)" 8"Literacy (std)", replace
 label values _deriv cog
 
-label define pred 1"Never in debt" 2"Out of debt" 3"Becomes in debt" 4"Always in debt"
+label define pred 1"Never in debt" 2"Out of debt" 3"Became in debt" 4"Always in debt"
 label values _predict pred
 
 
@@ -289,7 +289,7 @@ dropmiss, force
 
 replace predict="Never in debt" if predict=="1"
 replace predict="Out of debt" if predict=="2"
-replace predict="Becomes in debt" if predict=="3"
+replace predict="Became in debt" if predict=="3"
 replace predict="Always in debt" if predict=="4"
 
 save"margin_`x'`i'_new", replace

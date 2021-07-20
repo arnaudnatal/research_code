@@ -338,6 +338,24 @@ tabstat diff_CO diff_OP diff_ES diff_EX diff_AG delta_CO delta_OP delta_ES delta
 
 
 
+********** Standardiser les compétences cognitives
+tabstat base_raven_tt raven_tt_1 raven_tt_2 base_lit_tt lit_tt_1 lit_tt_2 base_num_tt num_tt_1 num_tt_2, stat(n mean sd p50)
+foreach x in raven_tt_1 raven_tt_2 base_raven_tt base_lit_tt lit_tt_1 lit_tt_2 base_num_tt num_tt_1 num_tt_2 {
+egen std_`x'=std(`x')
+drop `x'
+rename std_`x' `x'
+}
+label var base_raven_tt "Raven (std)"
+label var raven_tt_1 "Raven (std)"
+label var raven_tt_2 "Raven (std)"
+label var base_lit_tt "Literacy (std)"
+label var lit_tt_1 "Literacy (std)"
+label var lit_tt_2 "Literacy (std)"
+label var base_num_tt "Numeracy (std)"
+label var num_tt_1 "Numeracy (std)"
+label var num_tt_2 "Numeracy (std)"
+tabstat base_raven_tt raven_tt_1 raven_tt_2 base_lit_tt lit_tt_1 lit_tt_2 base_num_tt num_tt_1 num_tt_2, stat(n mean sd p50)
+
 ********** Interaction 
 fre caste2
 gen dalits=0 if caste2==2
@@ -377,6 +395,7 @@ restore
 merge m:1 HHID_panel using "NEEMSIS2-username"
 drop if _merge==2
 drop _merge
+
 
 save"panel_wide_v2", replace
 
@@ -1253,36 +1272,36 @@ twoway ///
 (kdensity std_`x'_1 if female==1, bwidth(0.50) lpattern(shortdash) lcolor(gs0)) ///
 (kdensity std_`x'_2 if female==0, bwidth(0.50) lpattern(dash) lcolor(gs9)) ///
 (kdensity std_`x'_2 if female==1, bwidth(0.50) lpattern(solid) lcolor(gs12)), ///
-xsize() xtitle("`x'", size(medsmall)) xlabel(,angle() labsize(small))  ///
+xsize() xtitle("`x' (std)", size(medsmall)) xlabel(,angle() labsize(small))  ///
 ylabel(,labsize(small)) ymtick() ytitle("Density", size(small)) ///
 legend(position(6) col(4) order(1 "Male in 2016-17" 2 "Female in 2016-17" 3 "Male in 2020-21" 4 "Female in 2020-21") size(small) off) name(f_`x', replace)
 }
 
 *** Cog
 twoway ///
-(kdensity raven_tt_1 if female==0, bwidth(3) lpattern(solid) lcolor(gs4)) ///
-(kdensity raven_tt_1 if female==1, bwidth(3) lpattern(shortdash) lcolor(gs0)) ///
-(kdensity raven_tt_2 if female==0, bwidth(3) lpattern(dash) lcolor(gs9)) ///
-(kdensity raven_tt_2 if female==1, bwidth(3) lpattern(solid) lcolor(gs12)), ///
-xsize() xtitle("Raven test", size(medsmall)) xlabel(,angle() labsize(small))  ///
+(kdensity raven_tt_1 if female==0, bwidth(1) lpattern(solid) lcolor(gs4)) ///
+(kdensity raven_tt_1 if female==1, bwidth(1) lpattern(shortdash) lcolor(gs0)) ///
+(kdensity raven_tt_2 if female==0, bwidth(1) lpattern(dash) lcolor(gs9)) ///
+(kdensity raven_tt_2 if female==1, bwidth(1) lpattern(solid) lcolor(gs12)), ///
+xsize() xtitle("Raven (std)", size(medsmall)) xlabel(,angle() labsize(small))  ///
 ylabel(,labsize(small)) ymtick() ytitle("Density", size(small)) ///
 legend(position(6) col(4) order(1 "Male in 2016-17" 2 "Female in 2016-17" 3 "Male in 2020-21" 4 "Female in 2020-21") off) name(f_rav, replace)
 
 twoway ///
-(kdensity num_tt_1 if female==0, bwidth(1.5) lpattern(solid) lcolor(gs4)) ///
-(kdensity num_tt_1 if female==1, bwidth(1.5) lpattern(shortdash) lcolor(gs0)) ///
-(kdensity num_tt_2 if female==0, bwidth(1.5) lpattern(dash) lcolor(gs9)) ///
-(kdensity num_tt_2 if female==1, bwidth(1.5) lpattern(solid) lcolor(gs12)), ///
-xsize() xtitle("Numeracy test", size(medsmall)) xlabel(,angle() labsize(small))  ///
+(kdensity num_tt_1 if female==0, bwidth(1) lpattern(solid) lcolor(gs4)) ///
+(kdensity num_tt_1 if female==1, bwidth(1) lpattern(shortdash) lcolor(gs0)) ///
+(kdensity num_tt_2 if female==0, bwidth(1) lpattern(dash) lcolor(gs9)) ///
+(kdensity num_tt_2 if female==1, bwidth(1) lpattern(solid) lcolor(gs12)), ///
+xsize() xtitle("Numeracy (std)", size(medsmall)) xlabel(,angle() labsize(small))  ///
 ylabel(,labsize(small)) ymtick() ytitle("Density", size(small)) ///
 legend(position(6) col(4) order(1 "Male in 2016-17" 2 "Female in 2016-17" 3 "Male in 2020-21" 4 "Female in 2020-21") off) name(f_num, replace)
 
 twoway ///
-(kdensity lit_tt_1 if female==0, bwidth(1.7) lpattern(solid) lcolor(gs4)) ///
-(kdensity lit_tt_1 if female==1, bwidth(1.7) lpattern(shortdash) lcolor(gs0)) ///
-(kdensity lit_tt_2 if female==0, bwidth(1.7) lpattern(dash) lcolor(gs9)) ///
-(kdensity lit_tt_2 if female==1, bwidth(1.7) lpattern(solid) lcolor(gs12)), ///
-xsize() xtitle("Literacy test", size(medsmall)) xlabel(,angle() labsize(small))  ///
+(kdensity lit_tt_1 if female==0, bwidth(1) lpattern(solid) lcolor(gs4)) ///
+(kdensity lit_tt_1 if female==1, bwidth(1) lpattern(shortdash) lcolor(gs0)) ///
+(kdensity lit_tt_2 if female==0, bwidth(1) lpattern(dash) lcolor(gs9)) ///
+(kdensity lit_tt_2 if female==1, bwidth(1) lpattern(solid) lcolor(gs12)), ///
+xsize() xtitle("Literacy (std)", size(medsmall)) xlabel(,angle() labsize(small))  ///
 ylabel(,labsize(small)) ymtick() ytitle("Density", size(small)) ///
 legend(position(6) col(4) order(1 "Male in 2016-17" 2 "Female in 2016-17" 3 "Male in 2020-21" 4 "Female in 2020-21") off) name(f_lit, replace)
 
@@ -1293,12 +1312,13 @@ grc1leg f1 f2 f3 f4 f5 f_OP f_CO f_EX f_AG f_ES, cols(5) leg(f_OP) name(perso_ra
 grc1leg f_rav f_num f_lit, cols(3) leg(f_rav) name(cog_raw, replace)
 *All
 set graph on
-grc1leg f1 f2 f3 f4 f5 f_OP f_CO f_EX f_AG f_ES f_rav f_num f_lit, cols(5) leg(f_OP) note("Kernel: Epanechnikov" "Bandwidth: 0.32 for factors, 0.50 for Big-5, 3.00 for raven, 1.50 for numeracy and 1.70 for literacy." "Items non-corrected from acquiesence biais for factor analysis." "Big-5 traits non-corrected from acquiesence bias." "NEEMSIS-1 (2016-17) & NEEMSIS-2 (2020-21).", size(tiny))
+grc1leg f1 f2 f3 f4 f5 f_OP f_CO f_EX f_AG f_ES f_rav f_num f_lit, cols(5) leg(f_OP) note("Kernel: Epanechnikov" "Bandwidth: 0.32 for factors, 0.50 for Big-5, 1.00 for raven, numeracy and literacy." "Items non-corrected from acquiesence biais for factor analysis." "Big-5 traits non-corrected from acquiesence bias." "NEEMSIS-1 (2016-17) & NEEMSIS-2 (2020-21).", size(tiny))
 graph save "Kernel_PTCS_raw_new.gph", replace
 graph export "Kernel_PTCS_raw_new.pdf", as(pdf) replace
 */
 
 
+/*
 * ANOVA for personality
 tabstat base_factor_imraw_1_std base_factor_imraw_2_std base_factor_imraw_3_std base_factor_imraw_4_std base_factor_imraw_5_std, stat(n mean sd p50) by(segmana)
 cls
@@ -1311,7 +1331,7 @@ cls
 oneway base_raven_tt segmana
 oneway base_num_tt segmana
 oneway base_lit_tt segmana
-
+*/
 
 
 ********** Debt
@@ -1380,27 +1400,27 @@ forvalues i=1(1)5 {
 label var factor_imraw_`i'_1 "Factor `i'"
 }
 
-label var cr_CO_1 "CO (cor) 2016-17"
-label var cr_OP_1 "OP (cor) 2016-17"
-label var cr_EX_1 "EX (cor) 2016-17"
-label var cr_AG_1 "AG (cor) 2016-17"
-label var cr_ES_1 "ES (cor) 2016-17"
-label var cr_CO_2 "CO (cor) 2020-21"
-label var cr_OP_2 "OP (cor) 2020-21"
-label var cr_EX_2 "EX (cor) 2020-21"
-label var cr_AG_2 "AG (cor) 2020-21"
-label var cr_ES_2 "ES (cor) 2020-21"
+label var cr_CO_1 "CO cor (std) 2016-17"
+label var cr_OP_1 "OP cor (std) 2016-17"
+label var cr_EX_1 "EX cor (std) 2016-17"
+label var cr_AG_1 "AG cor (std) 2016-17"
+label var cr_ES_1 "ES cor (std) 2016-17"
+label var cr_CO_2 "CO cor (std) 2020-21"
+label var cr_OP_2 "OP cor (std) 2020-21"
+label var cr_EX_2 "EX cor (std) 2020-21"
+label var cr_AG_2 "AG cor (std) 2020-21"
+label var cr_ES_2 "ES cor (std) 2020-21"
 
-label var CO_1 "CO 2016-17"
-label var OP_1 "OP 2016-17"
-label var EX_1 "EX 2016-17"
-label var AG_1 "AG 2016-17"
-label var ES_1 "ES 2016-17"
-label var CO_2 "CO 2020-21"
-label var OP_2 "OP 2020-21"
-label var EX_2 "EX 2020-21"
-label var AG_2 "AG 2020-21"
-label var ES_2 "ES 2020-21"
+label var CO_1 "CO (std) 2016-17"
+label var OP_1 "OP (std) 2016-17"
+label var EX_1 "EX (std) 2016-17"
+label var AG_1 "AG (std) 2016-17"
+label var ES_1 "ES (std) 2016-17"
+label var CO_2 "CO (std) 2020-21"
+label var OP_2 "OP (std) 2020-21"
+label var EX_2 "EX (std) 2020-21"
+label var AG_2 "AG (std) 2020-21"
+label var ES_2 "ES (std) 2020-21"
 
 set graph off
 graph matrix factor_imraw_1_1 factor_imraw_2_1 factor_imraw_3_1 factor_imraw_4_1 factor_imraw_5_1 cr_OP_1 cr_EX_1 cr_ES_1 cr_CO_1 cr_AG_1, half msymbol(o) msize(*0.2)

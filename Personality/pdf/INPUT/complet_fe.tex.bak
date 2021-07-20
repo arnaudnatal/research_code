@@ -1,8 +1,0 @@
-{\tiny\tabcolsep=0pt
-    \begin{longtable}{@{\extracolsep{\fill}}lccccccccccccccc}
-	\caption{Complete regression table for fixed effects analysis --  \textbf{Source :} NEEMSIS-1 (2016-17) and NEEMSIS-2 (2020-21); author's calculations.} \\
-
-
-
-    \end{longtable}%
-}

@@ -1539,23 +1539,23 @@ label var base_nocorrf4 "Factor 4"
 label var base_nocorrf5 "Factor 5"
 */
 
-label var base_cr_OP "OP (corr.)"
-label var base_cr_CO "CO (corr.)"
-label var base_cr_EX "EX (corr.)"
-label var base_cr_AG "AG (corr.)"
-label var base_cr_ES "ES (corr.)"
-label var base_cr_Grit "Grit (corr.)"
+label var base_cr_OP "OP cor (std)"
+label var base_cr_CO "CO cor (std)"
+label var base_cr_EX "EX cor (std)"
+label var base_cr_AG "AG cor (std)"
+label var base_cr_ES "ES cor (std)"
+label var base_cr_Grit "Grit cor (std)"
 
-label var base_OP "OP"
-label var base_CO "CO"
-label var base_EX "EX"
-label var base_AG "AG"
-label var base_ES "ES"
-label var base_Grit "Grit"
+label var base_OP "OP (std)"
+label var base_CO "CO (std)"
+label var base_EX "EX (std)"
+label var base_AG "AG (std)"
+label var base_ES "ES (std)"
+label var base_Grit "Grit (std)"
 
-label var base_raven_tt "Raven test"
-label var base_num_tt "Numeracy test"
-label var base_lit_tt "Literacy test"
+label var base_raven_tt "Raven (std)"
+label var base_num_tt "Numeracy (std)"
+label var base_lit_tt "Literacy (std)"
 
 drop villagenewFE
 

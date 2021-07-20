@@ -19,6 +19,18 @@ singlelinecheck=false % <-- important
 \usepackage{upgreek}
 
 \newcommand{\ie}{i.e.}
+\newcommand{\sd}{standard deviation}
+\newcommand{\pp}{percentage points}
+\newcommand{\aebe}{all else being equal}
+\newcommand{\Aebe}{All else being equal}
+\newcommand{\ote}{other things equal}
+\newcommand{\Ote}{Other things equal}
+\newcommand{\cl}{confidence level}
+\newcommand{\lit}{\dev{literature}}
+
+
+
+
 
 % \renewcommand*\thetable{\Alph{section}.\arabic{table}}
 % \renewcommand*\thefigure{\Alph{section}.\arabic{figure}}
@@ -99,7 +111,7 @@ The relevance of such analysis in economics is well documented in the literature
 \cite{Hanushek2008} shows that cognitive skills are correlated with individual earnings, distribution of income and economic growth.
 Moreover, other factors such as well-functioning economic institutions --although enter into growth and may well have stronger effects, may also amplify the effects of cognitive skills.
 % Authors add that the current situation in developing countries is much worse than generally pictured on the basis just of school enrollment and attainment.
-Concerning personality traits, \cite{Borghans2008} examines, for instance, the relevance of personality traits in economics.
+Regarding personality traits, \cite{Borghans2008} examines, for instance, the relevance of personality traits in economics.
 They show that psychological variables are a good predictor of socioeconomic success (especially on labour market\footnote{See \cite{Almlund2011}.}) \dev{and they can be influenced by interventions and investment more readily than IQ after the early years because of the non-stability through life cycle.}
 Thus, institutions such as World Bank collecting more and more data\footnote{As stated by \cite{Laajaj2019b}, the World Bank alone spent 1 billion USD a year.} because it enable a ``better understanding of skill requirements in the labor market, backward linkages between skills acquisition and educational achievement, personality, and social background, and forward linkages between skills acquisition and living standards, reductions in inequality and poverty, social inclusion, and economic growth'' \citep{STEP2014}.
 
@@ -122,7 +134,7 @@ For 4,026 individuals from Netherland, \cite{Pinjisakikool2017} shows that all t
 In terms of financial distress, \cite{Agarwal2013} shows that individuals with high math scores are less likely to make financial distress in USA.
 \cite{Parise2019} are one of the first who deal with causality instead of correlation.
 Using instrumental variable method\footnote{They instruments conscientiousness and emotional stability with shock during childhood \dev{à vérifier}.} on Dutch dataset, they shows that people in the bottom quintile of personality traits are 10 times more likely to experience financial distress than those in the top quintile.
-Concerning saving behaviour, \cite{Gerhard2018} decompose 3,382 individuals from United-Kingdom in two groups (striving and established) and find that agreeableness is negatively correlated with total household savings for both groups and the effect is stronger for the striving than for the established.
+Regarding saving behaviour, \cite{Gerhard2018} decompose 3,382 individuals from United-Kingdom in two groups (striving and established) and find that agreeableness is negatively correlated with total household savings for both groups and the effect is stronger for the striving than for the established.
 \cite{Nyhus2001} shows that extraversion is negatively correlated with savings for 1,266 individuals from Netherland and in interesting in debt, they shows that emotional stability is positively correlated with debt.
 Still with debt, \cite{Brown2014} shows that extraversion and agreeableness are positively associated with the level of debt held while conscientiousness is negatively correlated with the level of unsecured debt for 10,000 individuals of United-Kingdom and \cite{Forlicz2019} shows differences between debtors and debt-free individuals in terms of conscientiousness, honesty, attittude towards money and shoppping for 3,711 individuals from Poland, Spain, Romania and Italy.
 
@@ -130,8 +142,7 @@ Other research build a bridge between household finance and individual skills th
 \dev{Developper ? Pas sûr}
 
 \paragraph{Indebtedness in India}
-\url{https://www.ideasforindia.in/topics/social-identity/caste-gaps-in-behaviour-and-personality-traits-a-study-of-university-students.html}
-To our knowledge, no articles has looked at personality traits and cognitive skills on debt in India\footnote{\cite{Michiels2021} intersting in the role of personality traits on labour mobility in rural Tamil Nadu.} (nor even in developing countries) while the indian context is unique in terms of household finance.
+To our knowledge, no articles has looked at personality traits and cognitive skills on debt in India\footnote{\cite{Michiels2021} intersting in the role of personality traits on labour mobility in rural Tamil Nadu. \cite{Dasgupta2020} interesting in } (nor even in developing countries) while the indian context is unique in terms of household finance.
 Since the 80's, the incidence of indebtedness increase for rural and urban households (respectively from 19 to 32\% and from 17 to 22\%) with an increasing in the share of household indebted to formal (or institutional) sources (11 to 17\%) and informal sources\footnote{In part due to the economic and financial sector reforms of 1991: \url{http://indiabefore91.in/1991-economic-reforms}.} (10 to 19\%) \citep{Rajakumar2019}.
 As we discuss in section \ref{subsection:data}, this number is largely under-estimate \citep{Jones1994} and micro-level studies indicates incidence of debt around 80-90\% \citep{Guerin2013a, Jones1994, Dreze1997, Reboul2021}.
 The average amount of debt per household strongly increased between 1951 and 2012 (from 83 INR to 32,522 INR) with an increasing in the share of formal debt (from 7 to 56\% for rural households) and, thus, a decreasing in the share of traditional informal debt (from 93 to 43\% for rural households) \citep{Rajakumar2019}.
@@ -274,7 +285,7 @@ In this context it appears important to investigate the role of PT\&CS on indebt
 
 \paragraph{Problematic, contribution and plan}
 In a context where indebtedness is omnipresent but at different level according to social identity, study the relationship with PT\&CS appears full of meaning.
-In this article we investigate how PT\&CS shape indebtedness situation (i), how the evolution of debt is correlated with the evolution of PT\&CS (ii).
+In this article we investigate how PT\&CS shape indebtedness situation (i), how does debt change over time as PT\&CS changes? (ii), how PT\&CS influences the debt trajectory (iii).
 More finely, we try to capture the weight of social identity by investigating the contribution of PT\&CS for each social groups on the shape of debt and the variation of debt (iii).
 In other word, in a highly sensitive country to social identity, do individuals manage to differentiate themselves by their skills?
 
@@ -311,7 +322,7 @@ In NEEMSIS1 \& NEEMSIS2, two household members, called ``ego 1'' (mostly househo
 
 NEEMSIS's surveys stands out from other Indian data sources such as the All India Debt and Investment Survey (AIDIS), as it has the rare and valuable advantage of recording debt at the individual level (identifying the person who went to the lender and borrowed in her own name).
 
-Concerning the reliability, the great expertise of the team\footnote{Some members of the research team are present since more than twenty-year on the region for numerous quantitative and qualitative surveys.}, helped to formulate questions appropriately.
+Regarding the reliability, the great expertise of the team\footnote{Some members of the research team are present since more than twenty-year on the region for numerous quantitative and qualitative surveys.}, helped to formulate questions appropriately.
 This for instance involved using particular terms that are less degrading than the generic term ``debt'' lists of the main local lenders, and asking indirect questions.
 As stated by \cite{Reboul2021} (same data sets) ``[i]mproved data accuracy is for example reflected by an incidence of indebtedness found higher than in the estimates of the nation-wide AIDIS: 99\% of households are in debt in our case study, as opposed to 30\% in rural Tamil Nadu in 2012 according to the AIDIS \citep{NSSO2014}.'' 
 
@@ -332,8 +343,9 @@ Our final sample consists of 473 households and 835 egos follows in 2016-17 and 
 As stated earlier, our survey allow us to construct measures of cognitive skills.
 It include three score variables: literacy, numeracy, Raven\footnote{Raven test is ``a nonverbal test of mental ability consisting of abstract designs, each of which is missing one part. The participant chooses the missing component from several alternatives to complete each design.'' -- \url{https://dictionary.apa.org/ravens-progressive-matrices}. Accessed January 27, 2021.}.
 These scores are construct in adding up the correct answers of a set of four questions for literacy and numeracy (six for 2020-21) test and 36 for Raven.
+Then, we standardize the score to ensure comparability of results.
 
-Concerning Big-5, on the basis of 35 questions, we averaged answers --based on a Likert scale from 1-``Almost Never'' to 5-``Almost always'', that belong to a determined trait after correcting for acquiescence bias\footnote{Acquiescence bias represent the ``tendency for survey respondents to agree with statements regardless of their content'' \citep{Lavrakas2008}.} (we also create Big-5 personality traits non-corrected from acquiesence bias)(see Appendix \ref{section:efa_big5}).
+Regarding Big-5, on the basis of 35 questions, we averaged answers --based on a Likert scale from 1-``Almost Never'' to 5-``Almost always'', that belong to a determined trait after correcting for acquiescence bias\footnote{Acquiescence bias represent the ``tendency for survey respondents to agree with statements regardless of their content'' \citep{Lavrakas2008}.} (we also create Big-5 personality traits non-corrected from acquiesence bias) (see Appendix \ref{section:efa_big5}).
 The resulting mean represent the score on each traits.
 
 \citeauthor{McDonald1999}'s $\Upomega$\footnote{Literature on internal consistency estimators increasingly agrees that \citeauthor{Cronbach1951}'s $\upalpha$ --the most wide used estimator, is maybe not very efficient \citep{Bourque2019, TrizanoHermosilla2016}.}, a measure of internal consistency, are mostly satisfactory for 2016-17 data corrected from acquiescence bias: 0.81 for openness; 0.86 for conscientiousness; 0.59 for extraversion; 0.60 for agreeableness and 0.80 for emotional stability (see Figure \ref{fig:omega}).
@@ -342,7 +354,7 @@ We, therefore, implement our own exploratory factor analysis to identitfy person
 
 \begin{figure}[htpb]
 \raggedright
-\includegraphics[scale=0.5]{INPUT/omega}
+\includegraphics[scale=0.8]{INPUT/omega}
 \caption{Internal consistency of Big-5 personality traits -- Distribution of \citeauthor{McDonald1999}'s $\Upomega$ through time and correction for 953 individuals in 2016-17 and 1,316 in 2020-21 from rural Tamil Nadu, India.}
 \sourcefig{NEEMSIS-1 (2016-17) \& NEEMSIS-2 (2020-21); author's calculations.}
 \label{fig:omega}
@@ -354,7 +366,7 @@ The very good knownledge of the field\footnote{More than 20 years.} allow us to 
 Moreover, we implement our own factor analysis of the 35 questions by principal component with promax rotation.
 To avoid a bias in factor analysis, we do not recoded reverse questions beause it might force likeness with Big-5 taxonomy\footnote{In our dataset, acquiesence bias is measure with a set of reverse questions that are supposed perfectly opposed to another set of questions.  However, the assumption of opposition is supportable only in the Big-5 taxonomy, in another layout pairs of questions can measure different aspects of personality.}.
 
-The resulting factors for 2016-17 data are relatively similar to the Big-5 personality traits with satisfactory \citeauthor{McDonald1999}'s $\Upomega$: Factor 1 as Openness-Extraversion ($\Upomega=0.91)$; Factor 2 as Conscientiousness ($\Upomega=0.88)$; Factor 3 as Loquacious --easily distracted, put off duties, talkative, helpful with others-- ($\Upomega=0.69)$; Factor 4 as Emotional stability ($\Upomega=0.78)$ and Factor 5 as Agreeableness ($\Upomega=0.62)$ (see Appendix \ref{section:efa_big5}).
+The resulting factors for 2016-17 data are relatively similar to the Big-5 personality traits with satisfactory \citeauthor{McDonald1999}'s $\Upomega$: Factor 1 as Openness-Extraversion ($\Upomega=0.91$); Factor 2 as Conscientiousness ($\Upomega=0.88$); Factor 3 as \textit{Porupillatavan} --tamil terms for talkative, easily distracted individual-- ($\Upomega=0.69$); Factor 4 as Emotional stability ($\Upomega=0.78$) and Factor 5 as Agreeableness ($\Upomega=0.62$) (see Appendix \ref{section:efa_big5}).
 The resulting factors for 2020-21 data are very different to the Big-5 taxonomy and to the 2016-17 factors: Factor 1 as Sociability (); Factor 2 as Conscientiousness (); Factor 3 as Emotional stability (); Factor 4 as () and Factor 5 as ().
 
 \paragraph{Life-cycle effects}
@@ -413,18 +425,40 @@ Second, we investigate the burden of debt repayment with the individual debt ser
 	\label{subsection:econometricframework}
 	% ******************************
 
-In order to better understand the relationship between debt and PT\&CS, our analysis takee place in two step.
+In order to better understand the relationship between debt and PT\&CS, our analysis take place in three step.
 \paragraph{How PT\&CS shape individual debt?}
 In a first step, we use the PT\&CS of 2016-17 ($X'_{i}$) on individual debt of 2020-21 to understand how personality shapes individual debt.
 Our analysis faces sample selection issues because of the nature of our dependent variables: the sample is restricted to those who declared a non-zero and non-missing debt.
 We therefore do not account for entry and exit in debt by only considering total loan amount and debt service ratio.
 To overcome this sample selection issue, we use a \cite{Heckman1976} model.
-The household debt dependency ratios, defined as the number of indebtedness individuals divided by the total number of household members, in 2016-17 are used as exclusion restriction ($ER_{i}$) variables\footnote{The household debt dependency ratios is correlated with the probability, for an individual, of being indebted but not with the loan amount and the debt service ratio (see Appendix \ref{app:imr}).}, allowing to compute an inverse Mill’s ratio ($IMR_{i}$) to correct for selection in our equations of interest (eq. \ref{eq:ols}).
-First, we use probit model with maximum likelihood estimation to estimate the probability for an individual of being in debt ($Indebt_{i}$) (eq. \ref{eq:probit}) and we clusterize the error at household level.
+The household debt dependency ratios, defined as the number of indebtedness individuals divided by the total number of household members, in 2016-17 are used as exclusion restriction ($ER_{i}$) variables\footnote{The household debt dependency ratios is correlated with the probability, for an individual, of being indebted but not with the loan amount and the debt service ratio (see Appendix \ref{app:imr}).}, allowing to compute an inverse Mill’s ratio ($IMR_{i}$) to correct for selection sample in our equations of interest (eq. \ref{eq:ols}).
+
+\par\noindent\rule{\textwidth}{0.4pt}
+\dev{Intuition:}
+Un ménage avec beaucoup d'individus endettés peut être le reflet d'un ménage dans le besoin.
+Afin de bénéficier quotidiennement des ressources nécessaires, sans pour autant que les individus aient à porter un lourd fardeau de la dette, une stratégie de "diversification des individus" peut être adoptée....!
+Les individus "devront" s'endetter afin d'apporter les ressources nécessaires au ménage, sans pour autant que les montants soient élevés.
+
+D'autre part, un ménage où beaucoup d'individus sont endettés, rend l'endettement "normal" aux yeux des autres membres.
+Dans notre contexte, les individus s'endettent pour survivre, il est normal de s'endetter.
+Donc j'ai tendance à croire que plus il y a des individus endettés dans le ménage, plus la pratique sera normal, d'autant plus que quasi tout le monde l'est dans le contexte, cependant, chacun s'endette à "son aise"..!
+Le niveau dépend plus des richesses de la famille, du travail, je pense...!
+
+\cite{Lennox2011} point out that an absence of $ER$ in the first stage can lead to severe multicollinearity in the second stage.
+Our IMR is less likely to be subject to this problem, because our first stage includes \dev{debtor ratio} and thus meets this restriction.
+Nevertheless, we check for multicollinearity and find that the highest VIF score (for the \dev{dummyhead}) is 4.33, which is less than the cutoff point of 10.
+
+To examine the robustness of our Heckman two-stage results, we first estimate eq. \ref{eq:ols} excluding IMR. 
+The coefficient on PT\&CS are reported on Appendix, however, coefficient and t-stat are relatively similar.
+\par\noindent\rule{\textwidth}{0.4pt}
+
+
+First, we use probit model with maximum likelihood estimation to estimate the probability for an individual of being in debt ($Indebt_{i}$) (eq. \ref{eq:probit}).
+
 
 \begin{equation}\label{eq:probit}
 \begin{split}
-Indebt_{i}=\upbeta_{0}+X'_{i}*\upbeta_{1}+C'_{i}*\upbeta_{2}+Z'_{i}*\upbeta_{3}+\upbeta_{4}*ER_{i}+\upmu_{i}
+Indebt_{i}=\upbeta_{0}+X'_{i}*\upbeta_{1}+C'_{i}*\upbeta_{2}+\upbeta_{3}*ER_{i}+\upmu_{i}
 \end{split}
 \end{equation}
 
@@ -433,33 +467,17 @@ We do not use tobit model because our data are not censored or truncated, but de
 Despite the fact that Debt Service Ratio is a share, we do not use GLM beacuse of the upper bond of the variable ($>1$).
 \begin{equation}\label{eq:ols}
 \begin{split}
-Y_{i}=\upbeta_{0}+X'_{i}*\upbeta_{1}+C'_{i}*\upbeta_{2}+Z'_{i}*\upbeta_{3}+\upbeta_{4}*IMR_{i}+\upepsilon_i
+Y_{i}=\upbeta_{0}+X'_{i}*\upbeta_{1}+C'_{i}*\upbeta_{2}+\upbeta_{3}*IMR_{i}+\upepsilon_i
 \end{split}
 \end{equation}
 
-\paragraph{How PT\&CS variation is correlated with indebtedness variation?}
-In a second step, we fully accept the non-stability of personality traits by using the variation of Big-5 personality traits ($X'_{it}$) through time (2016-17 and 2020-21) on debt evolution with fixed effect regressions (eq. \ref{eq:fe}). 
-Unlike the previous approach (\textit{How PT\&CS shape individual debt?}), we do not use personality traits from factor analysis insofar as factor for 2016-17 are different from those for 2020-21. 
-We use the same debt measures as before: the total amount of debt and the individual debt service ratio ($Y_{i}$).
-
-\begin{equation}\label{eq:fe}
-\begin{split}
-Y_{it}=\upbeta_{0}+X'_{it}\upbeta_{1}+C'_{it}\upbeta_{2}+Z'_{it}\upbeta_{3}+\upalpha_{i}+u_{it}
-\end{split}
-\end{equation}
-
-An important caveat lies in the study of causality.
-We do not pretend to show a causal relationshipt between PT\&CS and indebtedness but to relate correlations because we cannot rule out the possibility of reverse causality between PT\&CS variation and indebtedness variation.
-
-
-\paragraph{Others variables and interpretation}
 Our control variables ($C'_{it}$) are based on \cite{Reboul2021, Brown2014, Chichaibelu2017} which take the existing classic controls. 
 We use two vector of variables:
 \begin{itemize}
-\item Individual level variables as age; age square; dummy variable which take 1 if individual is the household head, 0 otherwise; main occupation\footnote{Define as the most time-consuming activity.}; number of occupation (dummy variable which take 1 if individual declare more than one occupation, 0 otherwise); dummy variable which take 1 if individual received formal education through school, 0 otherwise (no formal education) and a dummy variable for marital status (1 if married, 0 otherwise). 
-\item Household level variables as monetary value of assets\footnote{The monetary value of assets includes gold; land; house; livestock; agricultural equipment and consumption good (car, computer, cookgas, phone, etc.).}; sex ratio; total annual income; household size; shock exposure (dummy variable which take 1 if the household experienced a shock\footnote{Marriage of at least one of the household members or/and household surveyed after the demonetisation.} between 2010 and 2016-17, 0 if not). 
+\item Individual level variables as age; age square; sex; dummy variable which take 1 if individual is the household head, 0 otherwise; main occupation\footnote{Define as the most time-consuming activity.}; number of occupation (dummy variable which take 1 if individual declare more than one occupation, 0 otherwise); dummy variable which take 1 if individual received formal education through school, 0 otherwise (no formal education) and a dummy variable for marital status (1 if married, 0 otherwise). 
+\item Household level variables as caste; monetary value of assets\footnote{The monetary value of assets includes gold; land; house; livestock; agricultural equipment and consumption good (car, computer, cookgas, phone, etc.).}; sex ratio; total annual income; household size; shock exposure (dummy variable which take 1 if the household experienced a shock\footnote{Marriage of at least one of the household members or/and household surveyed after the demonetisation.} between 2010 and 2016-17, 0 if not). 
 \end{itemize}
-In the first econometric approach (\textit{How PT\&CS shape individual debt?}), s our the amount of debt is estimated in $t+1$ and our independent variables in $t$, we therefore control for the indebtedness situation in $t$ in adding dummy variable which take 1 if individual is indebted in 2016-17, 0 otherwise.
+The amount of debt is estimated in $t+1$ and our independent variables in $t$, we therefore control for the indebtedness situation in $t$ in adding dummy variable which take 1 if individual is indebted in 2016-17, 0 otherwise.
 
 To take into account the strength of social identity (gender and caste) we investigate relationship on a pooled sample of egos with interactions variables to maximize statistical power, although splitting samples improves model specification (the sub-samples obtained are too small to make regressions).
 First we do not use interaction to see the global effect (1), then we add interaction variable with gender (2), caste (3) and both (4) to test wether the effect of PT\&CS differ by gender and caste :
@@ -468,11 +486,11 @@ First we do not use interaction to see the global effect (1), then we add intera
   \centering
     \begin{tabular}{lllll}
     (1)~~~~ $Z'_{i}=0$ & & & & (3)~~~~ $Z'_{i}=Caste*X'_{i}$ \\
-    (2)~~~~ $Z'_{i}=Gender*X'_{i}$ & & & & (4)~~~~ $Z'_{i}=Gender*Caste*X'_{i}$ \\
+    (2)~~~~ $Z'_{i}=Sex*X'_{i}$ & & & & (4)~~~~ $Z'_{i}=Sex*Caste*X'_{i}$ \\
     \end{tabular}%
 \end{table}%
 
-In all of our estimation (and specifications), we choose to cluster the error at households scale to take into account the fact that observations within each household are not i.i.d.
+We choose to cluster the error at households scale to take into account the fact that observations within each household are not i.i.d.
 Indeed, we have data for two individuals from the same household and these latter sharing resources and pooling others.%\footnote{See \cite{Lazear1988} or \cite{Bonke2015} more recently.}.
 In terms of debt, as stated by \cite{Reboul2021}, ``our data is limited, [but] it suggests that fully pooling and sharing the household debt burden is not the norm.''
 
@@ -481,6 +499,51 @@ We use gender (male/female) and caste (non-dalits/dalits) as representative valu
 Thanks to our interactions variables, we therefore obtains nine groups ME for each PT\&CS variable: average individual; average male; average female; average non-dalits; average dalits; average non-dalits male; average dalits male; average non-dalits female and average dalits female. 
 
 
+\paragraph{How does debt change over time as PT\&CS changes?}
+In a second step, we fully accept the non-stability of personality traits by using one-way\footnote{We choose to not compute two-way fixed effect for the many problems with maintaining assumptions and interpreting the coefficients \citep{Kropko2020,Imai2020}.} individual fixed effect regressions (eq. \ref{eq:fe}) in order to compare within individual over time.
+In other words, as PT\&CS increases for an individual over time, how does the debt change over time?
+Unlike the previous approach (\textit{How PT\&CS shape individual debt?}), we do not use personality traits from factor analysis insofar as factor for 2016-17 are different from those for 2020-21. 
+\dev{Les résultats de l'analyse factorielle sont différents en 2016-17 et en 2020-21.
+On ne peut pas comparer les facteurs.
+Par contre, les traits du Big-5 se mesurent de la même façon avec la moyenne.
+Je peux comparer les scores.
+Je dois, je pense, écrire ça de façon plus habile que je ne l'ai fait.}
+We use the same debt measures as before (the total amount of debt and the individual debt service ratio ($Y_{i}$). 
+
+\begin{equation}\label{eq:fe}
+\begin{split}
+Y_{it}=X'_{it}\upbeta_{1}+C'_{it}\upbeta_{2}+\upalpha_{i}+u_{it}
+\end{split}
+\end{equation}
+
+An important caveat lies in the study of causality.
+We do not pretend to show a causal relationshipt between PT\&CS and indebtedness but to relate correlations because we cannot rule out the possibility of reverse causality between PT\&CS variation and indebtedness variation.
+
+We use the same vector of control variables than before.
+However, as we estimate FE model, time-invariant variables are omitted from the analysis: sex; education; caste. 
+
+\paragraph{How PT\&CS influences the debt trajectory?}
+In a last step, return to the factor analysis to understand the debt trajectory through time.
+With a multinomial probit, we investigate the contribution of PT\&CS on the debt trajectory: Never indebted in 2016-17 and 2020-21 (i); Out of debt between 2016-17 and 2020-21 (ii); Became indebted between 2016-17 and 2020-21 (iii); Always indebted in 2016-17 and 2020-21 (iv).
+
+\begin{equation}\label{eq:mprobit}
+\begin{split}
+Y_{i}=\upbeta_{0}+X'_{i}\upbeta_{1}+C'_{i}\upbeta_{2}+\upalpha_{i}
+\end{split}
+\end{equation}
+
+We use the same vector of control variables than for Heckman model.
+
+\paragraph{How the PT\&CS varies across the indebtedness distribution?}
+J'ai regardé les résultats de régressions quantiles.
+Les résultats sont assez intéressants.
+Dans le bas de la distribution du montant total de la dette, ce sont les compétences cognitives qui jouent le plus (Q1).
+Puis à la médiane et au-dessus, ce sont plus les traits de personnalité. 
+Voir le fichier Excel.
+Cette quatrième problématique (\textit{How the PT\&CS varies across the indebtedness distribution?}) est aussi intéressante.
+J'hésite à l'ajouter.
+Cela va densifier le papier, mais est-ce trop ?
+Dans la mesure où sur mes variables dépendantes, les extrêmes sont très extrêmes, est-ce que les régressions quantiles ne seraient pas plus intéressantes que le raisonnement à la moyenne des OLS ? (surtout pour DSR)
 
 
 
@@ -492,7 +555,7 @@ Thanks to our interactions variables, we therefore obtains nine groups ME for ea
 \subsection{Household unit in Table \ref{tab:descHH}}
 Our final sample consists of 835 individuals from 473 households and almost half are dalits.
 Three quarters of households have 2 egos, the last quarters have only one egos.
-The sex ratio is significantly different through caste: in 24\% of dalits households there are as many men as women while in middle-upper caste, it is 34\% of households in 2016-17.
+\dev{The sex ratio is significantly different through caste: in 24\% of dalits households there are as many men as women while in middle-upper caste, it is 34\% of households in 2016-17.}
 In terms of assets, middle-upper caste households are three times richer than dalits on average --respectively 1,493,350 INR and 487,420 INR in 2016-17.
 50\% of middle-upper caste have less than 666,500 INR of assets while 50\% of dalits households have less than 266,400 INR in 2016-17.
 For 50\% of dalits, the monetary value of assets increased by at least 47\% between 2016-17 and 2020-21 while for 50\% of non-dalits households, it decreased by at least 22\%.
@@ -503,7 +566,7 @@ Last, whatever the caste, we observe a reduction of total income: for 50\% dalit
 \subimport{INPUT}{desc_HH.tex}
 
 \subsection{Individual unit in Table \ref{tab:descindiv}}
-At egos scale, 55.45\% of our sample are male (44.55\% are female) and among male, 46\% are dalit (among female 50\% are dalit).
+At egos level, 55.45\% of our sample are male (44.55\% are female) and among male, 46\% are dalit (among female 50\% are dalit).
 Male are, on average, older than female and three quarters of them are the head of household while female are only 9\% in 2016-17 and 27\% in 2020-21.
 This increase is partly due to the life cycle: when the household head died, the wife \dev{take over.}
 In terms of education, male are more formal educated than female.
@@ -537,16 +600,16 @@ Furthermore, 50\% of male have seen their DSR decreased by at least 0.27\% while
 
 Figure \ref{fig:PTCS} shows the distribution of each personality traits net of life-cycle.
 Middle-upper caste male tends to be more extraverted-openned than others (Factor 1).
-For Conscientiousness (Factor 2), male have significant higher score than women, whatever the caste (see Appendix \ref{section:efa_big5}, Table \ref{tab:anovaperso}).
-Dalits tend to be more emotional stable and conscientiousness (Factor 3) than non-dalits
+For Conscientiousness (Factor 2), male have higher score than women, whatever the caste.
+Dalits tend to be more \textit{Porupillatavan} (Factor 3) than non-dalits
 and dalits male more emotional stable than other (Factor 4).
-For Agreeableness (Factor 5), we do not find significant differences between our four groups (see Appendix \ref{section:efa_big5}, Table \ref{tab:anovaperso}).
+For Agreeableness (Factor 5), we do not observe differences between our four groups.
 In terms of cognitive skills, male tends to have higher score.
 
 
 \begin{figure}[ht]
 \raggedright
-\includegraphics[width=\textwidth]{INPUT/Kernel_PTCS_raw_new}
+\includegraphics[width=\textwidth]{INPUT/Kernel_PTCS_raw}
 \caption{Distribution of PT\&CS -- The resulting personality trait from factor analysis and Big-5 taxonomy are based on the standardised residual from univariate OLS regression with age as exogenous variable. This is the personality trait purged from life-cycle effects.}
 \sourcefig{NEEMSIS-1 (2016-17) \& NEEMSIS-2 (2020-21); author's calculations.}
 \label{fig:PTCS}
@@ -556,46 +619,86 @@ In terms of cognitive skills, male tends to have higher score.
 
 \newpage
 % ***********************************
-\section{Results and discussion}
+\section{Results}
 % ***********************************
 %As stated by \cite{Amrhein2019, Wasserstein2019, Wasserstein2016} reported confidence interval
 
-Reminder:
+
+
+
+
+% Following \cite{Frank2000} and \cite{Larcker2010}, we next assess how closely an unobservable confounding variable would have to be correlated with DEBT and PT\&CS to change the OLS results. 
+% The Impact Threshold for a Confounding Variable (ITCV) is 0.116. 
+% To put this number in perspective, the highest ITCV based on our identified control variables is 0.018 (for FINANCIALLY CHALLENGED). 
+% This suggests that we would need an omitted variable with an impact of more than six times that of any of our control variables to change our results.
+% Thus, there is unlikely to be a confounding variable that will overturn the positive association between ABSERROR and MW.
+% \cite{Feng2009}
+
+``Results are presented for the residual of the personality measures obtained from conditioning the personality traits on a polynomial function in age to mitigate against life cycle effects and potential problems of measurement error \citep{Brown2014}''.
+
+
+
+
+To interpret the results, marginal effects (ME) at representative values on the predicted value of the PT\&CS are reported for the four specifications as describe previously (without interaction (1), with gender interaction (2), with caste interaction (3), with gender \& caste interaction (4)).
+According to specifications, the representatives values are:
 \begin{itemize}
-\item[F1] EX-OP (like to think, expressing thoughts, active imagination, sharefeelings, new ideas, curious, inventive, talk to many people)
-\item[F2] CO
-\item[F3] Loquacious (easily distracted, put off duties, talkative, helpful with others). Qui parle volontiers et abondamment.
-\item[F4] ES
-\item[F5] AG
+\item[(1)] The average individual (col ``All'').
+\item[(2)] The average male (col ``Male'') and the average female (col ``Female'').
+\item[(3)] The average non-dalits (col ``MUC'') and the average dalits (col ``Dalits'').
+\item[(4)] The average non-dalits male (col ``MUC male''), the average dalits male (col ``Dalits male''), the average non-dalits female (col ``MUC female'') and the average dalits female (col ``Dalits female'').
 \end{itemize}
+All of our variables of interest (PT\&CS) are standardized to ensure comparability between them.
+We will therefore speaks in terms of ``one standard deviation'' more of PT\&CS\footnote{Reminder: Factor 1 as EX-OP; Factor 2 as CO; Factor 3 as \textit{Porupillatavan}; Factor 4 as ES; Factor 5 as AG.}.
 
 \subsection{How PT\&CS shape individual debt?}
-Table \ref{tab:ame_indebt} presents the results from the multivariate probit analysis of the first stage of the Heckman procedure. 
-The marginal effects (ME) at representative values on the predicted value of the PT\&CS are reported for the four specifications (without interaction (1), with gender interaction (2), with caste interaction (3), with gender \& caste interaction (4)).
-To ensure that Heckman procedure 
+\paragraph{Probability of being indebted}
+Table \ref{tab:ame_indebt} presents the results from the multivariates probit analysis of the first stage of the Heckman procedure.
+McFadden's pseudo $R^2$ indicate a very good goodness-of-fit for all the specification --they are all above 0.2 threshold \citep{McFadden1979}.
+Moreover, we observe that all p-values associated with the simultaneous coefficient nullity test (LR $\upchi^2$) are low enough to conclude that at least one of the regression coefficients in the model is not equal to zero.
+Whatever the specification, the probability of being in debt in 2016-17 is positively correlated with the probability of being in debt in 2020-21 and the exclusion restriction variable (Debtor ratio) is negatively correlated at the 95\% \cl. 
+
+The results show that 2016-17 cognitive skill --whatever the specification-- are not correlated with the probability of being indebted in 2020-21 at 95\% \cl~ (neither at 90\%), except for literacy which is positively correlated for the average female.
+However, three of the personality traits are correlated at the 90-95\% \cl. 
+Without interaction variables, Factor 1 as OP-EX is negatively correlated with the probability for the average individual of being in debt.
+With gender interaction, the relationship becomes clearer for the average female and with caste interaction for the average non-dalits.
+With three way interaction variable, we observe that for the average non-dalits female, \ote, when Factor 1 increase by one \sd, the probability of being in debt decrease by 11.1 pp.
+Factor 2 as CO and Factor 3 as Loquacious, are also negatively correlated for non-dalits female but less than Factor 1 (respectively 8.3 pp at 90\% \cl~ and 8.8 pp).
+\lit.
+For Factor 2, the relationship is reverse for male and more precisely for non-dalits one: \aebe, when Factor 2 increase by one \sd, the probability of being in debt increase by 9.3 pp.
 
 \subimport{INPUT}{AME_indebt.tex}
 
-\begin{itemize}
-\item All else being equal, one more point on the EXOP score reduces the probability of being in debt by 3.3 percentage points (pp).
-\item For a female, all else being equal, one more point on the EXOP score reduces the probability of being in debt by 4.8 pp.
-\item For a non-dalit individual, all else being equal, one more point on the EXOP score reduces the probability of being in debt by 8.1 pp.
-\item For a non-dalit female, all else being equal, one more point on the EXOP score reduces the probability of being in debt by 11.1 pp.
-\item For a male, all else being equal, one more point on the Conscientiousness score, increase the probability of being in debt by 4.5 pp.
 
-\item Other things equal, for the average female, one more point at the literacy test increase the probability of being in debt by 4.7 pp.
-\end{itemize}
+\paragraph{Total amount of debt}
+Table \ref{tab:ame_loanamount} presents the results from the multivariates OLS analysis of the first outcome of the Heckman procedure, the total amount of debt.
+All p-values associated with the simultaneous coefficient nullity test (F-stat) are low enough to conclude that at least one of the regression coefficients in the model is not equal to zero.
+The goodness-of-fit is less good than the previous one: we are able to explain around 22\% of the total variance of the total amount of debt.
+Unlike earlier, the debt situation of 2016-17 is not correlated at 90\% \cl~ with the outcome.
+The IMR is insignificant across all four estimations \dev{(Be careful of three-way interaction)}, indicating that self-selection does not significantly affect total loan amount of debt after controlling for PT\&CS and other controls variables.
 
 
-
-
+Numeracy and Raven are correlated with the total amount of debt at 95\% \cl~ for dalits female, but the relationship is reverse (negative relationship for Numeracy while positive relationship for Raven).
+In addition, Raven is negatively correlated for non-dalits female at 95\% \cl, and the relationship is more stronger than for dalits female (respectively +23,315 \rupee~ and -44,021 \rupee).
+Regarding personality traits, Factor 2 and Factor 3 are negatively correlated with the total amount of debt when there is not interactions variables.
+The relationship becomes clearer at 90\% \cl~ for male, non-dalits and \textit{in fine} for non-dalits male with a stronger relationship for Factor 2: \aebe, when Factor 2 increase by one \sd, predicted total loan amount decrease by 49,000 \rupee~ (37,000 \rupee~ for Factor 3).
+Factor 2 and Factor 3 are also negatively correlated at 90\% \cl~ for respectively dalits female and non-dalits female.
+Among dalits female, those with higher Factor 5 as AG are also those with lower amount of debt, \ote.
+Last, Factor 1 is positively correlated when there is not interactions variables and the relationship seems to be clarified for middle-upper caste individual and more for middle-upper caste male at 90\% \cl (40,167 \rupee~ of debt in more).
+ 
 
 \subimport{INPUT}{AME_loanamount.tex}
 
-\begin{itemize}
-\item All else being equal, an individual with one more point on the EXOP score is predicted to have 16,393 INR of debt in more.
-\item AEBE, a middle-upper caste individual with one more point on the EXOP score is predicted to have 23,584 INR of debt in more.
-\end{itemize}
+\paragraph{Individual debt service ratio}
+Table \ref{tab:ame_idsr} presents the results for the individual debt service ratio, the second outcome of the Heckman procedure.
+All p-values associated with the simultaneous coefficient nullity test (F-stat) are low enough and the goodness-of-fit is quite low compared to previous analysis.
+Debt situation of 2016-17 is still not correlated at 90\% \cl.
+The IMR is insignificant across all four estimations \dev{(Be careful of three-way interaction)}, indicating that self-selection does not significantly affect individual debt service ratio after controlling for PT\&CS and other controls variables.
+
+As for the previous analysis, Factor 1 is positively correlated with the share of the annual income dedicated to debt (capital and interest) repayment and especially for dalits female at 95\% \cl.
+Indeed, for the average individuals, when Factor 1 increase by one \sd~, the predicted debt service ratio increase by 94 pp, \aebe.
+Factor 2 is negatively correlated and mainly for female at 90\% \cl.
+Strengh of the correlation is similar to that of Factor 1 for the average female (83 pp in more for Factor 1 and 84 pp in less for Factor 2, \ote).
+Factor 4 as ES and Factor 3 are also correlated with the individual debt service ratio for non-dalits female at 90\% \cl~ and with the same strengh (around 123 pp) but relationship is reversed (positively correlated for Factor 3 and negatively correlated for Factor 4).
 
 
 \subimport{INPUT}{AME_IDSR.tex}
@@ -618,6 +721,47 @@ To ensure that Heckman procedure
 
 \subimport{INPUT}{AME_debtpath.tex}
 
+
+
+
+\clearpage
+\newpage
+\section{Discussion}
+
+Intensity of results may seem high.
+However, this come from the low range of definitions of PT\&CS.
+Ranging from -4 to 4, one more \sd~ represent a gap of $\frac{1}{8}$, which is high.
+Put another way, for a variable ranging from -4 to 4, take an additional unit come back to take 12.5\% in more.
+
+Discussion in three step:
+\begin{itemize}
+\item Discussion with debt and PT\&CS \citep{Brown2014, Forlicz2019, Nyhus2001}. Ce sont les seules papiers qui parlent exactement de ce lien.
+\item Discussion du social meaning of debt avec \citep{Guerin2014a, Guerin2020}.
+\item Discussion de PT\&CS with other outcomes in India \citep{Michiels2021, Dasgupta2020, Gaurav2012, Donato2017}.
+\end{itemize} 
+
+\paragraph{PT\&CS and debt in the literature}
+\cite{Nyhus2001}
+
+\cite{Brown2014}
+\begin{itemize}
+\item EX has the largest association (positively) compared to the other four personality traits (for single individuals sample).
+\item In couple sample, AG largest association (positively).
+\item CO inversely associated with level of unsecured debt as \cite{Donnelly2012} who report that individuals who are highly conscientious are more able to manage their money through greater levels of financial self-control, and also with the results of Nyhus and Webley (2001) which suggest that conscientious individuals are less likely to have ever been in debt.
+\item CO le seul reverse, les autres sont positively
+\item Neuroticsm = only non significant suggesting that this personality trait is not important in
+influencing this aspect of an individual’s economic decision-making, ceteris paribus.
+
+\end{itemize}
+The lack of a statistically significant association between neuroticism and unsecured debt is perhaps surprising given that Nyhus and Webley (2001) found that emotional instability (i.e. neuroticism) is a positive predictor of debt. 
+Moreover, given that neuroticism is related to pessimism, the finding that it has a statistically insignificant association with household finances is interesting in the context of the positive association found in the existing literature relating to financial optimism and debt.
+
+
+\cite{Forlicz2019}
+
+\paragraph{Literature on individual debt practices}
+
+\paragraph{PT\&CS and other outcomes in rural India}
 
 
 % \newpage
@@ -917,3 +1061,25 @@ To ensure that Heckman procedure
 
 
 %\cite{John1999} the Big 5 "represent personality at the broadest level of abstraction, and each dimension summarizes a large number of distinct, more specific personality characteristics".
+
+
+
+
+
+
+% FE
+%For example, with regard to the question of whether PT\&CS of individuals affects the debt of that individuals, we can investigate:
+%\begin{itemize}
+%\item Individual over time; 
+%\item Cross-section of individuals in 2016-17 or 2020-21.
+%\end{itemize} 
+%If we look only at the time series for $HHINDID\_panel=KOR20/1$, we ask:
+%\textit{As PT\&CS increases for $KOR20/1$ over time, how does the debt change over time?}
+%If we use one-way case FE, we generalize this question across individuals:
+%\textit{As PT\&CS increases for an individual over time, how does the debt change over time?}
+%If instead we look at the cross-section that exists in 2016-17, we ask:
+%\textit{How much more democratic are wealthier countries than poorer countries in 1990?}
+%One-way time FE generalize this question to the entire time frame under analysis, and simply ask: 
+%\textit{How much more democratic are wealthier countries than poorer countries at any point in time?}
+%If a researcher intends to compare one case to itself over time, it is appropriate to examine individual time series and to use one-way case FE; if a researcher intends to compare one case to another at the same point in time, it is appropriate to examine cross-sections and to use one-way time FE. 
+%If a researcher wishes to allow different cases to experience different over-time effects, or to let different cross-sectional effects exist at different points in time, it is straightforward to use interactions to extend a one-way FE specification to account for the desired heterogeneity \citep{Kropko2020}.

@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.22 (MiKTeX 21.6.28) (preloaded format=pdflatex 2021.7.10)  14 JUL 2021 23:29
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (MiKTeX 21.6.28) (preloaded format=pdflatex 2021.7.10)  19 JUL 2021 15:38
 entering extended mode
 **./Personality_debt.tex
 (Personality_debt.tex
@@ -1562,7 +1562,7 @@ Package upgreek Info: Using Euler Roman for upright Greek on input line 31.
 LaTeX Font Info:    Overwriting symbol font `ugrf@m' in version `bold'
 (Font)                  U/eur/m/n --> U/eur/b/n on input line 38.
 )
-LaTeX Font Info:    Trying to load font information for T1+jkp on input line 54
+LaTeX Font Info:    Trying to load font information for T1+jkp on input line 66
 .
 
 (C:\Users\Arnaud\AppData\Local\Programs\MiKTeX\tex/latex/kpfonts\t1jkp.fd
@@ -1587,47 +1587,47 @@ LaTeX Warning: Label `app:rob' multiply defined.
 )
 \openout1 = `Personality_debt.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/jkp/m/it on input line 54.
-LaTeX Font Info:    Trying to load font information for OML+jkp on input line 5
-4.
+LaTeX Font Info:    Checking defaults for OML/jkp/m/it on input line 66.
+LaTeX Font Info:    Trying to load font information for OML+jkp on input line 6
+6.
  (C:\Users\Arnaud\AppData\Local\Programs\MiKTeX\tex/latex/kpfonts\omljkp.fd
 File: omljkp.fd 2006/08/15 v1.0
 )
-LaTeX Font Info:    ... okay on input line 54.
-LaTeX Font Info:    Checking defaults for OMS/jkp/m/n on input line 54.
-LaTeX Font Info:    Trying to load font information for OMS+jkp on input line 5
-4.
+LaTeX Font Info:    ... okay on input line 66.
+LaTeX Font Info:    Checking defaults for OMS/jkp/m/n on input line 66.
+LaTeX Font Info:    Trying to load font information for OMS+jkp on input line 6
+6.
 
 (C:\Users\Arnaud\AppData\Local\Programs\MiKTeX\tex/latex/kpfonts\omsjkp.fd
 File: omsjkp.fd 2006/08/15 v1.0
 )
-LaTeX Font Info:    ... okay on input line 54.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 54.
-LaTeX Font Info:    ... okay on input line 54.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 54.
-LaTeX Font Info:    ... okay on input line 54.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 54.
-LaTeX Font Info:    ... okay on input line 54.
-LaTeX Font Info:    Checking defaults for OMX/jkp/m/n on input line 54.
-LaTeX Font Info:    Trying to load font information for OMX+jkp on input line 5
-4.
+LaTeX Font Info:    ... okay on input line 66.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 66.
+LaTeX Font Info:    ... okay on input line 66.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 66.
+LaTeX Font Info:    ... okay on input line 66.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 66.
+LaTeX Font Info:    ... okay on input line 66.
+LaTeX Font Info:    Checking defaults for OMX/jkp/m/n on input line 66.
+LaTeX Font Info:    Trying to load font information for OMX+jkp on input line 6
+6.
 
 (C:\Users\Arnaud\AppData\Local\Programs\MiKTeX\tex/latex/kpfonts\omxjkp.fd
 File: omxjkp.fd 2006/08/15 v1.0
 )
-LaTeX Font Info:    ... okay on input line 54.
-LaTeX Font Info:    Checking defaults for U/jkpexa/m/n on input line 54.
+LaTeX Font Info:    ... okay on input line 66.
+LaTeX Font Info:    Checking defaults for U/jkpexa/m/n on input line 66.
 LaTeX Font Info:    Trying to load font information for U+jkpexa on input line 
-54.
+66.
 
 (C:\Users\Arnaud\AppData\Local\Programs\MiKTeX\tex/latex/kpfonts\ujkpexa.fd
 File: ujkpexa.fd 2006/08/15 v1.0
 )
-LaTeX Font Info:    ... okay on input line 54.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 54.
-LaTeX Font Info:    ... okay on input line 54.
-LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 54.
-LaTeX Font Info:    ... okay on input line 54.
+LaTeX Font Info:    ... okay on input line 66.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 66.
+LaTeX Font Info:    ... okay on input line 66.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 66.
+LaTeX Font Info:    ... okay on input line 66.
 \c@maskedRefs=\count387
 
 (C:\Users\Arnaud\AppData\Local\Programs\MiKTeX\tex/latex/apacite\english.apc
@@ -1635,14 +1635,14 @@ File: english.apc 2013/07/21 v6.03 apacite language file
 LaTeX Info: Redefining \BPBI on input line 129.
 LaTeX Info: Redefining \BHBI on input line 130.
 )
-LaTeX Info: Redefining \microtypecontext on input line 54.
+LaTeX Info: Redefining \microtypecontext on input line 66.
 Package microtype Info: Generating PDF output.
 Package microtype Info: Character protrusion enabled (level 2).
 Package microtype Info: Using default protrusion set `alltext'.
 Package microtype Info: Automatic font expansion enabled (level 2),
 (microtype)             stretch: 20, shrink: 20, step: 1, non-selected.
 Package microtype Info: Using default expansion set `alltext-nott'.
-LaTeX Info: Redefining \showhyphens on input line 54.
+LaTeX Info: Redefining \showhyphens on input line 66.
 Package microtype Info: No adjustment of tracking.
 Package microtype Info: No adjustment of interword spacing.
 Package microtype Info: No adjustment of character kerning.
@@ -1650,7 +1650,7 @@ Package microtype Info: Loading generic protrusion settings for font family
 (microtype)             `jkp' (encoding: T1).
 (microtype)             For optimal results, create family-specific settings.
 (microtype)             See the microtype manual for details.
-Package hyperref Info: Link coloring ON on input line 54.
+Package hyperref Info: Link coloring ON on input line 66.
 
 (C:\Users\Arnaud\AppData\Local\Programs\MiKTeX\tex/latex/hyperref\nameref.sty
 Package: nameref 2021-04-02 v2.47 Cross-referencing by name of section
@@ -1664,9 +1664,9 @@ Package: gettitlestring 2019/12/15 v1.6 Cleanup title references (HO)
 )
 \c@section@level=\count388
 )
-LaTeX Info: Redefining \ref on input line 54.
-LaTeX Info: Redefining \pageref on input line 54.
-LaTeX Info: Redefining \nameref on input line 54.
+LaTeX Info: Redefining \ref on input line 66.
+LaTeX Info: Redefining \pageref on input line 66.
+LaTeX Info: Redefining \nameref on input line 66.
  (Personality_debt.out) (Personality_debt.out)
 \@outlinefile=\write4
 \openout4 = `Personality_debt.out'.
@@ -1703,7 +1703,7 @@ File: translations-basic-dictionary-english.trsl (english translation file `tra
 nslations-basic-dictionary')
 )
 Package translations Info: loading dictionary `translations-basic-dictionary' f
-or `english'. on input line 54.
+or `english'. on input line 66.
 Package caption Info: Begin \AtBeginDocument code.
 Package caption Info: changepage package is loaded.
 \caption@adjustwidth@hsize=\dimen363
@@ -1749,10 +1749,10 @@ Package caption Info: End \AtBeginDocument code.
 
 Package lastpage Info: Please have a look at the pageslts package at
 (lastpage)             https://www.ctan.org/pkg/pageslts
-(lastpage)             ! on input line 54.
+(lastpage)             ! on input line 66.
 \c@lstlisting=\count395
-LaTeX Font Info:    Trying to load font information for OT1+jkp on input line 5
-5.
+LaTeX Font Info:    Trying to load font information for OT1+jkp on input line 6
+7.
 (C:\Users\Arnaud\AppData\Local\Programs\MiKTeX\tex/latex/kpfonts\ot1jkp.fd
 File: ot1jkp.fd 2007/08/30 Fontinst v1.928 font definitions for OT1/jkp.
 )
@@ -1761,25 +1761,25 @@ Package microtype Info: Loading generic protrusion settings for font family
 (microtype)             For optimal results, create family-specific settings.
 (microtype)             See the microtype manual for details.
 LaTeX Font Info:    Trying to load font information for U+jkpsya on input line 
-55.
+67.
 
 (C:\Users\Arnaud\AppData\Local\Programs\MiKTeX\tex/latex/kpfonts\ujkpsya.fd
 File: ujkpsya.fd 2006/08/15 v1.0
 )
 LaTeX Font Info:    Trying to load font information for U+jkpsyb on input line 
-55.
+67.
 
 (C:\Users\Arnaud\AppData\Local\Programs\MiKTeX\tex/latex/kpfonts\ujkpsyb.fd
 File: ujkpsyb.fd 2006/08/15 v1.0
 )
 LaTeX Font Info:    Trying to load font information for U+jkpmia on input line 
-55.
+67.
 
 (C:\Users\Arnaud\AppData\Local\Programs\MiKTeX\tex/latex/kpfonts\ujkpmia.fd
 File: ujkpmia.fd 2006/08/15 v1.0
 )
 LaTeX Font Info:    Trying to load font information for U+jkpsyc on input line 
-55.
+67.
 
 (C:\Users\Arnaud\AppData\Local\Programs\MiKTeX\tex/latex/kpfonts\ujkpsyc.fd
 File: ujkpsyc.fd 2006/08/15 v1.0
@@ -1787,8 +1787,8 @@ File: ujkpsyc.fd 2006/08/15 v1.0
 (C:\Users\Arnaud\AppData\Local\Programs\MiKTeX\tex/latex/microtype\mt-eur.cfg
 File: mt-eur.cfg 2006/07/31 v1.1 microtype config. file: AMS Euler Roman (RS)
 )
-LaTeX Font Info:    Trying to load font information for TS1+jkp on input line 5
-5.
+LaTeX Font Info:    Trying to load font information for TS1+jkp on input line 6
+7.
 
 (C:\Users\Arnaud\AppData\Local\Programs\MiKTeX\tex/latex/kpfonts\ts1jkp.fd
 File: ts1jkp.fd 2007/08/30 Fontinst v1.928 font definitions for TS1/jkp.
@@ -1801,7 +1801,7 @@ Package microtype Info: Character `029' is missing
 (microtype)             in font `T1/jkp/m/sc/9'.
 (microtype)             Ignoring protrusion settings for this character.
 LaTeX Font Info:    Trying to load font information for T1+jkptt on input line 
-55.
+67.
 
 (C:\Users\Arnaud\AppData\Local\Programs\MiKTeX\tex/latex/kpfonts\t1jkptt.fd
 File: t1jkptt.fd 2007/01/26 Fontinst v1.928 font definitions for T1/jkptt.
@@ -1811,157 +1811,152 @@ Package microtype Info: Loading generic protrusion settings for font family
 (microtype)             For optimal results, create family-specific settings.
 (microtype)             See the microtype manual for details.
 
-Underfull \hbox (badness 10000) in paragraph at lines 60--61
+Underfull \hbox (badness 10000) in paragraph at lines 72--73
 
  []
 
 [1
 
-{C:/Users/Arnaud/AppData/Local/MiKTeX/pdftex/config/pdftex.map}]
-Overfull \hbox (2.4185pt too wide) in paragraph at lines 133--138
-\T1/jkptt/m/n/10.95 -gaps [] -in [] -behaviour [] -and [] -personality [] -trai
-ts [] -a [] -study [] -of [] -university [] -students [] .html$[][] \T1/jkp/m/n
-/10.95 (-20) To
- []
-
-[2] [3] [4] [5]
+{C:/Users/Arnaud/AppData/Local/MiKTeX/pdftex/config/pdftex.map}] [2] [3]
+[4] [5]
 
 pdfTeX warning: pdflatex (file ./INPUT/omega.pdf): PDF inclusion: found PDF ver
 sion <1.6>, but at most version <1.5> allowed
-<INPUT/omega.pdf, id=352, 433.62pt x 289.08pt>
+<INPUT/omega.pdf, id=358, 433.62pt x 289.08pt>
 File: INPUT/omega.pdf Graphic file (type pdf)
 <use INPUT/omega.pdf>
-Package pdftex.def Info: INPUT/omega.pdf  used on input line 345.
-(pdftex.def)             Requested size: 216.80946pt x 144.53964pt.
-[6 <./INPUT/omega.pdf>] [7] [8] [9] (INPUT/desc_HH.tex) [10] [11]
+Package pdftex.def Info: INPUT/omega.pdf  used on input line 357.
+(pdftex.def)             Requested size: 346.89647pt x 231.2643pt.
+[6 <./INPUT/omega.pdf>] [7] [8] [9] [10] [11] (INPUT/desc_HH.tex) [12] [13]
 (INPUT/desc_indiv.tex)
 
-LaTeX Warning: Reference `tab:anovaperso' on page 12 undefined on input line 54
-0.
-
-
-LaTeX Warning: Reference `tab:anovaperso' on page 12 undefined on input line 54
-3.
-
-
-
-pdfTeX warning: pdflatex (file ./INPUT/Kernel_PTCS_raw_new.pdf): PDF inclusion:
- found PDF version <1.6>, but at most version <1.5> allowed
-<INPUT/Kernel_PTCS_raw_new.pdf, id=530, 433.62pt x 289.08pt>
-File: INPUT/Kernel_PTCS_raw_new.pdf Graphic file (type pdf)
-<use INPUT/Kernel_PTCS_raw_new.pdf>
-Package pdftex.def Info: INPUT/Kernel_PTCS_raw_new.pdf  used on input line 549.
-
+pdfTeX warning: pdflatex (file ./INPUT/Kernel_PTCS_raw.pdf): PDF inclusion: fou
+nd PDF version <1.6>, but at most version <1.5> allowed
+<INPUT/Kernel_PTCS_raw.pdf, id=555, 433.62pt x 289.08pt>
+File: INPUT/Kernel_PTCS_raw.pdf Graphic file (type pdf)
+<use INPUT/Kernel_PTCS_raw.pdf>
+Package pdftex.def Info: INPUT/Kernel_PTCS_raw.pdf  used on input line 612.
 (pdftex.def)             Requested size: 455.24411pt x 303.51207pt.
-[12 <./INPUT/Kernel_PTCS_raw_new.pdf>] [13] (INPUT/AME_indebt.tex) [14]
-(INPUT/AME_loanamount.tex) (INPUT/AME_IDSR.tex) (INPUT/AME_FE_loanamount.tex)
-(INPUT/AME_FE_IDSR.tex) (INPUT/AME_debtpath.tex) [15] [16] [17] [18]
-(Personality_debt.bbl [19
+[14 <./INPUT/Kernel_PTCS_raw.pdf>] [15] (INPUT/AME_indebt.tex) [16]
+(INPUT/AME_loanamount.tex) [17] (INPUT/AME_IDSR.tex)
+(INPUT/AME_FE_loanamount.tex) (INPUT/AME_FE_IDSR.tex) (INPUT/AME_debtpath.tex)
+[18] [19] [20] [21] [22
 
-] [20] [21] [22]) [23]
+] (Personality_debt.bbl [23
+
+]
+Underfull \hbox (badness 10000) in paragraph at lines 665--683
+\T1/jkptt/m/n/10.95 topics / social [] -identity / caste [] -gaps [] -in [] -be
+haviour [] -and [] -personality [] -traits [] -a []
+ []
+
+[24] [25] [26] [27]) [28]
 
 pdfTeX warning: pdflatex (file ./INPUT/deltacont_raw.pdf): PDF inclusion: found
  PDF version <1.6>, but at most version <1.5> allowed
-<INPUT/deltacont_raw.pdf, id=672, 433.62pt x 289.08pt>
+<INPUT/deltacont_raw.pdf, id=761, 433.62pt x 289.08pt>
 File: INPUT/deltacont_raw.pdf Graphic file (type pdf)
 <use INPUT/deltacont_raw.pdf>
-Package pdftex.def Info: INPUT/deltacont_raw.pdf  used on input line 695.
+Package pdftex.def Info: INPUT/deltacont_raw.pdf  used on input line 839.
 (pdftex.def)             Requested size: 372.91255pt x 248.60835pt.
 
 
 pdfTeX warning: pdflatex (file ./INPUT/deltacont_cor.pdf): PDF inclusion: found
  PDF version <1.6>, but at most version <1.5> allowed
-<INPUT/deltacont_cor.pdf, id=673, 433.62pt x 289.08pt>
+<INPUT/deltacont_cor.pdf, id=762, 433.62pt x 289.08pt>
 File: INPUT/deltacont_cor.pdf Graphic file (type pdf)
 <use INPUT/deltacont_cor.pdf>
-Package pdftex.def Info: INPUT/deltacont_cor.pdf  used on input line 703.
+Package pdftex.def Info: INPUT/deltacont_cor.pdf  used on input line 847.
 (pdftex.def)             Requested size: 372.91255pt x 248.60835pt.
-[24 <./INPUT/deltacont_raw.pdf> <./INPUT/deltacont_cor.pdf>] (INPUT/Big5.tex)
-[25
+[29 <./INPUT/deltacont_raw.pdf> <./INPUT/deltacont_cor.pdf>] (INPUT/Big5.tex)
+[30
 
 ]
 
 pdfTeX warning: pdflatex (file ./INPUT/factor2016_2.pdf): PDF inclusion: found 
 PDF version <1.6>, but at most version <1.5> allowed
-<INPUT/factor2016_2.pdf, id=706, 433.62pt x 289.08pt>
+<INPUT/factor2016_2.pdf, id=794, 433.62pt x 289.08pt>
 File: INPUT/factor2016_2.pdf Graphic file (type pdf)
 <use INPUT/factor2016_2.pdf>
-Package pdftex.def Info: INPUT/factor2016_2.pdf  used on input line 725.
+Package pdftex.def Info: INPUT/factor2016_2.pdf  used on input line 869.
 (pdftex.def)             Requested size: 455.24411pt x 303.51207pt.
 
 
 pdfTeX warning: pdflatex (file ./INPUT/matrix_b5_efa.pdf): PDF inclusion: found
  PDF version <1.6>, but at most version <1.5> allowed
-<INPUT/matrix_b5_efa.pdf, id=707, 433.62pt x 289.08pt>
+<INPUT/matrix_b5_efa.pdf, id=795, 433.62pt x 289.08pt>
 File: INPUT/matrix_b5_efa.pdf Graphic file (type pdf)
 <use INPUT/matrix_b5_efa.pdf>
-Package pdftex.def Info: INPUT/matrix_b5_efa.pdf  used on input line 734.
+Package pdftex.def Info: INPUT/matrix_b5_efa.pdf  used on input line 878.
 (pdftex.def)             Requested size: 368.57874pt x 245.71915pt.
-[26
+[31
 
  <./INPUT/factor2016_2.pdf> <./INPUT/matrix_b5_efa.pdf>]
 (INPUT/imr_check_tab.tex)
 
 pdfTeX warning: pdflatex (file ./INPUT/imr_check.pdf): PDF inclusion: found PDF
  version <1.6>, but at most version <1.5> allowed
-<INPUT/imr_check.pdf, id=734, 433.62pt x 289.08pt>
+<INPUT/imr_check.pdf, id=823, 433.62pt x 289.08pt>
 File: INPUT/imr_check.pdf Graphic file (type pdf)
 <use INPUT/imr_check.pdf>
-Package pdftex.def Info: INPUT/imr_check.pdf  used on input line 755.
+Package pdftex.def Info: INPUT/imr_check.pdf  used on input line 899.
 (pdftex.def)             Requested size: 368.57874pt x 245.71915pt.
-[27
+[32
 
  <./INPUT/imr_check.pdf>] (INPUT/AME_indebt_b5.tex)
 (INPUT/AME_loanamount_b5.tex) (INPUT/AME_IDSR_b5.tex)
 (INPUT/AME_debtpath_b5.tex
 
-LaTeX Warning: Float too large for page by 2.4638pt on input line 97.
+LaTeX Warning: Float too large for page by 10.03424pt on input line 98.
 
-) [28
+) [33
 
-] [29] [30] (INPUT/complet_indebt.tex [31
+] [34] [35] (INPUT/complet_indebt.tex [36
 
-]) [32] (INPUT/complet_fe.tex
-[33
+]) [37] (INPUT/complet_fe.tex
+[38
 
-]) [34] (INPUT/complet_debtpath.tex [35
+]) [39] (INPUT/complet_debtpath.tex [40
 
-] [36] [37]) [38]
-(INPUT/complet_indebt_b5.tex [39
+] [41] [42]) [43]
+(INPUT/complet_indebt_b5.tex [44
 
-]) [40] (Personality_debt.toc)
+]) [45] (Personality_debt.toc [46
+
+])
 \tf@toc=\write5
 \openout5 = `Personality_debt.toc'.
 
 
 
 AED: lastpage setting LastPage
-[41
-
-]
+[47]
 \tf@thm=\write6
 \openout6 = `Personality_debt.thm'.
 
  (Personality_debt.aux)
 
-LaTeX Warning: There were undefined references.
-
-
 LaTeX Warning: There were multiply-defined labels.
 
 Package rerunfilecheck Info: File `Personality_debt.out' has not changed.
-(rerunfilecheck)             Checksum: 77620E2B2E20030212D063ACE684FCA3;3932.
+(rerunfilecheck)             Checksum: 249E65E344F229265888839817CE70D7;3945.
  ) 
 Here is how much of TeX's memory you used:
- 37228 strings out of 478847
- 685340 string characters out of 2847912
- 1380257 words of memory out of 3000000
- 53525 multiletter control sequences out of 15000+600000
- 612910 words of font info for 629 fonts, out of 8000000 for 9000
+ 37329 strings out of 478847
+ 686531 string characters out of 2847912
+ 1384392 words of memory out of 3000000
+ 53568 multiletter control sequences out of 15000+600000
+ 622178 words of font info for 659 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 89i,20n,95p,830b,1044s stack positions out of 5000i,500n,10000p,200000b,80000s
-pdfTeX warning (dest): name{Hfootnote.28} has been referenced but does not ex
+ 89i,20n,95p,830b,1072s stack positions out of 5000i,500n,10000p,200000b,80000s
+pdfTeX warning (dest): name{Hfootnote.30} has been referenced but does not ex
 ist, replaced by a fixed one
+
+pdfTeX warning (dest): name{Hfootnote.29} has been referenced but does not exis
+t, replaced by a fixed one
+
+pdfTeX warning (dest): name{Hfootnote.28} has been referenced but does not exis
+t, replaced by a fixed one
 
 pdfTeX warning (dest): name{Hfootnote.27} has been referenced but does not exis
 t, replaced by a fixed one
@@ -2061,10 +2056,11 @@ C:/Users/Arnaud/AppData/Local/Programs/MiKTeX/fonts/type1/public/kpfonts/jkpmne
 jkpmsc8a.pfb><C:/Users/Arnaud/AppData/Local/Programs/MiKTeX/fonts/type1/public/
 kpfonts/jkpsy.pfb><C:/Users/Arnaud/AppData/Local/Programs/MiKTeX/fonts/type1/pu
 blic/kpfonts/jkpsyb.pfb><C:/Users/Arnaud/AppData/Local/Programs/MiKTeX/fonts/ty
-pe1/public/kpfonts/jkpttmn8a.pfb>
-Output written on Personality_debt.pdf (41 pages, 5199650 bytes).
+pe1/public/kpfonts/jkpttmn8a.pfb><C:/Users/Arnaud/AppData/Local/Programs/MiKTeX
+/fonts/type1/tfrupee/tfrupee.pfb>
+Output written on Personality_debt.pdf (47 pages, 5321106 bytes).
 PDF statistics:
- 959 PDF objects out of 1000 (max. 8388607)
- 191 named destinations out of 1000 (max. 500000)
- 139480 words of extra memory for PDF output out of 154059 (max. 10000000)
+ 1067 PDF objects out of 1200 (max. 8388607)
+ 208 named destinations out of 1000 (max. 500000)
+ 145632 words of extra memory for PDF output out of 154059 (max. 10000000)
 

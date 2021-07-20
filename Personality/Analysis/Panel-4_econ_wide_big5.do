@@ -22,17 +22,17 @@ clear all
 macro drop _all
 set scheme plotplain
 ********** Path to folder "data" folder.
-global directory = "D:\Documents\_Thesis\Research-Skills_and_debt\Analysis"
-cd"$directory"
+*global directory = "D:\Documents\_Thesis\Research-Skills_and_debt\Analysis"
+*cd"$directory"
 
 
 *Fac
-*cd "C:\Users\anatal\Downloads\_Thesis\Research-Skills_and_debt\Analysis"
-*set scheme plotplain
+cd "C:\Users\anatal\Downloads\_Thesis\Research-Skills_and_debt\Analysis"
+set scheme plotplain
 
-*global git "C:\Users\anatal\Downloads\GitHub"
-*global dropbox "C:\Users\anatal\Downloads\Dropbox"
-*global thesis "C:\Users\anatal\Downloads\_Thesis\Research-Skills_and_debt\Analysis"
+global git "C:\Users\anatal\Downloads\GitHub"
+global dropbox "C:\Users\anatal\Downloads\Dropbox"
+global thesis "C:\Users\anatal\Downloads\_Thesis\Research-Skills_and_debt\Analysis"
 
 
 
@@ -86,15 +86,15 @@ label var dal_base_cr_`x'_std "Dalit X `x' cor (std)"
 label var threeway_base_cr_`x'_std "Dalit X Female X `x' cor (std)"
 label var base_cr_`x'_std "`x' cor (std)"
 }
-label var fem_base_raven_tt "Female X Raven"
-label var dal_base_raven_tt "Dalit X Raven"
-label var threeway_base_raven_tt "Dalit X Female X Raven"
-label var fem_base_num_tt "Female X Numeracy"
-label var dal_base_num_tt "Dalit X Numeracy"
-label var threeway_base_num_tt "Dalit X Female X Numeracy"
-label var fem_base_lit_tt "Female X Literacy"
-label var dal_base_lit_tt "Dalit X Literacy"
-label var threeway_base_lit_tt "Dalit X Female X Literacy"
+label var fem_base_raven_tt "Female X Raven (std)"
+label var dal_base_raven_tt "Dalit X Raven (std)"
+label var threeway_base_raven_tt "Dalit X Female X Raven (std)"
+label var fem_base_num_tt "Female X Numeracy (std)"
+label var dal_base_num_tt "Dalit X Numeracy (std)"
+label var threeway_base_num_tt "Dalit X Female X Numeracy (std)"
+label var fem_base_lit_tt "Female X Literacy (std)"
+label var dal_base_lit_tt "Dalit X Literacy (std)"
+label var threeway_base_lit_tt "Dalit X Female X Literacy (std)"
 label var femXdal "Female X Dalit"
 label var debtorratio2_1 "Debtor ratio in 2016-17"
 label var indebt_indiv_1 "Indebted (=1) in 2016-17"
