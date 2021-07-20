@@ -4279,17 +4279,12 @@ It has also been noted that there exists a close correlation between class, cast
   publisher = {Wiley},
 }
 
-@TechReport{Guerin2020,
-  author      = {Isabelle Guérin and Sébastien Michiels and Arnaud Natal and Christophe Jalil Nordman and Govindan Venkatasubramanian},
-  institution = {{Centre Emile Bernheim, Université Libre de Bruxelles}},
-  title       = {Surviving debt, survival debt in times of lockdown},
-  year        = {2020},
-  address     = {Brussels, Belgium},
-  month       = jul,
-  note        = {Submitted to \textit{Economic \& Political Weekly}},
-  number      = {20-009},
-  type        = {CEB Working Paper},
-  url         = {https://econpapers.repec.org/paper/solwpaper/2013_2f309493.htm},
+@Article{Guerin2021,
+  author  = {Isabelle Guérin and Sébastien Michiels and Arnaud Natal and Christophe Jalil Nordman and Govindan Venkatasubramanian},
+  journal = {Economic \& Political Weekly},
+  title   = {Surviving debt, survival debt in times of lockdown},
+  year    = {2021},
+  url     = {https://econpapers.repec.org/paper/solwpaper/2013_2f309493.htm},
 }
 
 @Article{CobbClark2012,
@@ -6971,6 +6966,20 @@ It has also been noted that there exists a close correlation between class, cast
   doi       = {10.1177/0049124100029002001},
   publisher = {{SAGE} Publications},
   url       = {https://doi.org/10.1177/0049124100029002001},
+}
+
+@Article{Donato2017,
+  author    = {Katherine Donato and Grant Miller and Manoj Mohanan and Yulya Truskinovsky and Marcos Vera-Hern{\'{a}}ndez},
+  journal   = {American Economic Review},
+  title     = {Personality Traits and Performance Contracts: Evidence from a Field Experiment among Maternity Care Providers in India},
+  year      = {2017},
+  month     = {may},
+  number    = {5},
+  pages     = {506--510},
+  volume    = {107},
+  doi       = {10.1257/aer.p20171105},
+  publisher = {American Economic Association},
+  url       = {https://www.aeaweb.org/articles?id=10.1257/aer.p20171105},
 }
 
 @Comment{jabref-meta: databaseType:bibtex;}

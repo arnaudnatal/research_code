@@ -62,6 +62,7 @@ global wave3 "NEEMSIS2-HH_v16"
 use"panel_long_v1.dta", clear
 
 
+
 ********** Déclaration du panel
 xtset panelvar year
 
@@ -151,6 +152,35 @@ label var sexratiocat_3 "SR: More male"
 label var hhsize "Household size"
 label var shock "Shock (=1)"
 label var incomeHH1000 "Total income (1,000 INR)"
+
+
+
+
+
+********** Tester le nb obs
+preserve
+global eff loanamount_indiv1000 std_OP std_CO std_EX std_AG std_ES raven_tt num_tt lit_tt age agesq dummyhead cat_mainoccupation_indiv_1 cat_mainoccupation_indiv_2 cat_mainoccupation_indiv_3 cat_mainoccupation_indiv_4 cat_mainoccupation_indiv_5 dummyedulevel maritalstatus2 dummymultipleoccupation_indiv assets1000 sexratiocat_1 sexratiocat_2 sexratiocat_3 hhsize shock incomeHH1000 female dalits
+
+keep HHINDID panelvar year HHID_panel INDID_panel $eff
+order HHINDID panelvar year HHID_panel INDID_panel $eff
+
+gen tag=!missing(panelvar*year*loanamount_indiv1000*std_OP*std_CO*std_EX*std_AG*std_ES*raven_tt*num_tt*lit_tt*age*agesq*dummyhead*cat_mainoccupation_indiv_1*cat_mainoccupation_indiv_2*cat_mainoccupation_indiv_3*cat_mainoccupation_indiv_4*cat_mainoccupation_indiv_5*dummyedulevel*maritalstatus2*dummymultipleoccupation_indiv*assets1000*sexratiocat_1*sexratiocat_2*sexratiocat_3*hhsize*shock*incomeHH1000*female*dalits)
+xtset panelvar year
+
+xtreg $eff, fe
+gen sample = e(sample)
+assert tag==sample
+tab sample
+xtdes 
+
+********** Nb miss
+mdesc $eff
+egen nbmiss=rowmiss($eff)
+keep if nbmiss==0
+xtdes
+xtreg $eff, fe
+restore
+
 
 
 ********** Interaction terms and margin with FE model:
@@ -247,13 +277,12 @@ qui xtlogit `var' $big5raw $cog $indivcontrol $hhcontrol4 c.std_OP##i.female##i.
 margins, dydx($big5raw $cog) at(dalits=(0 1) female=(0 1)) atmeans noestimcheck saving(margin_FE_`var'4, replace)
 */
 
-mdesc loanamount_indiv1000 $big5raw $cog $indivcontrol $hhcontrol4 female dalits if year==2016
 
-mdesc loanamount_indiv1000 $big5raw $cog $indivcontrol $hhcontrol4 female dalits if year==2020
 
 
 ********** 01.
 ********** Level of debt
+recode loanamount_indiv1000 DSR_indiv (.=0)
 cls
 foreach var in loanamount_indiv1000  DSR_indiv {
 xtreg `var' $big5raw $cog $indivcontrol $hhcontrol4 female dalits, fe vce(cluster HHFE)
@@ -307,74 +336,3 @@ qui xtreg `var' $big5raw $cog $indivcontrol $hhcontrol4 c.std_OP##i.female##i.da
 *dy/dx
 margins, dydx($big5raw $cog) at(dalits=(0 1) female=(0 1)) atmeans noestimcheck saving(margin_FE_`var'4, replace)
 }
-
-
-
-
-
-
-
-
-
-********************************************************
-********************************************************
-********************************************************
-********************************************************
-*XTQREG
-
-local quant=.75
-
-cls
-foreach var in loanamount_indiv1000  DSR_indiv {
-xtqreg `var' $big5raw $cog $indivcontrol $hhcontrol4 female dalits, q(`quant')
-est store res_1
-xtqreg `var' $big5raw $cog $indivcontrol $hhcontrol4 female dalits $intfemraw, q(`quant')
-est store res_2
-xtqreg `var' $big5raw $cog $indivcontrol $hhcontrol4 female dalits $intdalraw, q(`quant')
-est store res_3
-xtqreg `var' $big5raw $cog $indivcontrol $hhcontrol4 female dalits $intfemraw $intdalraw $threeraw, q(`quant')
-est store res_4
-
-
-esttab res_1 res_2 res_3 res_4 using "_reg.csv", ///
-	cells(b(fmt(3)) /// 
-	t(par fmt(3))) ///
-	drop() ///
-	legend label varlabels(_cons constant) ///
-	stats(N N_g rho r2_w r2_b r2_o F p, fmt(0 0 3 3 3 3 3 3) labels(`"Observations"' `"Nb of groups"' `"$\uprho$"' `"Within \$R^2$"' `"Between \$R^2$"' `"Overall \$R^2$"' `"F-stat"' `"p-value"')) ///
-	replace
-estimates clear
-preserve
-import delimited "_reg.csv", delimiter(",")  clear
-qui des
-sca def k=r(k)
-forvalues i=1(1)`=scalar(k)'{
-replace v`i'=substr(v`i',3,.)
-replace v`i'=substr(v`i',1,strlen(v`i')-1)
-}
-export excel using "XTQREG_indebt.xlsx", sheet("`var'", replace)
-restore
-
-
-********** Margins
-*** No int
-xqtreg `var' $big5raw $cog $indivcontrol $hhcontrol4 dalit female, vce(cluster HHFE) fe
-*dy/dx
-margins, dydx($big5raw $cog) atmeans noestimcheck saving(margin_FE_`var'1, replace) 
-
-*** Female
-xtqreg `var' $big5raw $cog $indivcontrol $hhcontrol4 c.std_OP##i.female c.std_CO##i.female c.std_EX##i.female c.std_AG##i.female c.std_ES##i.female c.raven_tt##i.female c.num_tt##i.female c.lit_tt##i.female, q(`quant')
-*dy/dx
-margins, dydx($big5raw $cog) at(female=(0 1)) atmeans noestimcheck saving(margin_FE_`var'2, replace)
-
-*** Dalits
-xtqreg `var' $big5raw $cog $indivcontrol $hhcontrol4 c.std_OP##i.dalits c.std_CO##i.dalits c.std_EX##i.dalits c.std_AG##i.dalits c.std_ES##i.dalits c.raven_tt##i.dalits c.num_tt##i.dalits c.lit_tt##i.dalits , q(`quant')
-*dy/dx
-margins, dydx($big5raw $cog) at(dalits=(0 1)) atmeans noestimcheck saving(margin_FE_`var'3, replace)
-
-*** Three
-xtqreg `var' $big5raw $cog $indivcontrol $hhcontrol4 c.std_OP##i.female##i.dalits c.std_CO##i.female##i.dalits c.std_EX##i.female##i.dalits c.std_AG##i.female##i.dalits c.std_ES##i.female##i.dalits c.raven_tt##i.female##i.dalits c.num_tt##i.female##i.dalits c.lit_tt##i.female##i.dalits , q(`quant')
-*dy/dx
-margins, dydx($big5raw $cog) at(dalits=(0 1) female=(0 1)) atmeans noestimcheck saving(margin_FE_`var'4, replace)
-}
-

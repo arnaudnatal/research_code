@@ -20,17 +20,17 @@ Personality traits: EFA + panel
 clear all
 macro drop _all
 ********** Path to folder "data" folder.
-*global directory = "D:\Documents\_Thesis\Research-Skills_and_debt\Analysis"
-*cd"$directory"
+global directory = "D:\Documents\_Thesis\Research-Skills_and_debt\Analysis"
+cd"$directory"
 
 
 *Fac
-cd "C:\Users\anatal\Downloads\_Thesis\Research-Skills_and_debt\Analysis"
-set scheme plotplain
+*cd "C:\Users\anatal\Downloads\_Thesis\Research-Skills_and_debt\Analysis"
+*set scheme plotplain
 
-global git "C:\Users\anatal\Downloads\GitHub"
-global dropbox "C:\Users\anatal\Downloads\Dropbox"
-global thesis "C:\Users\anatal\Downloads\_Thesis\Research-Skills_and_debt\Analysis"
+*global git "C:\Users\anatal\Downloads\GitHub"
+*global dropbox "C:\Users\anatal\Downloads\Dropbox"
+*global thesis "C:\Users\anatal\Downloads\_Thesis\Research-Skills_and_debt\Analysis"
 
 
 
@@ -1118,6 +1118,211 @@ list HHID_panel INDID_panel if _merge==2, clean noobs
 
 keep if _merge==3
 drop _merge
+
+********** Missings for lit_tt
+mdesc lit_tt_1 lit_tt_2
+list HHID_panel INDID_panel if lit_tt_2==., clean noobs
+
+***
+drop if egoid==0
+gen ok=0 
+replace ok=1 if HHID_panel=="ELA11"
+replace ok=1 if HHID_panel=="ELA12"
+replace ok=1 if HHID_panel=="ELA14"
+replace ok=1 if HHID_panel=="ELA20"
+replace ok=1 if HHID_panel=="ELA21"
+replace ok=1 if HHID_panel=="ELA24"
+replace ok=1 if HHID_panel=="ELA26"
+replace ok=1 if HHID_panel=="ELA31"
+replace ok=1 if HHID_panel=="ELA33"
+keep if ok==1
+tab lit_tt egoid, m
+tab HHID_panel version_HH
+egen HHINDID=concat(HHID_panel INDID_panel), p(/)
+tab HHINDID version_HH
+/*
+       ELA11      Ind_2  
+       ELA12      Ind_1  
+       ELA12      Ind_2  
+       ELA14      Ind_1  
+       ELA20      Ind_2  
+       ELA21      Ind_3  
+       ELA21      Ind_4  
+       ELA24      Ind_1  
+       ELA26      Ind_2  
+       ELA26      Ind_5  
+       ELA31      Ind_1  
+       ELA33      Ind_2  
+       ELA36      Ind_2  
+       ELA36      Ind_3  
+       ELA39      Ind_2  
+       ELA44      Ind_1  
+       ELA44      Ind_2  
+       ELA49      Ind_1  
+        ELA5      Ind_1  
+        ELA5      Ind_2  
+       ELA52      Ind_3  
+       ELA52      Ind_4  
+       GOV15      Ind_1  
+       GOV15      Ind_2  
+       GOV23      Ind_1  
+       GOV37      Ind_2  
+       GOV39      Ind_2  
+       GOV41      Ind_1  
+        KAR1      Ind_2  
+       KAR10      Ind_1  
+       KAR10      Ind_2  
+       KAR11      Ind_1  
+       KAR12      Ind_1  
+       KAR13      Ind_2  
+       KAR14      Ind_1  
+       KAR18      Ind_1  
+       KAR23      Ind_1  
+       KAR27      Ind_1  
+       KAR27      Ind_2  
+       KAR34      Ind_1  
+       KAR40      Ind_2  
+       KAR41      Ind_1  
+        KAR5      Ind_1  
+        KAR7      Ind_1  
+        KAR7      Ind_2  
+        KAR8      Ind_1  
+        KAR9      Ind_1  
+       KOR10      Ind_1  
+       KOR10      Ind_2  
+       KOR11      Ind_1  
+       KOR13      Ind_1  
+       KOR14      Ind_1  
+       KOR14      Ind_2  
+       KOR15      Ind_1  
+       KOR17      Ind_2  
+       KOR22      Ind_1  
+       KOR22      Ind_2  
+       KOR27      Ind_1  
+       KOR29      Ind_1  
+        KOR3      Ind_1  
+        KOR3      Ind_2  
+       KOR30      Ind_1  
+       KOR30      Ind_7  
+       KOR32      Ind_1  
+       KOR32      Ind_2  
+       KOR34      Ind_1  
+       KOR34      Ind_2  
+       KOR37      Ind_1  
+       KOR38      Ind_2  
+        KOR4      Ind_1  
+        KOR4      Ind_2  
+       KOR40      Ind_2  
+       KOR42      Ind_2  
+       KOR43      Ind_1  
+        KOR5      Ind_1  
+        KOR5      Ind_2  
+        KOR8      Ind_4  
+       KUV11      Ind_1  
+       KUV11      Ind_2  
+       KUV12      Ind_2  
+       KUV15      Ind_1  
+       KUV17      Ind_1  
+       KUV19      Ind_1  
+       KUV19      Ind_2  
+        KUV2      Ind_2  
+       KUV20      Ind_1  
+       KUV26      Ind_1  
+       KUV27      Ind_1  
+       KUV27      Ind_2  
+       KUV28      Ind_1  
+       KUV28      Ind_2  
+       KUV29      Ind_2  
+        KUV3      Ind_1  
+        KUV3      Ind_2  
+       KUV30      Ind_1  
+       KUV31      Ind_4  
+       KUV32      Ind_1  
+       KUV32      Ind_2  
+       KUV34      Ind_1  
+       KUV34      Ind_2  
+       KUV37      Ind_2  
+        KUV4      Ind_2  
+       KUV43      Ind_1  
+       KUV43      Ind_2  
+       KUV44      Ind_1  
+       KUV45      Ind_1  
+       KUV46      Ind_1  
+       KUV47      Ind_1  
+       KUV47      Ind_2  
+       KUV50      Ind_1  
+        KUV6      Ind_1  
+        KUV6      Ind_2  
+        KUV7      Ind_2  
+        KUV9      Ind_2  
+        MAN1      Ind_1  
+        MAN1      Ind_7  
+       MAN11      Ind_1  
+       MAN13      Ind_1  
+       MAN13      Ind_2  
+       MAN16      Ind_1  
+       MAN16      Ind_2  
+       MAN20      Ind_1  
+       MAN21      Ind_2  
+       MAN26      Ind_1  
+       MAN26      Ind_2  
+       MAN28      Ind_1  
+       MAN37      Ind_1  
+       MAN37      Ind_2  
+       MAN39      Ind_1  
+       MAN43      Ind_2  
+        MAN5      Ind_2  
+       MAN50      Ind_2  
+       MAN52      Ind_4  
+        MAN8      Ind_1  
+        MAN8      Ind_2  
+     MANAM10      Ind_1  
+     MANAM15      Ind_1  
+     MANAM15      Ind_2  
+     MANAM17      Ind_1  
+     MANAM20      Ind_1  
+     MANAM21      Ind_1  
+     MANAM28      Ind_1  
+     MANAM28      Ind_2  
+     MANAM33      Ind_2  
+     MANAM37      Ind_1  
+     MANAM38      Ind_1  
+     MANAM43      Ind_1  
+     MANAM43      Ind_2  
+     MANAM51      Ind_1  
+      MANAM7      Ind_1  
+       NAT16      Ind_1  
+        NAT2      Ind_2  
+       NAT49      Ind_1  
+       NAT49      Ind_2  
+       ORA12      Ind_2  
+       ORA13      Ind_1  
+       ORA17      Ind_2  
+       ORA18      Ind_1  
+       ORA21      Ind_1  
+       ORA21      Ind_2  
+       ORA29      Ind_2  
+        ORA3      Ind_2  
+       ORA31      Ind_1  
+       ORA35      Ind_2  
+       ORA39      Ind_1  
+       ORA48      Ind_1  
+       ORA48      Ind_2  
+        ORA5      Ind_2  
+        SEM1      Ind_2  
+       SEM19      Ind_2  
+       SEM20      Ind_1  
+        SEM3      Ind_1  
+       SEM34      Ind_1  
+       SEM36      Ind_1  
+       SEM36      Ind_2  
+       SEM41      Ind_1  
+       SEM46      Ind_1  
+       SEM51      Ind_2  
+       SEM52      Ind_1  
+       SEM52      Ind_2  
+*/
+
 
 ********** Cleaning
 rename dummydemonetisation_1 dummydemonetisation
