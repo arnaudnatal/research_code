@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.22 (MiKTeX 21.6.28) (preloaded format=pdflatex 2021.7.10)  21 JUL 2021 01:25
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (MiKTeX 21.6.28) (preloaded format=pdflatex 2021.7.10)  23 JUL 2021 22:31
 entering extended mode
 **./Personality_debt.tex
 (Personality_debt.tex
@@ -1842,7 +1842,7 @@ nd PDF version <1.6>, but at most version <1.5> allowed
 <INPUT/Kernel_PTCS_raw.pdf, id=549, 433.62pt x 289.08pt>
 File: INPUT/Kernel_PTCS_raw.pdf Graphic file (type pdf)
 <use INPUT/Kernel_PTCS_raw.pdf>
-Package pdftex.def Info: INPUT/Kernel_PTCS_raw.pdf  used on input line 608.
+Package pdftex.def Info: INPUT/Kernel_PTCS_raw.pdf  used on input line 610.
 (pdftex.def)             Requested size: 455.24411pt x 303.51207pt.
 [13 <./INPUT/Kernel_PTCS_raw.pdf>] [14] (INPUT/AME_indebt.tex) [15]
 (INPUT/AME_loanamount.tex) [16] (INPUT/AME_IDSR.tex)
@@ -1850,7 +1850,7 @@ Package pdftex.def Info: INPUT/Kernel_PTCS_raw.pdf  used on input line 608.
 [17] [18] [19] [20]
 
 Package natbib Warning: Citation `Guerin2020' on page 21 undefined on input lin
-e 735.
+e 737.
 
 [21
 
@@ -1866,19 +1866,19 @@ haviour [] -and [] -personality [] -traits [] -a []
 
 pdfTeX warning: pdflatex (file ./INPUT/deltacont_raw.pdf): PDF inclusion: found
  PDF version <1.6>, but at most version <1.5> allowed
-<INPUT/deltacont_raw.pdf, id=768, 433.62pt x 289.08pt>
+<INPUT/deltacont_raw.pdf, id=770, 433.62pt x 289.08pt>
 File: INPUT/deltacont_raw.pdf Graphic file (type pdf)
 <use INPUT/deltacont_raw.pdf>
-Package pdftex.def Info: INPUT/deltacont_raw.pdf  used on input line 855.
+Package pdftex.def Info: INPUT/deltacont_raw.pdf  used on input line 861.
 (pdftex.def)             Requested size: 372.91255pt x 248.60835pt.
 
 
 pdfTeX warning: pdflatex (file ./INPUT/deltacont_cor.pdf): PDF inclusion: found
  PDF version <1.6>, but at most version <1.5> allowed
-<INPUT/deltacont_cor.pdf, id=769, 433.62pt x 289.08pt>
+<INPUT/deltacont_cor.pdf, id=771, 433.62pt x 289.08pt>
 File: INPUT/deltacont_cor.pdf Graphic file (type pdf)
 <use INPUT/deltacont_cor.pdf>
-Package pdftex.def Info: INPUT/deltacont_cor.pdf  used on input line 863.
+Package pdftex.def Info: INPUT/deltacont_cor.pdf  used on input line 869.
 (pdftex.def)             Requested size: 372.91255pt x 248.60835pt.
 [29 <./INPUT/deltacont_raw.pdf> <./INPUT/deltacont_cor.pdf>] (INPUT/Big5.tex)
 [30
@@ -1887,19 +1887,19 @@ Package pdftex.def Info: INPUT/deltacont_cor.pdf  used on input line 863.
 
 pdfTeX warning: pdflatex (file ./INPUT/factor2016_2.pdf): PDF inclusion: found 
 PDF version <1.6>, but at most version <1.5> allowed
-<INPUT/factor2016_2.pdf, id=801, 433.62pt x 289.08pt>
+<INPUT/factor2016_2.pdf, id=803, 433.62pt x 289.08pt>
 File: INPUT/factor2016_2.pdf Graphic file (type pdf)
 <use INPUT/factor2016_2.pdf>
-Package pdftex.def Info: INPUT/factor2016_2.pdf  used on input line 885.
+Package pdftex.def Info: INPUT/factor2016_2.pdf  used on input line 891.
 (pdftex.def)             Requested size: 455.24411pt x 303.51207pt.
 
 
 pdfTeX warning: pdflatex (file ./INPUT/matrix_b5_efa.pdf): PDF inclusion: found
  PDF version <1.6>, but at most version <1.5> allowed
-<INPUT/matrix_b5_efa.pdf, id=802, 433.62pt x 289.08pt>
+<INPUT/matrix_b5_efa.pdf, id=804, 433.62pt x 289.08pt>
 File: INPUT/matrix_b5_efa.pdf Graphic file (type pdf)
 <use INPUT/matrix_b5_efa.pdf>
-Package pdftex.def Info: INPUT/matrix_b5_efa.pdf  used on input line 894.
+Package pdftex.def Info: INPUT/matrix_b5_efa.pdf  used on input line 900.
 (pdftex.def)             Requested size: 368.57874pt x 245.71915pt.
 [31
 
@@ -1908,10 +1908,10 @@ Package pdftex.def Info: INPUT/matrix_b5_efa.pdf  used on input line 894.
 
 pdfTeX warning: pdflatex (file ./INPUT/imr_check.pdf): PDF inclusion: found PDF
  version <1.6>, but at most version <1.5> allowed
-<INPUT/imr_check.pdf, id=830, 433.62pt x 289.08pt>
+<INPUT/imr_check.pdf, id=832, 433.62pt x 289.08pt>
 File: INPUT/imr_check.pdf Graphic file (type pdf)
 <use INPUT/imr_check.pdf>
-Package pdftex.def Info: INPUT/imr_check.pdf  used on input line 915.
+Package pdftex.def Info: INPUT/imr_check.pdf  used on input line 921.
 (pdftex.def)             Requested size: 368.57874pt x 245.71915pt.
 [32
 
@@ -1959,7 +1959,7 @@ Package rerunfilecheck Info: File `Personality_debt.out' has not changed.
 Here is how much of TeX's memory you used:
  37329 strings out of 478847
  686536 string characters out of 2847912
- 1384428 words of memory out of 3000000
+ 1384429 words of memory out of 3000000
  53568 multiletter control sequences out of 15000+600000
  622127 words of font info for 659 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
@@ -2073,9 +2073,9 @@ kpfonts/jkpsy.pfb><C:/Users/Arnaud/AppData/Local/Programs/MiKTeX/fonts/type1/pu
 blic/kpfonts/jkpsyb.pfb><C:/Users/Arnaud/AppData/Local/Programs/MiKTeX/fonts/ty
 pe1/public/kpfonts/jkpttmn8a.pfb><C:/Users/Arnaud/AppData/Local/Programs/MiKTeX
 /fonts/type1/tfrupee/tfrupee.pfb>
-Output written on Personality_debt.pdf (47 pages, 5323214 bytes).
+Output written on Personality_debt.pdf (47 pages, 5323680 bytes).
 PDF statistics:
- 1075 PDF objects out of 1200 (max. 8388607)
+ 1077 PDF objects out of 1200 (max. 8388607)
  208 named destinations out of 1000 (max. 500000)
  145632 words of extra memory for PDF output out of 154059 (max. 10000000)
 

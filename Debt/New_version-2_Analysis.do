@@ -21,12 +21,19 @@ cd"$directory"
 
 
 
-/*
+
 ****************************************
 * Not balanced
 ****************************************
 use"$directory\_paneldata\RUME-NEEMSIS-HH_v2.dta", clear
 tabstat hhsize_2010 hhsize_2016 hhsize_2020, stat(n mean sd p50) by(caste)
+
+*Verif assets
+/*
+gen testdiff=def_amountownlandwet_a_2016-def_amountownlandwet_2016
+sort testdiff
+order testdiff def_amountownlandwet_a_2016 def_amountownlandwet_2016 DAR_2016 DAR_as2010_2016
+*/
 
 *Housing
 tab house_2010 caste, col nofreq
@@ -41,6 +48,7 @@ tab housetitle_2016 caste, col nofreq
 tab housetitle_2020 caste, col nofreq
 
 *Assets
+tabstat def_assets1000_2010 def_assets1000_2016 def_assets1000_a_2016, stat(n mean sd p50) by(caste)
 tabstat def_assets1000_2010 def_assets1000_2016 def_assets1000_2020, stat(n mean sd p50) by(caste)
 tabstat def_assets_noland1000_2010 def_assets_noland1000_2016 def_assets_noland1000_2020, stat(n mean sd p50) by(caste)
 
@@ -65,7 +73,7 @@ tabstat def_loanamount_HH1000_2010 def_loanamount_HH1000_2016 def_loanamount_HH1
 
 tabstat def_imp1_ds_tot_HH1000_2010 def_imp1_ds_tot_HH1000_2016 def_imp1_ds_tot_HH1000_2020, stat(n mean sd p50) by(caste)
 
-tabstat DAR_2010 DAR_2016 DAR_2020, stat(n mean sd p50) by(caste)
+tabstat DAR_2010 DAR_2016 DAR_as2010_2016, stat(n mean sd p50) by(caste)
 
 tabstat DSR_2010 DSR_2016 DSR_2020, stat(n mean sd p50) by(caste)
 
@@ -89,23 +97,50 @@ tab head_mainoccupation_indiv_2020 caste, col nofreq
 
 ********** Graph
 *DAR
-fsum DAR_2010 DAR_2016 DAR_2020, stat(p90 p95 p99 max)
 foreach x in DAR {
 foreach i in 2010 2016 2020 {
 gen `x'2_`i'=`x'_`i'
 }
 }
+
+rename DAR_as2010_2016 DAR_a_2016
+gen DAR2_a_2016=DAR_a_2016
+fsum DAR_2010 DAR_2016 DAR_2020 DAR_a_2016, stat(p90 p95 p99 max)
+
 replace DAR2_2010=142 if DAR_2010>142
 replace DAR2_2016=787 if DAR_2016>787
 replace DAR2_2020=232 if DAR_2020>232
+replace DAR2_a_2016=345 if DAR_a_2016>345
 
-stripplot DAR2_2010 DAR2_2016 DAR2_2020, over() separate(caste) ///
+set graph off
+stripplot DAR2_2010 DAR2_a_2016, over() separate(caste) ///
 cumul cumprob box centre refline vertical /// 
 xsize(3) xtitle("") xlabel(,angle())  ///
-ylabel(0(100)800) ymtick(0(50)800) ytitle() ///
+ylabel(0(50)350) ymtick(0(25)350) ytitle() ///
 msymbol(oh oh oh) mcolor(plr1   plg1) 
 
-twoway (kdensity DAR_2010 if DAR_2010<450)(kdensity DAR_2016 if DAR_2016<450) (kdensity DAR_2020 if DAR_2020<450)
+*Graph over caste
+twoway (kdensity DAR_2010 if DAR_2010<400 & caste==1, bwidth(6)) (kdensity DAR_2010 if DAR_2010<400 & caste==2, bwidth(6)) (kdensity DAR_2010 if DAR_2010<400 & caste==3, bwidth(6)), legend(order(1 "Dalits" 2 "Middle" 3 "Upper")) xtitle("Debt to assets ratio") xlabel(0(50)400) ytitle("Density") title("2010") name(g1, replace)
+
+twoway (kdensity DAR_a_2016 if DAR_a_2016<400 & caste==1, bwidth(15)) (kdensity DAR_a_2016 if DAR_a_2016<400 & caste==2, bwidth(15)) (kdensity DAR_a_2016 if DAR_a_2016<400 & caste==3, bwidth(15)), legend(order(1 "Dalits" 2 "Middle" 3 "Upper") col(3)) xtitle("Debt to assets ratio") xlabel(0(50)400) ytitle("Density") title("2016-17") name(g2, replace)
+
+grc1leg g1 g2, leg(g2) note("Kernel: epanechnikov, bandwidth: 6 (2010) and 15 (2016-17).", size(vsmall)) name(gcomb, replace)
+graph save "DAR_caste.gph", replace
+graph export "DAR_caste.pdf", as(pdf) replace
+
+
+*Graph over assets
+xtile q_assets_2010=assets_2010, n(3)
+xtile q_assets_a_2016=assets_a_2016, n(3)
+twoway (kdensity DAR_2010 if DAR_2010<400 & q_assets_2010==1, bwidth(6)) (kdensity DAR_2010 if DAR_2010<400 & q_assets_2010==2, bwidth(6)) (kdensity DAR_2010 if DAR_2010<400 & q_assets_2010==3, bwidth(6)), legend(order(1 "Tercile 1" 2 "Tercile 2" 3 "Tercile 3")) xtitle("Debt to assets ratio") xlabel(0(50)400) ytitle("Density") title("2010") name(g1, replace)
+
+twoway (kdensity DAR_a_2016 if DAR_a_2016<400 & q_assets_a_2016==1, bwidth(15)) (kdensity DAR_a_2016 if DAR_a_2016<400 & q_assets_a_2016==2, bwidth(15)) (kdensity DAR_a_2016 if DAR_a_2016<400 & q_assets_a_2016==3, bwidth(15)), legend(order(1 "Tercile 1" 2 "Tercile 2" 3 "Tercile 3") col(3)) xtitle("Debt to assets ratio") xlabel(0(50)400) ytitle("Density") title("2016-17") name(g2, replace)
+
+grc1leg g1 g2, leg(g2) note("Kernel: epanechnikov, bandwidth: 6 (2010) and 15 (2016-17).", size(vsmall)) name(gcomb, replace)
+graph save "DAR_tercile.gph", replace
+graph export "DAR_tercile.pdf", as(pdf) replace
+set graph on
+
 
 
 *DSR
