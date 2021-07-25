@@ -1,7 +1,7 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.22 (MiKTeX 21.6.28) (preloaded format=pdflatex 2021.7.10)  24 JUL 2021 15:46
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (MiKTeX 21.6.28) (preloaded format=pdflatex 2021.7.10)  24 JUL 2021 16:20
 entering extended mode
-**./RR_EPW.tex
-(RR_EPW.tex
+**./Final_EPW.tex
+(Final_EPW.tex
 LaTeX2e <2021-06-01> patch level 1
 L3 programming layer <2021-06-18>
 (C:\Users\Arnaud\AppData\Local\Programs\MiKTeX\tex/latex/base\article.cls
@@ -1677,8 +1677,8 @@ LaTeX Font Info:    Trying to load font information for T1+jkp on input line 58
 (C:\Users\Arnaud\AppData\Local\Programs\MiKTeX\tex/latex/kpfonts\t1jkp.fd
 File: t1jkp.fd 2007/01/24 Fontinst v1.928 font definitions for T1/jkp.
 )
-(RR_EPW.aux)
-\openout1 = `RR_EPW.aux'.
+(Final_EPW.aux)
+\openout1 = `Final_EPW.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/jkp/m/it on input line 58.
 LaTeX Font Info:    Trying to load font information for OML+jkp on input line 5
@@ -1761,9 +1761,9 @@ Package: gettitlestring 2019/12/15 v1.6 Cleanup title references (HO)
 LaTeX Info: Redefining \ref on input line 58.
 LaTeX Info: Redefining \pageref on input line 58.
 LaTeX Info: Redefining \nameref on input line 58.
- (RR_EPW.out) (RR_EPW.out)
+ (Final_EPW.out) (Final_EPW.out)
 \@outlinefile=\write4
-\openout4 = `RR_EPW.out'.
+\openout4 = `Final_EPW.out'.
 
 
 (C:\Users\Arnaud\AppData\Local\Programs\MiKTeX\tex/context/base/mkii\supp-pdf.m
@@ -1906,105 +1906,102 @@ Package microtype Info: Loading generic protrusion settings for font family
 [1
 
 {C:/Users/Arnaud/AppData/Local/MiKTeX/pdftex/config/pdftex.map}] [2] [3]
-[4] [5] (Global.tex) [6] [7] [8]
-Underfull \hbox (badness 10000) in paragraph at lines 267--267
+[4] [5] [6] [7] (Global.tex) [8] [9] [10] [11]
+Underfull \hbox (badness 10000) in paragraph at lines 367--367
 \T1/jkptt/m/n/9 www [] .hindustantimes [] .com / india [] -news / covid [] -19 
 [] -rural [] -women [] -in [] -india [] -bear [] -the [] -brunt [] -of [] -the 
 [] -lockdown /
  []
 
 
-Underfull \hbox (badness 3803) in paragraph at lines 267--267
+Underfull \hbox (badness 3803) in paragraph at lines 367--367
 \T1/jkptt/m/n/9 story [] -gpWttWeBmJlUPwCZg43dHJ [] .html$[][]\T1/jkp/m/n/9 (+2
 0) ; [][]$\T1/jkptt/m/n/9 https :// www [] .thehindu [] .com / opinion / lead /
  getting [] -cash [] -transfers []
  []
 
-[9] [10]
+[12] [13] [14]
 
 pdfTeX warning: pdflatex (file ./DAR_caste.pdf): PDF inclusion: found PDF versi
 on <1.6>, but at most version <1.5> allowed
-<DAR_caste.pdf, id=412, 433.62pt x 289.08pt>
+<DAR_caste.pdf, id=433, 433.62pt x 289.08pt>
 File: DAR_caste.pdf Graphic file (type pdf)
 <use DAR_caste.pdf>
-Package pdftex.def Info: DAR_caste.pdf  used on input line 321.
+Package pdftex.def Info: DAR_caste.pdf  used on input line 437.
 (pdftex.def)             Requested size: 341.43306pt x 227.63405pt.
 
 
 pdfTeX warning: pdflatex (file ./DAR_tercile.pdf): PDF inclusion: found PDF ver
 sion <1.6>, but at most version <1.5> allowed
-<DAR_tercile.pdf, id=413, 433.62pt x 289.08pt>
+<DAR_tercile.pdf, id=434, 433.62pt x 289.08pt>
 File: DAR_tercile.pdf Graphic file (type pdf)
 <use DAR_tercile.pdf>
-Package pdftex.def Info: DAR_tercile.pdf  used on input line 329.
+Package pdftex.def Info: DAR_tercile.pdf  used on input line 445.
 (pdftex.def)             Requested size: 341.43306pt x 227.63405pt.
 
 LaTeX Warning: `!h' float specifier changed to `!ht'.
 
-[11 <./DAR_caste.pdf>]
+[15 <./DAR_caste.pdf>]
 
 pdfTeX warning: pdflatex (file ./totalclientele.pdf): PDF inclusion: found PDF 
 version <1.6>, but at most version <1.5> allowed
-<totalclientele.pdf, id=448, 433.62pt x 289.08pt>
+<totalclientele.pdf, id=468, 433.62pt x 289.08pt>
 File: totalclientele.pdf Graphic file (type pdf)
 <use totalclientele.pdf>
-Package pdftex.def Info: totalclientele.pdf  used on input line 361.
+Package pdftex.def Info: totalclientele.pdf  used on input line 492.
 (pdftex.def)             Requested size: 341.43306pt x 227.63405pt.
 
 
 pdfTeX warning: pdflatex (file ./totalloaned.pdf): PDF inclusion: found PDF ver
 sion <1.6>, but at most version <1.5> allowed
-<totalloaned.pdf, id=449, 433.62pt x 289.08pt>
+<totalloaned.pdf, id=469, 433.62pt x 289.08pt>
 File: totalloaned.pdf Graphic file (type pdf)
 <use totalloaned.pdf>
-Package pdftex.def Info: totalloaned.pdf  used on input line 369.
+Package pdftex.def Info: totalloaned.pdf  used on input line 500.
 (pdftex.def)             Requested size: 341.43306pt x 227.63405pt.
-[12 <./DAR_tercile.pdf>]
+[16 <./DAR_tercile.pdf>]
 
 pdfTeX warning: pdflatex (file ./contengency_borrower_loan_stata.pdf): PDF incl
 usion: found PDF version <1.6>, but at most version <1.5> allowed
-<contengency_borrower_loan_stata.pdf, id=496, 433.62pt x 289.08pt>
+<contengency_borrower_loan_stata.pdf, id=513, 433.62pt x 289.08pt>
 File: contengency_borrower_loan_stata.pdf Graphic file (type pdf)
 <use contengency_borrower_loan_stata.pdf>
 Package pdftex.def Info: contengency_borrower_loan_stata.pdf  used on input lin
-e 392.
+e 523.
 (pdftex.def)             Requested size: 341.43306pt x 227.63405pt.
-
-LaTeX Warning: `!h' float specifier changed to `!ht'.
-
-
+[17 <./totalclientele.pdf>]
 
 pdfTeX warning: pdflatex (file ./contengency_borrower_amount_stata.pdf): PDF in
 clusion: found PDF version <1.6>, but at most version <1.5> allowed
-<contengency_borrower_amount_stata.pdf, id=497, 433.62pt x 289.08pt>
+<contengency_borrower_amount_stata.pdf, id=535, 433.62pt x 289.08pt>
 File: contengency_borrower_amount_stata.pdf Graphic file (type pdf)
 <use contengency_borrower_amount_stata.pdf>
 Package pdftex.def Info: contengency_borrower_amount_stata.pdf  used on input l
-ine 400.
+ine 531.
 (pdftex.def)             Requested size: 341.43306pt x 227.63405pt.
-[13 <./totalclientele.pdf>]
-Underfull \hbox (badness 10000) in paragraph at lines 438--438
+[18 <./totalloaned.pdf> <./contengency_borrower_loan_stata.pdf>] [19 <./conteng
+ency_borrower_amount_stata.pdf>]
+Underfull \hbox (badness 10000) in paragraph at lines 582--582
 [][][][]$\T1/jkptt/m/n/9 https :// www [] .thehindu [] .com / news / cities / M
 adurai / collector [] -warns [] -against [] -violation [] -of [] -rbi [] -norms
  []
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 438--438
+Underfull \hbox (badness 10000) in paragraph at lines 582--582
 \T1/jkptt/m/n/9 -on [] -loan [] -moratorium / article31664789 [] .ece / amp /$[
 ][]\T1/jkp/m/n/9 (+20) ; [][]$\T1/jkptt/m/n/9 https :// www [] .thehindu [] .co
 m / news / national / tamil []
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 438--438
+Underfull \hbox (badness 10000) in paragraph at lines 582--582
 \T1/jkptt/m/n/9 -nadu / private [] -finance [] -firms [] -putting [] -pressure 
 [] -on [] -self [] -help [] -group [] -women [] -says [] -rajapalayam [] -mla /
 
  []
 
-[14 <./totalloaned.pdf> <./contengency_borrower_loan_stata.pdf>] [15 <./conteng
-ency_borrower_amount_stata.pdf>] [16] [17] [18] (RR_EPW.bbl [19] [20] [21]
+[20] [21] [22] [23] [24] [25] (Final_EPW.bbl [26] [27] [28]
 Underfull \hbox (badness 5260) in paragraph at lines 1246--1263
 []\T1/jkp/m/n/10.95 (+20) Nagaraj, A., & Sri-vas-tava, R.  (2020, April).  No W
 ork, New Debt: Virus
@@ -2016,7 +2013,7 @@ Underfull \hbox (badness 4608) in paragraph at lines 1246--1263
 p/m/it/10.95 (+20) The Jakarta Post\T1/jkp/m/n/10.95 (+20) .  Re-trieved
  []
 
-
+[29]
 Underfull \hbox (badness 1038) in paragraph at lines 1338--1359
 \T1/jkp/m/n/10.95 (+20) De-cem-ber).  \T1/jkp/m/it/10.95 (+20) NEEM-SIS Sur-vey
  Re-port: A Full Sta-tis-ti-cal Pic-ture of the House-hold
@@ -2028,34 +2025,34 @@ Underfull \hbox (badness 1430) in paragraph at lines 1338--1359
 e Développe-ment).  Re-
  []
 
-[22]
+[30]
 Underfull \hbox (badness 10000) in paragraph at lines 1703--1720
 [][]$\T1/jkptt/m/n/10.95 https :// www [] .financialaccess [] .org / blog / 202
 0 / 5 / 11 / banking [] -on [] -human [] -capital []
  []
 
-) [23] (AP_purpose.tex) (AP_clientele1.tex) (AP_clientele2.tex)
+[31]) [32] (AP_purpose.tex) (AP_clientele1.tex) (AP_clientele2.tex)
 
 AED: lastpage setting LastPage
-[24] [25]
+[33] [34]
 \tf@thm=\write5
-\openout5 = `RR_EPW.thm'.
+\openout5 = `Final_EPW.thm'.
 
- (RR_EPW.aux)
+ (Final_EPW.aux)
 
 LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
 
-Package rerunfilecheck Info: File `RR_EPW.out' has not changed.
+Package rerunfilecheck Info: File `Final_EPW.out' has not changed.
 (rerunfilecheck)             Checksum: 90111C311BD491CF4729F6BC2426C220;2098.
  ) 
 Here is how much of TeX's memory you used:
- 41191 strings out of 478847
- 807524 string characters out of 2847912
- 1272384 words of memory out of 3000000
+ 41196 strings out of 478847
+ 807866 string characters out of 2847912
+ 1272405 words of memory out of 3000000
  57640 multiletter control sequences out of 15000+600000
- 594196 words of font info for 561 fonts, out of 8000000 for 9000
+ 593772 words of font info for 558 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 89i,10n,99p,1923b,1038s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 89i,10n,99p,1926b,1058s stack positions out of 5000i,500n,10000p,200000b,80000s
 pdfTeX warning (dest): name{Hfootnote.21} has been referenced but does not ex
 ist, replaced by a fixed one
 
@@ -2128,9 +2125,9 @@ s/jkpbn8a.pfb><C:/Users/Arnaud/AppData/Local/Programs/MiKTeX/fonts/type1/public
 ts/type1/public/kpfonts/jkpmnc.pfb><C:/Users/Arnaud/AppData/Local/Programs/MiKT
 eX/fonts/type1/public/kpfonts/jkpmne.pfb><C:/Users/Arnaud/AppData/Local/Program
 s/MiKTeX/fonts/type1/public/kpfonts/jkpttmn8a.pfb>
-Output written on RR_EPW.pdf (25 pages, 720444 bytes).
+Output written on Final_EPW.pdf (34 pages, 728968 bytes).
 PDF statistics:
- 766 PDF objects out of 1000 (max. 8388607)
- 139 named destinations out of 1000 (max. 500000)
+ 808 PDF objects out of 1000 (max. 8388607)
+ 148 named destinations out of 1000 (max. 500000)
  125187 words of extra memory for PDF output out of 128383 (max. 10000000)
 

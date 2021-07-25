@@ -24,6 +24,8 @@ set scheme plotplain
 ********** Path to folder "data" folder.
 global directory = "D:\Documents\_Thesis\Research-Skills_and_debt\Analysis"
 cd"$directory"
+global git "C:\Users\Arnaud\Documents\GitHub"
+global dropbox "C:\Users\Arnaud\Dropbox"
 
 
 *Fac
@@ -119,6 +121,10 @@ global three threeway_base_factor_imraw_1_std threeway_base_factor_imraw_2_std t
 global efa base_factor_imraw_1_std base_factor_imraw_2_std base_factor_imraw_3_std base_factor_imraw_4_std base_factor_imraw_5_std
 global cog base_raven_tt base_num_tt base_lit_tt
 global indivcontrol age_1 agesq_1 dummyhead_1 cat_mainoccupation_indiv_1_1 cat_mainoccupation_indiv_1_2 cat_mainoccupation_indiv_1_3 cat_mainoccupation_indiv_1_4 cat_mainoccupation_indiv_1_5 dummyedulevel maritalstatus2_1 dummymultipleoccupation_indiv_1
+
+global indivcontrol2 age_1 agesq_1 dummyhead_1 cat_mainoccupation_indiv_1_1 cat_mainoccupation_indiv_1_2 cat_mainoccupation_indiv_1_3 cat_mainoccupation_indiv_1_4 cat_mainoccupation_indiv_1_5 edulevel_1 maritalstatus2_1 dummymultipleoccupation_indiv_1
+
+
 *global indivcontrol age_1 dummyhead_1 cat_n_mainoccupation_indiv_1_1 cat_n_mainoccupation_indiv_1_2 cat_n_mainoccupation_indiv_1_3 dummyedulevel maritalstatus2_1
 
 
@@ -150,6 +156,77 @@ label var indebt_indiv_1 "Indebted (=1) in 2016-17"
 
 
 
+
+********** ER test
+*Distance
+tab mainoccupation_distance_indiv_1
+recode mainoccupation_distance_indiv_1 (-5=0)
+
+*Debtor
+tab debtorratio2_1
+
+*Network size
+fre nbercontactphone_1 nbercontactphone_2
+
+tab nbercontactphone_1 indebt_indiv_2, col nofreq
+tab nbercontactphone_2 indebt_indiv_2, col nofreq
+
+recode nbercontactphone_1 (9=7) (.=7)
+fre nbercontactphone_1 
+gen dummyphone=nbercontactphone_1
+recode dummyphone (7=0) (2=1) (3=1) (4=1) (5=1) (6=1)
+tab dummyphone
+fre nbercontactphone_1
+clonevar nbercontact=nbercontactphone_1
+recode nbercontact (2=1) (5=4) (6=4)
+tab nbercontact
+
+*Contactlist
+egen nb_contact_impt=rowtotal(nbcontact_headbusiness_1 nbcontact_policeman_1 nbcontact_civilserv_1 nbcontact_bankemployee_1 nbcontact_panchayatcommittee_1 nbcontact_peoplecouncil_1 nbcontact_recruiter_1 nbcontact_headunion_1)
+bysort HHID: egen nb_contact_HH
+tab nb_contact_impt
+foreach x in nbcontact_headbusiness_1 nbcontact_policeman_1 nbcontact_civilserv_1 nbcontact_bankemployee_1 nbcontact_panchayatcommittee_1 nbcontact_peoplecouncil_1 nbcontact_recruiter_1 nbcontact_headunion_1 {
+replace `x'=1 if `x'>1 & `x'!=.
+recode `x' (.=0)
+}
+cls
+tab1 nbcontact_headbusiness_1 nbcontact_policeman_1 nbcontact_civilserv_1 nbcontact_bankemployee_1 nbcontact_panchayatcommittee_1 nbcontact_peoplecouncil_1 nbcontact_recruiter_1 nbcontact_headunion_1
+egen contact_impt=rowtotal(nbcontact_headbusiness_1 nbcontact_policeman_1 nbcontact_civilserv_1 nbcontact_bankemployee_1 nbcontact_panchayatcommittee_1 nbcontact_peoplecouncil_1 nbcontact_recruiter_1 nbcontact_headunion_1)
+replace contact_impt=1 if contact_impt>1
+tab contact_impt
+
+*Associationlist
+tab associationlist_1
+gen dummyassociation=0 if associationlist_1=="13" & associationlist_1!=""
+replace dummyassociation=1 if associationlist_1!="13" & associationlist_1!=""
+recode dummyassociation (.=0)
+tab dummyassociation
+
+*Nberevents
+tab nberpersonfamilyevent_1
+
+*Trust
+cls
+fre networkhelpkinmember_1 trustneighborhood_1 trustemployees_1 networkpeoplehelping_1
+recode trustneighborhood_1 trustemployees_1 networkpeoplehelping_1 networkhelpkinmember_1 (99=.)
+recode networkhelpkinmember_1 trustemployees_1 trustneighborhood_1 networkpeoplehelping_1 (1=5) (2=4) (3=3) (4=2) (5=1)
+
+egen trustreciprocity_1=rowtotal(networkhelpkinmember_1 trustemployees_1 trustneighborhood_1 networkpeoplehelping_1)
+egen trustreciprocity_2=rowtotal(networkhelpkinmember_1 trustemployees_1)
+egen trustreciprocity_3=rowtotal(networkhelpkinmember_1 trustneighborhood_1)
+egen trustreciprocity_4=rowtotal(networkhelpkinmember_1 networkpeoplehelping_1)
+
+tab trustreciprocity_1
+
+
+
+
+probit indebt_indiv_2 indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits mainoccupation_distance_indiv_1, vce(cluster HHFE)
+
+
+reg loanamount_indiv1000_2 indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits if indebt_indiv_2==1, vce(cluster HHFE)
+
+twoway (kdensity age_1 if indebt_indiv_1==0) (kdensity age_1 if indebt_indiv_1==1)
 
 
 

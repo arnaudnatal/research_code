@@ -22,6 +22,8 @@ macro drop _all
 ********** Path to folder "data" folder.
 global directory = "D:\Documents\_Thesis\Research-Skills_and_debt\Analysis"
 cd"$directory"
+global git "C:\Users\Arnaud\Documents\GitHub"
+global dropbox "C:\Users\Arnaud\Dropbox"
 
 
 *Fac
@@ -425,7 +427,7 @@ global perso cr_OP cr_CO cr_EX cr_AG cr_ES cr_Grit OP CO EX AG ES Grit raven_tt 
 
 global expenses savingsamount_HH educationexpenses_HH productexpenses_HH businessexpenses_HH foodexpenses_HH healthexpenses_HH ceremoniesexpenses_HH deathexpenses_HH chitfundpaymentamount_HH chitfundamount_HH chitfundamounttot_HH nbchitfunds_HH amountlent_HH interestlending_HH problemrepayment_HH goldquantity_HH goldquantitypledge_HH nbinsurance_HH insuranceamount_HH insuranceamounttot_HH insurancebenefitamount_HH insurancebenefitamounttot_HH landpurchased investequiptot_HH 
 
-global all $charactindiv $characthh $wealthindiv $wealthhh $debtindiv $debthh $perso $expenses
+global all $charactindiv $characthh $wealthindiv $wealthhh $debtindiv $debthh $perso $expenses nbercontactphone networkhelpkinmember
 
 keep $all HHID_panel INDID_panel egoid
 
@@ -471,9 +473,24 @@ save"$wave3~panel", replace
 ****************************************
 * Prepa 2016
 ****************************************
+cls
+********** Verif type of job
+use"$dropbox/RUME-NEEMSIS/NEEMSIS1/NEEMSIS-occupation_alllong.dta", clear
+fre kindofwork
+tab joblocation
+tab jobdistance
+
+
+
 
 ********** 
 use"$wave2", clear
+
+
+*ER test with network
+tab nbercontactphone
+tab dummycontactleaders
+tab1 nbcontact_headbusiness nbcontact_policeman nbcontact_civilserv nbcontact_bankemployee nbcontact_panchayatcommittee nbcontact_peoplecouncil nbcontact_recruiter nbcontact_headunion
 
 
 ********** Imputation for non corrected one
@@ -918,7 +935,9 @@ global perso factor_imraw_1 factor_imraw_2 factor_imraw_3 factor_imraw_4 factor_
 
 global expenses savingsamount_HH educationexpenses_HH productexpenses_HH businessexpenses_HH foodexpenses_HH healthexpenses_HH ceremoniesexpenses_HH deathexpenses_HH livestockexpenses_HH chitfundpaymentamount_HH chitfundamount_HH chitfundamounttot_HH nbchitfunds_HH amountlent_HH interestlending_HH problemrepayment_HH goldquantity_HH goldquantitypledge_HH nbinsurance_HH insuranceamount_HH insuranceamounttot_HH insurancebenefitamount_HH insurancebenefitamounttot_HH landpurchased investequiptot_HH 
 
-global all $charactindiv $characthh $wealthindiv $wealthhh $debtindiv $debthh $perso $expenses
+global network nbercontactphone dummycontactleaders nbcontact_headbusiness nbcontact_policeman nbcontact_civilserv nbcontact_bankemployee nbcontact_panchayatcommittee nbcontact_peoplecouncil nbcontact_recruiter nbcontact_headunion nberpersonfamilyevent associationlist networkhelpkinmember demotrustbank_ego trustneighborhood trustemployees networkpeoplehelping raw_trustingofother mainoccupation_distance_indiv
+
+global all $charactindiv $characthh $wealthindiv $wealthhh $debtindiv $debthh $perso $expenses $network
 
 keep $all HHID_panel INDID_panel egoid
 
@@ -1124,6 +1143,7 @@ mdesc lit_tt_1 lit_tt_2
 list HHID_panel INDID_panel if lit_tt_2==., clean noobs
 
 ***
+/*
 drop if egoid==0
 gen ok=0 
 replace ok=1 if HHID_panel=="ELA11"
@@ -1140,6 +1160,7 @@ tab lit_tt egoid, m
 tab HHID_panel version_HH
 egen HHINDID=concat(HHID_panel INDID_panel), p(/)
 tab HHINDID version_HH
+*/
 /*
        ELA11      Ind_2  
        ELA12      Ind_1  
