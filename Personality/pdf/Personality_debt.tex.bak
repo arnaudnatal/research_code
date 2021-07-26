@@ -428,10 +428,23 @@ Second, we investigate the burden of debt repayment with the individual debt ser
 In order to better understand the relationship between debt and PT\&CS, our analysis take place in three step.
 \paragraph{How PT\&CS shape individual debt?}
 In a first step, we use the PT\&CS of 2016-17 ($X'_{i}$) on individual debt of 2020-21 to understand how personality shapes individual debt.
-Our analysis faces sample selection issues because of the nature of our dependent variables: the sample is restricted to those who declared a non-zero and non-missing debt.
+Our analysis faces non-random sample selection issues because of the nature of our dependent variables: the sample is restricted to those who declared a non-zero and non-missing debt.
 We therefore do not account for entry and exit in debt by only considering total loan amount and debt service ratio.
-To overcome this sample selection issue, we use a \cite{Heckman1976} model.
-The household debt dependency ratios, defined as the number of indebtedness individuals divided by the total number of household members, in 2016-17 are used as exclusion restriction ($ER_{i}$) variables\footnote{The household debt dependency ratios is correlated with the probability, for an individual, of being indebted but not with the loan amount and the debt service ratio (see Appendix \ref{app:imr}).}, allowing to compute an inverse Mill’s ratio ($IMR_{i}$) to correct for selection sample in our equations of interest (eq. \ref{eq:ols}).
+To overcome this sample selection issue, it is rigorous to use the \cite{Heckman1976} procedure, which involves estimating a model of debt participation, where this is conditioned on factors additional to those that determine the amount of debt
+borrowed (named exclusion restriction --ER-- variables).
+
+\cite{Cox1993} used years of education, occupation, area income, employment status and rural-urban status as ER
+
+\cite{Duca1993} and \cite{Crook2001} assumed that the same variables determined the probability of having debt and the amount borrowed.
+
+\cite{Bertaut2002} used the proportion of household heads employed in the financial services in the region and the proportion of household heads employed in a workplace of 500 or more as ER variables  
+
+\cite{Rio2006} used localisation, race and employment status as ER variables.
+However, they results from Heckman procedures are no different from those from ``simple OLS cross section regressions'', suggested that ``any corner-solution biases are small''.
+Therefore, they focus separatly on the participation equation and on debt equations (excluding non-participants).
+
+
+We used the household debt dependency ratios, defined as the number of indebtedness individuals divided by the total number of household members, in 2016-17 as exclusion restriction variables, allowing to compute an inverse Mill’s ratio ($IMR_{i}$) to correct for selection sample in our equations of interest (eq. \ref{eq:ols}).
 \par\noindent\rule{\textwidth}{0.4pt}
 \dev{Intuition:}
 Un ménage avec beaucoup d'individus endettés peut être le reflet d'un ménage dans le besoin.
@@ -452,7 +465,7 @@ The coefficient on PT\&CS are reported on Appendix, however, coefficient and t-s
 \par\noindent\rule{\textwidth}{0.4pt}
 
 Moreover, \cite{Bertaut2002} define as $ER_{i}$ variables the proportion of household head employed in the financial services in the region and the proportion of household head employed in a work place of 500 or more in the region.
-We adapt this variables to our context and use the probability 
+We adapt this variables to our context and use the probability for an individual 
 
 
 First, we use probit model with maximum likelihood estimation to estimate the probability for an individual of being in debt ($Indebt_{i}$) (eq. \ref{eq:probit}).

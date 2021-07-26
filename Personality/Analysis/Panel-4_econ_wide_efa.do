@@ -181,9 +181,14 @@ clonevar nbercontact=nbercontactphone_1
 recode nbercontact (2=1) (5=4) (6=4)
 tab nbercontact
 
+fre sum_ext_HH_1
+clonevar dummy_ext_HH_1=sum_ext_HH_1
+replace dummy_ext_HH_1=1 if dummy_ext_HH_1>1
+tab dummy_ext_HH_1
+
 *Contactlist
 egen nb_contact_impt=rowtotal(nbcontact_headbusiness_1 nbcontact_policeman_1 nbcontact_civilserv_1 nbcontact_bankemployee_1 nbcontact_panchayatcommittee_1 nbcontact_peoplecouncil_1 nbcontact_recruiter_1 nbcontact_headunion_1)
-bysort HHID: egen nb_contact_HH
+
 tab nb_contact_impt
 foreach x in nbcontact_headbusiness_1 nbcontact_policeman_1 nbcontact_civilserv_1 nbcontact_bankemployee_1 nbcontact_panchayatcommittee_1 nbcontact_peoplecouncil_1 nbcontact_recruiter_1 nbcontact_headunion_1 {
 replace `x'=1 if `x'>1 & `x'!=.
@@ -223,10 +228,13 @@ tab trustreciprocity_1
 
 probit indebt_indiv_2 indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits mainoccupation_distance_indiv_1, vce(cluster HHFE)
 
+probit indebt_indiv_2 indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits dummy_ext_HH_1, vce(cluster HHFE)
 
-reg loanamount_indiv1000_2 indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits if indebt_indiv_2==1, vce(cluster HHFE)
+probit indebt_indiv_2 indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits nbercontactphone_2, vce(cluster HHFE)
 
-twoway (kdensity age_1 if indebt_indiv_1==0) (kdensity age_1 if indebt_indiv_1==1)
+
+reg loanamount_indiv1000_2 indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits nbercontactphone_2 if indebt_indiv_2==1, vce(cluster HHFE)
+
 
 
 
