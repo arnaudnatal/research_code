@@ -374,7 +374,12 @@ To mitigate against the potential problem of life-cycle events --that might indu
 We standardised the resulting residuals and use it at personality measures net of life cycle influences \citep{Nyhus2005, Brown2014}. 
 
 \paragraph{Exogeneity}
-The exogeneity of personality traits is well assume because of stability over time while there is no consensus in psychology \citep{Ardelt2000}.
+The exogeneity of PT\&CS is well assume because of stability over time while there is no consensus in psychology \citep{Ardelt2000, Deary2014}.
+
+Concerning cogntive skills, majority of individuals have higher --or equal-- score in 2020-21 than in 2016-17 (see Appendix \ref{section:stab_big5}) which coroborate with the lifelong learning theory\footnote{``Development after formal education: the continuing development of knowledge and skills that people experience after formal education and throughout their lives'' \citep{London2011}. See \cite{London2011} for furthers details.}. 
+\cite{Raven2000}
+
+\cite{Nisbett2012}
 
 According to \cite{Costa1997, McCrae2000} it remains stable, in part, because it is a genetic predisposition that, by definition, cannot be changed over life.
 Many economist\footnote{But not all, see \cite{Borghans2008, Almlund2011, Heckman2011}. As stated by \cite{Heckman2011}, ``Personality traits are not set in stone. They change over the life cycle. They are a possible avenue for intervention and policy.''} follow this path and the majority of then assume stability over time after the age of 25 and other verify this stability \citep{CobbClark2011}.
@@ -414,7 +419,7 @@ It is recommended to analyse indebtedness at household level because generally i
 However, in order to explore the role of individual characteristics such as personality and cognitive skills on indebtedness, we focus on three types of individual objective measures allowing us to understand the debt from three angles.
 
 First, we investigate the size of the individual debt with the total amount of individual debt taken out in her own name.
-Second, we investigate the burden of debt repayment with the individual debt service ratio\footnote{$DSR=\frac{Debt~service}{Annual~Income}$ which represent the share of income required to cover the repayment of interest and principal on a debt for one year.} (DSR).
+Second, we investigate the burden of debt repayment with the individual debt service ratio\footnote{Individual debt service ratio represent the share of income required to cover the repayment of interest and principal on a debt for one year.} (DSR).
 
 
 % First, we wish to understand the role of personality traits \& cognitive skills on the incidence of individual debt --through the probability of being in debt\footnote{Dummy variable equal to 1 if the individual has some unsettled debt taken out in her own name, 0 otherwise.} in 2020-21.
@@ -432,57 +437,43 @@ Our analysis faces non-random sample selection issues because of the nature of o
 We therefore do not account for entry and exit in debt by only considering total loan amount and debt service ratio.
 To overcome this sample selection issue, it is rigorous to use the \cite{Heckman1976} procedure, which involves estimating a model of debt participation, where this is conditioned on factors additional to those that determine the amount of debt
 borrowed (named exclusion restriction --ER-- variables).
-
-\cite{Cox1993} used years of education, occupation, area income, employment status and rural-urban status as ER
-
+Strong theoretical background is needed to determine ER variables that affect the participation decision but not the amount of debt.
+\cite{Cox1993} used years of education, occupation, area income, employment status and rural-urban status as exclusion restriction and \cite{Bertaut2002} used the proportion of household heads employed in the financial services in the region and the proportion of household heads employed in a workplace of 500 or more.
 \cite{Duca1993} and \cite{Crook2001} assumed that the same variables determined the probability of having debt and the amount borrowed.
-
-\cite{Bertaut2002} used the proportion of household heads employed in the financial services in the region and the proportion of household heads employed in a workplace of 500 or more as ER variables  
-
-\cite{Rio2006} used localisation, race and employment status as ER variables.
-However, they results from Heckman procedures are no different from those from ``simple OLS cross section regressions'', suggested that ``any corner-solution biases are small''.
+However, \cite{Lennox2011} point out that an absence of ER in the first stage can lead to severe multicollinearity in the second stage.
+\cite{Rio2006} used localisation, race and employment status.
+However, they results from Heckman procedures are no different from those from OLS regressions, suggested that ``any corner-solution biases are small''.
 Therefore, they focus separatly on the participation equation and on debt equations (excluding non-participants).
+We follow \cite{Rio2006} in focusing separatly on the participation equation and on debt equations in excluding non-participants.
+We also estimate a Heckman selection model as robustness check with the household debt dependency ratios --defined as the number of indebtedness individuals divided by the total number of household members, in 2016-17-- as exclusion restriction variables\footnote{Nevertheless, we check for multicollinearity and find that the highest VIF score (for the \dev{dummyhead}) is 4.33, which is less than the cutoff point of 10 \citep{Lennox2011}.}.
+Results are no different from those from OLS regression, suggested that the non-random sample selection issues is small, which coroborate with literature \citep{Rio2006, Brown2014}.
+We discuss the main findings of Heckman model in section \ref{section:results}, but full results are available on request.
+
+Another way to estimate our model is to use tobit model which allow for the truncation of the dependent variables as \cite{Brown2014, Cox1993}.
+However, it would be unsuitable as the data are not censored or truncated, but defined on $\mathbb{R}^{+}$ \citep{Maddala1991}.
 
 
-We used the household debt dependency ratios, defined as the number of indebtedness individuals divided by the total number of household members, in 2016-17 as exclusion restriction variables, allowing to compute an inverse Mill’s ratio ($IMR_{i}$) to correct for non-random selection sample in our equations of interest (eq. \ref{eq:ols}).
-\par\noindent\rule{\textwidth}{0.4pt}
-\dev{Intuition:}
-Un ménage avec beaucoup d'individus endettés peut être le reflet d'un ménage dans le besoin.
-Afin de bénéficier quotidiennement des ressources nécessaires, sans pour autant que les individus aient à porter un lourd fardeau de la dette, une stratégie de "diversification des individus" peut être adoptée....!
-Les individus "devront" s'endetter afin d'apporter les ressources nécessaires au ménage, sans pour autant que les montants soient élevés.
-
-D'autre part, un ménage où beaucoup d'individus sont endettés, rend l'endettement "normal" aux yeux des autres membres.
-Dans notre contexte, les individus s'endettent pour survivre, il est normal de s'endetter.
-Donc j'ai tendance à croire que plus il y a des individus endettés dans le ménage, plus la pratique sera normal, d'autant plus que quasi tout le monde l'est dans le contexte, cependant, chacun s'endette à "son aise"..!
-Le niveau dépend plus des richesses de la famille, du travail, je pense...!
-
-\cite{Lennox2011} point out that an absence of $ER$ in the first stage can lead to severe multicollinearity in the second stage.
-Our IMR is less likely to be subject to this problem, because our first stage includes \dev{debtor ratio} and thus meets this restriction.
-Nevertheless, we check for multicollinearity and find that the highest VIF score (for the \dev{dummyhead}) is 4.33, which is less than the cutoff point of 10.
-
-To examine the robustness of our Heckman two-stage results, we first estimate eq. \ref{eq:ols} excluding IMR. 
-The coefficient on PT\&CS are reported on Appendix, however, coefficient and t-stat are relatively similar.
-\par\noindent\rule{\textwidth}{0.4pt}
-
-Moreover, \cite{Bertaut2002} define as $ER_{i}$ variables the proportion of household head employed in the financial services in the region and the proportion of household head employed in a work place of 500 or more in the region.
-We adapt this variables to our context and use the probability for an individual 
+% We used t allowing to compute an inverse Mill’s ratio ($IMR_{i}$) to correct for non-random selection sample in our equations of interest (eq. \ref{eq:ols}).
+% \par\noindent\rule{\textwidth}{0.4pt}
+% \dev{Intuition:}
+% Un ménage avec beaucoup d'individus endettés peut être le reflet d'un ménage dans le besoin.
+% Afin de bénéficier quotidiennement des ressources nécessaires, sans pour autant que les individus aient à porter un lourd fardeau de la dette, une stratégie de "diversification des individus" peut être adoptée....!
+% Les individus "devront" s'endetter afin d'apporter les ressources nécessaires au ménage, sans pour autant que les montants soient élevés.
+% D'autre part, un ménage où beaucoup d'individus sont endettés, rend l'endettement "normal" aux yeux des autres membres.
+% Dans notre contexte, les individus s'endettent pour survivre, il est normal de s'endetter.
+% Donc j'ai tendance à croire que plus il y a des individus endettés dans le ménage, plus la pratique sera normal, d'autant plus que quasi tout le monde l'est dans le contexte, cependant, chacun s'endette à "son aise"..!
+% Le niveau dépend plus des richesses de la famille, du travail, je pense...!
+% Our IMR is less likely to be subject to this problem, because our first stage includes \dev{debtor ratio} and thus meets this restriction.
+% To examine the robustness of our Heckman two-stage results, we first estimate eq. \ref{eq:ols} excluding IMR. 
+% The coefficient on PT\&CS are reported on Appendix, however, coefficient and t-stat are relatively similar.
+% \par\noindent\rule{\textwidth}{0.4pt}
 
 
-First, we use probit model with maximum likelihood estimation to estimate the probability for an individual of being in debt ($Indebt_{i}$) (eq. \ref{eq:probit}).
-
+Therefore, we use, first, probit model with maximum likelihood estimation to estimate the probability for an individual of being in debt ($Indebt_{i}$) (eq. \ref{eq:probit}).
 
 \begin{equation}\label{eq:probit}
 \begin{split}
-Indebt_{i}=\upbeta_{0}+X'_{i}*\upbeta_{1}+C'_{i}*\upbeta_{2}+\upbeta_{3}*ER_{i}+\upmu_{i}
-\end{split}
-\end{equation}
-
-Then, in order to investigate the amount of debt and the burden of repayment ($Y_{i}$), we use OLS with cluster at household level (eq. \ref{eq:ols}).
-We do not use tobit model because our data are not censored or truncated, but defined on $\mathbb{R}^{+}$ \citep{Maddala1991}.
-Despite the fact that Debt Service Ratio is a share, we do not use GLM beacuse of the upper bond of the variable ($>1$).
-\begin{equation}\label{eq:ols}
-\begin{split}
-Y_{i}=\upbeta_{0}+X'_{i}*\upbeta_{1}+C'_{i}*\upbeta_{2}+\upbeta_{3}*IMR_{i}+\upepsilon_i
+Indebt_{i}=\upbeta_{0}+X'_{i}*\upbeta_{1}+C'_{i}*\upbeta_{2}+\upmu_{i}
 \end{split}
 \end{equation}
 
@@ -493,6 +484,14 @@ We use two vector of variables:
 \item Household level variables as caste; monetary value of assets\footnote{The monetary value of assets includes gold; land; house; livestock; agricultural equipment and consumption good (car, computer, cookgas, phone, etc.).}; sex ratio; total annual income; household size; shock exposure (dummy variable which take 1 if the household experienced a shock\footnote{Marriage of at least one of the household members or/and household surveyed after the demonetisation.} between 2010 and 2016-17, 0 if not). 
 \end{itemize}
 The amount of debt is estimated in $t+1$ and our independent variables in $t$, we therefore control for the indebtedness situation in $t$ in adding dummy variable which take 1 if individual is indebted in 2016-17, 0 otherwise.
+
+Then, in order to investigate the amount of debt and the burden of repayment ($Y_{i}$), we use OLS (eq. \ref{eq:ols}).
+Despite the fact that DSR is a share, we do not use GLM because of the upper bond of the variable ($>1$) \citep{Cook2008}.
+\begin{equation}\label{eq:ols}
+\begin{split}
+Y_{i}=\upbeta_{0}+X'_{i}*\upbeta_{1}+C'_{i}*\upbeta_{2}+\upepsilon_i
+\end{split}
+\end{equation}
 
 To take into account the strength of social identity (gender and caste) we investigate relationship on a pooled sample of egos with interactions variables to maximize statistical power, although splitting samples improves model specification (the sub-samples obtained are too small to make regressions).
 First we do not use interaction to see the global effect (1), then we add interaction variable with gender (2), caste (3) and both (4) to test wether the effect of PT\&CS differ by gender and caste :
@@ -512,6 +511,11 @@ In terms of debt, as stated by \cite{Reboul2021}, ``our data is limited, [but] i
 To interpret our results, we compute marginal effect (ME) at representative values on the predicted values of PT\&CS \cite{Williams2012}.
 We use gender (male/female) and caste (non-dalits/dalits) as representative values, all other variables are at mean.
 Thanks to our interactions variables, we therefore obtains nine groups ME for each PT\&CS variable: average individual; average male; average female; average non-dalits; average dalits; average non-dalits male; average dalits male; average non-dalits female and average dalits female. 
+
+\paragraph{How the PT\&CS varies across the indebtedness distribution?}
+As OLS regression is mean reasoning, we supplement this analysis with quantile reasoning to understand the variation of PT\&CS across the indebtedness distribution.
+Quantile debt regressions consider specific parts of the conditional distribution of the debt and indicate the influence of the PT\&CS variables on conditional debt respectively at P10, P25, P50, P75 and P90 of the distribution.
+
 
 
 \paragraph{How does debt change over time as PT\&CS changes?}
@@ -549,12 +553,6 @@ Y_{i}=\upbeta_{0}+X'_{i}\upbeta_{1}+C'_{i}\upbeta_{2}+\upalpha_{i}
 
 We use the same vector of control variables than for Heckman model.
 
-\paragraph{How the PT\&CS varies across the indebtedness distribution?}
-J'ai regardé les résultats de régressions quantiles.
-Les résultats sont assez intéressants.
-Dans le bas de la distribution du montant total de la dette, ce sont les compétences cognitives qui jouent le plus (Q1).
-Puis à la médiane et au-dessus, ce sont plus les traits de personnalité. 
-Voir le fichier Excel.
 
 
 
@@ -631,6 +629,7 @@ In terms of cognitive skills, male tends to have higher score.
 \newpage
 % ***********************************
 \section{Results}
+\label{section:results}
 % ***********************************
 %As stated by \cite{Amrhein2019, Wasserstein2019, Wasserstein2016} reported confidence interval
 
@@ -856,7 +855,7 @@ As \cite{Brown2014} on montre l'importance des PT\&CS dans l'analyse des finance
 %\clearpage
 %\newpage
 % ***********************************
-\section{Stability of Big-5 personality traits over time}
+\section{Stability of skills over time}
 \label{section:stab_big5}
 % ***********************************
 
@@ -871,20 +870,27 @@ As \cite{Brown2014} on montre l'importance des PT\&CS dans l'analyse des finance
 
 \begin{figure}[!htb]
 \raggedright
-\includegraphics[scale=0.86]{INPUT/deltacont_raw}
-\caption{Stability over time of Big-5 personality traits non-correted from acquiescence bias -- Distribution of variation rate between 2016-17 and 2020-21 for Big-5 personality traits non-corrected from acquiescence biais for 835 individuals from rural Tamil Nadu, India.}
+\includegraphics[scale=0.86]{INPUT/diffcont_raw}
+\caption{Stability over time of Big-5 personality traits non-correted from acquiescence bias -- Distribution of the difference of the score between 2016-17 and 2020-21 for Big-5 personality traits non-corrected from acquiescence biais for 835 individuals from rural Tamil Nadu, India.}
 \sourcefig{NEEMSIS-1 (2016-17) \& NEEMSIS-2 (2020-21); author's calculations.}
 \label{fig:stabraw}
 \end{figure}
 
 \begin{figure}[!htb]
 \raggedright
-\includegraphics[scale=0.86]{INPUT/deltacont_cor}
-\caption{Stability over time of Big-5 personality traits correted from acquiescence bias -- Distribution of variation rate between 2016-17 and 2020-21 for Big-5 personality traits corrected from acquiescence biais for 835 individuals from rural Tamil Nadu, India.}
+\includegraphics[scale=0.86]{INPUT/diffcont_cor}
+\caption{Stability over time of Big-5 personality traits correted from acquiescence bias -- Distribution of the difference of the score between 2016-17 and 2020-21 for Big-5 personality traits corrected from acquiescence biais for 835 individuals from rural Tamil Nadu, India.}
 \sourcefig{NEEMSIS-1 (2016-17) \& NEEMSIS-2 (2020-21); author's calculations.}
 \label{fig:stabcor}
 \end{figure}
 
+\begin{figure}[!htb]
+\raggedright
+\includegraphics[scale=0.86]{INPUT/diffcont_cog}
+\caption{Stability over time of cognitive skills -- Distribution of the difference of the score between 2016-17 and 2020-21 for three cognitive skills for 835 individuals from rural Tamil Nadu, India.}
+\sourcefig{NEEMSIS-1 (2016-17) \& NEEMSIS-2 (2020-21); author's calculations.}
+\label{fig:stabcog}
+\end{figure}
 
 
 \clearpage
@@ -919,23 +925,23 @@ As \cite{Brown2014} on montre l'importance des PT\&CS dans l'analyse des finance
 
 
 
-\clearpage
-\newpage
-% ***********************************
-\section{Exclusion restriction variable}
-\label{app:imr}
-% ***********************************
+% \clearpage
+% \newpage
+% % ***********************************
+% \section{Exclusion restriction variable}
+% \label{app:imr}
+% % ***********************************
 
 
-\subimport{INPUT}{imr_check_tab}
+% \subimport{INPUT}{imr_check_tab}
 
-\begin{figure}[!htb]
-\raggedright
-\includegraphics[scale=0.85]{INPUT/imr_check}
-\caption{Scatter plot and correlation test for IMR}
-\sourcefig{NEEMSIS-1 (2020-21); author's calculations.}
-\label{fig:imrcheck}
-\end{figure}
+% \begin{figure}[!htb]
+% \raggedright
+% \includegraphics[scale=0.85]{INPUT/imr_check}
+% \caption{Scatter plot and correlation test for IMR}
+% \sourcefig{NEEMSIS-1 (2020-21); author's calculations.}
+% \label{fig:imrcheck}
+% \end{figure}
 
 
 \clearpage

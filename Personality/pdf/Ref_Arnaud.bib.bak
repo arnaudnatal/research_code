@@ -7022,6 +7022,62 @@ It has also been noted that there exists a close correlation between class, cast
   url       = {https://doi.org/10.2307/2077836},
 }
 
+@Article{Rio2006,
+  author    = {Ana del R{\'{\i}}o and Garry Young},
+  journal   = {Applied Financial Economics},
+  title     = {The determinants of unsecured borrowing: evidence from the {BHPS}},
+  year      = {2006},
+  month     = {oct},
+  number    = {15},
+  pages     = {1119--1144},
+  volume    = {16},
+  doi       = {10.1080/09603100500438791},
+  publisher = {Informa {UK} Limited},
+  url       = {http://dx.doi.org/10.1080/09603100500438791},
+}
+
+@Article{Deary2014,
+  author    = {Ian J. Deary},
+  journal   = {Current Directions in Psychological Science},
+  title     = {The Stability of Intelligence From Childhood to Old Age},
+  year      = {2014},
+  month     = {aug},
+  number    = {4},
+  pages     = {239--245},
+  volume    = {23},
+  doi       = {10.1177/0963721414536905},
+  publisher = {{SAGE} Publications},
+  url       = {https://doi.org/10.1177/0963721414536905},
+}
+
+@Article{Raven2000,
+  author    = {John Raven},
+  journal   = {Cognitive Psychology},
+  title     = {The Raven{\textquotesingle}s Progressive Matrices: Change and Stability over Culture and Time},
+  year      = {2000},
+  month     = {aug},
+  number    = {1},
+  pages     = {1--48},
+  volume    = {41},
+  doi       = {10.1006/cogp.1999.0735},
+  publisher = {Elsevier {BV}},
+  url       = {https://doi.org/10.1006/cogp.1999.0735},
+}
+
+@Article{Nisbett2012,
+  author    = {Richard E. Nisbett and Joshua Aronson and Clancy Blair and William Dickens and James Flynn and Diane F. Halpern and Eric Turkheimer},
+  journal   = {American Psychologist},
+  title     = {Intelligence: New findings and theoretical developments.},
+  year      = {2012},
+  month     = {feb},
+  number    = {2},
+  pages     = {130--159},
+  volume    = {67},
+  doi       = {10.1037/a0026699},
+  publisher = {American Psychological Association ({APA})},
+  url       = {https://doi.org/10.1037/a0026699},
+}
+
 @Comment{jabref-meta: databaseType:bibtex;}
 
 @Comment{jabref-meta: grouping:

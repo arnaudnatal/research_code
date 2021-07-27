@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.22 (MiKTeX 21.6.28) (preloaded format=pdflatex 2021.7.10)  24 JUL 2021 16:20
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (MiKTeX 21.6.28) (preloaded format=pdflatex 2021.7.10)  27 JUL 2021 21:55
 entering extended mode
 **./Final_EPW.tex
 (Final_EPW.tex
@@ -1906,96 +1906,78 @@ Package microtype Info: Loading generic protrusion settings for font family
 [1
 
 {C:/Users/Arnaud/AppData/Local/MiKTeX/pdftex/config/pdftex.map}] [2] [3]
-[4] [5] [6] [7] (Global.tex) [8] [9] [10] [11]
-Underfull \hbox (badness 10000) in paragraph at lines 367--367
+[4] [5] [6] [7] [8] [9] [10] [11]
+Underfull \hbox (badness 10000) in paragraph at lines 429--429
 \T1/jkptt/m/n/9 www [] .hindustantimes [] .com / india [] -news / covid [] -19 
 [] -rural [] -women [] -in [] -india [] -bear [] -the [] -brunt [] -of [] -the 
 [] -lockdown /
  []
 
 
-Underfull \hbox (badness 3803) in paragraph at lines 367--367
+Underfull \hbox (badness 3803) in paragraph at lines 429--429
 \T1/jkptt/m/n/9 story [] -gpWttWeBmJlUPwCZg43dHJ [] .html$[][]\T1/jkp/m/n/9 (+2
 0) ; [][]$\T1/jkptt/m/n/9 https :// www [] .thehindu [] .com / opinion / lead /
  getting [] -cash [] -transfers []
  []
 
 [12] [13] [14]
-
-pdfTeX warning: pdflatex (file ./DAR_caste.pdf): PDF inclusion: found PDF versi
-on <1.6>, but at most version <1.5> allowed
-<DAR_caste.pdf, id=433, 433.62pt x 289.08pt>
-File: DAR_caste.pdf Graphic file (type pdf)
-<use DAR_caste.pdf>
-Package pdftex.def Info: DAR_caste.pdf  used on input line 437.
+<DAR_caste.png, id=433, 433.62pt x 289.08pt>
+File: DAR_caste.png Graphic file (type png)
+<use DAR_caste.png>
+Package pdftex.def Info: DAR_caste.png  used on input line 501.
+(pdftex.def)             Requested size: 341.43306pt x 227.63405pt.
+<DAR_tercile.png, id=434, 433.62pt x 289.08pt>
+File: DAR_tercile.png Graphic file (type png)
+<use DAR_tercile.png>
+Package pdftex.def Info: DAR_tercile.png  used on input line 509.
 (pdftex.def)             Requested size: 341.43306pt x 227.63405pt.
 
-
-pdfTeX warning: pdflatex (file ./DAR_tercile.pdf): PDF inclusion: found PDF ver
-sion <1.6>, but at most version <1.5> allowed
-<DAR_tercile.pdf, id=434, 433.62pt x 289.08pt>
-File: DAR_tercile.pdf Graphic file (type pdf)
-<use DAR_tercile.pdf>
-Package pdftex.def Info: DAR_tercile.pdf  used on input line 445.
-(pdftex.def)             Requested size: 341.43306pt x 227.63405pt.
 
 LaTeX Warning: `!h' float specifier changed to `!ht'.
 
-[15 <./DAR_caste.pdf>]
-
-pdfTeX warning: pdflatex (file ./totalclientele.pdf): PDF inclusion: found PDF 
-version <1.6>, but at most version <1.5> allowed
-<totalclientele.pdf, id=468, 433.62pt x 289.08pt>
-File: totalclientele.pdf Graphic file (type pdf)
-<use totalclientele.pdf>
-Package pdftex.def Info: totalclientele.pdf  used on input line 492.
+[15 <./DAR_caste.png>]
+<totalclientele.png, id=459, 433.62pt x 289.08pt>
+File: totalclientele.png Graphic file (type png)
+<use totalclientele.png>
+Package pdftex.def Info: totalclientele.png  used on input line 556.
+(pdftex.def)             Requested size: 341.43306pt x 227.63405pt.
+<totalloaned.png, id=460, 433.62pt x 289.08pt>
+File: totalloaned.png Graphic file (type png)
+<use totalloaned.png>
+Package pdftex.def Info: totalloaned.png  used on input line 564.
+(pdftex.def)             Requested size: 341.43306pt x 227.63405pt.
+ [16 <./DAR_tercile.png>]
+<contengency_borrower_loan_stata.png, id=495, 433.62pt x 289.08pt>
+File: contengency_borrower_loan_stata.png Graphic file (type png)
+<use contengency_borrower_loan_stata.png>
+Package pdftex.def Info: contengency_borrower_loan_stata.png  used on input lin
+e 587.
+(pdftex.def)             Requested size: 341.43306pt x 227.63405pt.
+ [17 <./totalclientele.png>]
+<contengency_borrower_amount_stata.png, id=508, 433.62pt x 289.08pt>
+File: contengency_borrower_amount_stata.png Graphic file (type png)
+<use contengency_borrower_amount_stata.png>
+Package pdftex.def Info: contengency_borrower_amount_stata.png  used on input l
+ine 595.
 (pdftex.def)             Requested size: 341.43306pt x 227.63405pt.
 
-
-pdfTeX warning: pdflatex (file ./totalloaned.pdf): PDF inclusion: found PDF ver
-sion <1.6>, but at most version <1.5> allowed
-<totalloaned.pdf, id=469, 433.62pt x 289.08pt>
-File: totalloaned.pdf Graphic file (type pdf)
-<use totalloaned.pdf>
-Package pdftex.def Info: totalloaned.pdf  used on input line 500.
-(pdftex.def)             Requested size: 341.43306pt x 227.63405pt.
-[16 <./DAR_tercile.pdf>]
-
-pdfTeX warning: pdflatex (file ./contengency_borrower_loan_stata.pdf): PDF incl
-usion: found PDF version <1.6>, but at most version <1.5> allowed
-<contengency_borrower_loan_stata.pdf, id=513, 433.62pt x 289.08pt>
-File: contengency_borrower_loan_stata.pdf Graphic file (type pdf)
-<use contengency_borrower_loan_stata.pdf>
-Package pdftex.def Info: contengency_borrower_loan_stata.pdf  used on input lin
-e 523.
-(pdftex.def)             Requested size: 341.43306pt x 227.63405pt.
-[17 <./totalclientele.pdf>]
-
-pdfTeX warning: pdflatex (file ./contengency_borrower_amount_stata.pdf): PDF in
-clusion: found PDF version <1.6>, but at most version <1.5> allowed
-<contengency_borrower_amount_stata.pdf, id=535, 433.62pt x 289.08pt>
-File: contengency_borrower_amount_stata.pdf Graphic file (type pdf)
-<use contengency_borrower_amount_stata.pdf>
-Package pdftex.def Info: contengency_borrower_amount_stata.pdf  used on input l
-ine 531.
-(pdftex.def)             Requested size: 341.43306pt x 227.63405pt.
-[18 <./totalloaned.pdf> <./contengency_borrower_loan_stata.pdf>] [19 <./conteng
-ency_borrower_amount_stata.pdf>]
-Underfull \hbox (badness 10000) in paragraph at lines 582--582
+[18 <./totalloaned.png> <./contengency_borrower_loan_stata.png>] [19 <./conteng
+ency_borrower_amount_stata.png>]
+Underfull \hbox (badness 10000) in paragraph at lines 646--646
 [][][][]$\T1/jkptt/m/n/9 https :// www [] .thehindu [] .com / news / cities / M
 adurai / collector [] -warns [] -against [] -violation [] -of [] -rbi [] -norms
  []
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 582--582
+Underfull \hbox (badness 10000) in paragraph at lines 646--646
 \T1/jkptt/m/n/9 -on [] -loan [] -moratorium / article31664789 [] .ece / amp /$[
 ][]\T1/jkp/m/n/9 (+20) ; [][]$\T1/jkptt/m/n/9 https :// www [] .thehindu [] .co
 m / news / national / tamil []
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 582--582
+Underfull \hbox (badness 10000) in paragraph at lines 646--646
 \T1/jkptt/m/n/9 -nadu / private [] -finance [] -firms [] -putting [] -pressure 
 [] -on [] -self [] -help [] -group [] -women [] -says [] -rajapalayam [] -mla /
 
@@ -2046,10 +2028,10 @@ Package rerunfilecheck Info: File `Final_EPW.out' has not changed.
 (rerunfilecheck)             Checksum: 90111C311BD491CF4729F6BC2426C220;2098.
  ) 
 Here is how much of TeX's memory you used:
- 41196 strings out of 478847
- 807866 string characters out of 2847912
- 1272405 words of memory out of 3000000
- 57640 multiletter control sequences out of 15000+600000
+ 41192 strings out of 478847
+ 807602 string characters out of 2847912
+ 1273405 words of memory out of 3000000
+ 57637 multiletter control sequences out of 15000+600000
  593772 words of font info for 558 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  89i,10n,99p,1926b,1058s stack positions out of 5000i,500n,10000p,200000b,80000s
@@ -2125,9 +2107,9 @@ s/jkpbn8a.pfb><C:/Users/Arnaud/AppData/Local/Programs/MiKTeX/fonts/type1/public
 ts/type1/public/kpfonts/jkpmnc.pfb><C:/Users/Arnaud/AppData/Local/Programs/MiKT
 eX/fonts/type1/public/kpfonts/jkpmne.pfb><C:/Users/Arnaud/AppData/Local/Program
 s/MiKTeX/fonts/type1/public/kpfonts/jkpttmn8a.pfb>
-Output written on Final_EPW.pdf (34 pages, 728968 bytes).
+Output written on Final_EPW.pdf (34 pages, 487284 bytes).
 PDF statistics:
- 808 PDF objects out of 1000 (max. 8388607)
+ 754 PDF objects out of 1000 (max. 8388607)
  148 named destinations out of 1000 (max. 500000)
  125187 words of extra memory for PDF output out of 128383 (max. 10000000)
 
