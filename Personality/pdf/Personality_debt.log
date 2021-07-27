@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.22 (MiKTeX 21.6.28) (preloaded format=pdflatex 2021.7.10)  27 JUL 2021 15:59
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (MiKTeX 21.6.28) (preloaded format=pdflatex 2021.7.10)  27 JUL 2021 23:09
 entering extended mode
 **./Personality_debt.tex
 (Personality_debt.tex
@@ -1831,27 +1831,15 @@ File: INPUT/omega.pdf Graphic file (type pdf)
 <use INPUT/omega.pdf>
 Package pdftex.def Info: INPUT/omega.pdf  used on input line 357.
 (pdftex.def)             Requested size: 346.89647pt x 231.2643pt.
-[6 <./INPUT/omega.pdf>]
-
-Package natbib Warning: Citation `London2011' on page 7 undefined on input line
- 379.
-
-
-Package natbib Warning: Citation `London2011' on page 7 undefined on input line
- 379.
-
-[7] [8]
-
-LaTeX Warning: `!h' float specifier changed to `!ht'.
-
-[9] [10] [11] (INPUT/desc_HH.tex) [12] [13] (INPUT/desc_indiv.tex)
+[6 <./INPUT/omega.pdf>] [7] [8] [9] [10] [11] (INPUT/desc_HH.tex) [12] [13]
+(INPUT/desc_indiv.tex)
 
 pdfTeX warning: pdflatex (file ./INPUT/Kernel_PTCS_raw.pdf): PDF inclusion: fou
 nd PDF version <1.6>, but at most version <1.5> allowed
-<INPUT/Kernel_PTCS_raw.pdf, id=587, 433.62pt x 289.08pt>
+<INPUT/Kernel_PTCS_raw.pdf, id=592, 433.62pt x 289.08pt>
 File: INPUT/Kernel_PTCS_raw.pdf Graphic file (type pdf)
 <use INPUT/Kernel_PTCS_raw.pdf>
-Package pdftex.def Info: INPUT/Kernel_PTCS_raw.pdf  used on input line 621.
+Package pdftex.def Info: INPUT/Kernel_PTCS_raw.pdf  used on input line 619.
 (pdftex.def)             Requested size: 455.24411pt x 303.51207pt.
 [14 <./INPUT/Kernel_PTCS_raw.pdf>] [15] (INPUT/AME_indebt.tex) [16]
 (INPUT/AME_loanamount.tex) [17] (INPUT/AME_IDSR.tex)
@@ -1859,7 +1847,7 @@ Package pdftex.def Info: INPUT/Kernel_PTCS_raw.pdf  used on input line 621.
 [18] [19] [20] [21]
 
 Package natbib Warning: Citation `Guerin2020' on page 22 undefined on input lin
-e 749.
+e 748.
 
 [22
 
@@ -1875,28 +1863,28 @@ haviour [] -and [] -personality [] -traits [] -a []
 
 pdfTeX warning: pdflatex (file ./INPUT/diffcont_raw.pdf): PDF inclusion: found 
 PDF version <1.6>, but at most version <1.5> allowed
-<INPUT/diffcont_raw.pdf, id=814, 433.62pt x 289.08pt>
+<INPUT/diffcont_raw.pdf, id=816, 433.62pt x 289.08pt>
 File: INPUT/diffcont_raw.pdf Graphic file (type pdf)
 <use INPUT/diffcont_raw.pdf>
-Package pdftex.def Info: INPUT/diffcont_raw.pdf  used on input line 873.
+Package pdftex.def Info: INPUT/diffcont_raw.pdf  used on input line 872.
 (pdftex.def)             Requested size: 372.91255pt x 248.60835pt.
 
 
 pdfTeX warning: pdflatex (file ./INPUT/diffcont_cor.pdf): PDF inclusion: found 
 PDF version <1.6>, but at most version <1.5> allowed
-<INPUT/diffcont_cor.pdf, id=815, 433.62pt x 289.08pt>
+<INPUT/diffcont_cor.pdf, id=817, 433.62pt x 289.08pt>
 File: INPUT/diffcont_cor.pdf Graphic file (type pdf)
 <use INPUT/diffcont_cor.pdf>
-Package pdftex.def Info: INPUT/diffcont_cor.pdf  used on input line 881.
+Package pdftex.def Info: INPUT/diffcont_cor.pdf  used on input line 880.
 (pdftex.def)             Requested size: 372.91255pt x 248.60835pt.
 
 
 pdfTeX warning: pdflatex (file ./INPUT/diffcont_cog.pdf): PDF inclusion: found 
 PDF version <1.6>, but at most version <1.5> allowed
-<INPUT/diffcont_cog.pdf, id=816, 433.62pt x 289.08pt>
+<INPUT/diffcont_cog.pdf, id=818, 433.62pt x 289.08pt>
 File: INPUT/diffcont_cog.pdf Graphic file (type pdf)
 <use INPUT/diffcont_cog.pdf>
-Package pdftex.def Info: INPUT/diffcont_cog.pdf  used on input line 889.
+Package pdftex.def Info: INPUT/diffcont_cog.pdf  used on input line 888.
 (pdftex.def)             Requested size: 372.91255pt x 248.60835pt.
 [30 <./INPUT/diffcont_raw.pdf> <./INPUT/diffcont_cor.pdf>] [31 <./INPUT/diffcon
 t_cog.pdf>] (INPUT/Big5.tex) [32
@@ -1905,19 +1893,19 @@ t_cog.pdf>] (INPUT/Big5.tex) [32
 
 pdfTeX warning: pdflatex (file ./INPUT/factor2016_2.pdf): PDF inclusion: found 
 PDF version <1.6>, but at most version <1.5> allowed
-<INPUT/factor2016_2.pdf, id=864, 433.62pt x 289.08pt>
+<INPUT/factor2016_2.pdf, id=866, 433.62pt x 289.08pt>
 File: INPUT/factor2016_2.pdf Graphic file (type pdf)
 <use INPUT/factor2016_2.pdf>
-Package pdftex.def Info: INPUT/factor2016_2.pdf  used on input line 910.
+Package pdftex.def Info: INPUT/factor2016_2.pdf  used on input line 909.
 (pdftex.def)             Requested size: 455.24411pt x 303.51207pt.
 
 
 pdfTeX warning: pdflatex (file ./INPUT/matrix_b5_efa.pdf): PDF inclusion: found
  PDF version <1.6>, but at most version <1.5> allowed
-<INPUT/matrix_b5_efa.pdf, id=865, 433.62pt x 289.08pt>
+<INPUT/matrix_b5_efa.pdf, id=867, 433.62pt x 289.08pt>
 File: INPUT/matrix_b5_efa.pdf Graphic file (type pdf)
 <use INPUT/matrix_b5_efa.pdf>
-Package pdftex.def Info: INPUT/matrix_b5_efa.pdf  used on input line 919.
+Package pdftex.def Info: INPUT/matrix_b5_efa.pdf  used on input line 918.
 (pdftex.def)             Requested size: 368.57874pt x 245.71915pt.
 [33
 
@@ -1963,13 +1951,13 @@ Package rerunfilecheck Info: File `Personality_debt.out' has not changed.
 (rerunfilecheck)             Checksum: 6B2F513487A8A83FB0C26699CD8A1EEC;3648.
  ) 
 Here is how much of TeX's memory you used:
- 37358 strings out of 478847
- 686888 string characters out of 2847912
- 1384898 words of memory out of 3000000
- 53596 multiletter control sequences out of 15000+600000
- 621722 words of font info for 656 fonts, out of 8000000 for 9000
+ 37326 strings out of 478847
+ 686549 string characters out of 2847912
+ 1383342 words of memory out of 3000000
+ 53594 multiletter control sequences out of 15000+600000
+ 613839 words of font info for 635 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 89i,20n,95p,830b,1074s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 89i,20n,95p,830b,1076s stack positions out of 5000i,500n,10000p,200000b,80000s
 pdfTeX warning (dest): name{Hfootnote.31} has been referenced but does not ex
 ist, replaced by a fixed one
 
@@ -2082,9 +2070,9 @@ kpfonts/jkpsy.pfb><C:/Users/Arnaud/AppData/Local/Programs/MiKTeX/fonts/type1/pu
 blic/kpfonts/jkpsyb.pfb><C:/Users/Arnaud/AppData/Local/Programs/MiKTeX/fonts/ty
 pe1/public/kpfonts/jkpttmn8a.pfb><C:/Users/Arnaud/AppData/Local/Programs/MiKTeX
 /fonts/type1/tfrupee/tfrupee.pfb>
-Output written on Personality_debt.pdf (48 pages, 5147494 bytes).
+Output written on Personality_debt.pdf (48 pages, 5146198 bytes).
 PDF statistics:
- 1120 PDF objects out of 1200 (max. 8388607)
+ 1122 PDF objects out of 1200 (max. 8388607)
  216 named destinations out of 1000 (max. 500000)
- 145624 words of extra memory for PDF output out of 154059 (max. 10000000)
+ 139480 words of extra memory for PDF output out of 154059 (max. 10000000)
 

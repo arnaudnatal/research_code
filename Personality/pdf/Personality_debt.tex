@@ -376,10 +376,12 @@ We standardised the resulting residuals and use it at personality measures net o
 \paragraph{Exogeneity}
 The exogeneity of PT\&CS is well assume because of stability over time while there is no consensus in psychology \citep{Ardelt2000, Deary2014}.
 
-Concerning cogntive skills, majority of individuals have higher --or equal-- score in 2020-21 than in 2016-17 (see Appendix \ref{section:stab_big5}) which coroborate with the lifelong learning theory\footnote{``Development after formal education: the continuing development of knowledge and skills that people experience after formal education and throughout their lives'' \citep{London2011}. See \cite{London2011} for furthers details.}. 
-\cite{Raven2000}
+Concerning cogntive skills and especially numeracy and literacy test, majority of individuals have higher --or equal-- score in 2020-21 than in 2016-17 (see Appendix \ref{section:stab_big5}) which coroborate with the lifelong learning theory\footnote{``Development after formal education: the continuing development of knowledge and skills that people experience after formal education and throughout their lives'' \citep{London2011}. See \cite{London2011} for furthers details.}. 
+About Raven test the stability is more mixed.
+It appear that an important share of the population have a stable or higher score across in 2020-21, but a significant share faces a drop in score.
+\cite{Raven2000} show that 
 
-\cite{Nisbett2012}
+% \cite{Nisbett2012}
 
 According to \cite{Costa1997, McCrae2000} it remains stable, in part, because it is a genetic predisposition that, by definition, cannot be changed over life.
 Many economist\footnote{But not all, see \cite{Borghans2008, Almlund2011, Heckman2011}. As stated by \cite{Heckman2011}, ``Personality traits are not set in stone. They change over the life cycle. They are a possible avenue for intervention and policy.''} follow this path and the majority of then assume stability over time after the age of 25 and other verify this stability \citep{CobbClark2011}.
@@ -445,7 +447,7 @@ However, \cite{Lennox2011} point out that an absence of ER in the first stage ca
 However, they results from Heckman procedures are no different from those from OLS regressions, suggested that ``any corner-solution biases are small''.
 Therefore, they focus separatly on the participation equation and on debt equations (excluding non-participants).
 We follow \cite{Rio2006} in focusing separatly on the participation equation and on debt equations in excluding non-participants.
-We also estimate a Heckman selection model as robustness check with the household debt dependency ratios --defined as the number of indebtedness individuals divided by the total number of household members, in 2016-17-- as exclusion restriction variables\footnote{Nevertheless, we check for multicollinearity and find that the highest VIF score (for the \dev{dummyhead}) is 4.33, which is less than the cutoff point of 10 \citep{Lennox2011}.}.
+We also estimate a Heckman selection model as robustness check with the household debt dependency ratios --defined as the number of indebtedness individuals divided by the total number of household members, in 2016-17-- as exclusion restriction variables\footnote{Nevertheless, we check for multicollinearity and find that the highest VIF score (for the dummyhead) is 4.33, which is less than the cutoff point of 10 \citep{Lennox2011}.}.
 Results are no different from those from OLS regression, suggested that the non-random sample selection issues is small, which coroborate with literature \citep{Rio2006, Brown2014}.
 We discuss the main findings of Heckman model in section \ref{section:results}, but full results are available on request.
 
@@ -504,7 +506,7 @@ First we do not use interaction to see the global effect (1), then we add intera
     \end{tabular}%
 \end{table}%
 
-We choose to cluster the error at households scale to take into account the fact that observations within each household are not i.i.d.
+We choose to cluster the error at households level to take into account the fact that observations within each household are not i.i.d.
 Indeed, we have data for two individuals from the same household and these latter sharing resources and pooling others.%\footnote{See \cite{Lazear1988} or \cite{Bonke2015} more recently.}.
 In terms of debt, as stated by \cite{Reboul2021}, ``our data is limited, [but] it suggests that fully pooling and sharing the household debt burden is not the norm.''
 
@@ -514,19 +516,28 @@ Thanks to our interactions variables, we therefore obtains nine groups ME for ea
 
 \paragraph{How the PT\&CS varies across the indebtedness distribution?}
 As OLS regression is mean reasoning, we supplement this analysis with quantile reasoning to understand the variation of PT\&CS across the indebtedness distribution.
-Quantile debt regressions consider specific parts of the conditional distribution of the debt and indicate the influence of the PT\&CS variables on conditional debt respectively at P10, P25, P50, P75 and P90 of the distribution.
+Quantile debt regressions consider specific parts of the conditional distribution of the debt and indicate the influence of the PT\&CS variables on conditional debt.
+Therefore, we estimate eq. \ref{eq:ols} with quantile regression respectively at P10, P25, P50, P75 and P90 of the distribution.
+Controls variables remain the same and we also cluster the error at households level.
+To fully understand the results we do not use interaction variables and we compute ME at means to investigate the relationship between debt and PT\&CS for the average individual at specific percentile of the distribution (respectively at P10, P25, P50, P75 and P90).
 
+\paragraph{How PT\&CS influences the debt trajectory?}
+In a third step, we try to understand the debt trajectory through time.
+With a multinomial probit, we investigate the contribution of PT\&CS on the debt trajectory: Never indebted in 2016-17 and 2020-21 (i); Out of debt between 2016-17 and 2020-21 (ii); Became indebted between 2016-17 and 2020-21 (iii); Always indebted in 2016-17 and 2020-21 (iv).
+
+\begin{equation}\label{eq:mprobit}
+\begin{split}
+Y_{i}=\upbeta_{0}+X'_{i}\upbeta_{1}+C'_{i}\upbeta_{2}+\upalpha_{i}
+\end{split}
+\end{equation}
+
+We use the same vector of control variables than for the two previous approach.
 
 
 \paragraph{How does debt change over time as PT\&CS changes?}
-In a second step, we fully accept the non-stability of personality traits by using one-way\footnote{We choose to not compute two-way fixed effect for the many problems with maintaining assumptions and interpreting the coefficients \citep{Kropko2020,Imai2020}.} individual fixed effect regressions (eq. \ref{eq:fe}) in order to compare within individual over time.
+In a last step, we fully accept the non-stability of personality traits by using one-way\footnote{We choose to not compute two-way fixed effect for the many problems with maintaining assumptions and interpreting the coefficients \citep{Kropko2020,Imai2020}.} individual fixed effect regressions (eq. \ref{eq:fe}) in order to compare within individual over time.
 In other words, as PT\&CS increases for an individual over time, how does the debt change over time?
-Unlike the previous approach (\textit{How PT\&CS shape individual debt?}), we do not use personality traits from factor analysis insofar as factor for 2016-17 are different from those for 2020-21. 
-\dev{Les résultats de l'analyse factorielle sont différents en 2016-17 et en 2020-21.
-On ne peut pas comparer les facteurs.
-Par contre, les traits du Big-5 se mesurent de la même façon avec la moyenne.
-Je peux comparer les scores.
-Je dois, je pense, écrire ça de façon plus habile que je ne l'ai fait.}
+Unlike the previous approach, we do not use personality traits from factor analysis insofar as factor for 2016-17 are different from those for 2020-21\footnote{The resulting factor from factor analysis of 2016-17 and 2020-21 are not interpreted the same way. We cannot therefore analyse the evolution of a factor while the way we compute Big-5 personality traits remain the same in 2016-17 and 2020-21.}.
 We use the same debt measures as before (the total amount of debt and the individual debt service ratio ($Y_{i}$). 
 
 \begin{equation}\label{eq:fe}
@@ -541,19 +552,6 @@ We do not pretend to show a causal relationshipt between PT\&CS and indebtedness
 We use the same vector of control variables than before.
 However, as we estimate FE model, time-invariant variables are omitted from the analysis: sex; education; caste. 
 
-\paragraph{How PT\&CS influences the debt trajectory?}
-In a last step, return to the factor analysis to understand the debt trajectory through time.
-With a multinomial probit, we investigate the contribution of PT\&CS on the debt trajectory: Never indebted in 2016-17 and 2020-21 (i); Out of debt between 2016-17 and 2020-21 (ii); Became indebted between 2016-17 and 2020-21 (iii); Always indebted in 2016-17 and 2020-21 (iv).
-
-\begin{equation}\label{eq:mprobit}
-\begin{split}
-Y_{i}=\upbeta_{0}+X'_{i}\upbeta_{1}+C'_{i}\upbeta_{2}+\upalpha_{i}
-\end{split}
-\end{equation}
-
-We use the same vector of control variables than for Heckman model.
-
-
 
 
 \newpage
@@ -563,24 +561,24 @@ We use the same vector of control variables than for Heckman model.
 
 \subsection{Household unit in Table \ref{tab:descHH}}
 Our final sample consists of 835 individuals from 473 households and almost half are dalits.
-Three quarters of households have 2 egos, the last quarters have only one egos.
-\dev{The sex ratio is significantly different through caste: in 24\% of dalits households there are as many men as women while in middle-upper caste, it is 34\% of households in 2016-17.}
-In terms of assets, middle-upper caste households are three times richer than dalits on average --respectively 1,493,350 INR and 487,420 INR in 2016-17.
-50\% of middle-upper caste have less than 666,500 INR of assets while 50\% of dalits households have less than 266,400 INR in 2016-17.
+Three quarters of households have 2 egos, the last quarters have only one egos --justifying the fact that we cluster the error at household level.
+The sex ratio is different through caste: in 24\% of dalits households the sex ratio is equal to 1 which mean that they are as many men as women while in middle-upper caste, it is 34\% of households in 2016-17.
+In terms of assets, middle-upper caste households are three times richer than dalits on average --respectively 1,493k INR and 487k INR in 2016-17.
+50\% of middle-upper caste have less than 666k INR of assets while 50\% of dalits households have less than 266k INR in 2016-17.
 For 50\% of dalits, the monetary value of assets increased by at least 47\% between 2016-17 and 2020-21 while for 50\% of non-dalits households, it decreased by at least 22\%.
 However, middle and upper caste still have higher amount of assets in 2020-21.
-This economic advantage of non-dalit households is also found with income: the median income of middle-upper caste is 33.71\% higher than dalits one in 2016-17 and 14.64\% higher in 2020-21.
-Last, whatever the caste, we observe a reduction of total income: for 50\% dalits households the total income decreased by at least 3.55\% and for 50\% of non-dalits households, it decreased by at least 5.40\%.
+This economic advantage of non-dalit households is also found with income: the median income of middle-upper caste is 34\% higher than dalits one in 2016-17 and 15\% higher in 2020-21.
+Last, whatever the caste, we observe a reduction of total income: for 50\% dalits households the total income decreased by at least 4\% and for 50\% of non-dalits households, it decreased by at least 5\%.
 		
 \subimport{INPUT}{desc_HH.tex}
 
 \subsection{Individual unit in Table \ref{tab:descindiv}}
-At egos level, 55.45\% of our sample are male (44.55\% are female) and among male, 46\% are dalit (among female 50\% are dalit).
+At egos level, 55\% of our sample are male and among them, 46\% are dalit (among female 50\% are dalit).
 Male are, on average, older than female and three quarters of them are the head of household while female are only 9\% in 2016-17 and 27\% in 2020-21.
-This increase is partly due to the life cycle: when the household head died, the wife \dev{take over.}
+This increase is partly due to the life cycle: when the household head died, is the wife who takes over as household head.
 In terms of education, male are more formal educated than female.
 
-Disparities in terms of gender are found in the occupation.
+Disparities in terms of gender are also found in the occupation.
 Despite the increasing of the number of female in agriculture and the decreasing of the number of male in self-employment, this activities are mostly reserved for male.
 The reverse assessment is true for salaried job in agriculture: between 2016-17 and 2020-21 the share of male increase by 47\% (from 16\% to 24\%) but female remain relatively more numerous (27.42\% in 2016-17 and 29.58\% in 2020-21). 
 Whatever the gender, non-agricultural salaried job remain stable over time and the share of male implicated is similar to the share of female (around 37\%).
@@ -649,7 +647,7 @@ In terms of cognitive skills, male tends to have higher score.
 
 
 
-To interpret the results, marginal effects (ME) at representative values on the predicted value of the PT\&CS are reported for the four specifications as describe previously (without interaction (1), with gender interaction (2), with caste interaction (3), with gender \& caste interaction (4)).
+To interpret the results, marginal effects (ME) at representative values on the predicted value of the PT\&CS are reported for the four specifications as describe previously (without interaction (1), with sex interaction (2), with caste interaction (3), with sex \& caste interaction (4)).
 According to specifications, the representatives values are:
 \begin{itemize}
 \item[(1)] The average individual (col ``All'').
@@ -658,14 +656,15 @@ According to specifications, the representatives values are:
 \item[(4)] The average non-dalits male (col ``MUC male''), the average dalits male (col ``Dalits male''), the average non-dalits female (col ``MUC female'') and the average dalits female (col ``Dalits female'').
 \end{itemize}
 All of our variables of interest (PT\&CS) are standardized to ensure comparability between them.
-We will therefore speaks in terms of ``one standard deviation'' more of PT\&CS\footnote{Reminder: Factor 1 as EX-OP; Factor 2 as CO; Factor 3 as \textit{Porupillatavan}; Factor 4 as ES; Factor 5 as AG.}.
+We will therefore speaks in terms of ``one standard deviation'' more of PT\&CS.
 
 \subsection{How PT\&CS shape individual debt?}
 \paragraph{Probability of being indebted}
 Table \ref{tab:ame_indebt} presents the results from the multivariates probit analysis of the first stage of the Heckman procedure.
 McFadden's pseudo $R^2$ indicate a very good goodness-of-fit for all the specification --they are all above 0.2 threshold \citep{McFadden1979}.
 Moreover, we observe that all p-values associated with the simultaneous coefficient nullity test (LR $\upchi^2$) are low enough to conclude that at least one of the regression coefficients in the model is not equal to zero.
-Whatever the specification, the probability of being in debt in 2016-17 is positively correlated with the probability of being in debt in 2020-21 and the exclusion restriction variable (Debtor ratio) is negatively correlated at the 95\% \cl. 
+Whatever the specification, the probability of being in debt in 2016-17 is positively correlated with the probability of being in debt in 2020-21. 
+% and the exclusion restriction variable (Debtor ratio) is negatively correlated at the 95\% \cl. 
 
 The results show that 2016-17 cognitive skill --whatever the specification-- are not correlated with the probability of being indebted in 2020-21 at 95\% \cl~ (neither at 90\%), except for literacy which is positively correlated for the average female.
 However, three of the personality traits are correlated at the 90-95\% \cl. 
@@ -684,7 +683,7 @@ Table \ref{tab:ame_loanamount} presents the results from the multivariates OLS a
 All p-values associated with the simultaneous coefficient nullity test (F-stat) are low enough to conclude that at least one of the regression coefficients in the model is not equal to zero.
 The goodness-of-fit is less good than the previous one: we are able to explain around 22\% of the total variance of the total amount of debt.
 Unlike earlier, the debt situation of 2016-17 is not correlated at 90\% \cl~ with the outcome.
-The IMR is insignificant across all four estimations \dev{(Be careful of three-way interaction)}, indicating that self-selection does not significantly affect total loan amount of debt after controlling for PT\&CS and other controls variables.
+% The IMR is insignificant across all four estimations \dev{(Be careful of three-way interaction)}, indicating that self-selection does not significantly affect total loan amount of debt after controlling for PT\&CS and other controls variables.
 
 
 Numeracy and Raven are correlated with the total amount of debt at 95\% \cl~ for dalits female, but the relationship is reverse (negative relationship for Numeracy while positive relationship for Raven).
@@ -702,7 +701,7 @@ Last, Factor 1 is positively correlated when there is not interactions variables
 Table \ref{tab:ame_idsr} presents the results for the individual debt service ratio, the second outcome of the Heckman procedure.
 All p-values associated with the simultaneous coefficient nullity test (F-stat) are low enough and the goodness-of-fit is quite low compared to previous analysis.
 Debt situation of 2016-17 is still not correlated at 90\% \cl.
-The IMR is insignificant across all four estimations \dev{(Be careful of three-way interaction)}, indicating that self-selection does not significantly affect individual debt service ratio after controlling for PT\&CS and other controls variables.
+% The IMR is insignificant across all four estimations \dev{(Be careful of three-way interaction)}, indicating that self-selection does not significantly affect individual debt service ratio after controlling for PT\&CS and other controls variables.
 
 As for the previous analysis, Factor 1 is positively correlated with the share of the annual income dedicated to debt (capital and interest) repayment and especially for dalits female at 95\% \cl.
 Indeed, for the average individuals, when Factor 1 increase by one \sd~, the predicted debt service ratio increase by 94 pp, \aebe.
