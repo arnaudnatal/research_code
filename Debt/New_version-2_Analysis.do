@@ -77,7 +77,13 @@ tabstat DAR_2010 DAR_2016 DAR_as2010_2016, stat(n mean sd p50) by(caste)
 
 tabstat DSR_2010 DSR_2016 DSR_2020, stat(n mean sd p50) by(caste)
 
+tabstat loanamount_HH_2010 loanamount_HH_2016 loanamount_HH_2020, stat(n mean sd p50 min max)
 
+gen DIR_2010=loanamount_HH_2010/annualincome_HH_2010
+gen DIR_2016=loanamount_HH_2016/annualincome_HH_2016
+gen DIR_2020=loanamount_HH_2020/annualincome_HH_2020
+
+tabstat DIR_2010 DIR_2016 DIR_2020, stat(n mean sd p50 p90 p95 p99) by(caste)
 
 ********** Head
 tab head_sex_2010 caste, col nofreq
@@ -519,7 +525,7 @@ ylabel(-100(100)1100) ymtick(-100(50)1100) ytitle("Variation rate (%)") yline(0)
 title("Non-agri income") legend(pos(6) cols(2)) name(fin2, replace)
 
 grc1leg fin1 fin2, name(evo,replace)
-graph export "Delta_share1.svg", as(svg)
+graph export "Delta_share1.svg", as(svg) replace
 
 twoway ///
 (connected c1_share_onlyagri n, msymbol() mcolor() color()) ///
@@ -536,7 +542,7 @@ ylabel(-100(50)300) ymtick(-100(10)350) ytitle("Variation rate (%)") yline(0) //
 title("Only non-agri income") legend(pos(6) cols(2)) name(fin2, replace)
 
 grc1leg fin1 fin2, name(evo,replace)
-graph export "Delta_share2.svg", as(svg)
+graph export "Delta_share2.svg", as(svg) replace
 
 set graph on
 
@@ -927,6 +933,8 @@ tab loan_database year
 
 
 ********** Amount and number
+tabstat def_loanamount1000, stat(n mean p50 min max) by(year)
+
 foreach x in 2010 2016 2020 {
 tabstat def_loanamount1000 if year==`x', stat(n mean) by(loanreasongiven)
 }
