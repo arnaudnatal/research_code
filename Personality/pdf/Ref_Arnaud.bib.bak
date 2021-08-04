@@ -4284,6 +4284,7 @@ It has also been noted that there exists a close correlation between class, cast
   journal = {Economic \& Political Weekly},
   title   = {Surviving debt, survival debt in times of lockdown},
   year    = {2021},
+  note    = {Forthcoming},
 }
 
 @Article{CobbClark2012,
@@ -7076,6 +7077,37 @@ It has also been noted that there exists a close correlation between class, cast
   doi       = {10.1037/a0026699},
   publisher = {American Psychological Association ({APA})},
   url       = {https://doi.org/10.1037/a0026699},
+}
+
+@Book{London2011,
+  editor    = {Manuel London},
+  publisher = {Oxford University Press},
+  title     = {{The Oxford Handbook of Lifelong Learning}},
+  year      = {2011},
+  month     = {mar},
+  doi       = {10.1093/oxfordhb/9780195390483.001.0001},
+}
+
+@Article{Peebles2010,
+  author    = {Gustav Peebles},
+  journal   = {Annual Review of Anthropology},
+  title     = {The Anthropology of Credit and Debt},
+  year      = {2010},
+  month     = {oct},
+  number    = {1},
+  pages     = {225--240},
+  volume    = {39},
+  doi       = {10.1146/annurev-anthro-090109-133856},
+  publisher = {Annual Reviews},
+  url       = {https://doi.org/10.1146/annurev-anthro-090109-133856},
+}
+
+@Article{Guerin2021b,
+  author  = {Isabelle Guérin and Cécile Mouchel and Christophe Jalil Nordman},
+  journal = {South Asia Multidisciplinary Academic Journal},
+  title   = {{With a Little Help From My Friends? Surviving the Lockdown using Social Networks in Rural South India}},
+  year    = {2021},
+  note    = {Forthcoming},
 }
 
 @Comment{jabref-meta: databaseType:bibtex;}

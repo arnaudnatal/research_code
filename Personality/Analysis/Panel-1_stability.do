@@ -271,6 +271,19 @@ gen agecat1=0 		if age_2020<=34
 replace agecat1=1 	if age_2020>34 & age_2020!=.
 label define age 0"];30] 2016-17" 1"]30;[ 2016-17"
 label values agecat1 age
+
+*scatter
+set scheme plottig
+gen age_2016=age_2020-4
+twoway (scatter diff_raven_tt age_2016 if sex==1 & diff_raven_tt<0) 
+twoway (scatter diff_raven_tt age_2016 if sex==2 & diff_raven_tt<0)
+
+twoway (scatter diff_raven_tt age_2016 if caste==1 & diff_raven_tt<0)
+twoway (scatter diff_raven_tt age_2016 if caste==2 & diff_raven_tt<0)
+twoway (scatter diff_raven_tt age_2016 if caste==3 & diff_raven_tt<0)
+
+
+
 ****************************************
 * END
 
