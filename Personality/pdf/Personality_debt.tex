@@ -103,7 +103,7 @@ The Big-5 model constitute the main personality trait taxonomy\footnote{Among th
 It identify five dimensions of personality: neuroticism --or emotional stability-- (the capacity to experience negative emotions); extraversion (the capacity to experience positive emotions, the tendency to seek stimulation and company from others); openness to experience (capacity to be creative and unstructured); agreeableness (perceptions of others that are caring, compassionate, and altruistic); conscientiousness (capacity to display self-discipline, act dutifully, and strive for achievement against measures or outside expectations).	
 
 % \paragraph{Skills in economics}
-Studies in economics focuses on the role of skills on labour market and especially on income gap, performance at work and type of work or education through educational attainment, course grades or standardized achievment test scores but few researcher have been interested in the relationship with household finances while it is a growing area of interest.%\footnote{This renewed interest led the Journal of Economic Literature (JEL) to create a field in its own right under the code G5.}.
+Studies in economics focuses on the role of skills on labour market and especially on income gap, performance at work and type of work or education through educational attainment, course grades or standardised achievment test scores but few researcher have been interested in the relationship with household finances while it is a growing area of interest.%\footnote{This renewed interest led the Journal of Economic Literature (JEL) to create a field in its own right under the code G5.}.
 First, household are more implicated in financial decision such as privatization of retirement pension, liberalization of loan market, increase in credit purchase, which are more complicated because of financial innovation \citep{Guiso2013}.
 Second, financial inclusion policies focus on credit as a potential tool for business creation, improved access to education and health, enhanced decision-making and women’s empowerment. 
 It constitute the main focus of the World Bank Group's Universal Financial Access 2020 initiative and featured as a target in eight of the 17 goals of sustainable development goals.
@@ -244,12 +244,11 @@ The very good knownledge of the field (see section \ref{subsection:data}) allow 
 Moreover, we implement our own factor analysis of the 35 questions by principal component with promax rotation.
 To avoid a bias in factor analysis, we do not recoded reverse questions beause it might force likeness with Big-5 taxonomyIn our dataset, acquiesence bias is measure with a set of reverse questions that are supposed perfectly opposed to another set of questions. 
 However, the assumption of opposition is supportable only in the Big-5 taxonomy, in another layout pairs of questions can measure different aspects of personality.
-
-The resulting factors for 2016-17 data are relatively similar to the Big-5 personality traits with satisfactory \citeauthor{McDonald1999}'s $\Upomega$: Factor 1 as Openness-Extraversion ($\Upomega=0.91$); Factor 2 as Conscientiousness ($\Upomega=0.88$); Factor 3 as \textit{Porupillatavan} --tamil terms for talkative, easily distracted individual-- ($\Upomega=0.69$); Factor 4 as Emotional stability ($\Upomega=0.78$) and Factor 5 as Agreeableness ($\Upomega=0.62$) (see Appendix \ref{section:efa_big5}) while resulting factors for 2020-21 data are very different to the Big-5 taxonomy and to the 2016-17 factors.
+The resulting factors for 2016-17 data are relatively similar to the Big-5 personality traits with satisfactory \citeauthor{McDonald1999}'s $\Upomega$: Factor 1 as Openness-Extraversion ($\Upomega=0.91$); Factor 2 as Conscientiousness ($\Upomega=0.88$); Factor 3 as \textit{Porupillatavan} --tamil terms for talkative, easily distracted individual-- ($\Upomega=0.69$); Factor 4 as Emotional stability ($\Upomega=0.78$) and Factor 5 as Agreeableness ($\Upomega=0.62$) (see Appendix \ref{section:efa_big5}) while resulting factors for 2020-21 data are very different to the Big-5 taxonomy and to the 2016-17 factors\footnote{We do not present results here because we do not use it as personality traits measure, however it is available on request. See section \ref{subsection:econometricframework}.}.
 
 %\paragraph{Life-cycle effects}
-To mitigate against the potential problem of life-cycle events --that might induce endogeneity through measurement error, we run univariate OLS regression with cognitive skills and personality traits as endogenous variables and age as exogenous variable. %(see Appendix \ref{section:efa_big5}).
-We standardised the resulting residuals and use it at as skills measures net of life cycle influences \citep{Nyhus2005, Brown2014}. 
+To mitigate against the potential problem of life-cycle events --that might induce endogeneity through measurement error-- [or to remove the effect of age on the \PTCS~ measures], we run univariate OLS regression with cognitive skills and personality traits as endogenous variables and age as exogenous variable. %(see Appendix \ref{section:efa_big5}).
+We standardised the resulting residuals and use it at as age-effect-free \PTCS~ or net of life cycle influences \citep{Nyhus2005, Brown2014, Groves2005}. 
 
 %\paragraph{Exogeneity}
 The exogeneity of \PTCS~ is well assume because of stability over time while there is no consensus in psychology \citep{Ardelt2000, Deary2014}.
@@ -460,12 +459,24 @@ In terms of income, disparities persist between male and female.
 On average, male have 102,000 INR per year as labour income while female have 19,000 INR.
 Between 2016-17 and 2020-21, the average variation rate is higher for female than for male (respectively 173\% and 163\%).
 
-\paragraph{Individual debt trend}
-There are also many disparities in terms of debt.
+% \paragpraph{\PTCS}
+Figure \ref{fig:PTCS} shows the distribution of each \PTCS~ net of life-cycle standardised.
+Traits from Big-5 taxonomy (row 2) are not corrected from acquiesence bias.
+The distribution of personality traits from Big-5 taxonomy and factor analysis seems to corroborate.
+Indeed, in 2016-17, it appear that male tend to have higher score for each traits: they are more open to experience, conscientious, extraverted, agreeable and emotional stable.
+When we compare 2016-17 distribution with 2020-21 one, we observe that, male --taken as a whole-- have slightly lower score for openess to experience and extraversion while female have slightly higher one.
+Distribution of conscientiousness is more platikurtic and shifted to the right in 2016-17 than in 2020-21 for male: taken as a whole, male are less conscientious in 2020-21 than in 2016-17.
+The assessment is reverse for female.
+Distributions of agreeableness of 2020-21 are more platikurtic for male and female: taken as a whole, a more important share of male/female is very/less agreeable in 2020-21 than in 2016-17.
+Conversely, distributions of 2020-21 for emotional stability are more leptokurtic for male and female.
+Concerning cognitive skills, distributions of RPM are more shifted to the left in 2016-17 than in 2020-21: taken as a whole, a more important share of male/female have a low score at RPM in 2020-21 than in 2016-17.
+For numeracy and literacy test, distributions are more shifted to the right in 2016-17 than in 2020-21: taken as a whole, a more important share of male/female have a high score in 2020-21 than in 2016-17.
+
+% \paragraph{Individual debt trend}
+There are many disparities in terms of debt.
 While the share of individual is relatively stable through time and gender (around 75\%), the path is different.
 Female are more vulnerable than male in the sense that the share of individual never in debt is lower for female than for male (respectively 10\% and 14\%) and the share of individual becomes in debt between 2016-17 and 2020-21 is higher for female than for male (respectively 14\% and 8\%).
 To finish with the path, we observe that more than six out of ten individuals remains indebted.
-
 Our sample of indebted individual consists of 643 individuals in 2016-17 and 606 individuals in 2020-21 whose 516 are indebted in 2016-17 and in 2020-21.
 Male have a higher absolute amount of debt than female (two times more in 2016-17: 190,000 INR for male while 80,000 INR for female) despite a reduction in the amount between 2016-17 and 2020-21 (for 50\% of male, debt has decreased by more than 57\%).
 On the other hand, 50\% of female saw their debt increased by more than 24\% (on average, in 2016-17 a female has a debt of 80,000 INR, while it is at 90,000 INR in 2020-21.
@@ -475,21 +486,10 @@ Furthermore, 50\% of male have seen their DSR decreased by at least 0.27\% while
 
 \subimport{INPUT}{desc_indiv.tex}
 
-\paragraph{Personality traits \& cognitive skills with Figures \ref{fig:PTCS}}
-
-Figure \ref{fig:PTCS} shows the distribution of each personality traits net of life-cycle.
-Middle-upper caste male tends to be more extraverted-openned than others (Factor 1).
-For Conscientiousness (Factor 2), male have higher score than women, whatever the caste.
-Dalits tend to be more \textit{Porupillatavan} (Factor 3) than non-dalits
-and dalits male more emotional stable than other (Factor 4).
-For Agreeableness (Factor 5), we do not observe differences between our four groups.
-In terms of cognitive skills, male tends to have higher score.
-
-
 \begin{figure}[ht]
 \raggedright
-\includegraphics[width=\textwidth]{INPUT/Kernel_PTCS_raw}
-\caption{Distribution of \PTCS~ -- The resulting personality trait from factor analysis and Big-5 taxonomy are based on the standardised residual from univariate OLS regression with age as exogenous variable. This is the personality trait purged from life-cycle effects.}
+\includegraphics[width=\textwidth]{INPUT/Kernel_PTCS_raw_new}
+\caption{Distribution of \PTCS~ -- The resulting \PTCS~ are based on the standardised residual from univariate OLS regression with age as exogenous variable. This is \PTCS~ purged from life-cycle effects.}
 \sourcefig{NEEMSIS-1 (2016-17) \& NEEMSIS-2 (2020-21); author's calculations.}
 \label{fig:PTCS}
 \end{figure}
@@ -504,14 +504,8 @@ In terms of cognitive skills, male tends to have higher score.
 %As stated by \cite{Amrhein2019, Wasserstein2019, Wasserstein2016} reported confidence interval
 
 To interpret the results, marginal effects (ME) at representative values on the predicted value of the \PTCS~ are reported for the four specifications as describe previously.
-According to specifications, the representatives values are:
-\begin{itemize}
-\item[(1)] The average individual (col ``All'').
-\item[(2)] The average male (col ``Male'') and the average female (col ``Female'').
-\item[(3)] The average non-dalits (col ``MUC'') and the average dalits (col ``Dalits'').
-\item[(4)] The average non-dalits male (col ``MUC male''), the average dalits male (col ``Dalits male''), the average non-dalits female (col ``MUC female'') and the average dalits female (col ``Dalits female'').
-\end{itemize}
-All of \PTCS~ are standardized to ensure comparability between them.
+According to specifications, the representatives values are: (1) the average individual (``All''); (2) the average male (``Male'') and the average female (``Female''); (3) the average non-dalits (``MUC'') and the average dalits (``Dalits''); (4) the average non-dalits male (``MUC male''), the average dalits male (``Dalits male''), the average non-dalits female (``MUC female'') and the average dalits female (``Dalits female'').
+All of \PTCS~ are standardised to ensure comparability between them.
 We will therefore speaks in terms of ``one standard deviation'' more of \PTCS.
 
 An important caveat to acknowledge prior to exposing the findings of our empirical analysis is the magnitude of the effects.
