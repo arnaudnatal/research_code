@@ -96,16 +96,16 @@ tab year2016 year2020
 
 ********** Macro
 global big5raw std_OP std_CO std_EX std_AG std_ES 
-global intfemraw fem_std_OP fem_std_CO fem_std_EX fem_std_AG fem_std_ES fem_raven_tt fem_lit_tt fem_num_tt
-global intdalraw dal_std_OP dal_std_CO dal_std_EX dal_std_AG dal_std_ES dal_raven_tt dal_lit_tt dal_num_tt
-global threeraw threeway_std_OP threeway_std_CO threeway_std_EX threeway_std_AG threeway_std_ES threeway_raven_tt threeway_lit_tt threeway_num_tt
+global intfemraw fem_std_OP fem_std_CO fem_std_EX fem_std_AG fem_std_ES fem_std_raven_tt fem_std_lit_tt fem_std_num_tt
+global intdalraw dal_std_OP dal_std_CO dal_std_EX dal_std_AG dal_std_ES dal_std_raven_tt dal_std_lit_tt dal_std_num_tt
+global threeraw threeway_std_OP threeway_std_CO threeway_std_EX threeway_std_AG threeway_std_ES threeway_std_raven_tt threeway_std_lit_tt threeway_std_num_tt
 
 global big5cor std_cr_OP std_cr_CO std_cr_EX std_cr_AG std_cr_ES
-global intfemcor fem_std_cr_OP fem_std_cr_CO fem_std_cr_EX fem_std_cr_AG fem_std_cr_ES fem_raven_tt fem_lit_tt fem_num_tt
-global intdalcor dal_std_cr_OP dal_std_cr_CO dal_std_cr_EX dal_std_cr_AG dal_std_cr_ES dal_raven_tt dal_lit_tt dal_num_tt
-global threecor threeway_std_cr_OP threeway_std_cr_CO threeway_std_cr_EX threeway_std_cr_AG threeway_std_cr_ES threeway_raven_tt threeway_lit_tt threeway_num_tt
+global intfemcor fem_std_cr_OP fem_std_cr_CO fem_std_cr_EX fem_std_cr_AG fem_std_cr_ES fem_std_raven_tt fem_std_lit_tt fem_std_num_tt
+global intdalcor dal_std_cr_OP dal_std_cr_CO dal_std_cr_EX dal_std_cr_AG dal_std_cr_ES dal_std_raven_tt dal_std_lit_tt dal_std_num_tt
+global threecor threeway_std_cr_OP threeway_std_cr_CO threeway_std_cr_EX threeway_std_cr_AG threeway_std_cr_ES threeway_std_raven_tt threeway_std_lit_tt threeway_std_num_tt
 
-global cog raven_tt num_tt lit_tt
+global cog std_raven_tt std_num_tt std_lit_tt
 
 global indivcontrol age agesq dummyhead cat_mainoccupation_indiv_1 cat_mainoccupation_indiv_2 cat_mainoccupation_indiv_3 cat_mainoccupation_indiv_4 cat_mainoccupation_indiv_5 dummyedulevel maritalstatus2 dummymultipleoccupation_indiv
 global hhcontrol4 assets1000 sexratiocat_1 sexratiocat_2 sexratiocat_3 hhsize shock incomeHH1000
@@ -118,22 +118,22 @@ label var dal_std_`x' "Dalit X `x' (std)"
 label var threeway_std_`x' "Dalit X Female X `x' (std)"
 label var std_`x' "`x' (std)"
 }
-label var fem_raven_tt "Female X Raven (std)"
-label var dal_raven_tt "Dalit X Raven (std)"
-label var threeway_raven_tt "Dalit X Female X Raven (std)"
-label var fem_num_tt "Female X Numeracy (std)"
-label var dal_num_tt "Dalit X Numeracy (std)"
-label var threeway_num_tt "Dalit X Female X Numeracy (std)"
-label var fem_lit_tt "Female X Literacy (std)"
-label var dal_lit_tt "Dalit X Literacy (std)"
-label var threeway_lit_tt "Dalit X Female X Literacy (std)"
+label var fem_std_raven_tt "Female X Raven (std)"
+label var dal_std_raven_tt "Dalit X Raven (std)"
+label var threeway_std_raven_tt "Dalit X Female X Raven (std)"
+label var fem_std_num_tt "Female X Numeracy (std)"
+label var dal_std_num_tt "Dalit X Numeracy (std)"
+label var threeway_std_num_tt "Dalit X Female X Numeracy (std)"
+label var fem_std_lit_tt "Female X Literacy (std)"
+label var dal_std_lit_tt "Dalit X Literacy (std)"
+label var threeway_std_lit_tt "Dalit X Female X Literacy (std)"
 label var femXdal "Female X Dalit"
 label var debtorratio2 "Debtor ratio"
 *label var indebt_indiv_1 "Indebted (=1) in 2016-17"
 
-label var raven_tt "Raven (std)"
-label var num_tt "Numeracy (std)"
-label var lit_tt "Literacy (std)"
+label var std_raven_tt "Raven (std)"
+label var std_num_tt "Numeracy (std)"
+label var std_lit_tt "Literacy (std)"
 label var age "Age"
 label var agesq "Age square"
 label var dummyhead "HH head (=1)"
@@ -159,12 +159,12 @@ label var incomeHH1000 "Total income (1,000 INR)"
 
 ********** Tester le nb obs
 preserve
-global eff loanamount_indiv1000 std_OP std_CO std_EX std_AG std_ES raven_tt num_tt lit_tt age agesq dummyhead cat_mainoccupation_indiv_1 cat_mainoccupation_indiv_2 cat_mainoccupation_indiv_3 cat_mainoccupation_indiv_4 cat_mainoccupation_indiv_5 dummyedulevel maritalstatus2 dummymultipleoccupation_indiv assets1000 sexratiocat_1 sexratiocat_2 sexratiocat_3 hhsize shock incomeHH1000 female dalits
+global eff loanamount_indiv1000 std_OP std_CO std_EX std_AG std_ES std_raven_tt std_num_tt std_lit_tt age agesq dummyhead cat_mainoccupation_indiv_1 cat_mainoccupation_indiv_2 cat_mainoccupation_indiv_3 cat_mainoccupation_indiv_4 cat_mainoccupation_indiv_5 dummyedulevel maritalstatus2 dummymultipleoccupation_indiv assets1000 sexratiocat_1 sexratiocat_2 sexratiocat_3 hhsize shock incomeHH1000 female dalits
 
 keep HHINDID panelvar year HHID_panel INDID_panel $eff
 order HHINDID panelvar year HHID_panel INDID_panel $eff
 
-gen tag=!missing(panelvar*year*loanamount_indiv1000*std_OP*std_CO*std_EX*std_AG*std_ES*raven_tt*num_tt*lit_tt*age*agesq*dummyhead*cat_mainoccupation_indiv_1*cat_mainoccupation_indiv_2*cat_mainoccupation_indiv_3*cat_mainoccupation_indiv_4*cat_mainoccupation_indiv_5*dummyedulevel*maritalstatus2*dummymultipleoccupation_indiv*assets1000*sexratiocat_1*sexratiocat_2*sexratiocat_3*hhsize*shock*incomeHH1000*female*dalits)
+gen tag=!missing(panelvar*year*loanamount_indiv1000*std_OP*std_CO*std_EX*std_AG*std_ES*std_raven_tt*std_num_tt*std_lit_tt*age*agesq*dummyhead*cat_mainoccupation_indiv_1*cat_mainoccupation_indiv_2*cat_mainoccupation_indiv_3*cat_mainoccupation_indiv_4*cat_mainoccupation_indiv_5*dummyedulevel*maritalstatus2*dummymultipleoccupation_indiv*assets1000*sexratiocat_1*sexratiocat_2*sexratiocat_3*hhsize*shock*incomeHH1000*female*dalits)
 xtset panelvar year
 
 xtreg $eff, fe
@@ -283,6 +283,9 @@ margins, dydx($big5raw $cog) at(dalits=(0 1) female=(0 1)) atmeans noestimcheck 
 ********** 01.
 ********** Level of debt
 recode loanamount_indiv1000 DSR_indiv (.=0)
+fre debtpath
+replace loanamount_indiv1000=. if debtpath==0
+replace DSR_indiv=. if debtpath==0
 cls
 foreach var in loanamount_indiv1000  DSR_indiv {
 xtreg `var' $big5raw $cog $indivcontrol $hhcontrol4 female dalits, fe vce(cluster HHFE)
@@ -322,17 +325,17 @@ qui xtreg `var' $big5raw $cog $indivcontrol $hhcontrol4 dalit female, vce(cluste
 margins, dydx($big5raw $cog) atmeans noestimcheck saving(margin_FE_`var'1, replace) 
 
 *** Female
-xtreg `var' $big5raw $cog $indivcontrol $hhcontrol4 c.std_OP##i.female c.std_CO##i.female c.std_EX##i.female c.std_AG##i.female c.std_ES##i.female c.raven_tt##i.female c.num_tt##i.female c.lit_tt##i.female, vce(cluster HHFE) fe
+xtreg `var' $indivcontrol $hhcontrol4 c.std_OP##i.female c.std_CO##i.female c.std_EX##i.female c.std_AG##i.female c.std_ES##i.female c.std_raven_tt##i.female c.std_num_tt##i.female c.std_lit_tt##i.female, vce(cluster HHFE) fe
 *dy/dx
 margins, dydx($big5raw $cog) at(female=(0 1)) atmeans noestimcheck saving(margin_FE_`var'2, replace)
 
 *** Dalits
-qui xtreg `var' $big5raw $cog $indivcontrol $hhcontrol4 c.std_OP##i.dalits c.std_CO##i.dalits c.std_EX##i.dalits c.std_AG##i.dalits c.std_ES##i.dalits c.raven_tt##i.dalits c.num_tt##i.dalits c.lit_tt##i.dalits , vce(cluster HHFE) fe
+qui xtreg `var' $indivcontrol $hhcontrol4 c.std_OP##i.dalits c.std_CO##i.dalits c.std_EX##i.dalits c.std_AG##i.dalits c.std_ES##i.dalits c.std_raven_tt##i.dalits c.std_num_tt##i.dalits c.std_lit_tt##i.dalits , vce(cluster HHFE) fe
 *dy/dx
 margins, dydx($big5raw $cog) at(dalits=(0 1)) atmeans noestimcheck saving(margin_FE_`var'3, replace)
 
 *** Three
-qui xtreg `var' $big5raw $cog $indivcontrol $hhcontrol4 c.std_OP##i.female##i.dalits c.std_CO##i.female##i.dalits c.std_EX##i.female##i.dalits c.std_AG##i.female##i.dalits c.std_ES##i.female##i.dalits c.raven_tt##i.female##i.dalits c.num_tt##i.female##i.dalits c.lit_tt##i.female##i.dalits , vce(cluster HHFE) fe
+qui xtreg `var' $indivcontrol $hhcontrol4 c.std_OP##i.female##i.dalits c.std_CO##i.female##i.dalits c.std_EX##i.female##i.dalits c.std_AG##i.female##i.dalits c.std_ES##i.female##i.dalits c.std_raven_tt##i.female##i.dalits c.std_num_tt##i.female##i.dalits c.std_lit_tt##i.female##i.dalits , vce(cluster HHFE) fe
 *dy/dx
 margins, dydx($big5raw $cog) at(dalits=(0 1) female=(0 1)) atmeans noestimcheck saving(margin_FE_`var'4, replace)
 }

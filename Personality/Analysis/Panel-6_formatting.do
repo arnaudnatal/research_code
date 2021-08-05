@@ -52,11 +52,6 @@ global wave3 "NEEMSIS2-HH_v16"
 
 
 
-*dy/dx
-*margins, dydx() at(dalits=(0 1) female=(0 1)) atmeans
-
-
-
 
 
 
@@ -69,8 +64,7 @@ i=3 --> at=1 (middle-upper male) at=2 (dalits male) at=3 (middle-upper female) a
 */
 
 *cap ssc inst sxpose
-foreach x in indebt_indiv loanamount_indiv1000 DSR_indiv { //heck_loanamount_indiv1000 heck_DSR_indiv FE_loanamount_indiv1000 FE_DSR_indiv b5_indebt_indiv b5_heck_loanamount_indiv1000 b5_heck_DSR_indiv { //b5_indebt_indiv b5_heck_loanamount_indiv1000 b5_heck_DSR_indiv loanamount_indiv1000 DSR_indiv b5_loanamount_indiv1000 b5_DSR_indiv delta2_loanamount_indiv delta2_DSR_indiv b5_delta2_loanamount_indiv b5_delta2_DSR_indiv  {
-*foreach x in FE_loanamount_indiv1000 FE_DSR_indiv {
+foreach x in indebt_indiv loanamount_indiv1000 DSR_indiv FE_loanamount_indiv1000 FE_DSR_indiv {
 forvalues i=1(1)4{
 *****
 *****
@@ -206,7 +200,92 @@ export excel using "margins.xlsx", sheet("`x'", replace) firstrow(varlabels)
 
 
 
-/*
+***QREG
+foreach x in loanamount_indiv1000 DSR_indiv {
+foreach i in 10 25 50 75 90{
+*****
+*****
+preserve
+use"margin_qreg`i'_`x'", clear
+
+label define cog 1"C-1" 2"C-2" 3"C-3" 4"C-4" 5"C-5" 6"Raven (std)" 7"Numeracy (std)" 8"Literacy (std)", replace
+label values _deriv cog
+decode _deriv, gen(deriv)
+keep _deriv _margin _se _statistic _pvalue _ci_lb _ci_ub
+foreach y in margin se statistic pvalue ci_lb ci_ub {
+gen `y'=_`y'
+}
+keep _deriv margin se statistic pvalue ci_lb ci_ub
+
+gen margin_str=strofreal(margin, "%9.3f")
+gen stat_str=strofreal(statistic, "%9.3f")
+keep _deriv margin_str stat_str
+rename margin_str nstr1
+rename stat_str nstr2
+decode _deriv, gen(deriv)
+drop _deriv
+order deriv, first
+reshape long nstr, i(deriv) j(num)
+gen xo="("
+gen xc=")"
+egen nstr_t=concat(xo nstr xc) if num==2
+replace nstr=nstr_t if nstr_t!=""
+drop xo xc nstr_t
+order deriv num
+
+replace deriv="" if num==2
+
+drop num 
+dropmiss, force
+
+gen n=_n
+
+save"margin_qreg`i'_`x'_new", replace
+restore 
+
+*****
+*****
+use"margin_qreg10_`x'_new.dta", replace
+rename nstr P10
+merge 1:1 n using "margin_qreg25_`x'_new.dta"
+drop _merge
+rename nstr P25
+merge 1:1 n using "margin_qreg50_`x'_new.dta"
+drop _merge
+rename nstr P50
+merge 1:1 n using "margin_qreg75_`x'_new.dta"
+drop _merge
+rename nstr P75
+merge 1:1 n using "margin_qreg90_`x'_new.dta"
+drop _merge
+rename nstr P90
+
+set obs `=_N+1'
+set obs `=_N+1'
+set obs `=_N+1'
+
+replace n=17-_n if n==.
+sort n
+
+replace P10="(1)" if n==-2
+replace P25="(2)" if n==-2
+replace P50="(3)" if n==-2
+replace P75="(4)" if n==-2
+replace P90="(5)" if n==-2
+
+foreach var in P10 P25 P50 P75 P90{
+replace `var'="ME/(t-stat)" if n==-1
+}
+
+foreach var in P10 P25 P50 P75 P90{
+replace `var'="`var'" if n==0
+}
+drop n
+export excel using "margins.xlsx", sheet("qreg_`x'", replace) firstrow(varlabels)
+*export excel using "margins_`x'.xlsx", sheet("`x'", replace) firstrow(varlabels)
+*export delimited using "margins_`x'.csv"
+}
+}
 
 
 
@@ -216,7 +295,7 @@ export excel using "margins.xlsx", sheet("`x'", replace) firstrow(varlabels)
 
 
 ******* Debtpath
-foreach x in debtpath  b5_debtpath { 
+foreach x in debtpath { 
 forvalues i=1(1)4{
 *****
 *****
@@ -352,10 +431,8 @@ replace Dalit_female="Dalits female" if n==0
 
 replace predict="" if deriv!="C-1"
 
-
 drop n
 export excel using "margins.xlsx", sheet("`x'", replace) firstrow(varlabels)
 *export excel using "margins_`x'.xlsx", sheet("`x'", replace) firstrow(varlabels)
 *export delimited using "margins_`x'.csv"
 }
-
