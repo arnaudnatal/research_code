@@ -5634,7 +5634,7 @@ It has also been noted that there exists a close correlation between class, cast
   url     = {https://doi.org/10.1108/IJSE-10-2017-0444},
 }
 
-@Article{Chakravartya2013,
+@Article{Chakravarty2013,
   author  = {Satya R. Chakravarty and Rupayan Pal},
   journal = {Journal of Policy Modeling},
   title   = {{Financial inclusion in India: An axiomatic approach}},
@@ -6835,13 +6835,15 @@ It has also been noted that there exists a close correlation between class, cast
   chapter   = {13},
 }
 
-@misc{Dasgupta2020,
-  year = {2020},
-  month = {dec},
-  author = {Utteeyo Dasgupta and Subha Mani and Smriti Sharma and Saurabh Singhal},
-  title = {Caste gaps in behaviour and personality traits: A study of university students},
+@TechReport{Dasgupta2020,
+  author       = {Utteeyo Dasgupta and Subha Mani and Smriti Sharma and Saurabh Singhal},
+  institution  = {Ideas for India},
+  title        = {{Caste gaps in behaviour and personality traits: A study of university students}},
+  year         = {2020},
+  month        = {dec},
+  note         = {Accessed July 15, 2021},
+  type         = {blog},
   howpublished = {\url{https://www.ideasforindia.in/topics/social-identity/caste-gaps-in-behaviour-and-personality-traits-a-study-of-university-students.html}},
-  note = {Accessed 15, July 2021}
 }
 
 @article{Imai2020,
@@ -7108,6 +7110,16 @@ It has also been noted that there exists a close correlation between class, cast
   title   = {{With a Little Help From My Friends? Surviving the Lockdown using Social Networks in Rural South India}},
   year    = {2021},
   note    = {Forthcoming},
+}
+
+@TechReport{Horn2021,
+  author      = {Samantha Horn and Julian C. Jamison and Dean Karlan and Jonathan Zinman},
+  institution = {VoxDev},
+  title       = {{Is financial literacy necessary for greater savings? Evidence from Uganda}},
+  year        = {2021},
+  note        = {Accessed August 06, 2021},
+  type        = {blog},
+  url         = {https://voxdev.org/topic/finance/financial-literacy-necessary-greater-savings-evidence-uganda},
 }
 
 @Comment{jabref-meta: databaseType:bibtex;}

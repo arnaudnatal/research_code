@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.22 (MiKTeX 21.6.28) (preloaded format=pdflatex 2021.7.10)  5 AUG 2021 20:28
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (MiKTeX 21.6.28) (preloaded format=pdflatex 2021.7.10)  6 AUG 2021 10:54
 entering extended mode
 **./Personality_debt.tex
 (Personality_debt.tex
@@ -1822,7 +1822,7 @@ Underfull \hbox (badness 10000) in paragraph at lines 73--74
 
 pdfTeX warning: pdflatex (file ./INPUT/omega.pdf): PDF inclusion: found PDF ver
 sion <1.6>, but at most version <1.5> allowed
-<INPUT/omega.pdf, id=356, 433.62pt x 289.08pt>
+<INPUT/omega.pdf, id=325, 433.62pt x 289.08pt>
 File: INPUT/omega.pdf Graphic file (type pdf)
 <use INPUT/omega.pdf>
 Package pdftex.def Info: INPUT/omega.pdf  used on input line 235.
@@ -1835,7 +1835,7 @@ LaTeX Warning: `!h' float specifier changed to `!ht'.
 
 pdfTeX warning: pdflatex (file ./INPUT/Kernel_PTCS_raw_new.pdf): PDF inclusion:
  found PDF version <1.6>, but at most version <1.5> allowed
-<INPUT/Kernel_PTCS_raw_new.pdf, id=568, 433.62pt x 289.08pt>
+<INPUT/Kernel_PTCS_raw_new.pdf, id=542, 433.62pt x 289.08pt>
 File: INPUT/Kernel_PTCS_raw_new.pdf Graphic file (type pdf)
 <use INPUT/Kernel_PTCS_raw_new.pdf>
 Package pdftex.def Info: INPUT/Kernel_PTCS_raw_new.pdf  used on input line 491.
@@ -1849,16 +1849,22 @@ Package pdftex.def Info: INPUT/Kernel_PTCS_raw_new.pdf  used on input line 491.
 ] [25] (Personality_debt.bbl [26
 
 ]
-Underfull \hbox (badness 10000) in paragraph at lines 607--625
-\T1/jkptt/m/n/10.95 topics / social [] -identity / caste [] -gaps [] -in [] -be
-haviour [] -and [] -personality [] -traits [] -a []
+Underfull \hbox (badness 10000) in paragraph at lines 607--628
+\T1/jkptt/m/n/10.95 -in [] -behaviour [] -and [] -personality [] -traits [] -a 
+[] -study [] -of [] -university [] -students [] .html$[][]
  []
 
-[27] [28] [29] [30] [31] [32]) [33]
+[27] [28]
+Underfull \hbox (badness 1688) in paragraph at lines 1274--1295
+\T1/jkp/m/it/10.95 (+20) es-sary for greater sav-ings? Ev-i-dence from Uganda \
+T1/jkp/m/n/10.95 (+20) (blog).  VoxDev.  Re-trieved
+ []
+
+[29] [30] [31] [32]) [33]
 
 pdfTeX warning: pdflatex (file ./INPUT/diffcont_raw.pdf): PDF inclusion: found 
 PDF version <1.6>, but at most version <1.5> allowed
-<INPUT/diffcont_raw.pdf, id=772, 433.62pt x 289.08pt>
+<INPUT/diffcont_raw.pdf, id=752, 433.62pt x 289.08pt>
 File: INPUT/diffcont_raw.pdf Graphic file (type pdf)
 <use INPUT/diffcont_raw.pdf>
 Package pdftex.def Info: INPUT/diffcont_raw.pdf  used on input line 727.
@@ -1867,7 +1873,7 @@ Package pdftex.def Info: INPUT/diffcont_raw.pdf  used on input line 727.
 
 pdfTeX warning: pdflatex (file ./INPUT/diffcont_cor.pdf): PDF inclusion: found 
 PDF version <1.6>, but at most version <1.5> allowed
-<INPUT/diffcont_cor.pdf, id=773, 433.62pt x 289.08pt>
+<INPUT/diffcont_cor.pdf, id=753, 433.62pt x 289.08pt>
 File: INPUT/diffcont_cor.pdf Graphic file (type pdf)
 <use INPUT/diffcont_cor.pdf>
 Package pdftex.def Info: INPUT/diffcont_cor.pdf  used on input line 735.
@@ -1876,7 +1882,7 @@ Package pdftex.def Info: INPUT/diffcont_cor.pdf  used on input line 735.
 
 pdfTeX warning: pdflatex (file ./INPUT/diffcont_cog.pdf): PDF inclusion: found 
 PDF version <1.6>, but at most version <1.5> allowed
-<INPUT/diffcont_cog.pdf, id=774, 433.62pt x 289.08pt>
+<INPUT/diffcont_cog.pdf, id=754, 433.62pt x 289.08pt>
 File: INPUT/diffcont_cog.pdf Graphic file (type pdf)
 <use INPUT/diffcont_cog.pdf>
 Package pdftex.def Info: INPUT/diffcont_cog.pdf  used on input line 743.
@@ -1888,7 +1894,7 @@ t_cog.pdf>] (INPUT/Big5.tex) [36
 
 pdfTeX warning: pdflatex (file ./INPUT/factor2016_2.pdf): PDF inclusion: found 
 PDF version <1.6>, but at most version <1.5> allowed
-<INPUT/factor2016_2.pdf, id=821, 433.62pt x 289.08pt>
+<INPUT/factor2016_2.pdf, id=801, 433.62pt x 289.08pt>
 File: INPUT/factor2016_2.pdf Graphic file (type pdf)
 <use INPUT/factor2016_2.pdf>
 Package pdftex.def Info: INPUT/factor2016_2.pdf  used on input line 764.
@@ -1897,7 +1903,7 @@ Package pdftex.def Info: INPUT/factor2016_2.pdf  used on input line 764.
 
 pdfTeX warning: pdflatex (file ./INPUT/matrix_b5_efa.pdf): PDF inclusion: found
  PDF version <1.6>, but at most version <1.5> allowed
-<INPUT/matrix_b5_efa.pdf, id=822, 433.62pt x 289.08pt>
+<INPUT/matrix_b5_efa.pdf, id=802, 433.62pt x 289.08pt>
 File: INPUT/matrix_b5_efa.pdf Graphic file (type pdf)
 <use INPUT/matrix_b5_efa.pdf>
 Package pdftex.def Info: INPUT/matrix_b5_efa.pdf  used on input line 773.
@@ -1943,13 +1949,13 @@ Package rerunfilecheck Info: File `Personality_debt.out' has not changed.
 (rerunfilecheck)             Checksum: 8EAA89F6786D68546F8724A45F039CF9;3753.
  ) 
 Here is how much of TeX's memory you used:
- 37195 strings out of 478847
- 684757 string characters out of 2847912
- 1367162 words of memory out of 3000000
- 53548 multiletter control sequences out of 15000+600000
- 601049 words of font info for 582 fonts, out of 8000000 for 9000
+ 37202 strings out of 478847
+ 684849 string characters out of 2847912
+ 1363004 words of memory out of 3000000
+ 53552 multiletter control sequences out of 15000+600000
+ 601281 words of font info for 583 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 89i,20n,95p,857b,1068s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 89i,20n,95p,857b,1066s stack positions out of 5000i,500n,10000p,200000b,80000s
 pdfTeX warning (dest): name{Hfootnote.21} has been referenced but does not ex
 ist, replaced by a fixed one
 
@@ -2031,9 +2037,9 @@ s/jkpsy.pfb><C:/Users/Arnaud/AppData/Local/Programs/MiKTeX/fonts/type1/public/k
 pfonts/jkpsyb.pfb><C:/Users/Arnaud/AppData/Local/Programs/MiKTeX/fonts/type1/pu
 blic/kpfonts/jkpttmn8a.pfb><C:/Users/Arnaud/AppData/Local/Programs/MiKTeX/fonts
 /type1/tfrupee/tfrupee.pfb>
-Output written on Personality_debt.pdf (56 pages, 5133038 bytes).
+Output written on Personality_debt.pdf (56 pages, 5128724 bytes).
 PDF statistics:
- 1077 PDF objects out of 1200 (max. 8388607)
- 203 named destinations out of 1000 (max. 500000)
+ 1057 PDF objects out of 1200 (max. 8388607)
+ 204 named destinations out of 1000 (max. 500000)
  133336 words of extra memory for PDF output out of 154059 (max. 10000000)
 

@@ -288,15 +288,14 @@ replace loanamount_indiv1000=. if debtpath==0
 replace DSR_indiv=. if debtpath==0
 cls
 foreach var in loanamount_indiv1000  DSR_indiv {
-xtreg `var' $big5raw $cog $indivcontrol $hhcontrol4 female dalits, fe vce(cluster HHFE)
+qui xtreg `var' $big5raw $cog $indivcontrol $hhcontrol4 female dalits, fe vce(cluster HHFE)
 est store res_1
-xtreg `var' $big5raw $cog $indivcontrol $hhcontrol4 female dalits $intfemraw, fe vce(cluster HHFE)
+qui xtreg `var' $big5raw $cog $indivcontrol $hhcontrol4 female dalits $intfemraw, fe vce(cluster HHFE)
 est store res_2
-xtreg `var' $big5raw $cog $indivcontrol $hhcontrol4 female dalits $intdalraw, fe vce(cluster HHFE)
+qui xtreg `var' $big5raw $cog $indivcontrol $hhcontrol4 female dalits $intdalraw, fe vce(cluster HHFE)
 est store res_3
-xtreg `var' $big5raw $cog $indivcontrol $hhcontrol4 female dalits $intfemraw $intdalraw $threeraw, fe vce(cluster HHFE)
+qui xtreg `var' $big5raw $cog $indivcontrol $hhcontrol4 female dalits $intfemraw $intdalraw $threeraw, fe vce(cluster HHFE)
 est store res_4
-
 
 esttab res_1 res_2 res_3 res_4 using "_reg.csv", ///
 	cells(b(fmt(3)) /// 
@@ -322,20 +321,20 @@ restore
 *** No int
 qui xtreg `var' $big5raw $cog $indivcontrol $hhcontrol4 dalit female, vce(cluster HHFE) fe
 *dy/dx
-margins, dydx($big5raw $cog) atmeans noestimcheck saving(margin_FE_`var'1, replace) 
+qui margins, dydx($big5raw $cog) atmeans noestimcheck saving(margin_FE_`var'1, replace) 
 
 *** Female
-xtreg `var' $indivcontrol $hhcontrol4 c.std_OP##i.female c.std_CO##i.female c.std_EX##i.female c.std_AG##i.female c.std_ES##i.female c.std_raven_tt##i.female c.std_num_tt##i.female c.std_lit_tt##i.female, vce(cluster HHFE) fe
+qui xtreg `var' $indivcontrol $hhcontrol4 c.std_OP##i.female c.std_CO##i.female c.std_EX##i.female c.std_AG##i.female c.std_ES##i.female c.std_raven_tt##i.female c.std_num_tt##i.female c.std_lit_tt##i.female, vce(cluster HHFE) fe
 *dy/dx
-margins, dydx($big5raw $cog) at(female=(0 1)) atmeans noestimcheck saving(margin_FE_`var'2, replace)
+qui margins, dydx($big5raw $cog) at(female=(0 1)) atmeans noestimcheck saving(margin_FE_`var'2, replace)
 
 *** Dalits
 qui xtreg `var' $indivcontrol $hhcontrol4 c.std_OP##i.dalits c.std_CO##i.dalits c.std_EX##i.dalits c.std_AG##i.dalits c.std_ES##i.dalits c.std_raven_tt##i.dalits c.std_num_tt##i.dalits c.std_lit_tt##i.dalits , vce(cluster HHFE) fe
 *dy/dx
-margins, dydx($big5raw $cog) at(dalits=(0 1)) atmeans noestimcheck saving(margin_FE_`var'3, replace)
+qui margins, dydx($big5raw $cog) at(dalits=(0 1)) atmeans noestimcheck saving(margin_FE_`var'3, replace)
 
 *** Three
 qui xtreg `var' $indivcontrol $hhcontrol4 c.std_OP##i.female##i.dalits c.std_CO##i.female##i.dalits c.std_EX##i.female##i.dalits c.std_AG##i.female##i.dalits c.std_ES##i.female##i.dalits c.std_raven_tt##i.female##i.dalits c.std_num_tt##i.female##i.dalits c.std_lit_tt##i.female##i.dalits , vce(cluster HHFE) fe
 *dy/dx
-margins, dydx($big5raw $cog) at(dalits=(0 1) female=(0 1)) atmeans noestimcheck saving(margin_FE_`var'4, replace)
+qui margins, dydx($big5raw $cog) at(dalits=(0 1) female=(0 1)) atmeans noestimcheck saving(margin_FE_`var'4, replace)
 }

@@ -504,13 +504,7 @@ Furthermore, 50\% of male have seen their DSR decreased by at least 0.27\% while
 %As stated by \cite{Amrhein2019, Wasserstein2019, Wasserstein2016} reported confidence interval
 
 To interpret the results, marginal effects (ME) at representative values on the predicted value of the \PTCS~ are reported for the four specifications as describe previously.
-According to specifications, the representatives values are:
-\begin{itemize}
-\item[(1)] The average individual (col ``All'').
-\item[(2)] The average male (col ``Male'') and the average female (col ``Female'').
-\item[(3)] The average non-dalits (col ``MUC'') and the average dalits (col ``Dalits'').
-\item[(4)] The average non-dalits male (col ``MUC male''), the average dalits male (col ``Dalits male''), the average non-dalits female (col ``MUC female'') and the average dalits female (col ``Dalits female'').
-\end{itemize}
+According to specifications, the representatives values are: (1) the average individual (``All''); (2) the average male (``Male'') and the average female (``Female''); (3) the average non-dalits (``MUC'') and the average dalits (``Dalits''); (4) the average non-dalits male (``MUC male''), the average dalits male (``Dalits male''), the average non-dalits female (``MUC female'') and the average dalits female (``Dalits female'').
 All of \PTCS~ are standardised to ensure comparability between them.
 We will therefore speaks in terms of ``one standard deviation'' more of \PTCS.
 
