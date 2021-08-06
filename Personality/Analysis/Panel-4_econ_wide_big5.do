@@ -100,6 +100,13 @@ label var threeway_base_lit_tt_std "Dalit X Female X Literacy (std)"
 label var femXdal "Female X Dalit"
 label var debtorratio2_1 "Debtor ratio in 2016-17"
 label var indebt_indiv_1 "Indebted (=1) in 2016-17"
+****************************************
+* END
+
+
+
+
+
 
 
 
@@ -154,7 +161,7 @@ forvalues i=1(1)`=scalar(k)'{
 replace v`i'=substr(v`i',3,.)
 replace v`i'=substr(v`i',1,strlen(v`i')-1)
 }
-export excel using "Probit_indebt.xlsx", sheet("Indebt_Big5", replace)
+export excel using "Probit_indebt.xlsx", sheet("Indebt_b5", replace)
 restore
 
 *********** Marges
@@ -186,6 +193,8 @@ qui margins, dydx(base_cr_OP_std base_cr_CO_std base_cr_EX_std base_cr_AG_std ba
 *label var imr_intfem "IMR (gender int)"
 *label var imr_intdal "IMR (caste int)"
 *label var imr_three "IMR (gender and caste int)"
+****************************************
+* END
 
 
 
@@ -201,6 +210,10 @@ qui margins, dydx(base_cr_OP_std base_cr_CO_std base_cr_EX_std base_cr_AG_std ba
 
 
 
+
+****************************************
+* Analysis
+****************************************
 ********** 2.
 ********** Level of debt in t+1
 cls
@@ -233,7 +246,7 @@ forvalues i=1(1)`=scalar(k)'{
 replace v`i'=substr(v`i',3,.)
 replace v`i'=substr(v`i',1,strlen(v`i')-1)
 }
-export excel using "OLS_indebt.xlsx", sheet("`var'", replace)
+export excel using "OLS_indebt.xlsx", sheet("b5_`var'", replace)
 restore
 
 ********** Margins
@@ -257,6 +270,8 @@ qui reg `var'_2 indebt_indiv_1 $indivcontrol $hhcontrol4 $villagesFE c.base_cr_O
 *dy/dx
 qui margins, dydx(base_cr_OP_std base_cr_CO_std base_cr_EX_std base_cr_AG_std base_cr_ES_std base_raven_tt_std base_num_tt_std base_lit_tt_std) at(dalits=(0 1) female=(0 1)) atmeans saving(margin_b5_`var'4, replace)
 }
+****************************************
+* END
 
 
 
@@ -266,12 +281,62 @@ qui margins, dydx(base_cr_OP_std base_cr_CO_std base_cr_EX_std base_cr_AG_std ba
 
 
 
+****************************************
+* Analysis
+****************************************
+********** 4.
+********** Level of debt in t+1 
+cls
+foreach var in loanamount_indiv1000 DSR_indiv {
+foreach quant in 10 25 50 75 90 {
+qui qreg `var'_2 indebt_indiv_1 $big5 $cog $indivcontrol $hhcontrol4 $villagesFE female dalits if indebt_indiv_2==1, vce(rob) q(.`quant')
+est store res_`quant'
 
+esttab res_`quant' using "_reg_`var'.csv", ///
+	cells(b(fmt(3)) /// 
+	t(par fmt(3))) ///
+	drop() ///	
+	legend label varlabels(_cons constant) ///
+	stats(N r2 r2_a F p, fmt(0 3 3 3 3) labels(`"Observations"' `"\$R^2$"' `"Adjusted \$R^2$"' `"F-stat"' `"p-value"')) ///
+	replace
+estimates clear
+
+preserve
+import delimited "_reg_`var'.csv", delimiter(",") varnames(nonames) clear
+qui des
+sca def k=r(k)
+forvalues i=1(1)`=scalar(k)'{
+replace v`i'=substr(v`i',3,.)
+replace v`i'=substr(v`i',1,strlen(v`i')-1)
+}
+export excel using "QREG_indebt.xlsx", sheet("b5_`var'_`quant'", replace)
+restore
+}
+
+********** Margin
+foreach quant in 10 25 50 75 90 {
+qui qreg `var'_2 indebt_indiv_1 $indivcontrol $hhcontrol4 $villagesFE c.base_cr_OP_std c.base_cr_CO_std c.base_cr_EX_std c.base_cr_AG_std c.base_cr_ES_std c.base_raven_tt_std c.base_num_tt_std c.base_lit_tt_std dalits female if indebt_indiv_2==1, vce(rob) q(.`quant')
+*dy/dx
+qui margins, dydx(base_cr_OP_std base_cr_CO_std base_cr_EX_std base_cr_AG_std base_cr_ES_std base_raven_tt_std base_num_tt_std base_lit_tt_std) atmeans saving(margin_qreg_`quant'_b5_`var', replace)
+}
+}
+****************************************
+* END
+
+
+
+
+
+
+
+
+****************************************
+* Analysis
+****************************************
 ********** 6.
 ********** Path of debt
-
+cls
 foreach var in debtpath {
-
 qui mprobit `var' $big5 $cog $indivcontrol $hhcontrol4 female dalits, vce(cluster HHFE)
 est store res_1
 
@@ -307,28 +372,25 @@ restore
 ********** Margins
 foreach var in debtpath {
 *** No int
-qui mprobit `var' $indivcontrol $hhcontrol4 c.base_cr_OP_std c.base_cr_CO_std c.base_cr_EX_std c.base_cr_AG_std c.base_cr_ES_std c.base_raven_tt c.base_num_tt c.base_lit_tt dalits female, vce(cluster HHFE)
-est store res_6
+qui mprobit `var' $indivcontrol $hhcontrol4 c.base_cr_OP_std c.base_cr_CO_std c.base_cr_EX_std c.base_cr_AG_std c.base_cr_ES_std c.base_raven_tt_std c.base_num_tt_std c.base_lit_tt_std dalits female, vce(cluster HHFE)
 *dy/dx
-margins, dydx(base_cr_OP_std base_cr_CO_std base_cr_EX_std base_cr_AG_std base_cr_ES_std base_raven_tt base_num_tt base_lit_tt) atmeans  saving(margin_b5_`var'1, replace)
+qui margins, dydx(base_cr_OP_std base_cr_CO_std base_cr_EX_std base_cr_AG_std base_cr_ES_std base_raven_tt_std base_num_tt_std base_lit_tt_std) atmeans  saving(margin_b5_`var'1, replace)
 
 
 *** Female
-qui mprobit `var' $indivcontrol $hhcontrol4 c.base_cr_OP_std##i.female c.base_cr_CO_std##i.female c.base_cr_EX_std##i.female c.base_cr_AG_std##i.female c.base_cr_ES_std##i.female c.base_raven_tt##i.female c.base_num_tt##i.female c.base_lit_tt##i.female dalits, vce(cluster HHFE)
-est store res_6
+qui mprobit `var' $indivcontrol $hhcontrol4 c.base_cr_OP_std##i.female c.base_cr_CO_std##i.female c.base_cr_EX_std##i.female c.base_cr_AG_std##i.female c.base_cr_ES_std##i.female c.base_raven_tt_std##i.female c.base_num_tt_std##i.female c.base_lit_tt_std##i.female dalits, vce(cluster HHFE)
 *dy/dx
-margins, dydx(base_cr_OP_std base_cr_CO_std base_cr_EX_std base_cr_AG_std base_cr_ES_std base_raven_tt base_num_tt base_lit_tt) at(female=(0 1)) atmeans saving(margin_b5_`var'2, replace)
+qui margins, dydx(base_cr_OP_std base_cr_CO_std base_cr_EX_std base_cr_AG_std base_cr_ES_std base_raven_tt_std base_num_tt_std base_lit_tt_std) at(female=(0 1)) atmeans saving(margin_b5_`var'2, replace)
 
 *** Dalits
-qui mprobit `var' $indivcontrol $hhcontrol4 c.base_cr_OP_std##i.dalits c.base_cr_CO_std##i.dalits c.base_cr_EX_std##i.dalits c.base_cr_AG_std##i.dalits c.base_cr_ES_std##i.dalits c.base_raven_tt##i.dalits c.base_num_tt##i.dalits c.base_lit_tt##i.dalits female, vce(cluster HHFE)
-est store res_6
+qui mprobit `var' $indivcontrol $hhcontrol4 c.base_cr_OP_std##i.dalits c.base_cr_CO_std##i.dalits c.base_cr_EX_std##i.dalits c.base_cr_AG_std##i.dalits c.base_cr_ES_std##i.dalits c.base_raven_tt_std##i.dalits c.base_num_tt_std##i.dalits c.base_lit_tt_std##i.dalits female, vce(cluster HHFE)
 *dy/dx
-margins, dydx(base_cr_OP_std base_cr_CO_std base_cr_EX_std base_cr_AG_std base_cr_ES_std base_raven_tt base_num_tt base_lit_tt) at(dalits=(0 1)) atmeans saving(margin_b5_`var'3, replace)
+qui margins, dydx(base_cr_OP_std base_cr_CO_std base_cr_EX_std base_cr_AG_std base_cr_ES_std base_raven_tt_std base_num_tt_std base_lit_tt_std) at(dalits=(0 1)) atmeans saving(margin_b5_`var'3, replace)
 
 *** Three
-qui mprobit `var' $indivcontrol $hhcontrol4 c.base_cr_OP_std##i.female##i.dalits c.base_cr_CO_std##i.female##i.dalits c.base_cr_EX_std##i.female##i.dalits c.base_cr_AG_std##i.female##i.dalits c.base_cr_ES_std##i.female##i.dalits c.base_raven_tt##i.female##i.dalits c.base_num_tt##i.female##i.dalits c.base_lit_tt##i.female##i.dalits, vce(cluster HHFE)
-est store res_6
+mprobit `var' $indivcontrol $hhcontrol4 c.base_cr_OP_std##i.female##i.dalits c.base_cr_CO_std##i.female##i.dalits c.base_cr_EX_std##i.female##i.dalits c.base_cr_AG_std##i.female##i.dalits c.base_cr_ES_std##i.female##i.dalits c.base_raven_tt_std##i.female##i.dalits c.base_num_tt_std##i.female##i.dalits c.base_lit_tt_std##i.female##i.dalits, vce(cluster HHFE)
 *dy/dx
-margins, dydx(base_cr_OP_std base_cr_CO_std base_cr_EX_std base_cr_AG_std base_cr_ES_std base_raven_tt base_num_tt base_lit_tt) at(dalits=(0 1) female=(0 1)) atmeans saving(margin_b5_`var'4, replace)
+qui margins, dydx(base_cr_OP_std base_cr_CO_std base_cr_EX_std base_cr_AG_std base_cr_ES_std base_raven_tt_std base_num_tt_std base_lit_tt_std) at(dalits=(0 1) female=(0 1)) atmeans saving(margin_b5_`var'4, replace)
 }
-
+****************************************
+* END

@@ -236,10 +236,8 @@ tab trustreciprocity_1
 ****************************************
 * Analysis
 ****************************************
-
 ********** 1.
 ********** Proba of being in debt, or overindebted, interest in t+1
-
 probit indebt_indiv_2 indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits, vce(cluster HHFE)
 est store res_1
 *predict probitxb_noint, xb
@@ -343,12 +341,10 @@ margins, dydx(base_factor_imraw_1_std base_factor_imraw_2_std base_factor_imraw_
 ****************************************
 * Analysis
 ****************************************
-
 ********** 2.
 ********** Level of debt in t+1
 cls
 foreach var in loanamount_indiv1000 DSR_indiv {
-
 qui reg `var'_2 indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits if indebt_indiv_2==1, vce(cluster HHFE)
 est store res_1
 
@@ -456,7 +452,7 @@ restore
 foreach quant in 10 25 50 75 90 {
 qui qreg `var'_2 indebt_indiv_1 $indivcontrol $hhcontrol4 $villagesFE c.base_factor_imraw_1_std c.base_factor_imraw_2_std c.base_factor_imraw_3_std c.base_factor_imraw_4_std c.base_factor_imraw_5_std c.base_raven_tt_std c.base_num_tt_std c.base_lit_tt_std dalits female if indebt_indiv_2==1, vce(rob) q(.`quant')
 *dy/dx
-qui margins, dydx(base_factor_imraw_1_std base_factor_imraw_2_std base_factor_imraw_3_std base_factor_imraw_4_std base_factor_imraw_5_std base_raven_tt_std base_num_tt_std base_lit_tt_std) atmeans saving(margin_qreg`quant'_`var', replace)
+qui margins, dydx(base_factor_imraw_1_std base_factor_imraw_2_std base_factor_imraw_3_std base_factor_imraw_4_std base_factor_imraw_5_std base_raven_tt_std base_num_tt_std base_lit_tt_std) atmeans saving(margin_qreg_`quant'_`var', replace)
 }
 }
 

@@ -64,7 +64,7 @@ i=3 --> at=1 (middle-upper male) at=2 (dalits male) at=3 (middle-upper female) a
 */
 
 *cap ssc inst sxpose
-foreach x in indebt_indiv loanamount_indiv1000 DSR_indiv FE_loanamount_indiv1000 FE_DSR_indiv {
+foreach x in indebt_indiv loanamount_indiv1000 DSR_indiv FE_loanamount_indiv1000 FE_DSR_indiv b5_indebt_indiv b5_loanamount_indiv1000 b5_DSR_indiv {
 forvalues i=1(1)4{
 *****
 *****
@@ -201,12 +201,12 @@ export excel using "margins.xlsx", sheet("`x'", replace) firstrow(varlabels)
 
 
 ***QREG
-foreach x in loanamount_indiv1000 DSR_indiv {
+foreach x in loanamount_indiv1000 DSR_indiv b5_loanamount_indiv1000 b5_DSR_indiv {
 foreach i in 10 25 50 75 90{
 *****
 *****
 preserve
-use"margin_qreg`i'_`x'", clear
+use"margin_qreg_`i'_`x'", clear
 
 label define cog 1"C-1" 2"C-2" 3"C-3" 4"C-4" 5"C-5" 6"Raven (std)" 7"Numeracy (std)" 8"Literacy (std)", replace
 label values _deriv cog
@@ -240,23 +240,23 @@ dropmiss, force
 
 gen n=_n
 
-save"margin_qreg`i'_`x'_new", replace
+save"margin_qreg_`i'_`x'_new", replace
 restore 
-
+}
 *****
 *****
-use"margin_qreg10_`x'_new.dta", replace
+use"margin_qreg_10_`x'_new.dta", replace
 rename nstr P10
-merge 1:1 n using "margin_qreg25_`x'_new.dta"
+merge 1:1 n using "margin_qreg_25_`x'_new.dta"
 drop _merge
 rename nstr P25
-merge 1:1 n using "margin_qreg50_`x'_new.dta"
+merge 1:1 n using "margin_qreg_50_`x'_new.dta"
 drop _merge
 rename nstr P50
-merge 1:1 n using "margin_qreg75_`x'_new.dta"
+merge 1:1 n using "margin_qreg_75_`x'_new.dta"
 drop _merge
 rename nstr P75
-merge 1:1 n using "margin_qreg90_`x'_new.dta"
+merge 1:1 n using "margin_qreg_90_`x'_new.dta"
 drop _merge
 rename nstr P90
 
@@ -285,7 +285,7 @@ export excel using "margins.xlsx", sheet("qreg_`x'", replace) firstrow(varlabels
 *export excel using "margins_`x'.xlsx", sheet("`x'", replace) firstrow(varlabels)
 *export delimited using "margins_`x'.csv"
 }
-}
+
 
 
 
@@ -295,7 +295,7 @@ export excel using "margins.xlsx", sheet("qreg_`x'", replace) firstrow(varlabels
 
 
 ******* Debtpath
-foreach x in debtpath { 
+foreach x in debtpath b5_debtpath { 
 forvalues i=1(1)4{
 *****
 *****
