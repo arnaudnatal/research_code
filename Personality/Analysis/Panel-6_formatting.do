@@ -65,6 +65,7 @@ i=3 --> at=1 (middle-upper male) at=2 (dalits male) at=3 (middle-upper female) a
 
 *cap ssc inst sxpose
 foreach x in indebt_indiv loanamount_indiv1000 DSR_indiv FE_loanamount_indiv1000 FE_DSR_indiv b5_indebt_indiv b5_loanamount_indiv1000 b5_DSR_indiv {
+
 forvalues i=1(1)4{
 *****
 *****
@@ -191,6 +192,24 @@ replace Dalit_male="Dalits male" if n==0
 replace Midup_female="MUC female" if n==0
 replace Dalit_female="Dalits female" if n==0
 
+replace deriv="OP cor (std)" if deriv=="C-1" & strpos("`x'", "b5")  
+replace deriv="CO cor (std)" if deriv=="C-2" & strpos("`x'", "b5")  
+replace deriv="EX cor (std)" if deriv=="C-3" & strpos("`x'", "b5")  
+replace deriv="AG cor (std)" if deriv=="C-4" & strpos("`x'", "b5")  
+replace deriv="ES cor (std)" if deriv=="C-5" & strpos("`x'", "b5")  
+
+replace deriv="OP (std)" if deriv=="C-1" & strpos("`x'", "FE")  
+replace deriv="CO (std)" if deriv=="C-2" & strpos("`x'", "FE")  
+replace deriv="EX (std)" if deriv=="C-3" & strpos("`x'", "FE")  
+replace deriv="AG (std)" if deriv=="C-4" & strpos("`x'", "FE")  
+replace deriv="ES (std)" if deriv=="C-5" & strpos("`x'", "FE") 
+
+replace deriv="F1 - OP-EX (std)" if deriv=="C-1"
+replace deriv="F2 - CO (std)" if deriv=="C-2"
+replace deriv="F3 - Porupillatavan (std)" if deriv=="C-3"
+replace deriv="F4 - ES (std)" if deriv=="C-4"
+replace deriv="F5 - AG (std)" if deriv=="C-5"
+
 drop n
 export excel using "margins.xlsx", sheet("`x'", replace) firstrow(varlabels)
 *export excel using "margins_`x'.xlsx", sheet("`x'", replace) firstrow(varlabels)
@@ -281,6 +300,19 @@ foreach var in P10 P25 P50 P75 P90{
 replace `var'="`var'" if n==0
 }
 drop n
+
+replace deriv="OP cor (std)" if deriv=="C-1" & strpos("`x'", "b5")  
+replace deriv="CO cor (std)" if deriv=="C-2" & strpos("`x'", "b5")  
+replace deriv="EX cor (std)" if deriv=="C-3" & strpos("`x'", "b5")  
+replace deriv="AG cor (std)" if deriv=="C-4" & strpos("`x'", "b5")  
+replace deriv="ES cor (std)" if deriv=="C-5" & strpos("`x'", "b5")  
+
+replace deriv="F1 - OP-EX (std)" if deriv=="C-1"
+replace deriv="F2 - CO (std)" if deriv=="C-2"
+replace deriv="F3 - Porupillatavan (std)" if deriv=="C-3"
+replace deriv="F4 - ES (std)" if deriv=="C-4"
+replace deriv="F5 - AG (std)" if deriv=="C-5"
+
 export excel using "margins.xlsx", sheet("qreg_`x'", replace) firstrow(varlabels)
 *export excel using "margins_`x'.xlsx", sheet("`x'", replace) firstrow(varlabels)
 *export delimited using "margins_`x'.csv"
@@ -428,6 +460,18 @@ replace Midup_male="MUC male" if n==0
 replace Dalit_male="Dalits male" if n==0
 replace Midup_female="MUC female" if n==0
 replace Dalit_female="Dalits female" if n==0
+
+replace deriv="OP cor (std)" if deriv=="C-1" & strpos("`x'", "b5")  
+replace deriv="CO cor (std)" if deriv=="C-2" & strpos("`x'", "b5")  
+replace deriv="EX cor (std)" if deriv=="C-3" & strpos("`x'", "b5")  
+replace deriv="AG cor (std)" if deriv=="C-4" & strpos("`x'", "b5")  
+replace deriv="ES cor (std)" if deriv=="C-5" & strpos("`x'", "b5")  
+
+replace deriv="F1 - OP-EX (std)" if deriv=="C-1"
+replace deriv="F2 - CO (std)" if deriv=="C-2"
+replace deriv="F3 - Porupillatavan (std)" if deriv=="C-3"
+replace deriv="F4 - ES (std)" if deriv=="C-4"
+replace deriv="F5 - AG (std)" if deriv=="C-5"
 
 replace predict="" if deriv!="C-1"
 

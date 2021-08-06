@@ -281,6 +281,11 @@ qui margins, dydx(base_cr_OP_std base_cr_CO_std base_cr_EX_std base_cr_AG_std ba
 
 
 
+
+
+
+
+
 ****************************************
 * Analysis
 ****************************************
@@ -289,7 +294,7 @@ qui margins, dydx(base_cr_OP_std base_cr_CO_std base_cr_EX_std base_cr_AG_std ba
 cls
 foreach var in loanamount_indiv1000 DSR_indiv {
 foreach quant in 10 25 50 75 90 {
-qui qreg `var'_2 indebt_indiv_1 $big5 $cog $indivcontrol $hhcontrol4 $villagesFE female dalits if indebt_indiv_2==1, vce(rob) q(.`quant')
+qui qreg2 `var'_2 indebt_indiv_1 $big5 $cog $indivcontrol $hhcontrol4 $villagesFE female dalits if indebt_indiv_2==1, cluster(HHFE) q(.`quant')
 est store res_`quant'
 
 esttab res_`quant' using "_reg_`var'.csv", ///
@@ -297,7 +302,7 @@ esttab res_`quant' using "_reg_`var'.csv", ///
 	t(par fmt(3))) ///
 	drop() ///	
 	legend label varlabels(_cons constant) ///
-	stats(N r2 r2_a F p, fmt(0 3 3 3 3) labels(`"Observations"' `"\$R^2$"' `"Adjusted \$R^2$"' `"F-stat"' `"p-value"')) ///
+	stats(N sum_adev sum_rdev r2, fmt(0 3 3 3) labels(`"Observations"' `"\$\sum$|Dev|"' `"\$\sum$Dev"' `"\$R^2$"')) ///
 	replace
 estimates clear
 
@@ -315,7 +320,7 @@ restore
 
 ********** Margin
 foreach quant in 10 25 50 75 90 {
-qui qreg `var'_2 indebt_indiv_1 $indivcontrol $hhcontrol4 $villagesFE c.base_cr_OP_std c.base_cr_CO_std c.base_cr_EX_std c.base_cr_AG_std c.base_cr_ES_std c.base_raven_tt_std c.base_num_tt_std c.base_lit_tt_std dalits female if indebt_indiv_2==1, vce(rob) q(.`quant')
+qui qreg2 `var'_2 indebt_indiv_1 $indivcontrol $hhcontrol4 $villagesFE base_cr_OP_std base_cr_CO_std base_cr_EX_std base_cr_AG_std base_cr_ES_std base_raven_tt_std base_num_tt_std base_lit_tt_std dalits female if indebt_indiv_2==1, cluster(HHFE) q(.`quant')
 *dy/dx
 qui margins, dydx(base_cr_OP_std base_cr_CO_std base_cr_EX_std base_cr_AG_std base_cr_ES_std base_raven_tt_std base_num_tt_std base_lit_tt_std) atmeans saving(margin_qreg_`quant'_b5_`var', replace)
 }
@@ -325,6 +330,14 @@ qui margins, dydx(base_cr_OP_std base_cr_CO_std base_cr_EX_std base_cr_AG_std ba
 
 
 
+
+
+
+
+
+
+
+/*
 
 
 

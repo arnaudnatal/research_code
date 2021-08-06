@@ -169,7 +169,7 @@ In this context it appears important to investigate the role of \PTCS~ on indebt
 Thus, in a context marked by numerous crises, where indebtedness --and all that it represents on the social level-- is predominent with growing inequalities, study the relationship with \PTCS~ appears full of meaning.
 In this article we investigate how \PTCS~ shape indebtedness situation? (i) and more finely, how the \PTCS~ varies across the indebtedness distribution? (ii).
 Then, we analyse how \PTCS~ influences the debt trajectory (iii)? and how does debt change over time as \PTCS~ changes? (iv).
-At the same time, we try to capture the weight of social identity by investigating the contribution of \PTCS for each social groups: do individuals manage to differentiate themselves through their skills?
+At the same time, we try to capture the weight of social identity by investigating the contribution of \PTCS~ for each social groups: do individuals manage to differentiate themselves through their skills?
 
 By providing descriptive and econometric empirical insights, this paper contributes to furthering our understanding of the determinants of individual indebtedness --which is rare and valuable in developing countries, as well as, contributing more generally to the expanding literature exploring the implications of \PTCS~ for economic outcomes.
 
@@ -517,7 +517,7 @@ Put another way, for a variable ranging from -4 to 4, take an additional unit co
 
 \subsection{How \PTCS~ shape individual debt?}
 \paragraph{Probability of being indebted}
-Table \ref{tab:ame_indebt} presents the results from the multivariates probit analysis of the first stage of the Heckman procedure.
+Table \ref{tab:ame_indebt} presents the results from the multivariates probit analysis of the probability for an individual to be indebtedness.
 McFadden's pseudo $R^2$ indicate a very good goodness-of-fit for all the specification --they are all above 0.2 threshold \citep{McFadden1979}.
 Moreover, we observe that all p-values associated with the simultaneous coefficient nullity test (LR $\upchi^2$) are low enough to conclude that at least one of the regression coefficients in the model is not equal to zero.
 Whatever the specification, the probability of being in debt in 2016-17 is positively correlated with the probability of being in debt in 2020-21. 
@@ -536,12 +536,10 @@ For Factor 2, the relationship is reverse for male and more precisely for non-da
 
 
 \paragraph{Total amount of debt}
-Table \ref{tab:ame_loanamount} presents the results from the multivariates OLS analysis of the first outcome of the Heckman procedure, the total amount of debt.
+Table \ref{tab:ame_loanamount} presents the results from the multivariates OLS analysis of the first outcome of the burden of debt, the total loan amount.
 All p-values associated with the simultaneous coefficient nullity test (F-stat) are low enough to conclude that at least one of the regression coefficients in the model is not equal to zero.
-The goodness-of-fit is less good than the previous one: we are able to explain around 22\% of the total variance of the total amount of debt.
-Unlike earlier, the debt situation of 2016-17 is not correlated at 90\% \cl~ with the outcome.
+The goodness-of-fit is less good than the previous one: we are able to explain around 23\% of the total variance of the total amount of debt and unlike earlier, the debt situation of 2016-17 is not correlated at 90 or 95\% \cl~ with the outcome.
 % The IMR is insignificant across all four estimations \dev{(Be careful of three-way interaction)}, indicating that self-selection does not significantly affect total loan amount of debt after controlling for \PTCS and other controls variables.
-
 
 Numeracy and Raven are correlated with the total amount of debt at 95\% \cl~ for dalits female, but the relationship is reverse (negative relationship for Numeracy while positive relationship for Raven).
 In addition, Raven is negatively correlated for non-dalits female at 95\% \cl, and the relationship is more stronger than for dalits female (respectively +23,315 \rupee~ and -44,021 \rupee).
@@ -555,9 +553,9 @@ Last, Factor 1 is positively correlated when there is not interactions variables
 \subimport{INPUT}{AME_loanamount.tex}
 
 \paragraph{Individual debt service ratio}
-Table \ref{tab:ame_idsr} presents the results for the individual debt service ratio, the second outcome of the Heckman procedure.
+Table \ref{tab:ame_idsr} presents the results for the individual debt service ratio.
 All p-values associated with the simultaneous coefficient nullity test (F-stat) are low enough and the goodness-of-fit is quite low compared to previous analysis.
-Debt situation of 2016-17 is still not correlated at 90\% \cl.
+Debt situation of 2016-17 is still not correlated at 90 or 95\% \cl.
 % The IMR is insignificant across all four estimations \dev{(Be careful of three-way interaction)}, indicating that self-selection does not significantly affect individual debt service ratio after controlling for \PTCS and other controls variables.
 
 As for the previous analysis, Factor 1 is positively correlated with the share of the annual income dedicated to debt (capital and interest) repayment and especially for dalits female at 95\% \cl.
@@ -574,18 +572,25 @@ Specifically, a one standard deviation increase in EX is associated with a decre
 
 
 
-\subsection{How \PTCS~ variation is correlated with indebtedness variation?}
+\subsection{How \PTCS~ varies across the indebtedness distribution?}
+
+%\subimport{INPUT}{AME_qreg.tex}
+
+
+
+\subsection{How \PTCS~ influences the debt trajectory?}
+
+\subimport{INPUT}{AME_debtpath.tex}
+
+
+
+\subsection{How does debt change over time as \PTCS~ changes?}
 
 \subimport{INPUT}{AME_FE_loanamount.tex}
 
 \subimport{INPUT}{AME_FE_IDSR.tex}
 
 
-
-%Turning to the amount of debt, 
-\subsection{How \PTCS~ shape the indebtedness path?}
-
-\subimport{INPUT}{AME_debtpath.tex}
 
 
 
