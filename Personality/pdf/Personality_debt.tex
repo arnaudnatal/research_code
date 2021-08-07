@@ -378,8 +378,8 @@ Indeed, we have data for two individuals from the same household and these latte
 In terms of debt, as stated by \cite{Reboul2021}, ``our data is limited, [but] it suggests that fully pooling and sharing the household debt burden is not the norm.''
 
 To interpret our results, we compute marginal effect (ME) at representative values on the predicted values of \PTCS.%~ \cite{Williams2012}.
-We use sex (male/female) and caste (non-dalits/dalits) as representative values, all other variables are at mean.
-Thanks to our interactions variables, we obtains nine groups of ME for each \PTCS~ variable: average individual; average male; average female; average non-dalits; average dalits; average non-dalits male; average dalits male; average non-dalits female and average dalits female. 
+We use sex (male vs female) and caste (non-dalits --or middle-upper caste vs dalits) as representative values, all other variables are at mean.
+Thanks to our interactions variables, we obtains nine groups of ME for each \PTCS~ variable: average individual; average male; average female; average non-dalits; average dalits; average non-dalits male; average dalits male; average middle-upper caste female and average dalits female. 
 
 We use Big-5 taxonomy as robustness check.
 
@@ -507,7 +507,7 @@ Furthermore, 50\% of male have seen their DSR decreased by at least 0.27\% while
 To interpret the results, marginal effects (ME) at representative values on the predicted value of the \PTCS~ are reported for the four specifications as describe previously.
 According to specifications, the representatives values are: (1) the average individual (``All''); (2) the average male (``Male'') and the average female (``Female''); (3) the average non-dalits (``MUC'') and the average dalits (``Dalits''); (4) the average non-dalits male (``MUC male''), the average dalits male (``Dalits male''), the average non-dalits female (``MUC female'') and the average dalits female (``Dalits female'').
 All of \PTCS~ are standardised to ensure comparability between them.
-We will therefore speaks in terms of ``one standard deviation'' more of \PTCS.
+We will therefore speaks in terms of ``one standard deviation (sd)'' more of \PTCS.
 
 An important caveat to acknowledge prior to exposing the findings of our empirical analysis is the magnitude of the effects.
 They may seem high. 
@@ -522,14 +522,18 @@ McFadden's pseudo $R^2$ indicate a very good goodness-of-fit for all the specifi
 Moreover, we observe that all p-values associated with the simultaneous coefficient nullity test (LR $\upchi^2$) are low enough to conclude that at least one of the regression coefficients in the model is not equal to zero.
 % and the exclusion restriction variable (Debtor ratio) is negatively correlated at the 95\% \cl. 
 
-The results show that 2016-17 cognitive skill --whatever the specification-- are not correlated with the probability of being indebted in 2020-21 at 95\% \cl~ (neither at 90\%), except for literacy which is positively correlated for the average female.
-However, three of the personality traits are correlated at the 90-95\% \cl. 
-Without interaction variables, Factor 1 as OP-EX is negatively correlated with the probability for the average individual of being in debt.
-With gender interaction, the relationship becomes clearer for the average female and with caste interaction for the average non-dalits.
-With three way interaction variable, we observe that for the average non-dalits female, \ote, when Factor 1 increase by one \sd, the probability of being in debt decrease by 11.1 pp.
-Factor 2 as CO and Factor 3 as Loquacious, are also negatively correlated for non-dalits female but less than Factor 1 (respectively 8.3 pp at 90\% \cl~ and 8.8 pp).
-\lit.
-For Factor 2, the relationship is reverse for male and more precisely for non-dalits one: \aebe, when Factor 2 increase by one \sd, the probability of being in debt increase by 9.3 pp.
+The results show that 2016-17 cognitive skill --whatever the specification-- are not correlated with the probability of being indebted in 2020-21 at 90-95\% \cl~(cl), except for literacy which is positively correlated for the average female.
+
+However, three of the personality traits are correlated at the 95\% cl. 
+Factor 1 as OP-EX is negatively correlated with the probability for the average middle-upper caste individual of being in debt and the relationship seems to be clarified for the average non-dalit female: \ote, when OP-EX increase by one \sd, the probability of being in debt decrease by 11.1 percentage point (pp).
+The magnitude of the relationship is little less strong for Factor 3: when the average non-dalit female is one sd more \textit{Porupillatavan}, the probability of being in debt decrease by 8.4 pp, \aebe. 
+Last, Factor 2 as CO is positively correlated (8.5 pp) for the average middle-upper male, \aebe.
+
+If we accept a 10\% risk of error Factor 4 and 5 becomes correlated.
+For the average dalit male, one more \sd~ on ES is associated by a decreasing of 6.2 pp of the probability of being in debt.
+Regarding AG, it is negatively correlated for the average non-dalit individual and especially for the average non-dalit male.
+The magnitude of the effect is lower than for CO (-6.7 pp compared to +8.5 pp).
+Always for CO, at 90\% \cl, when it increase by one sd, the probability decrease by 7.7 pp for the average non-dalit female.
 
 \subimport{INPUT}{AME_indebt.tex}
 
@@ -540,13 +544,20 @@ All p-values associated with the simultaneous coefficient nullity test (F-stat) 
 The goodness-of-fit is less good than the previous one: we are able to explain around 23\% of the total variance of the total amount of debt.
 % The IMR is insignificant across all four estimations \dev{(Be careful of three-way interaction)}, indicating that self-selection does not significantly affect total loan amount of debt after controlling for \PTCS and other controls variables.
 
-Numeracy and Raven are correlated with the total amount of debt at 95\% \cl~ for dalits female, but the relationship is reverse (negative relationship for Numeracy while positive relationship for Raven).
-In addition, Raven is negatively correlated for non-dalits female at 95\% \cl, and the relationship is more stronger than for dalits female (respectively +23,315 \rupee~ and -44,021 \rupee).
-Regarding personality traits, Factor 2 and Factor 3 are negatively correlated with the total amount of debt when there is not interactions variables.
-The relationship becomes clearer at 90\% \cl~ for male, non-dalits and \textit{in fine} for non-dalits male with a stronger relationship for Factor 2: \aebe, when Factor 2 increase by one \sd, predicted total loan amount decrease by 49,000 \rupee~ (37,000 \rupee~ for Factor 3).
-Factor 2 and Factor 3 are also negatively correlated at 90\% \cl~ for respectively dalits female and non-dalits female.
-Among dalits female, those with higher Factor 5 as AG are also those with lower amount of debt, \ote.
-Last, Factor 1 is positively correlated when there is not interactions variables and the relationship seems to be clarified for middle-upper caste individual and more for middle-upper caste male at 90\% \cl (40,167 \rupee~ of debt in more).
+Raven score is correlated with the total amount of debt at 95\% \cl~ for the average dalits female: \aebe, when Raven score increase by one \sd, predicted total loan amount increase by 21,000 \rupee.
+At 90\% cl, numeracy is also correlated for the average dalits female, but positively and with lower magnitude (-16,000 \rupee).
+Relationship between debt and Raven is reverse for the average non-dalit female with higher magnitude than for dalit female (+33,000 \rupee).
+
+Regarding personality traits, Factor 1, 2 and 5 are correlated with the total amount of debt at 95\% \cl~ for, at least, one group.
+For the average individual, OP-EX is positively correlated.
+The relationship seems to be clarified for the average non-dalit individual and especially for the average non-dalit male for who one more sd in OP-EX is associated by a increasing of 49,000 \rupee~ of the total loan amount, \ote.
+Always for the average middle-upper caste male, the strengh of the negative relationship is high enough (-64,000 \rupee) compared to other relationship. 
+Last, AG is negatively correlated for the average dalits and especially for the average dalit female: when AG increase by one \sd, the total amount borrowed decrease by 15,000 \rupee.
+
+At 90\% cl, new relationship appears for Factor 1 and 3.
+When OP-EX increase by one \sd, predicted total amount borrowed increase by 13,000 \rupee~\ote, for the average dalits female.
+Last, when the average individual is one sd more \textit{Porupillatavan}, the total loan amount decrease by 19,000 \rupee, \aebe.
+The relationship is stronger for the average male (-24,000 \rupee) and for the average non-dalit individual (-29,000 \rupee).
  
 
 \subimport{INPUT}{AME_loanamount.tex}
@@ -556,28 +567,36 @@ Table \ref{tab:ame_idsr} presents the results for the individual debt service ra
 All p-values associated with the simultaneous coefficient nullity test (F-stat) are low enough and the goodness-of-fit is quite low compared to previous analysis.
 % The IMR is insignificant across all four estimations \dev{(Be careful of three-way interaction)}, indicating that self-selection does not significantly affect individual debt service ratio after controlling for \PTCS and other controls variables.
 
-As for the previous analysis, Factor 1 is positively correlated with the share of the annual income dedicated to debt (capital and interest) repayment and especially for dalits female at 95\% \cl.
-Indeed, for the average individuals, when Factor 1 increase by one \sd~, the predicted debt service ratio increase by 94 pp, \aebe.
-Factor 2 is negatively correlated and mainly for female at 90\% \cl.
-Magnitude of the correlation is similar to that of Factor 1 for the average female (83 pp in more for Factor 1 and 84 pp in less for Factor 2, \ote).
-Factor 4 as ES and Factor 3 are also correlated with the individual debt service ratio for non-dalits female at 90\% \cl~ and with the same strengh (around 123 pp) but relationship is reversed (positively correlated for Factor 3 and negatively correlated for Factor 4).
+The results show that 2016-17 cognitive skill are not correlated with the total amount borrowed at 90-95\% \cl~.
 
+As for the previous analysis, Factor 1 is positively correlated with the share of the annual income dedicated to debt (capital and interest) repayment and especially for average female and average dalits female at 95\% \cl.
+Indeed, for the average dalit female, when OP-EX increase by one \sd~, the predicted DSR increase by 98 pp, \aebe.
+CO is negatively correlated for the average individuals and the magnitude of the correlation is similar to that of Factor 1 (49 pp in more for OP-EX and 48 pp in less for CO, \ote).
+
+\textit{Porupillatavan} and ES are correlated with the amount of debt if we accept a 10\% risk of error, especially for the average non-dalit female.
+While the relationship is positive for Factor 3, the one with Factor 4 is negative and stronger (respectively +93,000 \rupee~and -136,000 \rupee).
 
 \subimport{INPUT}{AME_IDSR.tex}
-
-Specifically, a one standard deviation increase in EX is associated with a decrease in the ... by 1.87 percentage points. 
-
 
 
 
 \subsection{How \PTCS~ varies across the indebtedness distribution?}
+
+Table \ref{tab:ame_qreg} presents the results from the quantile regression on the total loan amount and DSR.
+
+Loan amount 95 : literacy at p25 and ES at P50.
+At 90\% cl, numeracy for P25 and P90.
+
+DSR 95: OP-EX for P90
+At 90\% cl, OP-EX for P75 and ES for P90.
 
 \subimport{INPUT}{AME_QREG.tex}
 
 
 
 \subsection{How \PTCS~ influences the debt trajectory?}
-
+ Table \ref{tab:ame_debtpath} presents the results from the multinomial probit analysis of the debt trajectory through time.
+ 
 \subimport{INPUT}{AME_debtpath.tex}
 
 

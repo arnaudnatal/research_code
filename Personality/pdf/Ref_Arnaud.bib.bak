@@ -6836,14 +6836,14 @@ It has also been noted that there exists a close correlation between class, cast
 }
 
 @TechReport{Dasgupta2020,
-  author       = {Utteeyo Dasgupta and Subha Mani and Smriti Sharma and Saurabh Singhal},
-  institution  = {Ideas for India},
-  title        = {{Caste gaps in behaviour and personality traits: A study of university students}},
-  year         = {2020},
-  month        = {dec},
-  note         = {Accessed July 15, 2021},
-  type         = {blog},
-  howpublished = {\url{https://www.ideasforindia.in/topics/social-identity/caste-gaps-in-behaviour-and-personality-traits-a-study-of-university-students.html}},
+  author      = {Utteeyo Dasgupta and Subha Mani and Smriti Sharma and Saurabh Singhal},
+  institution = {Ideas for India},
+  title       = {{Caste gaps in behaviour and personality traits: A study of university students}},
+  year        = {2020},
+  month       = {dec},
+  note        = {Accessed July 15, 2021},
+  type        = {blog},
+  url         = {https://www.ideasforindia.in/topics/social-identity/caste-gaps-in-behaviour-and-personality-traits-a-study-of-university-students.html},
 }
 
 @article{Imai2020,
