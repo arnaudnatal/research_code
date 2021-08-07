@@ -316,6 +316,7 @@ Strong theoretical background is needed to determine exclusion restriction varia
 However, their results from Heckman procedure are no different from those from OLS regressions, suggested that ``any corner-solution biases are small''.
 Therefore, they focus separatly on the participation equation and on debt equations (excluding non-participants).
 We follow \cite{Rio2006} in focusing separatly on the participation equation and on debt equations in excluding non-participants.
+\dev{Préciser que Indeed, nous aussi on a tenté un Heckman avec les var de la literature mais elles ne fonctionnent pas, il y en a qu'une qui fonctionne c'est debtor ratio, d'où le fait qu'on fasse comme Rio}
 We also estimate a Heckman selection model as robustness check with the household debt dependency ratios --defined as the number of indebtedness individuals divided by the total number of household members, in 2016-17-- as exclusion restriction variables.
 We also check for multicollinearity and find that the highest VIF score is 4.33, which is less than the cutoff point of 10 \citep{Lennox2011}.
 Results [available on request] are no different from those from OLS regression, suggested that the non-random sample selection issues is small, which coroborate with literature \citep{Rio2006, Brown2014}.
@@ -595,7 +596,7 @@ At 90\% cl, OP-EX for P75 and ES for P90.
 
 
 \subsection{How \PTCS~ influences the debt trajectory?}
- Table \ref{tab:ame_mprobit} presents the results from the multinomial probit analysis of the debt trajectory through time.
+ Table \ref{tab:ame_debtpath} presents the results from the multinomial probit analysis of the debt trajectory through time.
  
 \subimport{INPUT}{AME_debtpath.tex}
 
