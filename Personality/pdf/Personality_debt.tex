@@ -111,7 +111,7 @@ Nevertheless, it is a known fact that debt and credit are two sides of the same 
 If the investment goes well, debt is protective and productive (which it is called credit) but if it goes wrong --if the return on investment is less than the cost of the loan, or is obtained too late, if the debt is only used to make ends meet \citep{Guerin2021}-- the debt can be source of impovrishment and destruction.
 The choice of terms reflects ambivalence of terms \citep{Peebles2010}.
 
-Research build a bridge between household finance and individual skills through the notion of financial literacy which measure how well an individual can understand and use personal finance-related information \citep{Huston2010, Hastings2013, Gaurav2012, Klapper2012, Horn2021} but the few studies that have focused on household finance mainly investigate the risk aversion, financial distress, savings and debt.
+Research build a bridge between household finance and individual skills through the notion of financial literacy which measure how well an individual can understand and use personal finance-related information \citep{Huston2010, Hastings2013, Gaurav2012, Klapper2012, Horn2021} but the few studies that have focused on \PTCS~ mainly investigate the risk aversion, financial distress, savings and debt.
 \cite{Nga2013} show that conscientiousness, openness to experience and agreeableness are correlated with risk aversion, cognitive biases and socially responsible investing for undergraduate students of Malaysia.
 For 4,000 individuals from Netherland, \cite{Pinjisakikool2017} shows that all the Big-5 personality traits are good predictor of financial risk tolerance as \cite{Bucciol2017} that shows that agreeableness, cynical hostility and anxiety are good predictor of financial risk taking for 11,000 individuals from USA (negative correlation).
 In terms of financial distress, \cite{Agarwal2013} shows that individuals with high math scores are less likely to make financial distress in USA.
@@ -583,15 +583,37 @@ While the relationship is positive for Factor 3, the one with Factor 4 is negati
 
 \subsection{How \PTCS~ varies across the indebtedness distribution?}
 
-Table \ref{tab:ame_qreg} presents the results from the quantile regression on the total loan amount and DSR.
+Figures \ref{fig:qreg_loanamount} and \ref{fig:qreg_dsr} presents the results from the quantile regression on the total loan amount and DSR.
 
-Loan amount 95 : literacy at p25 and ES at P50.
-At 90\% cl, numeracy for P25 and P90.
+Only Factor 4 as Emotional stability, numeracy and literacy are correlated at 95\% \cl~ with the total loan amount (see Figure \ref{fig:qreg_loanamount}).
+Regarding ES, between P10 and median (P50) correlation declining --to become more negative-- but still insignificant untile median: when ES increase by one \sd, conditional distribution of total loan amount at median decrease by around 10,000 \rupee, \ote.
+At P30, numeracy is also negatively correlated (around -10,000 \rupee).
+Between P30 and P40 correlation with literacy increasing (from +9,000 to +12,000 \rupee).
+At 90\% cl numeracy and literacy becomes correlated at P90: when numeracy increase by one \sd, conditional distribution of total loan amount increase by around 35,000 \rupee, \ote and when literacy increase by one \sd, conditional distribution decrease by around 30,000 \rupee, \ote.
 
-DSR 95: OP-EX for P90
-At 90\% cl, OP-EX for P75 and ES for P90.
+The coefficient of OP-EX varies across the individual DSR distribution (see Figure \ref{fig:qreg_dsr}) with ME being higher at the end of the distribution.
+ME of OP-EX is 20,000 \rupee at P80 and 45,000 at P90 if we accept 10\% risk of error, \aebe.
+Last, at P90 ES is negatively correlated with higher magnitude than OP-EX, \ote~(-50,000 \rupee).
 
-\subimport{INPUT}{AME_QREG.tex}
+
+%\subimport{INPUT}{AME_QREG.tex}
+
+\begin{figure}[!ht]
+\raggedright
+\includegraphics[width=\textwidth]{INPUT/qreg_loanamount_indiv1000_2}
+\caption{ME on the distribution of the total loan amount in 2020-21 estimated with quantile regression}
+\sourcefig{NEEMSIS-1 (2016-17) \& NEEMSIS-2 (2020-21); author's calculations.}
+\label{fig:qreg_loanamount}
+\end{figure}
+
+\begin{figure}[!ht]
+\raggedright
+\includegraphics[width=\textwidth]{INPUT/qreg_DSR_indiv_2}
+\caption{ME on the distribution of the individual DSR in 2020-21 estimated with quantile regression}
+\sourcefig{NEEMSIS-1 (2016-17) \& NEEMSIS-2 (2020-21); author's calculations.}
+\label{fig:qreg_dsr}
+\end{figure}
+
 
 
 
@@ -623,6 +645,8 @@ This paper reveal a number of important insights.
 Personality traits and cognitive skills are correlated with the probability of being in debt, the amount of debt and the burden of debt in rural India at different magnitude according to caste and sex.
 
 % We discuss respectively our results with literature on \PTCS and debt (i); on social meaning of debt \citep{Guerin2014a, Guerin2020} (ii) and on \PTCS studies in India \citep{Michiels2021, Dasgupta2020, Gaurav2012, Donato2017} (iii).
+
+Another findings, effect of OP-EX, ES, numeracy and literacy varies across the debt distribution.
 
 \paragraph{\PTCS~ and debt in the literature}
 Studies in northern countries reveal that emotional stability is a positive predictor of debt \citep{Nyhus2001}.

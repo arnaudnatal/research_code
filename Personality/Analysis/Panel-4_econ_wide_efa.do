@@ -153,7 +153,11 @@ label var femXdal "Female X Dalit"
 label var debtorratio2_1 "Debtor ratio in 2016-17"
 label var indebt_indiv_1 "Indebted (=1) in 2016-17"
 
-
+label var base_factor_imraw_1_std "F1 - OP-EX (std)"
+label var base_factor_imraw_2_std "F2 - CO (std)"
+label var base_factor_imraw_3_std "F3 - Porupillatavan (std)"
+label var base_factor_imraw_4_std "F4 - ES (std)"
+label var base_factor_imraw_5_std "F5 - AG (std)"
 
 
 ********** ER test
@@ -456,20 +460,40 @@ qui margins, dydx(base_factor_imraw_1_std base_factor_imraw_2_std base_factor_im
 }
 }
 
+set graph off
+foreach y in loanamount_indiv1000_2 DSR_indiv_2 {
+foreach x in base_factor_imraw_1_std base_factor_imraw_2_std base_factor_imraw_3_std base_factor_imraw_4_std base_factor_imraw_5_std base_raven_tt_std base_num_tt_std base_lit_tt_std {
+preserve
+tempname memhold
+tempfile results
+postfile `memhold' q b cilow95 cihigh95 cilow90 cihigh90 using `results'
+local laby="`: var label `x''"
+forv i = .1(.1).9 {
+qui qreg2 `y' indebt_indiv_1 $indivcontrol $hhcontrol4 $villagesFE base_factor_imraw_1_std base_factor_imraw_2_std base_factor_imraw_3_std base_factor_imraw_4_std base_factor_imraw_5_std base_raven_tt_std base_num_tt_std base_lit_tt_std dalits female if indebt_indiv_2==1, cluster(HHFE) q(`i')
+	local b = _b[`x']
+    local cilow90  = _b[`x']-_se[`x']*invttail(e(df_r),.05)    
+    local cihigh90  = _b[`x']+_se[`x']*invttail(e(df_r),.05)    
+    local cilow95  = _b[`x']-_se[`x']*invttail(e(df_r),.025)    
+    local cihigh95  = _b[`x']+_se[`x']*invttail(e(df_r),.025)    
+    post `memhold' (`i') (`b') (`cilow90') (`cihigh90') (`cilow95') (`cihigh95')
+}
+postclose `memhold'
+use `results', clear
+twoway ///
+(rarea cihigh90 cilow90 q, fcolor(%5)) ///
+(rarea cihigh95 cilow95 q, fcolor(%5)) ///
+(line b q, yline(0, lcolor(black) lpattern(solid) lwidth(0.1))) ///
+, xtitle("Quantile") legend(order(1 "95% cl" 2 "90% cl" 3 "Coef.") col(3) pos(6)) xlabel(.1(.1).9) title("`laby'", size(large)) aspectratio(0.5) scale(0.7) name(g_`x', replace)
+restore
+}
+grc1leg g_base_factor_imraw_1_std g_base_factor_imraw_2_std g_base_factor_imraw_3_std g_base_factor_imraw_4_std g_base_factor_imraw_5_std g_base_raven_tt_std g_base_num_tt_std g_base_lit_tt_std, leg(g_base_factor_imraw_1_std) name(g_`y', replace) note("`y'", size(half_tiny))
+graph save "qreg_`y'.gph", replace
+graph export "qreg_`y'.pdf", as(pdf) replace
+}
+set graph on
 
 ****************************************
 * END
-
-
-
-
-
-
-
-/*
-
-
-
 
 
 
