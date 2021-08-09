@@ -568,9 +568,24 @@ qui margins, dydx(base_factor_imraw_1_std base_factor_imraw_2_std base_factor_im
 * END
 
 
+****************************************
+* Graph mprobit
+****************************************
+use"margin_debtpath4", clear
+set graph off
+forvalues i=1(1)4{
+forvalues j=1(1)8{
+twoway ///
+(line _margin _predict if _at==`i' & _deriv==`j') ///
+(rcap _ci_ub _ci_lb _predict if _at==`i' & _deriv==`j'), name(g_`i'_x`j', replace)
+}
+}
+set graph on
+grc1leg g_1_x1 g_2_x1 g_3_x1 g_4_x1 g_1_x2 g_2_x2 g_3_x2 g_4_x2  g_1_x3 g_2_x3 g_3_x3 g_4_x3  g_1_x4 g_2_x4 g_3_x4 g_4_x4  g_1_x5 g_2_x5 g_3_x5 g_4_x5  g_1_x6 g_2_x6 g_3_x6 g_4_x6  g_1_x7 g_2_x7 g_3_x7 g_4_x7  g_1_x8 g_2_x8 g_3_x8 g_4_x8, col(4)
 
 
-
+****************************************
+* END
 
 
 
