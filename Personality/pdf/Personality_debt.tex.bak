@@ -40,7 +40,7 @@ singlelinecheck=false % <-- important
 % *****************************************************************
 % Interlignes et marges
 % *****************************************************************
-\setstretch{1.5}
+\setstretch{1.25}
 \geometry{%
 left=2.5cm,
 right=2.5cm,
@@ -71,13 +71,21 @@ bottom=2.5cm,
 \vspace{0.3cm}
 
 \begin{resab}{Abstract}
-
+Using individual panel dataset built on two original household surveys carried out in 2016-17 and 2020-21 in rural Tamil Nadu (South India), we analyse the relationship between personality traits (Big-5 taxonomy) \& cognitive skills (Raven, literacy and numeracy scores) and financial decision-making focusing on the amount of debt and its burden.
+First, we explore the contribution of personality traits \& cognitive skills in shaping the debt.
+In a second step, we take advantage of the evolution of personality traits \& cognitive skills to explore whether these personal characteristics are correlated with debt evolution. 
+We find that certain personality traits such as XXX are generally significantly associated with XXX. 
+The results also suggest that the magnitude and statistical significance of the association between personality traits and debt differs across caste and gender, suggesting the heaviness of these social identities.
+Our preliminary results call for further exploration of the nature and the variety of socioeconomic barriers facing disadvantaged groups in rural India.
 \end{resab}
 
 \begin{motkey}{Keywords}
 Gender, caste, debt burden
 \end{motkey}
 
+\begin{motkey}{JEL classification}
+C23, D14.
+\end{motkey}
 
 \hrule
 %\linenumbers
@@ -89,56 +97,60 @@ Gender, caste, debt burden
 % ******************************
 
 Since more than a decade, there has been increasing interest in psychology in economics literature, especially through personality traits and cognitive skills (\PTCS).
-The relevance of such analysis in economics is well documented in the literature.
-\cite{Hanushek2008} shows that cognitive skills are correlated with individual earnings, distribution of income and economic growth and other factors such as well-functioning economic institutions --although enter into growth and may well have stronger effects, may also amplify the effects of cognitive skills.
+The relevance of such analysis in economics is well documented.
+\cite{Hanushek2008} show that cognitive skills are correlated with individual earnings, distribution of income and economic growth (and other factors such as well-functioning economic institutions --although enter into growth and may well have stronger effects, may also amplify the effects of cognitive skills).
 % Authors add that the current situation in developing countries is much worse than generally pictured on the basis just of school enrollment and attainment.
-Regarding personality traits, \cite{Borghans2008} examines, for instance, the relevance of personality traits in economics.
+Regarding personality traits, \cite{Borghans2008} examine, for instance, the relevance of personality traits in economics.
 They show that psychological variables are a good predictor of socioeconomic success and especially on labour market\footnote{For further details see \cite{Almlund2011}.}. %\dev{and they can be influenced by interventions and investment more readily than IQ after the early years because of the non-stability through life cycle.}
-Institutions such as World Bank collecting more and more data\footnote{As stated by \cite{Laajaj2019b}, the World Bank alone spent 1 billion USD a year.} on \PTCS~ because it enable a better understanding of skill requirements in the labor market, backward linkages between skills acquisition and educational achievement, personality, and social background, and forward linkages between skills acquisition and living standards, reductions in inequality and poverty, social inclusion, and economic growth \citep{STEP2014}.
+Institutions --such as World Bank-- collect more and more data\footnote{As stated by \cite{Laajaj2019b}, the World Bank alone spent 1 billion USD a year.} on \PTCS~ because it enable a better understanding of skill requirements in the labor market, backward linkages between skills acquisition and educational achievement, personality, and social background, and forward linkages between skills acquisition and living standards, reductions in inequality and poverty, social inclusion, and economic growth \citep{STEP2014}.
 
 % \paragraph{Definition}
+\dev{Proches, ces deux termes ne visent pas à mesurer la même chose}.
 Cognitive skills represent the mental processes involved in the acquisition of knowledge, manipulation of information, and reasoning that include the domains of perception, memory, learning, attention, decision making, and language abilities \citep{Kiely2014} while personality is the dynamic organization within the individual of those psychophysical systems that determine his characteristics behavior and thought \citep{Allport1961}.
 The Big-5 model constitute the main personality trait taxonomy\footnote{Among the theories of personality, the traits can be defined as thought, emotion and habitual patterns of behavior \citep{Kassin2003}.}.
 %Based on \cite{Goldberg1981} and \cite{McCrae1987} works, it 
-It identify five dimensions of personality: neuroticism --or emotional stability-- (the capacity to experience negative emotions); extraversion (the capacity to experience positive emotions, the tendency to seek stimulation and company from others); openness to experience (capacity to be creative and unstructured); agreeableness (perceptions of others that are caring, compassionate, and altruistic); conscientiousness (capacity to display self-discipline, act dutifully, and strive for achievement against measures or outside expectations).	
+It identifies five dimensions of personality: neuroticism or emotional stability --ES-- (the capacity to experience negative emotions); extraversion --EX-- (the capacity to experience positive emotions, the tendency to seek stimulation and company from others); openness to experience --OP-- (capacity to be creative and unstructured); agreeableness --AG-- (perceptions of others that are caring, compassionate, and altruistic); conscientiousness --CO-- (capacity to display self-discipline, act dutifully, and strive for achievement against measures or outside expectations).	
 
 % \paragraph{Skills in economics}
-Studies in economics focuses on the role of skills on labour market and especially on income gap, performance at work and type of work or education through educational attainment, course grades or standardised achievment test scores but few researcher have been interested in the relationship with household finances while it is a growing area of interest.%\footnote{This renewed interest led the Journal of Economic Literature (JEL) to create a field in its own right under the code G5.}.
+Studies in economics focuses on the role of \PTCS~ on labour market and especially on income gap, performance at work and type of work or education through educational attainment, course grades or standardised achievment test scores but few researcher have been interested in the relationship with household finances while it is a growing area of interest.%\footnote{This renewed interest led the Journal of Economic Literature (JEL) to create a field in its own right under the code G5.}.
 First, household are more implicated in financial decision such as privatization of retirement pension, liberalization of loan market, increase in credit purchase, which are more complicated because of financial innovation \citep{Guiso2013}.
 Second, financial inclusion policies focus on credit as a potential tool for business creation, improved access to education and health, enhanced decision-making and women’s empowerment. 
-It constitute the main focus of the World Bank Group's Universal Financial Access 2020 initiative and featured as a target in eight of the 17 goals of sustainable development goals.
+It constitutes the main focus of the World Bank Group's Universal Financial Access 2020 initiative and featured as a target in eight of the 17 objectives of sustainable development goals.
 Nevertheless, it is a known fact that debt and credit are two sides of the same coin:
 If the investment goes well, debt is protective and productive (which it is called credit) but if it goes wrong --if the return on investment is less than the cost of the loan, or is obtained too late, if the debt is only used to make ends meet \citep{Guerin2021}-- the debt can be source of impovrishment and destruction.
-The choice of terms reflects ambivalence of terms \citep{Peebles2010}.
+The choice of terms reflects the ambivalence \citep{Peebles2010}.
 
-Research build a bridge between household finance and individual skills through the notion of financial literacy which measure how well an individual can understand and use personal finance-related information \citep{Huston2010, Hastings2013, Gaurav2012, Klapper2012, Horn2021} but the few studies that have focused on \PTCS~ mainly investigate the risk aversion, financial distress, savings and debt.
+Research build a bridge between household finance and individual skills through the notion of financial literacy which measure how well an individual can understand and use personal finance-related information \citep{Huston2010, Hastings2013, Gaurav2012, Klapper2012, Horn2021}.
+The few studies that have focused on \PTCS~ and household finances mainly investigate the risk aversion, financial distress, savings and debt.
 \cite{Nga2013} show that conscientiousness, openness to experience and agreeableness are correlated with risk aversion, cognitive biases and socially responsible investing for undergraduate students of Malaysia.
-For 4,000 individuals from Netherland, \cite{Pinjisakikool2017} shows that all the Big-5 personality traits are good predictor of financial risk tolerance as \cite{Bucciol2017} that shows that agreeableness, cynical hostility and anxiety are good predictor of financial risk taking for 11,000 individuals from USA (negative correlation).
-In terms of financial distress, \cite{Agarwal2013} shows that individuals with high math scores are less likely to make financial distress in USA.
+For 4,000 individuals from Netherland, \cite{Pinjisakikool2017} shows that all the Big-5 personality traits are good predictor of financial risk tolerance as \cite{Bucciol2017} whose show that agreeableness, cynical hostility and anxiety are good predictor of financial risk taking for 11,000 individuals from USA (negative correlation).
+In terms of financial distress, \cite{Agarwal2013} show that individuals with high math scores are less likely to make financial distress in USA.
 \cite{Parise2019} are one of the only who deal with causality.
-Using instrumental variable\footnote{They instruments conscientiousness and emotional stability with childhood trauma.} on Dutch dataset, they shows that people in the bottom quintile of personality traits are 10 times more likely to experience financial distress than those in the top quintile.
+Using instrumental variable\footnote{They instruments conscientiousness and emotional stability with childhood trauma.} on Dutch dataset, they show that people in the bottom quintile of personality traits are 10 times more likely to experience financial distress than those in the top quintile.
 Regarding saving behaviour, \cite{Gerhard2018} decompose 3,000 individuals from UK in two groups (striving and established) and find that agreeableness is negatively correlated with total household savings for both groups and the effect is stronger for the striving than for the established.
-\cite{Nyhus2001} shows that extraversion is negatively correlated with savings for 1,300 individuals from Netherland and they shows that emotional stability is positively correlated with debt.
-\cite{Brown2014} finds that extraversion and agreeableness are positively associated with the level of debt held while conscientiousness is negatively correlated with the level of unsecured debt for 10,000 individuals of UK and \cite{Forlicz2019} shows differences between debtors and debt-free individuals in terms of conscientiousness, honesty, attittude towards money and shoppping for 3,700 individuals from Poland, Spain, Romania and Italy.
+\cite{Nyhus2001} show that extraversion is negatively correlated with savings for 1,300 individuals from Netherland and that emotional stability is positively correlated with debt.
+\cite{Brown2014} find that extraversion and agreeableness are positively associated with the level of debt held while conscientiousness is negatively correlated with the level of unsecured debt for 10,000 individuals of UK and \cite{Forlicz2019} show differences between debtors and debt-free individuals in terms of conscientiousness, honesty, attittude towards money and shoppping for 3,700 individuals from Poland, Spain, Romania and Italy.
 
 % \paragraph{Indebtedness in India}
 To our knowledge, no articles has looked at personality trait\footnote{\cite{Michiels2021} interesting in the link between \PTCS~ and labour mobility. \cite{Dasgupta2020} interesting in the disparities in terms of \PTCS~ between castes.} and cognitive skills on debt in India (nor even in developing countries) while understand the relationship is essential in the indian context because of the uniqueness of indebtedness.
-Debt represent more than money, it is a social link where individual defining them and thinking of them according to their indebtedness and indebtedness relationship are closely nested in social relationship \citep{Guerin2014}. 
+Debt represent more than money, it is a social link closely nested in social relationship and individual defining them and thinking of them according to their indebtedness \citep{Guerin2014}. 
 Recent crisis such as microfinance crisis \citep{Nair2011, Sriram2010}, demonetisation \citep{GuerinDemo2017} or lockdown \citep{Guerin2021, Guerin2021b} has highlighted the importance of furthering our understanding of indebtedness at individual and household level in India.
+\dev{Phrase pour expliquer rapido pourquoi ca a été important durant les crises.}
 % Suicid des agri à cause des mc
 % Demo = especially rise in informal debt with many disparities = historical forms of inequality in Indian socieyty have probably been reinforced while new ones have emerged
 % most Indian villagers are embedded within complicated webs of rights and obligations that ensure their daily survival through the constant circulation of cash, goods and services.
 % Burden of debt after Lockdown = explosion of debt
 
-Since the 80's, the incidence of indebtedness increase for rural and urban households (respectively from 19 to 32\% and from 17 to 22\%) with an increasing in the share of household indebted to formal (or institutional) sources (11 to 17\%) and informal sources\footnote{In part due to the economic and financial sector reforms of 1991: \url{http://indiabefore91.in/1991-economic-reforms}.} (10 to 19\%) \citep{Rajakumar2019}.
-As we discuss in section \ref{subsection:data}, this number is largely under-estimate \citep{Jones1994} and micro-level studies indicates incidence of debt around 80-90\% \citep{Guerin2013a, Jones1994, Dreze1997, Reboul2021}.
+
+Since the 80's, the incidence of indebtedness increase for rural and urban households (respectively from 19 to 32\% and from 17 to 22\%) with an increasing in the share of household indebted to formal (or institutional) sources (11 to 17\%) and informal sources\footnote{In part due to the economic and financial sector reforms of 1991: \url{http://indiabefore91.in/1991-economic-reforms} - Accessed August 10, 2021.} (10 to 19\%) \citep{Rajakumar2019}.
+As we discuss in section \ref{subsection:data}, the incidence of debt is largely under-estimate \citep{Jones1994} and micro-level studies indicates an incidence around 80-90\% \citep{Guerin2013a, Jones1994, Dreze1997, Reboul2021}.
 The average amount of debt per household strongly increased between 1951 and 2012 (from 83 INR to 32,522 INR) with an increasing in the share of formal debt (from 7 to 56\% for rural households) and, thus, a decreasing in the share of traditional informal debt (from 93 to 43\% for rural households) \citep{Rajakumar2019}.
 
 The situation is not homogenous among individuals, many disparities coexist between caste and gender.
 \cite{Guerin2013a} show that the caste affect borrowing strategies as amount, type and source of debt in rural Tamil Nadu, India.
-Dalits, have higher incidence of indebtedness but borrow smaller amounts and more frequently from ambulant lenders \citep{Guerin2013a}.
-They borrow less for economic reason than non-dalits but more for household expenditures \citep{Guerin2013a, Guerin2014a}.
-Finally, they have the lower access\footnote{In part, because of they does not have necessary guarantee (i) such as good land (irrigated one and good location), specific know-how (ii), or because they self-excluded themselves because dalits are persuaded to fail \citep{Guerin2013a}.} to bank loans while it offer ``the best conditions financially speaking'' (low interest rate, higher amounts, long duration) \citep{Guerin2013a, Chavan2007}.
+Dalits, have higher incidence of indebtedness but borrow smaller amounts and more frequently from ambulant lenders.
+They borrow less for economic reason than non-dalits but more for household expenditures. %\citep{Guerin2013a, Guerin2014a}.
+Finally, they have the lower access\footnote{In part, because of they does not have necessary guarantee (i) such as good land (irrigated one and good location), specific know-how (ii), or because they self-excluded themselves because dalits are persuaded to fail \citep{Guerin2013a}.} to bank loans while it offer the best conditions with low interest rate, higher amounts, and long duration \citep{Chavan2007}.
 Over gender, \cite{Reboul2021} show that the relative amount of debt is higher for female than for male while male earn much more.
 Moreover, female in the poorest households have the highest borrowing responsibilities and dalit female tend to face higher debt burdens than non-dalit one.
 In terms of use, male borrow more for economic investment while female more for daily survival and debt repayment \citep{Reboul2021}.
@@ -275,7 +287,7 @@ There is no consensus in the literature to measure indebtedness but three approa
 Objective measures focus on the ability (or inability) to service or repay debts.
 Typically, it is the debt to income ratio, debt to asset ratio, debt service ratio.
 %Over-indebtedness occurs when a certain threshold is exceeded.
-Although this is the most widely used measure, it under-estimate the burden of debt in ousting personal feeling and sacrifice associated with debt and over-indebtedness \citep{Betti2007}.
+Although this is the most widely used measure, it under-estimate the burden of debt in ousting personal feeling and sacrifice associated with debt \citep{Betti2007}.
  
 Subjectives measure assume that ``individual households are the best judges of their own net debt/wealth position'' \citep{Betti2007}.
 The robustness of the results are based on the degree of honesty and literacy of individuals that can make it, sometimes, less reliable \citep{DAlessio2013}.
@@ -287,11 +299,11 @@ In rural Indian context, this type of measures have little meaning since most of
 % In order to best measure the debt, we could combine objective and subjective measures as \cite{Aniola2012} do in European Countries, but this brings the risk that all households will find themselves categorized as over-indebted according to the measure used \citep{Chichaibelu2018}.
 
 It is recommended to analyse indebtedness at household level because generally income is grouped between household members \citep{European2010}.
-However, in order to explore the role of individual characteristics such as \PTCS~ on indebtedness, we focus on two types of individual objective measures allowing us to understand the debt from three angles.
+However, in order to explore the role of individual characteristics such as \PTCS, we focus on two types of individual objective measures allowing us to understand the debt from three angles.
 First, we investigate the size of the individual debt with the total amount of individual debt taken out in her own name.
 Second, we investigate the burden of debt repayment with the individual debt service ratio (DSR).
 It represent the share of income required to cover the repayment of interest and principal on a debt for one year.
-We also complete the analysis with the probability for an individual to being in debt to capture the role of \PTCS~ on the incidence of debt.
+We also complete the analysis with the probability for an individual to being in debt to capture the incidence of debt.
 
 % First, we wish to understand the role of personality traits \& cognitive skills on the incidence of individual debt --through the probability of being in debt\footnote{Dummy variable equal to 1 if the individual has some unsettled debt taken out in her own name, 0 otherwise.} in 2020-21.
 
@@ -391,18 +403,18 @@ Therefore, we estimate eq. \ref{eq:ols} with quantile regression respectively at
 Controls variables remain the same and we also cluster the error at households level.
 To fully understand the results we do not use interaction variables ($Z'_{i}=0$) and we compute ME at means to investigate the relationship between debt and \PTCS~ for the average individual at specific percentile of the distribution.
 
-\paragraph{How \PTCS~ influences the debt trajectory?}
-In a third step, we try to understand the debt trajectory through time.
-With a multinomial probit, we investigate the contribution of \PTCS~ on the debt trajectory: Never indebted in 2016-17 and 2020-21 (i); Out of debt between 2016-17 and 2020-21 (ii); Became indebted between 2016-17 and 2020-21 (iii); Always indebted in 2016-17 and 2020-21 (iv).
+% \paragraph{How \PTCS~ influences the debt trajectory?}
+% In a third step, we try to understand the debt trajectory through time.
+% With a multinomial probit, we investigate the contribution of \PTCS~ on the debt trajectory: Never indebted in 2016-17 and 2020-21 (i); Out of debt between 2016-17 and 2020-21 (ii); Became indebted between 2016-17 and 2020-21 (iii); Always indebted in 2016-17 and 2020-21 (iv).
 
-\begin{equation}\label{eq:mprobit}
-\begin{split}
-Trajectory_{i}=\upbeta_{0}+X'_{i}\upbeta_{1}+C'_{i}\upbeta_{2}+Z'_{i}*\upbeta_{3}+\upalpha_{i}
-\end{split}
-\end{equation}
+% \begin{equation}\label{eq:mprobit}
+% \begin{split}
+% Trajectory_{i}=\upbeta_{0}+X'_{i}\upbeta_{1}+C'_{i}\upbeta_{2}+Z'_{i}*\upbeta_{3}+\upalpha_{i}
+% \end{split}
+% \end{equation}
 
-We use the same vector of control variables than for the two previous approach, we also cluster the error at households level and we compute ME at representative values (sex and caste at representative values).
-We also use Big-5 taxonomy as robustness check.
+% We use the same vector of control variables than for the two previous approach, we also cluster the error at households level and we compute ME at representative values (sex and caste at representative values).
+% We also use Big-5 taxonomy as robustness check.
 
 \paragraph{How does debt change over time as \PTCS~ changes?}
 In a last step, we fully accept the non-stability of personality traits by using one-way\footnote{We choose to not compute two-way fixed effect for the many problems with maintaining assumptions and interpreting the coefficients \citep{Kropko2020,Imai2020}.} individual fixed effect regressions (eq. \ref{eq:fe}) in order to compare within individual over time.
@@ -414,7 +426,7 @@ We use the same debt measures as before --the total amount of debt and the indiv
 
 \begin{equation}\label{eq:fe}
 \begin{split}
-Y_{it}=X'_{it}\upbeta_{1}+C'_{it}\upbeta_{2}+Z'_{it}*\upbeta_{3}+\upalpha_{i}+u_{it}
+Y_{it}=X'_{it}\upbeta_{1}+C'_{it}\upbeta_{2}+Z'_{it}*\upbeta_{3}+\upalpha_{i}+e_{it}
 \end{split}
 \end{equation}
 
@@ -527,14 +539,13 @@ The results show that 2016-17 cognitive skill --whatever the specification-- are
 
 However, three of the personality traits are correlated at the 95\% cl. 
 Factor 1 as OP-EX is negatively correlated with the probability for the average middle-upper caste individual of being in debt and the relationship seems to be clarified for the average non-dalit female: \ote, when OP-EX increase by one \sd, the probability of being in debt decrease by 11.1 percentage point (pp).
-The magnitude of the relationship is little less strong for Factor 3: when the average non-dalit female is one sd more \textit{Porupillatavan}, the probability of being in debt decrease by 8.4 pp, \aebe. 
+The magnitude of the relationship is little less strong for Factor 3 as \textit{Porupillatavan} (-8.4 pp). 
 Last, Factor 2 as CO is positively correlated (8.5 pp) for the average middle-upper male, \aebe.
 
 If we accept a 10\% risk of error Factor 4 and 5 becomes correlated.
 For the average dalit male, one more \sd~ on ES is associated by a decreasing of 6.2 pp of the probability of being in debt.
-Regarding AG, it is negatively correlated for the average non-dalit individual and especially for the average non-dalit male.
-The magnitude of the effect is lower than for CO (-6.7 pp compared to +8.5 pp).
-Always for CO, at 90\% \cl, when it increase by one sd, the probability decrease by 7.7 pp for the average non-dalit female.
+Regarding AG, it is negatively correlated for the average non-dalit individual and especially for the average non-dalit male with lower magnitude than for CO (-6.7 pp compared to +8.5 pp).
+Last, when CO increase by one sd, the probability decrease by 7.7 pp for the average non-dalit female.
 
 \subimport{INPUT}{AME_indebt.tex}
 
@@ -553,7 +564,7 @@ Regarding personality traits, Factor 1, 2 and 5 are correlated with the total am
 For the average individual, OP-EX is positively correlated.
 The relationship seems to be clarified for the average non-dalit individual and especially for the average non-dalit male for who one more sd in OP-EX is associated by a increasing of 49,000 \rupee~ of the total loan amount, \ote.
 Always for the average middle-upper caste male, the strengh of the negative relationship is high enough (-64,000 \rupee) compared to other relationship. 
-Last, AG is negatively correlated for the average dalits and especially for the average dalit female: when AG increase by one \sd, the total amount borrowed decrease by 15,000 \rupee.
+Last, AG is negatively correlated for the average dalits and especially for the average dalit female (-15,000 \rupee).
 
 At 90\% cl, new relationship appears for Factor 1 and 3.
 When OP-EX increase by one \sd, predicted total amount borrowed increase by 13,000 \rupee~\ote, for the average dalits female.
@@ -587,12 +598,11 @@ Figures \ref{fig:qreg_loanamount} and \ref{fig:qreg_dsr} presents the results fr
 
 Only Factor 4 as Emotional stability, numeracy and literacy are correlated at 95\% \cl~ with the total loan amount (see Figure \ref{fig:qreg_loanamount}).
 Regarding ES, between P10 and median (P50) correlation declining --to become more negative-- but still insignificant untile median: when ES increase by one \sd, conditional distribution of total loan amount at median decrease by around 10,000 \rupee, \ote.
-At P30, numeracy is also negatively correlated (around -10,000 \rupee).
-Between P30 and P40 correlation with literacy increasing (from +9,000 to +12,000 \rupee).
-At 90\% cl numeracy and literacy becomes correlated at P90: when numeracy increase by one \sd, conditional distribution of total loan amount increase by around 35,000 \rupee, \ote and when literacy increase by one \sd, conditional distribution decrease by around 30,000 \rupee, \ote.
+At P30, numeracy is also negatively correlated (around -10,000 \rupee) and between P30 and P40 correlation with literacy increasing (from +9,000 to +12,000 \rupee).
+At 90\% cl numeracy and literacy becomes correlated at P90 (respectively +35,000 \rupee~ and +30,000 \rupee).
 
 The coefficient of OP-EX varies across the individual DSR distribution (see Figure \ref{fig:qreg_dsr}) with ME being higher at the end of the distribution.
-ME of OP-EX is 20,000 \rupee at P80 and 45,000 at P90 if we accept 10\% risk of error, \aebe.
+ME of OP-EX is 20,000 \rupee~ at P80 and 45,000 \rupee~ at P90 if we accept 10\% risk of error, \aebe.
 Last, at P90 ES is negatively correlated with higher magnitude than OP-EX, \ote~(-50,000 \rupee).
 
 
@@ -617,16 +627,35 @@ Last, at P90 ES is negatively correlated with higher magnitude than OP-EX, \ote~
 
 
 
-\subsection{How \PTCS~ influences the debt trajectory?}
- Table \ref{tab:ame_debtpath} presents the results from the multinomial probit analysis of the debt trajectory through time.
- 
-\subimport{INPUT}{AME_debtpath.tex}
+% \subsection{How \PTCS~ influences the debt trajectory?}
+% Table \ref{tab:ame_debtpath} presents the results from the multinomial probit analysis of the debt trajectory through time.
+
+% \textit{Porupillatavan} is a good predictor of the stability of the debt situation (never in debt or always in debt).
+% It is positively correlated with the probability of never being in debt and thus negatively correlated with the probability of always being in debt, at 95\% cl.
+
+% \subimport{INPUT}{AME_debtpath.tex}
 
 
 
 \subsection{How does debt change over time as \PTCS~ changes?}
 
+\paragraph{Total amount of debt}
+Table \ref{tab:ame_fe_loanamount} presents the results from the one-way individual fixed effect regressions to understand how does total loan amount change over time as \PTCS~ changes.
+$\uprho$ (the intraclass correlation) is quite high which mean that around 55\% of the variance is due to differences across individuals. 
+Within-$R^2$ indicates that around 10\% of the variation of the total loan amount within individuals (over time) are captured by our model while between-$R^2$ indicates that 0\% of the variation of the dependent variable between individuals are captured by our model.
+All p-values associated with the simultaneous coefficient nullity test (F-stat) are low enough to conclude that at least one of the regression coefficients in the model is not equal to zero.
+ 
+
+
 \subimport{INPUT}{AME_FE_loanamount.tex}
+
+\paragraph{Individual debt service ratio}
+Table \ref{tab:ame_fe_dsr} presents the results from the one-way individual fixed effect regressions to understand how does individual DSR change over time as \PTCS~ changes.
+$\uprho$ (the intraclass correlation) is also quite high and within-$R^2$ and between-$R^2$ are similar than ones for total loan amount.
+All p-values associated with the simultaneous coefficient nullity test (F-stat) are higher than 0.05 threshold, which mean that, simultaneously, all regression coefficients in the model are equal to zero, however, this does not prevent variables taken independently of each other from being significantly different from zero, \ote.
+
+
+
 
 \subimport{INPUT}{AME_FE_IDSR.tex}
 
@@ -778,7 +807,7 @@ Pose la question de l'inclusion financière
 \begin{figure}[!htb]
 \raggedright
 \includegraphics[scale=0.86]{INPUT/diffcont_raw}
-\caption{Stability over time of Big-5 personality traits non-correted from acquiescence bias -- Distribution of the difference of the score between 2016-17 and 2020-21 for Big-5 personality traits non-corrected from acquiescence biais for 835 individuals from rural Tamil Nadu, India.}
+\caption{Stability over time of Big-5 personality traits non-corrected from acquiescence bias -- Distribution of the difference of the score between 2016-17 and 2020-21 for Big-5 personality traits non-corrected from acquiescence biais for 835 individuals from rural Tamil Nadu, India.}
 \sourcefig{NEEMSIS-1 (2016-17) \& NEEMSIS-2 (2020-21); author's calculations.}
 \label{fig:stabraw}
 \end{figure}

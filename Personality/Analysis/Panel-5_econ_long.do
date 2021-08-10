@@ -288,14 +288,15 @@ replace loanamount_indiv1000=. if debtpath==0
 replace DSR_indiv=. if debtpath==0
 cls
 foreach var in loanamount_indiv1000  DSR_indiv {
-qui xtreg `var' $big5raw $cog $indivcontrol $hhcontrol4 female dalits, fe vce(cluster HHFE)
+xtreg `var' $big5raw $cog $indivcontrol $hhcontrol4 female dalits, fe vce(cluster HHFE)
 est store res_1
-qui xtreg `var' $big5raw $cog $indivcontrol $hhcontrol4 female dalits $intfemraw, fe vce(cluster HHFE)
+xtreg `var' $big5raw $cog $indivcontrol $hhcontrol4 female dalits $intfemraw, fe vce(cluster HHFE)
 est store res_2
-qui xtreg `var' $big5raw $cog $indivcontrol $hhcontrol4 female dalits $intdalraw, fe vce(cluster HHFE)
+xtreg `var' $big5raw $cog $indivcontrol $hhcontrol4 female dalits $intdalraw, fe vce(cluster HHFE)
 est store res_3
-qui xtreg `var' $big5raw $cog $indivcontrol $hhcontrol4 female dalits $intfemraw $intdalraw $threeraw, fe vce(cluster HHFE)
+xtreg `var' $big5raw $cog $indivcontrol $hhcontrol4 female dalits $intfemraw $intdalraw $threeraw, fe vce(cluster HHFE)
 est store res_4
+}
 
 esttab res_1 res_2 res_3 res_4 using "_reg.csv", ///
 	cells(b(fmt(3)) /// 
