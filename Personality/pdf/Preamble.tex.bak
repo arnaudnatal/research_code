@@ -251,12 +251,12 @@ xleftmargin=0.5cm
     {\normalsize\bfseries #1\ \\ }\normalsize}
 {\end{adjustwidth}\medskip}
 
- \newenvironment{keyword}
+ \newenvironment{keywords}
 {\begin{adjustwidth}{0cm}{0cm} \hangafter =1\par
     {\normalsize\itshape Keywords:}~\normalsize}
 {\end{adjustwidth}\medskip}
 
- \newenvironment{JELcode}
+ \newenvironment{jelcodes}
 {\begin{adjustwidth}{0cm}{0cm} \hangafter =1\par
     {\normalsize\itshape JEL Codes:}~\normalsize}
 {\end{adjustwidth}\medskip}
@@ -439,4 +439,21 @@ xleftmargin=0.5cm
 \newcommand\Tablenote[2]{\multicolumn{#1}{l}{\makecell[l]{\textit{Note:}~#2}}}
 
 
-   
+
+
+
+
+% *****************************************************************
+% Tables and figures
+% *****************************************************************
+\newcommand\figaround[1]{%
+\begin{center}
+\textbf{[Figure \ref{#1} around here]
+\end{center}
+}%
+
+\newcommand\tabaround[1]{%
+\begin{center}
+[Table \ref{#1} around here]
+\end{center}
+}%

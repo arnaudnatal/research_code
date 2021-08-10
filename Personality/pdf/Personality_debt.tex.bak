@@ -79,17 +79,19 @@ The results also suggest that the magnitude and statistical significance of the 
 Our preliminary results call for further exploration of the nature and the variety of socioeconomic barriers facing disadvantaged groups in rural India.
 \end{resab}
 
-\begin{motkey}{Keywords}
-Gender, caste, debt burden
-\end{motkey}
+\begin{keywords}
+Gender, caste, debt burden, panel data, Tamil Nadu.
+\end{keywords}
 
-\begin{motkey}{JEL classification}
+\begin{jelcodes}
 C23, D14.
-\end{motkey}
+\end{jelcodes}
 
 \hrule
 %\linenumbers
 
+\clearpage
+\newpage
 % ******************************
 \section{Introduction}
 % \addcontentsline{toc}{section}{Introduction}
@@ -189,7 +191,8 @@ The rest of the article is organised as follow: section 2 is devoted to data and
 
 
 
-%\newpage
+\clearpage
+\newpage
 % ******************************
 \section{Data and methodology}
 % ******************************
@@ -241,15 +244,9 @@ The resulting mean represent the score on each traits.
 \citeauthor{McDonald1999}'s $\Upomega$\footnote{Literature on internal consistency estimators increasingly agrees that \citeauthor{Cronbach1951}'s $\upalpha$ --the most wide used estimator, is maybe not very efficient \citep{Bourque2019, TrizanoHermosilla2016}.}, a measure of internal consistency, are mostly satisfactory for 2016-17 data corrected from acquiescence bias: 0.81 for openness; 0.86 for conscientiousness; 0.59 for extraversion; 0.60 for agreeableness and 0.80 for emotional stability (see Figure \ref{fig:omega}).
 For 2020-21, the internal validity after correcting for acquiesence bias is not ideal compared to non-corrected items.
 It implies that results could suffer from measurement error, which would bias our results towards zero.
-%We, therefore, implement our own exploratory factor analysis to identitfy personnality traits.
+%We, therefore, implement our own exploratory factor analysis to identitfy personality traits.
 
-\begin{figure}[htpb]
-\raggedright
-\includegraphics[scale=0.8]{INPUT/omega}
-\caption{Internal consistency of Big-5 personality traits -- Distribution of \citeauthor{McDonald1999}'s $\Upomega$ through time and correction for 953 individuals in 2016-17 and 1,316 in 2020-21 from rural Tamil Nadu, India.}
-\sourcefig{NEEMSIS-1 (2016-17) \& NEEMSIS-2 (2020-21); author's calculations.}
-\label{fig:omega}
-\end{figure}
+\figaround{fig:omega}
 
 %\paragraph{Factor analysis}
 As warned by \cite{Laajaj2019}, the Big-Five taxonomy is limited in developing countries for several reasons: the enumerator-respondent interactions in face-to-face survey can induce a bias; the low education levels can make questions more difficult to understand and can induce a systematic response patterns, especially the acquiescence bias.
@@ -439,12 +436,16 @@ We do not pretend to show a causal relationshipt between \PTCS~ and indebtedness
 
 
 
-%\newpage
+\clearpage
+\newpage
 % ***********************************
 \section{Descriptive statistics}
 % ***********************************
 
-\subsection{Household unit in Table \ref{tab:descHH}}
+	% ******************************
+	\subsection{Household unit in Table \ref{tab:descHH}}
+	% ******************************
+
 Our final sample consists of 835 individuals from 473 households and almost half are dalits.
 Three quarters of households have 2 egos, the last quarters have only one egos --justifying the fact that we cluster the error at household level.
 The sex ratio is different through caste: in 24\% of dalits households the sex ratio is equal to 1 which mean that they are as many men as women while in middle-upper caste, it is 34\% of households in 2016-17.
@@ -455,9 +456,12 @@ However, middle and upper caste still have higher amount of assets in 2020-21.
 This economic advantage of non-dalit households is also found with income: the median income of middle-upper caste is 34\% higher than dalits one in 2016-17 and 15\% higher in 2020-21.
 Last, whatever the caste, we observe a reduction of total income: for 50\% dalits households the total income decreased by at least 4\% and for 50\% of non-dalits households, it decreased by at least 5\%.
 		
-\subimport{INPUT}{desc_HH.tex}
+\tabaround{tab:descHH}
 
-\subsection{Individual unit in Table \ref{tab:descindiv}}
+	% ******************************
+	\subsection{Individual unit in Table \ref{tab:descindiv}}
+	% ******************************
+
 At egos level, 55\% of our sample are male and among them, 46\% are dalit (among female 50\% are dalit).
 Male are, on average, older than female and three quarters of them are the head of household while female are only 9\% in 2016-17 and 27\% in 2020-21.
 This increase is partly due to the life cycle: when the household head died, is the wife who takes over as household head.
@@ -498,19 +502,16 @@ Male spend less of their annual income on debt repayment than female: in 2016-17
 Furthermore, 50\% of male have seen their DSR decreased by at least 0.27\% while 50\% of female have seen their DSR increased by at least 0.09\%.
 
 
-\subimport{INPUT}{desc_indiv.tex}
+\tabaround{tab:descindiv}
 
-\begin{figure}[ht]
-\raggedright
-\includegraphics[width=\textwidth]{INPUT/Kernel_PTCS_raw_new}
-\caption{Distribution of \PTCS~ -- The resulting \PTCS~ are based on the standardised residual from univariate OLS regression with age as exogenous variable. This is \PTCS~ purged from life-cycle effects.}
-\sourcefig{NEEMSIS-1 (2016-17) \& NEEMSIS-2 (2020-21); author's calculations.}
-\label{fig:PTCS}
-\end{figure}
+\figaround{fig:PTCS}
 
 
 
-%\newpage
+
+
+\clearpage
+\newpage
 % ***********************************
 \section{Results}
 \label{section:results}
@@ -528,7 +529,11 @@ However, this come from the low range of definitions of \PTCS~ variables.
 For personality traits, ranging around from -4 to 4, one more \sd~ represent a gap of 1/8.
 Put another way, for a variable ranging from -4 to 4, take an additional unit come back to take 12.5\% in more.
 
-\subsection{How \PTCS~ shape individual debt?}
+
+	% ******************************
+	\subsection{How \PTCS~ shape individual debt?}
+	% ******************************
+
 \paragraph{Probability of being indebted}
 Table \ref{tab:ame_indebt} presents the results from the multivariates probit analysis of the probability for an individual to be indebtedness.
 McFadden's pseudo $R^2$ indicate a very good goodness-of-fit for all the specification --they are all above 0.2 threshold \citep{McFadden1979}.
@@ -547,7 +552,7 @@ For the average dalit male, one more \sd~ on ES is associated by a decreasing of
 Regarding AG, it is negatively correlated for the average non-dalit individual and especially for the average non-dalit male with lower magnitude than for CO (-6.7 pp compared to +8.5 pp).
 Last, when CO increase by one sd, the probability decrease by 7.7 pp for the average non-dalit female.
 
-\subimport{INPUT}{AME_indebt.tex}
+\tabaround{tab:ame_indebt}
 
 
 \paragraph{Total amount of debt}
@@ -572,7 +577,8 @@ Last, when the average individual is one sd more \textit{Porupillatavan}, the to
 The relationship is stronger for the average male (-24,000 \rupee) and for the average non-dalit individual (-29,000 \rupee).
  
 
-\subimport{INPUT}{AME_loanamount.tex}
+\tabaround{tab:ame_loanamount}
+
 
 \paragraph{Individual debt service ratio}
 Table \ref{tab:ame_idsr} presents the results for the individual debt service ratio.
@@ -588,11 +594,12 @@ CO is negatively correlated for the average individuals and the magnitude of the
 \textit{Porupillatavan} and ES are correlated with the amount of debt if we accept a 10\% risk of error, especially for the average non-dalit female.
 While the relationship is positive for Factor 3, the one with Factor 4 is negative and stronger (respectively +93,000 \rupee~and -136,000 \rupee).
 
-\subimport{INPUT}{AME_IDSR.tex}
+\tabaround{tab:ame_idsr}
 
 
-
-\subsection{How \PTCS~ varies across the indebtedness distribution?}
+	% ******************************
+	\subsection{How \PTCS~ varies across the indebtedness distribution?}
+	% ******************************
 
 Figures \ref{fig:qreg_loanamount} and \ref{fig:qreg_dsr} presents the results from the quantile regression on the total loan amount and DSR.
 
@@ -608,21 +615,9 @@ Last, at P90 ES is negatively correlated with higher magnitude than OP-EX, \ote~
 
 %\subimport{INPUT}{AME_QREG.tex}
 
-\begin{figure}[!ht]
-\raggedright
-\includegraphics[width=\textwidth]{INPUT/qreg_loanamount_indiv1000_2}
-\caption{ME on the distribution of the total loan amount in 2020-21 estimated with quantile regression}
-\sourcefig{NEEMSIS-1 (2016-17) \& NEEMSIS-2 (2020-21); author's calculations.}
-\label{fig:qreg_loanamount}
-\end{figure}
+\figaround{fig:qreg_loanamount}
+\figaround{fig:qreg_dsr}
 
-\begin{figure}[!ht]
-\raggedright
-\includegraphics[width=\textwidth]{INPUT/qreg_DSR_indiv_2}
-\caption{ME on the distribution of the individual DSR in 2020-21 estimated with quantile regression}
-\sourcefig{NEEMSIS-1 (2016-17) \& NEEMSIS-2 (2020-21); author's calculations.}
-\label{fig:qreg_dsr}
-\end{figure}
 
 
 
@@ -636,7 +631,7 @@ Last, at P90 ES is negatively correlated with higher magnitude than OP-EX, \ote~
 % \subimport{INPUT}{AME_debtpath.tex}
 
 
-
+% ***********************************
 \subsection{How does debt change over time as \PTCS~ changes?}
 
 \paragraph{Total amount of debt}
@@ -644,38 +639,37 @@ Table \ref{tab:ame_fe_loanamount} presents the results from the one-way individu
 $\uprho$ (the intraclass correlation) is quite high which mean that around 55\% of the variance is due to differences across individuals. 
 Within-$R^2$ indicates that around 10\% of the variation of the total loan amount within individuals (over time) are captured by our model while between-$R^2$ indicates that 0\% of the variation of the dependent variable between individuals are captured by our model.
 All p-values associated with the simultaneous coefficient nullity test (F-stat) are low enough to conclude that at least one of the regression coefficients in the model is not equal to zero.
- 
 
+As cognitive skills, only literacy is positively correlated with the amount of debt at 95\% risk of error for the average male, average non-dalit and especially the average non-dalit male: when literacy is one more \sd, the predicted total amount borrowed increase by 81,000 \rupee, \ote.
+If we accept 10\% risk of error, Raven is positively correlated for the average female and negatively correlated for the average male (respectively +12,000 \rupee~ and -30,000 \rupee).
 
-\subimport{INPUT}{AME_FE_loanamount.tex}
+Regarding personality traits, EX is negatively correlated for the average dalit and especially for the average dalit male at 95\% cl (-41,000 \rupee).
+OP and CO are positively correlated respectively for non-dalit female (+29,000 \rupee) and for dalit female (+12,000 \rupee) if we accept 10\% risk of error.
+
+\tabaround{tab:ame_fe_loanamount}
+
 
 \paragraph{Individual debt service ratio}
 Table \ref{tab:ame_fe_dsr} presents the results from the one-way individual fixed effect regressions to understand how does individual DSR change over time as \PTCS~ changes.
 $\uprho$ (the intraclass correlation) is also quite high and within-$R^2$ and between-$R^2$ are similar than ones for total loan amount.
 All p-values associated with the simultaneous coefficient nullity test (F-stat) are higher than 0.05 threshold, which mean that, simultaneously, all regression coefficients in the model are equal to zero, however, this does not prevent variables taken independently of each other from being significantly different from zero, \ote.
 
+At 95\% \cl~, neither personality traits, neither cognitive skills are correlated with the total loan amount.
+Only EX is correlated at 90\% cl for the average male and the average dalit female.
+Respectively, when EX is one more sd, the predicted individual DSR increase by 33 pp for the average male \ote, and it decrease by 109 pp for the average dalit female \ote.
 
-
-
-\subimport{INPUT}{AME_FE_IDSR.tex}
-
-
+\tabaround{tab:ame_fe_dsr}
 
 
 
 \clearpage
 \newpage
-\section{Discussion and conclusion}
+% ***********************************
+\section{Discussion}
+% ***********************************
 
 As argued in the introduction, the quantification of the role of \PTCS~ remains a blind spot of current debates about indebtedness.
 
-
-This paper reveal a number of important insights.
-Personality traits and cognitive skills are correlated with the probability of being in debt, the amount of debt and the burden of debt in rural India at different magnitude according to caste and sex.
-
-% We discuss respectively our results with literature on \PTCS and debt (i); on social meaning of debt \citep{Guerin2014a, Guerin2020} (ii) and on \PTCS studies in India \citep{Michiels2021, Dasgupta2020, Gaurav2012, Donato2017} (iii).
-
-Another findings, effect of OP-EX, ES, numeracy and literacy varies across the debt distribution.
 
 \paragraph{\PTCS~ and debt in the literature}
 Studies in northern countries reveal that emotional stability is a positive predictor of debt \citep{Nyhus2001}.
@@ -703,46 +697,32 @@ Nevertheless, our results for non-dalits male are reverse to \cite{Nyhus2001, Br
 \item for gender : All other gender interactions with each personality trait are statistically insignificant.
 \end{itemize}
 
-\cite{Donnelly2012}
-\begin{itemize}
-\item For the probability of holding debt, CO inversely associated
-\end{itemize}
-
-
-\cite{Forlicz2019}
-\begin{itemize}
-\item 
-\end{itemize}
-
-\cite{Bertaut2002}
-\begin{itemize}
-\item 
-\end{itemize}
-
-\paragraph{Literature on individual debt practices}
-
-\paragraph{\PTCS~ and other outcomes in rural India}
-
-\paragraph{Conclusion}
-As \cite{Brown2014} on montre l'importance des \PTCS~ dans l'analyse des finances
-
-
-Numerous study reveal the gravity of the burden of debt for female and dalits, with double-jeopardy phenomenom. 
-Here we highlight the fact that in this social identity, there is considerable differences.
 
 
 
 
-% \newpage
+
+
+\clearpage
+\newpage
 % ***********************************
 \section{Conclusion}
 %\addcontentsline{toc}{section}{Conclusion}
 \label{Conclusion}
 % ***********************************
 
-Malgré un double jeopardy avéré pour les dalits female, some tend to differenciate themselves with \PTCS~.
-Les programmes de MC qui essayent de cibler les plus pauvres ne sont pas super efficient car même chez eux, il y a beaucoup de situation différentes en termes de dette.
-Pose la question de l'inclusion financière
+This paper reveal a number of important insights.
+Personality traits and cognitive skills are correlated with the probability of being in debt, the amount of debt and the burden of debt in rural India at different magnitude according to caste and sex.
+Another findings, effect of OP-EX, ES, numeracy and literacy varies across the debt distribution.
+
+As \cite{Brown2014} on montre l'importance des \PTCS~ dans l'analyse des finances
+
+Numerous study reveal the gravity of the burden of debt for female and dalits, with double-jeopardy phenomenom. 
+Here we highlight the fact that in this social identity, there is considerable differences.
+
+% Malgré un double jeopardy avéré pour les dalits female, some tend to differenciate themselves with \PTCS~.
+% Les programmes de MC qui essayent de cibler les plus pauvres ne sont pas super efficient car même chez eux, il y a beaucoup de situation différentes en termes de dette.
+% Pose la question de l'inclusion financière
 
 
 \clearpage
@@ -756,6 +736,64 @@ Pose la question de l'inclusion financière
 
 
 
+
+
+\clearpage
+\newpage
+% ***********************************
+\section*{Tables and figures}
+\addcontentsline{toc}{section}{Tables and figures}
+% ***********************************
+
+\begin{figure}[htpb]
+\raggedright
+\includegraphics[scale=0.8]{INPUT/omega}
+\caption{Internal consistency of Big-5 personality traits -- Distribution of \citeauthor{McDonald1999}'s $\Upomega$ through time and correction for 953 individuals in 2016-17 and 1,316 in 2020-21 from rural Tamil Nadu, India.}
+\sourcefig{NEEMSIS-1 (2016-17) \& NEEMSIS-2 (2020-21); author's calculations.}
+\label{fig:omega}
+\end{figure}
+
+\subimport{INPUT}{desc_HH.tex}
+
+\subimport{INPUT}{desc_indiv.tex}
+
+\begin{figure}[ht]
+\raggedright
+\includegraphics[width=\textwidth]{INPUT/Kernel_PTCS_raw_new}
+\caption{Distribution of \PTCS~ -- The resulting \PTCS~ are based on the standardised residual from univariate OLS regression with age as exogenous variable. This is \PTCS~ purged from life-cycle effects.}
+\sourcefig{NEEMSIS-1 (2016-17) \& NEEMSIS-2 (2020-21); author's calculations.}
+\label{fig:PTCS}
+\end{figure}
+
+\subimport{INPUT}{AME_indebt.tex}
+
+\subimport{INPUT}{AME_loanamount.tex}
+
+\subimport{INPUT}{AME_IDSR.tex}
+
+\begin{figure}[!h]
+\raggedright
+\includegraphics[width=\textwidth]{INPUT/qreg_loanamount_indiv1000_2}
+\caption{ME on the distribution of the total loan amount in 2020-21 estimated with quantile regression}
+\sourcefig{NEEMSIS-1 (2016-17) \& NEEMSIS-2 (2020-21); author's calculations.}
+\label{fig:qreg_loanamount}
+\end{figure}
+
+\begin{figure}[!h]
+\raggedright
+\includegraphics[width=\textwidth]{INPUT/qreg_DSR_indiv_2}
+\caption{ME on the distribution of the individual DSR in 2020-21 estimated with quantile regression}
+\sourcefig{NEEMSIS-1 (2016-17) \& NEEMSIS-2 (2020-21); author's calculations.}
+\label{fig:qreg_dsr}
+\end{figure}
+
+\subimport{INPUT}{AME_FE_loanamount.tex}
+
+\subimport{INPUT}{AME_FE_IDSR.tex}
+
+
+
+\clearpage
 \newpage
 %-------------------------------------------------------------------------------%
 \appendix

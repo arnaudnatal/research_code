@@ -439,4 +439,21 @@ xleftmargin=0.5cm
 \newcommand\Tablenote[2]{\multicolumn{#1}{l}{\makecell[l]{\textit{Note:}~#2}}}
 
 
-   
+
+
+
+
+% *****************************************************************
+% Tables and figures
+% *****************************************************************
+\newcommand\figaround[1]{%
+\begin{center}
+\textbf{[Figure \ref{#1} around here]}
+\end{center}
+}%
+
+\newcommand\tabaround[1]{%
+\begin{center}
+\textbf{[Table \ref{#1} around here]}
+\end{center}
+}%
