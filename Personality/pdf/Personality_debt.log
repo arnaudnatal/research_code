@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.22 (MiKTeX 21.6.28) (preloaded format=pdflatex 2021.7.10)  10 AUG 2021 22:58
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (MiKTeX 21.6.28) (preloaded format=pdflatex 2021.7.10)  11 AUG 2021 11:25
 entering extended mode
 **./Personality_debt.tex
 (Personality_debt.tex
@@ -931,7 +931,18 @@ Package: colortbl 2020/01/04 v1.0e Color table columns (DPC)
 \minrowclearance=\skip114
 )
 Package hyperref Info: Option `colorlinks' set `true' on input line 237.
-
+(C:\Users\Arnaud\AppData\Local\Programs\MiKTeX\tex/generic/soul\soul.sty
+Package: soul 2003/11/17 v2.4 letterspacing/underlining (mf)
+\SOUL@word=\toks61
+\SOUL@lasttoken=\toks62
+\SOUL@cmds=\toks63
+\SOUL@buffer=\toks64
+\SOUL@token=\toks65
+\SOUL@spaceskip=\skip115
+\SOUL@ttwidth=\dimen310
+\SOUL@uldp=\dimen311
+\SOUL@ulht=\dimen312
+)
 (C:\Users\Arnaud\AppData\Local\Programs\MiKTeX\tex/latex/pgf/frontendlayer\tikz
 .sty
 (C:\Users\Arnaud\AppData\Local\Programs\MiKTeX\tex/latex/pgf/basiclayer\pgf.sty
@@ -940,9 +951,9 @@ Package hyperref Info: Option `colorlinks' set `true' on input line 237.
 ty
 (C:\Users\Arnaud\AppData\Local\Programs\MiKTeX\tex/generic/pgf/utilities\pgfuti
 l-common.tex
-\pgfutil@everybye=\toks61
-\pgfutil@tempdima=\dimen310
-\pgfutil@tempdimb=\dimen311
+\pgfutil@everybye=\toks66
+\pgfutil@tempdima=\dimen313
+\pgfutil@tempdimb=\dimen314
 
 (C:\Users\Arnaud\AppData\Local\Programs\MiKTeX\tex/generic/pgf/utilities\pgfuti
 l-common-lists.tex))
@@ -968,32 +979,32 @@ Package: pgfsys 2021/05/15 v3.1.9a (3.1.9a)
 
 (C:\Users\Arnaud\AppData\Local\Programs\MiKTeX\tex/generic/pgf/utilities\pgfkey
 s.code.tex
-\pgfkeys@pathtoks=\toks62
-\pgfkeys@temptoks=\toks63
+\pgfkeys@pathtoks=\toks67
+\pgfkeys@temptoks=\toks68
 
 (C:\Users\Arnaud\AppData\Local\Programs\MiKTeX\tex/generic/pgf/utilities\pgfkey
 sfiltered.code.tex
-\pgfkeys@tmptoks=\toks64
+\pgfkeys@tmptoks=\toks69
 ))
-\pgf@x=\dimen312
-\pgf@y=\dimen313
-\pgf@xa=\dimen314
-\pgf@ya=\dimen315
-\pgf@xb=\dimen316
-\pgf@yb=\dimen317
-\pgf@xc=\dimen318
-\pgf@yc=\dimen319
-\pgf@xd=\dimen320
-\pgf@yd=\dimen321
+\pgf@x=\dimen315
+\pgf@y=\dimen316
+\pgf@xa=\dimen317
+\pgf@ya=\dimen318
+\pgf@xb=\dimen319
+\pgf@yb=\dimen320
+\pgf@xc=\dimen321
+\pgf@yc=\dimen322
+\pgf@xd=\dimen323
+\pgf@yd=\dimen324
 \w@pgf@writea=\write3
 \r@pgf@reada=\read3
 \c@pgf@counta=\count361
 \c@pgf@countb=\count362
 \c@pgf@countc=\count363
 \c@pgf@countd=\count364
-\t@pgf@toka=\toks65
-\t@pgf@tokb=\toks66
-\t@pgf@tokc=\toks67
+\t@pgf@toka=\toks70
+\t@pgf@tokb=\toks71
+\t@pgf@tokc=\toks72
 \pgf@sys@id@count=\count365
 
 (C:\Users\Arnaud\AppData\Local\Programs\MiKTeX\tex/generic/pgf/systemlayer\pgf.
@@ -1032,12 +1043,12 @@ e.tex
 .code.tex)
 (C:\Users\Arnaud\AppData\Local\Programs\MiKTeX\tex/generic/pgf/math\pgfmathpars
 er.code.tex
-\pgfmath@dimen=\dimen322
+\pgfmath@dimen=\dimen325
 \pgfmath@count=\count368
 \pgfmath@box=\box93
-\pgfmath@toks=\toks68
-\pgfmath@stack@operand=\toks69
-\pgfmath@stack@operation=\toks70
+\pgfmath@toks=\toks73
+\pgfmath@stack@operand=\toks74
+\pgfmath@stack@operation=\toks75
 )
 (C:\Users\Arnaud\AppData\Local\Programs\MiKTeX\tex/generic/pgf/math\pgfmathfunc
 tions.code.tex
@@ -1066,32 +1077,32 @@ t.code.tex
 (C:\Users\Arnaud\AppData\Local\Programs\MiKTeX\tex/generic/pgf/basiclayer\pgfco
 repoints.code.tex
 File: pgfcorepoints.code.tex 2021/05/15 v3.1.9a (3.1.9a)
-\pgf@picminx=\dimen323
-\pgf@picmaxx=\dimen324
-\pgf@picminy=\dimen325
-\pgf@picmaxy=\dimen326
-\pgf@pathminx=\dimen327
-\pgf@pathmaxx=\dimen328
-\pgf@pathminy=\dimen329
-\pgf@pathmaxy=\dimen330
-\pgf@xx=\dimen331
-\pgf@xy=\dimen332
-\pgf@yx=\dimen333
-\pgf@yy=\dimen334
-\pgf@zx=\dimen335
-\pgf@zy=\dimen336
+\pgf@picminx=\dimen326
+\pgf@picmaxx=\dimen327
+\pgf@picminy=\dimen328
+\pgf@picmaxy=\dimen329
+\pgf@pathminx=\dimen330
+\pgf@pathmaxx=\dimen331
+\pgf@pathminy=\dimen332
+\pgf@pathmaxy=\dimen333
+\pgf@xx=\dimen334
+\pgf@xy=\dimen335
+\pgf@yx=\dimen336
+\pgf@yy=\dimen337
+\pgf@zx=\dimen338
+\pgf@zy=\dimen339
 )
 (C:\Users\Arnaud\AppData\Local\Programs\MiKTeX\tex/generic/pgf/basiclayer\pgfco
 repathconstruct.code.tex
 File: pgfcorepathconstruct.code.tex 2021/05/15 v3.1.9a (3.1.9a)
-\pgf@path@lastx=\dimen337
-\pgf@path@lasty=\dimen338
+\pgf@path@lastx=\dimen340
+\pgf@path@lasty=\dimen341
 )
 (C:\Users\Arnaud\AppData\Local\Programs\MiKTeX\tex/generic/pgf/basiclayer\pgfco
 repathusage.code.tex
 File: pgfcorepathusage.code.tex 2021/05/15 v3.1.9a (3.1.9a)
-\pgf@shorten@end@additional=\dimen339
-\pgf@shorten@start@additional=\dimen340
+\pgf@shorten@end@additional=\dimen342
+\pgf@shorten@start@additional=\dimen343
 )
 (C:\Users\Arnaud\AppData\Local\Programs\MiKTeX\tex/generic/pgf/basiclayer\pgfco
 rescopes.code.tex
@@ -1104,14 +1115,14 @@ File: pgfcorescopes.code.tex 2021/05/15 v3.1.9a (3.1.9a)
 (C:\Users\Arnaud\AppData\Local\Programs\MiKTeX\tex/generic/pgf/basiclayer\pgfco
 regraphicstate.code.tex
 File: pgfcoregraphicstate.code.tex 2021/05/15 v3.1.9a (3.1.9a)
-\pgflinewidth=\dimen341
+\pgflinewidth=\dimen344
 )
 (C:\Users\Arnaud\AppData\Local\Programs\MiKTeX\tex/generic/pgf/basiclayer\pgfco
 retransformations.code.tex
 File: pgfcoretransformations.code.tex 2021/05/15 v3.1.9a (3.1.9a)
-\pgf@pt@x=\dimen342
-\pgf@pt@y=\dimen343
-\pgf@pt@temp=\dimen344
+\pgf@pt@x=\dimen345
+\pgf@pt@y=\dimen346
+\pgf@pt@temp=\dimen347
 )
 (C:\Users\Arnaud\AppData\Local\Programs\MiKTeX\tex/generic/pgf/basiclayer\pgfco
 requick.code.tex
@@ -1128,12 +1139,12 @@ File: pgfcorepathprocessing.code.tex 2021/05/15 v3.1.9a (3.1.9a)
 (C:\Users\Arnaud\AppData\Local\Programs\MiKTeX\tex/generic/pgf/basiclayer\pgfco
 rearrows.code.tex
 File: pgfcorearrows.code.tex 2021/05/15 v3.1.9a (3.1.9a)
-\pgfarrowsep=\dimen345
+\pgfarrowsep=\dimen348
 )
 (C:\Users\Arnaud\AppData\Local\Programs\MiKTeX\tex/generic/pgf/basiclayer\pgfco
 reshade.code.tex
 File: pgfcoreshade.code.tex 2021/05/15 v3.1.9a (3.1.9a)
-\pgf@max=\dimen346
+\pgf@max=\dimen349
 \pgf@sys@shading@range@num=\count371
 \pgf@shadingcount=\count372
 )
@@ -1174,8 +1185,8 @@ File: pgfmoduleplot.code.tex 2021/05/15 v3.1.9a (3.1.9a)
 (C:\Users\Arnaud\AppData\Local\Programs\MiKTeX\tex/latex/pgf/compatibility\pgfc
 omp-version-0-65.sty
 Package: pgfcomp-version-0-65 2021/05/15 v3.1.9a (3.1.9a)
-\pgf@nodesepstart=\dimen347
-\pgf@nodesepend=\dimen348
+\pgf@nodesepstart=\dimen350
+\pgf@nodesepend=\dimen351
 )
 (C:\Users\Arnaud\AppData\Local\Programs\MiKTeX\tex/latex/pgf/compatibility\pgfc
 omp-version-1-18.sty
@@ -1196,10 +1207,10 @@ Package: pgffor 2021/05/15 v3.1.9a (3.1.9a)
 
 (C:\Users\Arnaud\AppData\Local\Programs\MiKTeX\tex/generic/pgf/math\pgfmath.cod
 e.tex)
-\pgffor@iter=\dimen349
-\pgffor@skip=\dimen350
-\pgffor@stack=\toks71
-\pgffor@toks=\toks72
+\pgffor@iter=\dimen352
+\pgffor@skip=\dimen353
+\pgffor@stack=\toks76
+\pgffor@toks=\toks77
 ))
 (C:\Users\Arnaud\AppData\Local\Programs\MiKTeX\tex/generic/pgf/frontendlayer/ti
 kz\tikz.code.tex
@@ -1209,16 +1220,16 @@ Package: tikz 2021/05/15 v3.1.9a (3.1.9a)
 raryplothandlers.code.tex
 File: pgflibraryplothandlers.code.tex 2021/05/15 v3.1.9a (3.1.9a)
 \pgf@plot@mark@count=\count373
-\pgfplotmarksize=\dimen351
+\pgfplotmarksize=\dimen354
 )
-\tikz@lastx=\dimen352
-\tikz@lasty=\dimen353
-\tikz@lastxsaved=\dimen354
-\tikz@lastysaved=\dimen355
-\tikz@lastmovetox=\dimen356
-\tikz@lastmovetoy=\dimen357
-\tikzleveldistance=\dimen358
-\tikzsiblingdistance=\dimen359
+\tikz@lastx=\dimen355
+\tikz@lasty=\dimen356
+\tikz@lastxsaved=\dimen357
+\tikz@lastysaved=\dimen358
+\tikz@lastmovetox=\dimen359
+\tikz@lastmovetoy=\dimen360
+\tikzleveldistance=\dimen361
+\tikzsiblingdistance=\dimen362
 \tikz@figbox=\box99
 \tikz@figbox@bg=\box100
 \tikz@tempbox=\box101
@@ -1543,15 +1554,15 @@ LaTeX Info: Redefining \not on input line 1580.
 )
 (C:\Users\Arnaud\AppData\Local\Programs\MiKTeX\tex/latex/titling\titling.sty
 Package: titling 2009/09/04 v2.1d maketitle typesetting
-\thanksmarkwidth=\skip115
-\thanksmargin=\skip116
-\droptitle=\skip117
+\thanksmarkwidth=\skip116
+\thanksmargin=\skip117
+\droptitle=\skip118
 )
 (C:\Users\Arnaud\AppData\Local\Programs\MiKTeX\tex/latex/makecell\makecell.sty
 Package: makecell 2009/08/03 V0.1e Managing of Tab Column Heads and Cells
-\rotheadsize=\dimen360
+\rotheadsize=\dimen363
 \c@nlinenum=\count386
-\TeXr@lab=\toks73
+\TeXr@lab=\toks78
 )) (C:\Users\Arnaud\AppData\Local\Programs\MiKTeX\tex/latex/import\import.sty
 Package: import 2020/04/01  v 6.2
 )
@@ -1661,16 +1672,16 @@ LaTeX Info: Redefining \nameref on input line 67.
 kii
 [Loading MPS to PDF converter (version 2006.09.02).]
 \scratchcounter=\count389
-\scratchdimen=\dimen361
+\scratchdimen=\dimen364
 \scratchbox=\box103
 \nofMPsegments=\count390
 \nofMParguments=\count391
-\everyMPshowfont=\toks74
+\everyMPshowfont=\toks79
 \MPscratchCnt=\count392
-\MPscratchDim=\dimen362
+\MPscratchDim=\dimen365
 \MPnumerator=\count393
 \makeMPintoPDFobject=\count394
-\everyMPtoPDFconversion=\toks75
+\everyMPtoPDFconversion=\toks80
 )
 (C:\Users\Arnaud\AppData\Local\Programs\MiKTeX\tex/latex/epstopdf-pkg\epstopdf-
 base.sty
@@ -1691,8 +1702,8 @@ Package translations Info: loading dictionary `translations-basic-dictionary' f
 or `english'. on input line 67.
 Package caption Info: Begin \AtBeginDocument code.
 Package caption Info: changepage package is loaded.
-\caption@adjustwidth@hsize=\dimen363
-\caption@adjustwidth@linewidth=\dimen364
+\caption@adjustwidth@hsize=\dimen366
+\caption@adjustwidth@linewidth=\dimen367
 Package caption Info: listings package is loaded.
 Package caption Info: rotating package is loaded.
 Package caption Info: wrapfig package is loaded.
@@ -1833,7 +1844,7 @@ sion <1.6>, but at most version <1.5> allowed
 <INPUT/omega.pdf, id=693, 433.62pt x 289.08pt>
 File: INPUT/omega.pdf Graphic file (type pdf)
 <use INPUT/omega.pdf>
-Package pdftex.def Info: INPUT/omega.pdf  used on input line 751.
+Package pdftex.def Info: INPUT/omega.pdf  used on input line 758.
 (pdftex.def)             Requested size: 346.89647pt x 231.2643pt.
 (INPUT/desc_HH.tex) (INPUT/desc_indiv.tex)
 
@@ -1842,7 +1853,7 @@ pdfTeX warning: pdflatex (file ./INPUT/Kernel_PTCS_raw_new.pdf): PDF inclusion:
 <INPUT/Kernel_PTCS_raw_new.pdf, id=695, 433.62pt x 289.08pt>
 File: INPUT/Kernel_PTCS_raw_new.pdf Graphic file (type pdf)
 <use INPUT/Kernel_PTCS_raw_new.pdf>
-Package pdftex.def Info: INPUT/Kernel_PTCS_raw_new.pdf  used on input line 763.
+Package pdftex.def Info: INPUT/Kernel_PTCS_raw_new.pdf  used on input line 770.
 
 (pdftex.def)             Requested size: 455.24411pt x 303.51207pt.
 (INPUT/AME_indebt.tex) (INPUT/AME_loanamount.tex) (INPUT/AME_IDSR.tex)
@@ -1853,7 +1864,7 @@ clusion: found PDF version <1.6>, but at most version <1.5> allowed
 File: INPUT/qreg_loanamount_indiv1000_2.pdf Graphic file (type pdf)
 <use INPUT/qreg_loanamount_indiv1000_2.pdf>
 Package pdftex.def Info: INPUT/qreg_loanamount_indiv1000_2.pdf  used on input l
-ine 777.
+ine 784.
 (pdftex.def)             Requested size: 455.24411pt x 303.51207pt.
 
 LaTeX Warning: `!h' float specifier changed to `!ht'.
@@ -1865,7 +1876,7 @@ und PDF version <1.6>, but at most version <1.5> allowed
 <INPUT/qreg_DSR_indiv_2.pdf, id=697, 433.62pt x 289.08pt>
 File: INPUT/qreg_DSR_indiv_2.pdf Graphic file (type pdf)
 <use INPUT/qreg_DSR_indiv_2.pdf>
-Package pdftex.def Info: INPUT/qreg_DSR_indiv_2.pdf  used on input line 785.
+Package pdftex.def Info: INPUT/qreg_DSR_indiv_2.pdf  used on input line 792.
 (pdftex.def)             Requested size: 455.24411pt x 303.51207pt.
 
 LaTeX Warning: `!h' float specifier changed to `!ht'.
@@ -1881,7 +1892,7 @@ PDF version <1.6>, but at most version <1.5> allowed
 <INPUT/diffcont_raw.pdf, id=807, 433.62pt x 289.08pt>
 File: INPUT/diffcont_raw.pdf Graphic file (type pdf)
 <use INPUT/diffcont_raw.pdf>
-Package pdftex.def Info: INPUT/diffcont_raw.pdf  used on input line 848.
+Package pdftex.def Info: INPUT/diffcont_raw.pdf  used on input line 855.
 (pdftex.def)             Requested size: 372.91255pt x 248.60835pt.
 
 
@@ -1890,7 +1901,7 @@ PDF version <1.6>, but at most version <1.5> allowed
 <INPUT/diffcont_cor.pdf, id=808, 433.62pt x 289.08pt>
 File: INPUT/diffcont_cor.pdf Graphic file (type pdf)
 <use INPUT/diffcont_cor.pdf>
-Package pdftex.def Info: INPUT/diffcont_cor.pdf  used on input line 856.
+Package pdftex.def Info: INPUT/diffcont_cor.pdf  used on input line 863.
 (pdftex.def)             Requested size: 372.91255pt x 248.60835pt.
 
 
@@ -1899,7 +1910,7 @@ PDF version <1.6>, but at most version <1.5> allowed
 <INPUT/diffcont_cog.pdf, id=809, 433.62pt x 289.08pt>
 File: INPUT/diffcont_cog.pdf Graphic file (type pdf)
 <use INPUT/diffcont_cog.pdf>
-Package pdftex.def Info: INPUT/diffcont_cog.pdf  used on input line 864.
+Package pdftex.def Info: INPUT/diffcont_cog.pdf  used on input line 871.
 (pdftex.def)             Requested size: 372.91255pt x 248.60835pt.
 [35
 
@@ -1913,7 +1924,7 @@ PDF version <1.6>, but at most version <1.5> allowed
 <INPUT/factor2016_2.pdf, id=857, 433.62pt x 289.08pt>
 File: INPUT/factor2016_2.pdf Graphic file (type pdf)
 <use INPUT/factor2016_2.pdf>
-Package pdftex.def Info: INPUT/factor2016_2.pdf  used on input line 885.
+Package pdftex.def Info: INPUT/factor2016_2.pdf  used on input line 892.
 (pdftex.def)             Requested size: 455.24411pt x 303.51207pt.
 
 
@@ -1922,7 +1933,7 @@ pdfTeX warning: pdflatex (file ./INPUT/matrix_b5_efa.pdf): PDF inclusion: found
 <INPUT/matrix_b5_efa.pdf, id=858, 433.62pt x 289.08pt>
 File: INPUT/matrix_b5_efa.pdf Graphic file (type pdf)
 <use INPUT/matrix_b5_efa.pdf>
-Package pdftex.def Info: INPUT/matrix_b5_efa.pdf  used on input line 894.
+Package pdftex.def Info: INPUT/matrix_b5_efa.pdf  used on input line 901.
 (pdftex.def)             Requested size: 368.57874pt x 245.71915pt.
 [38
 
@@ -1947,11 +1958,11 @@ Package rerunfilecheck Info: File `Personality_debt.out' has not changed.
 (rerunfilecheck)             Checksum: 424BCBA0024186661E9B5604DC6CE72D;3584.
  ) 
 Here is how much of TeX's memory you used:
- 37122 strings out of 478847
- 683424 string characters out of 2847912
- 1252000 words of memory out of 3000000
- 53541 multiletter control sequences out of 15000+600000
- 594190 words of font info for 574 fonts, out of 8000000 for 9000
+ 37287 strings out of 478847
+ 685624 string characters out of 2847912
+ 1254646 words of memory out of 3000000
+ 53701 multiletter control sequences out of 15000+600000
+ 594503 words of font info for 575 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  89i,20n,95p,857b,1044s stack positions out of 5000i,500n,10000p,200000b,80000s
 pdfTeX warning (dest): name{Hfootnote.21} has been referenced but does not ex
@@ -2034,7 +2045,7 @@ sers/Arnaud/AppData/Local/Programs/MiKTeX/fonts/type1/public/kpfonts/jkpsy.pfb>
 b.pfb><C:/Users/Arnaud/AppData/Local/Programs/MiKTeX/fonts/type1/public/kpfonts
 /jkpttmn8a.pfb><C:/Users/Arnaud/AppData/Local/Programs/MiKTeX/fonts/type1/tfrup
 ee/tfrupee.pfb>
-Output written on Personality_debt.pdf (39 pages, 5247743 bytes).
+Output written on Personality_debt.pdf (39 pages, 5248750 bytes).
 PDF statistics:
  1016 PDF objects out of 1200 (max. 8388607)
  176 named destinations out of 1000 (max. 500000)

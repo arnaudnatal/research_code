@@ -296,7 +296,6 @@ xtreg `var' $big5raw $cog $indivcontrol $hhcontrol4 female dalits $intdalraw, fe
 est store res_3
 xtreg `var' $big5raw $cog $indivcontrol $hhcontrol4 female dalits $intfemraw $intdalraw $threeraw, fe vce(cluster HHFE)
 est store res_4
-}
 
 esttab res_1 res_2 res_3 res_4 using "_reg.csv", ///
 	cells(b(fmt(3)) /// 

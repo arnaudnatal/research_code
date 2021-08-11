@@ -136,6 +136,7 @@ Regarding saving behaviour, \cite{Gerhard2018} decompose 3,000 individuals from 
 % \paragraph{Indebtedness in India}
 To our knowledge, no articles has looked at personality trait\footnote{\cite{Michiels2021} interesting in the link between \PTCS~ and labour mobility. \cite{Dasgupta2020} interesting in the disparities in terms of \PTCS~ between castes.} and cognitive skills on debt in India (nor even in developing countries) while understand the relationship is essential in the indian context because of the uniqueness of indebtedness.
 Debt represent more than money, it is a social link closely nested in social relationship and individual defining them and thinking of them according to their indebtedness \citep{Guerin2014}. 
+\dev{Phrase pour parler des enjeux politiques de la compréhension de la dette au niveau indiv avant de parler des crises.}
 Recent crisis such as microfinance crisis \citep{Nair2011, Sriram2010}, demonetisation \citep{GuerinDemo2017} or lockdown \citep{Guerin2021, Guerin2021b} has highlighted the importance of furthering our understanding of indebtedness at individual and household level in India.
 \dev{Phrase pour expliquer rapido pourquoi ca a été important durant les crises.}
 % Suicid des agri à cause des mc
@@ -540,7 +541,7 @@ McFadden's pseudo $R^2$ indicate a very good goodness-of-fit for all the specifi
 Moreover, we observe that all p-values associated with the simultaneous coefficient nullity test (LR $\upchi^2$) are low enough to conclude that at least one of the regression coefficients in the model is not equal to zero.
 % and the exclusion restriction variable (Debtor ratio) is negatively correlated at the 95\% \cl. 
 
-The results show that 2016-17 cognitive skill --whatever the specification-- are not correlated with the probability of being indebted in 2020-21 at 90-95\% \cl~(cl), except for literacy which is positively correlated for the average female.
+The results show that 2016-17 \hl{cognitive skill --whatever the specification-- are not correlated with the probability of being indebted in 2020-21 at 90-95\% \cl~(cl), except for literacy which is positively correlated for the average female.
 
 However, three of the personality traits are correlated at the 95\% cl. 
 Factor 1 as OP-EX is negatively correlated with the probability for the average middle-upper caste individual of being in debt and the relationship seems to be clarified for the average non-dalit female: \ote, when OP-EX increase by one \sd, the probability of being in debt decrease by 11.1 percentage point (pp).
@@ -631,8 +632,9 @@ Last, at P90 ES is negatively correlated with higher magnitude than OP-EX, \ote~
 % \subimport{INPUT}{AME_debtpath.tex}
 
 
-% ***********************************
-\subsection{How does debt change over time as \PTCS~ changes?}
+	% ******************************
+	\subsection{How does debt change over time as \PTCS~ changes?}
+	% ******************************
 
 \paragraph{Total amount of debt}
 Table \ref{tab:ame_fe_loanamount} presents the results from the one-way individual fixed effect regressions to understand how does total loan amount change over time as \PTCS~ changes.
@@ -669,6 +671,12 @@ Respectively, when EX is one more sd, the predicted individual DSR increase by 3
 % ***********************************
 
 As argued in the introduction, the quantification of the role of \PTCS~ remains a blind spot of current debates about indebtedness.
+The statistics reveal a number of important insights. 
+First, the role of \PTCS~ is heterogenous depending on the gender and the caste of individuals,  diverse and highly fragmented along the lines of caste, class and localisation in terms of access to debt, debt purpose and price of the loan. 
+In what follows, we use insights from our qualitative analysis to further document and complement the analyses on debt fragmentation. 
+We discuss respectively fragmentation along caste and location, because for these social factors the qualitative analyses provide most complementary insights to the statistics.
+
+
 
 
 \paragraph{\PTCS~ and debt in the literature}

@@ -64,7 +64,7 @@ i=3 --> at=1 (middle-upper male) at=2 (dalits male) at=3 (middle-upper female) a
 */
 
 *cap ssc inst sxpose
-foreach x in indebt_indiv loanamount_indiv1000 DSR_indiv FE_loanamount_indiv1000 FE_DSR_indiv b5_indebt_indiv b5_loanamount_indiv1000 b5_DSR_indiv {
+foreach x in indebt_indiv loanamount_indiv1000 DSR_indiv FE_loanamount_indiv1000 FE_DSR_indiv { //b5_indebt_indiv b5_loanamount_indiv1000 b5_DSR_indiv {
 
 forvalues i=1(1)4{
 *****
@@ -95,8 +95,8 @@ keep _deriv at margin se statistic pvalue ci_lb ci_ub
 *label var ci_lb "[95% Conf."
 *label var ci_ub "Interval]"
 *export excel using "margins`i'.xlsx", sheet("`x'", replace) firstrow(varlabels)
-gen margin_str=strofreal(margin, "%9.3f")
-gen stat_str=strofreal(statistic, "%9.3f")
+gen margin_str=strofreal(margin, "%9.2f")
+gen stat_str=strofreal(statistic, "%9.2f")
 keep _deriv at margin_str stat_str
 rename margin_str nstr1
 rename stat_str nstr2
@@ -220,7 +220,7 @@ export excel using "margins.xlsx", sheet("`x'", replace) firstrow(varlabels)
 
 
 ***QREG
-foreach x in loanamount_indiv1000 DSR_indiv b5_loanamount_indiv1000 b5_DSR_indiv {
+foreach x in loanamount_indiv1000 DSR_indiv { //b5_loanamount_indiv1000 b5_DSR_indiv {
 foreach i in 10 25 50 75 90{
 *****
 *****
@@ -236,8 +236,8 @@ gen `y'=_`y'
 }
 keep _deriv margin se statistic pvalue ci_lb ci_ub
 
-gen margin_str=strofreal(margin, "%9.3f")
-gen stat_str=strofreal(statistic, "%9.3f")
+gen margin_str=strofreal(margin, "%9.2f")
+gen stat_str=strofreal(statistic, "%9.2f")
 keep _deriv margin_str stat_str
 rename margin_str nstr1
 rename stat_str nstr2
@@ -323,7 +323,7 @@ export excel using "margins.xlsx", sheet("qreg_`x'", replace) firstrow(varlabels
 
 
 
-
+/*
 
 
 ******* Debtpath

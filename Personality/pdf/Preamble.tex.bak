@@ -448,12 +448,12 @@ xleftmargin=0.5cm
 % *****************************************************************
 \newcommand\figaround[1]{%
 \begin{center}
-\textbf{[Figure \ref{#1} around here]
+\textbf{[Figure \ref{#1} around here]}
 \end{center}
 }%
 
 \newcommand\tabaround[1]{%
 \begin{center}
-[Table \ref{#1} around here]
+\textbf{[Table \ref{#1} around here]}
 \end{center}
 }%

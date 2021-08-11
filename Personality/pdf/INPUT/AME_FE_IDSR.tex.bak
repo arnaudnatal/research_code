@@ -34,7 +34,7 @@
     Nb of groups & 733   &       & \multicolumn{2}{c}{733} &       & \multicolumn{2}{c}{733} &       & \multicolumn{4}{c}{733} \\
     $\uprho$ & 0.561 &       & \multicolumn{2}{c}{0.570} &       & \multicolumn{2}{c}{0.557} &       & \multicolumn{4}{c}{0.564} \\
     Within $R^2$ & 0.062 &       & \multicolumn{2}{c}{0.084} &       & \multicolumn{2}{c}{0.077} &       & \multicolumn{4}{c}{0.106} \\
-    Between $R^2$ & 0.007 &       & \multicolumn{2}{c}{0.009} &       & \multicolumn{2}{c}{0.007} &       & \multicolumn{4}{c}{0.09} \\
+    Between $R^2$ & 0.007 &       & \multicolumn{2}{c}{0.009} &       & \multicolumn{2}{c}{0.007} &       & \multicolumn{4}{c}{0.009} \\
     Overall $R^2$ & 0.009 &       & \multicolumn{2}{c}{0.012} &       & \multicolumn{2}{c}{0.013} &       & \multicolumn{4}{c}{0.018} \\
     F-stat & 1.077 &       & \multicolumn{2}{c}{0.967} &       & \multicolumn{2}{c}{0.968} &       & \multicolumn{4}{c}{0.904} \\
     p-value & 0.369 &       & \multicolumn{2}{c}{0.519} &       & \multicolumn{2}{c}{0.518} &       & \multicolumn{4}{c}{0.654} \\
