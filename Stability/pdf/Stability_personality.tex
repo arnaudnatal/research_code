@@ -1,0 +1,135 @@
+\documentclass[a4paper, 11pt, onecolumn]{article} 
+
+% arara: pdflatex 
+%% arara: bibtex
+%% arara: pdflatex
+%% arara: pdflatex
+%% arara: clean: {extensions: [ aux, bbl, out, toc, blg, thm ]}
+
+\input{Preamble}
+
+%\usepackage{fonttable}
+
+\usepackage{import}
+
+\usepackage[
+singlelinecheck=false % <-- important
+]{caption}
+
+\usepackage{upgreek}
+
+\newcommand{\ie}{i.e.}
+\newcommand{\sd}{standard deviation}
+\newcommand{\pp}{percentage points}
+\newcommand{\aebe}{all else being equal}
+\newcommand{\Aebe}{All else being equal}
+\newcommand{\ote}{other things equal}
+\newcommand{\Ote}{Other things equal}
+\newcommand{\cl}{confidence level}
+\newcommand{\lit}{\dev{literature}}
+\newcommand{\PTCS}{PT\&CS}
+
+
+
+
+
+% \renewcommand*\thetable{\Alph{section}.\arabic{table}}
+% \renewcommand*\thefigure{\Alph{section}.\arabic{figure}}
+
+
+% *****************************************************************
+% Interlignes et marges
+% *****************************************************************
+\setstretch{1.25}
+\geometry{%
+left=2.5cm,
+right=2.5cm,
+top=2.5cm,
+bottom=2.5cm,
+%includefoot,
+%headsep=1cm,
+%footskip=1cm
+}%
+
+% *****************************************************************
+% Page de garde
+% *****************************************************************
+\title{Personality traits and cognitive skills in rural India: is stable over time and indiviudal?}
+\author{Arnaud Natal\thanks{Univ. Bordeaux, CNRS, GREThA, UMR 5113, F-33600 \textsc{Pessac, France} - \email{arnaud.natal@u-bordeaux.fr}} ~ \& Christophe J. Nordman\thanks{IRD, UMR LEDa-DIAL, IFP - \email{nordman@dial.prd}} }
+\date{\today}
+\renewcommand\maketitlehookc{%
+  \begin{center}
+    %\textsuperscript{1}{\small Université de Bordeaux}
+    \textsuperscript{}{\normalsize Very preliminary draft}
+  \end{center}}
+
+% ******************************************************************
+\begin{document}
+\maketitle
+
+\hrule 
+\vspace{0.3cm}
+
+\begin{resab}{Abstract}
+\end{resab}
+
+\begin{keywords}
+\end{keywords}
+
+\begin{jelcodes}
+\end{jelcodes}
+
+\hrule
+%\linenumbers
+
+\clearpage
+\newpage
+% ******************************
+\section{Introduction}
+% \addcontentsline{toc}{section}{Introduction}
+\label{Introduction}
+% ******************************
+
+
+
+\clearpage
+\newpage
+%-------------------------------------------------------------------------------%
+%\begin{nolinenumbers}
+\addcontentsline{toc}{section}{References}
+%\bibliography{C:/Users/Arnaud/Dropbox/Arnaud/Ref_Arnaud}
+\bibliography{Ref_Arnaud}
+%\nocite{*}
+
+
+
+
+
+\clearpage
+\newpage
+% ***********************************
+\section*{Tables and figures}
+\addcontentsline{toc}{section}{Tables and figures}
+% ***********************************
+
+
+
+
+\clearpage
+\newpage
+%-------------------------------------------------------------------------------%
+\appendix
+\addcontentsline{toc}{section}{Appendix}
+
+
+
+
+
+\clearpage
+\newpage
+%-------------------------------------------------------------------------------%
+\setcounter{tocdepth}5
+\tableofcontents
+
+%\end{nolinenumbers}
+\end{document}

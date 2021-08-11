@@ -7161,6 +7161,41 @@ It has also been noted that there exists a close correlation between class, cast
   publisher = {American Economic Association},
 }
 
+@Article{Hafen2010,
+  author    = {Christopher A. Hafen and Kamlesh Singh and Brett Laursen},
+  journal   = {Journal of Happiness Studies},
+  title     = {The Happy Personality in India: The Role of Emotional Intelligence},
+  year      = {2010},
+  month     = {nov},
+  number    = {5},
+  pages     = {807--817},
+  volume    = {12},
+  doi       = {10.1007/s10902-010-9228-4},
+  publisher = {Springer Science and Business Media {LLC}},
+  url       = {https://doi.org/10.1007/s10902-010-9228-4},
+}
+
+@Article{Singh2013,
+  author    = {Jitendra K. Singh and Girishwar Misra and Boele De Raad},
+  journal   = {European Journal of Personality},
+  title     = {{Personality Structure in the Trait Lexicon of Hindi, a Major Language Spoken in India}},
+  year      = {2013},
+  month     = {nov},
+  number    = {6},
+  pages     = {605--620},
+  volume    = {27},
+  doi       = {10.1002/per.1940},
+  publisher = {{SAGE} Publications},
+  url       = {https://doi.org/10.1002/per.1940},
+}
+
+@Book{Polanyi1944,
+  author    = {Karl Polanyi},
+  publisher = {Farrar \& Rinehart},
+  title     = {The Great Transformation},
+  year      = {1944},
+}
+
 @Comment{jabref-meta: databaseType:bibtex;}
 
 @Comment{jabref-meta: grouping:
