@@ -184,7 +184,7 @@ In this context it appears important to investigate the role of \PTCS~ on indebt
 %\paragraph{Problematic, contribution and plan}
 In a context marked by numerous crises, where indebtedness --and all that it represents on the social level-- is predominent with growing inequalities, study the relationship with \PTCS~ appears full of meaning.
 In this article we investigate how \PTCS~ shape indebtedness situation? (i) and more finely, how the \PTCS~ varies across the indebtedness distribution? (ii).
-Then, we analyse how \PTCS~ influences the debt trajectory (iii)? and how does debt change over time as \PTCS~ changes? (iv).
+Then, we analyse how does debt change over time as \PTCS~ changes? (iii).% how \PTCS~ influences the debt trajectory (iii)? and how does debt change over time as \PTCS~ changes? (iv).
 At the same time, we try to capture the weight of social identity by investigating the contribution of \PTCS~ for each social groups: do individuals manage to differentiate themselves through their skills?
 By providing descriptive and econometric empirical insights, this paper contributes to furthering our understanding of the determinants of individual indebtedness --which is rare and valuable in developing countries, as well as, contributing more generally to the expanding literature exploring the implications of \PTCS~ for economic outcomes and aim to articulating behavioural and structuralist approcahes, disjoint disciplinary approaches.
 The rest of the article is organised as follow: section 2 is devoted to data and methodology, then, in section 3 we discuss some descriptive statistics to highlight the weight of social identity before exploring and discussing the relationship between \PTCS~ and indebtedness in section 4.
@@ -664,7 +664,7 @@ Respectively, when EX is one more sd, the predicted individual DSR increase by 3
 \clearpage
 \newpage
 % ***********************************
-\section{Discussion}
+\section{Discussion and conclusion}
 % ***********************************
 
 
@@ -672,27 +672,92 @@ Respectively, when EX is one more sd, the predicted individual DSR increase by 3
 As argued in the introduction, the contribution of \PTCS~ remains a blind spot of current debates on indebtedness in India.
 The statistics reveal a number of important insights and recognize that behavioural and structuralist are meaningful and need to be articulated to deepend understand indebtedness.
 The role of \PTCS~ is heterogenous depending on the gender and the caste of individuals, and magnitude differs across skills, groups and output.
-In what follows, we use literature on \PTCS~ and indebtedness to further document and complement the analyses. 
-First, we relate our results to other studies on \PTCS~ and debt --which take all places in northern countries.
-Then, we discuss our findings in by mobilizing a more contextual literature on the one hand debt and on the other hand \PTCS.
+In what follows, we use our findings and literature on \PTCS~ and indebtedness to provide answers to our questions.
+%First, we relate our results to other studies on \PTCS~ and debt --which take all places in northern countries.
+%Then, we discuss our findings in by mobilizing a more contextual literature on the one hand debt and on the other hand \PTCS.
 
-\paragraph{}
+	% ******************************
+	\subsection{How \PTCS~ shape indebtedness situation?}
+	% ******************************
 
 An interesting finding of this paper is that cognitive skills appear to play a limited role on individual debt, \ote, while personality traits seems to be significantly associated with debt.
 Unlike \cite{Agarwal2013} whose find that numeracy is negatively correlated with financial mistake, neither numeracy, literacy or Raven have a significant correlation on the probabilty of being in debt.
-On the shaping of debt, only Raven test is correlated (positively) with the total amount of debt for dalit female, \aebe.
-This result illustrate \dev{le fait que tout le monde ou presque soit endetté, pas besoin d'avoir une certaine intelligence, (chose qui peut paraitre necessaire pour les tdint et tout, et bah non)}. Notion de financial literacy?
+This result illustrate \dev{le fait que tout le monde ou presque soit endetté, pas besoin d'avoir une certaine intelligence, (chose qui peut paraitre necessaire pour les tdint et tout, et bah non)  Notion de financial literacy?}
 
-Looking at personality traits, we have first identifies the crucial role of OP-EX and CO in shaping debt especially for non-dalit male, and dalit female.
-As shown in the literature \citep{Brown2014}, OP-EX is positively correlated with the probability of holding debt while our results suggest negative relationship for non-dalits female.
-We also find positive correlation with the total loan amount and the individual debt service ratio respectively for non-dalit male and dalit female, which coroborate with \cite{Brown2014}.
-% Using panel data variation, it appear that extraversion is negatively correlated with the amount of debt.
-% FIndings on Openness and Extraversion, thus \dev{suggest}
-% \cite{Brown2014, Donnelly2012} find that conscientiousness is inversely associated with the level of unsecured debt.
-% Our findings corroborate for the total loan amount and the individual DSR, but we find positive correlation with the probability of being in debt while \cite{Nyhus2001, Brown2014} find negative relationship.
-% It \dev{suggest that} individuals who are more conscientious are more able to ``manage their money through greater levels of financial self-control.''
+Looking at personality traits, we have first identifies the crucial role of OP-EX and CO in shaping debt with heterogenous contribution according to caste and gender.
+As shown in the literature \citep{Brown2014}, OP-EX is positively correlated with the probability of holding debt and positively correlated with the amount of debt.
+Our results suggest negative relationship with the probabilty of being in debt only for non-dalit female and positive relationship with the level of debt (total amount and DSR) for non-dalit male and dalit female.
+This interesting pattern can be explained by \dev{what?}.
+\cite{Brown2014, Donnelly2012} find that conscientiousness is inversely associated with the level of unsecured debt.
+Our findings corroborate for the total loan amount and the individual DSR, but we find positive correlation with the probability of being in debt while \cite{Nyhus2001, Brown2014} find negative relationship.
+It \dev{suggest that} individuals who are more conscientious are more able to ``manage their money through greater levels of financial self-control.''
 
 
+AG negatively correlated
+The only correlation with 5\% risk of error for Agreeableness is negative and with the amount of debt.
+\cite{Brown2014} find positive correlation.
+\cite{Nyhus2001} find not correlation with debt.
+
+Thus, yes personality traits shape indebtedness situation in rural India while cognitive skills not.
+
+	% ******************************
+	\subsection{How the \PTCS~ varies across the indebtedness distribution?}
+	% ******************************
+
+However, on the level of the debt, Raven test is correlated (positively) with the total amount of debt for dalit female, \aebe, numeracy and literacy are negatively correlated with the amount of debt in the first 30-40\% of the distribution and positively correlated in the last decile.
+ES negatively at median
+OPEX positively at last 20-10\% 
+
+OPEX change à la fin tout comme le cognitif. 
+
+
+	% ******************************
+	\subsection{How does debt change over time as \PTCS~ changes?}
+	% ******************************
+Literacy positively correlated 
+EX negatively correlated
+
+Using panel data variation, it appear that extraversion is negatively correlated with the amount of debt, especially for dalit male.
+
+
+Burden of debt nothing but amount of debt literacy and EX.
+
+	% ******************************
+	\subsection{Do individuals manage to differentiate themselves through their skils?}
+	% ******************************
+
+Dalit female with higher AG and Raven have higher amount of debt than other, \ote, and higher opex = higher burden.
+Les non dalit female elle se différencient avec OPEX et Poru car réduit leur proba d'être endetté.
+
+Dalit male EX negative avec le amount fe
+Non dalit male CO augmente proba d'etre endetté
+OPEX augmente montant de la dette et CO le diminue
+et literacy augmente amount fe
+
+Aborder le fait que DSR rejoint un peu la question de la negociation du remboursement
+
+Oui, certaines se démarquent.
+
+	% ******************************
+	\subsection{Concluding remarks}
+	% ******************************
+
+This paper reveal a number of important insights.
+Personality traits and cognitive skills are correlated with the probability of being in debt, the amount of debt and the burden of debt in rural India at different magnitude according to caste and sex.
+Another findings, effect of OP-EX, ES, numeracy and literacy varies across the debt distribution.
+
+As \cite{Brown2014} on montre l'importance des \PTCS~ dans l'analyse des finances
+
+Numerous study reveal the gravity of the burden of debt for female and dalits, with double-jeopardy phenomenom. 
+Here we highlight the fact that in this social identity, there is considerable differences.
+
+Numerous study have highlighted disparities in terms of debt between caste and gender.
+Nous sommes les seules à avoir creusé encore plus précisément pour savoir si des gens s'en sortaient mieux que d'autres à l'intérieur de ces identités sociales.
+
+
+% Malgré un double jeopardy avéré pour les dalits female, some tend to differenciate themselves with \PTCS~.
+% Les programmes de MC qui essayent de cibler les plus pauvres ne sont pas super efficient car même chez eux, il y a beaucoup de situation différentes en termes de dette.
+% Pose la question de l'inclusion financière
 
 
 % \paragraph{\PTCS~ and debt: comparisons with not}
@@ -703,19 +768,9 @@ We also find positive correlation with the total loan amount and the individual 
 % Our results corroborate with these latter: except for non-dalit female with the amount of debt (negatively correlated), we do not find any correlation with 5\% risk of error.
 % It suggest that ES is not important in influencing incidence and level of debt, \aebe, which is interesting \dev{in the context of the positive association found in the existing literature relating to financial optimism and debt.}
 
-% The only correlation with 5\% risk of error for Agreeableness is negative and with the amount of debt.
-% \cite{Brown2014} find positive correlation.
-% \cite{Nyhus2001} find not correlation with debt.
-
-% Concerning cognitive skills, \citep{Agarwal2013}.
 
 
 
-
-
-% \paragraph{Contextualization of the findings}
-
-% Ici parler des quantiles regressions pour dire que le long de la distribution, certains traits jouent plus ou moins
 % La réputation et la confiance sont des éléments clés dans notre contexte:
 % trust play a crucial role since both largely condition creditworthiness (and access to employment). 
 % The embeddedness of economic transactions in personal relationships, typical of informal economies (Platteau 1994; Hart 2000), remains a predominant reality in India (Harriss-White 2003).
@@ -732,99 +787,56 @@ We also find positive correlation with the total loan amount and the individual 
 
 
 
-Findings:
-
-CS are less good predictor than PT.
-It is correlated only with the amount of debt au premier tier (-) et au dixième (+)
 
 
-Les CS ne shape pas la dette.
-C'est OPEX qui shape positivement la dette (le montant et le fardeau)
-CO shape aussi, mais en negatively.
+% \begin{itemize}
+% \item[Proba]
+% \item No CS correlated
+% \item OP-EX negatively correlated for the average non-dalit female
+% \item \textit{Porupillatavan} negatively correlated for the average non-dalit female
+% \item CO positively correlated for the average middle-upper male
+
+% \item[Amount]
+% \item Raven positively correlated for the average dalit female
+% \item OP-EX positively correlated for the average non-dalit male
+% \item CO negatively correlated for the average non-dalit male
+% \item AG negatively correlated for the average dalit female
+
+% \item[IDSR]
+% \item No CS correlated
+% \item OP-EX positively correlated for the average dalit female
+% \item CO negatively correlated for the average individual
+
+% \item[qreg-Amount]
+% \item ES negatively correlated at P50
+% \item Numeracy negatively correlated at P30
+% \item Numeracy positively correlated at P90
+% \item Literacy negatively correlated at P30-P40
+% \item Literacy positively correlated at P90
+
+% \item[qreg-IDSR]
+% \item OP-EX positively correlated at P80-P90
+
+% \item[FE-Amount]
+% \item Literacy positively correlated for the average non-dalit male
+% \item EX negatively correlated for the average dalit male
+
+% \item[FE-IDSR]
+% \item Nothing
+% \end{itemize}
 
 
-
-\begin{itemize}
-\item[Proba]
-\item No CS correlated
-\item OP-EX negatively correlated for the average non-dalit female
-\item \textit{Porupillatavan} negatively correlated for the average non-dalit female
-\item CO positively correlated for the average middle-upper male
-
-\item[Amount]
-\item Raven positively correlated for the average dalit female
-\item OP-EX positively correlated for the average non-dalit male
-\item CO negatively correlated for the average non-dalit male
-\item AG negatively correlated for the average dalit female
-
-\item[IDSR]
-\item No CS correlated
-\item OP-EX positively correlated for the average dalit female
-\item CO negatively correlated for the average individual
-
-\item[qreg-Amount]
-\item ES negatively correlated at P50
-\item Numeracy negatively correlated at P30
-\item Numeracy positively correlated at P90
-\item Literacy negatively correlated at P30-P40
-\item Literacy positively correlated at P90
-
-\item[qreg-IDSR]
-\item OP-EX positively correlated at P80-P90
-
-\item[FE-Amount]
-\item Literacy positively correlated for the average non-dalit male
-\item EX negatively correlated for the average dalit male
-
-\item[FE-IDSR]
-\item Nothing
-\end{itemize}
+% Conclusion:
+% \begin{itemize}
+% \item[Groups]
+% \item Dalit female = 3 (Raven, AG: + amount) (OP-EX: + IDSR)
+% \item Dalit male = 1 (EX: - fe amount) 
+% \item Non-dalit female = 2 (OP-EX, Poru: - proba)
+% \item Non-dalit male = 4 (CO: + proba) (OP-EX: + amount) (CO: - amount) (literacy: + fe amount)
 
 
-Conclusion:
-\begin{itemize}
-\item[Groups]
-\item Dalit female = 3 (Raven, AG: + amount) (OP-EX: + IDSR)
-\item Dalit male = 1 (EX: - fe amount) 
-\item Non-dalit female = 2 (OP-EX, Poru: - proba)
-\item Non-dalit male = 4 (CO: + proba) (OP-EX: + amount) (CO: - amount) (literacy: + fe amount)
+% \end{itemize}
 
-
-\end{itemize}
-
-
-
-
-
-
-
-
-
-\clearpage
-\newpage
-% ***********************************
-\section{Conclusion}
-%\addcontentsline{toc}{section}{Conclusion}
-\label{Conclusion}
-% ***********************************
-
-This paper reveal a number of important insights.
-Personality traits and cognitive skills are correlated with the probability of being in debt, the amount of debt and the burden of debt in rural India at different magnitude according to caste and sex.
-Another findings, effect of OP-EX, ES, numeracy and literacy varies across the debt distribution.
-
-As \cite{Brown2014} on montre l'importance des \PTCS~ dans l'analyse des finances
-
-Numerous study reveal the gravity of the burden of debt for female and dalits, with double-jeopardy phenomenom. 
-Here we highlight the fact that in this social identity, there is considerable differences.
-
-Numerous study have highlighted disparities in terms of debt between caste and gender.
-Nous sommes les seules à avoir creusé encore plus précisément pour savoir si des gens s'en sortaient mieux que d'autres à l'intérieur de ces identités sociales.
-
-
-
-% Malgré un double jeopardy avéré pour les dalits female, some tend to differenciate themselves with \PTCS~.
-% Les programmes de MC qui essayent de cibler les plus pauvres ne sont pas super efficient car même chez eux, il y a beaucoup de situation différentes en termes de dette.
-% Pose la question de l'inclusion financière
 
 
 \clearpage
