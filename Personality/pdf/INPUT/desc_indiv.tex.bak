@@ -37,7 +37,7 @@
     \hspace*{0.1cm} \textit{Became in debt} &       &       & 8.42  &       &       &       & 13.71 \\
     \hspace*{0.1cm} \textit{Always in debt} &       &       & 62.85 &       &       &       & 60.48 \\
     Number of indebted individuals & n=359 & n=330 &       &       & n=284 & n=276 &  \\
-    Loan amount (\rupee1k) &       &       &       &       &       &       &  \\
+    Loan amount (1,000 INR) &       &       &       &       &       &       &  \\
     \hspace*{0.1cm} \textit{Mean} & 189.74 & 136.87 & 2,067.62 &       & 79.52 & 90.38 & 126.21 \\
     \hspace*{0.1cm} \textit{SD} & 250.40 & 238.64 & 41,296.09 &       & 97.08 & 94.29 & 934.12 \\
     \hspace*{0.1cm} \textit{Median} & 105.00 & 64.58 & -56.94 &       & 44.50 & 69.10 & 23.55 \\
