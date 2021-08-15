@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.22 (MiKTeX 21.6.28) (preloaded format=pdflatex 2021.7.10)  15 AUG 2021 23:48
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (MiKTeX 21.6.28) (preloaded format=pdflatex 2021.7.10)  15 AUG 2021 23:54
 entering extended mode
 **./Personality_debt.tex
 (Personality_debt.tex
@@ -21,7 +21,7 @@ File: size11.clo 2021/02/12 v1.4n Standard LaTeX file (size option)
 \belowcaptionskip=\skip48
 \bibindent=\dimen138
 )
-(Preamble.tex
+(C:/Users/Arnaud/Dropbox/Arnaud/Preamble.tex
 (C:\Users\Arnaud\AppData\Local\Programs\MiKTeX\tex/latex/apacite\apacite.sty
 Package: apacite 2013/07/21 v6.03 APA citation
 \c@BibCnt=\count190
@@ -1978,8 +1978,8 @@ Package rerunfilecheck Info: File `Personality_debt.out' has not changed.
 (rerunfilecheck)             Checksum: E9375190873669C20DF7F552DD799D4C;4721.
  ) 
 Here is how much of TeX's memory you used:
- 37338 strings out of 478847
- 686360 string characters out of 2847912
+ 37340 strings out of 478847
+ 686519 string characters out of 2847912
  1255056 words of memory out of 3000000
  53725 multiletter control sequences out of 15000+600000
  596815 words of font info for 589 fonts, out of 8000000 for 9000

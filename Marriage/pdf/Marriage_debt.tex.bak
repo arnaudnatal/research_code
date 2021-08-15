@@ -1,0 +1,1025 @@
+\documentclass[a4paper, 11pt, onecolumn]{article} 
+
+% arara: pdflatex 
+% arara: bibtex
+% arara: pdflatex
+% arara: pdflatex
+% arara: clean: {extensions: [ aux, bbl, out, toc, blg, thm ]}
+
+\input{C:/Users/Arnaud/Dropbox/Arnaud/Preamble}
+
+%\usepackage{fonttable}
+
+\usepackage{import}
+
+\usepackage[
+singlelinecheck=false % <-- important
+]{caption}
+
+\usepackage{upgreek}
+
+\newcommand{\ie}{i.e.}
+\newcommand{\sd}{standard deviation}
+\newcommand{\pp}{percentage points}
+\newcommand{\aebe}{all else being equal}
+\newcommand{\Aebe}{All else being equal}
+\newcommand{\ote}{other things equal}
+\newcommand{\Ote}{Other things equal}
+\newcommand{\cl}{confidence level}
+\newcommand{\lit}{\dev{literature}}
+\newcommand{\PTCS}{PT\&CS}
+
+
+
+
+
+% \renewcommand*\thetable{\Alph{section}.\arabic{table}}
+% \renewcommand*\thefigure{\Alph{section}.\arabic{figure}}
+
+
+% *****************************************************************
+% Interlignes et marges
+% *****************************************************************
+\setstretch{1.25}
+\geometry{%
+left=2.5cm,
+right=2.5cm,
+top=2.5cm,
+bottom=2.5cm,
+%includefoot,
+%headsep=1cm,
+%footskip=1cm
+}%
+
+% *****************************************************************
+% Page de garde
+% *****************************************************************
+\title{Marriage and debt in rural India}
+\author{Arnaud Natal\thanks{Univ. Bordeaux, CNRS, GREThA, UMR 5113, F-33600 \textsc{Pessac, France} - \email{arnaud.natal@u-bordeaux.fr}}}
+\date{\today}
+\renewcommand\maketitlehookc{%
+  \begin{center}
+    %\textsuperscript{1}{\small Université de Bordeaux}
+    \textsuperscript{}{\normalsize Very preliminary draft}
+  \end{center}}
+
+% ******************************************************************
+\begin{document}
+\maketitle
+
+\hrule 
+\vspace{0.3cm}
+
+\begin{resab}{Abstract}
+
+\end{resab}
+
+\begin{keywords}
+
+\end{keywords}
+
+\begin{jelcodes}
+
+\end{jelcodes}
+
+\hrule
+%\linenumbers
+
+\clearpage
+\newpage
+% ******************************
+\section{Introduction}
+% \addcontentsline{toc}{section}{Introduction}
+\label{Introduction}
+% ******************************
+\section*{Introduction}
+\label{section:introduction}
+%\addcontentsline{toc}{section}{Introduction}
+\paragraph{Accroche}
+\cite{Dubois1825} : en Inde, le mariage est la chose la plus importante
+
+\citep{Anukriti2018a}
+
+
+\paragraph{Problématisation}
+
+Most of the literature on marriage in India deal with dowry and the consequences in terms of empowerment \citep{Roy2015, Alfano2017, Srinivasan2007} or the age at marriage and the child marriage \citep{Vogl2013, Sheela2003}
+Few economist deal with the finance of marriage.
+Recently, \cite{Anukriti2020} investigate the chanels to finance dowry in India.
+They show that actual saving is drived by the expected amount of dowry [method].
+\cite{Bloch2004} is one of the only research article that try to investigate the determinants of marriage expenses [literature].
+
+\cite{Guerin2020c} show that ceremonials (including marriage) is a form of savings in rural India.
+Married expect withdraw a profit from marriage with gift.
+
+
+We try to understand the determinants of marriage benefits after 
+
+
+\cite{Krishna2003, Krishna2004} : debt as a source of poverty 
+
+
+
+
+\cite{Guerin2014a} : the problem is not debt, but to whom one becomes indebted
+
+
+\paragraph{Conséquences COVID}
+
+\cite{Guerin2020} : conséquences debt
+
+\cite{Shahare2021} : conséquences migrants 
+
+lockdow affected the lives of 66 million migrant daily wage workers
+(Census of India, 2011). Almost 77 percent of the workforce in India is included under
+this vulnerable employment category (ILO, 2019). They are the main pillars of nation-
+building of the Indian economy and contribute 50 percent to GDP (National
+Commission for Enterprises in the Unorganised Sector (NCEUS), 2007). 
+90 percent of the migrant workers belong to lower castes,
+tribes,1 and religious minorities in the rural areas (Desai \& Vanneman, 2011–2012;
+R. Srivastava, 2020).
+
+
+\cite{Desai2021} : conséquences en emploi par genre
+
+Estimates based on random-effects
+logistic regression models show that for men, the predicted probability of
+employment declined from 0.88 to 0.57, while for women it fell from 0.34 to
+0.22. Women’s concentration in self-employment may be one reason why their
+employment was somewhat protected. However, when looking only at wage
+workers, the study finds that women experienced greater job losses than men
+with predicted probability of employment declining by 72 percent for women
+compared to 40 percent for men. The findings highlight the gendered impacts
+of macro crises and inform policy considerations through ongoing phases of
+lockdowns and relaxation.
+
+%-----------------------------------------------------
+%-----------------------------------------------------
+\section{Theoretical Framework}
+%-----------------------------------------------------
+%-----------------------------------------------------
+
+
+%-----------------------------------------------------
+\subsection{Marriage in economics}
+\cite{Becker1973} : base pour parler de l'économie des marriages
+
+
+
+%-----------------------------------------------------
+\subsection{Marriage in India}
+
+\paragraph{Importance of marriage}
+\cite{Radhakrishnan1937} = mariage = sacrement central dans la vie des indiens
+Allant jusquà l'alliance entre deux familles \citep{Sheela2003}
+
+En Inde, choisir l’époux de sa fille est un des devoirs les plus importants pour un père, du
+moins en Inde du Sud \cite{Jejeebhoy2005}
+
+\cite{James2015} : stabilité de l'institution du mariage en Inde du Sud
+
+
+
+\paragraph{Characteristics}
+
+\begin{itemize}
+\item Endogamy
+Au-delà du fait que c’est à la famille de choisir la partenaire, cette dernière doit appartenir,
+en pratique19 à la même caste que le mari (endogamie), mais à un gotra (famille élargie), pravar
+(lien religieux et spirituel), village et pinda (parenté) différent \cite{Radhakrishnan1937}.
+Le mariage inter caste est autorisé lorsque c’est la femme qui appartient à une caste inférieure. Nous parlons alors
+de mariage anumola qui représente en quelque sorte une ascendance sociale des femmes dalits \cite{Ahuja2015}. L’inverse (femme de caste supérieure au mari), appelé pratiloma, est formellement interdit \cite{Radhakrishnan1937}.
+
+\cite{Bloch2004} : 
+To better understand the nature of marriage expenditures in India, it might help to
+outline the basic nature of Indian marriage markets: Marriage is restricted to endoga-
+mous groups. That is, people are only permitted to marry within a well-defined set of
+families who make up their subcaste. A second feature of the marriage market is that
+it is patrilocal4-brides leave their parents' home to live with their husbands. A third
+is that marriages are arranged for both grooms and brides by their parents. Finally it
+is important to note that marriage is considered final and, while there are cases of sep-
+aration, divorce is not an option
+D'autant plus en zones rurales
+
+Système des jati : la population est divisée en sous-groupe de caste localisé, des jaatis, héréditaire et endogame, associées à un certain métier et occupant une position particulière dans la hiérarchie sociale qui sont exclusives
+: on ne peut appartenir qu’à un et un seul jati
+
+\item Arranged marriage\footnote{En 2019 Naresh Tikait, chef du Bharatiya Kisan Union
+(un clan d’agriculteur comptant plus de 20 millions de membres à travers l’Inde) et président
+du Baliyan Khap des Jats (populations d’agriculteurs installés dans le nord-ouest de l’Inde et
+au Pakistan et plus particulièrement dans le Pendjab et le Rajasthan) déclare15 que les femmes
+n’ont pas leur mot à dire quant au choix de leur époux au vu du coût important que ces dernières
+représentent pour leur famille respective. Pour reprendre ses termes: " Ça n’est pas correct.
+Lorsqu’ils dépensent pour leur éducation, les parents devraient avoir leur mot à dire dans la
+sélection du partenaire de vie de leurs filles. "
+}
+
+Mariage arrangé comme assurance chez les plus pauvres : migration assez "loin" pour limiter risques climatiques \cite{Rosenzweig1989} + transferts de fond de la part des femmes vers leur famille \cite{Bélanger2011}
+
+Chez les upper, assurance par la stimulation du réseau \cite{Munshi2009}
+
+D'après \cite{Jejeebhoy2005} au Tamil Nadu, mariage avec migration de courte distance surtout pour le réseau
+
+\item Dowry
+
+financement de la dot, épargne vs emprunt \cite{Caldwell1983, Corno2016}
+
+Qu'est ce que la dot ? nature \cite{Caplan1984} + héritage ante mortem et 3 types de dot \cite{Tambiah1989} 
+
+\cite{Dalmia2005} pas vraiment un héritage
+
+Bride price \cite{Dalmia2005}
+
+\cite{Srinivasan2005} : dowry practice change in SI
+
+
+
+\item Age at marriage
+
+Mariage selon son rang dans la famille, donc les premiers se marient tot \cite{Field2008}
+Pour les filles mariage tot pour eviter avances sexuelles, pour virginité, filles = coutent cheres en éducation, santé, dot donc plus on marie tot plus on limite les dépensent et on réduit le montant de la dot \cite{Jensen2003}
+
+\cite{Reddy1991} : structure familiale et age au mariage en Inde du Sud
+
+
+
+\end{itemize}
+
+
+
+
+
+
+\cite{DeNeve2016} : economies of love in SI
+
+Kishwar has already challenged the idea that love marriages
+simply reflect a progressive practice in opposition to the traditional
+arranged marriage, from the perspective of a feminist interested in
+the empowerment of women and the agency afforded by different
+types of marriage.
+
+In the case of Grover’s
+research on low-income settlements in Delhi, she found that ‘the
+type of marriage into which a woman enters affects her access to
+postmarital support’7 and that the nature and extent of postmarital
+kin support were crucial in shaping women’s experiences of marital life and of the marriage they had entered into.8 One particularly
+interesting conclusion of Grover’s study was that love marriages were
+less likely to result in marital breakdown and divorce in the colonies
+she studied, not because there was more gender equality or women
+were more empowered, but because in such marriages women were
+more likely to be ‘deprived of the option of seeking parental shelter
+and support’.
+
+Tiruppur garment workers evaluate marriages
+in terms of the ‘family support’ and material assistance they enable
+or put at risk. They emphasize that in order to be successful in post-
+liberalization Tiruppur, one needs to mobilize as much parental and
+kin support as possible, and the arranged (endogamous) marriage
+is seen as the best guarantee to access such parental approval
+and material support. Young men’s narratives and experiences of
+postmarital life thus project a view of the arranged marriage as
+better suited to the demands and pressures of India’s contemporary
+‘enterprise culture’. Love marriages, by contrast, are presented
+and experienced as undermining one’s chances of obtaining the
+kin support that is so much needed to achieve ‘success’.
+
+What they say is that you cannot actually pull
+yourself up by your own bootstraps and that behind every successful
+man is a stable marriage and a supportive family. 
+
+Arranged marriages ‘are typically caste-endogamous
+alliances initiated by parents’,16 involving family and accompanied
+by ever-increasing gifts of gold, cash, and other commodities. Love
+marriages, by contrast, ‘are self-chosen unions preceded by pre-marital
+relationships based on love, which may or may not contravene caste-
+endogamy norms’17 and which may or may not get parental approval.
+The Tamil terms used are kalyaanam (marriage) for the normative
+or arranged marriage, and kaadal kalyaanam (love marriage) for its
+opposite form, for which the English ‘love marriage’ is usually used.
+16 Grover, Marriage, Love, Caste and Kinship Support, p. 3.
+17 Ibid., p. 3.
+
+However, the reality and diversity of marital arrangements cannot
+be captured by this simple dichotomy, and variations on the ideal
+types are many. What has now come to be known as the ‘love-cum-
+arranged marriage’ constitutes an increasingly important in-between
+form, in which partners select each other and initiate the marriage
+but where parental approval and involvement—usually marked by a
+conventional family wedding and gift exchanges—turns the marriage
+into the normative alliance it is supposed to be. Such parental approval
+is likely to be given when caste endogamy is observed and the alliance
+makes good economic sense, that is, when the status aspirations of the
+families involved are not challenged by the union. Even though the
+couple may have chosen each other, they will have obtained parental
+consent, even if only after protracted arguments and disagreements.
+This parental approval—albeit after the event—is what makes
+love-cum-arranged marriages resemble arranged marriages in that,
+crucially, the alliance is ultimately accepted by the respective families,
+a wedding is organized with parental involvement, gifts are exchanged,
+and the couple enjoys the support of kin on both sides.19
+Very often
+19 Donner, ‘One’s own marriage’; Fuller, C. J. and H. Narasimhan (2008).
+Companionate marriage in India: The changing marriage system in a middle-class
+Brahman subcaste. Journal of the Royal Anthropological Institute, 14:4, pp. 736–54.
+
+Moreover, parents
+under financial duress—of which there are many among Tiruppur’s
+labouring classes—tend to be more inclined to turn a self-chosen union
+into a ‘love-cum-arranged marriage’, as it may allow them to limit the
+size of the dowry and the cost of the wedding. In Tiruppur, such love-
+cum-arranged marriages are usually not publicly presented as ‘love
+marriages’ at all, but rather as ‘arranged’ or approved marriages.
+They also attract much less comment later on, as the postmarital
+lives of the couples resemble those of arranged marriages.
+
+\cite{Fuller2008}, on the other hand, use the term
+‘companionate marriages’ to refer to the rise of a type of marriage
+among middle-class Tamil Vattima Brahmans in which couples try
+to find out whether they will be congenial companions in marriage
+without necessarily selecting each other or ‘falling in love’ before
+marriage.21 This form of ‘companionate marriage’ and the courtship
+that precedes it have become increasingly popular among the
+wealthier Gounder families in Tiruppur too, but they are much less
+prevalent among the city’s labouring classes.22 The romantic unions
+and love marriages among Tiruppur’s working communities often flout
+the ideal of caste endogamy, cross religious boundaries, and disregard
+parental authority as well as differences of wealth and status.
+
+Recent research by Srinivasan has shown that
+the arranged marriage form, marked by soaring dowries and ever-
+increasing status competition, has become the norm across castes
+and classes in South India.25 The local use of ‘dowry’ includes both
+stridhanam, or gift to the bride, and ‘bridegroom-price’ or gifts paid to
+attract a suitable partner.26 Paying dowry has become a key strategy
+across social groups for attaining and expressing wealth and status
+in a context marked by rapid economic change, rising aspirations,
+and competitive consumption. With status itself being a premium
+social value, arranged marriages and rising dowries have become
+the vehicles for acquiring ‘status and prestige, high life-style, and
+mobility’.27 Crucially, love marriages forgo any gift exchange at the
+time of marriage and are thus also excluded from the status and wealth
+increases that any such exchanges may produce.
+25 Srinivasan, Daughters or dowries?.
+26 Caplan, L. (1984). Bridegroom price in urban India: Class, caste and ‘dowry evil’
+among Christians in Madras. Man, 19:2, pp. 216–33.
+27 Srinivasan, Daughters or dowries?, p. 603.
+
+Second, love marriages are also evaluated through a set of economic
+idioms about entrepreneurship, mobility, financial exchange, and
+material support. Just as arranged marriages are increasingly
+entangled with discourses about monetary exchange and postmarital
+support (as reflected in the widespread practice of dowry giving and
+postmarital gift exchanges), love marriages are similarly evaluated
+and experienced in terms of the contribution they make—or fail to
+make—to marital stability, economic well-being, and aspirations for
+status and social mobility. 
+
+
+
+
+
+
+
+
+
+
+
+
+\cite{Dharmalingam1994} : economics of marriage change in SI
+
+
+
+
+\cite{Guerin2020c}
+We attended the entire process for five of those, from the preparations, which involve
+lively debates among family members and subtle calculations to determine the scale of the events, to
+post-ceremonial remarks, both within the family (with heated debates on the generosity or conver-
+sely the selfishness of the guests) and the neighbourhood (here with endless judgments on the greatness – or the smallness – of the event). Discussions about notebooks – a backbone of ceremonial
+savings as we shall see below – were also key.7
+
+First of all, these events are concrete oppor-
+tunities to display and make visible the status (mariyātai) of the family. Ceremonies, insofar as they
+gather the whole set of relations of individuals and their families, and insofar as they are in great part
+funded by this same set of relations, express one’s mariyātai and contribute to building it. The scale of
+the ceremony is evaluated in terms of guest numbers, their ‘quality,’ the quality of food provided, and
+the gifts received: all this aims at maintaining, possibly uplifting or at least not downgrading the
+organisers’ mariyātai (and that of their respective kin). Far from being simple, impersonal, individual
+numbers of the kind found on a savings account statement, ceremonies reflect, crystalise and update
+the social wealth of a group and its control over specific territories. These aspects are assessed in
+terms of both the size of the local attendant population and the capacity to attract outsiders.
+
+The scale of the ceremony mostly depends on two criteria. The scale of ceremonies recently
+organised within the close circle (kinship and neighbourhood) is a first benchmark. Doing less
+amounts to a downgrade in terms of honour. Doing better, even very slightly, is usually what is
+expected.
+
+
+
+
+
+
+
+
+
+\cite{Guerin2014a} : Census data indicates that Tamil Nadu is one of the states where household debt is the highest (NSSO
+2003). 
+Traditional” forms of rural debt based around extreme dependency between
+landlords and labour are fading away (Cederlöf 1997; Guérin et al. 2009), as also observed in
+other parts of India (Breman 1974; Breman et al. 2009). Labourers now have a wide range of
+borrowing options. Empirical studies in the early 1980s highlighted the dynamism and
+diversification of the rural financial landscape (Bouman 1989; Harriss B. 1981). In rural
+Tamil Nadu for instance, professional lending, which had historically been the preserve of
+specific castes, has opened up to other communities. Many local elites also used their cash
+surpluses to invest as loans (Harriss B. 1981). More recent studies have shown that the
+diversification of Tamil Nadu’s rural financial landscape is still going on (Ramachandran and
+Swaminathan 2005; Polzin 2009).
+
+Tamil Nadu is
+moreover one of the states where microfinance has developed the most (Fouillet 2009).
+
+De l'autre côté (du côté de la demande donc), il y a une envie de mobilité sociale = consumérisme, même en zone rurale Kapadia2002
+
+Consumerism creates norms which many households are
+willing to follow without having the financial means to do so (the “paradox of aspiration”
+raised by Thorstein Veblen and also observed by Olsen and Morgan (2010) in Andhra
+Pradesh). Households are borrowing on a daily basis at slack financial times to make ends
+meet. They also borrow considerable amounts to marry their children, renovate their houses
+or invest in private education. 
+Avec RUME monthly debt service around half of their monthly income on average
+D'autant plus graves que les revenus ne sont pas stables
+
+On trouve trois types de ménages : 
+transitional over indebtedness
+pauperization
+extreme dependance
+
+
+
+
+
+
+
+
+%-----------------------------------------------------
+%-----------------------------------------------------
+\section{Data and method}
+%-----------------------------------------------------
+\cite{NEEMSISreport}
+\cite{NEEMSIS2017}
+
+\subsection{Data}
+Peut-être que je peux faire un matching avec pour les mariages de 2010-2016 comme ça je regarde avant marriage, juste après et au moins 4 ans après, même si ça me paraît difficile..!
+
+Bien regarder la composition par sexe et par âge des ménages pour trouver les mêmes, mais juste qu'il n'y a pas eu de mariage.
+Le mariage est la norme, donc en théorie, tous les HH qui ont une fille entre 18 et 25 ans ont vécu un mariage.
+Je dois donc trouver des ménages avec des enfants non mariés qui ont l'age de ce marier.
+Je dois faire un gros topos sur ça parce que c'est le plus important.
+
+
+\cite{Guerin2014a} Difficultés à collecter données sur la dette car Many people under-estimate their debt levels for various reasons, including shame, concern for confidentiality,
+fear of losing access (for fear that the survey results might be disclosed to NGOs or governmental units). For
+further discussion of the challenges of collecting reliable data on debt, see Morvant-Roux (2006), and Collins et
+al. (2009).
+Morvant-Roux Solène, Processus d’appropriation des dispositifs de microfinance : un exemple en milieu
+rural mexicain, Thèse de doctorat en sciences économiques, Université Lumière Lyon 2, 2006.
+
+J'ai de la chance car excellente connaissance du terrain et présence de l'équipe depuis une vingtaine d'année donc confiance et fiabilité sont au rdv
+
+
+\subsection{Method}
+
+Statistiques descriptives sur les mariages
+
+Relation between ceremonies fees, dowry and gift
+
+Est-ce que je ne peux pas régresser le résidu du coût du mariage sur la dot ou un truc du genre ?
+
+\begin{enumerate}
+\item Est-ce que plus on dépense dans le mariage, plus on a des retours sur investissement ?
+\item Est-ce que la caste, le type de mariage, etc. déterminent les marriages fees ?
+\item Quels sont les déterminants de la dot ?
+\end{enumerate}
+
+D'après Isabelle, la dot joue un peu le rôle d'aspiration, est-ce que si je prends la dot net des facteurs classiques je n'ai pas le niveau d'aspiration ?
+Je peux potientiellement regarder l'impact de ces aspirations sur qql chose ?
+
+
+
+
+
+
+\cite{Bloch2004} : 
+A large proportion of marriage costs are in the form of dowries.
+To an outsider these weddings can seem extremely lavish, especially in contrast
+with the extreme poverty of rural Indian life, with large numbers of people invited for
+feasts and ceremonies that can go on for several days. Such celebrations are, of
+course, not unique to India but are of special relevance in very poor societies where
+the money spent on weddings can be particularly wasteful given its high opportunity
+cost. 
+
+
+While there is a large economics literature on marriage markets following the
+work of Becker (1990), and a rapidly expanding literature on dowries,1 wedding cel-
+ebrations are driven by different considerations and have not been addressed at all by
+economists, or much by other social scientists.
+
+ Our in-depth
+interviews indicated that dowries were largely driven by competition for scarce men
+and by the quality of grooms. However, marriage celebrations were driven by differ-
+ent criteria that had more to do with symbolic display than transfers, with the bride's
+family primarily responsible for paying for the wedding, just as they were responsi-
+ble for paying the dowry. The size of the celebration was usually justified as being
+forced by norms in the community that are usually determined by observing the scale
+of other recent weddings in the community.
+
+In addition, however, to what was considered a minimally acceptable wedding,
+many families tended to have particularly lavish celebrations influenced less by norms
+in the village than by patterns in cities with celebrations by poor families imitating the
+more extravagant patterns common in richer families. 
+Comme dans le papier de \cite{Guerin2014a} où les HH tendent vers les modes de consommations urbains bien qu'ils soient ruraux et très pauve
+
+When asked why he
+had spent so much money on a wedding that was obviously well beyond his means, the
+father said that his daughter had married into a "good family" and he wanted to have a
+"show." It should be noted that the son-in-law's father was a relatively wealthy
+landowner from another village. Such clear distinctions between the motives driving
+dowries, which our respondents said were about "purchasing" desirable grooms, and
+wedding celebrations, which they indicated were of more symbolic value, were
+expressed by most of the individuals with whom we had in-depth interviews.
+
+Clearly, wedding celebrations have a lot to do with social status and prestige. What
+does status mean in this context and how does it matter? Anthropologists have long
+believed that Indian concepts of individuality differ markedly from the Western. An
+Indian is defined not just by his or her own accomplishments and character, but also
+by their circle of acquaintances and friends-how many important people they know,
+and the status and respect accorded to them by their social group. Mines (1994), in a
+study of a South India community, shows that men will often describe themselves to
+a stranger not simply by providing information about who they are and what they do,
+but by listing all their prominent acquaintances. In our own fieldwork, one village
+leader described himself to us in a similar manner, "I am not a big man, but my father
+was a freedom fighter and my daughter is married to a big family in Patilur village
+(about 100 miles away). They have lots of land and her father-in-law is a big Congress
+politician in the area." Thus, the village leader's sense of self seemed to be derived
+from the "big men" to whom he was related.
+
+Furthermore, mobility within a village is often achieved by imitating the behaviors
+of families of higher social orders (Srinivas 1989). Families devote a great deal of
+effort and expense to the presentation of external attributes. Household decisions are
+often made with an emphasis on how one's family will be viewed by others: What will
+others say? What will they think? For the parents of a daughter, marriage is potentially
+the most important source of mobility because marrying into a "good family" can
+greatly enhance how a family is viewed by its peers, and a prestigious match is an
+occasion for great celebration and status displays. This, more than anything, explains
+why some weddings are particularly lavish. Status is a value in itself.
+While it may
+also generate some secondary benefits like greater access to networks and informa-
+tion, families clearly gain direct Utility from simply moving up the social ladder and
+being associated by marriage with a prestigious, wealthy pedigree.3 Thus, when a
+family marries into a rich family it is in their interest to demonstrate this to the rest of
+the village, particularly if the rest of the village does not know the new in-laws. The
+most effective way of signaling a family's newfound affinity-derived status is to have
+as lavish a wedding as they can possibly afford. On the flip side, if a family marries a
+poor local family-well
+known to everyone in the village, this may also be an occa-
+sion for celebration-but lavish displays are no longer necessary because not much
+can be gained by signaling.
+
+Marriage celebrations, however, follow a different pattern. They are large, averag-
+ing about four months income, though much smaller than the dowry. In about 25 per-
+cent of the cases, the bride's family reported spending nothing on marriage
+celebrations, which is indicative of a small function restricted to immediate family
+members or of rare cases (more common in the past) where the groom's family cele-
+brated the wedding. Excluding these families, marriage expenses average over 5,000
+rupees, which is about a third of the annual income of an average family. While the
+celebration costs are small relative to the dowry, they still represent a major burden
+for families at a time when substantial resources have to be spent on the dowry.
+
+. When the bride's family is marrying into
+a family from another village, however, the quality of the match is unknown to the
+village of the bride's family and this change in status can be signaled to the village
+by the size of the wedding celebration. This is suggested by the fact that in the sam-
+ple analyzed in this paper, the average distance from the wife's home village for
+families that practice village exogamy is 34 kilometers, which can be a considerable
+distance in a society where roads and public transportation are very poor. In addi-
+tion, while families themselves are quite careful about obtaining reasonably good
+information on their prospective in-laws, the new in-laws are often quite unknown
+to the other families in the village. Therefore, variations in village exogamy provide
+a natural experiment that allows us to test if wedding celebrations are driven by sig-
+naling motives
+
+The processes by which dowries and marriage expenses are determined are some-
+what different. Dowries are almost always the result of direct negotiations between
+the families of the bride and the groom, though there is clear sense of what a reason-
+able dowry is for any given match which is a function of the marriage market.
+Wedding celebrations are also, to a degree, the result of negotiations between the
+two families but to a much lesser extent than the dowry. A bride's family often spends
+well beyond the level expected by the groom's family as a result of its own set of
+incentives
+
+Based on our ethnographic findings, we follow a "participatory econometric" \cite{Rao1997, Rao2002}.
+
+Often dowries are not perfectly observable in the community, and hence cannot be used as perfect sig-
+nals of the groom's quality. Clearly, rumors may circulate about the amount of the dowry paid, but the exact
+amount of the dowry is not usually public information. There are at least two reasons why dowries are not
+publicly observed. Firstly, they are illegal and hence are usually not publicly announced. Secondly, there are
+clear incentive problems in the revelation of dowries. Bride's families have an incentive to underreport
+the
+amount paid, as high dowries may imply that the bride is of poor quality
+
+Yh and Yw, the pre-marriage wealth of the two families, will be measured with
+dummy variables for whether the families had any land.l4 Among these rural households, the possession of land makes a great deal of difference to a household's status
+within the village because about 40 percent of the households are landless. To meas-
+ure the characteristics of the husband and wife that are valued in the marriage market
+xh and xw, we use their years of schooling and their ages at marriage. m the measure
+of alternatives in the marriage market is measured by the year of marriage and the
+marriage squeeze ratio \citep{Rao1993}-the ratio of the number of women to the number men at
+marriageable ages (defined as women aged 10-19/ men aged 20-29). m is measured
+at the year of the marriage for the district where the village is located, because the
+census reports age tables by district. Also, because the census occurs every ten years
+we use the ratio for the census year closest to the year of marriage. In addition to these
+variables we also include dummies for whether the family is Muslim or belongs to
+a scheduled caste, which are disadvantaged castes targeted by affirmative action
+programs.
+In the regression analysis we will examine a set of four specifications for each
+dependent variable. The first will test Model 1, including only the wife's characteris-
+tics, the second will include the husband's and wife's characteristics with the village
+exogamy variable and no interactions, the third will add the interactions between vil-
+lage exogamy and the wealth and education of the husband and wife. Finally, we
+include a fourth regression introducing a new pair of variables, the average level of
+education in the husband's village, and the interaction between village education and
+exogamy. This is a measure of the opportunity cost for people from the husband's vil-
+lage to attend the wedding. They attempt to answer a comment from a referee who
+suggested that positive effects on interactions of wealthy husbands with exogamy may
+simply indicate that husband's families with higher opportunity cost demand larger
+outlays of expenditures during the wedding. If this is true, then the husbands from vil-
+lages that are better educated should have more money spent on their wedding cele-
+brations. After controlling for the average level of education in the husband's village
+and its interaction with exogamy, the husband's own education and wealth should
+measure the impact of the husbands own characteristics on wedding celebrations,
+independent of the opportunity cost of his fellow villagers to attend the wedding.
+
+
+
+
+
+
+%-----------------------------------------------------
+%-----------------------------------------------------
+\section{Real cost of marriage}
+%-----------------------------------------------------
+
+
+\begin{greybox}{NEEMSIS 2 data at marriage level for description (n=117)}{marriageleveldesc}
+\begin{itemize}[leftmargin=*]
+\item 85.47\% of our marriages are arranged and only 6.84\% are consanguineous;
+\item We find strong difference between caste for arranged marriage: 69.23\% for upper caste and 91.43 for middle;
+\item In 85.47\% of marriage, the economic situation of husband or wife is the same than the observed husband or wife;
+\item On average, the number of people at the wedding increase with the caste and on all sample, 372 persons are present at a marriage;
+\item 90\% of marriage take place before lockdown and 8.55\% after;
+\item We have 2 marriage during the lockdown;
+\item 83.75\% of marriage take place in the same caste (dalits, middle, upper);
+\item [...] thus 16.25\% (which represent 19 marriages) are inter caste\footnote{As \cite{Guerin2014a} stated, avec la dette normalement ils ne prêtent pas entre eux.} [literature] which is supported by the government;
+\item 
+\end{itemize}
+\end{greybox}
+
+
+\begin{greybox}{NEEMSIS 2 data at marriage level (n=117)}{marriagelevel}
+\begin{itemize}[leftmargin=*]
+\item Marriage cost, engagement cost and total cost increase with caste;
+\item 50\% of marriage cost and engagement cost is provided by husband and 50\% by female for 50\% of marriages (44\% by wife for marriage on average and 74\% by wife for engagement on average);
+\item Dowry represent 54\% of wife total cost (including engagement, marriage and dowry) but dowry represent 176\% of marriage and engagement fees;
+\item Wife provide, on average, 66\% of total cost of \textbf{union (including engagement, marriage and dowry)} and the median is at 69\%;
+\end{itemize}
+\end{greybox}
+
+
+\begin{greybox}{NEEMSIS 2 data at individual level (male=59; female=58)}{individuallevel}
+\begin{itemize}[leftmargin=*]
+\item In our sample, the marriage cost represent 47\% of the monetary value of assets;
+\item [...], the engagement represent 11\% of the monetary value of assets;
+\item For our sub sample of female, dowry represent 69\% of the monetary value of assets (the median is at 43\%);
+\item Relative to the annual labor income of the household, the cost of marriage represent 85\% for male and 166\% for female;
+\item The dowry represent 235\% of the annual labor income, around 2 years and 4 months of labor income;
+\item The total cost of union represent 1 year of income for male on average and more than 3 years for female;
+\item If we looked the expenses, they represent, on average, 85\% of the cost for male and 59\% of the marriage cost for female  (not including dowry, only marriage fees) which suppose that female need to borrow more than male to finance the marriage fees;
+\item Surprisingly, when the husband/wife family is in better economic situation than the observed, the proportion of the payment is not higher than when the husband/wife family is in the same situation;
+\item [...] Indeed, when the observed is a male (husband) and the wife's family is in better situation, the ratio of $\frac{marriage wife cost}{marriage total cost}$ equal 0.40 on average while it is at 0.46 on average when the wife family is in the same situation (for observed wife, the ratio is respectively 0.49 and 0.56);
+
+\end{itemize}
+\end{greybox}
+
+voici une ref à \ref{labox:gift}
+
+\begin{greybox}{NEEMSIS 2 data for gift (male=59; female=58)}{gift}
+\begin{itemize}[leftmargin=*]
+\item 95\% of individuals (husband or wife of our sample) received gift; 
+\item On average, individuals receive 133 000 rupees as gift for their marriage;
+\item [...] that represent 38\% of the monetary value of assets and around one year of labor income (98\%);
+\item Gift represent 138\% of the cost provided by the individual on average (the median is at 90\%);
+\item Thus, 42\% of the individuals have a net profit on marriage fees (gift amount higher than cost);
+\item This proportion is higher for wife than for husband because they pay less on marriage fees;
+\item If we looked at the net benefits of marriage for wife ($benefits=gift-(fees+dowry)$) and husband ($benefits=(gift+dowry)-fees$), the average benefits is respectively at -266 120 rupees and +209 850 rupees;
+\item [...] that represent a gain of 38\% of their assets for male (median) and a loss of 42\% for female (median);
+\item in terms if labor income, it represent a gain of 11 months of labor income for husband family and a loss of 33 months for wife family;
+\item Again with income, the median is at 0.61 for husband, which represent more than 7 months and the median is at 1.1 for wife, which represent more than 13 months;
+\end{itemize}
+\end{greybox}
+
+
+
+\cite{Guerin2014a} : Honouring reciprocity in ceremonies has always been a source of permanent pressure.
+Many interviewees make clear that they prefer going into debt outside the family circle
+to meet their own needs. This is a matter of freedom, as kin support calls for constant
+justification (niyayapadthanum). Some say they borrow from their kin only for
+"justified" reasons, which are mainly ceremony, housing and health costs. The
+obligation of reciprocity (tiruppu) is also a burden. Not only should the debt be repaid,
+but the debtor should be able to lend in return when the creditor is in need. 
+
+
+
+\cite{Guerin2020c} Weddings are the most important events in terms of amount,
+which vary according to social group. For Dalits, typical amounts in the region now range from three
+to six lacks (300,000 to 600,000 INR), which on average amounts to four to eight years of household
+income. These amounts have risen considerably over recent decades and include the cost of the cer-
+ebration, gifts to close relatives and the dowry.
+
+At the same time, one is supposed to organise an event within one’s financial and
+human resources. Human resources are needed to help with the preparation of the food, service
+and cleaning – the events usually bring together several hundred guests who must be welcomed, fed and sometimes accommodated. Financial resources depend on available savings (has the family
+been able to accumulate gold, possibly land that can be offered, sold or pledged?), borrowing
+capacities (how much can the family borrow and what is its creditworthiness in the eyes of potential
+creditors?). Last but not least, how much can be expected from the guests in gifts (moi)? 
+Le moi panam (la somme des dons offerts lors de l'événement) représente le plus souvent une part importante des dépenses de cérémonie, voire plus. En fait, mis à part les mariages de filles qui conduisent toujours à une «perte» due à la dot, chaque cérémonie devrait conduire à un surplus, un «profit», comme on nous l’a souvent dit (le terme anglais est fréquemment utilisé). En fait, le moi panam est le «nœud» de l’événement, son pilier. En d'autres termes, les cérémonies sont une sorte de pari sur la générosité de leur cercle social (à la fois en argent et en temps), qui à son tour dépend des obligations que les organisateurs ont accumulées au fil des ans. Pour les funérailles, les invités doivent fournir du riz et des articles de cuisine, qui doivent ensuite être retournés en temps opportun.
+
+As we were told once, each event ‘is a link
+to the past, the present and the future.’ It is an opportunity to show ‘the strength of your family
+and relatives’ as we were also told, but the strength in question is a process: each event updates
+prior relations and prefigures upcoming relations.
+
+
+The event cost them around 1,50,000 INR10 (mostly food and transport, which was taken care of
+for distant guests). They received 1,92,365 INR as gift (moi panam), which means a ‘surplus’ of
+around 40,000 INR, that Sivaselvi used to pay off past debts. Gifts in cash ranged from 50 to 3000
+INR. Gifts in gold ranged from a quarter of sovereign to 2.5 sovereigns (from around 5500 to
+55,000 INR). The number and profile of the guests was a great source of satisfaction: most of the
+neigbhours came, and many from outside and sometime long distances, revealing the territorial
+spread of the family. In terms of gifts, however, Sivaselvi explains bitterly that she was expecting
+a surplus of twice more.
+
+
+
+
+
+
+
+
+
+
+
+%-----------------------------------------------------
+%-----------------------------------------------------
+\section{Marriage debt: burden of good debt}
+%-----------------------------------------------------
+
+Après avoir balancé mes chiffres, dire que c'est de la bonne dette d'un point de vu sociale
+
+Je dois revenir sur le fait que ce sont les plus pauvres qui s'endettent pour le plus pour les cérémonies. De plus, c'est pour cela que nous trouvons les montants de dettes les plus élevés.
+Je devrais faire un panel avec les prêts pour montrer que les montants moyens de prêts pour mariage ne font que augmenter et que ce sont les castes les plus basses qui s'endettent avec ça.
+Faire les ratios panel dette mariage / revenus annuel du travail pour montrer cette augmentation.
+
+
+\cite{Guerin2012} : Debt for why?
+
+
+
+\cite{Guerin2014a} : social meaning of debt
+While “financial inclusion” policies are now central to the political agendas of Indian public
+policy makers (Garikipati 2008), private stakeholders such as NGOs and banks (Srinivasan
+2009), and international organisations (World Bank 2007), this concern remains extremely
+pressing
+
+Over indebtedness and unmanageable can see as disaster : 
+Dette --> suicide : Mohanty B. B. We are Like the Living Dead’: Farmer Suicides in Maharashtra, Western India, The Journal
+of Peasant Studies, 32(2): 243–276, 2005
+
+But it is also daily indebtedness: not necessarily lead to the dramatic situations observed amougst cotton farmers or microfinance clients but it can be nevertheless a source of impoverishment, pauperization and dependency \citep{Guerin2014a}
+
+As for
+the purposes for taking on debt, table 3 shows how in terms of debt size, the most significant
+reasons include economic investment (mainly in agriculture) and ceremonies. In terms of the
+number of loans, household expenses, economic investment and ceremonies are the most
+common purposes. Here too significant disparities emerge as regards debt purpose: low castes, landless households and labourers more often borrow to cover daily survival costs and
+ceremonies, while middle castes, landowners and producers more often borrow for economic
+investment.
+
+If we examine the main causes of over-indebtedness (see table 4 below), the most frequent are
+ceremonies (42.65\% of households), housing and health (25\% and 23.53\%). These are
+followed by failed economic investments (17.65\%); most frequently obtained for agricultural
+purposes such as well digging or tractor purchase. 
+
+When they are asked to talk about over-indebtedness, the borrowers rarely use
+the amount of debt as an indicator. It is more the nature of the debt and the nature of the debt
+relationship that determines whether debt is considered a burden or not.
+
+Debt is a marker of social hierarchy in
+kinship groups, the neighborhood and community alike. People try to avoid debts degrading
+to their status, or at least try to pay back these debts first.
+
+Borrowing from mobile lenders is seen as the most degrading practice, reserved for low castes
+(and to women). Mobile lenders come to households’ doorsteps, precluding any form of
+discretion. They do not request any collateral but use coercive enforcement methods. The
+lenders themselves state that low caste individuals and women are more prepared to tolerate
+abusive language from them.
+
+The sense of debt as something immoral also depends upon the hierarchical positions of the
+lender and the borrower. On the borrower’s side, the norm is to contract loans from someone
+from an equal or higher caste." They do not take water from us, do you think they would take
+money?" is something the low castes often said to us. On the creditor side, some upper castes
+refuse to lend to castes who are too low in the hierarchy in comparison to them, stating that it
+would be degrading for them to go and claim their due. To ask an upper caste whether he is
+indebted to a lower caste can be considered as an insult.
+
+The use of the term terinjavanga presupposes the idea of mutual
+acquaintanceship (‘I know him/her, he/she knows me’)
+
+While family support is crucial for
+ceremonies and rituals
+
+The most sensitive debts are those that do not respect the rules of rights and
+obligations dictated by blood and alliances/bonds. For instance, borrowing money
+from the bride’s kin is often a last resort, because it admits that the groom’s family is
+unable to meet its responsibilities. Sometimes individuals may have no choice, but they
+will be prompt in repayments, as the case study below illustrates.
+Kathirvelu has an outstanding debt of 165 000 INR borrowed from twelve lenders, at rates ranging from 0 to
+5\% per month. Of this, he considers only 28 000 INR as problematic. 20 000 INR is from pledging his
+daughter-in-law’s jewellery. She allowed him to pledge 10 000 INR, but without her knowledge he
+borrowed twice as much. The interest rate is rather low (1.5\% monthly) but this is not the problem: “I have
+to keep face with the bride’s kin” he says. Another priority is a debt of 8000 INR from his son’s recruiter.
+Here too, he does not want to show the bride’s kin that he is indebted. The family reputation is at stake: he
+still has two daughters to marry, “we will never get them married if we have a reputation as indebted
+family” (Kathirvelu, SC, agriculture coolie and tenant)
+
+“Bad” debts are
+rarely the most expensive, financially speaking, but those that tarnish the reputation of the
+family and jeopardize its future, especially children’s marriages. Bad debts serve to reveal that a household is unable to maintain its position in the social hierarchy. The poor do
+undertake financial reasoning, but financial criteria are not a priority and debt behaviours
+stem from subtle arbitrations between financial costs and social status.
+\cite{James2020} : debt, marriage and consumption
+
+
+
+
+
+\cite{Bhukuth2018} : Poor households may take out credit for subsistence reasons. Yet they need credit not
+only to buy consumer goods, but also to pay for health expenses, house repairs and social
+investment (Krishna et al., 2003, 2004; Sriram \& Parhi, 2006; Bhukuth et al., 2007).
+Therefore, servicing these debts becomes the main source of household poverty (Krishna
+et al., 2003, 2004; Sriram \& Parhi, 2006).
+Moreover, these households do not generally have access to the formal credit market.
+Although the Indian government nationalised the banks in 1969 in a move to encourage
+them to provide the rural population with formal credit, not all the people have benefited
+(Basu, 2005). From the 1990s, liberalisation and privatisation result in credit rationing
+among rural households, in particular for dalits (Chavan, 2007; Ramachandran \&
+Swaminathan, 2005; Shah et al., 2007; Shetty, 2004). Poor households, most of whom
+are landless, are denied access to the credit market because they have no savings or bank
+account, which is a prerequisite to obtain credit from a bank.
+
+
+
+\cite{Carswell2021}
+
+The most commonly used source of credit is moneylenders: nearly 39\% of
+households owed money to moneylenders. Moneylenders tend to lend fairly small amounts of money (average debt
+amongst our sample to moneylenders being Rs 5,317) under what is known as kandu vatti, best translated as ‘metre
+interest’ or ‘running interest’. Moneylenders usually belong to landed castes from nearby villages or towns. They
+travel around on motorbikes and charge usurious interest rates of up to 10\% per month. Such loans require weekly
+payments over 10 weeks. But moneylenders also loan larger amounts against collateral, such as a patta (land docu-
+ment) or a vehicle registration document. For such loans, families typically approach a moneylender in town and tend
+to repay a monthly sum that contains both interest and capital repayment.
+
+The second most common debt is SHG-based microcredit. Women can borrow money from the SHG savings
+pot (internal loans), borrowing rather small amounts averaging Rs 6,559. Or they take out SHG bank loans which are
+larger, averaging nearly Rs 17,000, and are used by over a fifth of the sample. Loans from employers are also impor-
+tant. Agricultural workers were historically entangled in debt-relations with their landlords—be it as pannaiyaal (per-
+manent farm servant) or as lenders of first resort. While pannaiyaal has transformed significantly, landowners
+continue to be an important credit source, with 24\% of households in our sample in debt to a landowner.5 Following
+rural industrialization, debt bondage re-emerged within the rural powerloom industry through cash advances to
+workers (Carswell \& De Neve, 2013). 
+
+Good debt, by contrast, is debt that is cheap, or at least more affordable, not socially debasing and that
+might even enhance one's status within the family or wider community. Good debt allows one to invest in the
+future, through marriages, education or house building, and can be both status enhancing and productive in the
+long run. As Guérin writes, unless debts become unmanageable, being in debt itself ‘is not a symptom of poor
+management or financial illiteracy but a sign of responsibility’ (2014, p. S44). Indeed, rather than being frowned
+upon, getting into debt can be morally accepted and even valued, such as when you borrow to contribute to
+ceremonial exchanges (seeru), help with family emergencies, invest in education, or spend on children's mar-
+riages. Women's borrowing to buy gold for their daughters, for example, is widely valued as an honourable and
+responsible thing to do.
+
+
+%-----------------------------------------------------
+%-----------------------------------------------------
+\section{Gift as profit}
+%-----------------------------------------------------
+
+
+\cite{Guerin2020c} : savings gift ceremonials
+Proposent que le mariage lui même soit une forme d'épargne
+Donc on investi beaucoup d'argent dedans (à moi de le montrer), mais c'est une sorte d'épargne
+
+In the absence – or the dismantling – of public health and social security systems, bank saving is
+expected to help the poor to cope with risk and emergencies, to better plan for the future, whether for
+life cycle and ritual events, education, housing or economic investments (Collins et al. 2009).
+
+People keep explicit accounts of contributions and
+receipts, and switch between debtor and creditor positions across their life cycle, but accounting
+remains imbued with social and emotional considerations.
+
+Achievements in terms of savings deposit,
+however, are less convincing. The median amount is unchanged (around 600 INR) and the average
+amount had even decreased (from 4470 INR to 2043 INR). Most bank accounts are in fact ‘dormant’
+and mostly used as a conduit for social transfers. 
+In villages, we were frequently told that bank deposits were ‘useless.’ People were clear that infor-
+mal saving made more sense, both socially and financially. Gold, in particular, meets a much higher
+demand for storing value than keeping money in a bank account. As in 2010, gold is still the most
+important form of saving. Most households own gold (95.7\%) at an average weight of 52.2 grams, for
+an average value of 155,653 INR (76 times more than the average value of bank deposits).
+"pour tacler \cite{Anukriti2020} si jamais elle parle d'épargne classique"
+
+ In rural Tamil Nadu, the reappropriation of rituals, whether in terms of meaning or funding, is a powerful
+tool for asserting individual and collective identities, especially among Dalits (De Neve 2000, Picherit
+2018) At the same time, some dominant group rituals continue to spread. This is the case of the
+dowry, a Brahmin practice which many social groups have adopted in recent years, and around
+the 1960s in Tamil Nadu (Kapadia 1996). The prevalence of the dowry is often presented, perceived
+and upheld, as pre-mortem compensation for non-access to inheritance for girls, including by the
+women themselves. Although generous dowries certainly boost the social standing of households,
+clans and the women themselves in their community (much less than it being material protection
+for the women, as it is most often appropriated by in-laws), it is obviously a symptom of – and a
+powerful tool of – entrenched patriarch
+
+Families usually keep one notebook per event (see Figures 1 and 2 as examples), with a list of the
+givers specifying their names, location and the amount of their gift, which can be in cash or in
+kind, mostly gold, clothes, vessels and food.7 Gifts in kind are restricted to relatives (exceptionally
+close friends may give gold).
+
+
+
+
+
+
+
+
+Rao, V., 2001. Celebrations as social investments: festival expenditures, unit price variation and social status in rural
+India. Journal of Development Studies, 38 (1), 71–97.
+
+
+
+
+\cite{Heyer1992} : Dowry and savings
+
+\cite{Goedecke2018} : Financial policy and savings
+
+\cite{Anukriti2020} : finance dowry through savings and saving chanels
+
+
+
+
+
+
+
+%-----------------------------------------------------
+\section{Discussion}
+
+\section*{Conclusion}
+\label{section:conclusion}
+%\addcontentsline{toc}{section}{Conclusion}
+
+
+
+
+
+
+
+
+
+
+
+
+\newpage
+%-------------------------------------------------------------------------------%
+%\begin{nolinenumbers}
+\addcontentsline{toc}{section}{Références}
+\bibliography{C:/Users/Arnaud/Dropbox/Arnaud/Ref_Arnaud}
+%\nocite{*}
+
+
+
+\clearpage
+\newpage
+%-------------------------------------------------------------------------------%
+\setcounter{tocdepth}5
+\tableofcontents
+
+%\end{nolinenumbers}
+\end{document}
