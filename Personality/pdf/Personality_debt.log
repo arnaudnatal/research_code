@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.22 (MiKTeX 21.6.28) (preloaded format=pdflatex 2021.7.10)  17 AUG 2021 15:07
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (MiKTeX 21.6.28) (preloaded format=pdflatex 2021.7.10)  17 AUG 2021 15:16
 entering extended mode
 **./Personality_debt.tex
 (Personality_debt.tex
@@ -1812,8 +1812,14 @@ Package microtype Info: Loading generic protrusion settings for font family
 {C:/Users/Arnaud/AppData/Local/MiKTeX/pdftex/config/pdftex.map}] [2
 
 ] [3]
-[4] [5] [6] [7] [8] [9] [10] [11] [12] [13] [14] [15] [16] [17] [18] [19]
-[20] [21] [22] [23] [24] [25] [26] [27] (Personality_debt.bbl [28
+[4] [5] [6] [7] [8] [9] [10] [11] [12] [13] [14] [15] [16]
+Overfull \hbox (15.95874pt too wide) in paragraph at lines 494--510
+[] []\T1/jkp/b/n/12 (-20) Per-son-al-ity traits and cog-ni-tive skills[] \T1/jk
+p/m/n/12 (-20) Fig-ure [][]2[][] shows the dis-tri-bu-tion of each PT&CS  net
+ []
+
+[17] [18] [19] [20] [21] [22] [23] [24] [25] [26] [27] (Personality_debt.bbl
+[28
 
 ] [29]
 Underfull \hbox (badness 1838) in paragraph at lines 607--628
@@ -1997,14 +2003,14 @@ AED: lastpage setting LastPage
 LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
 
 Package rerunfilecheck Info: File `Personality_debt.out' has not changed.
-(rerunfilecheck)             Checksum: 98D3D8D12F5DC2DF9F7383F37C57CB1D;4721.
+(rerunfilecheck)             Checksum: F1458882FFB8A3D0831FEDF32EF1945A;4593.
  ) 
 Here is how much of TeX's memory you used:
- 37363 strings out of 478847
- 687136 string characters out of 2847912
- 1258745 words of memory out of 3000000
+ 37367 strings out of 478847
+ 687171 string characters out of 2847912
+ 1259745 words of memory out of 3000000
  53767 multiletter control sequences out of 15000+600000
- 601024 words of font info for 584 fonts, out of 8000000 for 9000
+ 601426 words of font info for 587 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  89i,20n,95p,734b,1062s stack positions out of 5000i,500n,10000p,200000b,80000s
 pdfTeX warning (dest): name{Hfootnote.21} has been referenced but does not ex
@@ -2087,7 +2093,7 @@ sers/Arnaud/AppData/Local/Programs/MiKTeX/fonts/type1/public/kpfonts/jkpsy.pfb>
 b.pfb><C:/Users/Arnaud/AppData/Local/Programs/MiKTeX/fonts/type1/public/kpfonts
 /jkpttmn8a.pfb><C:/Users/Arnaud/AppData/Local/Programs/MiKTeX/fonts/type1/tfrup
 ee/tfrupee.pfb>
-Output written on Personality_debt.pdf (50 pages, 5287979 bytes).
+Output written on Personality_debt.pdf (50 pages, 5288052 bytes).
 PDF statistics:
  1166 PDF objects out of 1200 (max. 8388607)
  196 named destinations out of 1000 (max. 500000)

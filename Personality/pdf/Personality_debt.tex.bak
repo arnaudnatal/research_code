@@ -455,10 +455,10 @@ We do not pretend to show a causal relationship between \PTCS~ and indebtedness 
 % ***********************************
 
 	% ******************************
-	\subsection{Household unit in Table \ref{tab:descHH}}
+	\subsection{Household unit}
 	% ******************************
 
-Our final sample consists of 835 individuals from 473 households and almost half are dalits.
+Our final sample consists of 835 individuals from 473 households and almost half are dalits (see Table \ref{tab:descHH}).
 Three quarters of households have 2 egos, the last quarters have only one egos --justifying the fact that we cluster the error at household level.
 %The sex ratio is different through caste: in 24\% of dalits households the sex ratio is equal to 1 which means that they are as many men as women while in middle-upper castes, it is 34\% of households in 2016-17.
 In terms of assets, middle-upper castes households are three times richer than dalits on average --respectively \rupee1,493k and \rupee487k in 2016-17.
@@ -471,10 +471,10 @@ Last, whatever the caste, we observe a reduction of total income: for 50\% dalit
 \tabaround{tab:descHH}
 
 	% ******************************
-	\subsection{Individual unit in Table \ref{tab:descindiv}}
+	\subsection{Individual unit}
 	% ******************************
 
-At egos level, 55\% of our sample are males and among them, 46\% are dalits (among females 50\% are dalits).
+At egos level (see Table \ref{tab:descindiv}), 55\% of our sample are males and among them, 46\% are dalits (among females 50\% are dalits).
 Males are, on average, older than females and three quarters of them are the head of the household while females are only 9\% in 2016-17 and 27\% in 2020-21.
 This increase is partly due to the life cycle: when the household head died, the wife takes over as household head.
 In terms of education, males are more formally educated than females.
@@ -490,7 +490,7 @@ In terms of income, disparities persist between males and females.
 On average, males have \rupee102k per year as labour income while females have \rupee19k.
 Between 2016-17 and 2020-21, the average variation rate is higher for females than for males (respectively 173\% and 163\%).
 
-% \paragraph{\PTCS}
+\paragraph{Personality traits and cognitive skills}
 Figure \ref{fig:PTCS} shows the distribution of each \PTCS~ net of life-cycle standardised.
 Traits from Big-5 taxonomy (row 2) are not corrected from acquiescence bias.
 The distribution of personality traits from Big-5 taxonomy and factor analysis seems to match.
@@ -787,7 +787,7 @@ Being dalit or woman makes individuals more trapped in their social identity, wi
 Our paper contributes to the empirical literature on individual finances through its determinants and its disparities, in a context where understanding is essential because of the incidence of debt and the repetition of crisis that exacerbate disparities (microfinance crisis in the late 2010s, demonetisation in 2016, lockdown in 2020).
 We also contribute to the literature which seeks to measure the weight of social identity.
 Overall, it highlights the importance of taking into account individual characteristics such as personality traits when analysing debt at individual level or household level \citep{Brown2014}.
-We also contribute to the expanding literature exploring the implications of cognitive skills and personality traits for economic outcomes and it calls for further research to understand how personality traits are acquired, and how they can be leveraged to allow disadvantaged groups to have more bearable debt burden.
+Last, we also contribute to the expanding literature exploring the implications of cognitive skills and personality traits for economic outcomes and it calls for further research to understand how personality traits are acquired, and how they can be leveraged to allow disadvantaged groups to have more bearable debt burden.
 
 
 
