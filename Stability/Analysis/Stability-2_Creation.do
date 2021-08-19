@@ -24,7 +24,7 @@ global git "C:\Users\Arnaud\Documents\GitHub"
 
 *Fac
 *cd "C:\Users\anatal\Downloads\_Thesis\Research-Skills_and_debt\Analysis"
-set scheme plotplain, perm
+set scheme plotplain
 
 *global git "C:\Users\anatal\Downloads\GitHub"
 *global dropbox "C:\Users\anatal\Downloads\Dropbox"
@@ -202,10 +202,49 @@ label values cat_`x' varcat
 
 
 ***** Age
-gen agecat_1=0 		if age_2<=34
-replace agecat_1=1 	if age_2>34 & age_2!=.
-label define age 0"];30] 2016-17" 1"]30;[ 2016-17"
+gen agecat_1=0 		if age_1<=30
+replace agecat_1=1 	if age_1>30 & age_2!=.
+label define age 0"];30] in 2016-17" 1"]30;[ in 2016-17"
 label values agecat_1 age
+
+
+
+***** Label
+
+label var diff_lit_tt "Literacy"
+label var delta_lit_tt "Literacy"
+label var absdelta_lit_tt "Literacy"
+label var cat_diff_lit_tt "Literacy"
+
+label var diff_num_tt "Numeracy"
+label var delta_num_tt "Numeracy"
+label var absdelta_num_tt "Numeracy"
+label var cat_diff_num_tt "Numeracy"
+
+label var diff_raven_tt "Raven"
+label var delta_raven_tt "Raven"
+label var absdelta_raven_tt "Raven"
+label var cat_diff_raven_tt "Raven"
+
+label var delta_ars "Acqui. bias"
+label var diff_ars "Acqui. bias"
+label var absdelta_ars "Acqui. bias"
+label var delta_ars2 "Acqui. bias"
+label var diff_ars2 "Acqui. bias"
+label var absdelta_ars2 "Acqui. bias"
+label var delta_ars3 "Acqui. bias"
+label var diff_ars3 "Acqui. bias"
+label var absdelta_ars3 "Acqui. bias"
+
+
+foreach x in OP CO EX AG ES Grit {
+foreach y in delta_cr_ diff_cr_ absdelta_cr_ cat_diff_cr_ {
+label var  `y'`x' "`x' corr." 
+}
+foreach y in delta_ diff_ absdelta_ cat_diff_ {
+label var `y'`x' "`x'"
+}
+}
 
 *
 save"panel_stab_v4", replace

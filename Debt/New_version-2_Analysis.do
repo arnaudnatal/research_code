@@ -954,11 +954,20 @@ tabstat def_loanamount1000 if year==`x' & panel_2010_2016_2020==1, stat(n mean) 
 
 ********** Total clientele using it: reason
 fre loanreasongiven
-forvalues i=1(1)13{
+recode loanreasongiven (6=1) (4=2) (10=2) (9=3) (8=7) (11=7) (77=12)
+fre loanreasongiven
+recode loanreasongiven (7=4) (12=6)
+fre loanreasongiven
+
+tabstat def_loanamount1000 if year==2010, stat(n mean) by(loanreasongiven)
+tabstat def_loanamount1000 if year==2016, stat(n mean) by(loanreasongiven)
+
+
+forvalues i=1(1)6{
 gen reason`i'=0
 }
 
-forvalues i=1(1)12{
+forvalues i=1(1)6{
 replace reason`i'=1 if loanreasongiven==`i'
 }
 replace reason13=1 if loanreasongiven==77
@@ -967,12 +976,12 @@ replace reason13=1 if loanreasongiven==77
 cls
 preserve 
 keep if year==2010
-forvalues i=1(1)13{
+forvalues i=1(1)6{
 bysort HHID_panel: egen reasonHH_`i'=max(reason`i')
 } 
 bysort HHID_panel: gen n=_n
 keep if n==1
-forvalues i=1(1)13{
+forvalues i=1(1)6{
 tab reasonHH_`i', m
 }
 restore
@@ -981,12 +990,12 @@ restore
 cls
 preserve 
 keep if year==2016
-forvalues i=1(1)13{
+forvalues i=1(1)6{
 bysort HHID_panel: egen reasonHH_`i'=max(reason`i')
 } 
 bysort HHID_panel: gen n=_n
 keep if n==1
-forvalues i=1(1)13{
+forvalues i=1(1)6{
 tab reasonHH_`i', m
 }
 restore

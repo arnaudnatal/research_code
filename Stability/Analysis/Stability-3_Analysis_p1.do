@@ -24,7 +24,7 @@ global git "C:\Users\Arnaud\Documents\GitHub"
 
 *Fac
 *cd "C:\Users\anatal\Downloads\_Thesis\Research-Skills_and_debt\Analysis"
-set scheme plotplain, perm
+set scheme plottig
 
 *global git "C:\Users\anatal\Downloads\GitHub"
 *global dropbox "C:\Users\anatal\Downloads\Dropbox"
@@ -44,15 +44,97 @@ global wave3 "NEEMSIS2-HH_v17"
 
 
 
-*scatter
-set scheme plottig
-gen age_2016=age_2020-4
-twoway (scatter diff_raven_tt age_2016 if sex==1 & diff_raven_tt<0) 
-twoway (scatter diff_raven_tt age_2016 if sex==2 & diff_raven_tt<0)
 
-twoway (scatter diff_raven_tt age_2016 if caste==1 & diff_raven_tt<0)
-twoway (scatter diff_raven_tt age_2016 if caste==2 & diff_raven_tt<0)
-twoway (scatter diff_raven_tt age_2016 if caste==3 & diff_raven_tt<0)
+
+
+****************************************
+* OMEGA
+****************************************
+use"panel_stab_v4", clear
+
+
+/*
+original data = 1 always to 5 never: more = never
+
+
+liketothink_old_1 		original data (alw-->nev)
+
+raw_liketothink_1 		original but 99 recoded to . (alw-->nev)
+
+raw_rec_liketothink_1 	original but 99 recoded to . + all reverse  (nev-->alw)
+
+liketothink_1 			original but 99 recoded to . + all reverse + reverse reversed questions (nev-->alw)
+
+cr_liketothink_1 		original but 99 recoded to . + all reverse + reverse reversed questions (nev-->alw)
+
+In order to calculate omega on subsample, I am using "raw" variable.
+
+global big5 ///
+curious interestedbyart repetitivetasks inventive liketothink newideas activeimagination ///
+organized  makeplans workhard appointmentontime putoffduties easilydistracted completeduties ///
+enjoypeople sharefeelings shywithpeople enthusiastic talktomanypeople  talkative expressingthoughts  ///
+workwithother  understandotherfeeling trustingofother rudetoother toleratefaults  forgiveother  helpfulwithothers ///
+managestress  nervous  changemood feeldepressed easilyupset worryalot  staycalm ///
+tryhard  stickwithgoals   goaftergoal finishwhatbegin finishtasks  keepworking
+*/
+
+
+
+********** LOOP
+cls
+forvalues x=1(1)2{ 
+preserve
+keep if sex==`x'
+forvalues i=2(1)2{
+omega raw_curious_`i' raw_interestedbyart_`i' raw_repetitivetasks_`i' raw_inventive_`i' raw_liketothink_`i' raw_newideas_`i' raw_activeimagination_`i', rev(raw_repetitivetasks_`i')
+omega cr_curious_`i' cr_interestedbyart_`i' cr_repetitivetasks_`i' cr_inventive_`i' cr_liketothink_`i' cr_newideas_`i' cr_activeimagination_`i'
+
+omega raw_organized_`i' raw_makeplans_`i' raw_workhard_`i' raw_appointmentontime_`i' raw_putoffduties_`i' raw_easilydistracted_`i' raw_completeduties_`i', rev(raw_putoffduties_`i' raw_easilydistracted_`i')
+omega cr_organized_`i' cr_makeplans_`i' cr_workhard_`i' cr_appointmentontime_`i' cr_putoffduties_`i' cr_easilydistracted_`i' cr_completeduties_`i'
+
+omega raw_enjoypeople_`i' raw_sharefeelings_`i' raw_shywithpeople_`i' raw_enthusiastic_`i' raw_talktomanypeople_`i' raw_talkative_`i' raw_expressingthoughts_`i', rev(raw_shywithpeople_`i')
+omega cr_enjoypeople_`i' cr_sharefeelings_`i' cr_shywithpeople_`i' cr_enthusiastic_`i' cr_talktomanypeople_`i' cr_talkative_`i' cr_expressingthoughts_`i'
+
+omega raw_workwithother_`i' raw_understandotherfeeling_`i' raw_trustingofother_`i' raw_rudetoother_`i' raw_toleratefaults_`i' raw_forgiveother_`i' raw_helpfulwithothers_`i', rev(raw_rudetoother_`i')
+omega cr_workwithother_`i' cr_understandotherfeeling_`i' cr_trustingofother_`i' cr_rudetoother_`i' cr_toleratefaults_`i' cr_forgiveother_`i' cr_helpfulwithothers_`i'
+
+omega raw_managestress_`i' raw_nervous_`i' raw_changemood_`i' raw_feeldepressed_`i' raw_easilyupset_`i' raw_worryalot_`i' raw_staycalm_`i', rev(raw_managestress_`i' raw_staycalm_`i')
+omega cr_managestress_`i' cr_nervous_`i' cr_changemood_`i' cr_feeldepressed_`i' cr_easilyupset_`i' cr_worryalot_`i' cr_staycalm_`i'
+
+omega raw_tryhard_`i' raw_stickwithgoals_`i' raw_goaftergoal_`i' raw_finishwhatbegin_`i' raw_finishtasks_`i' raw_keepworking_`i'
+omega cr_tryhard_`i' cr_stickwithgoals_`i' cr_goaftergoal_`i' cr_finishwhatbegin_`i' cr_finishtasks_`i' cr_keepworking_`i'
+}
+restore
+}
+
+/*
+GLOBAL: raw vs corr
+OP
+CO
+EX
+AG
+ES
+Grit
+
+MALE: raw vs corr
+OP
+CO
+EX
+AG
+ES
+Grit
+
+FEMALE: raw vs corr
+OP
+CO
+EX
+AG
+ES
+Grit
+
+*/
+
+
 
 ****************************************
 * END
@@ -71,65 +153,207 @@ twoway (scatter diff_raven_tt age_2016 if caste==3 & diff_raven_tt<0)
 
 
 
+
+
+
+
+
+
+
+
+
 ****************************************
-* BIAS
+* Cognitive skills
 ****************************************
+use"panel_stab_v4", clear
+
+*Tab
+tab1 diff_lit_tt diff_num_tt diff_raven_tt
+
+
+********** SCATTER
 set graph off
-twoway ///
-(kdensity ars3, bwidth(0.15)) ///
-(kdensity ars3_2020, bwidth(0.15)) ///
-, xtitle("Acquiesence bias", size(small)) xlabel(0(0.25)1.75, labsize(vsmall)) legend(order(1 "2016-17" 2 "2020-21") pos(6) col(2)) ytitle("Density", size(small)) ylabel(,labsize(small)) note("Kernel epanechnikov with bandwidth=0.15", size(tiny))
-graph save "$git\Analysis\Personality\Big-5\kernel_ars.gph", replace
-graph export "$git\RUME-NEEMSIS\Big-5\kernel_ars.svg", as(svg) replace
-graph export "$git\Analysis\Personality\Big-5\kernel_ars.pdf", as(pdf) replace
+twoway (scatter diff_raven_tt age_1 if sex==1) (scatter diff_raven_tt age_1 if sex==2)
+twoway (scatter diff_raven_tt age_1 if caste==1) (scatter diff_raven_tt age_1 if caste==2) (scatter diff_raven_tt age_1 if caste==3)
+
+twoway (scatter diff_lit_tt age_1 if sex==1) (scatter diff_lit_tt age_1 if sex==2)
+twoway (scatter diff_lit_tt age_1 if caste==1) (scatter diff_lit_tt age_1 if caste==2) (scatter diff_lit_tt age_1 if caste==3)
+
+twoway (scatter diff_num_tt age_1 if sex==1) (scatter diff_num_tt age_1 if sex==2)
+twoway (scatter diff_num_tt age_1 if caste==1) (scatter diff_num_tt age_1 if caste==2) (scatter diff_num_tt age_1 if caste==3)
+
 set graph on
 
-*** Kernel over sex caste and age per year
+
+********** KERNEL
 set graph off
-twoway (kdensity ars3 if sex==1, bwidth(0.15)) (kdensity ars3 if sex==2, bwidth(0.15)) ///
+twoway (kdensity diff_raven_tt if sex==1) (kdensity diff_raven_tt   if sex==2)
+twoway (kdensity diff_raven_tt if caste==1) (kdensity diff_raven_tt   if caste==2) (kdensity diff_raven_tt if caste==3)
+
+twoway (kdensity diff_lit_tt   if sex==1) (kdensity diff_lit_tt   if sex==2)
+twoway (kdensity diff_lit_tt   if caste==1) (kdensity diff_lit_tt   if caste==2) (kdensity diff_lit_tt   if caste==3)
+
+twoway (kdensity diff_num_tt   if sex==1) (kdensity diff_num_tt   if sex==2)
+twoway (kdensity diff_num_tt   if caste==1) (kdensity diff_num_tt   if caste==2) (kdensity diff_num_tt   if caste==3)
+
+set graph on
+
+
+
+********** CAT PLOT
+*ssc install catplot
+*Gender
+set graph off
+foreach x in raven_tt num_tt lit_tt {
+catplot sex cat_diff_`x', asyvars percent(sex) recast(bar) ///
+ylabel(, labsize(vsmall)) ytitle("Percent", size(small)) ///
+var2opts(label(labsize(vsmall) angle(45))) ///
+title(`"`: var label cat_diff_`x''"', size(small)) ///
+name(g_`x', replace) legend(col(2) size(vsmall)) blabel(bar, format(%4.1f) size(tiny) angle(45))
+}
+grc1leg g_raven_tt g_num_tt g_lit_tt, cols(3) leg(g_raven_tt) name(combage, replace) pos(6)
+set graph on
+graph save "$git\Analysis\Stability\Analysis\Graph\diff_cog_gender.gph", replace
+graph export "$git\RUME-NEEMSIS\Big-5\diff_cog_gender.svg", as(svg) replace
+graph export "$git\Analysis\Stability\Analysis\Graph\diff_cog_gender.pdf", as(pdf) replace
+
+*Caste
+set graph off
+foreach x in raven_tt num_tt lit_tt {
+catplot caste cat_diff_`x', asyvars percent(caste) recast(bar) ///
+ylabel(, labsize(vsmall)) ytitle("Percent", size(small)) ///
+var2opts(label(labsize(vsmall) angle(45))) ///
+title(`"`: var label cat_diff_`x''"', size(small)) ///
+name(g_`x', replace) legend(col(3) size(vsmall)) blabel(bar, format(%4.1f) size(tiny) angle(45))
+}
+grc1leg g_raven_tt g_num_tt g_lit_tt, cols(3) leg(g_raven_tt) name(combage, replace) pos(6)
+set graph on
+graph save "$git\Analysis\Stability\Analysis\Graph\diff_cog_caste.gph", replace
+graph export "$git\RUME-NEEMSIS\Big-5\diff_cog_caste.svg", as(svg) replace
+graph export "$git\Analysis\Stability\Analysis\Graph\diff_cog_caste.pdf", as(pdf) replace
+
+*Age
+set graph off
+foreach x in raven_tt num_tt lit_tt {
+catplot agecat_1 cat_diff_`x', asyvars percent(agecat_1) recast(bar) ///
+ylabel(, labsize(vsmall)) ytitle("Percent", size(small)) ///
+var2opts(label(labsize(vsmall) angle(45))) ///
+title(`"`: var label cat_diff_`x''"', size(small)) ///
+name(g_`x', replace) legend(col(2) size(vsmall)) blabel(bar, format(%4.1f) size(tiny) angle(45))
+}
+grc1leg g_raven_tt g_num_tt g_lit_tt, cols(3) leg(g_raven_tt) name(combage, replace) pos(6)
+set graph on
+graph save "$git\Analysis\Stability\Analysis\Graph\diff_cog_age.gph", replace
+graph export "$git\RUME-NEEMSIS\Big-5\diff_cog_age.svg", as(svg) replace
+graph export "$git\Analysis\Stability\Analysis\Graph\diff_cog_age.pdf", as(pdf) replace
+
+
+
+********** HISTOGRAM
+set graph off
+histogram diff_raven_tt, percent width(1) xlabel(-36(6)27, labsize(vsmall) ang(0)) xmtick(-36(1)27) ylabel(, labsize(vsmall)) ymtick() xtitle("slope - Raven", size(small)) ytitle(, size(small)) name(g1, replace) note("") title("") legend(off)
+histogram diff_num_tt, percent width(1) xlabel(-12(2)12, labsize(vsmall) ang()) ylabel(, labsize(vsmall)) ymtick() xtitle("slope -  Num", size(small)) ytitle(, size(small)) name(g2, replace)  note("") title("") legend(off)
+histogram diff_lit_tt, percent width(0.5) xlabel(-4(1)4, labsize(vsmall) ang()) xmtick(-4(0.2)4) ylabel(, labsize(vsmall)) ymtick() xtitle("slope -  Lit", size(small)) ytitle(, size(small)) name(g3, replace)  note("") title("") legend(off)
+*Combine
+graph combine g1 g2 g3, cols(3)
+graph save "$git\Analysis\Stability\Analysis\Graph\diffcont_cog.gph", replace
+graph export "$git\RUME-NEEMSIS\Big-5\diffcont_cog.svg", as(svg) replace
+graph export "$git\Analysis\Stability\Analysis\Graph\diffcont_cog.pdf", as(pdf) replace
+set graph on 
+
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Bias
+****************************************
+
+********** GLOBAL KERNEL
+set graph off
+twoway ///
+(kdensity ars3_1, bwidth(0.15)) ///
+(kdensity ars3_2, bwidth(0.15)) ///
+, xtitle("Acquiesence bias", size(small)) xlabel(0(0.25)1.75, labsize(vsmall)) legend(order(1 "2016-17" 2 "2020-21") pos(6) col(2)) ytitle("Density", size(small)) ylabel(,labsize(small)) note("Kernel epanechnikov with bandwidth=0.15", size(tiny))
+graph save "$git\Analysis\Stability\Analysis\Graph\kernel_ars.gph", replace
+graph export "$git\RUME-NEEMSIS\Big-5\kernel_ars.svg", as(svg) replace
+graph export "$git\Analysis\Stability\Analysis\Graph\kernel_ars.pdf", as(pdf) replace
+set graph on
+
+
+
+
+********** SUB KERNEL
+set graph off
+twoway (kdensity ars3_1 if sex==1, bwidth(0.15)) (kdensity ars3_1 if sex==2, bwidth(0.15)) ///
 , title("2016-17", size(medium)) xtitle("Acquiesence bias", size(small)) xlabel(0(0.25)1.75, labsize(vsmall)) legend(order(1 "Male" 2 "Female") pos(6) col(1) off) ytitle("Density", size(small)) ylabel(,labsize(small)) name(g1, replace)
-twoway (kdensity ars3_2020 if sex==1, bwidth(0.15)) (kdensity ars3_2020 if sex==2, bwidth(0.15)) ///
+twoway (kdensity ars3_2 if sex==1, bwidth(0.15)) (kdensity ars3_2 if sex==2, bwidth(0.15)) ///
 , title("2020-21", size(medium)) xtitle("Acquiesence bias", size(small)) xlabel(0(0.25)1.75, labsize(vsmall)) legend(order(1 "Male" 2 "Female") pos(6) col(1)) ytitle("Density", size(small)) ylabel(,labsize(small))  name(g2, replace)
 
-twoway (kdensity ars3 if caste==1, bwidth(0.15)) (kdensity ars3 if caste==2, bwidth(0.15)) (kdensity ars3 if caste==3, bwidth(0.15)) ///
+twoway (kdensity ars3_1 if caste==1, bwidth(0.15)) (kdensity ars3_1 if caste==2, bwidth(0.15)) (kdensity ars3_1 if caste==3, bwidth(0.15)) ///
 , xtitle("Acquiesence bias", size(small)) xlabel(0(0.25)1.75, labsize(vsmall)) legend(order(1 "Dalits" 2 "Middle" 3 "Upper") pos(6) col(1) off) ytitle("Density", size(small)) ylabel(,labsize(small)) name(g3, replace)
-twoway (kdensity ars3_2020 if caste==1, bwidth(0.15)) (kdensity ars3_2020 if caste==2, bwidth(0.15)) (kdensity ars3_2020 if caste==3, bwidth(0.15)) ///
+twoway (kdensity ars3_2 if caste==1, bwidth(0.15)) (kdensity ars3_2 if caste==2, bwidth(0.15)) (kdensity ars3_2 if caste==3, bwidth(0.15)) ///
 , xtitle("Acquiesence bias", size(small)) xlabel(0(0.25)1.75, labsize(vsmall)) legend(order(1 "Dalits" 2 "Middle" 3 "Upper") pos(6) col(1)) ytitle("Density", size(small)) ylabel(,labsize(small)) name(g4, replace)
 
-twoway (kdensity ars3 if caste==1, bwidth(0.15)) (kdensity ars3 if caste==2, bwidth(0.15)) ///
-, xtitle("Acquiesence bias", size(small)) xlabel(0(0.25)1.75, labsize(vsmall)) legend(order(1 "];30] 2016-17" 2 "]30;[ 2016-17") pos(6) col(1) off) ytitle("Density", size(small)) ylabel(,labsize(small)) name(g5, replace)
-twoway (kdensity ars3_2020 if agecat1==0, bwidth(0.15)) (kdensity ars3_2020 if agecat1==1, bwidth(0.15)) ///
-, xtitle("Acquiesence bias", size(small)) xlabel(0(0.25)1.75, labsize(vsmall)) legend(order(1 "];30] 2016-17" 2 "]30;[ 2016-17") pos(6) col(1)) ytitle("Density", size(small)) ylabel(,labsize(small)) name(g6, replace)
+twoway (kdensity ars3_1 if agecat_1==0, bwidth(0.15)) (kdensity ars3_1 if agecat_1==1, bwidth(0.15)) ///
+, xtitle("Acquiesence bias", size(small)) xlabel(0(0.25)1.75, labsize(vsmall)) legend(order(1 "30 or less in 2016-17" 2 "More than 30 in 2016-17") pos(6) col(1) off) ytitle("Density", size(small)) ylabel(,labsize(small)) name(g5, replace)
+twoway (kdensity ars3_2 if agecat_1==0, bwidth(0.15)) (kdensity ars3_2 if agecat_1==1, bwidth(0.15)) ///
+, xtitle("Acquiesence bias", size(small)) xlabel(0(0.25)1.75, labsize(vsmall)) legend(order(1 "30 or less in 2016-17" 2 "More than 30 in 2016-17") pos(6) col(1)) ytitle("Density", size(small)) ylabel(,labsize(small)) name(g6, replace)
 
 grc1leg g1 g2, name(comb1, replace) pos(3)
 grc1leg g3 g4, name(comb2, replace) pos(3)
 grc1leg g5 g6, name(comb3, replace) pos(3)
 
 graph combine comb1 comb2 comb3, col(1) xcommon note("Kernel epanechnikov with bandwidth=0.15", size(tiny))
-graph save "$git\Analysis\Personality\Big-5\kernel_ars_sub.gph", replace
+graph save "$git\Analysis\Stability\Analysis\Graph\kernel_ars_sub.gph", replace
 graph export "$git\RUME-NEEMSIS\Big-5\kernel_ars_sub.svg", as(svg) replace
-graph export "$git\Analysis\Personality\Big-5\kernel_ars_sub.pdf", as(pdf) replace
+graph export "$git\Analysis\Stability\Analysis\Graph\kernel_ars_sub.pdf", as(pdf) replace
 set graph on
 
 
 
-*** Line
-pctile ars3_p=ars3, n(20)
-pctile ars3_2020_p=ars3_2020, n(20)
+
+
+
+
+
+********** LINE
+pctile ars3_1_p=ars3_1, n(20)
+pctile ars3_2_p=ars3_2, n(20)
 gen n=_n*5
 replace n=. if n>100
 
 set graph off
-twoway (line ars3_p n) (line ars3_2020_p n), xtitle("Percentage of population", size(small)) xlabel(0(10)100, labsize(vsmall)) xmtick(0(5)100) legend(order(1 "2016-17" 2 "2020-21") pos(6) col(2)) ytitle("Acquiesence bias", size(small)) ylabel(0(0.1)1.1, labsize(vsmall)) ymtick(0(0.05)1.1)
-graph save "$git\Analysis\Personality\Big-5\curve_ars.gph", replace
+twoway (line ars3_1_p n) (line ars3_2_p n), xtitle("Percentage of population", size(small)) xlabel(0(10)100, labsize(vsmall)) xmtick(0(5)100) legend(order(1 "2016-17" 2 "2020-21") pos(6) col(2)) ytitle("Acquiesence bias", size(small)) ylabel(0(0.1)1.1, labsize(vsmall)) ymtick(0(0.05)1.1)
+graph save "$git\Analysis\Stability\Analysis\Graph\curve_ars.gph", replace
 graph export "$git\RUME-NEEMSIS\Big-5\curve_ars.svg", as(svg) replace
-graph export "$git\Analysis\Personality\Big-5\curve_ars.pdf", as(pdf) replace
+graph export "$git\Analysis\Stability\Analysis\Graph\curve_ars.pdf", as(pdf) replace
 set graph on
 
-drop n ars3_p ars3_2020_p
+drop n ars3_1_p ars3_2_p
 
 
 
+
+
+
+********** CATPLOT
 set graph off
 catplot sex pathars, asyvars percent(sex) recast(bar) ///
 ylabel(, labsize(vsmall)) ytitle("Percent", size(small)) ///
@@ -141,15 +365,15 @@ ylabel(, labsize(vsmall)) ytitle("Percent", size(small)) ///
 var2opts(label(labsize(vsmall) angle(45))) ///
 name(g2, replace) legend(col(3) pos(6) size(vsmall)) blabel(bar, format(%4.1f) size(tiny) angle(45))
 
-catplot agecat1 pathars, asyvars percent(agecat1) recast(bar) ///
+catplot agecat_1 pathars, asyvars percent(agecat_1) recast(bar) ///
 ylabel(, labsize(vsmall)) ytitle("Percent", size(small)) ///
 var2opts(label(labsize(vsmall) angle(45))) ///
 name(g3, replace) legend(col(2) pos(6) size(vsmall)) blabel(bar, format(%4.1f) size(tiny) angle(45))
 
 graph combine g1 g2 g3, col(3) note("Acquiesence bias", size(tiny))
-graph save "$git\Analysis\Personality\Big-5\path_ars.gph", replace
+graph save "$git\Analysis\Stability\Analysis\Graph\path_ars.gph", replace
 graph export "$git\RUME-NEEMSIS\Big-5\path_ars.svg", as(svg) replace
-graph export "$git\Analysis\Personality\Big-5\path_ars.pdf", as(pdf) replace
+graph export "$git\Analysis\Stability\Analysis\Graph\path_ars.pdf", as(pdf) replace
 set graph on
 ****************************************
 * END
@@ -170,10 +394,10 @@ set graph on
 
 
 ****************************************
-* CAT PLOT
+* PERSONALITY TRAITS: CATPLOT
 ****************************************
 
-********** Corrected - Non corrected
+********** Corrected vs Non corrected
 preserve
 foreach x in OP CO EX AG ES Grit {
 rename cat_diff_cr_`x' cat_diff_`x'2
@@ -181,8 +405,6 @@ rename cat_diff_`x' cat_diff_`x'1
 }
 gen corr2=1
 gen corr1=0
-egen HHINDID=concat(HHID_panel INDID_panel), p(/)
-order HHINDID
 sort HHINDID
 reshape long cat_diff_OP cat_diff_CO cat_diff_EX cat_diff_AG cat_diff_ES cat_diff_Grit corr, i(HHINDID) j(n)
 order HHINDID corr cat_diff_OP cat_diff_CO cat_diff_EX cat_diff_AG cat_diff_ES cat_diff_Grit
@@ -197,9 +419,9 @@ title("`x'", size(small)) ///
 name(g_`x', replace) legend(order(1 "Non-corrected" 2 "Corrected") col(3) size(vsmall)) blabel(bar, format(%4.1f) size(tiny) angle(45))
 }
 grc1leg g_OP g_CO g_EX g_AG g_ES, leg(g_OP) pos(6) cols(3)
-graph save "$git\Analysis\Personality\Big-5\diff_cor_ncor.gph", replace
+graph save "$git\Analysis\Stability\Analysis\Graph\diff_cor_ncor.gph", replace
 graph export "$git\RUME-NEEMSIS\Big-5\diff_cor_ncor.svg", as(svg) replace
-graph export "$git\Analysis\Personality\Big-5\diff_cor_ncor.pdf", as(pdf) replace
+graph export "$git\Analysis\Stability\Analysis\Graph\diff_cor_ncor.pdf", as(pdf) replace
 set graph on
 restore
 
@@ -217,9 +439,9 @@ title("`x'", size(small)) ///
 name(g_`x', replace) legend(col(2) size(vsmall)) blabel(bar, format(%4.1f) size(tiny) angle(45))
 }
 grc1leg g_OP g_CO g_EX g_AG g_ES, cols(2) name(combage, replace) legend(g_OP) pos(6) note("Traits corrected from acquiesence bias.", size(tiny))
-graph save "$git\Analysis\Personality\Big-5\diff_gender_cor.gph", replace
+graph save "$git\Analysis\Stability\Analysis\Graph\diff_gender_cor.gph", replace
 graph export "$git\RUME-NEEMSIS\Big-5\diff_gender_cor.svg", as(svg) replace
-graph export "$git\Analysis\Personality\Big-5\diff_gender_cor.pdf", as(pdf) replace
+graph export "$git\Analysis\Stability\Analysis\Graph\diff_gender_cor.pdf", as(pdf) replace
 set graph on
 
 *Caste
@@ -233,14 +455,14 @@ name(g_`x', replace) legend(col(3) size(vsmall)) blabel(bar, format(%4.1f) size(
 }
 grc1leg g_OP g_CO g_EX g_AG g_ES, cols(2) name(combage, replace) legend(g_OP) pos(6) note("Traits corrected from acquiesence bias.", size(tiny))
 set graph on
-graph save "$git\Analysis\Personality\Big-5\diff_caste_cor.gph", replace
+graph save "$git\Analysis\Stability\Analysis\Graph\diff_caste_cor.gph", replace
 graph export "$git\RUME-NEEMSIS\Big-5\diff_caste_cor.svg", as(svg) replace
-graph export "$git\Analysis\Personality\Big-5\diff_caste_cor.pdf", as(pdf) replace
+graph export "$git\Analysis\Stability\Analysis\Graph\diff_caste_cor.pdf", as(pdf) replace
 
 *Age
 set graph off
 foreach x in OP CO EX AG ES {
-catplot agecat1 cat_diff_cr_`x', asyvars percent(agecat1) recast(bar) ///
+catplot agecat_1 cat_diff_cr_`x', asyvars percent(agecat_1) recast(bar) ///
 ylabel(, labsize(vsmall)) ytitle("Percent", size(small)) ///
 var2opts(label(labsize(vsmall) angle(45))) ///
 title("`x'", size(small)) ///
@@ -248,9 +470,9 @@ name(g_`x', replace) legend(col(2) size(vsmall)) blabel(bar, format(%4.1f) size(
 }
 grc1leg g_OP g_CO g_EX g_AG g_ES, cols(2) name(combage, replace) legend(g_OP) pos(6) note("Traits corrected from acquiesence bias.", size(tiny))
 set graph on
-graph save "$git\Analysis\Personality\Big-5\diff_age_cor.gph", replace
+graph save "$git\Analysis\Stability\Analysis\Graph\diff_age_cor.gph", replace
 graph export "$git\RUME-NEEMSIS\Big-5\diff_age_cor.svg", as(svg) replace
-graph export "$git\Analysis\Personality\Big-5\diff_age_cor.pdf", as(pdf) replace
+graph export "$git\Analysis\Stability\Analysis\Graph\diff_age_cor.pdf", as(pdf) replace
 
 
 
@@ -267,9 +489,9 @@ name(g_`x', replace) legend(col(2) size(vsmall)) blabel(bar, format(%4.1f) size(
 }
 grc1leg g_OP g_CO g_EX g_AG g_ES, cols(2) name(combage, replace) legend(g_OP) pos(6) note("Raw traits (non-corrected from acquiesence bias).", size(tiny))
 set graph on
-graph save "$git\Analysis\Personality\Big-5\diff_gender_raw.gph", replace
+graph save "$git\Analysis\Stability\Analysis\Graph\diff_gender_raw.gph", replace
 graph export "$git\RUME-NEEMSIS\Big-5\diff_gender_raw.svg", as(svg) replace
-graph export "$git\Analysis\Personality\Big-5\diff_gender_raw.pdf", as(pdf) replace
+graph export "$git\Analysis\Stability\Analysis\Graph\diff_gender_raw.pdf", as(pdf) replace
 
 *Caste
 set graph off
@@ -282,14 +504,14 @@ name(g_`x', replace) legend(col(3) size(vsmall)) blabel(bar, format(%4.1f) size(
 }
 grc1leg g_OP g_CO g_EX g_AG g_ES, cols(2) name(combage, replace) legend(g_OP) pos(6) note("Raw traits (non-corrected from acquiesence bias).", size(tiny))
 set graph on
-graph save "$git\Analysis\Personality\Big-5\diff_caste_raw.gph", replace
+graph save "$git\Analysis\Stability\Analysis\Graph\diff_caste_raw.gph", replace
 graph export "$git\RUME-NEEMSIS\Big-5\diff_caste_raw.svg", as(svg) replace
-graph export "$git\Analysis\Personality\Big-5\diff_caste_raw.pdf", as(pdf) replace
+graph export "$git\Analysis\Stability\Analysis\Graph\diff_caste_raw.pdf", as(pdf) replace
 
 *Age
 set graph off
 foreach x in OP CO EX AG ES {
-catplot agecat1 cat_diff_`x', asyvars percent(agecat1) recast(bar) ///
+catplot agecat_1 cat_diff_`x', asyvars percent(agecat_1) recast(bar) ///
 ylabel(, labsize(vsmall)) ytitle("Percent", size(small)) ///
 var2opts(label(labsize(vsmall) angle(45))) ///
 title("`x'", size(small)) ///
@@ -297,57 +519,11 @@ name(g_`x', replace) legend(col(2) size(vsmall)) blabel(bar, format(%4.1f) size(
 }
 grc1leg g_OP g_CO g_EX g_AG g_ES, cols(2) name(combage, replace) legend(g_OP) pos(6) note("Raw traits (non-corrected from acquiesence bias).", size(tiny))
 set graph on
-graph save "$git\Analysis\Personality\Big-5\diff_age_raw.gph", replace
+graph save "$git\Analysis\Stability\Analysis\Graph\diff_age_raw.gph", replace
 graph export "$git\RUME-NEEMSIS\Big-5\diff_age_raw.svg", as(svg) replace
-graph export "$git\Analysis\Personality\Big-5\diff_age_raw.pdf", as(pdf) replace
+graph export "$git\Analysis\Stability\Analysis\Graph\diff_age_raw.pdf", as(pdf) replace
 
 
-********** Cognitif
-*ssc install catplot
-*Gender
-set graph off
-foreach x in raven_tt num_tt lit_tt {
-catplot sex cat_diff_`x', asyvars percent(sex) recast(bar) ///
-ylabel(, labsize(vsmall)) ytitle("Percent", size(small)) ///
-var2opts(label(labsize(vsmall) angle(45))) ///
-title("`x'", size(small)) ///
-name(g_`x', replace) legend(col(2) size(vsmall)) blabel(bar, format(%4.1f) size(tiny) angle(45))
-}
-grc1leg g_raven_tt g_num_tt g_lit_tt, cols(3) leg(g_raven_tt) name(combage, replace) pos(6)
-set graph on
-graph save "$git\Analysis\Personality\Big-5\diff_cog_gender.gph", replace
-graph export "$git\RUME-NEEMSIS\Big-5\diff_cog_gender.svg", as(svg) replace
-graph export "$git\Analysis\Personality\Big-5\diff_cog_gender.pdf", as(pdf) replace
-
-*Caste
-set graph off
-foreach x in raven_tt num_tt lit_tt {
-catplot caste cat_diff_`x', asyvars percent(caste) recast(bar) ///
-ylabel(, labsize(vsmall)) ytitle("Percent", size(small)) ///
-var2opts(label(labsize(vsmall) angle(45))) ///
-title("`x'", size(small)) ///
-name(g_`x', replace) legend(col(3) size(vsmall)) blabel(bar, format(%4.1f) size(tiny) angle(45))
-}
-grc1leg g_raven_tt g_num_tt g_lit_tt, cols(3) leg(g_raven_tt) name(combage, replace) pos(6)
-set graph on
-graph save "$git\Analysis\Personality\Big-5\diff_cog_caste.gph", replace
-graph export "$git\RUME-NEEMSIS\Big-5\diff_cog_caste.svg", as(svg) replace
-graph export "$git\Analysis\Personality\Big-5\diff_cog_caste.pdf", as(pdf) replace
-
-*Age
-set graph off
-foreach x in raven_tt num_tt lit_tt {
-catplot agecat1 cat_diff_`x', asyvars percent(agecat1) recast(bar) ///
-ylabel(, labsize(vsmall)) ytitle("Percent", size(small)) ///
-var2opts(label(labsize(vsmall) angle(45))) ///
-title("`x'", size(small)) ///
-name(g_`x', replace) legend(col(2) size(vsmall)) blabel(bar, format(%4.1f) size(tiny) angle(45))
-}
-grc1leg g_raven_tt g_num_tt g_lit_tt, cols(3) leg(g_raven_tt) name(combage, replace) pos(6)
-set graph on
-graph save "$git\Analysis\Personality\Big-5\diff_cog_age.gph", replace
-graph export "$git\RUME-NEEMSIS\Big-5\diff_cog_age.svg", as(svg) replace
-graph export "$git\Analysis\Personality\Big-5\diff_cog_age.pdf", as(pdf) replace
 
 ****************************************
 * END
@@ -365,17 +541,13 @@ graph export "$git\Analysis\Personality\Big-5\diff_cog_age.pdf", as(pdf) replace
 
 
 
-****************************************
-* HISTOGRAM
-****************************************
 
-********** Graphical
-*For line 
-foreach x in absdiff_cr_OP absdiff_cr_CO absdiff_cr_EX absdiff_cr_AG absdiff_cr_ES absdiff_cr_Grit absdiff_OP absdiff_CO absdiff_EX absdiff_AG absdiff_ES absdiff_Grit {
-pctile `x'_p=`x', n(20)
-}
-gen n=_n*5
-replace n=. if n>100
+
+
+
+****************************************
+* PERSONALITY TRAITS: HISTOGRAM
+****************************************
 
 
 ********** Raw traits
@@ -398,9 +570,9 @@ twoway ///
 */
 *Combine
 graph combine g1 g2 g3 g4 g5, cols(3) note("Raw traits (non-corrected from acquiesence bias).", size(tiny))
-graph save "$git\Analysis\Personality\Big-5\diffcont_raw.gph", replace
+graph save "$git\Analysis\Stability\Analysis\Graph\diffcont_raw.gph", replace
 graph export "$git\RUME-NEEMSIS\Big-5\diffcont_raw.svg", as(svg) replace
-graph export "$git\Analysis\Personality\Big-5\diffcont_raw.pdf", as(pdf) replace
+graph export "$git\Analysis\Stability\Analysis\Graph\diffcont_raw.pdf", as(pdf) replace
 set graph on 
 
 
@@ -425,34 +597,10 @@ twoway ///
 */
 *Combine
 graph combine g1 g2 g3 g4 g5, cols(3) note("Traits corrected from acquiesence bias.", size(tiny))
-graph save "$git\Analysis\Personality\Big-5\diffcont_cor.gph", replace
+graph save "$git\Analysis\Stability\Analysis\Graph\diffcont_cor.gph", replace
 graph export "$git\RUME-NEEMSIS\Big-5\diffcont_cor.svg", as(svg) replace
-graph export "$git\Analysis\Personality\Big-5\diffcont_cor.pdf", as(pdf) replace
+graph export "$git\Analysis\Stability\Analysis\Graph\diffcont_cor.pdf", as(pdf) replace
 set graph on 
 
-drop absdiff_cr_OP_p absdiff_cr_CO_p absdiff_cr_EX_p absdiff_cr_AG_p absdiff_cr_ES_p absdiff_cr_Grit_p absdiff_OP_p absdiff_CO_p absdiff_EX_p absdiff_AG_p absdiff_ES_p absdiff_Grit_p n
-
-
-
-
-
-
-********** COGNITIF
-tab1 diff_raven_tt diff_num_tt diff_lit_tt
-*Density
-set graph off
-histogram diff_raven_tt, percent width(1) xlabel(-36(6)27, labsize(vsmall) ang(0)) xmtick(-36(1)27) ylabel(, labsize(vsmall)) ymtick() xtitle("slope - Raven", size(small)) ytitle(, size(small)) name(g1, replace) note("") title("") legend(off)
-histogram diff_num_tt, percent width(1) xlabel(-12(2)12, labsize(vsmall) ang()) ylabel(, labsize(vsmall)) ymtick() xtitle("slope -  Num", size(small)) ytitle(, size(small)) name(g2, replace)  note("") title("") legend(off)
-histogram diff_lit_tt, percent width(0.5) xlabel(-4(1)4, labsize(vsmall) ang()) xmtick(-4(0.2)4) ylabel(, labsize(vsmall)) ymtick() xtitle("slope -  Lit", size(small)) ytitle(, size(small)) name(g3, replace)  note("") title("") legend(off)
-*Combine
-graph combine g1 g2 g3, cols(3)
-graph save "$git\Analysis\Personality\Big-5\diffcont_cog.gph", replace
-graph export "$git\RUME-NEEMSIS\Big-5\diffcont_cog.svg", as(svg) replace
-graph export "$git\Analysis\Personality\Big-5\diffcont_cog.pdf", as(pdf) replace
-set graph on 
-
-drop absdiff_raven_tt absdiff_num_tt absdiff_lit_tt
-
-drop absdiff_cr_OP absdiff_cr_CO absdiff_cr_EX absdiff_cr_AG absdiff_cr_ES absdiff_cr_Grit absdiff_OP absdiff_CO absdiff_EX absdiff_AG absdiff_ES absdiff_Grit absdiff_ars absdiff_ars2 absdiff_ars3
 ****************************************
 * END
