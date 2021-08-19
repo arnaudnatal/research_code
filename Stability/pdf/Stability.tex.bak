@@ -166,10 +166,6 @@ Then, we standardise the score to ensure comparability of results between person
 Regarding personality traits, on the basis of 35 questions referring to Big-5 taxonomy, we averaged answers --based on a Likert scale from 1-``Almost Never'' to 5-``Almost always'', that belong to a determined trait after correcting for acquiescence bias\footnote{Acquiescence bias represents the tendency to answer more in one direction (agree or disagree) over the other.} (see Appendix \ref{section:efa_big5}).
 The resulting mean represents the score on each trait.
 
-\citeauthor{McDonald1999}'s $\Upomega$\footnote{Literature on internal consistency estimators increasingly agrees that \citeauthor{Cronbach1951}'s $\upalpha$ --the widest used estimator is maybe not very efficient \citep{Bourque2019, TrizanoHermosilla2016}.}, a measure of internal consistency, are mostly satisfactory for 2016-17 data corrected from acquiescence bias: 0.81 for openness; 0.86 for conscientiousness; 0.59 for extraversion; 0.60 for agreeableness and 0.80 for emotional stability (see Figure \ref{fig:omega}).
-For 2020-21, the internal validity after correcting for acquiescence bias is not ideal compared to non-corrected items.
-It implies that results could suffer from measurement error, which would bias our results towards zero.
-%We, therefore, implement our own exploratory factor analysis to identify personality traits.
 
 
 	% ******************************
@@ -216,10 +212,101 @@ Figure \ref{fig:ars} shows the distribution of the acquiescence bias in 2016-17 
 Even if a small part of our population have a high AB, the 2020-21 distribution is more spread out to the right in 2020-21 than in 2016-17, suggesting higher bias.
 Intuition is confirmed with Figure \ref{fig:curvears} that shows cumulative distribution of acquiescence bias. 
 The flatter the curve is, the lower the acquiescence bias is.
-In 2016-17, 50\% of individuals have a bias lower than 0.3 while it is 
+In 2016-17, 50\% of individuals have a bias lower than 0.3 while it is 0.5 in 2020-21.
+
+Figure \ref{fig:arssub} shows that female have higher bias than male. 
+In 2020-21, by caste, 
 
 
-Figure \ref{fig:arssub} shows 
+	% ******************************
+	\subsection{Internal consistency}
+	% ******************************
+
+\citeauthor{McDonald1999}'s $\Upomega$\footnote{Literature on internal consistency estimators increasingly agrees that \citeauthor{Cronbach1951}'s $\upalpha$ --the widest used estimator is maybe not very efficient \citep{Bourque2019, TrizanoHermosilla2016}.}, a measure of internal consistency, are mostly satisfactory for 2016-17 data corrected from acquiescence bias: 0.81 for openness; 0.86 for conscientiousness; 0.59 for extraversion; 0.60 for agreeableness and 0.80 for emotional stability (see Figure \ref{fig:omega}).
+For 2020-21, the internal validity after correcting for acquiescence bias is not ideal compared to non-corrected items.
+It implies that results could suffer from measurement error, which would bias our results towards zero.
+
+
+
+
+\clearpage
+\newpage
+\section{Corrected items}
+
+\begin{figure}[!h]
+\raggedright
+\includegraphics[scale=0.8]{INPUT/diffcont_cor}
+\caption{}
+\sourcefig{NEEMSIS-1 (2016-17) \& NEEMSIS-2 (2020-21); author's calculations.}
+\label{fig:diffagecor}
+\end{figure}
+
+\begin{figure}[!h]
+\raggedright
+\includegraphics[scale=0.8]{INPUT/diff_age_cor}
+\caption{}
+\sourcefig{NEEMSIS-1 (2016-17) \& NEEMSIS-2 (2020-21); author's calculations.}
+\label{fig:diffagecor}
+\end{figure}
+
+\begin{figure}[!h]
+\raggedright
+\includegraphics[scale=0.8]{INPUT/diff_gender_cor}
+\caption{}
+\sourcefig{NEEMSIS-1 (2016-17) \& NEEMSIS-2 (2020-21); author's calculations.}
+\label{fig:diffgendercor}
+\end{figure}
+
+\begin{figure}[!h]
+\raggedright
+\includegraphics[scale=0.8]{INPUT/diff_caste_cor}
+\caption{}
+\sourcefig{NEEMSIS-1 (2016-17) \& NEEMSIS-2 (2020-21); author's calculations.}
+\label{fig:diffcastecor}
+\end{figure}
+
+
+
+\clearpage
+\newpage
+\section{Non-corrected items}
+
+\begin{figure}[!h]
+\raggedright
+\includegraphics[scale=0.8]{INPUT/diffcont_raw}
+\caption{}
+\sourcefig{NEEMSIS-1 (2016-17) \& NEEMSIS-2 (2020-21); author's calculations.}
+\label{fig:diffagecor}
+\end{figure}
+
+\begin{figure}[!h]
+\raggedright
+\includegraphics[scale=0.8]{INPUT/diff_age_cor}
+\caption{}
+\sourcefig{NEEMSIS-1 (2016-17) \& NEEMSIS-2 (2020-21); author's calculations.}
+\label{fig:diffagecor}
+\end{figure}
+
+\begin{figure}[!h]
+\raggedright
+\includegraphics[scale=0.8]{INPUT/diff_gender_cor}
+\caption{}
+\sourcefig{NEEMSIS-1 (2016-17) \& NEEMSIS-2 (2020-21); author's calculations.}
+\label{fig:diffgendercor}
+\end{figure}
+
+\begin{figure}[!h]
+\raggedright
+\includegraphics[scale=0.8]{INPUT/diff_caste_cor}
+\caption{}
+\sourcefig{NEEMSIS-1 (2016-17) \& NEEMSIS-2 (2020-21); author's calculations.}
+\label{fig:diffcastecor}
+\end{figure}
+
+
+
+
+
 
 
 \clearpage
@@ -267,6 +354,17 @@ Figure \ref{fig:arssub} shows
 \sourcefig{NEEMSIS-1 (2016-17) \& NEEMSIS-2 (2020-21); author's calculations.}
 \label{fig:arssub}
 \end{figure}
+
+
+\begin{figure}[!h]
+\raggedright
+\includegraphics[scale=0.8]{INPUT/omega}
+\caption{\citeauthor{McDonald1999}'s $\upomega$ -- For 953 individuals in 2016-17 and 1,316 in 2020-21 from rural Tamil Nadu, India.}
+\sourcefig{NEEMSIS-1 (2016-17) \& NEEMSIS-2 (2020-21); author's calculations.}
+\label{fig:omega}
+\end{figure}
+
+
 
 
 % \begin{figure}[!h]
