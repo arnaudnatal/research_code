@@ -91,6 +91,15 @@ Gender, caste, panel data, Tamil Nadu.
 \label{Introduction}
 % ******************************
 
+\begin{itemize}
+\item Faire analyse factorielle 2016
+\item Faire analyse factorielle 2020
+\item Faire FA par sexe, caste et age
+\item Organiser le papier
+\item 
+\end{itemize}
+
+
 Since more than a decade, there has been increasing interest in psychology in economics literature, especially through personality traits and cognitive skills (\PTCS).
 The relevance of such analysis in economics is well documented.
 \cite{Hanushek2008} show that cognitive skills are correlated with individual earnings, distribution of income and economic growth (and other factors such as well-functioning economic institutions --although enter into growth and may well have stronger effects, may also amplify the effects of cognitive skills).
@@ -281,7 +290,7 @@ It implies that results could suffer from measurement error, which would bias ou
 
 \begin{figure}[!h]
 \raggedright
-\includegraphics[scale=0.8]{INPUT/diff_age_cor}
+\includegraphics[scale=0.8]{INPUT/diff_age_raw}
 \caption{}
 \sourcefig{NEEMSIS-1 (2016-17) \& NEEMSIS-2 (2020-21); author's calculations.}
 \label{fig:diffagecor}
@@ -289,7 +298,7 @@ It implies that results could suffer from measurement error, which would bias ou
 
 \begin{figure}[!h]
 \raggedright
-\includegraphics[scale=0.8]{INPUT/diff_gender_cor}
+\includegraphics[scale=0.8]{INPUT/diff_gender_raw}
 \caption{}
 \sourcefig{NEEMSIS-1 (2016-17) \& NEEMSIS-2 (2020-21); author's calculations.}
 \label{fig:diffgendercor}
@@ -297,7 +306,7 @@ It implies that results could suffer from measurement error, which would bias ou
 
 \begin{figure}[!h]
 \raggedright
-\includegraphics[scale=0.8]{INPUT/diff_caste_cor}
+\includegraphics[scale=0.8]{INPUT/diff_caste_raw}
 \caption{}
 \sourcefig{NEEMSIS-1 (2016-17) \& NEEMSIS-2 (2020-21); author's calculations.}
 \label{fig:diffcastecor}
