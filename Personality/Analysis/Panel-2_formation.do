@@ -570,15 +570,15 @@ global big5rrok rr_curious rr_interestedbyart rr_repetitivetasks rr_inventive rr
 
 
 foreach x in $big5 $big5raw $big5cor $big5rrok{
-gen im_`x'=`x'
+gen im`x'=`x'
 }
 
 
 forvalues j=1(1)3{
 forvalues i=1(1)2{
-foreach x in $big5 $big5raw $big5cor $big5rrok{
-sum im_`x' if sex==`i' & caste==`j' & egoid!=0 & egoid!=.
-replace im_`x'=r(mean) if im_`x'==. & sex==`i' & caste==`j' & egoid!=0 & egoid!=.
+foreach x in $big5 {
+sum im`x' if sex==`i' & caste==`j' & egoid!=0 & egoid!=.
+replace im`x'=r(mean) if `x'==. & sex==`i' & caste==`j' & egoid!=0 & egoid!=.
 }
 }
 }
@@ -603,7 +603,7 @@ label var rr_`x' "rr_`x'"
 tab raw_`x' rr_`x'
 }
 
-fre im_rr_curious im_rr_interestedbyart im_rr_repetitivetasks im_rr_inventive im_rr_liketothink im_rr_newideas im_rr_activeimagination rr_curious rr_interestedbyart rr_repetitivetasks rr_inventive rr_liketothink rr_newideas rr_activeimagination 
+fre imrr_curious imrr_interestedbyart imrr_repetitivetasks imrr_inventive imrr_liketothink imrr_newideas imrr_activeimagination rr_curious rr_interestedbyart rr_repetitivetasks rr_inventive rr_liketothink rr_newideas rr_activeimagination 
 
 cls
 foreach x in imraw2 { //imcor imraw {
