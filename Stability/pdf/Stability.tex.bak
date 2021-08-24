@@ -74,6 +74,8 @@ bottom=2.5cm,
 L'internal consistency est excellente pour 2016-17 et moyenne pour 2020-21.
 Cependant, à vérifier en lancant de nouveau les lignes
 
+Cependant, lorsqu'on lance une analyse factorielle pour 2016-17 et une pour 2020-21, on voit que les mêmes facteurs ressortent à peu près et ils sont relativement proche du Big-5, suggérant que ca fonctionne bien
+
 
 \end{resab}
 
@@ -249,8 +251,23 @@ It implies that results could suffer from measurement error, which would bias ou
 	\subsection{Factor analysis}
 	% ******************************
 
+2016-17
+\begin{enumerate}
+\item OP-EX
+\item CO
+\item \textit{Porupillatavan}
+\item ES
+\item AG
+\end{enumerate}
 
-
+2020-21
+\begin{enumerate}
+\item Mix
+\item CO
+\item ES
+\item Mix
+\item Mix
+\end{enumerate}
 
 
 

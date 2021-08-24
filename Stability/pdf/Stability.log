@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.22 (MiKTeX 21.6.28) (preloaded format=pdflatex 2021.7.10)  25 AUG 2021 01:48
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (MiKTeX 21.6.28) (preloaded format=pdflatex 2021.7.10)  25 AUG 2021 01:52
 entering extended mode
 **./Stability.tex
 (Stability.tex
@@ -1866,32 +1866,32 @@ LaTeX Warning: Reference `section:stab_big5' on page 9 undefined on input line
 
 [9
 
-] [10]
+] [10] [11]
 
 pdfTeX warning: pdflatex (file ./INPUT/diffcont_cor.pdf): PDF inclusion: found 
 PDF version <1.6>, but at most version <1.5> allowed
-<INPUT/diffcont_cor.pdf, id=251, 433.62pt x 289.08pt>
+<INPUT/diffcont_cor.pdf, id=265, 433.62pt x 289.08pt>
 File: INPUT/diffcont_cor.pdf Graphic file (type pdf)
 <use INPUT/diffcont_cor.pdf>
-Package pdftex.def Info: INPUT/diffcont_cor.pdf  used on input line 265.
+Package pdftex.def Info: INPUT/diffcont_cor.pdf  used on input line 281.
 (pdftex.def)             Requested size: 346.89647pt x 231.2643pt.
 
 
 pdfTeX warning: pdflatex (file ./INPUT/diff_age_cor.pdf): PDF inclusion: found 
 PDF version <1.6>, but at most version <1.5> allowed
-<INPUT/diff_age_cor.pdf, id=252, 433.62pt x 289.08pt>
+<INPUT/diff_age_cor.pdf, id=266, 433.62pt x 289.08pt>
 File: INPUT/diff_age_cor.pdf Graphic file (type pdf)
 <use INPUT/diff_age_cor.pdf>
-Package pdftex.def Info: INPUT/diff_age_cor.pdf  used on input line 273.
+Package pdftex.def Info: INPUT/diff_age_cor.pdf  used on input line 289.
 (pdftex.def)             Requested size: 346.89647pt x 231.2643pt.
 
 
 pdfTeX warning: pdflatex (file ./INPUT/diff_gender_cor.pdf): PDF inclusion: fou
 nd PDF version <1.6>, but at most version <1.5> allowed
-<INPUT/diff_gender_cor.pdf, id=253, 433.62pt x 289.08pt>
+<INPUT/diff_gender_cor.pdf, id=267, 433.62pt x 289.08pt>
 File: INPUT/diff_gender_cor.pdf Graphic file (type pdf)
 <use INPUT/diff_gender_cor.pdf>
-Package pdftex.def Info: INPUT/diff_gender_cor.pdf  used on input line 281.
+Package pdftex.def Info: INPUT/diff_gender_cor.pdf  used on input line 297.
 (pdftex.def)             Requested size: 346.89647pt x 231.2643pt.
 
 LaTeX Warning: `!h' float specifier changed to `!ht'.
@@ -1900,43 +1900,43 @@ LaTeX Warning: `!h' float specifier changed to `!ht'.
 
 pdfTeX warning: pdflatex (file ./INPUT/diff_caste_cor.pdf): PDF inclusion: foun
 d PDF version <1.6>, but at most version <1.5> allowed
-<INPUT/diff_caste_cor.pdf, id=254, 433.62pt x 289.08pt>
+<INPUT/diff_caste_cor.pdf, id=268, 433.62pt x 289.08pt>
 File: INPUT/diff_caste_cor.pdf Graphic file (type pdf)
 <use INPUT/diff_caste_cor.pdf>
-Package pdftex.def Info: INPUT/diff_caste_cor.pdf  used on input line 289.
+Package pdftex.def Info: INPUT/diff_caste_cor.pdf  used on input line 305.
 (pdftex.def)             Requested size: 346.89647pt x 231.2643pt.
 
 LaTeX Warning: `!h' float specifier changed to `!ht'.
 
-[11
+[12
 
- <./INPUT/diffcont_cor.pdf> <./INPUT/diff_age_cor.pdf>] [12 <./INPUT/diff_gende
+ <./INPUT/diffcont_cor.pdf> <./INPUT/diff_age_cor.pdf>] [13 <./INPUT/diff_gende
 r_cor.pdf> <./INPUT/diff_caste_cor.pdf>]
 
 pdfTeX warning: pdflatex (file ./INPUT/diffcont_raw.pdf): PDF inclusion: found 
 PDF version <1.6>, but at most version <1.5> allowed
-<INPUT/diffcont_raw.pdf, id=307, 433.62pt x 289.08pt>
+<INPUT/diffcont_raw.pdf, id=322, 433.62pt x 289.08pt>
 File: INPUT/diffcont_raw.pdf Graphic file (type pdf)
 <use INPUT/diffcont_raw.pdf>
-Package pdftex.def Info: INPUT/diffcont_raw.pdf  used on input line 303.
+Package pdftex.def Info: INPUT/diffcont_raw.pdf  used on input line 319.
 (pdftex.def)             Requested size: 346.89647pt x 231.2643pt.
 
 
 pdfTeX warning: pdflatex (file ./INPUT/diff_age_raw.pdf): PDF inclusion: found 
 PDF version <1.6>, but at most version <1.5> allowed
-<INPUT/diff_age_raw.pdf, id=308, 433.62pt x 289.08pt>
+<INPUT/diff_age_raw.pdf, id=323, 433.62pt x 289.08pt>
 File: INPUT/diff_age_raw.pdf Graphic file (type pdf)
 <use INPUT/diff_age_raw.pdf>
-Package pdftex.def Info: INPUT/diff_age_raw.pdf  used on input line 311.
+Package pdftex.def Info: INPUT/diff_age_raw.pdf  used on input line 327.
 (pdftex.def)             Requested size: 346.89647pt x 231.2643pt.
 
 
 pdfTeX warning: pdflatex (file ./INPUT/diff_gender_raw.pdf): PDF inclusion: fou
 nd PDF version <1.6>, but at most version <1.5> allowed
-<INPUT/diff_gender_raw.pdf, id=309, 433.62pt x 289.08pt>
+<INPUT/diff_gender_raw.pdf, id=324, 433.62pt x 289.08pt>
 File: INPUT/diff_gender_raw.pdf Graphic file (type pdf)
 <use INPUT/diff_gender_raw.pdf>
-Package pdftex.def Info: INPUT/diff_gender_raw.pdf  used on input line 319.
+Package pdftex.def Info: INPUT/diff_gender_raw.pdf  used on input line 335.
 (pdftex.def)             Requested size: 346.89647pt x 231.2643pt.
 
 LaTeX Warning: `!h' float specifier changed to `!ht'.
@@ -1945,44 +1945,44 @@ LaTeX Warning: `!h' float specifier changed to `!ht'.
 
 pdfTeX warning: pdflatex (file ./INPUT/diff_caste_raw.pdf): PDF inclusion: foun
 d PDF version <1.6>, but at most version <1.5> allowed
-<INPUT/diff_caste_raw.pdf, id=310, 433.62pt x 289.08pt>
+<INPUT/diff_caste_raw.pdf, id=325, 433.62pt x 289.08pt>
 File: INPUT/diff_caste_raw.pdf Graphic file (type pdf)
 <use INPUT/diff_caste_raw.pdf>
-Package pdftex.def Info: INPUT/diff_caste_raw.pdf  used on input line 327.
+Package pdftex.def Info: INPUT/diff_caste_raw.pdf  used on input line 343.
 (pdftex.def)             Requested size: 346.89647pt x 231.2643pt.
 
 LaTeX Warning: `!h' float specifier changed to `!ht'.
 
-[13
+[14
 
- <./INPUT/diffcont_raw.pdf> <./INPUT/diff_age_raw.pdf>] [14 <./INPUT/diff_gende
+ <./INPUT/diffcont_raw.pdf> <./INPUT/diff_age_raw.pdf>] [15 <./INPUT/diff_gende
 r_raw.pdf> <./INPUT/diff_caste_raw.pdf>]
 
 pdfTeX warning: pdflatex (file ./INPUT/eigen_without.pdf): PDF inclusion: found
  PDF version <1.6>, but at most version <1.5> allowed
-<INPUT/eigen_without.pdf, id=364, 433.62pt x 289.08pt>
+<INPUT/eigen_without.pdf, id=378, 433.62pt x 289.08pt>
 File: INPUT/eigen_without.pdf Graphic file (type pdf)
 <use INPUT/eigen_without.pdf>
-Package pdftex.def Info: INPUT/eigen_without.pdf  used on input line 342.
+Package pdftex.def Info: INPUT/eigen_without.pdf  used on input line 358.
 (pdftex.def)             Requested size: 346.89647pt x 231.2643pt.
 
 
 pdfTeX warning: pdflatex (file ./INPUT/cumul.pdf): PDF inclusion: found PDF ver
 sion <1.6>, but at most version <1.5> allowed
-<INPUT/cumul.pdf, id=365, 433.62pt x 289.08pt>
+<INPUT/cumul.pdf, id=379, 433.62pt x 289.08pt>
 File: INPUT/cumul.pdf Graphic file (type pdf)
 <use INPUT/cumul.pdf>
-Package pdftex.def Info: INPUT/cumul.pdf  used on input line 350.
+Package pdftex.def Info: INPUT/cumul.pdf  used on input line 366.
 (pdftex.def)             Requested size: 346.89647pt x 231.2643pt.
 
 
 pdfTeX warning: pdflatex (file ./INPUT/factor2016_tot_without.pdf): PDF inclusi
 on: found PDF version <1.6>, but at most version <1.5> allowed
-<INPUT/factor2016_tot_without.pdf, id=366, 433.62pt x 289.08pt>
+<INPUT/factor2016_tot_without.pdf, id=380, 433.62pt x 289.08pt>
 File: INPUT/factor2016_tot_without.pdf Graphic file (type pdf)
 <use INPUT/factor2016_tot_without.pdf>
 Package pdftex.def Info: INPUT/factor2016_tot_without.pdf  used on input line 3
-58.
+74.
 (pdftex.def)             Requested size: 346.89647pt x 231.2643pt.
 
 LaTeX Warning: `!h' float specifier changed to `!ht'.
@@ -1991,47 +1991,47 @@ LaTeX Warning: `!h' float specifier changed to `!ht'.
 
 pdfTeX warning: pdflatex (file ./INPUT/factor2020_tot_without.pdf): PDF inclusi
 on: found PDF version <1.6>, but at most version <1.5> allowed
-<INPUT/factor2020_tot_without.pdf, id=367, 433.62pt x 289.08pt>
+<INPUT/factor2020_tot_without.pdf, id=381, 433.62pt x 289.08pt>
 File: INPUT/factor2020_tot_without.pdf Graphic file (type pdf)
 <use INPUT/factor2020_tot_without.pdf>
 Package pdftex.def Info: INPUT/factor2020_tot_without.pdf  used on input line 3
-66.
+82.
 (pdftex.def)             Requested size: 346.89647pt x 231.2643pt.
 
 LaTeX Warning: `!h' float specifier changed to `!ht'.
 
-[15
+[16
 
- <./INPUT/eigen_without.pdf> <./INPUT/cumul.pdf>] [16 <./INPUT/factor2016_tot_w
-ithout.pdf> <./INPUT/factor2020_tot_without.pdf>] (Stability.bbl [17
+ <./INPUT/eigen_without.pdf> <./INPUT/cumul.pdf>] [17 <./INPUT/factor2016_tot_w
+ithout.pdf> <./INPUT/factor2020_tot_without.pdf>] (Stability.bbl [18
 
 ]
-[18] [19]) [20]
+[19] [20]) [21]
 
 pdfTeX warning: pdflatex (file ./INPUT/kernel_ars.pdf): PDF inclusion: found PD
 F version <1.6>, but at most version <1.5> allowed
-<INPUT/kernel_ars.pdf, id=473, 433.62pt x 289.08pt>
+<INPUT/kernel_ars.pdf, id=487, 433.62pt x 289.08pt>
 File: INPUT/kernel_ars.pdf Graphic file (type pdf)
 <use INPUT/kernel_ars.pdf>
-Package pdftex.def Info: INPUT/kernel_ars.pdf  used on input line 399.
+Package pdftex.def Info: INPUT/kernel_ars.pdf  used on input line 415.
 (pdftex.def)             Requested size: 346.89647pt x 231.2643pt.
 
 
 pdfTeX warning: pdflatex (file ./INPUT/curve_ars.pdf): PDF inclusion: found PDF
  version <1.6>, but at most version <1.5> allowed
-<INPUT/curve_ars.pdf, id=474, 433.62pt x 289.08pt>
+<INPUT/curve_ars.pdf, id=488, 433.62pt x 289.08pt>
 File: INPUT/curve_ars.pdf Graphic file (type pdf)
 <use INPUT/curve_ars.pdf>
-Package pdftex.def Info: INPUT/curve_ars.pdf  used on input line 407.
+Package pdftex.def Info: INPUT/curve_ars.pdf  used on input line 423.
 (pdftex.def)             Requested size: 346.89647pt x 231.2643pt.
 
 
 pdfTeX warning: pdflatex (file ./INPUT/kernel_ars_sub.pdf): PDF inclusion: foun
 d PDF version <1.6>, but at most version <1.5> allowed
-<INPUT/kernel_ars_sub.pdf, id=475, 433.62pt x 289.08pt>
+<INPUT/kernel_ars_sub.pdf, id=489, 433.62pt x 289.08pt>
 File: INPUT/kernel_ars_sub.pdf Graphic file (type pdf)
 <use INPUT/kernel_ars_sub.pdf>
-Package pdftex.def Info: INPUT/kernel_ars_sub.pdf  used on input line 415.
+Package pdftex.def Info: INPUT/kernel_ars_sub.pdf  used on input line 431.
 (pdftex.def)             Requested size: 346.89647pt x 231.2643pt.
 
 LaTeX Warning: `!h' float specifier changed to `!ht'.
@@ -2040,10 +2040,10 @@ LaTeX Warning: `!h' float specifier changed to `!ht'.
 
 pdfTeX warning: pdflatex (file ./INPUT/omega.pdf): PDF inclusion: found PDF ver
 sion <1.6>, but at most version <1.5> allowed
-<INPUT/omega.pdf, id=476, 433.62pt x 289.08pt>
+<INPUT/omega.pdf, id=490, 433.62pt x 289.08pt>
 File: INPUT/omega.pdf Graphic file (type pdf)
 <use INPUT/omega.pdf>
-Package pdftex.def Info: INPUT/omega.pdf  used on input line 424.
+Package pdftex.def Info: INPUT/omega.pdf  used on input line 440.
 (pdftex.def)             Requested size: 346.89647pt x 231.2643pt.
 
 LaTeX Warning: `!h' float specifier changed to `!ht'.
@@ -2051,7 +2051,7 @@ LaTeX Warning: `!h' float specifier changed to `!ht'.
 (INPUT/Big5.tex)
 File: INPUT/omega.pdf Graphic file (type pdf)
 <use INPUT/omega.pdf>
-Package pdftex.def Info: INPUT/omega.pdf  used on input line 461.
+Package pdftex.def Info: INPUT/omega.pdf  used on input line 477.
 (pdftex.def)             Requested size: 346.89647pt x 231.2643pt.
 
 
@@ -2059,46 +2059,46 @@ LaTeX Warning: `!h' float specifier changed to `!ht'.
 
 File: INPUT/diffcont_raw.pdf Graphic file (type pdf)
 <use INPUT/diffcont_raw.pdf>
-Package pdftex.def Info: INPUT/diffcont_raw.pdf  used on input line 470.
+Package pdftex.def Info: INPUT/diffcont_raw.pdf  used on input line 486.
 (pdftex.def)             Requested size: 372.91255pt x 248.60835pt.
 File: INPUT/diffcont_cor.pdf Graphic file (type pdf)
 <use INPUT/diffcont_cor.pdf>
-Package pdftex.def Info: INPUT/diffcont_cor.pdf  used on input line 478.
+Package pdftex.def Info: INPUT/diffcont_cor.pdf  used on input line 494.
 (pdftex.def)             Requested size: 372.91255pt x 248.60835pt.
 
 
 pdfTeX warning: pdflatex (file ./INPUT/diffcont_cog.pdf): PDF inclusion: found 
 PDF version <1.6>, but at most version <1.5> allowed
-<INPUT/diffcont_cog.pdf, id=479, 433.62pt x 289.08pt>
+<INPUT/diffcont_cog.pdf, id=493, 433.62pt x 289.08pt>
 File: INPUT/diffcont_cog.pdf Graphic file (type pdf)
 <use INPUT/diffcont_cog.pdf>
-Package pdftex.def Info: INPUT/diffcont_cog.pdf  used on input line 486.
+Package pdftex.def Info: INPUT/diffcont_cog.pdf  used on input line 502.
 (pdftex.def)             Requested size: 372.91255pt x 248.60835pt.
-[21
+[22
 
- <./INPUT/kernel_ars.pdf> <./INPUT/curve_ars.pdf>] [22] [23 <./INPUT/kernel_ars
-_sub.pdf> <./INPUT/omega.pdf>] [24] [25 <./INPUT/diffcont_cog.pdf>] [26
+ <./INPUT/kernel_ars.pdf> <./INPUT/curve_ars.pdf>] [23] [24 <./INPUT/kernel_ars
+_sub.pdf> <./INPUT/omega.pdf>] [25] [26 <./INPUT/diffcont_cog.pdf>] [27
 
 
 ]
 
 pdfTeX warning: pdflatex (file ./INPUT/factor2016_2.pdf): PDF inclusion: found 
 PDF version <1.6>, but at most version <1.5> allowed
-<INPUT/factor2016_2.pdf, id=559, 433.62pt x 289.08pt>
+<INPUT/factor2016_2.pdf, id=573, 433.62pt x 289.08pt>
 File: INPUT/factor2016_2.pdf Graphic file (type pdf)
 <use INPUT/factor2016_2.pdf>
-Package pdftex.def Info: INPUT/factor2016_2.pdf  used on input line 519.
+Package pdftex.def Info: INPUT/factor2016_2.pdf  used on input line 535.
 (pdftex.def)             Requested size: 455.24411pt x 303.51207pt.
 
 
 pdfTeX warning: pdflatex (file ./INPUT/matrix_b5_efa.pdf): PDF inclusion: found
  PDF version <1.6>, but at most version <1.5> allowed
-<INPUT/matrix_b5_efa.pdf, id=560, 433.62pt x 289.08pt>
+<INPUT/matrix_b5_efa.pdf, id=574, 433.62pt x 289.08pt>
 File: INPUT/matrix_b5_efa.pdf Graphic file (type pdf)
 <use INPUT/matrix_b5_efa.pdf>
-Package pdftex.def Info: INPUT/matrix_b5_efa.pdf  used on input line 528.
+Package pdftex.def Info: INPUT/matrix_b5_efa.pdf  used on input line 544.
 (pdftex.def)             Requested size: 368.57874pt x 245.71915pt.
-[27
+[28
 
  <./INPUT/factor2016_2.pdf> <./INPUT/matrix_b5_efa.pdf>] (Stability.toc)
 \tf@toc=\write5
@@ -2107,7 +2107,7 @@ Package pdftex.def Info: INPUT/matrix_b5_efa.pdf  used on input line 528.
 
 
 AED: lastpage setting LastPage
-[28
+[29
 
 ]
 \tf@thm=\write6
@@ -2124,10 +2124,10 @@ Package rerunfilecheck Info: File `Stability.out' has not changed.
 (rerunfilecheck)             Checksum: 2CDAE15CE8A4921AF2F2A84BC92A17CB;2296.
  ) 
 Here is how much of TeX's memory you used:
- 37005 strings out of 478847
- 682214 string characters out of 2847912
+ 37018 strings out of 478847
+ 682328 string characters out of 2847912
  1081003 words of memory out of 3000000
- 53593 multiletter control sequences out of 15000+600000
+ 53595 multiletter control sequences out of 15000+600000
  586503 words of font info for 523 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  89i,10n,95p,658b,970s stack positions out of 5000i,500n,10000p,200000b,80000s
@@ -2179,9 +2179,9 @@ rograms/MiKTeX/fonts/type1/public/kpfonts/jkpmnc.pfb><C:/Users/Arnaud/AppData/L
 ocal/Programs/MiKTeX/fonts/type1/public/kpfonts/jkpmne.pfb><C:/Users/Arnaud/App
 Data/Local/Programs/MiKTeX/fonts/type1/public/kpfonts/jkpmsc8a.pfb><C:/Users/Ar
 naud/AppData/Local/Programs/MiKTeX/fonts/type1/public/kpfonts/jkpttmn8a.pfb>
-Output written on Stability.pdf (28 pages, 5580404 bytes).
+Output written on Stability.pdf (29 pages, 5582593 bytes).
 PDF statistics:
- 673 PDF objects out of 1000 (max. 8388607)
- 105 named destinations out of 1000 (max. 500000)
+ 690 PDF objects out of 1000 (max. 8388607)
+ 116 named destinations out of 1000 (max. 500000)
  121068 words of extra memory for PDF output out of 128383 (max. 10000000)
 
