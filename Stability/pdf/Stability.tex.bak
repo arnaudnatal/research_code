@@ -71,6 +71,10 @@ bottom=2.5cm,
 \vspace{0.3cm}
 
 \begin{resab}{Abstract}
+L'internal consistency est excellente pour 2016-17 et moyenne pour 2020-21.
+Cependant, à vérifier en lancant de nouveau les lignes
+
+
 \end{resab}
 
 \begin{keywords}
@@ -96,7 +100,11 @@ Gender, caste, panel data, Tamil Nadu.
 \item Faire analyse factorielle 2020
 \item Faire FA par sexe, caste et age
 \item Organiser le papier
-\item 
+\item Selon moi, si l'objectif c'est de regarder la stabilité, il faut partir de la mesure du Big-5
+\item Puis balancer les omega pour montrer la cohérence interne: si élevée alors ca veut dire que le Big-5 est pas dég
+\item Aborder la question du biais avec les mesures
+\item Montrer que le modèle n'est pas forcément dégueu en 2016 car FA similaire à Big5
+\item Pb pour 2020, la FA ne colle pas 
 \end{itemize}
 
 
@@ -237,6 +245,14 @@ It implies that results could suffer from measurement error, which would bias ou
 
 
 
+	% ******************************
+	\subsection{Factor analysis}
+	% ******************************
+
+
+
+
+
 
 \clearpage
 \newpage
@@ -314,6 +330,42 @@ It implies that results could suffer from measurement error, which would bias ou
 
 
 
+
+\clearpage
+\newpage
+\section{Factor analysis}
+
+\begin{figure}[!h]
+\raggedright
+\includegraphics[scale=0.8]{INPUT/eigen_without}
+\caption{}
+\sourcefig{NEEMSIS-1 (2016-17) \& NEEMSIS-2 (2020-21); author's calculations.}
+\label{fig:diffcastecor}
+\end{figure}
+
+\begin{figure}[!h]
+\raggedright
+\includegraphics[scale=0.8]{INPUT/cumul}
+\caption{}
+\sourcefig{NEEMSIS-1 (2016-17) \& NEEMSIS-2 (2020-21); author's calculations.}
+\label{fig:diffcastecor}
+\end{figure}
+
+\begin{figure}[!h]
+\raggedright
+\includegraphics[scale=0.8]{INPUT/factor2016_tot_without}
+\caption{}
+\sourcefig{NEEMSIS-1 (2016-17); author's calculations.}
+\label{fig:diffcastecor}
+\end{figure}
+
+\begin{figure}[!h]
+\raggedright
+\includegraphics[scale=0.8]{INPUT/factor2020_tot_without}
+\caption{}
+\sourcefig{NEEMSIS-2 (2020-21); author's calculations.}
+\label{fig:diffcastecor}
+\end{figure}
 
 
 
