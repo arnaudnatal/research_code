@@ -53,31 +53,6 @@ global wave3 "NEEMSIS2-HH_v17"
 use"panel_stab_v4", clear
 
 
-/*
-original data = 1 always to 5 never: more = never
-
-
-liketothink_old_1 		original data (alw-->nev)
-
-raw_liketothink_1 		original but 99 recoded to . (alw-->nev)
-
-raw_rec_liketothink_1 	original but 99 recoded to . + all reverse  (nev-->alw)
-
-liketothink_1 			original but 99 recoded to . + all reverse + reverse reversed questions (nev-->alw)
-
-cr_liketothink_1 		original but 99 recoded to . + all reverse + reverse reversed questions (nev-->alw)
-
-In order to calculate omega on subsample, I am using "raw" variable.
-
-global big5 ///
-curious interestedbyart repetitivetasks inventive liketothink newideas activeimagination ///
-organized  makeplans workhard appointmentontime putoffduties easilydistracted completeduties ///
-enjoypeople sharefeelings shywithpeople enthusiastic talktomanypeople  talkative expressingthoughts  ///
-workwithother  understandotherfeeling trustingofother rudetoother toleratefaults  forgiveother  helpfulwithothers ///
-managestress  nervous  changemood feeldepressed easilyupset worryalot  staycalm ///
-tryhard  stickwithgoals   goaftergoal finishwhatbegin finishtasks  keepworking
-*/
-
 
 
 ********** LOOP
@@ -89,9 +64,9 @@ tab dalit
 tab agecat_1
 
 cls
-forvalues x=2(1)2{ 
-preserve
-keep if dalit==`x'
+*forvalues x=2(1)2{ 
+*preserve
+*keep if dalit==`x'
 forvalues i=1(1)1{
 
 omega raw_curious_`i' raw_interestedbyart_`i' raw_repetitivetasks_`i' raw_inventive_`i' raw_liketothink_`i' raw_newideas_`i' raw_activeimagination_`i', rev(raw_repetitivetasks_`i')
@@ -106,7 +81,6 @@ omega cr_enjoypeople_`i' cr_sharefeelings_`i' cr_shywithpeople_`i' cr_enthusiast
 omega raw_workwithother_`i' raw_understandotherfeeling_`i' raw_trustingofother_`i' raw_rudetoother_`i' raw_toleratefaults_`i' raw_forgiveother_`i' raw_helpfulwithothers_`i', rev(raw_rudetoother_`i')
 omega cr_workwithother_`i' cr_understandotherfeeling_`i' cr_trustingofother_`i' cr_rudetoother_`i' cr_toleratefaults_`i' cr_forgiveother_`i' cr_helpfulwithothers_`i'
 
-
 omega raw_managestress_`i' raw_nervous_`i' raw_changemood_`i' raw_feeldepressed_`i' raw_easilyupset_`i' raw_worryalot_`i' raw_staycalm_`i', rev(raw_managestress_`i' raw_staycalm_`i')
 omega cr_managestress_`i' cr_nervous_`i' cr_changemood_`i' cr_feeldepressed_`i' cr_easilyupset_`i' cr_worryalot_`i' cr_staycalm_`i'
 
@@ -116,23 +90,8 @@ omega cr_tryhard_`i' cr_stickwithgoals_`i' cr_goaftergoal_`i' cr_finishwhatbegin
 restore
 }
 
-
-
-
-
-
-
 ****************************************
 * END
-
-
-
-
-
-
-
-
-
 
 
 

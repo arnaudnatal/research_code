@@ -79,8 +79,17 @@ global big5 ///
 imrr_curious_2 imrr_interestedbyart_2 imrr_repetitivetasks_2 imrr_inventive_2 imrr_liketothink_2 imrr_newideas_2 imrr_activeimagination_2 imrr_organized_2 imrr_makeplans_2 imrr_workhard_2 imrr_appointmentontime_2 imrr_putoffduties_2 imrr_easilydistracted_2 imrr_completeduties_2 imrr_enjoypeople_2 imrr_sharefeelings_2 imrr_shywithpeople_2 imrr_enthusiastic_2 imrr_talktomanypeople_2 imrr_talkative_2 imrr_expressingthoughts_2 imrr_workwithother_2 imrr_understandotherfeeling_2 imrr_trustingofother_2 imrr_rudetoother_2 imrr_toleratefaults_2 imrr_forgiveother_2 imrr_helpfulwithothers_2 imrr_managestress_2 imrr_nervous_2 imrr_changemood_2 imrr_feeldepressed_2 imrr_easilyupset_2 imrr_worryalot_2 imrr_staycalm_2 imrr_tryhard_2 imrr_stickwithgoals_2 imrr_goaftergoal_2 imrr_finishwhatbegin_2 imrr_finishtasks_2 imrr_keepworking_2
 
 minap $big5
-qui factor $big5, pcf fa(6) 
-qui rotate, promax
+factor $big5, pcf fa(6) 
+putexcel set "$git\Analysis\Stability\Analysis\stat.xlsx", modify sheet(eigen)
+putexcel (B2)=matrix(e(Ev))
+rotate, promax
+ereturn list
+matrix list e(r_Ev)
+matrix list e(r_Phi)
+matrix list e(Ev)
+
+putexcel set "$git\Analysis\Stability\Analysis\stat.xlsx", modify sheet(promax)
+putexcel (B2)=matrix(e(r_Ev))
 
 qui predict f_1 f_2 f_3 f_4 f_5 f_6
 qui cpcorr $big5 \ f_1 f_2 f_3 f_4 f_5 f_6
@@ -95,9 +104,13 @@ preserve
 global big5 ///
 imrr_curious_2 imrr_interestedbyart_2 imrr_repetitivetasks_2 imrr_inventive_2 imrr_liketothink_2 imrr_newideas_2 imrr_activeimagination_2 imrr_organized_2 imrr_makeplans_2 imrr_workhard_2 imrr_appointmentontime_2 imrr_putoffduties_2 imrr_easilydistracted_2 imrr_completeduties_2 imrr_enjoypeople_2 imrr_sharefeelings_2 imrr_shywithpeople_2 imrr_enthusiastic_2 imrr_talktomanypeople_2 imrr_talkative_2 imrr_expressingthoughts_2 imrr_workwithother_2 imrr_understandotherfeeling_2 imrr_trustingofother_2 imrr_rudetoother_2 imrr_toleratefaults_2 imrr_forgiveother_2 imrr_helpfulwithothers_2 imrr_managestress_2 imrr_nervous_2 imrr_changemood_2 imrr_feeldepressed_2 imrr_easilyupset_2 imrr_worryalot_2 imrr_staycalm_2 
 
-minap $big5
+qui minap $big5
 qui factor $big5, pcf fa(5) 
+putexcel set "$git\Analysis\Stability\Analysis\stat.xlsx", modify sheet(eigen)
+putexcel (B3)=matrix(e(Ev))
 qui rotate, promax
+putexcel set "$git\Analysis\Stability\Analysis\stat.xlsx", modify sheet(promax)
+putexcel (B3)=matrix(e(r_Ev))
 
 qui predict f_1 f_2 f_3 f_4 f_5
 qui cpcorr $big5 \ f_1 f_2 f_3 f_4 f_5
@@ -114,9 +127,13 @@ keep if sex==1
 global big5 ///
 imrr_curious_2 imrr_interestedbyart_2 imrr_repetitivetasks_2 imrr_inventive_2 imrr_liketothink_2 imrr_newideas_2 imrr_activeimagination_2 imrr_organized_2 imrr_makeplans_2 imrr_workhard_2 imrr_appointmentontime_2 imrr_putoffduties_2 imrr_easilydistracted_2 imrr_completeduties_2 imrr_enjoypeople_2 imrr_sharefeelings_2 imrr_shywithpeople_2 imrr_enthusiastic_2 imrr_talktomanypeople_2 imrr_talkative_2 imrr_expressingthoughts_2 imrr_workwithother_2 imrr_understandotherfeeling_2 imrr_trustingofother_2 imrr_rudetoother_2 imrr_toleratefaults_2 imrr_forgiveother_2 imrr_helpfulwithothers_2 imrr_managestress_2 imrr_nervous_2 imrr_changemood_2 imrr_feeldepressed_2 imrr_easilyupset_2 imrr_worryalot_2 imrr_staycalm_2 imrr_tryhard_2 imrr_stickwithgoals_2 imrr_goaftergoal_2 imrr_finishwhatbegin_2 imrr_finishtasks_2 imrr_keepworking_2
 
-minap $big5
+qui minap $big5
 qui factor $big5, pcf fa(6) 
+putexcel set "$git\Analysis\Stability\Analysis\stat.xlsx", modify sheet(eigen)
+putexcel (B4)=matrix(e(Ev))
 qui rotate, promax
+putexcel set "$git\Analysis\Stability\Analysis\stat.xlsx", modify sheet(promax)
+putexcel (B4)=matrix(e(r_Ev))
 
 qui predict f_1 f_2 f_3 f_4 f_5 f_6
 qui cpcorr $big5 \ f_1 f_2 f_3 f_4 f_5 f_6
@@ -132,9 +149,13 @@ keep if sex==1
 global big5 ///
 imrr_curious_2 imrr_interestedbyart_2 imrr_repetitivetasks_2 imrr_inventive_2 imrr_liketothink_2 imrr_newideas_2 imrr_activeimagination_2 imrr_organized_2 imrr_makeplans_2 imrr_workhard_2 imrr_appointmentontime_2 imrr_putoffduties_2 imrr_easilydistracted_2 imrr_completeduties_2 imrr_enjoypeople_2 imrr_sharefeelings_2 imrr_shywithpeople_2 imrr_enthusiastic_2 imrr_talktomanypeople_2 imrr_talkative_2 imrr_expressingthoughts_2 imrr_workwithother_2 imrr_understandotherfeeling_2 imrr_trustingofother_2 imrr_rudetoother_2 imrr_toleratefaults_2 imrr_forgiveother_2 imrr_helpfulwithothers_2 imrr_managestress_2 imrr_nervous_2 imrr_changemood_2 imrr_feeldepressed_2 imrr_easilyupset_2 imrr_worryalot_2 imrr_staycalm_2 
 
-minap $big5
+qui minap $big5
 qui factor $big5, pcf fa(5) 
+putexcel set "$git\Analysis\Stability\Analysis\stat.xlsx", modify sheet(eigen)
+putexcel (B5)=matrix(e(Ev))
 qui rotate, promax
+putexcel set "$git\Analysis\Stability\Analysis\stat.xlsx", modify sheet(promax)
+putexcel (B5)=matrix(e(r_Ev))
 
 qui predict f_1 f_2 f_3 f_4 f_5
 qui cpcorr $big5 \ f_1 f_2 f_3 f_4 f_5
@@ -151,9 +172,13 @@ keep if sex==2
 global big5 ///
 imrr_curious_2 imrr_interestedbyart_2 imrr_repetitivetasks_2 imrr_inventive_2 imrr_liketothink_2 imrr_newideas_2 imrr_activeimagination_2 imrr_organized_2 imrr_makeplans_2 imrr_workhard_2 imrr_appointmentontime_2 imrr_putoffduties_2 imrr_easilydistracted_2 imrr_completeduties_2 imrr_enjoypeople_2 imrr_sharefeelings_2 imrr_shywithpeople_2 imrr_enthusiastic_2 imrr_talktomanypeople_2 imrr_talkative_2 imrr_expressingthoughts_2 imrr_workwithother_2 imrr_understandotherfeeling_2 imrr_trustingofother_2 imrr_rudetoother_2 imrr_toleratefaults_2 imrr_forgiveother_2 imrr_helpfulwithothers_2 imrr_managestress_2 imrr_nervous_2 imrr_changemood_2 imrr_feeldepressed_2 imrr_easilyupset_2 imrr_worryalot_2 imrr_staycalm_2 imrr_tryhard_2 imrr_stickwithgoals_2 imrr_goaftergoal_2 imrr_finishwhatbegin_2 imrr_finishtasks_2 imrr_keepworking_2
 
-minap $big5
+qui minap $big5
 qui factor $big5, pcf fa(6) 
+putexcel set "$git\Analysis\Stability\Analysis\stat.xlsx", modify sheet(eigen)
+putexcel (B6)=matrix(e(Ev))
 qui rotate, promax
+putexcel set "$git\Analysis\Stability\Analysis\stat.xlsx", modify sheet(promax)
+putexcel (B6)=matrix(e(r_Ev))
 
 qui predict f_1 f_2 f_3 f_4 f_5 f_6
 qui cpcorr $big5 \ f_1 f_2 f_3 f_4 f_5 f_6
@@ -169,9 +194,13 @@ keep if sex==2
 global big5 ///
 imrr_curious_2 imrr_interestedbyart_2 imrr_repetitivetasks_2 imrr_inventive_2 imrr_liketothink_2 imrr_newideas_2 imrr_activeimagination_2 imrr_organized_2 imrr_makeplans_2 imrr_workhard_2 imrr_appointmentontime_2 imrr_putoffduties_2 imrr_easilydistracted_2 imrr_completeduties_2 imrr_enjoypeople_2 imrr_sharefeelings_2 imrr_shywithpeople_2 imrr_enthusiastic_2 imrr_talktomanypeople_2 imrr_talkative_2 imrr_expressingthoughts_2 imrr_workwithother_2 imrr_understandotherfeeling_2 imrr_trustingofother_2 imrr_rudetoother_2 imrr_toleratefaults_2 imrr_forgiveother_2 imrr_helpfulwithothers_2 imrr_managestress_2 imrr_nervous_2 imrr_changemood_2 imrr_feeldepressed_2 imrr_easilyupset_2 imrr_worryalot_2 imrr_staycalm_2  
 
-minap $big5
+qui minap $big5
 qui factor $big5, pcf fa(5) 
+putexcel set "$git\Analysis\Stability\Analysis\stat.xlsx", modify sheet(eigen)
+putexcel (B7)=matrix(e(Ev))
 qui rotate, promax
+putexcel set "$git\Analysis\Stability\Analysis\stat.xlsx", modify sheet(promax)
+putexcel (B7)=matrix(e(r_Ev))
 
 qui predict f_1 f_2 f_3 f_4 f_5
 qui cpcorr $big5 \ f_1 f_2 f_3 f_4 f_5
@@ -187,9 +216,13 @@ keep if caste==1
 global big5 ///
 imrr_curious_2 imrr_interestedbyart_2 imrr_repetitivetasks_2 imrr_inventive_2 imrr_liketothink_2 imrr_newideas_2 imrr_activeimagination_2 imrr_organized_2 imrr_makeplans_2 imrr_workhard_2 imrr_appointmentontime_2 imrr_putoffduties_2 imrr_easilydistracted_2 imrr_completeduties_2 imrr_enjoypeople_2 imrr_sharefeelings_2 imrr_shywithpeople_2 imrr_enthusiastic_2 imrr_talktomanypeople_2 imrr_talkative_2 imrr_expressingthoughts_2 imrr_workwithother_2 imrr_understandotherfeeling_2 imrr_trustingofother_2 imrr_rudetoother_2 imrr_toleratefaults_2 imrr_forgiveother_2 imrr_helpfulwithothers_2 imrr_managestress_2 imrr_nervous_2 imrr_changemood_2 imrr_feeldepressed_2 imrr_easilyupset_2 imrr_worryalot_2 imrr_staycalm_2 imrr_tryhard_2 imrr_stickwithgoals_2 imrr_goaftergoal_2 imrr_finishwhatbegin_2 imrr_finishtasks_2 imrr_keepworking_2
 
-minap $big5
+qui minap $big5
 qui factor $big5, pcf fa(6) 
+putexcel set "$git\Analysis\Stability\Analysis\stat.xlsx", modify sheet(eigen)
+putexcel (B8)=matrix(e(Ev))
 qui rotate, promax
+putexcel set "$git\Analysis\Stability\Analysis\stat.xlsx", modify sheet(promax)
+putexcel (B8)=matrix(e(r_Ev))
 
 qui predict f_1 f_2 f_3 f_4 f_5 f_6
 qui cpcorr $big5 \ f_1 f_2 f_3 f_4 f_5 f_6
@@ -205,9 +238,13 @@ keep if caste==1
 global big5 ///
 imrr_curious_2 imrr_interestedbyart_2 imrr_repetitivetasks_2 imrr_inventive_2 imrr_liketothink_2 imrr_newideas_2 imrr_activeimagination_2 imrr_organized_2 imrr_makeplans_2 imrr_workhard_2 imrr_appointmentontime_2 imrr_putoffduties_2 imrr_easilydistracted_2 imrr_completeduties_2 imrr_enjoypeople_2 imrr_sharefeelings_2 imrr_shywithpeople_2 imrr_enthusiastic_2 imrr_talktomanypeople_2 imrr_talkative_2 imrr_expressingthoughts_2 imrr_workwithother_2 imrr_understandotherfeeling_2 imrr_trustingofother_2 imrr_rudetoother_2 imrr_toleratefaults_2 imrr_forgiveother_2 imrr_helpfulwithothers_2 imrr_managestress_2 imrr_nervous_2 imrr_changemood_2 imrr_feeldepressed_2 imrr_easilyupset_2 imrr_worryalot_2 imrr_staycalm_2 
 
-minap $big5
+qui minap $big5
 qui factor $big5, pcf fa(5) 
+putexcel set "$git\Analysis\Stability\Analysis\stat.xlsx", modify sheet(eigen)
+putexcel (B9)=matrix(e(Ev))
 qui rotate, promax
+putexcel set "$git\Analysis\Stability\Analysis\stat.xlsx", modify sheet(promax)
+putexcel (B9)=matrix(e(r_Ev))
 
 qui predict f_1 f_2 f_3 f_4 f_5
 qui cpcorr $big5 \ f_1 f_2 f_3 f_4 f_5
@@ -224,9 +261,13 @@ keep if caste==2 | caste==3
 global big5 ///
 imrr_curious_2 imrr_interestedbyart_2 imrr_repetitivetasks_2 imrr_inventive_2 imrr_liketothink_2 imrr_newideas_2 imrr_activeimagination_2 imrr_organized_2 imrr_makeplans_2 imrr_workhard_2 imrr_appointmentontime_2 imrr_putoffduties_2 imrr_easilydistracted_2 imrr_completeduties_2 imrr_enjoypeople_2 imrr_sharefeelings_2 imrr_shywithpeople_2 imrr_enthusiastic_2 imrr_talktomanypeople_2 imrr_talkative_2 imrr_expressingthoughts_2 imrr_workwithother_2 imrr_understandotherfeeling_2 imrr_trustingofother_2 imrr_rudetoother_2 imrr_toleratefaults_2 imrr_forgiveother_2 imrr_helpfulwithothers_2 imrr_managestress_2 imrr_nervous_2 imrr_changemood_2 imrr_feeldepressed_2 imrr_easilyupset_2 imrr_worryalot_2 imrr_staycalm_2 imrr_tryhard_2 imrr_stickwithgoals_2 imrr_goaftergoal_2 imrr_finishwhatbegin_2 imrr_finishtasks_2 imrr_keepworking_2
 
-minap $big5
+qui minap $big5
 qui factor $big5, pcf fa(6) 
+putexcel set "$git\Analysis\Stability\Analysis\stat.xlsx", modify sheet(eigen)
+putexcel (B10)=matrix(e(Ev))
 qui rotate, promax
+putexcel set "$git\Analysis\Stability\Analysis\stat.xlsx", modify sheet(promax)
+putexcel (B10)=matrix(e(r_Ev))
 
 qui predict f_1 f_2 f_3 f_4 f_5 f_6
 qui cpcorr $big5 \ f_1 f_2 f_3 f_4 f_5 f_6
@@ -242,9 +283,13 @@ keep if caste==2 | caste==3
 global big5 ///
 imrr_curious_2 imrr_interestedbyart_2 imrr_repetitivetasks_2 imrr_inventive_2 imrr_liketothink_2 imrr_newideas_2 imrr_activeimagination_2 imrr_organized_2 imrr_makeplans_2 imrr_workhard_2 imrr_appointmentontime_2 imrr_putoffduties_2 imrr_easilydistracted_2 imrr_completeduties_2 imrr_enjoypeople_2 imrr_sharefeelings_2 imrr_shywithpeople_2 imrr_enthusiastic_2 imrr_talktomanypeople_2 imrr_talkative_2 imrr_expressingthoughts_2 imrr_workwithother_2 imrr_understandotherfeeling_2 imrr_trustingofother_2 imrr_rudetoother_2 imrr_toleratefaults_2 imrr_forgiveother_2 imrr_helpfulwithothers_2 imrr_managestress_2 imrr_nervous_2 imrr_changemood_2 imrr_feeldepressed_2 imrr_easilyupset_2 imrr_worryalot_2 imrr_staycalm_2  
 
-minap $big5
+qui minap $big5
 qui factor $big5, pcf fa(5) 
+putexcel set "$git\Analysis\Stability\Analysis\stat.xlsx", modify sheet(eigen)
+putexcel (B11)=matrix(e(Ev))
 qui rotate, promax
+putexcel set "$git\Analysis\Stability\Analysis\stat.xlsx", modify sheet(promax)
+putexcel (B11)=matrix(e(r_Ev))
 
 qui predict f_1 f_2 f_3 f_4 f_5
 qui cpcorr $big5 \ f_1 f_2 f_3 f_4 f_5
@@ -495,12 +540,32 @@ rename `x' b`i'_`x'
 save "$git\Analysis\Stability\Analysis\fa`i'.dta", replace
 }
 
+import excel "$git\Analysis\Stability\Analysis\stat.xlsx", sheet("promax_mod") firstrow clear
+split Factor, p(F)
+order Factor Factor2
+drop Factor1 Factor
+destring Factor2, replace
+rename Factor2 Factor
+save "$git\Analysis\Stability\Analysis\promax_mod.dta", replace
+
+import excel "$git\Analysis\Stability\Analysis\stat.xlsx", sheet("eigen_mod") firstrow clear
+split Factor, p(F)
+order Factor Factor2
+drop Factor1 Factor
+destring Factor2, replace
+rename Factor2 Factor
+merge 1:1 Factor using "$git\Analysis\Stability\Analysis\promax_mod.dta", nogen
+
+save "$git\Analysis\Stability\Analysis\promax_eigen.dta", replace
+erase"$git\Analysis\Stability\Analysis\promax_mod.dta"
+
+
+********** Merge
 use"$git\Analysis\Stability\Analysis\fa1.dta", clear
 forvalues i=2(1)20{
 merge 1:1 N using "$git\Analysis\Stability\Analysis\fa`i'.dta", nogen
 }
 dropmiss, force
-
 
 forvalues i=1(1)6{
 foreach x in C_F p_F {
@@ -549,6 +614,7 @@ save"$git\Analysis\Stability\Analysis\factor.dta", replace
 forvalues i=1(1)20{
 erase "$git\Analysis\Stability\Analysis\fa`i'.dta"
 }
+
 ****************************************
 * END
 
@@ -566,9 +632,9 @@ erase "$git\Analysis\Stability\Analysis\fa`i'.dta"
 ****************************************
 * GRAPH
 ****************************************
+set scheme plottig
+
 set graph off
-gen n=_n
-gen threshold=0.05
 
 *Graph
 *twoway ///
@@ -583,8 +649,9 @@ gen threshold=0.05
 *sort n
 
 
-
 *** With
+preserve
+gen n=_n
 foreach x in tot mal fem dal nda {
 foreach i in 2016 2020 {
 forvalues j=1(1)6{
@@ -601,7 +668,7 @@ twoway ///
 , ylabel(1(1)41, valuelabel labsize(tiny) angle(0)) ytitle("")  ///
 xlabel(, labsize(tiny) nogrid) xmtick() xtitle("") ///
 title("Factor `j'", size(small)) ///
-legend(order(1 "Correlation with factor" 3 "p-value" 4 ".05 threshold") pos(6) col(3) size(vsmall) off) ///
+legend(order(1 "Correlation with factor") pos(6) col(3) size(vsmall) off) ///
 name(g_with_`x'_`i'_`j', replace)  // aspectratio(10)
 sort n
 }
@@ -615,10 +682,13 @@ grc1leg g_with_`x'_2020_1 g_with_`x'_2020_2 g_with_`x'_2020_3 g_with_`x'_2020_4 
 graph save "$git\Analysis\Stability\Analysis\Graph\factor2020_`x'_with.gph", replace
 graph export "$git\Analysis\Stability\Analysis\Graph\factor2020_`x'_with.pdf", as(pdf) replace
 }
-
+restore
 
 
 *** Without
+preserve
+gen n=_n
+drop if n>35
 foreach x in tot mal fem dal nda {
 foreach i in 2016 2020 {
 forvalues j=1(1)5{
@@ -635,7 +705,7 @@ twoway ///
 , ylabel(1(1)35, valuelabel labsize(tiny) angle(0)) ytitle("")  ///
 xlabel(, labsize(tiny) nogrid) xmtick() xtitle("")  ///
 title("Factor `j'", size(small)) ///
-legend(order(1 "Correlation without factor" 3 "p-value" 4 ".05 threshold") pos(6) col(3) size(vsmall) off) ///
+legend(order(1 "Correlation without factor") pos(6) col(3) size(vsmall) off) ///
 name(g_without_`x'_`i'_`j', replace)  // aspectratio(10)
 sort n
 }
@@ -649,8 +719,29 @@ grc1leg g_without_`x'_2020_1 g_without_`x'_2020_2 g_without_`x'_2020_3 g_without
 graph save "$git\Analysis\Stability\Analysis\Graph\factor2020_`x'_without.gph", replace
 graph export "$git\Analysis\Stability\Analysis\Graph\factor2020_`x'_without.pdf", as(pdf) replace
 }
-
+restore
 ****************************************
 * END
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* STAT
+****************************************
+use"$git\Analysis\Stability\Analysis\promax_eigen.dta", clear
+
+
+
+****************************************
+* END
