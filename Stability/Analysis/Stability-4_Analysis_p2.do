@@ -24,7 +24,7 @@ global git "C:\Users\Arnaud\Documents\GitHub"
 
 *Fac
 *cd "C:\Users\anatal\Downloads\_Thesis\Research-Skills_and_debt\Analysis"
-set scheme plotplain, perm
+set scheme plottig, perm
 
 *global git "C:\Users\anatal\Downloads\GitHub"
 *global dropbox "C:\Users\anatal\Downloads\Dropbox"
@@ -46,38 +46,48 @@ global wave3 "NEEMSIS2-HH_v17"
 
 
 
-
-
-
-
-
 ****************************************
 * OMEGA
 ****************************************
+use"panel_stab_v4", clear
+
+********** LOOP
+
+fre caste
+clonevar dalit=caste
+recode dalit (3=2)
+tab dalit
+tab agecat_1
+
+/*
+cls
+forvalues x=2(1)2{ 
 preserve
-import delimited "$git\Analysis\Personality\Big-5\_omega.csv", delimiter(";") clear
+keep if sex==`x'
+forvalues i=1(1)1{
 
-encode traits, gen(big5)
-gen deltaraw=(raw2020-raw2016)*100/raw2016
-gen deltacor=(cor2020-cor2016)*100/cor2016
+omega raw_curious_`i' rr_interestedbyart_`i' rr_repetitivetasks_`i' rr_inventive_`i' rr_liketothink_`i' rr_newideas_`i' rr_activeimagination_`i', rev(rr_repetitivetasks_`i')
+omega cr_curious_`i' cr_interestedbyart_`i' cr_repetitivetasks_`i' cr_inventive_`i' cr_liketothink_`i' cr_newideas_`i' cr_activeimagination_`i'
 
-gen delta2016=(cor2016-raw2016)*100/raw2016
-gen delta2020=(cor2020-raw2020)*100/raw2020
-set graph off
-graph bar raw2016 cor2016 raw2020 cor2020, over(traits) blabel(bar, format(%4.2f) size(tiny)) legend(pos(6) col(4) order(1 "Non-cor. 2016-17" 2 "Corr. 2016-17" 3 "Non-cor. 2020-21" 4 "Corr. 2020-21")) name(g1, replace) note("McDonald's Ω", size(tiny))
-graph save "$git\Analysis\Personality\Big-5\omega.gph", replace
-graph export "$git\RUME-NEEMSIS\Big-5\omega.svg", as(svg) replace
-graph export "$git\Analysis\Personality\Big-5\omega.pdf", as(pdf) replace
+omega rr_organized_`i' rr_makeplans_`i' rr_workhard_`i' rr_appointmentontime_`i' rr_putoffduties_`i' rr_easilydistracted_`i' rr_completeduties_`i', rev(rr_putoffduties_`i' rr_easilydistracted_`i')
+omega cr_organized_`i' cr_makeplans_`i' cr_workhard_`i' cr_appointmentontime_`i' cr_putoffduties_`i' cr_easilydistracted_`i' cr_completeduties_`i'
 
-graph bar deltaraw deltacor, over(traits) ylabel(-70(10)80) ymtick(-65(5)75) blabel(bar, format(%4.2f) size(tiny)) legend(pos(6) col(2) order(1 "Non-cor." 2 "Corr.")) title("Variation over time (2016-17 / 2020-21)", size(small)) name(g2, replace)
-graph bar delta2016 delta2020, over(traits) ylabel(-70(10)80) blabel(bar, format(%4.2f) size(tiny)) legend(pos(6) col(2) order(1 "2016-17" 2 "2020-21")) title("Variation over correction (Non-cor. / Corr.)", size(small)) name(g3, replace)
-graph combine g2 g3, col(3) note("Variation rate of McDonald's Ω", size(tiny))
-graph save "$git\Analysis\Personality\Big-5\omega_delta.gph", replace
-graph export "$git\RUME-NEEMSIS\Big-5\omega_delta.svg", as(svg) replace
-graph export "$git\Analysis\Personality\Big-5\omega_delta.pdf", as(pdf) replace
-set graph on
+omega rr_enjoypeople_`i' rr_sharefeelings_`i' rr_shywithpeople_`i' rr_enthusiastic_`i' rr_talktomanypeople_`i' rr_talkative_`i' rr_expressingthoughts_`i', rev(rr_shywithpeople_`i')
+omega cr_enjoypeople_`i' cr_sharefeelings_`i' cr_shywithpeople_`i' cr_enthusiastic_`i' cr_talktomanypeople_`i' cr_talkative_`i' cr_expressingthoughts_`i'
 
+omega rr_workwithother_`i' rr_understandotherfeeling_`i' rr_trustingofother_`i' rr_rudetoother_`i' rr_toleratefaults_`i' rr_forgiveother_`i' rr_helpfulwithothers_`i', rev(rr_rudetoother_`i')
+omega cr_workwithother_`i' cr_understandotherfeeling_`i' cr_trustingofother_`i' cr_rudetoother_`i' cr_toleratefaults_`i' cr_forgiveother_`i' cr_helpfulwithothers_`i'
+
+omega rr_managestress_`i' rr_nervous_`i' rr_changemood_`i' rr_feeldepressed_`i' rr_easilyupset_`i' rr_worryalot_`i' rr_staycalm_`i', rev(rr_managestress_`i' rr_staycalm_`i')
+omega cr_managestress_`i' cr_nervous_`i' cr_changemood_`i' cr_feeldepressed_`i' cr_easilyupset_`i' cr_worryalot_`i' cr_staycalm_`i'
+
+omega rr_tryhard_`i' rr_stickwithgoals_`i' rr_goaftergoal_`i' rr_finishwhatbegin_`i' rr_finishtasks_`i' rr_keepworking_`i'
+omega cr_tryhard_`i' cr_stickwithgoals_`i' cr_goaftergoal_`i' cr_finishwhatbegin_`i' cr_finishtasks_`i' cr_keepworking_`i'
+}
 restore
+}
+*/
+
 ****************************************
 * END
 
@@ -90,31 +100,59 @@ restore
 
 
 
-****************************************
-* TABLE
-****************************************
-*Nb
-tab nbdec  // 0-403; 1-297; 2-115; 3-20
-tab1 dec_raven_tt dec_num_tt dec_lit_tt
-tab dec_raven_tt if nbdec==1  // 234=78.79
-tab dec_num_tt if nbdec==1  // 37=12.46
-tab dec_lit_tt if nbdec==1  // 26=8.75
 
-tab dec_raven dec_num if nbdec==2  // 52=45.22
-tab dec_raven dec_lit if nbdec==2  // 56=48.69
-tab dec_num dec_lit if nbdec==2  // 7=6.09
 
-*By age
-stripplot age , over(nbdec) separate() ///
-cumul cumprob box centre vertical refline /// 
-xsize(4) xtitle("") xlabel(0 "Stable or better" 1 "One decrease" 2 "Two decrease" 3 "Three decrease",angle(45))  ///
-ylabel(15(5)90) ytitle("") ///
-title("Age in 2016-17") ///
-msymbol(oh) mcolor(gs8) name(y1, replace) 
-*By gender
-tab nbdec sex, col nofreq
-*By caste
-tab nbdec caste, col nofreq
+
+
+
+
+
+
+****************************************
+* OMEGA RPZ
+****************************************
+import excel "$git\Analysis\Stability\Analysis\stat.xlsx", sheet("omega") firstrow clear
+
+foreach x in Female Nondalit {
+replace `x'="." if `x'=="X"
+destring `x', replace
+}
+gen traits=.
+replace traits=1 if Traits=="OP"
+replace traits=2 if Traits=="CO"
+replace traits=3 if Traits=="EX"
+replace traits=4 if Traits=="AG"
+replace traits=5 if Traits=="ES"
+replace traits=6 if Traits=="Grit"
+label define traits 1"OP" 2"CO" 3"EX" 4"AG" 5"ES" 6"Grit"
+label values traits traits
+drop Traits
+gen year=.
+replace year=2016 if Year=="2016-17"
+replace year=2020 if Year=="2020-21"
+drop Year
+gen type=.
+replace type=1 if Type=="Raw"
+replace type=2 if Type=="Cor"
+label define type 1"Raw" 2"Cor"
+label values type type
+drop Type
+order type year traits
+rename Totalsample total
+rename Male male
+rename Female female
+rename Dalit dalit
+rename Nondalit nondalit
+
+save "$git\Analysis\Stability\Analysis\omega.dta", replace
+
+********** Graph
+set graph off
+foreach x in total male female dalit nondalit {
+graph bar `x', over(year) over(type) over(traits)  blabel(bar, format(%4.2f) size(tiny)) legend(pos(6) col(4) order(1 "2016-17" 2 "2020-21")) ytitle("McDonald's Ω") note("`x'", size(tiny)) name(g_`x', replace)
+graph save "$git\Analysis\Stability\Analysis\Graph\omega_`x'.gph", replace
+graph export "$git\Analysis\Stability\Analysis\Graph\omega_`x'.pdf", as(pdf) replace
+}
 
 ****************************************
 * END

@@ -24,7 +24,7 @@ global git "C:\Users\Arnaud\Documents\GitHub"
 
 *Fac
 *cd "C:\Users\anatal\Downloads\_Thesis\Research-Skills_and_debt\Analysis"
-set scheme plottig
+set scheme plottig, perm
 
 *global git "C:\Users\anatal\Downloads\GitHub"
 *global dropbox "C:\Users\anatal\Downloads\Dropbox"
@@ -39,62 +39,22 @@ global wave3 "NEEMSIS2-HH_v17"
 * END
 
 
+/*
+completeduties_old putoffduties_old = max never, with 99 as cat
+
+raw_completeduties raw_putoffduties = max never, with 99 recoded as missing
+
+rr_completeduties raw_rec_putoffduties = max always, with 99 recoded as missing
+
+cr_completeduties cr_putoffduties = max always, with 99 recoded as missing and reverse questions recoded for Big-5 corrected from acquiescence bias
+
+imrr_completeduties imrr_putoffduties = max always, with 99 recoded as missing and imputation to avoid missing
+
+imcr_completeduties imcr_putoffduties = max always, with 99 recoded as missing and reverse questions recoded for Big-5 corrected from acquiescence bias and imputation to avoid missing
 
 
-
-
-
-
-
-
-****************************************
-* OMEGA
-****************************************
-use"panel_stab_v4", clear
-
-
-
-
-********** LOOP
-
-fre caste
-clonevar dalit=caste
-recode dalit (3=2)
-tab dalit
-tab agecat_1
-
-cls
-*forvalues x=2(1)2{ 
-*preserve
-*keep if dalit==`x'
-forvalues i=1(1)1{
-
-omega raw_curious_`i' raw_interestedbyart_`i' raw_repetitivetasks_`i' raw_inventive_`i' raw_liketothink_`i' raw_newideas_`i' raw_activeimagination_`i', rev(raw_repetitivetasks_`i')
-omega cr_curious_`i' cr_interestedbyart_`i' cr_repetitivetasks_`i' cr_inventive_`i' cr_liketothink_`i' cr_newideas_`i' cr_activeimagination_`i'
-
-omega raw_organized_`i' raw_makeplans_`i' raw_workhard_`i' raw_appointmentontime_`i' raw_putoffduties_`i' raw_easilydistracted_`i' raw_completeduties_`i', rev(raw_putoffduties_`i' raw_easilydistracted_`i')
-omega cr_organized_`i' cr_makeplans_`i' cr_workhard_`i' cr_appointmentontime_`i' cr_putoffduties_`i' cr_easilydistracted_`i' cr_completeduties_`i'
-
-omega raw_enjoypeople_`i' raw_sharefeelings_`i' raw_shywithpeople_`i' raw_enthusiastic_`i' raw_talktomanypeople_`i' raw_talkative_`i' raw_expressingthoughts_`i', rev(raw_shywithpeople_`i')
-omega cr_enjoypeople_`i' cr_sharefeelings_`i' cr_shywithpeople_`i' cr_enthusiastic_`i' cr_talktomanypeople_`i' cr_talkative_`i' cr_expressingthoughts_`i'
-
-omega raw_workwithother_`i' raw_understandotherfeeling_`i' raw_trustingofother_`i' raw_rudetoother_`i' raw_toleratefaults_`i' raw_forgiveother_`i' raw_helpfulwithothers_`i', rev(raw_rudetoother_`i')
-omega cr_workwithother_`i' cr_understandotherfeeling_`i' cr_trustingofother_`i' cr_rudetoother_`i' cr_toleratefaults_`i' cr_forgiveother_`i' cr_helpfulwithothers_`i'
-
-omega raw_managestress_`i' raw_nervous_`i' raw_changemood_`i' raw_feeldepressed_`i' raw_easilyupset_`i' raw_worryalot_`i' raw_staycalm_`i', rev(raw_managestress_`i' raw_staycalm_`i')
-omega cr_managestress_`i' cr_nervous_`i' cr_changemood_`i' cr_feeldepressed_`i' cr_easilyupset_`i' cr_worryalot_`i' cr_staycalm_`i'
-
-omega raw_tryhard_`i' raw_stickwithgoals_`i' raw_goaftergoal_`i' raw_finishwhatbegin_`i' raw_finishtasks_`i' raw_keepworking_`i'
-omega cr_tryhard_`i' cr_stickwithgoals_`i' cr_goaftergoal_`i' cr_finishwhatbegin_`i' cr_finishtasks_`i' cr_keepworking_`i'
-}
-restore
-}
-
-****************************************
-* END
-
-
-
+completeduties putoffduties = max always, with 99 recoded as missing and reverse questions recoded for Big-5
+*/
 
 
 

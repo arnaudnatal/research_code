@@ -24,7 +24,7 @@ global git "C:\Users\Arnaud\Documents\GitHub"
 
 *Fac
 *cd "C:\Users\anatal\Downloads\_Thesis\Research-Skills_and_debt\Analysis"
-set scheme plotplain, perm
+set scheme plottig, perm
 
 *global git "C:\Users\anatal\Downloads\GitHub"
 *global dropbox "C:\Users\anatal\Downloads\Dropbox"
@@ -677,8 +677,6 @@ erase "$git\Analysis\Stability\Analysis\fa`i'.dta"
 ****************************************
 * GRAPH
 ****************************************
-set scheme plottig
-
 set graph off
 
 *Graph
