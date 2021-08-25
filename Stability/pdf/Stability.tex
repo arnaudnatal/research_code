@@ -272,118 +272,6 @@ It implies that results could suffer from measurement error, which would bias ou
 Donc CO et ES ressortent avec l'analyse factorielle donc on peut regarder la stabilité ici avec ça je pense.
 
 
-\clearpage
-\newpage
-\section{Corrected items}
-
-\begin{figure}[!h]
-\raggedright
-\includegraphics[scale=0.8]{INPUT/diffcont_cor}
-\caption{}
-\sourcefig{NEEMSIS-1 (2016-17) \& NEEMSIS-2 (2020-21); author's calculations.}
-\label{fig:diffagecor}
-\end{figure}
-
-\begin{figure}[!h]
-\raggedright
-\includegraphics[scale=0.8]{INPUT/diff_age_cor}
-\caption{}
-\sourcefig{NEEMSIS-1 (2016-17) \& NEEMSIS-2 (2020-21); author's calculations.}
-\label{fig:diffagecor}
-\end{figure}
-
-\begin{figure}[!h]
-\raggedright
-\includegraphics[scale=0.8]{INPUT/diff_gender_cor}
-\caption{}
-\sourcefig{NEEMSIS-1 (2016-17) \& NEEMSIS-2 (2020-21); author's calculations.}
-\label{fig:diffgendercor}
-\end{figure}
-
-\begin{figure}[!h]
-\raggedright
-\includegraphics[scale=0.8]{INPUT/diff_caste_cor}
-\caption{}
-\sourcefig{NEEMSIS-1 (2016-17) \& NEEMSIS-2 (2020-21); author's calculations.}
-\label{fig:diffcastecor}
-\end{figure}
-
-
-
-\clearpage
-\newpage
-\section{Non-corrected items}
-
-\begin{figure}[!h]
-\raggedright
-\includegraphics[scale=0.8]{INPUT/diffcont_raw}
-\caption{}
-\sourcefig{NEEMSIS-1 (2016-17) \& NEEMSIS-2 (2020-21); author's calculations.}
-\label{fig:diffagecor}
-\end{figure}
-
-\begin{figure}[!h]
-\raggedright
-\includegraphics[scale=0.8]{INPUT/diff_age_raw}
-\caption{}
-\sourcefig{NEEMSIS-1 (2016-17) \& NEEMSIS-2 (2020-21); author's calculations.}
-\label{fig:diffagecor}
-\end{figure}
-
-\begin{figure}[!h]
-\raggedright
-\includegraphics[scale=0.8]{INPUT/diff_gender_raw}
-\caption{}
-\sourcefig{NEEMSIS-1 (2016-17) \& NEEMSIS-2 (2020-21); author's calculations.}
-\label{fig:diffgendercor}
-\end{figure}
-
-\begin{figure}[!h]
-\raggedright
-\includegraphics[scale=0.8]{INPUT/diff_caste_raw}
-\caption{}
-\sourcefig{NEEMSIS-1 (2016-17) \& NEEMSIS-2 (2020-21); author's calculations.}
-\label{fig:diffcastecor}
-\end{figure}
-
-
-
-
-\clearpage
-\newpage
-\section{Factor analysis}
-
-\begin{figure}[!h]
-\raggedright
-\includegraphics[scale=0.8]{INPUT/eigen_without}
-\caption{}
-\sourcefig{NEEMSIS-1 (2016-17) \& NEEMSIS-2 (2020-21); author's calculations.}
-\label{fig:diffcastecor}
-\end{figure}
-
-\begin{figure}[!h]
-\raggedright
-\includegraphics[scale=0.8]{INPUT/cumul}
-\caption{}
-\sourcefig{NEEMSIS-1 (2016-17) \& NEEMSIS-2 (2020-21); author's calculations.}
-\label{fig:diffcastecor}
-\end{figure}
-
-\begin{figure}[!h]
-\raggedright
-\includegraphics[scale=0.8]{INPUT/factor2016_tot_without}
-\caption{}
-\sourcefig{NEEMSIS-1 (2016-17); author's calculations.}
-\label{fig:diffcastecor}
-\end{figure}
-
-\begin{figure}[!h]
-\raggedright
-\includegraphics[scale=0.8]{INPUT/factor2020_tot_without}
-\caption{}
-\sourcefig{NEEMSIS-2 (2020-21); author's calculations.}
-\label{fig:diffcastecor}
-\end{figure}
 
 
 
@@ -399,10 +287,6 @@ Donc CO et ES ressortent avec l'analyse factorielle donc on peut regarder la sta
 
 
 
-
-
-
-
 \clearpage
 \newpage
 % ***********************************
@@ -410,13 +294,8 @@ Donc CO et ES ressortent avec l'analyse factorielle donc on peut regarder la sta
 \addcontentsline{toc}{section}{Tables and figures}
 % ***********************************
 
-\begin{figure}[!h]
-\raggedright
-\includegraphics[scale=0.8]{INPUT/kernel_ars}
-\caption{Distribution of acquiescence bias according to year -- For 953 individuals in 2016-17 and 1,316 in 2020-21 from rural Tamil Nadu, India.}
-\sourcefig{NEEMSIS-1 (2016-17) \& NEEMSIS-2 (2020-21); author's calculations.}
-\label{fig:ars}
-\end{figure}
+
+\subimport{INPUT}{Big5.tex}
 
 \begin{figure}[!h]
 \raggedright
@@ -428,123 +307,68 @@ Donc CO et ES ressortent avec l'analyse factorielle donc on peut regarder la sta
 
 \begin{figure}[!h]
 \raggedright
-\includegraphics[scale=0.8]{INPUT/kernel_ars_sub}
-\caption{Distribution of acquiescence bias according to sex, caste and gender -- For 953 individuals in 2016-17 and 1,316 in 2020-21 from rural Tamil Nadu, India.}
+\includegraphics[scale=0.8]{INPUT/path_ars}
+\caption{Trajectory of acquiescence bias through time according to sex, caste and age -- For 835 individuals from rural Tamil Nadu, India.}
 \sourcefig{NEEMSIS-1 (2016-17) \& NEEMSIS-2 (2020-21); author's calculations.}
 \label{fig:arssub}
 \end{figure}
 
-
 \begin{figure}[!h]
 \raggedright
-\includegraphics[scale=0.8]{INPUT/omega}
+\includegraphics[scale=0.8]{INPUT/omega_total}
 \caption{\citeauthor{McDonald1999}'s $\upomega$ -- For 953 individuals in 2016-17 and 1,316 in 2020-21 from rural Tamil Nadu, India.}
 \sourcefig{NEEMSIS-1 (2016-17) \& NEEMSIS-2 (2020-21); author's calculations.}
 \label{fig:omega}
 \end{figure}
 
-
-
-
-% \begin{figure}[!h]
-% \raggedright
-% \includegraphics[scale=0.8]{INPUT/path_ars}
-% \caption{Trajectory of acquiescence bias through time according to sex, caste and age -- For 835 individuals from rural Tamil Nadu, India.}
-% \sourcefig{NEEMSIS-1 (2016-17) \& NEEMSIS-2 (2020-21); author's calculations.}
-% \label{fig:pathars}
-% \end{figure}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-\subimport{INPUT}{Big5.tex}
+\begin{figure}[!h]
+\raggedright
+\includegraphics[scale=0.8]{INPUT/diffcont_raw}
+\caption{Simple difference for traits non-corrected from acquiesence bias -- For 835 individuals from rural Tamil Nadu, India.}
+\sourcefig{NEEMSIS-1 (2016-17) \& NEEMSIS-2 (2020-21); author's calculations.}
+\label{fig:diffraw}
+\end{figure}
 
 \begin{figure}[!h]
 \raggedright
-\includegraphics[scale=0.8]{INPUT/omega}
-\caption{Internal consistency of Big-5 personality traits -- Distribution of \citeauthor{McDonald1999}'s $\Upomega$ through time and correction for 953 individuals in 2016-17 and 1,316 in 2020-21 from rural Tamil Nadu, India.}
+\includegraphics[scale=0.8]{INPUT/diffcont_cor}
+\caption{Simple difference for traits corrected from acquiesence bias -- For 835 individuals from rural Tamil Nadu, India.}
 \sourcefig{NEEMSIS-1 (2016-17) \& NEEMSIS-2 (2020-21); author's calculations.}
-\label{fig:omega}
+\label{fig:diffcor}
 \end{figure}
 
 
-\begin{figure}[!htb]
+\begin{figure}[!h]
 \raggedright
-\includegraphics[scale=0.86]{INPUT/diffcont_raw}
-\caption{Stability over time of Big-5 personality traits non-corrected from acquiescence bias -- Distribution of the difference of the score between 2016-17 and 2020-21 for Big-5 personality traits non-corrected from acquiescence biais for 835 individuals from rural Tamil Nadu, India.}
+\includegraphics[scale=0.8]{INPUT/eigen_without}
+\caption{Eigen values of factor analysis -- For 953 individuals in 2016-17 and 1,316 in 2020-21 from rural Tamil Nadu, India.}
 \sourcefig{NEEMSIS-1 (2016-17) \& NEEMSIS-2 (2020-21); author's calculations.}
-\label{fig:stabraw}
+\label{fig:eigen}
 \end{figure}
 
-\begin{figure}[!htb]
+\begin{figure}[!h]
 \raggedright
-\includegraphics[scale=0.86]{INPUT/diffcont_cor}
-\caption{Stability over time of Big-5 personality traits correted from acquiescence bias -- Distribution of the difference of the score between 2016-17 and 2020-21 for Big-5 personality traits corrected from acquiescence biais for 835 individuals from rural Tamil Nadu, India.}
+\includegraphics[scale=0.8]{INPUT/cumul}
+\caption{Variance explained by factor analysis -- For 953 individuals in 2016-17 and 1,316 in 2020-21 from rural Tamil Nadu, India.}
 \sourcefig{NEEMSIS-1 (2016-17) \& NEEMSIS-2 (2020-21); author's calculations.}
-\label{fig:stabcor}
-\end{figure}
-
-\begin{figure}[!htb]
-\raggedright
-\includegraphics[scale=0.86]{INPUT/diffcont_cog}
-\caption{Stability over time of cognitive skills -- Distribution of the difference of the score between 2016-17 and 2020-21 for three cognitive skills for 835 individuals from rural Tamil Nadu, India.}
-\sourcefig{NEEMSIS-1 (2016-17) \& NEEMSIS-2 (2020-21); author's calculations.}
-\label{fig:stabcog}
+\label{fig:varexp}
 \end{figure}
 
 
-
-
-
-
-
-\clearpage
-\newpage
-%-------------------------------------------------------------------------------%
-\appendix
-\addcontentsline{toc}{section}{Appendix}
-
-
-
-
-\clearpage
-\newpage
-% ***********************************
-\section{Factor analysis for personality traits}
-\label{section:efa_big5}
-% ***********************************
-
-
-
-\clearpage
-\begin{figure}[!htb]
+\begin{figure}[!h]
 \raggedright
-\includegraphics[width=\textwidth, angle=0]{INPUT/factor2016_2}
-\caption{Results of factor analysis for 2016-17 raw items}
+\includegraphics[scale=0.8]{INPUT/factor2016_tot_without}
+\caption{}
 \sourcefig{NEEMSIS-1 (2016-17); author's calculations.}
-\label{fig:resefa}
+\label{fig:efa16}
 \end{figure}
 
-
-\begin{figure}[!htb]
+\begin{figure}[!h]
 \raggedright
-\includegraphics[scale=0.85]{INPUT/matrix_b5_efa}
-\caption{Correlation between Factor from EFA and Big-5 personality traits}
-\sourcefig{NEEMSIS-1 (2016-17); author's calculations.}
-\label{fig:descXY}
+\includegraphics[scale=0.8]{INPUT/factor2020_tot_without}
+\caption{}
+\sourcefig{NEEMSIS-2 (2020-21); author's calculations.}
+\label{fig:efa20}
 \end{figure}
 
 
