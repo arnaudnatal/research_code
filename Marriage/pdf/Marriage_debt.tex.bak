@@ -669,7 +669,7 @@ independent of the opportunity cost of his fellow villagers to attend the weddin
 %-----------------------------------------------------
 
 
-\begin{greybox}{NEEMSIS 2 data at marriage level for description (n=117)}{marriageleveldesc}
+NEEMSIS 2 data at marriage level for description (n=117)
 \begin{itemize}[leftmargin=*]
 \item 85.47\% of our marriages are arranged and only 6.84\% are consanguineous;
 \item We find strong difference between caste for arranged marriage: 69.23\% for upper caste and 91.43 for middle;
@@ -681,20 +681,19 @@ independent of the opportunity cost of his fellow villagers to attend the weddin
 \item [...] thus 16.25\% (which represent 19 marriages) are inter caste\footnote{As \cite{Guerin2014a} stated, avec la dette normalement ils ne prêtent pas entre eux.} [literature] which is supported by the government;
 \item 
 \end{itemize}
-\end{greybox}
 
 
-\begin{greybox}{NEEMSIS 2 data at marriage level (n=117)}{marriagelevel}
+NEEMSIS 2 data at marriage level (n=117)
 \begin{itemize}[leftmargin=*]
 \item Marriage cost, engagement cost and total cost increase with caste;
 \item 50\% of marriage cost and engagement cost is provided by husband and 50\% by female for 50\% of marriages (44\% by wife for marriage on average and 74\% by wife for engagement on average);
 \item Dowry represent 54\% of wife total cost (including engagement, marriage and dowry) but dowry represent 176\% of marriage and engagement fees;
 \item Wife provide, on average, 66\% of total cost of \textbf{union (including engagement, marriage and dowry)} and the median is at 69\%;
 \end{itemize}
-\end{greybox}
 
 
-\begin{greybox}{NEEMSIS 2 data at individual level (male=59; female=58)}{individuallevel}
+
+NEEMSIS 2 data at individual level (male=59; female=58)
 \begin{itemize}[leftmargin=*]
 \item In our sample, the marriage cost represent 47\% of the monetary value of assets;
 \item [...], the engagement represent 11\% of the monetary value of assets;
@@ -707,11 +706,10 @@ independent of the opportunity cost of his fellow villagers to attend the weddin
 \item [...] Indeed, when the observed is a male (husband) and the wife's family is in better situation, the ratio of $\frac{marriage wife cost}{marriage total cost}$ equal 0.40 on average while it is at 0.46 on average when the wife family is in the same situation (for observed wife, the ratio is respectively 0.49 and 0.56);
 
 \end{itemize}
-\end{greybox}
 
-voici une ref à \ref{labox:gift}
+voici une ref à 
 
-\begin{greybox}{NEEMSIS 2 data for gift (male=59; female=58)}{gift}
+NEEMSIS 2 data for gift (male=59; female=58)
 \begin{itemize}[leftmargin=*]
 \item 95\% of individuals (husband or wife of our sample) received gift; 
 \item On average, individuals receive 133 000 rupees as gift for their marriage;
@@ -724,7 +722,6 @@ voici une ref à \ref{labox:gift}
 \item in terms if labor income, it represent a gain of 11 months of labor income for husband family and a loss of 33 months for wife family;
 \item Again with income, the median is at 0.61 for husband, which represent more than 7 months and the median is at 1.1 for wife, which represent more than 13 months;
 \end{itemize}
-\end{greybox}
 
 
 
