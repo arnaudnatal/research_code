@@ -1,3 +1,4 @@
+cls
 /*
 -------------------------
 Arnaud Natal
@@ -11,9 +12,14 @@ TITLE: CLEANING MARRIAGE NEEMSIS2
 */
 
 clear all
-global directory "D:\Documents\_Thesis\Research-Marriage\Data"
-cd"$directory\NEEMSIS2"
+*global directory "D:\Documents\_Thesis\Research-Marriage\Data"
+global directory "C:\Users\anatal\Downloads\_Thesis\Research-Marriage\Data"
 
+*global git "D:\Documents\GitHub"
+global git "C:\Users\anatal\Downloads\GitHub"
+
+cd"$directory\NEEMSIS2"
+set scheme plottig
 
 
 
@@ -24,6 +30,66 @@ cd"$directory\NEEMSIS2"
 * Preliminary analysis
 ****************************************
 use"$directory\NEEMSIS2\NEEMSIS2-marriage_v6.dta", clear
+
+
+********** Identify respondent amount
+gen respondent_engagementcost1000=.
+gen respondent_marriagecost1000=.
+gen respondent_sharemarriage=.
+gen respondent_shareengagement=.
+
+replace respondent_engagementcost1000=engagementhusbandcost1000 if sex==1
+replace respondent_engagementcost1000=engagementwifecost1000 if sex==2
+
+replace respondent_marriagecost1000=marriagehusbandcost1000 if sex==1
+replace respondent_marriagecost1000=marriagewifecost1000 if sex==2
+
+replace respondent_shareengagement=husbandshareengagement if sex==1
+replace respondent_shareengagement=wifeshareengagement if sex==2
+
+replace respondent_sharemarriage=husbandsharemarriage if sex==1
+replace respondent_sharemarriage=wifesharemarriage if sex==2
+
+
+********** Extremums
+replace MCIR=9 if MCIR>9
+replace ECIR=2 if ECIR>2
+
+
+
+
+********** Age as cat
+fsum ageatmarriage
+fre sex
+gen female_agecat=.
+replace female_agecat=1 if ageatmarriage<18 & ageatmarriage!=. & sex==2
+replace female_agecat=2 if ageatmarriage>=18 & ageatmarriage<25 & ageatmarriage!=. & sex==2
+replace female_agecat=3 if ageatmarriage>=25 & ageatmarriage<30 & ageatmarriage!=. & sex==2
+replace female_agecat=4 if ageatmarriage>=30 & ageatmarriage<40 & ageatmarriage!=. & sex==2
+replace female_agecat=5 if ageatmarriage>=40 & ageatmarriage!=. & sex==2
+
+label define agecat 1"];18[" 2"[18;25[" 3"[25;30[" 4"[30;40[" 5"[40;["
+label values female_agecat agecat
+
+tab female_agecat sex, m
+
+
+
+********** Label for moc
+label define mainoccupation_indiv 0"Not working" 1"Agri" 2"SE" 3"SJ agri" 4"SJ non-agri" 5"UW hh business" 6"UW other business" 7"UW own farm" 8"UW another farm", replace
+label values mainoccupation_indiv mainoccupation_indiv
+
+
+
+********** Quantile income and assets
+xtile totalincome_HH_q=totalincome_HH, n(4)
+xtile assets_q=assets, n(4)
+
+label define inc_q 1"Income - Q1" 2"Income - Q2" 3"Income - Q3" 4"Income - Q4", replace
+label define ass_q 1"Assets - Q1" 2"Assets - Q2" 3"Assets - Q3" 4"Assets - Q4", replace
+
+label values totalincome_HH_q inc_q
+label values assets_q ass_q
 
 
 ********** Who marries?
@@ -47,6 +113,31 @@ tab marriagespousefamily caste, col nofreq
 tabstat peoplewedding, stat(mean sd p50 min max) by(caste)
 tab datecovid caste, nofreq col
 
+
+
+********** % of expenses in capital
+preserve
+bysort HHID_panel: egen sum_marriageexpenses=sum(marriageexpenses)
+duplicates drop HHID_panel, force
+drop if sum_marriageexpenses==. | sum_marriageexpenses==0
+tab caste
+restore
+
+
+
+
+********** How pay the marriage?
+tab1 howpaymarriage_loan howpaymarriage_capital howpaymarriage_gift
+/*
+102/117 marriages were paid with loan
+113/117 marriages were paid with capital
+7/117 marriages were paid with gift 
+
+pb bc i have only 38 values in marriageexpenses
+*/
+order howpaymarriage_capital marriageexpenses, last
+sort howpaymarriage_capital marriageexpenses
+*I have 75 missings
 
 
 ********** Cost of marriage
@@ -153,8 +244,8 @@ tabstat husbandsharemarriage if sex==2, stat(n mean sd p50) by(marriagespousefam
 
 
 ********** Date
-twoway (scatter peoplewedding marriagedate, legend(off) ytitle("Nb people at wedding"))
-twoway (scatter marriagetotalcost marriagedate, legend(off))
+*twoway (scatter peoplewedding marriagedate, legend(off) ytitle("Nb people at wedding"))
+*twoway (scatter marriagetotalcost marriagedate, legend(off))
 
 
 
@@ -162,11 +253,233 @@ twoway (scatter marriagetotalcost marriagedate, legend(off))
 ********** Type of marriage
 tabstat marriagetotalcost1000, stat(n min p50 max)
 
+/*
 stripplot marriagetotalcost1000, over(marriagearranged) separate(caste) ///
 cumul cumprob box centre refline vertical /// 
 xsize(3) xtitle("") xlabel(,angle())  ///
 ylabel(0(100)1800) ymtick(0(50)1800) ytitle() ///
-msymbol(oh oh oh) mcolor(plr1 ply1 plg1) 
+msymbol(oh oh oh) 
+*/
+
+
+
+
+********** Graphical representation of cost
+* Absolut measure of marriage and engagement cost
+fsum marriagetotalcost1000 respondent_sharemarriage engagementtotalcost1000 respondent_shareengagement wifesharemarriage
+set graph off
+stripplot marriagetotalcost1000, over(caste) separate() ///
+cumul cumprob box centre refline vertical /// 
+xsize(3) xtitle("") ytitle("₹1k") xlabel(,angle(45))  ///
+ylabel(0(300)1800) ymtick(0(100)1800) ytitle() ///
+msymbol(oh oh oh) ///
+legend(off) ///
+title("Cost") name(g1, replace)
+
+stripplot wifesharemarriage, over(caste) separate() ///
+cumul cumprob box centre refline vertical /// 
+xsize(3) xtitle("") xlabel(,angle(45))  ///
+ylabel(0(.1)1) ymtick(0(.05)1) ytitle("(*100)%") ///
+msymbol(oh oh oh) ///
+legend(off) ///
+title("Share paid by spouse") name(g2, replace)
+
+stripplot engagementtotalcost1000, over(caste) separate() ///
+cumul cumprob box centre refline vertical /// 
+xsize(3) xtitle("") ytitle("₹1k") xlabel(,angle(45))  ///
+ylabel(0(100)400) ymtick(0(25)400) ytitle() ///
+msymbol(oh oh oh) ///
+legend(off) ///
+title("Cost") name(g3, replace)
+
+stripplot wifeshareengagement, over(caste) separate() ///
+cumul cumprob box centre refline vertical /// 
+xsize(3) xtitle("") xlabel(,angle(45))  ///
+ylabel(0(.1)1) ymtick(0(.05)1) ytitle("(*100)%") ///
+msymbol(oh oh oh) ///
+legend(off) ///
+legend(col(3) pos(6)) ///
+title("Share paid by spouse") name(g4, replace)
+
+graph combine g1 g2, col(2) name(g_marriage, replace) title("Marriage")
+graph combine g3 g4, col(2) name(g_engagement, replace) title("Engagement")
+graph combine g_engagement g_marriage, note("Couple level (n=117)", size(tiny)) name(g_abs, replace)
+set graph on
+
+graph display g_abs
+graph export "$git/Analysis/Marriage/Graph/cost_caste_abs.pdf", replace
+
+
+
+
+
+* Relatives measures of marriage and engagement cost
+fsum MCAR MCIR ECAR ECIR
+set graph off
+
+stripplot MCAR, over(sex) separate(caste) ///
+cumul cumprob box centre refline vertical /// 
+xsize(3) xtitle("") xlabel(,angle())  ///
+ylabel(0(.3)3.6) ymtick(0(.1)3.6) ytitle("(*100)%") ///
+msymbol(oh oh oh) ///
+legend(pos(6) col(3)) ///
+title("Cost to assets ratio") name(g1, replace)
+
+stripplot MCIR, over(sex) separate(caste) ///
+cumul cumprob box centre refline vertical /// 
+xsize(3) xtitle("") xlabel(,angle())  ///
+ylabel(0(.5)9) ymtick(0(0.25)9) ytitle("(*100)%") ///
+msymbol(oh oh oh) ///
+legend(pos(6) col(3)) ///
+title("Cost to income ratio") name(g2, replace)
+
+stripplot ECAR, over(sex) separate(caste) ///
+cumul cumprob box centre refline vertical /// 
+xsize(3) xtitle("") xlabel(,angle())  ///
+ylabel(0(.1).5) ymtick(0(.05).5) ytitle("(*100)%") ///
+msymbol(oh oh oh) ///
+legend(pos(6) col(3)) ///
+title("Cost to assets ratio") name(g3, replace)
+
+stripplot ECIR, over(sex) separate(caste) ///
+cumul cumprob box centre refline vertical /// 
+xsize(3) xtitle("") xlabel(,angle())  ///
+ylabel(0(.2)2) ymtick(0(0.1)2) ytitle("(*100)%") ///
+msymbol(oh oh oh) ///
+legend(pos(6) col(3)) ///
+title("Cost to income ratio") name(g4, replace)
+
+grc1leg g1 g2, col(2) name(g_marriage, replace) title("Marriage")
+grc1leg g3 g4, col(2) name(g_engagement, replace) title("Engagement")
+grc1leg g_engagement g_marriage, note("Respondent level (n=117)", size(tiny)) name(g_rel, replace)
+set graph on
+
+
+graph display g_rel
+graph export "$git/Analysis/Marriage/Graph/cost_sexcaste_rel.pdf", replace
+
+
+
+* Dowry absolut cost
+tabstat marriagedowry1000 DMC, stat(n mean sd p50 min max) by(
+
+set graph off
+stripplot marriagedowry1000, over(caste) separate() ///
+cumul cumprob box centre refline vertical /// 
+xsize(3) xtitle("") xlabel(,angle(45))  ///
+ylabel(0(100)1200) ymtick(0(50)1200) ytitle("₹1k") ///
+msymbol(oh oh oh) ///
+title("Amount") name(g1, replace)
+
+stripplot DWTC, over(caste) separate() ///
+cumul cumprob box centre refline vertical /// 
+xsize(3) xtitle("") xlabel(,angle())  ///
+ylabel(0(.1)1) ymtick(0(.05)1) ytitle("(*100)%") ///
+msymbol(oh oh oh) ///
+title("Dowry to union total cost") name(g2, replace)
+
+stripplot wifesharetotal, over(caste) separate() ///
+cumul cumprob box centre refline vertical /// 
+xsize(3) xtitle("") xlabel(,angle())  ///
+ylabel(0(.1)1) ymtick(0(.05)1) ytitle("(*100)%") ///
+msymbol(oh oh oh) ///
+title("Total cost assumed by the wife") name(g3, replace)
+
+graph combine g1 g2 g3, col(3) name(g_dowry_abs, replace)
+set graph on
+
+graph display g_dowry_abs
+graph export "$git/Analysis/Marriage/Graph/dowry_caste_abs.pdf", replace
+
+
+
+* Dowry absolut over age of bride, educ and labour of groom
+
+stripplot marriagedowry1000 if sex==2, over(female_agecat) separate(caste) ///
+cumul cumprob box centre refline vertical /// 
+xsize(3) xtitle("") xlabel(,angle(45))  ///
+ylabel(0(100)800) ymtick(0(50)800) ytitle("₹1k") ///
+msymbol(o o o o) ///
+title("Amount") name(g1bis, replace)
+
+stripplot marriagedowry1000 if sex==1, over(edulevel) separate(caste) ///
+cumul cumprob box centre refline vertical /// 
+xsize(3) xtitle("") xlabel(,angle(45))  ///
+ylabel(0(100)1200) ymtick(0(50)1200) ytitle("₹1k") ///
+msymbol(o o o o) ///
+title("Amount") name(g1bis, replace)
+
+stripplot marriagedowry1000 if sex==1, over(mainoccupation_indiv) separate(caste) ///
+cumul cumprob box centre refline vertical /// 
+xsize(3) xtitle("") xlabel(,angle(45))  ///
+ylabel(0(100)1200) ymtick(0(50)1200) ytitle("₹1k") ///
+msymbol(o o o o) ///
+title("Amount") name(g1bis, replace)
+
+stripplot marriagedowry1000 if sex==1, over(totalincome_HH_q) separate(caste) ///
+cumul cumprob box centre refline vertical /// 
+xsize(3) xtitle("") xlabel(,angle(45))  ///
+ylabel(0(100)1200) ymtick(0(50)1200) ytitle("₹1k") ///
+msymbol(o o o o) ///
+title("Amount") name(g1bis, replace)
+
+stripplot marriagedowry1000 if sex==1, over(assets_q) separate(caste) ///
+cumul cumprob box centre refline vertical /// 
+xsize(3) xtitle("") xlabel(,angle(45))  ///
+ylabel(0(100)1200) ymtick(0(50)1200) ytitle("₹1k") ///
+msymbol(o o o o) ///
+title("Amount") name(g1bis, replace)
+
+
+
+
+* Dowry relative cost
+fsum DAAR DAIR
+set graph off
+stripplot DAAR, over(caste) separate(edulevel) ///
+cumul cumprob box centre refline vertical /// 
+xsize(3) xtitle("") xlabel(,angle())  ///
+ylabel(0(.5)3.5) ymtick(0(.1)3.5) ytitle("(*100)%") ///
+msymbol(o o o o) ///
+title("Assets ratio") name(g2, replace)
+
+stripplot DAIR, over(caste) separate(marriagearranged) ///
+cumul cumprob box centre refline vertical /// 
+xsize(3) xtitle("") xlabel(,angle())  ///
+ylabel(0(.2)2) ymtick(0(0.1)2) ytitle("(*100)%") ///
+msymbol(oh oh oh) ///
+title("Income ratio") name(g3, replace)
+
+
+
+
+
+
+
+********** QREG
+foreach x in assets totalincome_HH {
+preserve
+tempname memhold
+tempfile results
+postfile `memhold' q b cilow95 cihigh95 using `results'
+forvalues i=.1(.1).9 {
+qui qreg2 marriagedowry assets totalincome_HH if sex==1, q(`i')
+	local b = _b[`x']
+    local cilow95  = _b[`x']-_se[`x']*invttail(e(df_r),.025)    
+    local cihigh95  = _b[`x']+_se[`x']*invttail(e(df_r),.025)    
+    post `memhold' (`i') (`b') (`cilow95') (`cihigh95')
+}
+postclose `memhold'
+use `results', clear
+twoway ///
+(rarea cihigh95 cilow95 q, fcolor(%5)) ///
+(line b q, yline(0, lcolor(black) lpattern(solid) lwidth(0.1))) ///
+, xtitle("Quantile") legend(order(1 "95% cl" 2 "90% cl" 3 "Coef.") col(3) pos(6)) xlabel(.1(.1).9) title("", size(large)) aspectratio(0.5) scale(0.7) name(g_male_`x', replace)
+restore
+}
+}
+
+
 
 save"$directory\NEEMSIS2\NEEMSIS2-marriage_v7.dta", replace
 ****************************************
@@ -278,6 +591,12 @@ tabstat peoplewedding totalmarriagegiftamount1000 partycost1000, stat(n mean sd 
 save"$directory\NEEMSIS2\NEEMSIS2-marriage_v8.dta", replace
 ****************************************
 * END
+
+
+
+
+
+
 
 
 
@@ -406,11 +725,24 @@ tab marriagedowry1000 if (caste==2 | hwcaste==2) & sex==2 & marriagemobility==3
 * Stat loans
 ****************************************
 use"$directory\NEEMSIS2\NEEMSIS2-loans_v11.dta", clear
+drop _merge
+preserve
+use "$directory\NEEMSIS2\NEEMSIS2-marriage_v8.dta", clear
+duplicates drop HHID_panel, force
+keep HHID_panel
+gen marriage=1
+save "$directory\NEEMSIS2\NEEMSIS2-marriage_v8_1.dta", replace
+restore
+
+preserve
+merge m:1 HHID_panel using "$directory\NEEMSIS2\NEEMSIS2-marriage_v8_1.dta"
+tab marriage
+keep if marriage==1
+save"$directory\NEEMSIS2\NEEMSIS2-loans_v11_marriage.dta", replace
+restore
+
+
 tab loan_database
-tab loansettled loan_database
-*keep if loansettled==0
-
-
 
 **********  Amount of reason
 gen loanamount1000=loanamount/1000
@@ -509,6 +841,26 @@ tab loanreasongiven caste, row col nofreq
 *surtout les dalits
 tab loanlender_new2020 caste if loanreasongiven==8, row col nofreq
 *wkp et relatives
+
+
+
+
+********** Only the 117 marriage
+use"$directory\NEEMSIS2\NEEMSIS2-loans_v11_marriage.dta", clear
+fre loanreasongiven
+tabstat loanamount, stat(n mean sd p50 sum) by(loanreasongiven)
+
+tab loanlender if loanreasongiven==8
+preserve
+keep if loanreasongiven==8
+duplicates drop HHID_panel, force
+tab caste
+restore
+
+
+
+
+
 
 ****************************************
 * END
@@ -813,22 +1165,6 @@ tabstat monthlyinterestrate if loanlender==1, stat(n mean sd q) by(loanreasongiv
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ****************************************
 * Burden of marriage debt
 ****************************************
@@ -836,6 +1172,10 @@ use"$directory\NEEMSIS2\NEEMSIS2-marriage_v8.dta", clear
 gen dummyloanmarriage=1 if marriageloanamount_HH>0
 recode dummyloanmarriage (.=0)
 tab dummyloanmarriage
+gen loanamount1000_HH=loanamount_HH/1000
+gen marriageloanamount1000_HH=marriageloanamount_HH/1000
+gen loanamount1000_nomar_HH=loanamount1000_HH-marriageloanamount1000_HH
+
 * Verif
 gen verif=marriageloanamount_HH-marriageloanamount_mar_HH-marriageloanamount_fin_HH
 tab verif
@@ -845,21 +1185,50 @@ drop verif
 gen marriageshare=marriageloanamount_HH*100/loanamount_HH
 tab marriageshare
 
-* Perc of increase
-gen loanamount1000_HH=loanamount_HH/1000
-gen marriageloanamount1000_HH=marriageloanamount_HH/1000
-gen loanamount1000_nomar_HH=loanamount1000_HH-marriageloanamount1000_HH
-tabstat loanamount1000_nomar_HH loanamount1000_HH, stat(n mean sd p1 p5 p10 q p90 p95 p99 min max)
-gen percmarriage=(loanamount1000_HH-loanamount1000_nomar_HH)*100/loanamount1000_nomar_HH
 
-tabstat loanamount1000_nomar_HH loanamount1000_HH percmarriage if dummyloanmarriage==1, stat(n mean sd min p1 p5 p10 q p90 p95 p99 max) by(caste)
+* % of debt in more with marriage debt
+gen inc_loanamount=(loanamount1000_HH-loanamount1000_nomar_HH)*100/loanamount1000_nomar_HH if marriageloanamount_HH!=. & marriageloanamount_HH!=0
+gen share_marriage_in_loanamount=(loanamount1000_HH-loanamount1000_nomar_HH)*100/loanamount1000_HH if marriageloanamount_HH!=. & marriageloanamount_HH!=0
 
-tabstat loanamount1000_nomar_HH loanamount1000_HH percmarriage if dummyloanmarriage==1, stat(n mean sd min p1 p5 p10 q p90 p95 p99 max) by(sex)
+
+* % of assets/income of debt in more/of marriage debt 
+gen inc_assets=(loanamount1000_HH-loanamount1000_nomar_HH)*100/assets1000 if marriageloanamount_HH!=. & marriageloanamount_HH!=0
+gen inc_income=(loanamount1000_HH-loanamount1000_nomar_HH)*100/totalincome1000_HH if marriageloanamount_HH!=. & marriageloanamount_HH!=0
+sort inc_income
+
+* Graph rpz
+fsum inc_loanamount inc_assets inc_income, stat(min p1 p5 p10 p25 p50 p75 p90 p95 p99 max)
+
+stripplot share_marriage_in_loanamount, over(caste) separate() ///
+cumul cumprob box centre refline vertical /// 
+xsize(3) xtitle("") xlabel(,angle())  ///
+ylabel(0(10)100) ymtick(0(5)100) ytitle("%") ///
+msymbol(oh oh oh) 
+
+stripplot inc_loanamount, over(caste) separate() ///
+cumul cumprob box centre refline vertical /// 
+xsize(3) xtitle("") xlabel(,angle())  ///
+ylabel(0(200)3000) ymtick(0(100)3000) ytitle("%") ///
+msymbol(oh oh oh) 
+
+stripplot inc_assets, over(caste) separate() ///
+cumul cumprob box centre refline vertical /// 
+xsize(3) xtitle("") xlabel(,angle())  ///
+ylabel(0(10)120) ymtick(0(5)120) ytitle("%") ///
+msymbol(oh oh oh)
+
+stripplot inc_income, over(caste) separate() ///
+cumul cumprob box centre refline vertical /// 
+xsize(3) xtitle("") xlabel(,angle())  ///
+ylabel(0(200)3000) ymtick(0(100)3100) ytitle("%") ///
+msymbol(oh oh oh)
+
+
 
 
 * Perc of increase of DAR
 gen DAR_with=loanamount_HH/assets
-gen DAR_without=(loanamount_HH-marriageloanamount_HH)/assets
+
 
 *gen percDAR=(DAR_with-DAR_without)*100/DAR_without
 
