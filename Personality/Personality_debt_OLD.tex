@@ -1,0 +1,754 @@
+\documentclass[a4paper, 11pt, onecolumn]{article} 
+
+% arara: pdflatex 
+% arara: bibtex
+% arara: pdflatex
+% arara: pdflatex
+% arara: clean: {extensions: [ aux, bbl, out, toc, blg, thm ]}
+
+\input{Preamble}
+
+%\usepackage{fonttable}
+
+\usepackage{import}
+
+\usepackage[
+singlelinecheck=false % <-- important
+]{caption}
+
+\usepackage{upgreek}
+
+\newcommand{\ie}{\textit{i.e.}}
+
+
+% *****************************************************************
+% Interlignes et marges
+% *****************************************************************
+\setstretch{1}
+\geometry{%
+left=2.5cm,
+right=2.5cm,
+top=2.5cm,
+bottom=2.5cm,
+%includefoot,
+%headsep=1cm,
+%footskip=1cm
+}%
+
+% *****************************************************************
+% Page de garde
+% *****************************************************************
+\title{{Indebtedness in Rural India: The Contribution of Cognitive Skills and Personality Traits\thanks{The authors are grateful to Anne Hilger and Elena Reboul.}}}
+\author{Arnaud Natal\thanks{Univ. Bordeaux, CNRS, GREThA, UMR 5113, F-33600 \textsc{Pessac, France} - \email{arnaud.natal@u-bordeaux.fr}} ~ \& Christophe J. Nordman\thanks{IRD, UMR LEDa-DIAL, IFP - \email{nordman@dial.prd}} }
+\date{\today}
+\renewcommand\maketitlehookc{%
+  \begin{center}
+    %\textsuperscript{1}{\small Université de Bordeaux}
+    \textsuperscript{}{\normalsize Preliminary draft}
+  \end{center}}
+
+% ******************************************************************
+\begin{document}
+\maketitle
+
+\hrule 
+\vspace{0.3cm}
+
+\begin{resab}{Abstract}
+We study the impact of cognitive skills and personality traits on indebtedness among rural households in India, specifically examining whether there is a heterogeneous impact according to gender (i) and social class (ii).
+In addition, the contribution of the article lies in investigating the extent to which personality traits , 
+The empirical analyses are based on unique panel data set from rural south India. 
+The results are based on correlated random effect estimations. 
+\end{resab}
+
+\begin{motkey}{Keywords}
+Personality traits, cognitive skills, indedebtedness, rural India, caste, gender.
+\end{motkey}
+
+
+\hrule
+%\linenumbers
+
+% ******************************
+\section*{Introduction}
+\addcontentsline{toc}{section}{Introduction}
+\label{Introduction}
+% ******************************
+
+Recents global crisis like subprimes, demonetisation in India, lockdown, revealed the importance to understand financial practices of household, especially in developing countries.
+Indeed, in rural India the demonetisation (2016) caused a rise in the informal economy, especially informal debt \citep{GuerinDemo2017} and after the lockdown (2020) households faced a ``halt to unsecured debt and an erosion of the trust that cements most transactions; [and] the emergence ot new forms of secured debt that threaten household assets'' \citep{Guerin2020}.
+
+
+%PLein de ménages se sont retrouvés dans la merde suite aux différentes crises, notamment car ils étaient déjà grave endettés et là c'est de pire en pire\dev{Bien développer pourquoi les crises ont révélé l'importance de s'intéresser à la situation financière des ménages: quasi tout le monde a été endetté un jour +  role sociale de la dette dans certains pays, notamment en Inde}% \citep{GuerinDemo2017} \citep{Guerin2020}.
+
+%\dev{Essayer de s'intéresser à un déterminant potentiel de l'endettement sachant que l'endettement s'est hyper important dans les pays en dev pour telles et telles raisons}
+
+Household finance has faced a renewed interest since a decade \citep{Guiso2013}.
+Indeed, household are more implicated in financial decision such as privatization of retirement pension, liberalization of loan market, increase in credit purchase, which are more complicated because of financial innovation\footnote{For a comprehensive review on the subject, see \cite{Tufano2003}.}.
+This renewed interest led the Journal of Economic Literature (JEL) to create a field in its own right under the code G5.
+Household finance (or consumer finance for researchers in business sciences) refer to the way that ``households use financial instruments to attain their objectives'' \citep{Campbell2006}.
+More precisely\footnote{For a comprehensive review on household finance, see \cite{Tufano2009} for whom household finance is ``the study of how institutions provide goods and services to satisfy the financial functions of households, how consumers make financial decisions, and how government action affects the provision of financial services'', \cite{Guiso2013}, or \cite{Xiao2020}.}  its a ``research field to study how financial institutions provide products and services to meet financial needs of consumers, how consumers make financial decisions, how government agencies regulate financial institutions and protect financial consumers and how science and technology help optimize the efficiency of consumer finance markets and improve social welfare'' \citep{Xiao2020}.
+
+Often, economist have focused on specific aspects of the household financial practices such as savings, gold or debt.
+\dev{Essayer de trouver un pont un peu mieux pour relier les deux parce que c'est un peu bancale dit comme ça.}
+Even if the study of cognitive skills and personality traits have started to attract the attention of labor-economist \citep{Almlund2011}, few researcher have been interested in the relationship with household finances while ``it is apparent that personality traits may influence financial decision-making at the individual and household level'' \citep{Brown2014}.
+
+%\paragraph{Cognitive skills}
+Cognitive skills can be defined as a ``term that refers to mental processes involved in the acquisition of knowledge, manipulation of information, and reasoning [that] include the domains of perception, memory, learning, attention, decision making, and language abilities'' \citep{Kiely2014}.
+
+%\paragraph{Personality traits and the Big-Five}
+While ``personality is the dynamic organization within the individual of those psychophysical systems that determine his characteristics behavior and thought'' \citep{Allport1961}.
+Among the theories of personality, the traits can be define as thought, emotion and habitual patterns of behavior \citep{Kassin2003}.
+The Big-Five model --or Five Factor model (FFM)-- constitute the main personality trait taxonomy.
+Based on \cite{Goldberg1981} and \cite{McCrae1987} works\footnote{Themselves inspired by the work of \cite{Cattell1943, Cattell1947} and \cite{Norman1963}.}, this taxonomy identify five dimensions of personality from factor analysis [on specific questionnaires]: neuroticism (i), \ie~the capacity to experience negative emotions (anxiety, anger, depression, etc); extraversion (ii), \ie~the energy, the capacity to experience positive emotions, the tendency to seek stimulation and company from others; openness to experience (iii), \ie~``one’s capacity to be creative and unstructured versus one’s tendency to need structure and clarity'' \citep{Piedmont2014}; agreeableness (iv), \ie~``perceptions of others that are caring, compassionate, and altruistic versus manipulative, self-serving, and antagonistic'' \citep{Piedmont2014}; conscientiousness (v), \ie~the capacity to display self-discipline, act dutifully, and strive for achievement against measures or outside expectations.
+%\dev{Conclure la partie définition.}
+
+The relationship between household finance and cognitive skills/personality traits yet appears full of meaning for many reasons.
+\begin{itemize}
+%\item Rôle de l'épargne, l'investissement et la consommation des ménages (ii).
+%\citep{Keynes1936} : l'épargne sert en partie à constituer une réserve pour faire face aux imprévus, prévoir un rapport futur entre les revenus et les besoins de l'individu
+%D'autant plus vrai dans les PED où les populations font faces à de nombreux chocs \citep{WB2013}
+%Nous on a l'or qui est la première source d'épargne \citep{Roesch2008, Guerin2012a}
+
+\item First, more household are financial included \citep{Badarinza2019}, especially in India \citep{Chakravartya2013}.
+
+
+\item More and more household are financial included \citep{Badarinza2019} et notamment en Inde .
+%Avec en plus la hausse des middle class \citep{Badarinza2019}  (à voir si je tiens cet argument car pas vraiment le cas des ménages que j'ai)
+Donc regarder cette relation permet pourquoi pas d'augmenter l'efficience des politiques d'inclusions financières.
+
+\item Most of rural households in India are indebtedness, especially to consume which is (consumption) an determinants of global wealth\footnote{Expenditures approach of GDP.}.
+In India, the households and non-profit institutions serving households (NPISHs) final consumption expenditure represent 60.29\% of GDP\footnote{World Bank Data - \url{https://data.worldbank.org/indicator/NE.CON.PRVT.ZS?locations=IN}. Accessed January 22, 2021.}.
+Try to capture the role of cognitive skills and personality traits thus allows to better understand the determinants of indebtedness in India, which is an important vector of wealth through consumption. 
+%Consumption expenses represent almost a third of loans in 2010 and 2016-17 --this is the most common loan reason-- and the average amount of one loan is 9,920 INR in 2010 and 24,780 INR in 2016-17.
+
+\item \cite{Fong2001} suggest that a weak efficacy feeling can contribute to low income which increase the feeling of weak efficacy \citep{Bowles2001}. 
+Applied in indebtedness, understand the role of cognitive skills and personality traits can allow us to break 
+
+\end{itemize}
+
+
+
+
+
+
+
+
+% \begin{itemize}[label=--]
+% \item Quel est le rôle de la structure du ménage sur sa situation financière ? 
+% \item Quel est la relation entre personnalité et structure ?
+% \item Quel est le rôle des compétences cognitives et non cognitives sur la situation financière des ménages/individus ?
+% \end{itemize}
+
+% \paragraph{Hypothèses}	
+% \begin{itemize}[label=--]
+% \item Normalement caste, genre, niveau d'actifs jouent sur l'endettement des ménages
+% \item Normalement personnalité joue aussi sur endettement (dans les pays du nord du moins).
+% \end{itemize}
+
+
+
+
+\newpage
+% ******************************
+\section{A brief review}
+% ******************************
+
+	% ******************************
+	\subsection{Indebtedness in rural India}
+	\label{ss:finance}
+	% ******************************
+The Indian context is unique compared to other developping countries like China in terms of household finance.
+Especially the role of retirement assets, gold and debt are unusual in the international context \citep{Badarinza2016b}.
+To follows our research questions we only focuses\footnote{\cite{Badarinza2016b} developed the role of retirement assets and gold.} on debt.
+%---------------------------------
+%KEEP THAT BUT NOT IN THE ARTICLE
+%---------------------------------
+%\paragraph{Retirement assets}
+%Compared to China, the retirement pensions are not very efficient.
+%Indeed, around 90\% of labor is informal [in the sense of absence of social insurance] and 85\% of non-agricultural workforce is informal \citep{Mehrotra2019}.
+%For \cite{Badarinza2016b}, India figures as an outlier among low-middle-income countries on this point.
+%\paragraph{Gold}
+%\begin{itemize}
+%\item On average, gold represent more than 11\% of indien household balance sheet  while it is less than 1\% in China \citep{Badarinza2016b}.
+%\item Préciser les différences rurales urbaines de \cite{Badarinza2016b}.
+%\item Mais rester sur le fait qu'au TN l'or est la première forme d'épargne d'après \cite{Roesch2008} \cite{Guerin2012a}
+%\item Pourquoi ils aiment tant ?
+%\item[1] Real estate has lower liquidity when compared with gold, and if liquidity needs are correlated with inflation volatility, gold better serves the purpose than real estate. Gold as a non-financial asset also has additional properties that are not provided for by real estate, such as a high collateral value and physical verifiability \citep{Badarinza2016b}
+%\item[2] Avec la littérature d'Isabelle, parler du social role de l'or en rural India.
+%\end{itemize}
+%---------------------------------
+
+\paragraph{Indebtedness}
+The largest part of households debt is informal in rural India.
+Compared to China, a tiny part of households have a mortgage loan --which is a classic formal loan \citep{Badarinza2016b}.
+\dev{Mieux développer le constat}.
+
+\cite{Badarinza2016b} 
+
+\begin{itemize}
+\item Constat: peu de formel, énormément d'informel
+\item[1] car les terres et les maisons s'héritent : \citep{Badarinza2016b} avancent que cela peut provenir de la « prédominance des ménages multigénérationnels, dans lesquels les terres et les propriétés résidentielles constituent une part importante des legs » donc pas beaucoup besoin d'emprunt formel. 4\% des ménages dont le chef a moins de 35 ans ont un prêt hypothécaire ce qui est nettement inférieur à la situation des autres pays émergents comme la Chine \citep{Badarinza2016b}.
+\item[2] Pénétration bancaire très hétérogène : \citep{Badarinza2016b} et \citep{Burgess2005} : les États ayant un taux de pénétration bancaire élevé sont ceux où les ménages sont les moins dépendants de l’endettement non institutionnel.
+\item Faisons donc un gros zoom sur l'endettement [informel]
+\item Quelques chiffres dessus
+\item Comment le mesurer ? 
+	\begin{itemize}
+	\item Pas de consensus, mais 3 approches \citep{Betti2007} \citep{Ferreira2000} :
+	\item[1] Mesures objectives : surendettement comme un niveau d’endettement insoutenable en termes de capacité à payer ou rembourser ses dettes, en se référant à un seuil défini au préalable. Largement utilisé, mais sous-estime le fardeau du surendettement en évinçant de l’analyse l’aspect subjectif et les sacrifices associés \citep{Betti2007}
+	\item[2] Mesures subjectives : évaluation de la situation financière des ménages, par eux mêmes, en considérant que ces derniers « sont les meilleurs juges de leur propre situation nette d’endettement ou de richesse » \citep{Betti2007}, mais robustesse des résultats va en grande partie dépendre du degré d’honnêteté et de littératie du répondant \citep{Betti2007} \citep{DAlessio2013} \citep{Schicks2011}
+	\item \citep{Keese2012} et \citep{Rinaldi2006}, les mesures objectives s’alignent assez bien sur les mesures subjectives au niveau de la classification des ménages.
+	\item[3] Mesures administratives : cas de non-paiement de dette enregistrés de façon officielle devant un tribunal
+	\item Solution de combiner objectifs et subjectifs \citep{Aniola2012} \citep{Gumy2007}, mais presque tous les ménages peuvent être considérés comme surendettés à un moment donné \citep{Chichaibelu2018}
+	\item \citep{European2010} ont 5 recommendations pour bien mesurer:
+	\item[1] Le surendettement s’analyse au niveau du ménage car les revenus des individus sont généralement regroupés ;
+	\item[2] Les indicateurs doivent couvrir tous les aspects des engagements financiers : le logement, le crédit à la consommation, les factures, les emprunts hypothécaires ;
+	\item[3] Le surendettement est considéré comme un état structurel car il implique une incapacité à faire face à des dépenses récurrentes ;
+	\item[4] Le surendettement ne se résout pas en empruntant davantage ;
+	\item[5] Pour qu’un ménage respecte ses engagements, il doit réduire considérablement ses dépenses ou trouver un moyen d’accroître ses revenus.
+	\end{itemize}
+
+\item Déterminants:
+
+\item \citep{Datta2018, Pandey2016} parlent de ça ça et ça, nous on fait mieux car plus de variables
+
+\item[1] D'après \citep{Badarinza2016b}, la proba de contracter une dette informelle se réduit avec le niveau d'éducation: [l]es ménages dont au moins un membre a fait des études supérieures ou des études de troisième cycle ont une dette hypothécaire supérieure de 15,1\% par rapport au groupe des personnes peu instruites et une part de dette non institutionnelle inférieure de 28,7\%.
+\item[2] Castes, sex, moc, etc. \citep{Guerin2012a} \citep{Guerin2013a} \citep{Guerin2014} \citep{Reboul2020} 
+\item Constat: On a pas encore abordé le rôle des différences individuelles compétences cognitives et non-cognitive alors même que c'est un champs qui gagne du terrain en économie.
+\end{itemize}
+
+
+
+
+
+
+
+
+
+
+	% ***********************************
+	\subsection{Cognitive skills and personality traits in economics}
+	% ***********************************
+
+\citep{Almlund2011} a fait un truc de ouf
+
+\paragraph{Economics}
+\begin{itemize}
+\item Accroche pour dire qu'avec la revue de \citep{Almlund2011}, l'éco s'est surtout intéressé au marché du travail et a trouvé que ce trait joue le plus
+\item Décollage au début des années 2000\footnote{Préciser en footnote qu'il y a eu \cite{Bowles1976} avant qui a regardé les earnings, mais vraiment très peu de travaux.} avec le marché du travail est notamment:
+\item[1] les différences de rémunérations \citep{Bowles2001} \citep{Heckman2006}  \citep{Cawley2001}
+\item[2] performance au travail : la consciensiocité est le trait qui prédit le mieux la performance au travail de facon générale: \citep{Nyhus2005} \citep{Salgado1997} \citep{Hogan2003} \citep{Barrick1991}
+\item[3] type de travail : À la différence du quotient intellectuel (Q.I.), ce trait de personnalité ne varie pas avec la complexité du travail effectué, laissant penser que la conscienciosité concerne un plus large éventail d’emplois. En effet, les professeurs, les scientifiques et les cadres supérieurs ont en général de meilleurs résultats en matière de compétences cognitives par rapport à des travailleurs non qualifiés \citep{Schmidt2004} \citep{Almlund2011} \citep{Barrick1991}. + \citep{CobbClark2011} trouvent que le degré d’agréabilité a une relation négative avec la probabilité d’être un manager et d’être un professionnel des affaires (business professional).
+\item MAIS PAS QUE MARCHÉ DU TRAVAIL
+\item On regarde aussi l'éducation où \cite{Almlund2011} : Avant tout, les auteurs constatent que parmi les cinq (5) traits du Big Five, la conscienciosité et le névrosisme prédisent bien un grand nombre d’outcomes, notamment ceux en rapport avec l’éducation (la conscienciosité explique assez bien l’attainment et achievement à l’école). L’ouverture à l’expérience prédit, elle, assez bien la course difficulty selected et l’attendance. 
+\item puis on regarde la santé: Lorsque les variables expliquées sont en rapport avec la santé, la conscienciosité est le meilleur prédicateur pour la longévité de vie (plus que l’intelligence et le background) \citep{Almlund2011}
+\item et la criminalité: Enfin, lorsque les auteurs s’intéressent à la littérature sur la criminalité, ces derniers relèvent que la conscienciosité et l’agréabilité sont d’importants prédicteurs de la criminalité \citep{Almlund2011} 
+\end{itemize}
+
+\paragraph{Household finance}
+\begin{itemize}
+\item Accroche en disant que globalement, peu de travaux s'y sont intéréssé
+\item Petit paragraphe pour dire que la littérature a lié les deux avec la notions de financial literacy, mais ca ne fait pas l'objet de notre question ici. \citep{Hastings2013} \citep{Varum2014} \citep{Pinjisakikool2017} \citep{Gaurav2012} \citep{Hastings2013} 
+\item Les premiers travaux qui lie skills et hh finance ont moins de 10 ans et s'intéressent principalement à:
+\item[1] décision d'investissement, financial distress : \citep{Nga2013} \citep{Pinjisakikool2017b} \citep{Bucciol2017} \citep{Agarwal2013} \citep{Parise2019}
+\item[2] épargne  : \citep{CobbClark2016} \citep{Gerhard2018}
+\item[3] dette : \citep{Forlicz2019} \citep{Silva2018} \citep{Brown2014}
+\end{itemize}
+
+
+
+
+	% ***********************************
+	\subsection{Contribution to literature}
+	% ***********************************
+The main objective of this paper is to analyze the role of cognitive skills and personality traits on indebtedness in a context where contextual determinants variable are decisive.
+\begin{enumerate}
+\item à travers ce papier on cherche tout d'abord à mieux comprendre l'endettement 
+\item puis on cherche à concilier deux gros pan de la littérature: structurel vs individualiste
+\end{enumerate}
+
+\cite{Guerin2014a} : What is however clear is that over-indebtedness as a concept has little meaning to the poor.
+Financial indicators are certainly useful (and will be used here) to quantify the cost of debt.
+
+To understand debt practices, motivations and rationales, however, it is necessary to examine
+how the poor perceive and experience debt. It also requires taking into account the diversity
+of debt meanings and debt relationships. Of those in extremely vulnerable financial situations,
+very few consider themselves as over-indebted. The contrast between exogenous
+categorisations and local subjectivities is striking. One could of course argue that the poor
+suffer from “false consciousness”, in the sense that they are not even able to assess their own
+exploitation. Our explanation is different: we argue that the poor have their own “frameworks
+of calculations” (Villarreal 2009; this volume) and debt hierarchies (Shipton 2007). Such
+phenomena transcend questions of material or self-centred motivations and reflect issues of
+status, honour, power, and individual and group identity. This is our second argument:
+individuals engage multiple criteria to establish debt hierarchies and to evaluate debt burdens.
+Though financial criteria certainly matter, the social meaning of debt is equally, or more
+valued. While some debts are dishonoring, others are not. This depends upon the social
+relation between the debtor and the creditor and their respective status. Caste, class, kin and
+gender relationships are instrumental here.
+
+
+\newpage
+% ***********************************
+\section{Hypothesis, data and methodology}
+% ***********************************
+
+	% ***********************************
+	\subsection{Hypothesis}
+	% ***********************************
+
+As we already note, the goal of this paper is to analyze the role of cognitive skills and personality traits on indebtedness in a context where contextualvariable are decisive.
+To try to achieve this goal we, firstly, check the contextual determinants of debt.
+Then, we add personality traits and cognitive skills in the analysis to answer our first question: is cognitive skills and personality traits plays a significant role on indebtedness situation of households in rural India?
+Following literature, we can make H\ref{hyp:stability}.
+Indeed, concerning conscientiousness, \cite{Donnelly2012} state that ``highly conscientious individuals manage their money more because they have positive financial attitudes as well as a future orientation''.
+\cite{Brown2014, Nyhus2001} find similar results: conscientious individuals are less likely to have ever been in debt and conscientiousness is negatively related to the amount of unsecured debt.
+\cite{Nga2013} find that conscientiousness have a significant influence on risk aversion in Malaysia.
+\cite{Forlicz2019} find that for most of these countries there existed significant differences between debtors and debt-free individuals regarding the level of conscientiousness
+For neuroticism, \cite{Pinjisakikool2017b} find that emotional stability (inverse of neuroticism) significantly predict financial risk tolerance.
+
+\begin{hyp}[H\ref{hyp:stability}] \label{hyp:stability}
+Conscientiousness and neuroticism play significant role on household indebtedness [and over-indebtedness].
+\end{hyp}
+
+To understand the phenomenon more in depth, we decompose the analysis by caste, class and gender.
+The notion of class allow us to encompass ``property, wealth, occupation, income, and education'' \citep{Beteille2007}.
+We implement a multiple correspondance analysis with land property, wealth, occupation and income\footnote{We choose to not take into account education to stay at household level.} to create a dichotomy between high and low class (see appendix \ref{section:mca_class}).
+For caste and class decomposition, we formulate H\ref{hyp:poorer} imagining that cognitive skills are more important for lower households because we can imagine that higher one have all a high level of cognitive skills (math, literacy, etc.) because of better level of education\footnote{For the link between caste and education, see \cite{Borooah2005}.}.
+%\cite{Gaurav2012} find that cognitive skills significantly predict the financial aptitude and debt literacy for rural farmer in Gujarat
+%\cite{Agarwal2013} finds that ``consumers with higher math scores, are substantially less likely to make a financial mistake'' in separating our sample between economically and socially upper households and economically and socially lower households.
+\begin{hyp}[H\ref{hyp:poorer}] \label{hyp:poorer}
+Cognitive skills are better predictors for lower households than for higher one. 
+\end{hyp}
+
+Concerning gender, as \cite{Reboul2020} stated: ``[w]omen in the poorest households, despite meager incomes, have the highest borrowing responsibilities, shouldering the highest shares of household debt. [...] Their larger role in household debt management may be linked to their greater mobility and lower restrictions on social interactions, notably with men, which would underpin both their greater income shares and their access to credit relations. ''
+Thus, we can formulate the H\ref{hyp:women} hypothesis.
+\begin{hyp}[H\ref{hyp:women}] \label{hyp:women}
+When ego is a woman, her cognitive skills and personality traits play a bigger role in household finances than when ego is a man.
+\end{hyp}
+
+\cite{Reboul2019} Far beyond the issue of information about wages, the management of family finances leads
+to constant tensions and conflicts among family members, and thus gives rise to various tactics
+aimed at partially overcoming family constraints. This is particularly true for women, who have
+a heavy responsibility to ensure, among other things, daily expenses
+
+
+Last, we explore the source and use of debt in creating the dichotomy formal--informal and income generator--non-income generator of debt.
+Following results of \cite{Brown2014}, we formulate H\ref{hyp:filr}.
+\begin{hyp}[H\ref{hyp:filr}] \label{hyp:filr}
+Conscientiousness, extraversion, agreeableness and openess to experience have an association with informal debt.
+\end{hyp}
+
+To try to verify our hypotheses, we use original data set from rural south India.
+
+\cite{Guerin2014a} il faut aussi que je regarde le rôle des compétences cognitives sur la négociation de la dette en cross section : qui sont ceux qui arrivent le mieux à négocier leur dette ? 
+Comment savoir la negociation de la dette ? C'est le prix de la dette
+Prix de la dette p16 de \cite{Guerin2014a} The cost of \textit{terinjavanga} loans
+
+
+	% ***********************************
+	\subsection{Data}
+	% ***********************************
+
+Our empirical analysis is based on the RUME-NEEMSIS survey \citep{NEEMSISreport, NEEMSIS2017}. %(see chapter 1 of this thesis).
+As we mentioned earlier, we benefit from panel data for 388 households.
+%Thanks to the NEEMSIS's methodology, we obtain 387 ego 1 and 368 ego 2 for 2016-17 using panel data.
+
+% For ego 1
+% Due to several reason\footnote{Explain why.}, eight ego 1 interviewed in 2016 and fourty ego 2 is household member that does not interviewed in 2010 (new household member ?).
+% To fully explore the role of personality in household indebtedness, we create pseudo ego 1.
+% To construct pseudo ego 1 profil, we use ego 1 data for the 378 household which is available in panel dimension and we complete with the ego 2 data\footnote{Les ménages ne bénéficiant pas de données de panel concernant égo 1 (8) disposent, en revanche des données concernant égo 2.}. 
+
+
+
+\cite{Guerin2014a} Si jamais je pars sur l'échelle individuelle: Households’ creditworthiness is above all a matter of trust (nambikai), the term used locally
+when people refer to their ability to access credit. The fabric of trust covers many aspects that
+far exceed good credit history and repayment behaviour, and relates to every aspect of the
+borrowers’ reputation. Creditworthiness is rarely assessed on the individual level, and often
+incorporates the reputation and morality of the whole family or even lineage (Harriss-White
+and Colatei 2004). Lenders often state that they take two levels into account. One relates to
+family and lineage (taradaram), namely the family’s history, its “ethical” background and
+“morality”. The second level is individual (daram), relating very broadly to the “quality” of a
+person. It is therefore perfectly rational that the poor attach an equal importance to their
+reputation.
+
+“Behavior” also matters. As previously discussed, low castes are often seen as risky
+borrowers. Irrespective of caste, bad habits such as laziness, alcoholism and gambling are
+considered as indicators of poor repayment potential. As discussed above, respect and deference are also highly valued. Potential borrowers should equally show respect to their
+lenders and at times to its community.
+Giving money is a matter of respect. I respect them, they should respect me. How could I give them
+money if they talk badly about me? (Rajagopalan, Reddiar [FC], landowner and lender).
+If you don’t want credit from a particular community, then you can talk about them to others; otherwise
+you should not criticize. It might spoil creditworthiness. We should talk respectfully about these people,
+this is the only way to get creditworthiness (Gundusammy, Goundar (MBC), agriculture coolie and
+marginal farmer).
+
+	% ***********************************
+	\subsection{Methodology} \label{subsection:methodology}
+	% ***********************************
+
+		% ***********************************
+		%\subsubsection{Econometric framework} \label{subsubsection:econometrics}
+		% ***********************************
+
+\paragraph*{Theoretical model}
+To verify hypotheses H\ref{hyp:stability} to H\ref{hyp:filr} and study the relationship between cognitive skills/personality traits and indebtedness among rural households in India, we use correlated random effect (CRE) --or Mundlak Fixed Effect, that allows for time-invariant exogenous variables and at the same time delivers the fixed effect esimates on the time-varying covariates \citep{Mundlak1978, Wooldridge2010, Wooldridge2013, Schunck2013}.
+Unlike \cite{Brown2014}, we do not use tobit model because the data are not censored, but defined on $\mathbb{R}^{+}$ \citep{Maddala1991}.
+We also do not use zero-inflated beta model as \cite{Cook2008} recommends because of the panel nature of our data.
+Thus, we estimates a random effect model\footnote{Following \cite{Schunck2013, Wooldridge2013}, we use Generalised Least Square (GLS).} with Mundlak fixed effect for each time-variant variable:
+\begin{equation}\label{eq:CRE}
+\begin{split}
+Y_{it}~=~\upalpha~+~X'_i\upbeta~+~Z'_{it}\upgamma~+~\overline{Z'}_{it}\uppi~+~a_i~+~u_{it}
+\end{split}
+\end{equation}
+
+\paragraph*{Endogenous variables}
+%Where $Y_{it}$ represent the vector of endogenous variables; $X'_i$ a vector of time-invariant observed variables; $Z'_{it}$ a vector of variables that changes across individual $i$ and time $t$; and $\overline{Z'}_{it}$ represent the Mundlak fixed effect (the mean over time of $Z'_{it}$).
+%The CRE relaxes the assumption\footnote{This assumption avoid the omitted variables biases.} of no correlation between the time-invariant error ($a_i$) and the time-variant variables ($z_{it}$).
+%As \cite{Schunck2013} note, CRE ``allows us to estimate the effect of level 2 variables [individual level] while providing effect estimates of level 1 variables that are unbiased by a possible correlation with the level 2 error''.
+
+The $Y_{i,t}$ vector of endogenous variables is compose by 3 groups of objective indebtedness measure: 
+\begin{itemize}
+\item The main measure of indebtedness, \ie~the debt service (DS) (i); the interest service (IS) (ii); the debt service ratio (DSR\footnote{For 2016-17 only: (i) To calculate this ratio (and ISR), we impute the average of loan interest for microcredit and loan from moneylender to loans from the same sources for which we do not have the value of interest because they do not represent one of the three main loans. (ii) For marriage loan (some loans not belonging to the financial practices module), we calcultate the average duration of marriage loan that belong to financial practice module and we impute to other marriage loan (upper bounds at 35 months). Then, we impute the average share of total repaid on loan amount (lower bound at 60\%) to others marriage loan. With this two imputations we are able to calculate the loan service for all marriage loans.}) (iii), which represent the debt service relative to the household income; the interest service ratio (ISR) (iv).
+%The debt service, which represent the total amount of debt owed in one year; 
+%The interest service (ii), which represent the total amount of debt interest owed in one year;
+%The debt service ratio (DSR) (iii), which represent the debt service compared to annual household income; 
+%The interest service ratio (ISR) (iv), which represent the interest service compared to annual household income.
+
+\item The robustness measure of indebtedness, \ie~the total amount of non-settled loans in the household (v); the debt to assets ratio (DAR) (vi); the debt to income ratio (DIR) (vii).
+%The debt to assets ratio (DAR) (ii), which represent the total amount of non-settled loans in the household compared to the monetary value of assets; 
+%The debt to income ratio (DIR) (iii), which represent the total amount of non-settled loans in the household compared to the annual income.
+
+\item The measure of type of debt, \ie~the informal debt to total debt ratio (ILR) (viii); the formal debt to total debt ratio (FLR) (ix); the income generator debt ratio (IGLR) (x); the non-income generator debt ratio (NIGLR) (xi).
+%The measure of type of debt, \ie~the informal debt to total debt ratio (IDR) (i), which represents the total amount of informal non-setlled loans compared to the total amount of non-settled loans in the household; The formal debt to total debt ratio (FDR) (ii), which represents the total amount of formal non-setlled loans compared to the total amount of non-settled loans in the household; The income generator debt ratio (IGDR) (iii), which represents the total amount of income generator debt compared to the total amount of non-settled loans in the household; The non-income generator debt ratio (NIGDR) (iv), which represents the total amount of non-income generator debt compared to the total amount of non-settled loans in the household.
+\end{itemize}
+
+To explore the over-indebtedness, we dichotomize DSR, ISR, DAR and DIR.
+For the DSR and DAR, a household is considered to be over-indebted when its annual debt represent more than 40\% of his annual income \citep{Chichaibelu2017, DAlessio2013, Bryan2010, Disney2008, Muthitacharoen2015, OXERA2004}.
+We use the threshold of 0.2 for ISR (half of DSR), and 1 for DIR.
+
+
+%In our context the interest service could refers to the bargaining power of the borrower over the lender.
+Despite the no conceptual consensus on what constitutes indebtedness and how it ought to be measured, DSR and ISR represents the most use ratio in the literature \citep{Chichaibelu2017, DAlessio2013}.%, OXERA2004}. 
+%DSR considers both annual interest payment and principal repayment while ISR only considers annual interest payment. 
+DAR and DIR is also ``usually adopted by both public and private institutions'' \citep{Betti2007} as \cite{Disney2008, Rio2008} .
+% in unpublished reports to government bodies, on-line central bank publications or business briefings'' as \cite{Disney2008, Rio2008} \citep{Betti2007}.
+
+%In order to explore the indebtedness situation of household, we consider all ratios (DSR, ISR, DAR, DIR) as continuous variables so as not to limit ourselves to an over-simplifying analysis by considering only the dichotomy over-indebted household\footnote{Starting from DSR, the threshold of 0.4 -- 0.5 in DSR is commonly use in the literature to differentiate over-indebted household from an "simple" indebted household:  when household debt service represent more than 40--50\% of his annual income.} or non-over-indebted household (we still explore this dichotomy in appendix).
+%The fourth last ratios (IDR, FDR, IGDR, NIGDR)
+
+%\subsubsection*{Exogenous variables}
+
+\paragraph{Variables of interest}
+Our variables of interest (cognitive skills and personality traits) belong to the vector $X'_i$.
+Cognitive skills include three score variables: literacy, numeracy, raven\footnote{Raven test is ``a nonverbal test of mental ability consisting of abstract designs, each of which is missing one part. The participant chooses the missing component from several alternatives to complete each design.'' - \url{https://dictionary.apa.org/ravens-progressive-matrices} Accessed January 27, 2021.}.
+Concerning personality traits, most psychologist accept the notion of a stable over time \cite{Mischel1995, Mischel2008}.
+Moreover, the literature considers that personality traits do not change after the age of 25 \citep{CobbClark2012}, which has also been shown in surveys \citep{CobbClark2011}.
+Thus, we assume the stability over time of personality traits in our analysis and remove the individual under 25\citep{Nyhus2005, Brown2014, Heineck2010}.
+The construction of personality traits is explain in sub-section \ref{subsection:factor}.
+
+To mitigate against the potential problem of life-cycle events\footnote{That might induce endogeneity with measurement error.}, we run univariate OLS regression (see equations i and ii below) with  cognitive skills $S_k$ (where $k=1, 2, 3$ for raven, literacy, numeracy) and personality traits $P_k$ (where $k=1,...,5$ for Big-Five personality traits) as endogenous variables and age $A$ as exogenous variable.
+We standardised the resulting residuals $\hat{\upvarepsilon_j}$ of equations $S_k=\upphi A+\upvarepsilon_j$ (eq. i) and $P_k=\upphi A+\upvarepsilon_j$ (eq. ii) and use it as cognitive and non-cognitive measure net of life cycle influences \citep{Nyhus2005, Brown2014}.
+
+\paragraph{Contextual determinants}
+We draw on the existing literature to specify the vector $Z'_{it}$ which represents the contextual determinants of indebtedness: house ownership, agricultural land ownership, monetary value of assets, caste, gender \citep{Guerin2012a, Guerin2013a, Guerin2014, Reboul2020}.
+The monetary value of assets includes the monetary value of: gold; land; house; livestock; agricultural equipment and consumption good such as car, computer, cookgas, phone, etc.
+%\footnote{sex ratio in categorical: majority of women in the household; majority of men in the household; same number}
+
+\paragraph{Control variables}
+Our control variables are based on \cite{Reboul2020, Brown2014, Chichaibelu2017} which take the existing classic controls. 
+We use two vector of variables.
+\begin{itemize}
+\item $C'_{1,it}$ for time-variant variables includes ego controls: age, age square, main occupation\footnote{Define as the most income-generating activity.} (self-employed agriculture; casual agriculture; casual non-agriculture; regular non-agriculture; self-employed non-agriculture; other) and the place in the household (head; wife; other). 
+And households controls: annual income, dependency ratio in categorical (majority of active member; majority of inactive member; same number); household size; number of children (individual under 16 years old); shock exposure (dummy variable which take 1 if the household experienced a shock\footnote{Marriage of at least one of the household members or/and household surveyed after the demonetisation.} between 2010 and 2016-17, 0 if not); number of income sources. 
+\item $C'_{2,i}$ for time-invariant variables: caste (dalits; middle; upper), ego gender (female=1), ego education level (primary; high-school; secondary or more).
+\end{itemize}
+
+\paragraph*{Model to estimate}
+
+Following CRE, we add to the specification the mean over-time ($\overline{Z'}_{ij}$ and $\overline{C'}_{1,it}$) of variables that are time-variant ($Z'_{ij}$ and $C_{1,it}$) and we estimates the following equation:
+\begin{equation}\label{eq:CREfinal}
+\begin{split}
+Y_{it}~=~\upalpha~+~X'_i\upbeta~+~Z'_{ij}\upgamma~+~C'_{1,it}\upzeta~+~C'_{2,i}\upeta~+~\overline{Z'}_{ij}\updelta~+~\overline{C'}_{1,it}\uptheta~+~a_i~+~u_{it}
+\end{split}
+\end{equation}
+
+\paragraph*{Caveat}
+An important caveat to acknowledge is the fact that this paper does not claim to seek causality. 
+Although we assume that personality traits are exogenous regressor, there is no consensus among psychologist as we note earlier.
+As many other paper \citep{Brown2014, Bucciol2017, Pinjisakikool2017, Pinjisakikool2017b, CobbClark2016, Bertoni2019}, our empirical analysis relate to correlation because of we cannot rule out the possibility of reverse causality between our endogenous variables and our supposed exogenous personality traits.
+At the time of writing, only \cite{Parise2019} deal with reverse causality issue in instrumenting conscientiousness and neuroticism with exposition to shock during childhood.
+
+\newpage
+% ***********************************
+\section{Factor analysis and descriptive statistics}
+% ***********************************
+
+	% ***********************************
+	\subsection{Factor analysis for personality traits} \label{subsection:factor}
+	% ***********************************
+
+The design of our questionnaire\footnote{Explain the skills module.} allow us to easily construct Big-Five personality traits.
+Indeed, on the basis of the 41 questions relative to Big-Five personality traits and Grit, we averaged answers that belong to a determined trait (see appendix \ref{section:efa_big5}) after correcting for acquiescence bias. 
+Yet, as warned by \cite{Laajaj2019}, the Big-Five taxonomy is limited in developing countries for several reasons: the enumerator-respondent interactions (i) in face-to-face survey can induce a bias; the low education levels (ii) can make questions more difficult to understand and can induce a systematic response patterns\footnote{Especially the acquiescence bias that represent the ``tendency for survey respondents to agree with statements regardless of their content'' \citep{Lavrakas2008}.} (iii).
+
+Dire que j'ai pour les deux années
+
+The very good knownledge of the field\footnote{Some members of the research team are present since more than twenty-year.} allow us to collect data of high quality and avoid a bias due to misunderstanding of questions.
+Moreover, we implement our own factor analysis of the 41 questions by principal component with promax rotation after correcting for acquiescence bias for each year.
+Pas de stabilité de la structure dans le temps donc on va faire des pooled
+The resulting personality traits are relatively similar (see table \ref{table:efa_corr} of appendix \ref{section:efa_big5}) to the Big-Five: Conscientiousness (i); Emotional stability (ii); Extraversion \& Openness (iii); Stability and Conscientiousness (iv); Agreeableness (v) (see appendix \ref{section:efa_big5}).
+Then, we implement checks of internal factor validity using the Cronbach alpha measure and the results are satisfactory (over 0.79 except for agreeableness for which it is equal to 0.67).
+
+%\cite{John1999} the Big 5 "represent personality at the broadest level of abstraction, and each dimension summarizes a large number of distinct, more specific personality characteristics".
+
+
+
+
+	% ***********************************
+	\subsection{Descriptive analysis}
+	% ***********************************
+
+		% ***********************************
+		\subsubsection{Study population}
+		% ***********************************
+		
+\subimport{INPUT}{table_HHcharact.tex}
+From table \ref{table:HHcharact} [and as we mentioned earlier], our balanced sample contains 388 households from around 15 villages.
+Almost half of housholds are dalits\footnote{The \jati{s} affiliation has been clubbed in three categories: dalits (or SC/ST composed of Paraiyars and Arunthathiyars), middle (Vanniyars, Kulalars and Nattars) and upper caste (Mudaliyars, Rediyars, Naidus, Chettiyars and Yathavars).}, 38\% are middle caste and the local upper caste represents 14\%  of our sample.
+On average, we find between 4 and 5 individuals per household [and between 1 and 2 childrens per household] in 2010 and 2016-17 and we do not note any significant difference between caste group [except for the upper caste who have on average less than one children per household].
+Whatever the caste, for almost half of households, men outnumber women. 
+We note, however, that this share tends to decrease between 2010 and 2016-17.
+
+For work and financial situation, we observe the fact that all caste faced a loss of assets.
+In 2010, 50\% of households have 681,000 INR of assets while they have 380,470 INR in 2016-17 and the average has decreased by more than 26 \%.
+This loss of assets is largely explained by the fall of agriculture.
+Indeed, as \dev{literature to explain the fall in assets.}%\cite{Guerin2012a} note: (trouver de la littérature sur le fait que les castes les plus élevés ont quitté l'agricultre pour aller travailler en ville, je crois qu'Isabelle en parle dans ses papiers).
+This is what we find here: the share of self-employed agriculture and casual agriculture tend to decrease for all caste and espacially for middle and upper caste; the share of landowner is almost divided by 2 for all caste.
+Regarding the income, they have improved over the period considered, increasing on average by at least 50 \%.
+Finally, more and more households have a worker composition ratio above 1 (more active members than non-active members).
+
+		% ***********************************
+		\subsubsection{Who is ego?}
+		% ***********************************
+		
+\input{INPUT/table_EGOcharact.tex}
+The balanced sample contains 382 ego 1 and 73\% are men who is, on average, 45 years old [40 years old for women] in 2010\footnote{As noted in subsection \ref{subsection:methodology}, the stability over time of personality traits is tenable.} (table \ref{table:EGOcharact}).
+About half of egos have no education (less than primary), but we observe a large difference between men and women: 61\% of men are educated (primary of more) while women are only 37\%.
+Dispersal between caste is the same than for household but we note the fact that for women, dalits are overrepresented compered to upper caste.
+The majority of men are the head of household.% and this share increased between 2010 and 2016-17 because of for some households, the head in 2016-17 is the son in 2010 (other cat.).
+%The same observation is true for women: the wife in 2010 become the mother of 2016-17.
+Despite the small share, it is important to note that more than 20\% of women are the head of household in our sample.
+Finally, womens are more enrolled in non stable activity as casual agriculture and NREGA programs (Other) than men.
+Indeed, most men get the majority of their income from self-employement agriculture, non-agricol regular work or self-employement.
+
+\begin{figure}[ht]
+\raggedright
+\includegraphics[width=\textwidth]{INPUT/k_persoEGO3}
+\caption{Distribution of cognitive skills and personality traits -- The resulting cognitive score and personality trait is based on the standardised residual from univariate OLS regression with age as exogenous variable. This is the cognitive score and personality trait purged from life-cycle effects. kernel~=~epanechnikov, bandwidth~=~0.3}
+\sourcefig{NEEMSIS (2016-17); author's calculations.}
+\label{figure:EGOscore}
+\end{figure}
+Concerning the cognitive skills, on figure \ref{figure:EGOscore} we observe several differences between men and women insofar as men have higher score than women for the three measures.
+%It is also the men who are more educated so we can easily say that is the effect of school (vérifier la littérature dessus car si ca se trouve ce n'est pas du tout le cas).
+\dev{Changer, dire que c'est avec l'analyse factorielle et changer tous les commentaires du coup.} For the Big-Five personality traits note several differences between men and women in terms of score.
+For extraversion where the distribution of men are more oblique to the right, which means that they have higher extraversion score.
+This is the inverse for women for conscientiousness: the distribution is oblique to the left compared to men, which means that they have lower conscientiousness score.
+For the emotional stability, the distribution is more leptokurtique for women than for men, which means that the men are more evenly distributed in terms of score than women.
+Finally, we do not note differences in terms of openness and agreeableness between men and women.
+
+		% ***********************************
+		\subsubsection{Indebtedness trend}
+		% ***********************************
+
+\begin{figure}[ht]
+\raggedright
+\includegraphics[width=\textwidth]{INPUT/box_main}
+\caption{Box plot over year for main indebtedness indicators}
+\sourcefig{RUME (2010) and NEEMSIS (2016-17); author's calculations.}
+\label{figure:debttrendmain}
+\end{figure}
+Figure \ref{figure:debttrendmain} shows the explosion of indebtedness between 2010 and 2016-17.
+In terms of absolute debt service (the total amount of debt owed in one year) the box plot is much more extended upwards in 2016-17 than in 2010.
+The value of the median has increased from about 18,000 INR to 38,000 INR and the average debt service as increase of 50\% (from about 30,000 INR to 54,000 INR).
+By controlling through income, the trend is the same: in 2010, the value of the third quartile has increase from 54\% to 76\%.
+Looking at interests, the conclusions still the same.
+
+
+\begin{figure}[ht]
+\raggedright
+\includegraphics[width=\textwidth]{INPUT/box_rob}
+\caption{Box plot over year for other indebtedness indicators}
+\sourcefig{RUME (2010) and NEEMSIS (2016-17); author's calculations.}
+\label{figure:debttrendrob}
+\end{figure}
+
+\cite{Guerin2014a} : A second interview made it
+possible to build trust and confidence, and to get more reliable estimates7. The average
+outstanding debt was 96 791 INR (median 79 500), while average household income was
+21 600 INR (median 15 870), and average monetary value of assets was 69 885 INR (median
+51 425). On average, household debt was 4.5 times higher than household income, and 1.4
+times the monetary value of assets.
+
+
+\newpage
+% ***********************************
+\section{Results}
+% ***********************************
+
+\clearpage
+\newpage
+	% ***********************************
+	\subsection{Global relation}
+	% ***********************************
+%https://www.jwe.cc/2012/03/stata-latex-tables-estout/
+\begin{table}[htpb]
+\centering
+\begin{threeparttable}
+\caption{Total sample and first part of main variables}
+\label{econ:all_global_p1}
+\estauto{INPUT/econ_all_global_p1}{8}{S S S S S S S S}
+%\starnote
+\fignote{$\sym{*}~~p<0.10, \sym{**}~~~p<0.05, \sym{***}~~~~~p<0.01$. $\ssymbol{2}$ for 1,000 INR. $\ssymbol{3}$ Owner.}
+\sourcetab{RUME (2010) and NEEMSIS (2016-17); author's calculations.}
+\end{threeparttable}
+\end{table}	
+
+\begin{table}[htpb]
+\centering
+\begin{threeparttable}
+\caption{Total sample and second part of main variables}
+\label{econ:all_global_p2}
+\estauto{INPUT/econ_all_global_p2}{8}{S S S S S S S S}
+%\starnote
+\fignote{$\sym{*}~~p<0.10, \sym{**}~~~p<0.05, \sym{***}~~~~~p<0.01$. $\ssymbol{2}$ for 1,000 INR. $\ssymbol{3}$ Owner.}
+\sourcetab{RUME (2010) and NEEMSIS (2016-17); author's calculations.}
+\end{threeparttable}
+\end{table}	
+
+
+
+\begin{table}[htpb]
+\centering
+\begin{threeparttable}
+\caption{Total sample and first part of type and use variables}
+\label{econ:all_type_p1}
+\estauto{INPUT/econ_all_type_p1}{8}{S S S S S S S S}
+%\starnote
+\fignote{$\sym{*}~~p<0.10, \sym{**}~~~p<0.05, \sym{***}~~~~~p<0.01$. $\ssymbol{2}$ for 1,000 INR. $\ssymbol{3}$ Owner.}
+\sourcetab{RUME (2010) and NEEMSIS (2016-17); author's calculations.}
+\end{threeparttable}
+\end{table}	
+
+\begin{table}[htpb]
+\centering
+\begin{threeparttable}
+\caption{Total sample and second part of type and use variables}
+\label{econ:all_type_p2}
+\estauto{INPUT/econ_all_type_p2}{8}{S S S S S S S S}
+%\starnote
+\fignote{$\sym{*}~~p<0.10, \sym{**}~~~p<0.05, \sym{***}~~~~~p<0.01$. $\ssymbol{2}$ for 1,000 INR. $\ssymbol{3}$ Owner.}
+\sourcetab{RUME (2010) and NEEMSIS (2016-17); author's calculations.}
+\end{threeparttable}
+\end{table}	
+
+	
+	
+	
+	% ***********************************
+	\subsection{Class and caste dichotomy}
+	% ***********************************
+	% ***********************************
+	\subsection{Gender question}
+	% ***********************************
+	
+	
+	% ***********************************
+	\subsection{``From'' and ``to'' of debt}
+	% ***********************************
+
+
+
+
+
+
+
+
+
+
+
+
+% %Beaucoup de résultats se confirment dans les structure : les upper sont les propriétaires terriens et ont des concrete house.
+% %Je vais montrer ca avec des statistiques descriptives.
+% %Je dois aussi regarder la relation entre structure et personnalité pour adapter mon interpretation :
+% %\begin{itemize}[label=--]
+% %\item Si il n'y a pas de relation, les individus se différencient entre eux, quelque soit la structure.
+% %\item Si il y a une relation, certaines structure ont plus ce type là de personne
+% %\end{itemize}
+
+% % Est-ce que dans ces gros groupes, il n'y a pas des individus qui se démarquent avec leurs caractéristiques individuelles ? Je peux faire un premier jet descriptif avec des kdensity de la distribution des traits de personnalité selon les différentes modalités d'une variable institutionnelle. Sur un graphique, mettre la distribution du score d'agréabilité des dalits, des middle et des uppers. Faire ça pour les cinq traits et pour presque toutes les variables institutionnelles. Dans le même genre, je peux faire des ttest de score entre les sous groupes.
+
+
+
+% \clearpage
+% \newpage
+% \section{Conclusion (3 pages)}
+
+% \section{Pistes en réflexions}
+% %\begin{itemize}[label=--]
+% %\item Quel est le score de l'\textit{homo oeconomicus} en termes de \textit{Big Five} ? \citep{Lopez2020}
+% %\item À partir de là, on peut chercher à voir si les autoentrepreneurs sont des \textit{homo oeconomicus} ou s'ils sont \textit{schumpeterien} ou \textit{coasien}.
+% %\item Analyse \textit{schumpeterienne} : \url{https://doi.org/10.4000/interventionseconomiques.1481}
+% %\item Regarder les articles de \cite{Gong2020} et de \cite{Srinivasan2005}
+% %\item Voir Occupational Attainment and Earnings in Southeast Asia: The Role of Non-cognitive Skills de Labour Economics, 2020
+% %\item salaire (y) = perso (x) -> OK; salaire (y) = perso (x) + educ (x) -> pas OK; perso passe par educ
+% %\item soulèvent; pointent; surlignent; mettent en évidence
+% %\item \cite{Yilmazer2005} + \cite{Poterba2001} + \cite{King1982}
+% %\end{itemize}
+% %
+% %\clearpage
+\newpage
+%-------------------------------------------------------------------------------%
+%\begin{nolinenumbers}
+\addcontentsline{toc}{section}{Références}
+\bibliography{Ref_Arnaud}
+%\nocite{*}
+
+
+
+\newpage
+%-------------------------------------------------------------------------------%
+\appendix
+
+\section{Factor analysis for personality traits}
+\label{section:efa_big5}
+
+\input{INPUT/app_efa_eigen}
+\input{INPUT/app_efa_promax}
+\input{INPUT/app_efa_f1}
+\input{INPUT/app_efa_f2}
+\input{INPUT/app_efa_f3}
+\input{INPUT/app_efa_f4}
+\input{INPUT/app_efa_f5}
+\input{INPUT/app_efa_corr}
+
+\clearpage
+\newpage
+\section{Factor analysis for social class}
+\label{section:mca_class}
+
+\input{INPUT/app_mca_eigen}
+\input{INPUT/app_mca_d1}
+
+
+
+
+
+
+\clearpage
+\newpage
+%-------------------------------------------------------------------------------%
+\setcounter{tocdepth}5
+\tableofcontents
+
+%\end{nolinenumbers}
+\end{document}
