@@ -35,3 +35,15 @@ Le mariage est une question de pouvoir, d'aspiration et de mobilité.
   - 2. Other costs
   - 3. Burden of marriage debt
   - 4. Gift and profits for marriage
+
+
+## Expenses
+
+1. Combien les ménages investissent dans les mariages ?
+2. Le coût en termes de capital/épargne c'est _marriageexpenses_
+3. Je peux comparer avec les loans pour voir la part de l'un et de l'autre dans le montant total total investit
+4. Je peux regarder si les ménages arrivent à tirer des bénéfices
+5. Pour 2010-2016, il y a 240 mariages: j'ai 240 expenses
+6. Je peux trouver la date du mariage avec les données de 2020-21
+7. Comparer la situation économique du ménage avant le mariage (2010), juste après (2016-17) et "longtemps" après (2020-21).
+8. Les actifs, les revenus, 
