@@ -156,49 +156,36 @@ use"$dropbox\NEEMSIS2\\$wave3", clear
 
 *
 fre respect workmate useknowledgeatwork
-
 *
 fre satisfyingpurpose schedule takeholiday
-
 *
 fre agreementatwork1 agreementatwork2 agreementatwork3 agreementatwork4
-
 *
 fre changework happywork satisfactionsalary
-
 *
 global execution executionwork1 executionwork2 executionwork3 executionwork4 executionwork5 executionwork6 executionwork7 executionwork8 executionwork9
 fre $execution
 foreach x in $execution {
 reg loanamount_indiv `x'
 }
-
-
-
 *
 fre accidentalinjury losswork lossworknumber mostseriousincident mostseriousinjury seriousinjuryother physicalharm
-
 *
 fre problemwork1 problemwork2 problemwork4 problemwork5 problemwork6 problemwork7 problemwork8 problemwork9 problemwork10
-
 *
 fre workexposure1 workexposure2 workexposure3 workexposure4 workexposure5
-
 *
 fre professionalequipment break retirementwork verbalaggression physicalagression sexualharassment 
-
 *
 fre sexualaggression
-
 *
 fre discrimination1 discrimination2 discrimination3 discrimination4 discrimination5 discrimination6 discrimination7 discrimination8 discrimination9
-
 *
 fre resdiscrimination1 resdiscrimination2 resdiscrimination3
-
 *
 fre rurallocation lackskill
 
 
-*Debt
+********** SE
+tab mainoccupation_indiv egoid
 

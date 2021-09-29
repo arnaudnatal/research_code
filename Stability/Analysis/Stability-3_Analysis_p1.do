@@ -428,8 +428,6 @@ graph save "$git\Analysis\Stability\Analysis\Graph\diff_age_raw.gph", replace
 graph export "$git\RUME-NEEMSIS\Big-5\diff_age_raw.svg", as(svg) replace
 graph export "$git\Analysis\Stability\Analysis\Graph\diff_age_raw.pdf", as(pdf) replace
 
-
-
 ****************************************
 * END
 
@@ -453,7 +451,6 @@ graph export "$git\Analysis\Stability\Analysis\Graph\diff_age_raw.pdf", as(pdf) 
 ****************************************
 * PERSONALITY TRAITS: HISTOGRAM
 ****************************************
-
 
 ********** Raw traits
 *Density
