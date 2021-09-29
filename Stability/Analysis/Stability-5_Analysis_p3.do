@@ -748,7 +748,7 @@ twoway ///
 , ylabel(1(1)35, valuelabel labsize(tiny) angle(0)) ytitle("")  ///
 xlabel(, labsize(tiny) nogrid) xmtick() xtitle("")  ///
 title("Factor `j'", size(small)) ///
-legend(order(1 "Correlation without factor") pos(6) col(3) size(vsmall) off) ///
+legend(order(1 "Correlation") pos(6) col(3) size(vsmall) off) ///
 name(g_without_`x'_`i'_`j', replace)  // aspectratio(10)
 sort n
 }
@@ -964,3 +964,70 @@ set graph on
 
 ****************************************
 * END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Evolution
+****************************************
+********** 2016-17
+global big5 ///
+imrr_curious_1 imrr_interestedbyart_1 imrr_repetitivetasks_1 imrr_inventive_1 imrr_liketothink_1 imrr_newideas_1 imrr_activeimagination_1 imrr_organized_1 imrr_makeplans_1 imrr_workhard_1 imrr_appointmentontime_1 imrr_putoffduties_1 imrr_easilydistracted_1 imrr_completeduties_1 imrr_enjoypeople_1 imrr_sharefeelings_1 imrr_shywithpeople_1 imrr_enthusiastic_1 imrr_talktomanypeople_1 imrr_talkative_1 imrr_expressingthoughts_1 imrr_workwithother_1 imrr_understandotherfeeling_1 imrr_trustingofother_1 imrr_rudetoother_1 imrr_toleratefaults_1 imrr_forgiveother_1 imrr_helpfulwithothers_1 imrr_managestress_1 imrr_nervous_1 imrr_changemood_1 imrr_feeldepressed_1 imrr_easilyupset_1 imrr_worryalot_1 imrr_staycalm_1
+
+qui factor $big5, pcf fa(5) 
+qui rotate, promax
+qui predict f1_1 f2_1 f3_1 f4_1 f5_1
+
+
+
+********** 2020-21
+global big5 ///
+imrr_curious_2 imrr_interestedbyart_2 imrr_repetitivetasks_2 imrr_inventive_2 imrr_liketothink_2 imrr_newideas_2 imrr_activeimagination_2 imrr_organized_2 imrr_makeplans_2 imrr_workhard_2 imrr_appointmentontime_2 imrr_putoffduties_2 imrr_easilydistracted_2 imrr_completeduties_2 imrr_enjoypeople_2 imrr_sharefeelings_2 imrr_shywithpeople_2 imrr_enthusiastic_2 imrr_talktomanypeople_2 imrr_talkative_2 imrr_expressingthoughts_2 imrr_workwithother_2 imrr_understandotherfeeling_2 imrr_trustingofother_2 imrr_rudetoother_2 imrr_toleratefaults_2 imrr_forgiveother_2 imrr_helpfulwithothers_2 imrr_managestress_2 imrr_nervous_2 imrr_changemood_2 imrr_feeldepressed_2 imrr_easilyupset_2 imrr_worryalot_2 imrr_staycalm_2 
+
+factor $big5, pcf fa(5) 
+rotate, promax
+qui predict f1_2 f2_2 f3_2 f4_2 f5_2
+
+
+
+**Label
+label var f1_1 "OP-EX"
+label var f2_1 "CO"
+label var f3_1 "Porupillatavan"
+label var f4_1 "ES"
+label var f5_1 "AG"
+
+label var f1_2 "OP-AG"
+label var f2_2 "CO"
+label var f3_2 "ES"
+label var f4_2 "Mix"
+label var f5_2 "Mix"
+
+gen simplediff_CO=f2_2-f2_1
+gen simplediff_ES=f3_2-f4_1
+
+histogram simplediff_CO
+histogram simplediff_ES

@@ -154,5 +154,17 @@ graph save "$git\Analysis\Stability\Analysis\Graph\omega_`x'.gph", replace
 graph export "$git\Analysis\Stability\Analysis\Graph\omega_`x'.pdf", as(pdf) replace
 }
 
+
+*Only for corrected items
+set graph off
+preserve
+keep if type==2
+foreach x in total male female dalit nondalit {
+graph bar `x', over(year) over(traits)  blabel(bar, format(%4.2f) size(tiny)) legend(pos(6) col(4) order(1 "2016-17" 2 "2020-21")) ytitle("McDonald's Ω") note("`x'", size(tiny)) name(g_`x', replace)
+graph save "$git\Analysis\Stability\Analysis\Graph\omega_corr_`x'.gph", replace
+graph export "$git\Analysis\Stability\Analysis\Graph\omega_corr_`x'.pdf", as(pdf) replace
+}
+restore
+
 ****************************************
 * END
