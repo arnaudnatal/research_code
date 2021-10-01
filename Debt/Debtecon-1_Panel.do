@@ -331,6 +331,12 @@ fre livinghome
 drop if livinghome==3 | livinghome==4
 
 
+*Villagearea+religion+HH debt
+tab villagearea, m
+tab religion, m
+tab loanamount_HH
+
+
 *Land property
 tab ownland, m
 replace ownland=0 if ownland==.
