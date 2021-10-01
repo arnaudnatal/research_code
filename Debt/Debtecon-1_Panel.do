@@ -12,6 +12,13 @@ Panel for indebtedness and over-indebtedness
 */
 
 
+
+
+
+
+
+
+
 ****************************************
 * INITIALIZATION
 ****************************************
@@ -37,6 +44,35 @@ global wave2 "NEEMSIS1-HH_v7"
 global wave3 "NEEMSIS2-HH_v19"
 ****************************************
 * END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -89,6 +125,34 @@ sort HHID_panel
 save"panel", replace
 ****************************************
 * END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -239,10 +303,33 @@ save"$wave1-_temp", replace
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ****************************************
 * PREPA 2016
 ****************************************
 use "$wave2", clear
+
+*Individual who not live in the HH = to drop
+fre livinghome
+drop if livinghome==3 | livinghome==4
+
 
 *Land property
 tab ownland, m
@@ -340,7 +427,11 @@ bysort HHID_panel: egen wifehusb_edulevel=sum(_edulevel)
 bysort HHID_panel: egen wifehusb_occupation=sum(_occupation)
 
 drop _sex _maritalstatus _age _edulevel _occupation
+label values head_edulevel edulevel
+label values head_sex sex
 
+label values wifehusb_edulevel edulevel
+label values wifehusb_sex sex
 
 *Assets
 gen assets1000=assets/1000
@@ -358,16 +449,6 @@ bysort HHID_panel: egen `x'_HH=sum(`x')
 drop `x'
 rename `x'_HH `x'
 }
-
-
-*Label
-label list
-
-label values head_edulevel edulevel
-label values head_sex sex
-
-label values wifehusb_edulevel edulevel
-label values wifehusb_sex sex
 
 
 *Variables to keep
@@ -389,30 +470,91 @@ save"$wave2-_temp", replace
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ****************************************
 * PREPA 2020
 ****************************************
 use "$wave3", clear
 
+
+*Individual who not live in the HH = to drop
+preserve
+keep if INDID_left!=.
+dropmiss, force
+tab reasonlefthome
+restore
+drop if INDID_left!=.
+
+fre livinghome
+drop if livinghome==3 | livinghome==4
+
+drop if HHID_panel==""
+
+
 *Decision
-tab decisionwork
-tab decisionearnwork
+label define deconsumption 77"Other" 1"Yourself - Household head" 2"Spouse (Husband/Wife)" 3"Your spouse and yourseld jointly" 4"Someone else" 5"Yourself and someone else jointly", replace
+destring decisionconsumption decisionhealth, replace
+label values decisionconsumption deconsumption
+label values decisionhealth deconsumption
 
-tab opinionworkingwoman
-tab opinionactivewoman
-
-tab decisionworkother  // avec les gens du HH
-tab decisionearnworkother  // avec les gens du HH
-
-
-tab decisiondropping
-tab decisiondroppingother  // avec les gens du HH
-
+preserve
+duplicates drop HHID_panel, force
 tab decisionconsumption 
 tab decisionhealth  // avec les gens du HH
+restore
+/*
+
+Who usually makes decisions about |
+making major household purchases? |      Freq.     Percent        Cum.
+----------------------------------+-----------------------------------
+        Yourself - Household head |        222       44.85       44.85
+            Spouse (Husband/Wife) |        250       50.51       95.35
+ Your spouse and yourseld jointly |         14        2.83       98.18
+                     Someone else |          2        0.40       98.59
+Yourself and someone else jointly |          5        1.01       99.60
+                            Other |          2        0.40      100.00
+----------------------------------+-----------------------------------
+                            Total |        495      100.00
+
+
+ Who usually makes decision about |
+    health care in the household? |      Freq.     Percent        Cum.
+----------------------------------+-----------------------------------
+        Yourself - Household head |        215       43.43       43.43
+            Spouse (Husband/Wife) |        256       51.72       95.15
+ Your spouse and yourseld jointly |         17        3.43       98.59
+                     Someone else |          1        0.20       98.79
+Yourself and someone else jointly |          6        1.21      100.00
+----------------------------------+-----------------------------------
+                            Total |        495      100.00
+
+						
+Given that, I choose to put in the regression spouse characteristics.						
+*/						
+
 
 
 *Land property
+destring ownland, replace
 tab ownland, m
 replace ownland=0 if ownland==.
 
@@ -508,6 +650,11 @@ bysort HHID_panel: egen wifehusb_edulevel=sum(_edulevel)
 bysort HHID_panel: egen wifehusb_occupation=sum(_occupation)
 
 drop _sex _maritalstatus _age _edulevel _occupation
+label values head_edulevel edulevel
+label values head_sex sex
+
+label values wifehusb_edulevel edulevel
+label values wifehusb_sex sex
 
 
 *Assets
@@ -515,7 +662,7 @@ gen assets1000=assets/1000
 
 
 *Crisis
-tab1 dummydemonetisation dummymarriage
+tab1 dummymarriage
 bysort HHID_panel: egen marriageexpenses_HH=sum(marriageexpenses)
 replace marriageexpenses_HH=. if dummymarriage==0
 
@@ -528,25 +675,17 @@ rename `x'_HH `x'
 }
 
 
-*Label
-label list
-
-label values head_edulevel edulevel
-label values head_sex sex
-
-label values wifehusb_edulevel edulevel
-label values wifehusb_sex sex
+*Destring
+destring religion housetype housetitle, replace
 
 
 *Variables to keep
 global dep loanamount_HH loans_HH imp1_ds_tot_HH imp1_is_tot_HH
-global indep villageid villagearea religion jatis caste assets1000 annualincome_HH nboccupation_HH foodexpenses educationexpenses healthexpenses ceremoniesexpenses deathexpenses HHsize housetype housetitle houseroom nbchildren_HH nontoworkers_HH femtomale_HH head_sex head_maritalstatus head_age head_edulevel head_occupation wifehusb_sex wifehusb_maritalstatus wifehusb_age wifehusb_edulevel wifehusb_occupation sizeownland amountownland ownland goldquantity goldquantityamount dummydemonetisation dummymarriage marriageexpenses_HH
+global indep villageid villagearea religion jatis caste assets1000 annualincome_HH nboccupation_HH foodexpenses educationexpenses healthexpenses ceremoniesexpenses deathexpenses HHsize housetype housetitle houseroom nbchildren_HH nontoworkers_HH femtomale_HH head_sex head_maritalstatus head_age head_edulevel head_occupation wifehusb_sex wifehusb_maritalstatus wifehusb_age wifehusb_edulevel wifehusb_occupation sizeownland amountownland ownland goldquantity goldquantityamount dummymarriage marriageexpenses_HH
  
 keep HHID_panel year $dep $indep
 
 duplicates drop
-
-
 
 
 save"$wave3-_temp", replace
@@ -556,23 +695,46 @@ save"$wave3-_temp", replace
 
 
 
-****************************************
-* MERGE 2016
-****************************************
-use"$wave2~ego", clear
 
-merge 1:1 HHID_panel INDID_panel using "$wave3~ego"
 
-gen match=1 if _merge==3
-replace match=2 if _merge==2
-replace match=3 if _merge==1
-label define match 1"Matched" 2"2020-21 only" 3"2016-17 only"
-label values match match
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Base panel
+****************************************
+use"$wave1-_temp", clear
+
+
+*Append
+append using "$wave2-_temp"
+append using "$wave3-_temp"
+
+
+*Panel
+merge m:1 HHID_panel using "panel"
+keep if _merge==3
 drop _merge
 
-order HHINDID HHID_panel INDID_panel match HHID2016 HHID2010 INDID2016 name sex caste jatis age_1 age_2 address religion  villageid villageareaid comefrom otherorigin villageid_new villageid_new_comments dummydemonetisation demotrustneighborhood demotrustemployees_ego demotrustbank_ego demonetworkpeoplehelping_ego demonetworkhelpkinmember_ego demogeneralperception demogoodexpectations demobadexpectations submissiondate_1 submissiondate_2
-sort HHINDID
 
-save"panel_stab_v1", replace
+*Only keep full panel
+tab panel
+dis 1146/3
+keep if panel==1
+drop year2010 year2016 year2020 panel
+
+
+save"panel_v2", replace
 ****************************************
 * END
