@@ -32,9 +32,8 @@ set scheme plotplain
 
 
 ********** Name of the NEEMSIS2 questionnaire version to clean
-global wave1 "RUME-HH_v8"
-global wave2 "NEEMSIS1-HH_v7"
-global wave3 "NEEMSIS2-HH_v17"
+global wave2 "NEEMSIS1-HH_v9"
+global wave3 "NEEMSIS2-HH_v5"
 ****************************************
 * END
 
@@ -44,31 +43,27 @@ global wave3 "NEEMSIS2-HH_v17"
 ****************************************
 * PANEL
 ***************************************
-use"C:\Users\Arnaud\Dropbox\RUME-NEEMSIS\RUME\RUME-HH_v8", clear
-save"$wave1", replace
-duplicates drop HHID_panel, force
-keep HHID_panel year
-rename year year2010
-save"$wave1~hh", replace
+use"$directory\\$wave2", clear
+fre egoid
+keep if egoid>0
+*keep HHID_panel INDID_panel egoid name age sex edulevel jatis caste villageid dummydemonetisation relationshiptohead maritalstatus
+keep HHID_panel INDID_panel
+gen year2016=1
+save"$wave2-_tempego", replace
 
-use"C:\Users\Arnaud\Dropbox\RUME-NEEMSIS\NEEMSIS1\NEEMSIS1-HH_v7", clear
-save"$wave2", replace
-duplicates drop HHID_panel, force
-keep HHID_panel year
-rename year year2016
-save"$wave2~hh", replace
+use"$directory\\$wave3", clear
+fre ego
+keep if ego>0
+*keep HHID_panel INDID_panel egoid name age sex edulevel jatis caste villageid relationshiptohead maritalstatus
+keep HHID_panel INDID_panel
+gen year2020=1
+save"$wave3-_tempego", replace
 
-use"C:\Users\Arnaud\Dropbox\RUME-NEEMSIS\NEEMSIS2\NEEMSIS2-HH_v17", clear
-save"$wave3", replace
-duplicates drop HHID_panel, force
-duplicates drop HHID_panel, force
-keep HHID_panel year
-rename year year2020
-save"$wave3~hh", replace
+
 
 *Merge all
-use"$wave1~hh", clear
-merge 1:1 HHID_panel using "$wave2~hh"
+use"$directory\\$wave2-_tempego", clear
+merge 1:1 HHID_panel INDID_panel using "$directory\\$wave3-_tempego"
 rename _merge merge_1016
 merge 1:1 HHID_panel using "$wave3~hh"
 rename _merge merge_101620
