@@ -481,11 +481,17 @@ save "omega", replace
 ********** Graph
 use"omega", clear
 
-/*
+preserve
 fre sample
 keep if sample==1
 graph bar omega, over(correction) over(year) over(traits) blabel(bar, format(%4.2f) size(tiny)) 
-legend(pos(6) col(4) order(1 "Non-cor. 2016-17" 2 "Corr. 2016-17" 3 "Non-cor. 2020-21" 4 "Corr. 2020-21")) name(g1, replace) note("McDonald's Ω", size(tiny))
+restore
+
+preserve
+fre sample
+keep if sample==2
+graph bar omega, over(correction) over(year) over(traits) blabel(bar, format(%4.2f) size(tiny)) 
+restore
 
 ****************************************
 * END
