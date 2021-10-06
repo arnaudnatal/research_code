@@ -247,11 +247,19 @@ managestress  nervous  changemood feeldepressed easilyupset worryalot  staycalm 
 tryhard  stickwithgoals   goaftergoal finishwhatbegin finishtasks  keepworking
 
 
+
+
+
 ********** Recode 1: replace 99 with missing
 foreach x in $big5grit {
 clonevar `x'_recode=`x'
 replace `x'_recode=. if `x'_recode==99 | `x'_recode==6
 }
+
+
+
+
+
 
 
 ********** Recode 2: all so that more is better! 
@@ -270,11 +278,14 @@ label values `x'_rec_rev big5n
 
 
 
+
 ********** Passe-passe pour travailler
 foreach x in $big5grit {
 rename `x' `x'_backup 
 rename `x'_rec_rev `x'
 }
+
+
 
 
 
@@ -335,6 +346,10 @@ Si à l'une des questions, l'individu répond 3, le biais augmente, mais n'est p
 Le biais devient important lorsque l'individu répond deux choses allant dans le même sens : 1 et 2 (1 et 1, 2 et 2) ou 4 et 5 (4 et 4, 5 et 5).
 
 Pour mieux voir, on retire 3 pour avoir comme base de comparaison 0 et on passe en val abs.
+
+Symétrie à 3
+
+Je calcul aussi le biais par trait de personnalité
 */
 
 local var ///
@@ -357,8 +372,24 @@ xsize(3) xtitle("") xlabel(,angle())  ///
 ylabel(0(.2)1.6) ymtick(0(.1)1.7) ytitle() ///
 msymbol(oh oh oh) mcolor(plr1 plg1 ply1) 
 */
+egen ars_AG_temp=rowmean(rudetoother helpfulwithothers)
+egen ars_CO_temp=rowmean(putoffduties completeduties easilydistracted makeplans)
+egen ars_EX_temp=rowmean(shywithpeople talktomanypeople)
+egen ars_OP_temp=rowmean(repetitivetasks curious)
+egen ars_ES_temp=rowmean(nervous staycalm worryalot managestress)
 
+foreach x in AG CO EX OP ES {
+gen ars_`x'=ars_`x'_temp-3
+drop ars_`x'_temp
+}
 
+egen ars4=rowmean(ars_AG ars_CO ars_EX ars_OP ars_ES)
+egen ars5=rowmedian(ars_AG ars_CO ars_EX ars_OP ars_ES)
+
+*Stat
+corr ars_AG ars_CO ars_EX ars_OP ars_ES if year==2016
+corr ars_AG ars_CO ars_EX ars_OP ars_ES if year==2020
+tabstat ars3, stat(n min p1 p5 p10 q p90 p95 p99 max) by(year) long
 
 
 
@@ -388,27 +419,7 @@ pwcorr organized  makeplans workhard appointmentontime putoffduties easilydistra
 pwcorr enjoypeople sharefeelings shywithpeople enthusiastic talktomanypeople  talkative expressingthoughts, star(.05)
 pwcorr workwithother  understandotherfeeling trustingofother rudetoother toleratefaults  forgiveother  helpfulwithothers, star(.05)
 pwcorr managestress  nervous  changemood feeldepressed easilyupset worryalot  staycalm, star(.05)
-
-
-
-
-
-
-
-
-
-
-********** Check for which traits, the bias is the higher
-egen ars_AG_temp=rowmean(rudetoother helpfulwithothers)
-egen ars_CO_temp=rowmean(putoffduties completeduties easilydistracted makeplans)
-egen ars_EX_temp=rowmean(shywithpeople talktomanypeople)
-egen ars_OP_temp=rowmean(repetitivetasks curious)
-egen ars_ES_temp=rowmean(nervous staycalm worryalot managestress)
-
-foreach x in AG CO EX OP ES {
-gen ars_`x'=ars_`x'_temp-3
-drop ars_`x'_temp
-}
+restore
 
 
 
@@ -437,6 +448,8 @@ foreach x of varlist $big5grit {
 gen cr_`x'=`x'-ars2 if ars!=.
 gen cr1_`x'=`x' if ars!=.
 gen cr2_`x'=.
+gen cr4_`x'=`x'-ars4 if ars!=.
+gen cr5_`x'=`x'-ars5 if ars!=.
 }
 
 foreach x of varlist $big5grit {
@@ -462,6 +475,18 @@ foreach x of varlist $big5grit {
 replace cr2_`x'=0 if cr2_`x'<0
 }
 
+
+
+
+
+
+********** Bon, il faut que je procède avec les cr classiques je pense
+/*
+Sauf que, lorsque je corrige, les omega sautent
+Il faut donc que je regarde qui sont ceux qui me font tout sauter
+Ce sont ceux qui ont les plus grands écarts entre cr et non corrigés
+Donc ceux qui ont le biais le plus élevés ?
+*/
 
 
 
