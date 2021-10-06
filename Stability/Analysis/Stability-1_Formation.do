@@ -40,6 +40,9 @@ global wave3 "NEEMSIS2-HH_v9"
 
 
 
+
+
+
 ****************************************
 * PANEL
 ***************************************
@@ -205,9 +208,10 @@ tryhard  stickwithgoals   goaftergoal finishwhatbegin finishtasks  keepworking, 
 sort HHID_panel INDID_panel year
 
 *Clean year
-recode year (2016=1) (2020=2)
-label define year 1"2016" 2"2020"
-label values year year
+clonevar time=year
+recode time (2016=1) (2020=2)
+label define time 1"2016" 2"2020"
+label values time time
 
 save"panel_stab_v1", replace
 ****************************************
@@ -263,11 +267,54 @@ label values `x'_rec_rev big5n
 }
 
 
+
+
+
 ********** Passe-passe pour travailler
 foreach x in $big5grit {
 rename `x' `x'_backup 
 rename `x'_rec_rev `x'
 }
+
+
+
+
+
+********** Check missings
+foreach x in $big5grit {
+forvalues i=16(4)20 {
+mdesc `x' if year==20`i'
+}
+}
+
+
+
+
+
+
+
+********** Imputation for missings
+fre sex
+fre caste
+foreach x in $big5grit{
+clonevar im`x'=`x'
+}
+
+forvalues i=1(1)2{
+forvalues j=1(1)3{
+forvalues k=16(4)20 {
+foreach x in $big5grit{
+sum im`x' if sex==`i' & caste==`j' & year==20`k'
+replace im`x'=r(mean) if `x'==. & sex==`i' & caste==`j'  & year==20`k'
+}
+}
+}
+}
+
+
+
+
+
 
 
 ********** Acquiescence bias measure and correction
@@ -301,19 +348,22 @@ worryalot managestress
 egen ars=rowmean(`var') 
 gen ars2=ars-3  
 gen ars3=abs(ars2)
-tabstat ars3, stat(n mean sd p50 min max) by(year)
 *Graph 
+/*
 set graph off
-stripplot ars3, over(year) separate(caste) ///
+stripplot ars3, over(time) separate(caste) ///
 cumul cumprob box centre refline vertical /// 
 xsize(3) xtitle("") xlabel(,angle())  ///
 ylabel(0(.2)1.6) ymtick(0(.1)1.7) ytitle() ///
 msymbol(oh oh oh) mcolor(plr1 plg1 ply1) 
+*/
+
 
 
 
 
 ********** Recode 3: Reverse coded les items reverses pour que tu sois dans le même sens dans un seul et même trait: que les var tendent vers le traits pour lequel elles ont été posées
+
 foreach x in $big5grit {
 clonevar `x'_rec_rev=`x'
 }
@@ -328,20 +378,136 @@ label values `x' big5n2
 
 
 
-********** Recode 4: corr from acquiescence bias
-foreach x of varlist $big5grit {
-gen cr_`x'=`x'-ars2 if ars!=. 
+
+
+********** Correlation between questions of each trait
+preserve
+keep if year==2020
+pwcorr curious interestedbyart repetitivetasks inventive liketothink newideas activeimagination, star(.05)
+pwcorr organized  makeplans workhard appointmentontime putoffduties easilydistracted completeduties, star(.05)
+pwcorr enjoypeople sharefeelings shywithpeople enthusiastic talktomanypeople  talkative expressingthoughts, star(.05)
+pwcorr workwithother  understandotherfeeling trustingofother rudetoother toleratefaults  forgiveother  helpfulwithothers, star(.05)
+pwcorr managestress  nervous  changemood feeldepressed easilyupset worryalot  staycalm, star(.05)
+
+
+
+
+
+
+
+
+
+
+********** Check for which traits, the bias is the higher
+egen ars_AG_temp=rowmean(rudetoother helpfulwithothers)
+egen ars_CO_temp=rowmean(putoffduties completeduties easilydistracted makeplans)
+egen ars_EX_temp=rowmean(shywithpeople talktomanypeople)
+egen ars_OP_temp=rowmean(repetitivetasks curious)
+egen ars_ES_temp=rowmean(nervous staycalm worryalot managestress)
+
+foreach x in AG CO EX OP ES {
+gen ars_`x'=ars_`x'_temp-3
+drop ars_`x'_temp
 }
 
 
-********** Big5 taxonomy
-egen cr_OP = rowmean(cr_curious cr_interested~t   cr_repetitive~s cr_inventive cr_liketothink cr_newideas cr_activeimag~n)
-egen cr_CO = rowmean(cr_organized  cr_makeplans cr_workhard cr_appointmen~e cr_putoffduties cr_easilydist~d cr_completedu~s) 
-egen cr_EX = rowmean(cr_enjoypeople cr_sharefeeli~s cr_shywithpeo~e  cr_enthusiastic  cr_talktomany~e  cr_talkative cr_expressing~s ) 
-egen cr_AG = rowmean(cr_workwithot~r   cr_understand~g cr_trustingof~r cr_rudetoother cr_toleratefa~s  cr_forgiveother  cr_helpfulwit~s) 
-egen cr_ES = rowmean(cr_managestress  cr_nervous  cr_changemood cr_feeldepres~d cr_easilyupset cr_worryalot  cr_staycalm) 
-egen cr_Grit = rowmean(cr_tryhard  cr_stickwithg~s   cr_goaftergoal cr_finishwhat~n cr_finishtasks  cr_keepworking)
 
+
+
+
+*********** Vérifier l'écart entre le biais moyen et le biais par trait
+foreach x in AG CO EX OP ES {
+gen `x'_diff=ars_`x'-ars2
+}
+
+tabstat AG_diff CO_diff EX_diff OP_diff ES_diff, stat(n mean cv p50 min max) by(year)
+
+preserve
+keep if year==2020
+order ars_AG ars_CO ars_EX ars_OP ars_ES
+sort ars_AG
+restore
+
+
+
+
+
+********** Recode 4: corr from acquiescence bias
+foreach x of varlist $big5grit {
+gen cr_`x'=`x'-ars2 if ars!=.
+gen cr1_`x'=`x' if ars!=.
+gen cr2_`x'=.
+}
+
+foreach x of varlist $big5grit {
+replace cr1_`x'=`x'-ars2 if ars!=. & ars3>=1
+}
+foreach x in curious interestedbyart  repetitivetasks inventive liketothink newideas activeimagination {
+replace cr2_`x'=`x'-ars_OP if ars!=.
+}
+foreach x in organized  makeplans workhard appointmentontime putoffduties easilydistracted completeduties {
+replace cr2_`x'=`x'-ars_CO if ars!=.
+}
+foreach x in enjoypeople sharefeelings shywithpeople enthusiastic talktomanypeople  talkative expressingthoughts {
+replace cr2_`x'=`x'-ars_EX if ars!=.
+}
+foreach x in workwithother understandotherfeeling trustingofother rudetoother toleratefaults forgiveother helpfulwithothers {
+replace cr2_`x'=`x'-ars_AG if ars!=.
+}
+foreach x in managestress nervous changemood feeldepressed easilyupset worryalot staycalm {
+replace cr2_`x'=`x'-ars_ES if ars!=.
+}
+
+foreach x of varlist $big5grit {
+replace cr2_`x'=0 if cr2_`x'<0
+}
+
+
+
+
+
+********** Test omega imput
+
+preserve
+keep if year==2020
+keep if panel==1
+
+***OP
+omega curious interestedbyart repetitivetasks inventive liketothink newideas activeimagination, rev(repetitivetasks)
+omega cr_curious cr_interestedbyart cr_repetitivetasks cr_inventive cr_liketothink cr_newideas cr_activeimagination, rev(cr_repetitivetasks) 
+omega cr1_curious cr1_interestedbyart cr1_repetitivetasks cr1_inventive cr1_liketothink cr1_newideas cr1_activeimagination, rev(cr1_repetitivetasks) 
+omega cr2_curious cr2_interestedbyart cr2_repetitivetasks cr2_inventive cr2_liketothink cr2_newideas cr2_activeimagination, rev(cr2_repetitivetasks) 
+
+***CO
+omega organized  makeplans workhard appointmentontime putoffduties easilydistracted completeduties, rev(putoffduties easilydistracted)
+omega cr_organized cr_makeplans cr_workhard cr_appointmentontime cr_putoffduties cr_easilydistracted cr_completeduties, rev(cr_putoffduties cr_easilydistracted) 
+omega cr1_organized cr1_makeplans cr1_workhard cr1_appointmentontime cr1_putoffduties cr1_easilydistracted cr1_completeduties, rev(cr1_putoffduties cr1_easilydistracted) 
+omega cr2_organized cr2_makeplans cr2_workhard cr2_appointmentontime cr2_putoffduties cr2_easilydistracted cr2_completeduties, rev(cr2_putoffduties cr2_easilydistracted) 
+
+***EX
+omega enjoypeople sharefeelings shywithpeople enthusiastic talktomanypeople  talkative expressingthoughts, rev(shywithpeople) 
+omega cr_enjoypeople cr_sharefeelings cr_shywithpeople cr_enthusiastic cr_talktomanypeople cr_talkative cr_expressingthoughts, rev(cr_shywithpeople) 
+omega cr1_enjoypeople cr1_sharefeelings cr1_shywithpeople cr1_enthusiastic cr1_talktomanypeople cr1_talkative cr1_expressingthoughts, rev(cr1_shywithpeople) 
+omega cr2_enjoypeople cr2_sharefeelings cr2_shywithpeople cr2_enthusiastic cr2_talktomanypeople cr2_talkative cr2_expressingthoughts, rev(cr2_shywithpeople) 
+
+***AG
+omega workwithother  understandotherfeeling trustingofother rudetoother toleratefaults  forgiveother  helpfulwithothers, rev(rudetoother) 
+omega cr_workwithother cr_understandotherfeeling cr_trustingofother cr_rudetoother cr_toleratefaults cr_forgiveother cr_helpfulwithothers, rev(cr_rudetoother) 
+omega cr1_workwithother cr1_understandotherfeeling cr1_trustingofother cr1_rudetoother cr1_toleratefaults cr1_forgiveother cr1_helpfulwithothers, rev(cr1_rudetoother) 
+omega cr2_workwithother cr2_understandotherfeeling cr2_trustingofother cr2_rudetoother cr2_toleratefaults cr2_forgiveother cr2_helpfulwithothers, rev(cr2_rudetoother) 
+
+***ES
+omega managestress  nervous  changemood feeldepressed easilyupset worryalot  staycalm, rev(managestress staycalm) 
+omega cr_managestress cr_nervous cr_changemood cr_feeldepressed cr_easilyupset cr_worryalot  cr_staycalm, rev(cr_managestress cr_staycalm)  
+omega cr1_managestress cr1_nervous cr1_changemood cr1_feeldepressed cr1_easilyupset cr1_worryalot  cr1_staycalm, rev(cr1_managestress cr1_staycalm)  
+omega cr2_managestress cr2_nervous cr2_changemood cr2_feeldepressed cr2_easilyupset cr2_worryalot  cr2_staycalm, rev(cr2_managestress cr2_staycalm)  
+restore
+
+
+
+
+
+********** Big5 taxonomy
 egen OP = rowmean(curious interestedbyart  repetitivetasks inventive liketothink newideas activeimagination)
 egen CO = rowmean(organized  makeplans workhard appointmentontime putoffduties easilydistracted completeduties) 
 egen EX = rowmean(enjoypeople sharefeelings shywithpeople enthusiastic talktomanypeople  talkative expressingthoughts) 
@@ -349,24 +515,26 @@ egen AG = rowmean(workwithother understandotherfeeling trustingofother rudetooth
 egen ES = rowmean(managestress nervous changemood feeldepressed easilyupset worryalot staycalm) 
 egen Grit = rowmean(tryhard stickwithgoals  goaftergoal finishwhat~n finishtasks keepworking)
 
+egen cr_OP = rowmean(cr_curious cr_interested~t   cr_repetitive~s cr_inventive cr_liketothink cr_newideas cr_activeimag~n)
+egen cr_CO = rowmean(cr_organized  cr_makeplans cr_workhard cr_appointmen~e cr_putoffduties cr_easilydist~d cr_completedu~s) 
+egen cr_EX = rowmean(cr_enjoypeople cr_sharefeeli~s cr_shywithpeo~e  cr_enthusiastic  cr_talktomany~e  cr_talkative cr_expressing~s ) 
+egen cr_AG = rowmean(cr_workwithot~r   cr_understand~g cr_trustingof~r cr_rudetoother cr_toleratefa~s  cr_forgiveother  cr_helpfulwit~s) 
+egen cr_ES = rowmean(cr_managestress  cr_nervous  cr_changemood cr_feeldepres~d cr_easilyupset cr_worryalot  cr_staycalm) 
+egen cr_Grit = rowmean(cr_tryhard  cr_stickwithg~s   cr_goaftergoal cr_finishwhat~n cr_finishtasks  cr_keepworking)
 
+egen cr1_OP = rowmean(cr1_curious cr1_interested~t   cr1_repetitive~s cr1_inventive cr1_liketothink cr1_newideas cr1_activeimag~n)
+egen cr1_CO = rowmean(cr1_organized  cr1_makeplans cr1_workhard cr1_appointmen~e cr1_putoffduties cr1_easilydist~d cr1_completedu~s) 
+egen cr1_EX = rowmean(cr1_enjoypeople cr1_sharefeeli~s cr1_shywithpeo~e  cr1_enthusiastic  cr1_talktomany~e  cr1_talkative cr1_expressing~s ) 
+egen cr1_AG = rowmean(cr1_workwithot~r   cr1_understand~g cr1_trustingof~r cr1_rudetoother cr1_toleratefa~s  cr1_forgiveother  cr1_helpfulwit~s) 
+egen cr1_ES = rowmean(cr1_managestress  cr1_nervous  cr1_changemood cr1_feeldepres~d cr1_easilyupset cr1_worryalot  cr1_staycalm) 
+egen cr1_Grit = rowmean(cr1_tryhard  cr1_stickwithg~s   cr1_goaftergoal cr1_finishwhat~n cr1_finishtasks  cr1_keepworking)
 
-/*
-********** IMPUTATION pour les missings
-foreach x in $big5rr{
-gen im`x'=`x'
-}
-forvalues j=1(1)3{
-forvalues i=1(1)2{
-foreach x in $big5rr{
-sum im`x' if sex==`i' & caste==`j' & egoid!=0 & egoid!=.
-replace im`x'=r(mean) if `x'==. & sex==`i' & caste==`j' & egoid!=0 & egoid!=.
-}
-}
-}
-*/
-
-
+egen cr2_OP = rowmean(cr2_curious cr2_interested~t   cr2_repetitive~s cr2_inventive cr2_liketothink cr2_newideas cr2_activeimag~n)
+egen cr2_CO = rowmean(cr2_organized  cr2_makeplans cr2_workhard cr2_appointmen~e cr2_putoffduties cr2_easilydist~d cr2_completedu~s) 
+egen cr2_EX = rowmean(cr2_enjoypeople cr2_sharefeeli~s cr2_shywithpeo~e  cr2_enthusiastic  cr2_talktomany~e  cr2_talkative cr2_expressing~s ) 
+egen cr2_AG = rowmean(cr2_workwithot~r   cr2_understand~g cr2_trustingof~r cr2_rudetoother cr2_toleratefa~s  cr2_forgiveother  cr2_helpfulwit~s) 
+egen cr2_ES = rowmean(cr2_managestress  cr2_nervous  cr2_changemood cr2_feeldepres~d cr2_easilyupset cr2_worryalot  cr2_staycalm) 
+egen cr2_Grit = rowmean(cr2_tryhard  cr2_stickwithg~s   cr2_goaftergoal cr2_finishwhat~n cr2_finishtasks  cr2_keepworking)
 
 save"panel_stab_v2", replace
 ****************************************
@@ -378,7 +546,18 @@ save"panel_stab_v2", replace
 
 
 
+****************************************
+* Verif des scores corrigés selon la correction effectuée
+****************************************
+use"panel_stab_v2", clear
+cls
+foreach x in OP CO EX ES AG {
+tabstat `x' cr_`x' cr1_`x' cr2_`x', stat(n mean cv p50 min max) by(year)
+}
 
+save"panel_stab_v2", replace
+****************************************
+* END
 
 
 
@@ -391,8 +570,22 @@ save"panel_stab_v2", replace
 ****************************************
 use"panel_stab_v2.dta", clear
 
+sort ars3
 
-********** Omega values
+*Bias
+gen indiv_biased=0
+replace indiv_biased=1 if ars3>=1
+
+preserve
+fre panel
+keep if panel==1
+tab indiv_biased year
+restore
+
+
+
+
+********** Omega values real
 /*
 forvalues i=1(1)2{
 putexcel set "Desc.xlsx", modify sheet(omega_`i')
