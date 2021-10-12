@@ -1,9 +1,10 @@
 cls
+
 /*
 -------------------------
 Arnaud Natal
 arnaud.natal@u-bordeaux.fr
-August 17, 2021
+October 1, 2021
 -----
 Stability over time of personality traits: merging des bases
 -----
@@ -326,6 +327,41 @@ replace im`x'=r(mean) if `x'==. & sex==`i' & caste==`j'  & year==20`k'
 
 
 
+********** Correlation
+preserve
+cls 
+keep if year==2016
+pwcorr curious interestedbyart repetitivetasks inventive liketothink newideas activeimagination, star(.01)
+*
+pwcorr organized makeplans workhard appointmentontime putoffduties easilydistracted completeduties, star(.01)
+*
+pwcorr enjoypeople sharefeelings shywithpeople enthusiastic talktomanypeople  talkative expressingthoughts, star(.01)
+*
+pwcorr workwithother understandotherfeeling trustingofother rudetoother toleratefaults forgiveother helpfulwithothers, star(.01)
+*
+pwcorr managestress nervous changemood feeldepressed easilyupset worryalot  staycalm, star(.01)
+*
+restore
+
+preserve 
+cls
+keep if year==2020
+pwcorr curious interestedbyart repetitivetasks inventive liketothink newideas activeimagination, star(.01)
+*activeimagination est peut-être plus bas que les autres
+pwcorr organized makeplans workhard appointmentontime putoffduties easilydistracted completeduties, star(.01)
+*puttofduties pas ouf
+pwcorr enjoypeople sharefeelings shywithpeople enthusiastic talktomanypeople  talkative expressingthoughts, star(.01)
+*shywithpeople
+pwcorr workwithother understandotherfeeling trustingofother rudetoother toleratefaults forgiveother helpfulwithothers, star(.01)
+*rudetoother
+pwcorr managestress nervous changemood feeldepressed easilyupset worryalot  staycalm, star(.01)
+*nothing
+restore
+
+
+
+
+
 
 
 ********** Acquiescence bias measure and correction
@@ -364,14 +400,14 @@ egen ars=rowmean(`var')
 gen ars2=ars-3  
 gen ars3=abs(ars2)
 *Graph 
-/*
 set graph off
 stripplot ars3, over(time) separate(caste) ///
 cumul cumprob box centre refline vertical /// 
 xsize(3) xtitle("") xlabel(,angle())  ///
 ylabel(0(.2)1.6) ymtick(0(.1)1.7) ytitle() ///
-msymbol(oh oh oh) mcolor(plr1 plg1 ply1) 
-*/
+msymbol(oh oh oh) mcolor(plr1 plg1 ply1) name(boxplotars, replace)
+graph export boxplotars.pdf, replace
+
 egen ars_AG_temp=rowmean(rudetoother helpfulwithothers)
 egen ars_CO_temp=rowmean(putoffduties completeduties easilydistracted makeplans)
 egen ars_EX_temp=rowmean(shywithpeople talktomanypeople)
@@ -381,6 +417,17 @@ egen ars_ES_temp=rowmean(nervous staycalm worryalot managestress)
 foreach x in AG CO EX OP ES {
 gen ars_`x'=ars_`x'_temp-3
 drop ars_`x'_temp
+gen ars3_`x'=abs(ars_`x')
+}
+
+*
+forvalues i=2016(4)2020 {
+stripplot ars3_AG ars3_CO ars3_EX ars3_OP ars3_ES if year==`i', over() separate(caste) ///
+cumul cumprob box centre refline vertical /// 
+xsize(3) xtitle("`i'") xlabel(,angle(45))  ///
+ylabel(0(.2)2) ymtick(0(.1)2) ytitle() ///
+msymbol(oh oh oh) mcolor(plr1 plg1 ply1) name(boxplotars`i', replace)
+graph export boxplotars`i'.pdf, replace
 }
 
 egen ars4=rowmean(ars_AG ars_CO ars_EX ars_OP ars_ES)
@@ -390,6 +437,12 @@ egen ars5=rowmedian(ars_AG ars_CO ars_EX ars_OP ars_ES)
 corr ars_AG ars_CO ars_EX ars_OP ars_ES if year==2016
 corr ars_AG ars_CO ars_EX ars_OP ars_ES if year==2020
 tabstat ars3, stat(n min p1 p5 p10 q p90 p95 p99 max) by(year) long
+
+
+
+
+
+
 
 
 
@@ -411,16 +464,46 @@ label values `x' big5n2
 
 
 
-********** Correlation between questions of each trait
+log using Desc, replace text
+********** Correlation
+***2016
 preserve
-keep if year==2020
-pwcorr curious interestedbyart repetitivetasks inventive liketothink newideas activeimagination, star(.05)
-pwcorr organized  makeplans workhard appointmentontime putoffduties easilydistracted completeduties, star(.05)
-pwcorr enjoypeople sharefeelings shywithpeople enthusiastic talktomanypeople  talkative expressingthoughts, star(.05)
-pwcorr workwithother  understandotherfeeling trustingofother rudetoother toleratefaults  forgiveother  helpfulwithothers, star(.05)
-pwcorr managestress  nervous  changemood feeldepressed easilyupset worryalot  staycalm, star(.05)
+keep if year==2016
+*OP
+pwcorr curious interestedbyart repetitivetasks inventive liketothink newideas activeimagination, star(.01)
+
+*CO
+pwcorr organized makeplans workhard appointmentontime putoffduties easilydistracted completeduties, star(.01)
+
+*EX
+pwcorr enjoypeople sharefeelings shywithpeople enthusiastic talktomanypeople  talkative expressingthoughts, star(.01)
+
+*AG
+pwcorr workwithother understandotherfeeling trustingofother rudetoother toleratefaults forgiveother helpfulwithothers, star(.01)
+
+*ES
+pwcorr managestress nervous changemood feeldepressed easilyupset worryalot  staycalm, star(.01)
 restore
 
+***2020
+preserve
+keep if year==2020
+*OP
+pwcorr curious interestedbyart repetitivetasks inventive liketothink newideas activeimagination, star(.01)
+
+*CO
+pwcorr organized makeplans workhard appointmentontime putoffduties easilydistracted completeduties, star(.01)
+
+*EX
+pwcorr enjoypeople sharefeelings shywithpeople enthusiastic talktomanypeople  talkative expressingthoughts, star(.01)
+
+*AG
+pwcorr workwithother understandotherfeeling trustingofother rudetoother toleratefaults forgiveother helpfulwithothers, star(.01)
+
+*ES
+pwcorr managestress nervous changemood feeldepressed easilyupset worryalot  staycalm, star(.01)
+restore
+log close
 
 
 
@@ -455,6 +538,7 @@ gen cr5_`x'=`x'-ars5 if ars!=.
 foreach x of varlist $big5grit {
 replace cr1_`x'=`x'-ars2 if ars!=. & ars3>=1
 }
+
 foreach x in curious interestedbyart  repetitivetasks inventive liketothink newideas activeimagination {
 replace cr2_`x'=`x'-ars_OP if ars!=.
 }
@@ -474,6 +558,22 @@ replace cr2_`x'=`x'-ars_ES if ars!=.
 foreach x of varlist $big5grit {
 replace cr2_`x'=0 if cr2_`x'<0
 }
+
+
+
+
+
+********** Who have the higher bias?
+*Sex
+tab sex year if ars3>1, col nofreq
+*Principalement des hommes
+
+*Age
+tabstat age if ars3>1, stat(n mean sd p50 min max) by(year)
+
+*Caste
+tab caste year if ars3>1, col nofreq
+*Principalement des dalits
 
 
 
@@ -527,6 +627,60 @@ omega cr_managestress cr_nervous cr_changemood cr_feeldepressed cr_easilyupset c
 omega cr1_managestress cr1_nervous cr1_changemood cr1_feeldepressed cr1_easilyupset cr1_worryalot  cr1_staycalm, rev(cr1_managestress cr1_staycalm)  
 omega cr2_managestress cr2_nervous cr2_changemood cr2_feeldepressed cr2_easilyupset cr2_worryalot  cr2_staycalm, rev(cr2_managestress cr2_staycalm)  
 restore
+
+
+
+
+
+********** Omega as data
+preserve
+clear all
+input sample	traits	correction	year2016	year2020
+1	1	0	0.868386175	0.764244248
+1	1	1	0.811328043	0.368360137
+1	2	0	0.85132604	0.70404754
+1	2	1	0.856587504	0.417065151
+1	3	0	0.729188007	0.651072121
+1	3	1	0.588299672	0.448570114
+1	4	0	0.510766933	0.612616194
+1	4	1	0.602029083	0.307593575
+1	5	0	0.479387466	0.729498845
+1	5	1	0.801919231	0.792915118
+1	6	0	0.732293366	0.664093592
+1	6	1	0.753628544	0.447264361
+2	1	0	0.864361921	0.765863028
+2	1	1	0.805783057	0.383624434
+2	2	0	0.843918601	0.705388653
+2	2	1	0.848500949	0.368849752
+2	3	0	0.722326272	0.643470461
+2	3	1	0.57663988	0.436589964
+2	4	0	0.521202368	0.597217979
+2	4	1	0.585015614	0.30314471
+2	5	0	0.497242214	0.707849376
+2	5	1	0.79321718	0.778994403
+2	6	0	0.727218443	0.654720975
+2	6	1	0.745714831	0.437390982
+end
+
+label define traits 1"OP" 2"CO" 3"EX" 4"AG" 5"ES" 6"Grit"
+label define sample 1"total" 2"panel"
+label define correction 0"No" 1"Corr"
+label values traits traits 
+label values sample sample
+label values correction correction
+
+rename year2016 omega2016
+rename year2020 omega2020
+
+
+log using Desc, append text
+********** Omega for 2016-17 and 2020-21 before and after correction of acquiescence bias
+list traits correction omega2016 omega2020 if sample==1, clean noobs
+log close
+restore
+
+
+
 
 
 

@@ -488,7 +488,7 @@ Yourself and someone else jointly |          6        1.21      100.00
                             Total |        495      100.00
 
 						
-Given that, I choose to put in the regression spouse characteristics.						
+Given that, I choose to put in the regression spouse characteristics.
 */						
 
 
@@ -508,6 +508,7 @@ replace dummy_workage=1 if age>=15
 
 
 *Job+dummy
+/*
 tab nboccupation_indiv
 gen dummy_job=0
 replace dummy_job=1 if nboccupation_indiv!=. & nboccupation_indiv>0
@@ -516,13 +517,15 @@ gen dummy_nojob=0
 replace dummy_nojob=1 if nboccupation_indiv!=. & nboccupation_indiv==0
 
 tab dummy_job dummy_workage
+*/
 
 
 *Age to work 
+/*
 replace nboccupation_indiv=. if dummy_workage==0
 replace dummy_job=. if dummy_workage==0
 replace dummy_nojob=. if dummy_workage==0
-
+*/
 
 *HHsize
 bysort HHID_panel: gen HHsize=_N
@@ -535,6 +538,7 @@ bysort HHID_panel: egen nbchildren_HH=sum(dummy_children)
 
 
 *Workers structure of HH
+/*
 bysort HHID_panel: egen nbworkers_HH=sum(dummy_job)
 bysort HHID_panel: egen nbnonworkers_HH=sum(dummy_nojob)
 *gen workers_to_nonworkers_HH=nbworkers_HH/nbnonworkers_HH
@@ -543,6 +547,7 @@ replace nonworkers_to_workers_HH=nbnonworkers_HH if nbworkers_HH==0
 gen nontoworkers_HH=nonworkers_to_workers_HH*100
 drop nonworkers_to_workers_HH
 tab nontoworkers_HH
+*/
 
 
 *Sex ratio of HH
@@ -678,3 +683,67 @@ drop year2010 year2016 year2020 panel
 save"panel_v2", replace
 ****************************************
 * END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Var creation
+****************************************
+use"panel_v2", clear
+
+
+
+**********Deflate: all in 2010 value 
+***https://data.worldbank.org/indicator/FP.CPI.TOTL?locations=IN
+foreach x in foodexpenses educationexpenses healthexpenses ceremoniesexpenses deathexpenses goldquantityamount amountownland assets1000 annualincome_HH occinc_HH_agri occinc_HH_agricasual occinc_HH_nonagricasual occinc_HH_nonagriregnonqual occinc_HH_nonagriregqual occinc_HH_selfemp occinc_HH_nrega imp1_ds_tot_HH imp1_is_tot_HH loanamount_HH marriageexpenses_HH {
+replace `x'=`x'*(100/158) if year==2016 & `x'!=.
+replace `x'=`x'*(100/184) if year==2020 & `x'!=.
+}
+
+
+**********Debt measure
+*Continuous
+gen DIR=loanamount_HH/annualincome_HH
+gen DAR=loanamount_HH/(assets1000*1000)
+gen DSR=imp1_ds_tot_HH/annualincome_HH
+gen ISR=imp1_is_tot_HH/annualincome_HH
+
+
+*Dummy for overindebtedness
+foreach x in DSR DAR {
+forvalues i=30(10)50{
+gen `x'`i'=0
+}
+}
+
+foreach x in DSR DAR {
+forvalues i=30(10)50{
+replace `x'`i'=1 if `x'>=.`i' & `x'!=.
+}
+}
+
+
+save"panel_v3", replace
+****************************************
+* END
+
