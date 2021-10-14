@@ -108,7 +108,7 @@ recode panel (.=0)
 
 global tokeep age edulevel sex caste jatis name address villageid villageareaid villageid_new villageid_new_comments username ///
 dummydemonetisation demotrustneighborhood demotrustemployees_ego demotrustbank_ego demonetworkpeoplehelping_ego demonetworkhelpkinmember_ego demogeneralperception demogoodexpectations demobadexpectations ///
-curious interestedbyart repetitivetasks inventive liketothink newideas activeimagination organized makeplans workhard appointmentontime putoffduties easilydistracted completeduties enjoypeople sharefeelings shywithpeople enthusiastic talktomanypeople talkative expressingthoughts workwithother understandotherfeeling trustingofother rudetoother toleratefaults forgiveother helpfulwithothers managestress nervous changemood feeldepressed easilyupset worryalot staycalm tryhard stickwithgoals goaftergoal finishwhatbegin finishtasks keepworking
+curious interestedbyart repetitivetasks inventive liketothink newideas activeimagination organized makeplans workhard appointmentontime putoffduties easilydistracted completeduties enjoypeople sharefeelings shywithpeople enthusiastic talktomanypeople talkative expressingthoughts workwithother understandotherfeeling trustingofother rudetoother toleratefaults forgiveother helpfulwithothers managestress nervous changemood feeldepressed easilyupset worryalot staycalm tryhard stickwithgoals goaftergoal finishwhatbegin finishtasks keepworking username
 keep HHINDID HHID_panel INDID_panel panel egoid year $tokeep
 
 
@@ -144,9 +144,6 @@ egen HHINDID=concat(HHID_panel INDID_panel), p(/)
 duplicates tag HHINDID, gen(tag)
 tab tag
 drop tag
-drop username_str
-gen username_str=username+1-1
-tostring username_str, replace
 drop username
 rename username_str username
 
@@ -158,7 +155,7 @@ recode panel (.=0)
 
 global tokeep age edulevel sex caste jatis name address villageid villageareaid username ///
 covsick ///
-curious interestedbyart repetitivetasks inventive liketothink newideas activeimagination organized makeplans workhard appointmentontime putoffduties easilydistracted completeduties enjoypeople sharefeelings shywithpeople enthusiastic talktomanypeople talkative expressingthoughts workwithother understandotherfeeling trustingofother rudetoother toleratefaults forgiveother helpfulwithothers managestress nervous changemood feeldepressed easilyupset worryalot staycalm tryhard stickwithgoals goaftergoal finishwhatbegin finishtasks keepworking
+curious interestedbyart repetitivetasks inventive liketothink newideas activeimagination organized makeplans workhard appointmentontime putoffduties easilydistracted completeduties enjoypeople sharefeelings shywithpeople enthusiastic talktomanypeople talkative expressingthoughts workwithother understandotherfeeling trustingofother rudetoother toleratefaults forgiveother helpfulwithothers managestress nervous changemood feeldepressed easilyupset worryalot staycalm tryhard stickwithgoals goaftergoal finishwhatbegin finishtasks keepworking username
 keep HHINDID HHID_panel INDID_panel panel egoid year $tokeep
 
 
@@ -293,11 +290,19 @@ rename `x'_rec_rev `x'
 
 
 ********** Check missings
-foreach x in $big5grit {
 forvalues i=16(4)20 {
-mdesc `x' if year==20`i'
+mdesc $big5grit if year==20`i'
 }
-}
+
+
+mdesc $big5grit if year==2020
+mdesc rudetoother helpfulwithothers  ///
+putoffduties completeduties /// 
+easilydistracted makeplans  ///
+shywithpeople talktomanypeople ///
+repetitivetasks curious  ///
+nervous staycalm ///  
+worryalot managestress if year==2020
 
 
 
@@ -399,7 +404,133 @@ worryalot managestress
 egen ars=rowmean(`var') 
 gen ars2=ars-3  
 gen ars3=abs(ars2)
-*Graph 
+
+
+
+
+
+
+********** Bias by dropping pairs of questions to check the stability of the mean
+local var ///
+putoffduties completeduties /// 
+easilydistracted makeplans  ///
+shywithpeople talktomanypeople ///
+repetitivetasks curious  ///
+nervous staycalm ///  
+worryalot managestress 
+egen _1_ars=rowmean(`var') 
+gen _1_ars2=_1_ars-3  
+gen _1_ars3=abs(_1_ars2)
+
+local var ///
+rudetoother helpfulwithothers  ///
+easilydistracted makeplans  ///
+shywithpeople talktomanypeople ///
+repetitivetasks curious  ///
+nervous staycalm ///  
+worryalot managestress 
+egen _2_ars=rowmean(`var') 
+gen _2_ars2=_2_ars-3  
+gen _2_ars3=abs(_2_ars2)
+
+local var ///
+rudetoother helpfulwithothers  ///
+putoffduties completeduties /// 
+shywithpeople talktomanypeople ///
+repetitivetasks curious  ///
+nervous staycalm ///  
+worryalot managestress 
+egen _3_ars=rowmean(`var') 
+gen _3_ars2=_3_ars-3  
+gen _3_ars3=abs(_3_ars2)
+
+local var ///
+rudetoother helpfulwithothers  ///
+putoffduties completeduties /// 
+easilydistracted makeplans  ///
+repetitivetasks curious  ///
+nervous staycalm ///  
+worryalot managestress 
+egen _4_ars=rowmean(`var') 
+gen _4_ars2=_4_ars-3  
+gen _4_ars3=abs(_4_ars2)
+
+local var ///
+rudetoother helpfulwithothers  ///
+putoffduties completeduties /// 
+easilydistracted makeplans  ///
+shywithpeople talktomanypeople ///
+nervous staycalm ///  
+worryalot managestress 
+egen _5_ars=rowmean(`var') 
+gen _5_ars2=_5_ars-3  
+gen _5_ars3=abs(_5_ars2)
+
+local var ///
+rudetoother helpfulwithothers  ///
+putoffduties completeduties /// 
+easilydistracted makeplans  ///
+shywithpeople talktomanypeople ///
+repetitivetasks curious  ///
+worryalot managestress 
+egen _6_ars=rowmean(`var') 
+gen _6_ars2=_6_ars-3  
+gen _6_ars3=abs(_6_ars2)
+
+local var ///
+rudetoother helpfulwithothers  ///
+putoffduties completeduties /// 
+easilydistracted makeplans  ///
+shywithpeople talktomanypeople ///
+repetitivetasks curious  ///
+nervous staycalm
+egen _7_ars=rowmean(`var') 
+gen _7_ars2=_7_ars-3  
+gen _7_ars3=abs(_7_ars2)
+
+
+
+
+
+
+********** Bias by trait
+egen ars_AG_temp=rowmean(rudetoother helpfulwithothers)
+egen ars_CO_temp=rowmean(putoffduties completeduties easilydistracted makeplans)
+egen ars_EX_temp=rowmean(shywithpeople talktomanypeople)
+egen ars_OP_temp=rowmean(repetitivetasks curious)
+egen ars_ES_temp=rowmean(nervous staycalm worryalot managestress)
+
+egen ars_CO1_temp=rowmean(putoffduties completeduties)
+egen ars_CO2_temp=rowmean(easilydistracted makeplans)
+egen ars_ES1_temp=rowmean(nervous staycalm)
+egen ars_ES2_temp=rowmean(worryalot managestress)
+
+foreach x in AG CO EX OP ES {
+gen ars_`x'=ars_`x'_temp-3
+drop ars_`x'_temp
+gen ars3_`x'=abs(ars_`x')
+}
+
+foreach x in CO ES {
+forvalues i=1(1)2{
+gen ars_`x'`i'=ars_`x'`i'_temp-3
+drop ars_`x'`i'_temp
+gen ars3_`x'`i'=abs(ars_`x'`i')
+}
+}
+
+egen ars4=rowmean(ars_AG ars_CO ars_EX ars_OP ars_ES)
+egen ars5=rowmedian(ars_AG ars_CO ars_EX ars_OP ars_ES)
+
+
+
+
+
+
+
+
+
+********** Graph 
 set graph off
 stripplot ars3, over(time) separate(caste) ///
 cumul cumprob box centre refline vertical /// 
@@ -408,32 +539,22 @@ ylabel(0(.2)1.6) ymtick(0(.1)1.7) ytitle() ///
 msymbol(oh oh oh) mcolor(plr1 plg1 ply1) name(boxplotars, replace)
 graph export boxplotars.pdf, replace
 
-egen ars_AG_temp=rowmean(rudetoother helpfulwithothers)
-egen ars_CO_temp=rowmean(putoffduties completeduties easilydistracted makeplans)
-egen ars_EX_temp=rowmean(shywithpeople talktomanypeople)
-egen ars_OP_temp=rowmean(repetitivetasks curious)
-egen ars_ES_temp=rowmean(nervous staycalm worryalot managestress)
-
-foreach x in AG CO EX OP ES {
-gen ars_`x'=ars_`x'_temp-3
-drop ars_`x'_temp
-gen ars3_`x'=abs(ars_`x')
-}
-
-*
 forvalues i=2016(4)2020 {
-stripplot ars3_AG ars3_CO ars3_EX ars3_OP ars3_ES if year==`i', over() separate(caste) ///
+stripplot ars3_AG ars3_CO ars3_CO1 ars3_CO2 ars3_EX ars3_OP ars3_ES ars3_ES1 ars3_ES2 if year==`i', over() separate(caste) ///
 cumul cumprob box centre refline vertical /// 
-xsize(3) xtitle("`i'") xlabel(,angle(45))  ///
-ylabel(0(.2)2) ymtick(0(.1)2) ytitle() ///
-msymbol(oh oh oh) mcolor(plr1 plg1 ply1) name(boxplotars`i', replace)
-graph export boxplotars`i'.pdf, replace
+xsize(3) xtitle("") xlabel(,angle(45))  ///
+ylabel(0(.2)2) ymtick(0(.1)2) ytitle("|ars|") ///
+msymbol(oh oh oh) mcolor(plr1 plg1 ply1) ///
+legend(pos(6) col(3)) name(boxplotars`i', replace)
+graph export boxplotars`i'_det.pdf, replace
 }
 
-egen ars4=rowmean(ars_AG ars_CO ars_EX ars_OP ars_ES)
-egen ars5=rowmedian(ars_AG ars_CO ars_EX ars_OP ars_ES)
 
-*Stat
+
+
+
+
+********** Correlation
 corr ars_AG ars_CO ars_EX ars_OP ars_ES if year==2016
 corr ars_AG ars_CO ars_EX ars_OP ars_ES if year==2020
 tabstat ars3, stat(n min p1 p5 p10 q p90 p95 p99 max) by(year) long
@@ -442,6 +563,53 @@ tabstat ars3, stat(n min p1 p5 p10 q p90 p95 p99 max) by(year) long
 
 
 
+
+
+
+********** Bias by enumerator
+encode username, gen(username_code)
+foreach x in ars3_AG ars3_CO ars3_CO1 ars3_CO2 ars3_EX ars3_OP ars3_ES ars3_ES1 ars3_ES2 {
+reg `x' i.username_code if year==2020
+}
+
+reg ars3 i.username_code if year==2020
+
+egen mean_ars3=rowmean(ars3_AG ars3_CO1 ars3_CO2 ars3_EX ars3_OP ars3_ES1 ars3_ES2)
+gen test=mean_ars3-ars3
+tab test
+
+set graph on
+stripplot ars3 if year==2020, over(username) separate() ///
+cumul cumprob box centre refline vertical /// 
+xsize(3) xtitle("`i'") xlabel(,angle(45))  ///
+ylabel(0(.2)2) ymtick(0(.1)2) ytitle() ///
+msymbol(oh oh oh) mcolor(plr1 plg1 ply1) name(ars3_2020_username, replace)
+
+
+
+
+
+********** Questions on bias
+cls
+forvalues i=1(1)7{
+ttest ars3==_`i'_ars3 if year==2016
+}
+*pb avec 1 (AG)
+cls
+forvalues i=1(1)7{
+ttest ars3==_`i'_ars3 if year==2020
+}
+*pb avec 3 (CO2), 5 (OP) et 7 (ES2)
+
+/*
+rudetoother helpfulwithothers  // _1_--> AG
+putoffduties completeduties  // _2_--> CO1
+easilydistracted makeplans  // _3_--> CO2
+shywithpeople talktomanypeople  // _4_--> EX
+repetitivetasks curious  // _5_--> OP
+nervous staycalm  // _6_--> ES1
+worryalot managestress  // _7_--> ES2
+*/
 
 
 
@@ -509,35 +677,17 @@ log close
 
 
 
-*********** Vérifier l'écart entre le biais moyen et le biais par trait
-foreach x in AG CO EX OP ES {
-gen `x'_diff=ars_`x'-ars2
-}
-
-tabstat AG_diff CO_diff EX_diff OP_diff ES_diff, stat(n mean cv p50 min max) by(year)
-
-preserve
-keep if year==2020
-order ars_AG ars_CO ars_EX ars_OP ars_ES
-sort ars_AG
-restore
-
-
 
 
 
 ********** Recode 4: corr from acquiescence bias
 foreach x of varlist $big5grit {
 gen cr_`x'=`x'-ars2 if ars!=.
-gen cr1_`x'=`x' if ars!=.
 gen cr2_`x'=.
-gen cr4_`x'=`x'-ars4 if ars!=.
-gen cr5_`x'=`x'-ars5 if ars!=.
+*gen cr4_`x'=`x'-ars4 if ars!=.
+*gen cr5_`x'=`x'-ars5 if ars!=.
 }
 
-foreach x of varlist $big5grit {
-replace cr1_`x'=`x'-ars2 if ars!=. & ars3>=1
-}
 
 foreach x in curious interestedbyart  repetitivetasks inventive liketothink newideas activeimagination {
 replace cr2_`x'=`x'-ars_OP if ars!=.
@@ -580,16 +730,6 @@ tab caste year if ars3>1, col nofreq
 
 
 
-********** Bon, il faut que je procède avec les cr classiques je pense
-/*
-Sauf que, lorsque je corrige, les omega sautent
-Il faut donc que je regarde qui sont ceux qui me font tout sauter
-Ce sont ceux qui ont les plus grands écarts entre cr et non corrigés
-Donc ceux qui ont le biais le plus élevés ?
-*/
-
-
-
 
 ********** Test omega imput
 
@@ -600,31 +740,26 @@ keep if panel==1
 ***OP
 omega curious interestedbyart repetitivetasks inventive liketothink newideas activeimagination, rev(repetitivetasks)
 omega cr_curious cr_interestedbyart cr_repetitivetasks cr_inventive cr_liketothink cr_newideas cr_activeimagination, rev(cr_repetitivetasks) 
-omega cr1_curious cr1_interestedbyart cr1_repetitivetasks cr1_inventive cr1_liketothink cr1_newideas cr1_activeimagination, rev(cr1_repetitivetasks) 
 omega cr2_curious cr2_interestedbyart cr2_repetitivetasks cr2_inventive cr2_liketothink cr2_newideas cr2_activeimagination, rev(cr2_repetitivetasks) 
 
 ***CO
 omega organized  makeplans workhard appointmentontime putoffduties easilydistracted completeduties, rev(putoffduties easilydistracted)
 omega cr_organized cr_makeplans cr_workhard cr_appointmentontime cr_putoffduties cr_easilydistracted cr_completeduties, rev(cr_putoffduties cr_easilydistracted) 
-omega cr1_organized cr1_makeplans cr1_workhard cr1_appointmentontime cr1_putoffduties cr1_easilydistracted cr1_completeduties, rev(cr1_putoffduties cr1_easilydistracted) 
 omega cr2_organized cr2_makeplans cr2_workhard cr2_appointmentontime cr2_putoffduties cr2_easilydistracted cr2_completeduties, rev(cr2_putoffduties cr2_easilydistracted) 
 
 ***EX
 omega enjoypeople sharefeelings shywithpeople enthusiastic talktomanypeople  talkative expressingthoughts, rev(shywithpeople) 
 omega cr_enjoypeople cr_sharefeelings cr_shywithpeople cr_enthusiastic cr_talktomanypeople cr_talkative cr_expressingthoughts, rev(cr_shywithpeople) 
-omega cr1_enjoypeople cr1_sharefeelings cr1_shywithpeople cr1_enthusiastic cr1_talktomanypeople cr1_talkative cr1_expressingthoughts, rev(cr1_shywithpeople) 
 omega cr2_enjoypeople cr2_sharefeelings cr2_shywithpeople cr2_enthusiastic cr2_talktomanypeople cr2_talkative cr2_expressingthoughts, rev(cr2_shywithpeople) 
 
 ***AG
 omega workwithother  understandotherfeeling trustingofother rudetoother toleratefaults  forgiveother  helpfulwithothers, rev(rudetoother) 
 omega cr_workwithother cr_understandotherfeeling cr_trustingofother cr_rudetoother cr_toleratefaults cr_forgiveother cr_helpfulwithothers, rev(cr_rudetoother) 
-omega cr1_workwithother cr1_understandotherfeeling cr1_trustingofother cr1_rudetoother cr1_toleratefaults cr1_forgiveother cr1_helpfulwithothers, rev(cr1_rudetoother) 
 omega cr2_workwithother cr2_understandotherfeeling cr2_trustingofother cr2_rudetoother cr2_toleratefaults cr2_forgiveother cr2_helpfulwithothers, rev(cr2_rudetoother) 
 
 ***ES
 omega managestress  nervous  changemood feeldepressed easilyupset worryalot  staycalm, rev(managestress staycalm) 
 omega cr_managestress cr_nervous cr_changemood cr_feeldepressed cr_easilyupset cr_worryalot  cr_staycalm, rev(cr_managestress cr_staycalm)  
-omega cr1_managestress cr1_nervous cr1_changemood cr1_feeldepressed cr1_easilyupset cr1_worryalot  cr1_staycalm, rev(cr1_managestress cr1_staycalm)  
 omega cr2_managestress cr2_nervous cr2_changemood cr2_feeldepressed cr2_easilyupset cr2_worryalot  cr2_staycalm, rev(cr2_managestress cr2_staycalm)  
 restore
 
