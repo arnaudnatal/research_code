@@ -323,27 +323,70 @@ egen ars_ES1_temp=rowmean(nervous staycalm)
 egen ars_ES2_temp=rowmean(worryalot managestress)
 
 foreach x in AG CO EX OP ES {
-gen ars_`x'=ars_`x'_temp-3
+gen ars2_`x'=ars_`x'_temp-3
 drop ars_`x'_temp
-gen ars3_`x'=abs(ars_`x')
+gen ars3_`x'=abs(ars2_`x')
 }
 
 foreach x in CO ES {
 forvalues i=1(1)2{
-gen ars_`x'`i'=ars_`x'`i'_temp-3
+gen ars2_`x'`i'=ars_`x'`i'_temp-3
 drop ars_`x'`i'_temp
-gen ars3_`x'`i'=abs(ars_`x'`i')
+gen ars3_`x'`i'=abs(ars2_`x'`i')
 }
 }
 
-egen ars4=rowmean(ars_AG ars_CO ars_EX ars_OP ars_ES)
-egen ars5=rowmedian(ars_AG ars_CO ars_EX ars_OP ars_ES)
+egen ars4=rowmean(ars2_AG ars2_CO ars2_EX ars2_OP ars2_ES)
+egen ars5=rowmedian(ars2_AG ars2_CO ars2_EX ars2_OP ars2_ES)
 
 
+label var _1_ars "bias at 3 without pair 1 of rev question"
+label var _1_ars2 "bias at 0 without pair 1 of rev question"
+label var _1_ars3 "abs bias at 0 without pair 1 of rev question"
+label var _2_ars "bias at 3 without pair 2 of rev question"
+label var _2_ars2 "bias at 0 without pair 2 of rev question"
+label var _2_ars3 "abs bias at 0 without pair 2 of rev question"
+label var _3_ars "bias at 3 without pair 3 of rev question"
+label var _3_ars2 "bias at 0 without pair 3 of rev question"
+label var _3_ars3 "abs bias at 0 without pair 3 of rev question"
+label var _4_ars "bias at 3 without pair 4 of rev question"
+label var _4_ars2 "bias at 0 without pair 4 of rev question"
+label var _4_ars3 "abs bias at 0 without pair 4 of rev question"
+label var _5_ars "bias at 3 without pair 5 of rev question"
+label var _5_ars2 "bias at 0 without pair 5 of rev question"
+label var _5_ars3 "abs bias at 0 without pair 5 of rev question"
+label var _6_ars "bias at 3 without pair 6 of rev question"
+label var _6_ars2 "bias at 0 without pair 6 of rev question"
+label var _6_ars3 "abs bias at 0 without pair 6 of rev question"
+label var _7_ars "bias at 3 without pair 7 of rev question"
+label var _7_ars2 "bias at 0 without pair 7 of rev question"
+label var _7_ars3 "abs bias at 0 without pair 7 of rev question"
 
+label var ars2_AG "bias at 0 for AG"
+label var ars3_AG "abs bias at 0 for AG"
+label var ars2_CO "bias at 0 for CO"
+label var ars3_CO "abs bias at 0 for CO"
+label var ars2_EX "bias at 0 for EX"
+label var ars3_EX "abs bias at 0 for EX"
+label var ars2_OP "bias at 0 for OP"
+label var ars3_OP "abs bias at 0 for OP"
+label var ars2_ES "bias at 0 for ES"
+label var ars3_ES "abs bias at 0 for ES"
+label var ars2_CO1 "bias at 0 for CO1"
+label var ars3_CO1 "abs bias at 0 for CO1"
+label var ars2_CO2 "bias at 0 for CO2"
+label var ars3_CO2 "abs bias at 0 for CO2"
+label var ars2_ES1 "bias at 0 for ES1"
+label var ars3_ES1 "abs bias at 0 for ES1"
+label var ars2_ES2 "bias at 0 for ES2"
+label var ars3_ES2 "abs bias at 0 for ES2"
+label var ars4 "Mean bias of bias by traits"
+label var ars5 "Median bias of bias by traits"
 
-
-
+label var ars "bias at 3"
+label var ars2 "bias at 0"
+label var ars3 "abs bias at 0"
+ 
 
 
 
@@ -372,8 +415,8 @@ graph export boxplotars`i'_det.pdf, replace
 
 
 ********** Correlation
-corr ars_AG ars_CO ars_EX ars_OP ars_ES if year==2016
-corr ars_AG ars_CO ars_EX ars_OP ars_ES if year==2020
+corr ars2_AG ars2_CO ars2_EX ars2_OP ars2_ES if year==2016
+corr ars2_AG ars2_CO ars2_EX ars2_OP ars2_ES if year==2020
 tabstat ars3, stat(n min p1 p5 p10 q p90 p95 p99 max) by(year) long
 
 
@@ -385,22 +428,103 @@ tabstat ars3, stat(n min p1 p5 p10 q p90 p95 p99 max) by(year) long
 
 ********** Bias by enumerator
 encode username, gen(username_code)
+
+*Abs class bias
+qui reg ars3 i.username_code if year==2016
+est store res_2016
+qui reg ars3 i.username_code if year==2020
+est store res_2020
+
+esttab res_2016 using "_reg.csv", ///
+	cells("b(fmt(3)star)" "se(fmt(3)par)") /// 
+	star(* 0.10 ** 0.05 *** 0.01) ///
+	drop() ///
+	legend label varlabels(_cons constant) ///
+	stats(N r2 r2_a p, fmt(0 3 3 3) labels(`"Observations"' `"\$R^2$"' `"Adjusted \$R^2$"' `"p-value"')) ///
+	replace	
+	
+preserve
+import delimited "_reg.csv", delimiter(",") varnames(nonames) clear
+qui des
+sca def k=r(k)
+forvalues i=1(1)`=scalar(k)'{
+replace v`i'=substr(v`i',3,.)
+replace v`i'=substr(v`i',1,strlen(v`i')-1)
+}
+export excel using "OLS_username.xlsx", sheet(Class2016,replace)
+restore
+
+esttab res_2020 using "_reg.csv", ///
+	cells("b(fmt(3)star)" "se(fmt(3)par)") /// 
+	star(* 0.10 ** 0.05 *** 0.01) ///
+	drop() ///
+	legend label varlabels(_cons constant) ///
+	stats(N r2 r2_a p, fmt(0 3 3 3) labels(`"Observations"' `"\$R^2$"' `"Adjusted \$R^2$"' `"p-value"')) ///
+	replace	
+	
+preserve
+import delimited "_reg.csv", delimiter(",") varnames(nonames) clear
+qui des
+sca def k=r(k)
+forvalues i=1(1)`=scalar(k)'{
+replace v`i'=substr(v`i',3,.)
+replace v`i'=substr(v`i',1,strlen(v`i')-1)
+}
+export excel using "OLS_username.xlsx", sheet(Class2020,replace)
+restore
+
+estimates clear
+
+
+*By traits
 foreach x in ars3_AG ars3_CO ars3_CO1 ars3_CO2 ars3_EX ars3_OP ars3_ES ars3_ES1 ars3_ES2 {
-reg `x' i.username_code if year==2020
+qui reg `x' i.username_code if year==2016
+est store res_2016_`x'
+qui reg `x' i.username_code if year==2020
+est store res_2020_`x'
 }
 
-reg ars3 i.username_code if year==2020
 
-egen mean_ars3=rowmean(ars3_AG ars3_CO1 ars3_CO2 ars3_EX ars3_OP ars3_ES1 ars3_ES2)
-gen test=mean_ars3-ars3
-tab test
+esttab res_2016_* using "_reg.csv", ///
+	cells("b(fmt(3)star)" "se(fmt(3)par)") /// 
+	star(* 0.10 ** 0.05 *** 0.01) ///
+	drop() ///
+	legend label varlabels(_cons constant) ///
+	stats(N r2 r2_a p, fmt(0 3 3 3) labels(`"Observations"' `"\$R^2$"' `"Adjusted \$R^2$"' `"p-value"')) ///
+	replace	
+	
+preserve
+import delimited "_reg.csv", delimiter(",") varnames(nonames) clear
+qui des
+sca def k=r(k)
+forvalues i=1(1)`=scalar(k)'{
+replace v`i'=substr(v`i',3,.)
+replace v`i'=substr(v`i',1,strlen(v`i')-1)
+}
+export excel using "OLS_username.xlsx", sheet(Traits2016,replace)
+restore
 
-set graph on
-stripplot ars3 if year==2020, over(username) separate() ///
-cumul cumprob box centre refline vertical /// 
-xsize(3) xtitle("`i'") xlabel(,angle(45))  ///
-ylabel(0(.2)2) ymtick(0(.1)2) ytitle() ///
-msymbol(oh oh oh) mcolor(plr1 plg1 ply1) name(ars3_2020_username, replace)
+esttab res_2020_* using "_reg.csv", ///
+	cells("b(fmt(3)star)" "se(fmt(3)par)") /// 
+	star(* 0.10 ** 0.05 *** 0.01) ///
+	drop() ///
+	legend label varlabels(_cons constant) ///
+	stats(N r2 r2_a p, fmt(0 3 3 3) labels(`"Observations"' `"\$R^2$"' `"Adjusted \$R^2$"' `"p-value"')) ///
+	replace	
+	
+preserve
+import delimited "_reg.csv", delimiter(",") varnames(nonames) clear
+qui des
+sca def k=r(k)
+forvalues i=1(1)`=scalar(k)'{
+replace v`i'=substr(v`i',3,.)
+replace v`i'=substr(v`i',1,strlen(v`i')-1)
+}
+export excel using "OLS_username.xlsx", sheet(Traits2020,replace)
+restore
+estimates clear
+
+
 
 
 

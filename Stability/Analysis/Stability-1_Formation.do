@@ -215,6 +215,26 @@ recode time (2016=1) (2020=2)
 label define time 1"2016" 2"2020"
 label values time time
 
+
+*Clean username 2016
+fre username
+replace username="Antoni" if username=="1"
+replace username="Antoni - Vivek Radja" if username=="1 2"
+replace username="Vivek Radja" if username=="2"
+replace username="Vivek Radja - Mayan" if username=="2 5"
+replace username="Vivek Radja - Raja Annamalai" if username=="2 6"
+replace username="Kumaresh" if username=="3"
+replace username="Kumaresh - Sithanantham" if username=="3 4"
+replace username="Kumaresh - Raja Annamalai" if username=="3 6"
+replace username="Sithanantham" if username=="4"
+replace username="Sithanantham - Raja Annamalai" if username=="4 6"
+replace username="Mayan" if username=="5"
+replace username="Mayan - Raja Annamalai" if username=="5 6"
+replace username="Raja Annamalai" if username=="6"
+replace username="Raja Annamalai - Pazhani" if username=="6 7"
+replace username="Pazhani" if username=="7"
+
+
 save"panel_stab_v1", replace
 ****************************************
 * END
