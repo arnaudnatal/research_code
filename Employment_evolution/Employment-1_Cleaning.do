@@ -10,49 +10,36 @@ TITLE: Nettoyage
 -------------------------
 */
 
-global directory = "D:\Documents\_Thesis\Research-Labour_and_debt\Data"
+global directory = "D:\Documents\_Thesis\Research-Employment_evolution\Data"
 cd "$directory"
 
 global wave1 "RUME-HH_v8"
-global wave2 "NEEMSIS1-HH_v7"
-global wave3 "NEEMSIS2-HH_v15"
-global track "TRACKING1-HH_v2"
+global wave2 "NEEMSIS1-HH_v9"
+global wave3 "NEEMSIS2-HH_v19"
+global occ1 "RUME-occupations_v3"
+global occ2 "NEEMSIS-occupation_allwide_v4"
+global occ3 "NEEMSIS_APPEND-occupations_v5"
+
+
+
 
 
 ****************************************
-* Test 2020
+* Evolution mainocc
 ****************************************
+use"$wave1", clear
+
+fre mainocc_occupation_indiv
+
+
+use"$wave2", clear
+fre mainocc_occupation_indiv
+
+
 use"$wave3", clear
-fre livinghome
-keep if livinghome==1 | livinghome==2
-tab INDID_left
+fre mainocc_occupation_indiv
 
-*HH size
-bysort HHID_panel: egen HHsize=sum(1)
-tab HHsize
 
-*Nb child
-bysort HHID_panel: egen nbchildren=sum(1) if age<16
-recode nbchildren (.=0)
-bysort HHID_panel: egen nbchild=max(nbchildren)
-drop nbchildren
-tab nbchild
-
-*Own house
-destring house, replace
-gen ownhouse=0
-replace ownhouse=1 if house==1
-
-*Land
-destring ownland, replace
-
-foreach x in totalloanamount_indiv totalnumberloans_indiv totalloanbalance_indiv totalloanamount totalnumberloans totalloanbalance imp1_ds_tot imp1_is_tot loanamount_indiv IDR DSDR DSR ISR DSR_HH ISR_HH IDHDR InfoDR FoDR IncDR NoincDR PRdummy HSdummy ILdummy edulevel age sex caste jatis relationshiptohead villageid maritalstatus assets assets_noland dummymarriage HHsize nbchild ownhouse ownland totalincome_indiv totalincome_HH dummyremreceived mainoccupation_hours_indiv mainoccupation_income_indiv mainoccupation_indiv mainoccupationname_indiv mainoccupation_HH nboccupation_indiv nboccupation_HH {
-rename `x' `x'_2020
-}
-
-keep HHID2010 HHID_panel INDID *_2020
-
-save"$wave3~1.dta", replace
 ****************************************
 * END
 

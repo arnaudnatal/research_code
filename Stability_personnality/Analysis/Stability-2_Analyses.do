@@ -402,7 +402,7 @@ graph export boxplotars.pdf, replace
 forvalues i=2016(4)2020 {
 stripplot ars3_AG ars3_CO ars3_CO1 ars3_CO2 ars3_EX ars3_OP ars3_ES ars3_ES1 ars3_ES2 if year==`i', over() separate(caste) ///
 cumul cumprob box centre refline vertical /// 
-xsize(3) xtitle("") xlabel(,angle(45))  ///
+xsize(3) xtitle("`i'") xlabel(,angle(45))  ///
 ylabel(0(.2)2) ymtick(0(.1)2) ytitle("|ars|") ///
 msymbol(oh oh oh) mcolor(plr1 plg1 ply1) ///
 legend(pos(6) col(3)) name(boxplotars`i', replace)
@@ -631,19 +631,19 @@ gen cr2_`x'=.
 
 
 foreach x in curious interestedbyart  repetitivetasks inventive liketothink newideas activeimagination {
-replace cr2_`x'=`x'-ars_OP if ars!=.
+replace cr2_`x'=`x'-ars2_OP if ars!=.
 }
 foreach x in organized  makeplans workhard appointmentontime putoffduties easilydistracted completeduties {
-replace cr2_`x'=`x'-ars_CO if ars!=.
+replace cr2_`x'=`x'-ars2_CO if ars!=.
 }
 foreach x in enjoypeople sharefeelings shywithpeople enthusiastic talktomanypeople  talkative expressingthoughts {
-replace cr2_`x'=`x'-ars_EX if ars!=.
+replace cr2_`x'=`x'-ars2_EX if ars!=.
 }
 foreach x in workwithother understandotherfeeling trustingofother rudetoother toleratefaults forgiveother helpfulwithothers {
-replace cr2_`x'=`x'-ars_AG if ars!=.
+replace cr2_`x'=`x'-ars2_AG if ars!=.
 }
 foreach x in managestress nervous changemood feeldepressed easilyupset worryalot staycalm {
-replace cr2_`x'=`x'-ars_ES if ars!=.
+replace cr2_`x'=`x'-ars2_ES if ars!=.
 }
 
 foreach x of varlist $big5grit {
@@ -673,37 +673,53 @@ tab caste year if ars3>1, col nofreq
 
 
 ********** Test omega imput
-
+/*
 preserve
 keep if year==2020
-keep if panel==1
+*keep if panel==1
+putexcel set "omega.xlsx", modify sheet(2020_total)
 
 ***OP
 omega curious interestedbyart repetitivetasks inventive liketothink newideas activeimagination, rev(repetitivetasks)
+putexcel (E2)=matrix(r(omega))
 omega cr_curious cr_interestedbyart cr_repetitivetasks cr_inventive cr_liketothink cr_newideas cr_activeimagination, rev(cr_repetitivetasks) 
+putexcel (E3)=matrix(r(omega))
 omega cr2_curious cr2_interestedbyart cr2_repetitivetasks cr2_inventive cr2_liketothink cr2_newideas cr2_activeimagination, rev(cr2_repetitivetasks) 
+putexcel (E4)=matrix(r(omega))
 
 ***CO
 omega organized  makeplans workhard appointmentontime putoffduties easilydistracted completeduties, rev(putoffduties easilydistracted)
+putexcel (E5)=matrix(r(omega))
 omega cr_organized cr_makeplans cr_workhard cr_appointmentontime cr_putoffduties cr_easilydistracted cr_completeduties, rev(cr_putoffduties cr_easilydistracted) 
+putexcel (E6)=matrix(r(omega))
 omega cr2_organized cr2_makeplans cr2_workhard cr2_appointmentontime cr2_putoffduties cr2_easilydistracted cr2_completeduties, rev(cr2_putoffduties cr2_easilydistracted) 
+putexcel (E7)=matrix(r(omega))
 
 ***EX
 omega enjoypeople sharefeelings shywithpeople enthusiastic talktomanypeople  talkative expressingthoughts, rev(shywithpeople) 
+putexcel (E8)=matrix(r(omega))
 omega cr_enjoypeople cr_sharefeelings cr_shywithpeople cr_enthusiastic cr_talktomanypeople cr_talkative cr_expressingthoughts, rev(cr_shywithpeople) 
+putexcel (E9)=matrix(r(omega))
 omega cr2_enjoypeople cr2_sharefeelings cr2_shywithpeople cr2_enthusiastic cr2_talktomanypeople cr2_talkative cr2_expressingthoughts, rev(cr2_shywithpeople) 
+putexcel (E10)=matrix(r(omega))
 
 ***AG
 omega workwithother  understandotherfeeling trustingofother rudetoother toleratefaults  forgiveother  helpfulwithothers, rev(rudetoother) 
+putexcel (E11)=matrix(r(omega))
 omega cr_workwithother cr_understandotherfeeling cr_trustingofother cr_rudetoother cr_toleratefaults cr_forgiveother cr_helpfulwithothers, rev(cr_rudetoother) 
+putexcel (E12)=matrix(r(omega))
 omega cr2_workwithother cr2_understandotherfeeling cr2_trustingofother cr2_rudetoother cr2_toleratefaults cr2_forgiveother cr2_helpfulwithothers, rev(cr2_rudetoother) 
+putexcel (E13)=matrix(r(omega))
 
 ***ES
 omega managestress  nervous  changemood feeldepressed easilyupset worryalot  staycalm, rev(managestress staycalm) 
+putexcel (E14)=matrix(r(omega))
 omega cr_managestress cr_nervous cr_changemood cr_feeldepressed cr_easilyupset cr_worryalot  cr_staycalm, rev(cr_managestress cr_staycalm)  
+putexcel (E15)=matrix(r(omega))
 omega cr2_managestress cr2_nervous cr2_changemood cr2_feeldepressed cr2_easilyupset cr2_worryalot  cr2_staycalm, rev(cr2_managestress cr2_staycalm)  
+putexcel (E16)=matrix(r(omega))
 restore
-
+*/
 
 
 
@@ -711,48 +727,98 @@ restore
 ********** Omega as data
 preserve
 clear all
-input sample	traits	correction	year2016	year2020
-1	1	0	0.868386175	0.764244248
-1	1	1	0.811328043	0.368360137
-1	2	0	0.85132604	0.70404754
-1	2	1	0.856587504	0.417065151
-1	3	0	0.729188007	0.651072121
-1	3	1	0.588299672	0.448570114
-1	4	0	0.510766933	0.612616194
-1	4	1	0.602029083	0.307593575
-1	5	0	0.479387466	0.729498845
-1	5	1	0.801919231	0.792915118
-1	6	0	0.732293366	0.664093592
-1	6	1	0.753628544	0.447264361
-2	1	0	0.864361921	0.765863028
-2	1	1	0.805783057	0.383624434
-2	2	0	0.843918601	0.705388653
-2	2	1	0.848500949	0.368849752
-2	3	0	0.722326272	0.643470461
-2	3	1	0.57663988	0.436589964
-2	4	0	0.521202368	0.597217979
-2	4	1	0.585015614	0.30314471
-2	5	0	0.497242214	0.707849376
-2	5	1	0.79321718	0.778994403
-2	6	0	0.727218443	0.654720975
-2	6	1	0.745714831	0.437390982
+input panel	traits	correction	year	omega
+1	1	1	2016	0.864361921
+1	1	2	2016	0.805783057
+1	1	3	2016	0.80987671
+1	2	1	2016	0.843918601
+1	2	2	2016	0.848500949
+1	2	3	2016	0.883629311
+1	3	1	2016	0.722326272
+1	3	2	2016	0.57663988
+1	3	3	2016	0.803717672
+1	4	1	2016	0.521202368
+1	4	2	2016	0.585015614
+1	4	3	2016	0.836415401
+1	5	1	2016	0.497242214
+1	5	2	2016	0.79321718
+1	5	3	2016	0.850892239
+0	1	1	2016	0.868386175
+0	1	2	2016	0.811328043
+0	1	3	2016	0.810829871
+0	2	1	2016	0.85132604
+0	2	2	2016	0.856587504
+0	2	3	2016	0.889121278
+0	3	1	2016	0.729188007
+0	3	2	2016	0.588299672
+0	3	3	2016	0.807201466
+0	4	1	2016	0.510766933
+0	4	2	2016	0.602029083
+0	4	3	2016	0.833129231
+0	5	1	2016	0.479387466
+0	5	2	2016	0.801919231
+0	5	3	2016	0.855408328
+1	1	1	2020	0.765863028
+1	1	2	2020	0.383624434
+1	1	3	2020	0.747477791
+1	2	1	2020	0.705388653
+1	2	2	2020	0.368849752
+1	2	3	2020	0.665769886
+1	3	1	2020	0.643470461
+1	3	2	2020	0.436589964
+1	3	3	2020	0.833399312
+1	4	1	2020	0.597217979
+1	4	2	2020	0.30314471
+1	4	3	2020	0.835737224
+1	5	1	2020	0.707849376
+1	5	2	2020	0.778994403
+1	5	3	2020	0.828889273
+0	1	1	2020	0.764244248
+0	1	2	2020	0.368360137
+0	1	3	2020	0.74406823
+0	2	1	2020	0.70404754
+0	2	2	2020	0.417065151
+0	2	3	2020	0.681238123
+0	3	1	2020	0.651072121
+0	3	2	2020	0.448570114
+0	3	3	2020	0.827102195
+0	4	1	2020	0.612616194
+0	4	2	2020	0.307593575
+0	4	3	2020	0.845953408
+0	5	1	2020	0.729498845
+0	5	2	2020	0.792915118
+0	5	3	2020	0.834844869
+
 end
 
-label define traits 1"OP" 2"CO" 3"EX" 4"AG" 5"ES" 6"Grit"
-label define sample 1"total" 2"panel"
-label define correction 0"No" 1"Corr"
+label define traits 1"OP" 2"CO" 3"EX" 4"AG" 5"ES"
+label define panel 0"total" 1"panel"
+label define correction 1"No" 2"Corr. class" 3"Corr. maison"
 label values traits traits 
-label values sample sample
+label values panel panel
 label values correction correction
 
-rename year2016 omega2016
-rename year2020 omega2020
 
+graph bar omega if panel==1, over(correction) over(year, gap(100)) over(traits) ///
+bar(1, fcolor(plr1) lcolor(plr1)) ///
+bar(2, fcolor(ply1) lcolor(ply1)) ///
+bar(3, fcolor(plg1) lcolor(plg1)) ///
+bargap(0) intensity(inten30) ///
+ytitle("McDonald's Ω") ylabel(0(.1)1) ymtick(0(.05)1) ///
+note("Égos en panel", size(small)) ///
+legend(pos(6) col(3)) name(omega_panel, replace)
+graph export omega_panel.pdf, replace
 
-log using Desc, append text
-********** Omega for 2016-17 and 2020-21 before and after correction of acquiescence bias
-list traits correction omega2016 omega2020 if sample==1, clean noobs
-log close
+graph bar omega, over(correction) over(year, gap(100)) over(traits) ///
+bar(1, fcolor(plr1) lcolor(plr1)) ///
+bar(2, fcolor(ply1) lcolor(ply1)) ///
+bar(3, fcolor(plg1) lcolor(plg1)) ///
+bargap(0) intensity(inten30) ///
+ytitle("McDonald's Ω") ylabel(0(.1)1) ymtick(0(.05)1) ///
+note("Tous les égos", size(small)) ///
+legend(pos(6) col(3)) name(omega_tot, replace)
+graph export omega_tot.pdf, replace
+
 restore
 
 
