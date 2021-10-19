@@ -79,14 +79,7 @@ erase "$wave2-_temp.dta"
 ****************************************
 use"panel_v1", clear
 
-drop if mainocc_occupation_indiv==.
-drop if working_pop==1
-drop if working_pop==2
 
-tab mainocc_occupation_indiv
-keep if mainocc_occupation_indiv==0
-ta age
-ta year
 
 ********** Moc des 15-70
 preserve
@@ -141,11 +134,40 @@ bar(3, fcolor(plg1) lcolor(plg1)) ///
 bargap(0) intensity(inten30) ///
 blabel(bar, format(%5.1f) size(tiny)) ///
 ytitle("%") ylabel(0(3)35) ymtick(0(1)36) ///
-note("Occupation principale des 15-70 ans", size(vsmall)) ///
+note("Occupation principale des 15-70 ans occupés", size(vsmall)) ///
 legend(order(1 "2010" 2 "2016-17" 3 "2020-21") pos(6) col(3)) ///
-name(evo_moc_1570, replace)
+name(evo_moc_1570act, replace)
 *
-graph export "evo_moc_1570.pdf", replace
+graph export "evo_moc_1570act.pdf", replace
+restore
+
+********** Moc des HH
+preserve
+drop if mainocc_occupation_HH==.
+
+*
+tab mainocc_occupation_indiv year, m col nofreq
+*
+contract mainocc_occupation_indiv year, zero freq(moc_freq) perc(moc_pc)
+foreach i in 2010 2016 2020{
+egen tot_`i'=sum(moc_freq) if year==`i'
+replace moc_pc=moc_freq*100/tot_`i' if tot_`i'!=.
+}
+separate moc_pc, by(year) veryshortlabel
+*
+graph bar moc_pc2010 moc_pc2016 moc_pc2020, ///
+over(mainocc_occupation_indiv, label(angle(45))) ///
+bar(1, fcolor(plr1) lcolor(plr1)) ///
+bar(2, fcolor(ply1) lcolor(ply1)) ///
+bar(3, fcolor(plg1) lcolor(plg1)) ///
+bargap(0) intensity(inten30) ///
+blabel(bar, format(%5.1f) size(tiny)) ///
+ytitle("%") ylabel(0(3)35) ymtick(0(1)36) ///
+note("Occupation principale des 15-70 ans occupés", size(vsmall)) ///
+legend(order(1 "2010" 2 "2016-17" 3 "2020-21") pos(6) col(3)) ///
+name(evo_moc_1570act, replace)
+*
+graph export "evo_moc_1570act.pdf", replace
 restore
 
 
