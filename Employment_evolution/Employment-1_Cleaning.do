@@ -14,32 +14,51 @@ global directory = "D:\Documents\_Thesis\Research-Employment_evolution\Data"
 cd "$directory"
 
 global wave1 "RUME-HH_v8"
-global wave2 "NEEMSIS1-HH_v9"
+global wave2 "NEEMSIS1-HH_v8"
 global wave3 "NEEMSIS2-HH_v19"
-global occ1 "RUME-occupations_v3"
+global occ1 "RUME-occupations_v4"
 global occ2 "NEEMSIS-occupation_allwide_v4"
 global occ3 "NEEMSIS_APPEND-occupations_v5"
 
 
-
+set scheme plotplain
 
 
 ****************************************
 * Evolution mainocc
 ****************************************
 use"$wave1", clear
-
-fre mainocc_occupation_indiv
-
+keep HHID_panel INDID_panel caste jatis age sex relationshiptohead villageid working_pop annualincome_indiv annualincome_HH mainocc_occupation_indiv mainocc_profession_indiv mainocc_occupation_HH worker villageid
+gen year=2010
+save "$wave1-_temp", replace
 
 use"$wave2", clear
-fre mainocc_occupation_indiv
+keep HHID_panel INDID_panel caste jatis age sex relationshiptohead villageid working_pop annualincome_indiv annualincome_HH mainocc_occupation_indiv mainocc_profession_indiv mainocc_occupation_HH worker villageid livinghome
+gen year=2016
+save "$wave2-_temp", replace
 
 
 use"$wave3", clear
-fre mainocc_occupation_indiv
+keep HHID_panel INDID_panel caste jatis age sex relationshiptohead villageid working_pop annualincome_indiv annualincome_HH mainocc_occupation_indiv mainocc_profession_indiv mainocc_occupation_HH worker villageid livinghome INDID_left
+gen dummyleft=0
+replace dummyleft=1 if INDID_left!=.
+drop INDID_left
+gen year=2020
 
 
+append using "$wave1-_temp"
+append using "$wave2-_temp"
+
+sort year HHID_panel INDID_panel
+order HHID_panel INDID_panel year
+
+
+label define occupcode 0"No occ" 1"Agri SE" 2"Agri casual" 3"Casual" 4"Reg non-quali" 5"Reg quali" 6"SE" 7"NREGA", modify
+
+
+save"panel_v1", replace
+erase "$wave1-_temp.dta"
+erase "$wave2-_temp.dta"
 ****************************************
 * END
 
@@ -56,120 +75,83 @@ fre mainocc_occupation_indiv
 
 
 ****************************************
-* Test 2016
+* Graph bar 2016
 ****************************************
-use"$wave2", clear
-fre livinghome
-keep if livinghome==1 | livinghome==2
+use"panel_v1", clear
 
-*HH size
-bysort HHID_panel: egen HHsize=sum(1)
-tab HHsize
+drop if mainocc_occupation_indiv==.
+drop if working_pop==1
+drop if working_pop==2
 
-*Nb child
-bysort HHID_panel: egen nbchildren=sum(1) if age<16
-recode nbchildren (.=0)
-bysort HHID_panel: egen nbchild=max(nbchildren)
-drop nbchildren
-tab nbchild
+tab mainocc_occupation_indiv
+keep if mainocc_occupation_indiv==0
+ta age
+ta year
 
-*Own house
-destring house, replace
-gen ownhouse=0
-replace ownhouse=1 if house==1
-
-*Land
-destring ownland, replace
-
-foreach x in totalloanamount_indiv totalnumberloans_indiv totalloanbalance_indiv totalloanamount totalnumberloans totalloanbalance imp1_ds_tot imp1_is_tot loanamount_indiv IDR DSDR DSR ISR DSR_HH ISR_HH IDHDR InfoDR FoDR IncDR NoincDR PRdummy HSdummy ILdummy edulevel age sex caste jatis relationshiptohead villageid maritalstatus assets assets_noland dummymarriage HHsize nbchild ownhouse ownland totalincome_indiv totalincome_HH dummyremreceived mainoccupation_hours_indiv mainoccupation_income_indiv mainoccupation_indiv mainoccupationname_indiv mainoccupation_HH nboccupation_indiv nboccupation_HH {
-rename `x' `x'_2020
+********** Moc des 15-70
+preserve
+drop if mainocc_occupation_indiv==.
+drop if working_pop==1
+*
+tab mainocc_occupation_indiv year, m col nofreq
+*
+contract mainocc_occupation_indiv year, zero freq(moc_freq) perc(moc_pc)
+foreach i in 2010 2016 2020{
+egen tot_`i'=sum(moc_freq) if year==`i'
+replace moc_pc=moc_freq*100/tot_`i' if tot_`i'!=.
 }
-
-keep HHID2010 HHID_panel INDID *_2020
-
-save"$wave2~1.dta", replace
-****************************************
-* END
-
-
-
-
-
-
-
-
-
-
-
-
-
-****************************************
-* Test panel
-****************************************
-use"$wave3~1", clear
-
-merge 1:1 HHID2010 INDID using "$wave2~1"
-keep if _merge==3
-drop _merge
-
-save"paneltest.dta", replace
+separate moc_pc, by(year) veryshortlabel
+*
+graph bar moc_pc2010 moc_pc2016 moc_pc2020, ///
+over(mainocc_occupation_indiv, label(angle(45))) ///
+bar(1, fcolor(plr1) lcolor(plr1)) ///
+bar(2, fcolor(ply1) lcolor(ply1)) ///
+bar(3, fcolor(plg1) lcolor(plg1)) ///
+bargap(0) intensity(inten30) ///
+blabel(bar, format(%5.1f) size(tiny)) ///
+ytitle("%") ylabel(0(3)35) ymtick(0(1)36) ///
+note("Occupation principale des 15-70 ans", size(vsmall)) ///
+legend(order(1 "2010" 2 "2016-17" 3 "2020-21") pos(6) col(3)) ///
+name(evo_moc_1570, replace)
+*
+graph export "evo_moc_1570.pdf", replace
+restore
 
 
-
-/*
-We measure income mobility in absolute and relative terms. Absolute income mobility is measured by
-the logged value of the difference of income between 2010 and 2016 (after controlling for inflation).
-Relative income mobility is detected by a variable measuring the number of percentiles of mobility
-(percentile rank change) that a worker experienced across the distribution of annual wages between the
-2010 and 2016-2017 waves. The variable can take the values [-100; 100].
-*/
-
-****************************************
-* END
-
-
-
-
-
-
-
-
-
-
-
-****************************************
-* Test tracking
-****************************************
-use"$track", clear
-fre livinghome
-keep if livinghome==1 | livinghome==2
-tab INDID_left
-
-*HH size
-bysort HHID_panel: egen HHsize=sum(1)
-tab HHsize
-
-*Nb child
-bysort HHID_panel: egen nbchildren=sum(1) if age<16
-recode nbchildren (.=0)
-bysort HHID_panel: egen nbchild=max(nbchildren)
-drop nbchildren
-tab nbchild
-
-*Own house
-destring house, replace
-gen ownhouse=0
-replace ownhouse=1 if house==1
-
-*Land
-destring ownland, replace
-
-foreach x in totalloanamount_indiv totalnumberloans_indiv totalloanbalance_indiv totalloanamount totalnumberloans totalloanbalance imp1_ds_tot imp1_is_tot loanamount_indiv IDR DSDR DSR ISR DSR_HH ISR_HH IDHDR InfoDR FoDR IncDR NoincDR PRdummy HSdummy ILdummy edulevel age sex caste jatis relationshiptohead villageid maritalstatus assets assets_noland dummymarriage HHsize nbchild ownhouse ownland totalincome_indiv totalincome_HH dummyremreceived mainoccupation_hours_indiv mainoccupation_income_indiv mainoccupation_indiv mainoccupationname_indiv mainoccupation_HH nboccupation_indiv nboccupation_HH {
-rename `x' `x'_2020
+********** Moc de ceux qui sont occupés
+preserve
+drop if mainocc_occupation_indiv==.
+drop if working_pop==1
+drop if working_pop==2
+*
+tab mainocc_occupation_indiv year, m col nofreq
+*
+contract mainocc_occupation_indiv year, zero freq(moc_freq) perc(moc_pc)
+foreach i in 2010 2016 2020{
+egen tot_`i'=sum(moc_freq) if year==`i'
+replace moc_pc=moc_freq*100/tot_`i' if tot_`i'!=.
 }
+separate moc_pc, by(year) veryshortlabel
+*
+graph bar moc_pc2010 moc_pc2016 moc_pc2020, ///
+over(mainocc_occupation_indiv, label(angle(45))) ///
+bar(1, fcolor(plr1) lcolor(plr1)) ///
+bar(2, fcolor(ply1) lcolor(ply1)) ///
+bar(3, fcolor(plg1) lcolor(plg1)) ///
+bargap(0) intensity(inten30) ///
+blabel(bar, format(%5.1f) size(tiny)) ///
+ytitle("%") ylabel(0(3)35) ymtick(0(1)36) ///
+note("Occupation principale des 15-70 ans", size(vsmall)) ///
+legend(order(1 "2010" 2 "2016-17" 3 "2020-21") pos(6) col(3)) ///
+name(evo_moc_1570, replace)
+*
+graph export "evo_moc_1570.pdf", replace
+restore
 
-keep HHID2010 HHID_panel INDID *_2020
 
-save"$wave3~1.dta", replace
 ****************************************
 * END
+
+
+
+
