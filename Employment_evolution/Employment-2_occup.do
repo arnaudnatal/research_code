@@ -168,7 +168,7 @@ restore
 }
 
 set graph on
-grc1leg occ_year_1 occ_year_2, col(3) note("1=Male, 2=Female")
+grc1leg occ_year_1 occ_year_2, col(3) note("1=Male, 2=Female", size(vsmall))
 graph export "occ_year_sex.pdf", replace
 
 ****************************************
@@ -239,7 +239,7 @@ restore
 }
 
 set graph on
-grc1leg occ_year_1 occ_year_2 occ_year_3, col(3) note("1=Dalits, 2=Middle, 3=Upper, 77=Other")
+grc1leg occ_year_1 occ_year_2 occ_year_3, col(3) note("1=Dalits, 2=Middle, 3=Upper, 77=Other", size(vsmall))
 graph export "occ_year_caste.pdf", replace
 
 ****************************************
