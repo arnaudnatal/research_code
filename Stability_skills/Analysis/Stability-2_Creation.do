@@ -19,19 +19,23 @@ Stability over time of personality traits: merging des bases
 clear all
 macro drop _all
 ********** Path to folder "data" folder.
-global directory = "D:\Documents\_Thesis\Research-Stability_skills\Analysis"
-cd"$directory"
-global git "C:\Users\Arnaud\Documents\GitHub"
+*global directory = "D:\Documents\_Thesis\Research-Stability_skills\Analysis"
+*cd"$directory"
+*global git "C:\Users\Arnaud\Documents\GitHub"
 
 *Fac
-*cd "C:\Users\anatal\Downloads\_Thesis\Research-Skills_and_debt\Analysis"
+global directory = "C:\Users\anatal\Downloads\_Thesis\Research-Stability_skills\Analysis"
+cd "$directory"
 set scheme plotplain
+global git "C:\Users\anatal\Downloads\GitHub"
 
-*global git "C:\Users\anatal\Downloads\GitHub"
 *global dropbox "C:\Users\anatal\Downloads\Dropbox"
 *global thesis "C:\Users\anatal\Downloads\_Thesis\Research-Skills_and_debt\Analysis"
 
 
+********** Name of the NEEMSIS2 questionnaire version to clean
+global wave2 "NEEMSIS1-HH_v9"
+global wave3 "NEEMSIS2-HH_v20"
 ****************************************
 * END
 
@@ -58,6 +62,7 @@ Regarder stabilité
 * Panel 2016 2020
 ****************************************
 use"panel_stab_v1", clear
+
 
 global big5 curious interestedbyart repetitivetasks inventive liketothink newideas activeimagination ///
 organized  makeplans workhard appointmentontime putoffduties easilydistracted completeduties ///
@@ -138,65 +143,6 @@ worryalot managestress if year==2020
 
 
 
-********** Imputation for missings
-fre sex
-fre caste
-foreach x in $big5grit{
-clonevar im`x'=`x'
-}
-
-forvalues i=1(1)2{
-forvalues j=1(1)3{
-forvalues k=16(4)20 {
-foreach x in $big5grit{
-sum im`x' if sex==`i' & caste==`j' & year==20`k'
-replace im`x'=r(mean) if `x'==. & sex==`i' & caste==`j'  & year==20`k'
-}
-}
-}
-}
-
-
-
-
-
-********** Correlation
-preserve
-cls 
-keep if year==2016
-pwcorr curious interestedbyart repetitivetasks inventive liketothink newideas activeimagination, star(.01)
-*
-pwcorr organized makeplans workhard appointmentontime putoffduties easilydistracted completeduties, star(.01)
-*
-pwcorr enjoypeople sharefeelings shywithpeople enthusiastic talktomanypeople  talkative expressingthoughts, star(.01)
-*
-pwcorr workwithother understandotherfeeling trustingofother rudetoother toleratefaults forgiveother helpfulwithothers, star(.01)
-*
-pwcorr managestress nervous changemood feeldepressed easilyupset worryalot  staycalm, star(.01)
-*
-restore
-
-preserve 
-cls
-keep if year==2020
-pwcorr curious interestedbyart repetitivetasks inventive liketothink newideas activeimagination, star(.01)
-*activeimagination est peut-être plus bas que les autres
-pwcorr organized makeplans workhard appointmentontime putoffduties easilydistracted completeduties, star(.01)
-*puttofduties pas ouf
-pwcorr enjoypeople sharefeelings shywithpeople enthusiastic talktomanypeople  talkative expressingthoughts, star(.01)
-*shywithpeople
-pwcorr workwithother understandotherfeeling trustingofother rudetoother toleratefaults forgiveother helpfulwithothers, star(.01)
-*rudetoother
-pwcorr managestress nervous changemood feeldepressed easilyupset worryalot  staycalm, star(.01)
-*nothing
-restore
-
-
-
-
-
-
-
 ********** Acquiescence bias measure and correction
 /*
 Ca fonctionne par paire.
@@ -244,7 +190,6 @@ Idée de correction qui aurait du sens par rapport à la façon dont les questio
 Il y a une pause dans l'administration du questionnaire entre changemood et understandotherfeeling.
 Donc il peut être intéressant de corriger le biais par groupe de question.
 Pb: les reverses questions ne sont pas dans le même groupe, donc la moyenne n'a pas vraiment de sens........
-
 
 
 
@@ -387,6 +332,13 @@ gen _7_ars3=abs(_7_ars2)
 
 
 ********** Bias by trait
+/*
+We can also check a bias per Big-5 trait, but it is a non-sense with our data:
+In the survey, questions to a certain traits are not asking in order.
+Thus, the "bored bias per trait" does not exist.
+*/
+
+/*
 egen ars_AG_temp=rowmean(rudetoother helpfulwithothers)
 egen ars_CO_temp=rowmean(putoffduties completeduties easilydistracted makeplans)
 egen ars_EX_temp=rowmean(shywithpeople talktomanypeople)
@@ -458,7 +410,7 @@ label var ars2_ES2 "bias at 0 for ES2"
 label var ars3_ES2 "abs bias at 0 for ES2"
 label var ars4 "Mean bias of bias by traits"
 label var ars5 "Median bias of bias by traits"
-
+*/
 label var ars "bias at 3"
 label var ars2 "bias at 0"
 label var ars3 "abs bias at 0"
@@ -538,6 +490,9 @@ pwcorr workwithother understandotherfeeling trustingofother rudetoother tolerate
 
 *ES
 pwcorr managestress nervous changemood feeldepressed easilyupset worryalot  staycalm, star(.01)
+
+*Grit
+pwcorr tryhard  stickwithgoals   goaftergoal finishwhatbegin finishtasks  keepworking, star(.01)
 restore
 
 ***2020
@@ -557,6 +512,9 @@ pwcorr workwithother understandotherfeeling trustingofother rudetoother tolerate
 
 *ES
 pwcorr managestress nervous changemood feeldepressed easilyupset worryalot  staycalm, star(.01)
+
+*Grit
+pwcorr tryhard  stickwithgoals   goaftergoal finishwhatbegin finishtasks  keepworking, star(.01)
 restore
 
 
@@ -572,12 +530,12 @@ restore
 ********** Recode 4: corr from acquiescence bias
 foreach x of varlist $big5grit {
 gen cr_`x'=`x'-ars2 if ars!=.
-gen cr2_`x'=.
+*gen cr2_`x'=.
 *gen cr4_`x'=`x'-ars4 if ars!=.
 *gen cr5_`x'=`x'-ars5 if ars!=.
 }
 
-
+/*
 foreach x in curious interestedbyart  repetitivetasks inventive liketothink newideas activeimagination {
 replace cr2_`x'=`x'-ars2_OP if ars!=.
 }
@@ -597,7 +555,7 @@ replace cr2_`x'=`x'-ars2_ES if ars!=.
 foreach x of varlist $big5grit {
 replace cr2_`x'=0 if cr2_`x'<0
 }
-
+*/
 
 
 
@@ -612,151 +570,123 @@ replace cr2_`x'=0 if cr2_`x'<0
 /*
 preserve
 keep if year==2020
-*keep if panel==1
-putexcel set "omega.xlsx", modify sheet(2020_total)
+keep if panel==1
+putexcel set "omega.xlsx", modify sheet(draft)
 
 ***OP
 omega curious interestedbyart repetitivetasks inventive liketothink newideas activeimagination, rev(repetitivetasks)
 putexcel (E2)=matrix(r(omega))
 omega cr_curious cr_interestedbyart cr_repetitivetasks cr_inventive cr_liketothink cr_newideas cr_activeimagination, rev(cr_repetitivetasks) 
 putexcel (E3)=matrix(r(omega))
-omega cr2_curious cr2_interestedbyart cr2_repetitivetasks cr2_inventive cr2_liketothink cr2_newideas cr2_activeimagination, rev(cr2_repetitivetasks) 
-putexcel (E4)=matrix(r(omega))
+*omega cr2_curious cr2_interestedbyart cr2_repetitivetasks cr2_inventive cr2_liketothink cr2_newideas cr2_activeimagination, rev(cr2_repetitivetasks) 
+*putexcel (E4)=matrix(r(omega))
 
 ***CO
 omega organized  makeplans workhard appointmentontime putoffduties easilydistracted completeduties, rev(putoffduties easilydistracted)
-putexcel (E5)=matrix(r(omega))
+putexcel (E4)=matrix(r(omega))
 omega cr_organized cr_makeplans cr_workhard cr_appointmentontime cr_putoffduties cr_easilydistracted cr_completeduties, rev(cr_putoffduties cr_easilydistracted) 
-putexcel (E6)=matrix(r(omega))
-omega cr2_organized cr2_makeplans cr2_workhard cr2_appointmentontime cr2_putoffduties cr2_easilydistracted cr2_completeduties, rev(cr2_putoffduties cr2_easilydistracted) 
-putexcel (E7)=matrix(r(omega))
+putexcel (E5)=matrix(r(omega))
+*omega cr2_organized cr2_makeplans cr2_workhard cr2_appointmentontime cr2_putoffduties cr2_easilydistracted cr2_completeduties, rev(cr2_putoffduties cr2_easilydistracted) 
+*putexcel (E7)=matrix(r(omega))
 
 ***EX
 omega enjoypeople sharefeelings shywithpeople enthusiastic talktomanypeople  talkative expressingthoughts, rev(shywithpeople) 
-putexcel (E8)=matrix(r(omega))
+putexcel (E6)=matrix(r(omega))
 omega cr_enjoypeople cr_sharefeelings cr_shywithpeople cr_enthusiastic cr_talktomanypeople cr_talkative cr_expressingthoughts, rev(cr_shywithpeople) 
-putexcel (E9)=matrix(r(omega))
-omega cr2_enjoypeople cr2_sharefeelings cr2_shywithpeople cr2_enthusiastic cr2_talktomanypeople cr2_talkative cr2_expressingthoughts, rev(cr2_shywithpeople) 
-putexcel (E10)=matrix(r(omega))
+putexcel (E7)=matrix(r(omega))
+*omega cr2_enjoypeople cr2_sharefeelings cr2_shywithpeople cr2_enthusiastic cr2_talktomanypeople cr2_talkative cr2_expressingthoughts, rev(cr2_shywithpeople) 
+*putexcel (E10)=matrix(r(omega))
 
 ***AG
+*alpha workwithother  understandotherfeeling trustingofother rudetoother toleratefaults  forgiveother  helpfulwithothers
 omega workwithother  understandotherfeeling trustingofother rudetoother toleratefaults  forgiveother  helpfulwithothers, rev(rudetoother) 
-putexcel (E11)=matrix(r(omega))
+putexcel (E8)=matrix(r(omega))
 omega cr_workwithother cr_understandotherfeeling cr_trustingofother cr_rudetoother cr_toleratefaults cr_forgiveother cr_helpfulwithothers, rev(cr_rudetoother) 
-putexcel (E12)=matrix(r(omega))
-omega cr2_workwithother cr2_understandotherfeeling cr2_trustingofother cr2_rudetoother cr2_toleratefaults cr2_forgiveother cr2_helpfulwithothers, rev(cr2_rudetoother) 
-putexcel (E13)=matrix(r(omega))
+putexcel (E9)=matrix(r(omega))
+*omega cr2_workwithother cr2_understandotherfeeling cr2_trustingofother cr2_rudetoother cr2_toleratefaults cr2_forgiveother cr2_helpfulwithothers, rev(cr2_rudetoother) 
+*putexcel (E13)=matrix(r(omega))
 
 ***ES
 omega managestress  nervous  changemood feeldepressed easilyupset worryalot  staycalm, rev(managestress staycalm) 
-putexcel (E14)=matrix(r(omega))
+putexcel (E10)=matrix(r(omega))
 omega cr_managestress cr_nervous cr_changemood cr_feeldepressed cr_easilyupset cr_worryalot  cr_staycalm, rev(cr_managestress cr_staycalm)  
-putexcel (E15)=matrix(r(omega))
-omega cr2_managestress cr2_nervous cr2_changemood cr2_feeldepressed cr2_easilyupset cr2_worryalot  cr2_staycalm, rev(cr2_managestress cr2_staycalm)  
-putexcel (E16)=matrix(r(omega))
+putexcel (E11)=matrix(r(omega))
+*omega cr2_managestress cr2_nervous cr2_changemood cr2_feeldepressed cr2_easilyupset cr2_worryalot  cr2_staycalm, rev(cr2_managestress cr2_staycalm)  
+*putexcel (E16)=matrix(r(omega))
+
+*** Grit
+omega tryhard  stickwithgoals   goaftergoal finishwhatbegin finishtasks  keepworking
+putexcel (E12)=matrix(r(omega))
+omega cr_tryhard  cr_stickwithgoals  cr_goaftergoal cr_finishwhatbegin cr_finishtasks cr_keepworking
+putexcel (E13)=matrix(r(omega))
 restore
 */
 
 
 
-
+/*
 ********** Omega as data
 preserve
 clear all
-input panel	traits	correction	year	omega
-1	1	1	2016	0.864361921
-1	1	2	2016	0.805783057
-1	1	3	2016	0.80987671
-1	2	1	2016	0.843918601
-1	2	2	2016	0.848500949
-1	2	3	2016	0.883629311
-1	3	1	2016	0.722326272
-1	3	2	2016	0.57663988
-1	3	3	2016	0.803717672
-1	4	1	2016	0.521202368
-1	4	2	2016	0.585015614
-1	4	3	2016	0.836415401
-1	5	1	2016	0.497242214
-1	5	2	2016	0.79321718
-1	5	3	2016	0.850892239
-0	1	1	2016	0.868386175
-0	1	2	2016	0.811328043
-0	1	3	2016	0.810829871
-0	2	1	2016	0.85132604
-0	2	2	2016	0.856587504
-0	2	3	2016	0.889121278
-0	3	1	2016	0.729188007
-0	3	2	2016	0.588299672
-0	3	3	2016	0.807201466
-0	4	1	2016	0.510766933
-0	4	2	2016	0.602029083
-0	4	3	2016	0.833129231
-0	5	1	2016	0.479387466
-0	5	2	2016	0.801919231
-0	5	3	2016	0.855408328
-1	1	1	2020	0.765863028
-1	1	2	2020	0.383624434
-1	1	3	2020	0.747477791
-1	2	1	2020	0.705388653
-1	2	2	2020	0.368849752
-1	2	3	2020	0.665769886
-1	3	1	2020	0.643470461
-1	3	2	2020	0.436589964
-1	3	3	2020	0.833399312
-1	4	1	2020	0.597217979
-1	4	2	2020	0.30314471
-1	4	3	2020	0.835737224
-1	5	1	2020	0.707849376
-1	5	2	2020	0.778994403
-1	5	3	2020	0.828889273
-0	1	1	2020	0.764244248
-0	1	2	2020	0.368360137
-0	1	3	2020	0.74406823
-0	2	1	2020	0.70404754
-0	2	2	2020	0.417065151
-0	2	3	2020	0.681238123
-0	3	1	2020	0.651072121
-0	3	2	2020	0.448570114
-0	3	3	2020	0.827102195
-0	4	1	2020	0.612616194
-0	4	2	2020	0.307593575
-0	4	3	2020	0.845953408
-0	5	1	2020	0.729498845
-0	5	2	2020	0.792915118
-0	5	3	2020	0.834844869
+
+/*
+input 
 
 end
+*/
 
-label define traits 1"OP" 2"CO" 3"EX" 4"AG" 5"ES"
-label define panel 0"total" 1"panel"
-label define correction 1"No" 2"Corr. class" 3"Corr. maison"
-label values traits traits 
+import delimited "omega.csv", delimiter(";") varnames(1) clear 
+rename corrected correction
+label define panel 0"No panel" 1"Panel" 2"All"
+label define correction 0"Raw" 1"Corrected", modify
+label define alpha 0"Omega" 1"Alpha"
 label values panel panel
 label values correction correction
+label values alpha alpha
+*
+replace traits="1" if traits=="OP"
+replace traits="2" if traits=="CO"
+replace traits="3" if traits=="EX"
+replace traits="4" if traits=="AG"
+replace traits="5" if traits=="ES"
+replace traits="6" if traits=="Grit"
+destring traits, replace
+label define traits 1"OP" 2"CO" 3"EX" 4"AG" 5"ES" 6"Grit"
+label values traits traits
+
 
 set graph off
+graph bar omega if panel==0, over(correction) over(year, gap(100)) over(traits) ///
+bar(1, fcolor(plr1) lcolor(plr1)) ///
+bar(2, fcolor(ply1) lcolor(ply1)) ///
+bar(3, fcolor(plg1) lcolor(plg1)) ///
+bargap(0) intensity(inten30) ///
+ytitle("McDonald's ω") ylabel(0(.1)1) ymtick(0(.05)1) ///
+note("Individuals not in panel." "2016: n=118" "2020: n=826", size(vsmall)) ///
+legend(pos(6) col(3)) name(omega_panel, replace)
+graph export omega_notpanel.pdf, replace
+
 graph bar omega if panel==1, over(correction) over(year, gap(100)) over(traits) ///
 bar(1, fcolor(plr1) lcolor(plr1)) ///
 bar(2, fcolor(ply1) lcolor(ply1)) ///
 bar(3, fcolor(plg1) lcolor(plg1)) ///
 bargap(0) intensity(inten30) ///
-ytitle("McDonald's Ω") ylabel(0(.1)1) ymtick(0(.05)1) ///
-note("Égos en panel", size(small)) ///
+ytitle("McDonald's ω") ylabel(0(.1)1) ymtick(0(.05)1) ///
+note("Individuals in panel." "2016: n=835" "2020: n=835", size(vsmall)) ///
 legend(pos(6) col(3)) name(omega_panel, replace)
 graph export omega_panel.pdf, replace
 
-graph bar omega, over(correction) over(year, gap(100)) over(traits) ///
+graph bar omega if panel==2, over(correction) over(year, gap(100)) over(traits) ///
 bar(1, fcolor(plr1) lcolor(plr1)) ///
 bar(2, fcolor(ply1) lcolor(ply1)) ///
 bar(3, fcolor(plg1) lcolor(plg1)) ///
 bargap(0) intensity(inten30) ///
-ytitle("McDonald's Ω") ylabel(0(.1)1) ymtick(0(.05)1) ///
-note("Tous les égos", size(small)) ///
-legend(pos(6) col(3)) name(omega_tot, replace)
-graph export omega_tot.pdf, replace
-set graph on
+ytitle("McDonald's ω") ylabel(0(.1)1) ymtick(0(.05)1) ///
+note("All individuals." "2016: n=953" "2020: n=1661", size(vsmall)) ///
+legend(pos(6) col(3)) name(omega_panel, replace)
+graph export omega_all.pdf, replace
 restore
-
+*/
 
 
 
@@ -779,14 +709,74 @@ egen cr_Grit = rowmean(cr_tryhard  cr_stickwithg~s   cr_goaftergoal cr_finishwha
 
 
 
-********** username
-encode username, gen(username_code)
 
+
+
+********** Imputation for missings
+fre sex
+fre caste
+foreach x in $big5grit{
+clonevar imcr_`x'=cr_`x'
+}
+
+forvalues i=1(1)2{
+forvalues j=1(1)3{
+forvalues k=16(4)20 {
+foreach x in $big5grit{
+sum imcr_`x' if sex==`i' & caste==`j' & year==20`k'
+replace imcr_`x'=r(mean) if cr_`x'==. & sex==`i' & caste==`j' & year==20`k'
+}
+}
+}
+}
+
+
+
+
+
+********** username
+tab username if year==2016
+tab username if year==2020
+clonevar username_backup=username
+replace username="Antoni" if username=="Antoni - Vivek Radja"
+replace username="Kumaresh" if username=="Kumaresh - Raja Annamalai"
+replace username="Kumaresh" if username=="Kumaresh - Sithanantham"
+replace username="Raja Annamalai" if username=="Mayan - Raja Annamalai"
+replace username="Raja Annamalai" if username=="Raja Annamalai - Pazhani"
+replace username="Raja Annamalai" if username=="Sithanantham - Raja Annamalai"
+replace username="Raja Annamalai" if username=="Vivek Radja - Raja Annamalai"
+replace username="Mayan" if username=="Vivek Radja - Mayan"
+
+clonevar username_2016=username
+replace username_2016="" if year==2020
+
+clonevar username_2020=username
+replace username_2020="" if year==2016
+
+encode username_2016, gen(username_2016_code)
+encode username_2020, gen(username_2020_code)
+
+fre username_2016_code username_2020_code
+
+
+********** edulevel
+fre edulevel
+ta edulevel year, m col nofreq
+clonevar edulevel_backup=edulevel
+recode edulevel (5=4) (.=0)
+tab edulevel year, m col nofreq
 
 
 save"panel_stab_v2", replace
 ****************************************
 * END
+
+
+
+
+
+
+
 
 
 
@@ -796,9 +786,9 @@ save"panel_stab_v2", replace
 use"panel_stab_v2", clear
 keep if panel==1
 
-drop curious_backup interestedbyart_backup repetitivetasks_backup inventive_backup liketothink_backup newideas_backup activeimagination_backup organized_backup makeplans_backup workhard_backup appointmentontime_backup putoffduties_backup easilydistracted_backup completeduties_backup enjoypeople_backup sharefeelings_backup shywithpeople_backup enthusiastic_backup talktomanypeople_backup talkative_backup expressingthoughts_backup workwithother_backup understandotherfeeling_backup trustingofother_backup rudetoother_backup toleratefaults_backup forgiveother_backup helpfulwithothers_backup managestress_backup nervous_backup changemood_backup feeldepressed_backup easilyupset_backup worryalot_backup staycalm_backup tryhard_backup stickwithgoals_backup goaftergoal_backup finishwhatbegin_backup finishtasks_backup keepworking_backup covselllivestock_cow covselllivestock_goat covselllivestock_chicken covselllivestock_bullock covselllivestock_bullforploughin covselllivestock_none covsellequipment_tractor covsellequipment_bullockcar covsellequipment_harvester covsellequipment_plowingmac covsellequipment_none curious_recode interestedbyart_recode repetitivetasks_recode inventive_recode liketothink_recode newideas_recode activeimagination_recode organized_recode makeplans_recode workhard_recode appointmentontime_recode putoffduties_recode easilydistracted_recode completeduties_recode enjoypeople_recode sharefeelings_recode shywithpeople_recode enthusiastic_recode talktomanypeople_recode talkative_recode expressingthoughts_recode workwithother_recode understandotherfeeling_recode trustingofother_recode rudetoother_recode toleratefaults_recode forgiveother_recode helpfulwithothers_recode managestress_recode nervous_recode changemood_recode feeldepressed_recode easilyupset_recode worryalot_recode staycalm_recode tryhard_recode stickwithgoals_recode goaftergoal_recode finishwhatbegin_recode finishtasks_recode keepworking_recode curious_rec_rev interestedbyart_rec_rev repetitivetasks_rec_rev inventive_rec_rev liketothink_rec_rev newideas_rec_rev activeimagination_rec_rev organized_rec_rev makeplans_rec_rev workhard_rec_rev appointmentontime_rec_rev putoffduties_rec_rev easilydistracted_rec_rev completeduties_rec_rev enjoypeople_rec_rev sharefeelings_rec_rev shywithpeople_rec_rev enthusiastic_rec_rev talktomanypeople_rec_rev talkative_rec_rev expressingthoughts_rec_rev workwithother_rec_rev understandotherfeeling_rec_rev trustingofother_rec_rev rudetoother_rec_rev toleratefaults_rec_rev forgiveother_rec_rev helpfulwithothers_rec_rev managestress_rec_rev nervous_rec_rev changemood_rec_rev feeldepressed_rec_rev easilyupset_rec_rev worryalot_rec_rev staycalm_rec_rev tryhard_rec_rev stickwithgoals_rec_rev goaftergoal_rec_rev finishwhatbegin_rec_rev finishtasks_rec_rev keepworking_rec_rev
+drop curious_backup interestedbyart_backup repetitivetasks_backup inventive_backup liketothink_backup newideas_backup activeimagination_backup organized_backup makeplans_backup workhard_backup appointmentontime_backup putoffduties_backup easilydistracted_backup completeduties_backup enjoypeople_backup sharefeelings_backup shywithpeople_backup enthusiastic_backup talktomanypeople_backup talkative_backup expressingthoughts_backup workwithother_backup understandotherfeeling_backup trustingofother_backup rudetoother_backup toleratefaults_backup forgiveother_backup helpfulwithothers_backup managestress_backup nervous_backup changemood_backup feeldepressed_backup easilyupset_backup worryalot_backup staycalm_backup tryhard_backup stickwithgoals_backup goaftergoal_backup finishwhatbegin_backup finishtasks_backup keepworking_backup curious_recode interestedbyart_recode repetitivetasks_recode inventive_recode liketothink_recode newideas_recode activeimagination_recode organized_recode makeplans_recode workhard_recode appointmentontime_recode putoffduties_recode easilydistracted_recode completeduties_recode enjoypeople_recode sharefeelings_recode shywithpeople_recode enthusiastic_recode talktomanypeople_recode talkative_recode expressingthoughts_recode workwithother_recode understandotherfeeling_recode trustingofother_recode rudetoother_recode toleratefaults_recode forgiveother_recode helpfulwithothers_recode managestress_recode nervous_recode changemood_recode feeldepressed_recode easilyupset_recode worryalot_recode staycalm_recode tryhard_recode stickwithgoals_recode goaftergoal_recode finishwhatbegin_recode finishtasks_recode keepworking_recode curious_rec_rev interestedbyart_rec_rev repetitivetasks_rec_rev inventive_rec_rev liketothink_rec_rev newideas_rec_rev activeimagination_rec_rev organized_rec_rev makeplans_rec_rev workhard_rec_rev appointmentontime_rec_rev putoffduties_rec_rev easilydistracted_rec_rev completeduties_rec_rev enjoypeople_rec_rev sharefeelings_rec_rev shywithpeople_rec_rev enthusiastic_rec_rev talktomanypeople_rec_rev talkative_rec_rev expressingthoughts_rec_rev workwithother_rec_rev understandotherfeeling_rec_rev trustingofother_rec_rev rudetoother_rec_rev toleratefaults_rec_rev forgiveother_rec_rev helpfulwithothers_rec_rev managestress_rec_rev nervous_rec_rev changemood_rec_rev feeldepressed_rec_rev easilyupset_rec_rev worryalot_rec_rev staycalm_rec_rev tryhard_rec_rev stickwithgoals_rec_rev goaftergoal_rec_rev finishwhatbegin_rec_rev finishtasks_rec_rev keepworking_rec_rev
 
-reshape wide HHID_panel INDID_panel egoid name sex age jatis caste edulevel villageid villageareaid villageid_new username panel dummydemonetisation relationshiptohead maritalstatus aspirationminimumwage dummyaspirationmorehours aspirationminimumwage2 demotrustneighborhood demotrustemployees_ego demotrustbank_ego demonetworkpeoplehelping_ego demonetworkhelpkinmember_ego canreadcard1a canreadcard1b canreadcard1c canreadcard2 numeracy1 numeracy2 numeracy3 numeracy4 a1 a2 a3 a4 a5 a6 a7 a8 a9 a10 a11 a12 ab1 ab2 ab3 ab4 ab5 ab6 ab7 ab8 ab9 ab10 ab11 ab12 b1 b2 b3 b4 b5 b6 b7 b8 b9 b10 b11 b12 demogeneralperception demogoodexpectations demobadexpectations annualincome_indiv annualincome_HH mainocc_kindofwork_indiv mainocc_occupation_indiv assets ra1 rab1 rb1 ra2 rab2 rb2 ra3 rab3 rb3 ra4 rab4 rb4 ra5 rab5 rb5 ra6 rab6 rb6 ra7 rab7 rb7 ra8 rab8 rb8 ra9 rab9 rb9 ra10 rab10 rb10 ra11 rab11 rb11 ra12 rab12 rb12 set_a set_ab set_b raven_tt refuse num_tt lit_tt covsellland covsubsistence covsubsistencereason covsubsistencesize covsubsistencenext covsubsistencereasonother covharvest covselfconsumption covharvestquantity covharvestprices covselllivestock covsellequipment covfoodenough covfoodquality covgenexpenses covexpensesdecrease covexpensesincrease covexpensesstable covplacepurchase covsick time curious interestedbyart repetitivetasks inventive liketothink newideas activeimagination organized makeplans workhard appointmentontime putoffduties easilydistracted completeduties enjoypeople sharefeelings shywithpeople enthusiastic talktomanypeople talkative expressingthoughts workwithother understandotherfeeling trustingofother rudetoother toleratefaults forgiveother helpfulwithothers managestress nervous changemood feeldepressed easilyupset worryalot staycalm tryhard stickwithgoals goaftergoal finishwhatbegin finishtasks keepworking imcurious iminterestedbyart imrepetitivetasks iminventive imliketothink imnewideas imactiveimagination imorganized immakeplans imworkhard imappointmentontime imputoffduties imeasilydistracted imcompleteduties imenjoypeople imsharefeelings imshywithpeople imenthusiastic imtalktomanypeople imtalkative imexpressingthoughts imworkwithother imunderstandotherfeeling imtrustingofother imrudetoother imtoleratefaults imforgiveother imhelpfulwithothers immanagestress imnervous imchangemood imfeeldepressed imeasilyupset imworryalot imstaycalm imtryhard imstickwithgoals imgoaftergoal imfinishwhatbegin imfinishtasks imkeepworking ars ars2 ars3 _1_ars _1_ars2 _1_ars3 _2_ars _2_ars2 _2_ars3 _3_ars _3_ars2 _3_ars3 _4_ars _4_ars2 _4_ars3 _5_ars _5_ars2 _5_ars3 _6_ars _6_ars2 _6_ars3 _7_ars _7_ars2 _7_ars3 ars2_AG ars3_AG ars2_CO ars3_CO ars2_EX ars3_EX ars2_OP ars3_OP ars2_ES ars3_ES ars2_CO1 ars3_CO1 ars2_CO2 ars3_CO2 ars2_ES1 ars3_ES1 ars2_ES2 ars3_ES2 ars4 ars5 cr_curious cr2_curious cr_interestedbyart cr2_interestedbyart cr_repetitivetasks cr2_repetitivetasks cr_inventive cr2_inventive cr_liketothink cr2_liketothink cr_newideas cr2_newideas cr_activeimagination cr2_activeimagination cr_organized cr2_organized cr_makeplans cr2_makeplans cr_workhard cr2_workhard cr_appointmentontime cr2_appointmentontime cr_putoffduties cr2_putoffduties cr_easilydistracted cr2_easilydistracted cr_completeduties cr2_completeduties cr_enjoypeople cr2_enjoypeople cr_sharefeelings cr2_sharefeelings cr_shywithpeople cr2_shywithpeople cr_enthusiastic cr2_enthusiastic cr_talktomanypeople cr2_talktomanypeople cr_talkative cr2_talkative cr_expressingthoughts cr2_expressingthoughts cr_workwithother cr2_workwithother cr_understandotherfeeling cr2_understandotherfeeling cr_trustingofother cr2_trustingofother cr_rudetoother cr2_rudetoother cr_toleratefaults cr2_toleratefaults cr_forgiveother cr2_forgiveother cr_helpfulwithothers cr2_helpfulwithothers cr_managestress cr2_managestress cr_nervous cr2_nervous cr_changemood cr2_changemood cr_feeldepressed cr2_feeldepressed cr_easilyupset cr2_easilyupset cr_worryalot cr2_worryalot cr_staycalm cr2_staycalm cr_tryhard cr2_tryhard cr_stickwithgoals cr2_stickwithgoals cr_goaftergoal cr2_goaftergoal cr_finishwhatbegin cr2_finishwhatbegin cr_finishtasks cr2_finishtasks cr_keepworking cr2_keepworking OP CO EX AG ES Grit cr_OP cr_CO cr_EX cr_AG cr_ES cr_Grit username_code, i(HHINDID) j(year)
+reshape wide HHID_panel INDID_panel egoid name sex age jatis caste edulevel villageid villageareaid villageid_new username panel dummydemonetisation relationshiptohead maritalstatus canread everattendedschool reasonneverattendedschool converseinenglish house housetype electricity water toiletfacility noowntoilet readystartjob aspirationminimumwage dummyaspirationmorehours aspirationminimumwage2 nbercontactphone nberpersonfamilyevent contactlist dummycontactleaders contactleaders trustneighborhood trustemployees networkpeoplehelping networkhelpkinmember demotrustneighborhood demotrustemployees_ego demotrustbank_ego demonetworkpeoplehelping_ego demonetworkhelpkinmember_ego canreadcard1a canreadcard1b canreadcard1c canreadcard2 numeracy1 numeracy2 numeracy3 numeracy4 a1 a2 a3 a4 a5 a6 a7 a8 a9 a10 a11 a12 ab1 ab2 ab3 ab4 ab5 ab6 ab7 ab8 ab9 ab10 ab11 ab12 b1 b2 b3 b4 b5 b6 b7 b8 b9 b10 b11 b12 demogeneralperception demogoodexpectations demobadexpectations annualincome_indiv annualincome_HH mainocc_kindofwork_indiv mainocc_occupation_indiv assets ra1 rab1 rb1 ra2 rab2 rb2 ra3 rab3 rb3 ra4 rab4 rb4 ra5 rab5 rb5 ra6 rab6 rb6 ra7 rab7 rb7 ra8 rab8 rb8 ra9 rab9 rb9 ra10 rab10 rb10 ra11 rab11 rb11 ra12 rab12 rb12 set_a set_ab set_b raven_tt refuse num_tt lit_tt covsellland covsubsistence covsick time curious interestedbyart repetitivetasks inventive liketothink newideas activeimagination organized makeplans workhard appointmentontime putoffduties easilydistracted completeduties enjoypeople sharefeelings shywithpeople enthusiastic talktomanypeople talkative expressingthoughts workwithother understandotherfeeling trustingofother rudetoother toleratefaults forgiveother helpfulwithothers managestress nervous changemood feeldepressed easilyupset worryalot staycalm tryhard stickwithgoals goaftergoal finishwhatbegin finishtasks keepworking ars ars2 ars3 _1_ars _1_ars2 _1_ars3 _2_ars _2_ars2 _2_ars3 _3_ars _3_ars2 _3_ars3 _4_ars _4_ars2 _4_ars3 _5_ars _5_ars2 _5_ars3 _6_ars _6_ars2 _6_ars3 _7_ars _7_ars2 _7_ars3 cr_curious cr_interestedbyart cr_repetitivetasks cr_inventive cr_liketothink cr_newideas cr_activeimagination cr_organized cr_makeplans cr_workhard cr_appointmentontime cr_putoffduties cr_easilydistracted cr_completeduties cr_enjoypeople cr_sharefeelings cr_shywithpeople cr_enthusiastic cr_talktomanypeople cr_talkative cr_expressingthoughts cr_workwithother cr_understandotherfeeling cr_trustingofother cr_rudetoother cr_toleratefaults cr_forgiveother cr_helpfulwithothers cr_managestress cr_nervous cr_changemood cr_feeldepressed cr_easilyupset cr_worryalot cr_staycalm cr_tryhard cr_stickwithgoals cr_goaftergoal cr_finishwhatbegin cr_finishtasks cr_keepworking OP CO EX AG ES Grit cr_OP cr_CO cr_EX cr_AG cr_ES cr_Grit imcr_curious imcr_interestedbyart imcr_repetitivetasks imcr_inventive imcr_liketothink imcr_newideas imcr_activeimagination imcr_organized imcr_makeplans imcr_workhard imcr_appointmentontime imcr_putoffduties imcr_easilydistracted imcr_completeduties imcr_enjoypeople imcr_sharefeelings imcr_shywithpeople imcr_enthusiastic imcr_talktomanypeople imcr_talkative imcr_expressingthoughts imcr_workwithother imcr_understandotherfeeling imcr_trustingofother imcr_rudetoother imcr_toleratefaults imcr_forgiveother imcr_helpfulwithothers imcr_managestress imcr_nervous imcr_changemood imcr_feeldepressed imcr_easilyupset imcr_worryalot imcr_staycalm imcr_tryhard imcr_stickwithgoals imcr_goaftergoal imcr_finishwhatbegin imcr_finishtasks imcr_keepworking username_backup username_2016 username_2020 username_2016_code username_2020_code edulevel_backup, i(HHINDID) j(year)
 
 replace age2020=age2016+4 if age2020==.
 
