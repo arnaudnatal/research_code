@@ -18,24 +18,22 @@ Stability over time of personality traits
 ****************************************
 clear all
 macro drop _all
+set scheme plotplain
+
 ********** Path to folder "data" folder.
-*global directory = "D:\Documents\_Thesis\Research-Stability_skills\Analysis"
-*cd"$directory"
-*global git "C:\Users\Arnaud\Documents\GitHub"
+*** PC
+global directory = "D:\Documents\_Thesis\Research-Stability_skills\Analysis"
+cd"$directory"
+global git "C:\Users\Arnaud\Documents\GitHub"
 
-*Fac
-global directory = "C:\Users\anatal\Downloads\_Thesis\Research-Stability_skills\Analysis"
-cd "$directory"
-set scheme plottig
-global git "C:\Users\anatal\Downloads\GitHub"
-
-*global dropbox "C:\Users\anatal\Downloads\Dropbox"
-*global thesis "C:\Users\anatal\Downloads\_Thesis\Research-Skills_and_debt\Analysis"
-
+*** Fac
+*global directory = "C:\Users\anatal\Downloads\_Thesis\Research-Stability_skills\Analysis"
+*cd "$directory"
+*global git "C:\Users\anatal\Downloads\GitHub"
 
 ********** Name of the NEEMSIS2 questionnaire version to clean
 global wave2 "NEEMSIS1-HH_v9"
-global wave3 "NEEMSIS2-HH_v20"
+global wave3 "NEEMSIS2-HH_v21"
 ****************************************
 * END
 
@@ -59,6 +57,10 @@ test-retest measure pour la reliability des data
 
 
 
+
+
+
+
 ****************************************
 * 1. ACQUIESCENCE BIAS
 ****************************************
@@ -70,10 +72,11 @@ fre panel
 set graph off
 stripplot ars3 if panel==1, over(time) separate(caste) ///
 cumul cumprob box centre vertical refline /// 
-xsize(4) xtitle("") xlabel(,angle(0))  ///
+xsize(5) xtitle("") xlabel(,angle(0))  ///
+msymbol(+ + +) mcolor(black black black)  ///
 ylabel(0(.2)1.6) ymtick(0(.1)1.7) ytitle("") ///
-msymbol(oh oh oh) mcolor(ply1 plr1 plb1)  ///
-legend(pos(6) col(3))
+note("2016: n=835" "2020: n=835", size(vsmall)) ///
+legend(order(1 "Mean" 5 "Individual"))
 graph export bias_panel.pdf, replace
 set graph on
 
@@ -105,6 +108,23 @@ xsize(4) xtitle("") xlabel(,angle(45))  ///
 ylabel(0(.2)1.6) ymtick(0(.1)1.7) ytitle("") ///
 msymbol(oh oh oh) mcolor(ply1 plr1 plb1)  ///
 legend(pos(6) col(3))
+
+*** By traits
+/*
+twoway ///
+(kdensity ars2_AG if year==2020 & panel==1, bwidth(0.7)) ///
+(kdensity ars2_CO if year==2020 & panel==1, bwidth(0.7)) ///
+(kdensity ars2_EX if year==2020 & panel==1, bwidth(0.7)) ///
+(kdensity ars2_OP if year==2020 & panel==1, bwidth(0.7)) ///
+(kdensity ars2_ES if year==2020 & panel==1, bwidth(0.7)) 
+
+twoway ///
+(kdensity ars3_AG if year==2020 & panel==1, bwidth(0.5)) ///
+(kdensity ars3_CO if year==2020 & panel==1, bwidth(0.5)) ///
+(kdensity ars3_EX if year==2020 & panel==1, bwidth(0.5)) ///
+(kdensity ars3_OP if year==2020 & panel==1, bwidth(0.5)) ///
+(kdensity ars3_ES if year==2020 & panel==1, bwidth(0.5)) 
+*/
 
 *** By enumerator
 stripplot ars3 if year==2016 & panel==1, over(username_2016_code) separate() ///
