@@ -602,6 +602,7 @@ label define traits 1"OP" 2"CO" 3"EX" 4"AG" 5"ES" 6"Grit"
 label values traits traits
 
 
+
 set graph off
 graph bar omega if panel==0, over(correction) over(year, gap(100)) over(traits) ///
 bar(1, fcolor(plr1) lcolor(plr1)) ///
@@ -708,10 +709,6 @@ save"panel_stab_v2", replace
 * END
 
 
-order HHID_panel INDID_panel ars2 curious_bkcl cr_curious_bkcl curious cr_curious
-sort HHID_panel INDID_panel
-
-/*
 
 
 
@@ -723,11 +720,25 @@ sort HHID_panel INDID_panel
 use"panel_stab_v2", clear
 keep if panel==1
 
-drop curious_backup interestedbyart_backup repetitivetasks_backup inventive_backup liketothink_backup newideas_backup activeimagination_backup organized_backup makeplans_backup workhard_backup appointmentontime_backup putoffduties_backup easilydistracted_backup completeduties_backup enjoypeople_backup sharefeelings_backup shywithpeople_backup enthusiastic_backup talktomanypeople_backup talkative_backup expressingthoughts_backup workwithother_backup understandotherfeeling_backup trustingofother_backup rudetoother_backup toleratefaults_backup forgiveother_backup helpfulwithothers_backup managestress_backup nervous_backup changemood_backup feeldepressed_backup easilyupset_backup worryalot_backup staycalm_backup tryhard_backup stickwithgoals_backup goaftergoal_backup finishwhatbegin_backup finishtasks_backup keepworking_backup ars_CO1_temp ars_CO2_temp ars_ES1_temp ars_ES2_temp cr_curious_backup cr_interestedbyart_backup cr_repetitivetasks_backup cr_inventive_backup cr_liketothink_backup cr_newideas_backup cr_activeimagination_backup cr_organized_backup cr_makeplans_backup cr_workhard_backup cr_appointmentontime_backup cr_putoffduties_backup cr_easilydistracted_backup cr_completeduties_backup cr_enjoypeople_backup cr_sharefeelings_backup cr_shywithpeople_backup cr_enthusiastic_backup cr_talktomanypeople_backup cr_talkative_backup cr_expressingthoughts_backup cr_workwithother_backup cr_understandotherfeeling_backup cr_trustingofother_backup cr_rudetoother_backup cr_toleratefaults_backup cr_forgiveother_backup cr_helpfulwithothers_backup cr_managestress_backup cr_nervous_backup cr_changemood_backup cr_feeldepressed_backup cr_easilyupset_backup cr_worryalot_backup cr_staycalm_backup cr_tryhard_backup cr_stickwithgoals_backup cr_goaftergoal_backup cr_finishwhatbegin_backup cr_finishtasks_backup cr_keepworking_backup
+drop curious_bkcl interestedbyart_bkcl repetitivetasks_bkcl inventive_bkcl liketothink_bkcl newideas_bkcl activeimagination_bkcl organized_bkcl makeplans_bkcl workhard_bkcl appointmentontime_bkcl putoffduties_bkcl easilydistracted_bkcl completeduties_bkcl enjoypeople_bkcl sharefeelings_bkcl shywithpeople_bkcl enthusiastic_bkcl talktomanypeople_bkcl talkative_bkcl expressingthoughts_bkcl workwithother_bkcl understandotherfeeling_bkcl trustingofother_bkcl rudetoother_bkcl toleratefaults_bkcl forgiveother_bkcl helpfulwithothers_bkcl managestress_bkcl nervous_bkcl changemood_bkcl feeldepressed_bkcl easilyupset_bkcl worryalot_bkcl staycalm_bkcl tryhard_bkcl stickwithgoals_bkcl goaftergoal_bkcl finishwhatbegin_bkcl finishtasks_bkcl keepworking_bkcl cr_curious_bkcl cr_interestedbyart_bkcl cr_repetitivetasks_bkcl cr_inventive_bkcl cr_liketothink_bkcl cr_newideas_bkcl cr_activeimagination_bkcl cr_organized_bkcl cr_makeplans_bkcl cr_workhard_bkcl cr_appointmentontime_bkcl cr_putoffduties_bkcl cr_easilydistracted_bkcl cr_completeduties_bkcl cr_enjoypeople_bkcl cr_sharefeelings_bkcl cr_shywithpeople_bkcl cr_enthusiastic_bkcl cr_talktomanypeople_bkcl cr_talkative_bkcl cr_expressingthoughts_bkcl cr_workwithother_bkcl cr_understandotherfeeling_bkcl cr_trustingofother_bkcl cr_rudetoother_bkcl cr_toleratefaults_bkcl cr_forgiveother_bkcl cr_helpfulwithothers_bkcl cr_managestress_bkcl cr_nervous_bkcl cr_changemood_bkcl cr_feeldepressed_bkcl cr_easilyupset_bkcl cr_worryalot_bkcl cr_staycalm_bkcl cr_tryhard_bkcl cr_stickwithgoals_bkcl cr_goaftergoal_bkcl cr_finishwhatbegin_bkcl cr_finishtasks_bkcl cr_keepworking_bkcl ars_CO1_temp ars_CO2_temp ars_ES1_temp ars_ES2_temp
 
 reshape wide HHID_panel INDID_panel egoid name sex age jatis caste edulevel villageid villageareaid villageid_new username panel dummydemonetisation relationshiptohead maritalstatus canread everattendedschool reasonneverattendedschool converseinenglish house housetype electricity water toiletfacility noowntoilet readystartjob aspirationminimumwage dummyaspirationmorehours aspirationminimumwage2 nbercontactphone nberpersonfamilyevent contactlist dummycontactleaders contactleaders trustneighborhood trustemployees networkpeoplehelping networkhelpkinmember demotrustneighborhood demotrustemployees_ego demotrustbank_ego demonetworkpeoplehelping_ego demonetworkhelpkinmember_ego canreadcard1a canreadcard1b canreadcard1c canreadcard2 numeracy1 numeracy2 numeracy3 numeracy4 a1 a2 a3 a4 a5 a6 a7 a8 a9 a10 a11 a12 ab1 ab2 ab3 ab4 ab5 ab6 ab7 ab8 ab9 ab10 ab11 ab12 b1 b2 b3 b4 b5 b6 b7 b8 b9 b10 b11 b12 demogeneralperception demogoodexpectations demobadexpectations annualincome_indiv annualincome_HH mainocc_kindofwork_indiv mainocc_occupation_indiv assets ra1 rab1 rb1 ra2 rab2 rb2 ra3 rab3 rb3 ra4 rab4 rb4 ra5 rab5 rb5 ra6 rab6 rb6 ra7 rab7 rb7 ra8 rab8 rb8 ra9 rab9 rb9 ra10 rab10 rb10 ra11 rab11 rb11 ra12 rab12 rb12 set_a set_ab set_b raven_tt refuse num_tt lit_tt covsellland covsubsistence covsick time curious interestedbyart repetitivetasks inventive liketothink newideas activeimagination organized makeplans workhard appointmentontime putoffduties easilydistracted completeduties enjoypeople sharefeelings shywithpeople enthusiastic talktomanypeople talkative expressingthoughts workwithother understandotherfeeling trustingofother rudetoother toleratefaults forgiveother helpfulwithothers managestress nervous changemood feeldepressed easilyupset worryalot staycalm tryhard stickwithgoals goaftergoal finishwhatbegin finishtasks keepworking ars ars2 ars3 _1_ars _1_ars2 _1_ars3 _2_ars _2_ars2 _2_ars3 _3_ars _3_ars2 _3_ars3 _4_ars _4_ars2 _4_ars3 _5_ars _5_ars2 _5_ars3 _6_ars _6_ars2 _6_ars3 _7_ars _7_ars2 _7_ars3 cr_curious cr_interestedbyart cr_repetitivetasks cr_inventive cr_liketothink cr_newideas cr_activeimagination cr_organized cr_makeplans cr_workhard cr_appointmentontime cr_putoffduties cr_easilydistracted cr_completeduties cr_enjoypeople cr_sharefeelings cr_shywithpeople cr_enthusiastic cr_talktomanypeople cr_talkative cr_expressingthoughts cr_workwithother cr_understandotherfeeling cr_trustingofother cr_rudetoother cr_toleratefaults cr_forgiveother cr_helpfulwithothers cr_managestress cr_nervous cr_changemood cr_feeldepressed cr_easilyupset cr_worryalot cr_staycalm cr_tryhard cr_stickwithgoals cr_goaftergoal cr_finishwhatbegin cr_finishtasks cr_keepworking OP CO EX AG ES Grit cr_OP cr_CO cr_EX cr_AG cr_ES cr_Grit  username_backup username_2016 username_2020 username_2016_code username_2020_code edulevel_backup ars2_AG ars3_AG ars2_CO ars2_EX ars2_ES ars2_OP ars3_CO ars3_EX ars3_OP ars3_ES, i(HHINDID) j(year)
 
+********** Cleaning
+*** ID
+drop HHID_panel2020 INDID_panel2020
+rename HHID_panel2016 HHID_panel
+rename INDID_panel2016 INDID_panel
+
+*** Characteristics
+* Age, sex, name, caste, 
 replace age2020=age2016+4 if age2020==.
+drop name2020 sex2020 caste2020 jatis2020
+rename name2016 name
+rename sex2016 sex
+rename caste2016 caste
+rename jatis2016 jatis
+
 
 save"panel_stab_v2_wide", replace
 ****************************************
