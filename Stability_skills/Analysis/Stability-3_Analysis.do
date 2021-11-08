@@ -65,11 +65,10 @@ test-retest measure pour la reliability des data
 * 1. ACQUIESCENCE BIAS
 ****************************************
 use"panel_stab_v2", clear
-
+set graph off
 fre panel
 ********** Graph
 *** General
-set graph off
 stripplot ars3 if panel==1, over(time) separate(caste) ///
 cumul cumprob box centre vertical refline /// 
 xsize(5) xtitle("") xlabel(,angle(0))  ///
@@ -78,7 +77,6 @@ ylabel(0(.2)1.6) ymtick(0(.1)1.7) ytitle("") ///
 note("2016: n=835" "2020: n=835", size(vsmall)) ///
 legend(order(1 "Mean" 5 "Individual"))
 graph export bias_panel.pdf, replace
-set graph on
 
 *** By sex
 stripplot ars3 if year==2020 & panel==1, over(sex) separate() ///
@@ -153,6 +151,7 @@ est store bias20
 
 estout bias16 bias20, cells("b(fmt(3)) p(fmt(2))" se(fmt(2))) stats(N r2 r2_a, fmt(0 2 2)) 
 
+set graph on
 ****************************************
 * END
 
@@ -212,49 +211,35 @@ tab ars32016_q ars32020_q, row nofreq
 use"panel_stab_v2", clear
 keep if year==2016
 
+keep if panel==1
+
+********** Imputation for non corrected one
+global big5cr cr_curious cr_interestedbyart cr_repetitivetasks cr_inventive cr_liketothink cr_newideas cr_activeimagination cr_organized cr_makeplans cr_workhard cr_appointmentontime cr_putoffduties cr_easilydistracted cr_completeduties cr_enjoypeople cr_sharefeelings cr_shywithpeople cr_enthusiastic cr_talktomanypeople cr_talkative cr_expressingthoughts cr_workwithother cr_understandotherfeeling cr_trustingofother cr_rudetoother cr_toleratefaults cr_forgiveother cr_helpfulwithothers cr_managestress cr_nervous cr_changemood cr_feeldepressed cr_easilyupset cr_worryalot cr_staycalm cr_tryhard cr_stickwithgoals cr_goaftergoal cr_finishwhatbegin cr_finishtasks cr_keepworking
+
+foreach x in $big5cr{
+gen im`x'=`x'
+}
+
+forvalues j=1(1)3{
+forvalues i=1(1)2{
+foreach x in $big5cr{
+qui sum im`x' if sex==`i' & caste==`j' & egoid!=0 & egoid!=.
+replace im`x'=r(mean) if im`x'==. & sex==`i' & caste==`j' & egoid!=0 & egoid!=.
+}
+}
+}
+
+
 ********** Macro
 global imcorgrit imcr_curious imcr_interestedbyart imcr_repetitivetasks imcr_inventive imcr_liketothink imcr_newideas imcr_activeimagination imcr_organized imcr_makeplans imcr_workhard imcr_appointmentontime imcr_putoffduties imcr_easilydistracted imcr_completeduties imcr_enjoypeople imcr_sharefeelings imcr_shywithpeople imcr_enthusiastic imcr_talktomanypeople imcr_talkative imcr_expressingthoughts imcr_workwithother imcr_understandotherfeeling imcr_trustingofother imcr_rudetoother imcr_toleratefaults imcr_forgiveother imcr_helpfulwithothers imcr_managestress imcr_nervous imcr_changemood imcr_feeldepressed imcr_easilyupset imcr_worryalot imcr_staycalm imcr_tryhard imcr_stickwithgoals imcr_goaftergoal imcr_finishwhatbegin imcr_finishtasks imcr_keepworking
 
 global imcor imcr_curious imcr_interestedbyart imcr_repetitivetasks imcr_inventive imcr_liketothink imcr_newideas imcr_activeimagination imcr_organized imcr_makeplans imcr_workhard imcr_appointmentontime imcr_putoffduties imcr_easilydistracted imcr_completeduties imcr_enjoypeople imcr_sharefeelings imcr_shywithpeople imcr_enthusiastic imcr_talktomanypeople imcr_talkative imcr_expressingthoughts imcr_workwithother imcr_understandotherfeeling imcr_trustingofother imcr_rudetoother imcr_toleratefaults imcr_forgiveother imcr_helpfulwithothers imcr_managestress imcr_nervous imcr_changemood imcr_feeldepressed imcr_easilyupset imcr_worryalot imcr_staycalm
 
-**********
-********** Panel: ALL
-
-********** Factor analyses: without grit
-minap $imcor
-qui factor $imcor, pcf fa(8) // 5
-rotate, promax
-putexcel set "EFA_2016.xlsx", modify sheet(without_all)
-putexcel (E2)=matrix(e(r_L))
-
-*predict f1_without f2_without f3_without f4_without f5_without f6_without f7_without f8_without
-*cpcorr $imcor \ f1_without f2_without f3_without f4_without f5_without f6_without f7_without f8_without
-*matrix list r(p)
-
-
-********** Factor analyses: with grit
-minap $imcorgrit
-qui factor $imcorgrit, pcf fa(8) // 5
-rotate, promax
-putexcel set "EFA_2016.xlsx", modify sheet(with_all)
-putexcel (E2)=matrix(e(r_L))
-
-*predict f1_with f2_with f3_with f4_with f5_with f6_with f7_with f8_with
-*cpcorr $imcorgrit \ f1_with f2_with f3_with f4_with f5_with f6_with f7_with f8_with
-*matrix list r(p)
-
-
-
-
-
-**********
-********** Panel: panel
-keep if panel==1
 
 
 ********** Factor analyses: without grit
 minap $imcor
-qui factor $imcor, pcf fa(7) // 5
+factor $imcor, pcf fa(5) // 5
 rotate, promax
 putexcel set "EFA_2016.xlsx", modify sheet(without_panel)
 putexcel (E2)=matrix(e(r_L))
@@ -266,7 +251,7 @@ putexcel (E2)=matrix(e(r_L))
 
 ********** Factor analyses: with grit
 minap $imcorgrit
-qui factor $imcorgrit, pcf fa(9)  // 5
+qui factor $imcorgrit, pcf fa(6)  // 5
 rotate, promax
 putexcel set "EFA_2016.xlsx", modify sheet(with_panel)
 putexcel (E2)=matrix(e(r_L))
@@ -304,49 +289,36 @@ putexcel (E2)=matrix(e(r_L))
 use"panel_stab_v2", clear
 keep if year==2020
 
+keep if panel==1
+
+********** Imputation for non corrected one
+global big5cr cr_curious cr_interestedbyart cr_repetitivetasks cr_inventive cr_liketothink cr_newideas cr_activeimagination cr_organized cr_makeplans cr_workhard cr_appointmentontime cr_putoffduties cr_easilydistracted cr_completeduties cr_enjoypeople cr_sharefeelings cr_shywithpeople cr_enthusiastic cr_talktomanypeople cr_talkative cr_expressingthoughts cr_workwithother cr_understandotherfeeling cr_trustingofother cr_rudetoother cr_toleratefaults cr_forgiveother cr_helpfulwithothers cr_managestress cr_nervous cr_changemood cr_feeldepressed cr_easilyupset cr_worryalot cr_staycalm cr_tryhard cr_stickwithgoals cr_goaftergoal cr_finishwhatbegin cr_finishtasks cr_keepworking
+
+foreach x in $big5cr{
+gen im`x'=`x'
+}
+
+forvalues j=1(1)3{
+forvalues i=1(1)2{
+foreach x in $big5cr{
+qui sum im`x' if sex==`i' & caste==`j' & egoid!=0 & egoid!=.
+replace im`x'=r(mean) if im`x'==. & sex==`i' & caste==`j' & egoid!=0 & egoid!=.
+}
+}
+}
+
+
 ********** Macro
 global imcorgrit imcr_curious imcr_interestedbyart imcr_repetitivetasks imcr_inventive imcr_liketothink imcr_newideas imcr_activeimagination imcr_organized imcr_makeplans imcr_workhard imcr_appointmentontime imcr_putoffduties imcr_easilydistracted imcr_completeduties imcr_enjoypeople imcr_sharefeelings imcr_shywithpeople imcr_enthusiastic imcr_talktomanypeople imcr_talkative imcr_expressingthoughts imcr_workwithother imcr_understandotherfeeling imcr_trustingofother imcr_rudetoother imcr_toleratefaults imcr_forgiveother imcr_helpfulwithothers imcr_managestress imcr_nervous imcr_changemood imcr_feeldepressed imcr_easilyupset imcr_worryalot imcr_staycalm imcr_tryhard imcr_stickwithgoals imcr_goaftergoal imcr_finishwhatbegin imcr_finishtasks imcr_keepworking
 
 global imcor imcr_curious imcr_interestedbyart imcr_repetitivetasks imcr_inventive imcr_liketothink imcr_newideas imcr_activeimagination imcr_organized imcr_makeplans imcr_workhard imcr_appointmentontime imcr_putoffduties imcr_easilydistracted imcr_completeduties imcr_enjoypeople imcr_sharefeelings imcr_shywithpeople imcr_enthusiastic imcr_talktomanypeople imcr_talkative imcr_expressingthoughts imcr_workwithother imcr_understandotherfeeling imcr_trustingofother imcr_rudetoother imcr_toleratefaults imcr_forgiveother imcr_helpfulwithothers imcr_managestress imcr_nervous imcr_changemood imcr_feeldepressed imcr_easilyupset imcr_worryalot imcr_staycalm
 
-**********
-********** Panel: ALL
 
-********** Factor analyses: without grit
-minap $imcor
-qui factor $imcor, pcf fa(11) // 2
-rotate, promax
-putexcel set "EFA_2020.xlsx", modify sheet(without_all)
-putexcel (E2)=matrix(e(r_L))
-
-*predict f1_without f2_without f3_without f4_without f5_without f6_without f7_without f8_without
-*cpcorr $imcor \ f1_without f2_without f3_without f4_without f5_without f6_without f7_without f8_without
-*matrix list r(p)
-
-
-********** Factor analyses: with grit
-minap $imcorgrit
-qui factor $imcorgrit, pcf fa(13) // 2
-rotate, promax
-putexcel set "EFA_2020.xlsx", modify sheet(with_all)
-putexcel (E2)=matrix(e(r_L))
-
-*predict f1_with f2_with f3_with f4_with f5_with f6_with f7_with f8_with
-*cpcorr $imcorgrit \ f1_with f2_with f3_with f4_with f5_with f6_with f7_with f8_with
-*matrix list r(p)
-
-
-
-
-
-**********
-********** Panel: panel
-keep if panel==1
 
 
 ********** Factor analyses: without grit
 minap $imcor
-qui factor $imcor, pcf fa(11) // 2
+qui factor $imcor, pcf fa(5) // 2
 rotate, promax
 putexcel set "EFA_2020.xlsx", modify sheet(without_panel)
 putexcel (E2)=matrix(e(r_L))
@@ -358,7 +330,7 @@ putexcel (E2)=matrix(e(r_L))
 
 ********** Factor analyses: with grit
 minap $imcorgrit
-qui factor $imcorgrit, pcf fa(14)  // 2
+qui factor $imcorgrit, pcf fa(6)  // 2
 rotate, promax
 putexcel set "EFA_2020.xlsx", modify sheet(with_panel)
 putexcel (E2)=matrix(e(r_L))
@@ -377,143 +349,91 @@ putexcel (E2)=matrix(e(r_L))
 
 
 
-
-
-
-
-
-
-
-
-
-/*
-********** Correlation with big-5 and cronbach
-cpcorr cr_OP cr_EX cr_ES cr_CO cr_AG cr_Grit OP EX ES CO AG Grit factor_`x'_1 factor_`x'_2 factor_`x'_3 factor_`x'_4 factor_`x'_5 factor_`x'_6
-matrix list r(p)
-*/
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ****************************************
-* Correlation + 
+* Graphical representation
 ****************************************
-
-
-
-
-
-********** Graphical representation
-/*
-preserve
-import delimited "factor2020.csv", delimiter(";") clear
-drop v46
-gen n=_n
-drop if n==42
-order n var
-gen threshold=0.05
-*Clean
-forvalues i=1(1)6{
-rename factor_imcrwith_`i' factor_Corrwith_`i'
-rename pvalue_imcrwith_`i' pvalue_Corrwith_`i'
-rename factor_imrawwith_`i' factor_Rawwith_`i'
-rename pvalue_imrawwith_`i' pvalue_Rawwith_`i'
-}
-
-forvalues i=1(1)5{
-rename factor_imcr_`i' factor_Corr_`i'
-rename pvalue_imcr_`i' pvalue_Corr_`i'
-rename factor_imraw_`i' factor_Raw_`i'
-rename pvalue_imraw_`i' pvalue_Raw_`i'
-}
-gen big5=""
-replace big5="Openness" if n>=1 & n<=7
-replace big5="Conscientiousness" if n>=8 & n<=14
-replace big5="Extraversion" if n>=15 & n<=21
-replace big5="Agreeableness" if n>=22 & n<=28
-replace big5="Emotional stability / Neuroticism" if n>=29 & n<=35
-replace big5="Grit" if n>=36 & n<=41
-order n var big5
-save"factor2020.dta", replace
-
-use"factor2020.dta", clear
-
 set graph off
-* With
-foreach x in Raw Corr {
+
+********** With
+foreach x in with_panel {
+forvalues j=2016(4)2020 {
+import excel "EFA_`j'.xlsx", sheet("`x'") firstrow clear
+rename Variables var
+rename N n
+gen Big5=""
+replace Big5="(OP)" if NaiveBigFive=="Openness"
+replace Big5="(CO)" if NaiveBigFive=="Conscientiousness"
+replace Big5="(EX)" if NaiveBigFive=="Extraversion"
+replace Big5="(AG)" if NaiveBigFive=="Agreeableness"
+replace Big5="(ES)" if NaiveBigFive=="Emotional stability"
+replace Big5="(GR)" if NaiveBigFive=="Grit"
+egen varbis=concat(var Big5), p(" ")
+drop var
+rename varbis var
+set graph off
 forvalues i=1(1)6{
 *Sort
-gsort - factor_`x'with_`i'
-sencode var, gen(var_factor_`x'with_`i') gsort(factor_`x'with_`i')
-replace factor_`x'with_`i'=round(factor_`x'with_`i', 0.01)
+gsort - F`i'
+sencode var, gen(var_F`i') gsort(F`i')
+replace F`i'=round(F`i', 0.01)
 *Graph
 twoway ///
-(bar factor_`x'with_`i' var_factor_`x'with_`i', barw(0.6) yline(0, lcolor(gs10) lpattern(solid) lwidth(*0.8))) ///
-(scatter factor_`x'with_`i' var_factor_`x'with_`i', mlabel(factor_`x'with_`i') mlabposition(12) mlabsize(*0.3) mlabangle(0) msymbol(i)) ///
-(scatter pvalue_`x'with_`i' var_factor_`x'with_`i', msymbol(o) mcolor(gs1) msize(*0.2)) ///
-(line threshold var_factor_`x'with_`i', lcolor(gs1) lpattern(solid) lwidth(*0.2)), ///
-xlabel(1(1)41, valuelabel labsize(tiny) angle(45) nogrid) xtitle("")  ///
-ylabel(, labsize(tiny)) ///
+(line var_F`i' F`i', xline(0, lcolor(gs10))) ///
+(scatter var_F`i' F`i', mlabel(F`i') mlabposition(11) mlabsize(*0.3) mlabangle(0) msymbol(i)), ///
+xlabel(, labsize(tiny) angle(0) nogrid) xtitle("")  ///
+ylabel(1(1)41, valuelabel labsize(tiny)) ytitle("") ///
 title("Factor `i'", size(small)) ///
-legend(order(1 "Correlation with factor" 3 "p-value" 4 ".05 threshold") pos(6) col(3) size(vsmall) off) ///
-name(g_`x'_`i', replace)
-drop var_factor_`x'with_`i'
+legend(order(1 "Correlation with factor") pos(6) col(3) size(vsmall) off) ///
+name(g_`i', replace)
 sort n
 }
-grc1leg g_`x'_1 g_`x'_2 g_`x'_3 g_`x'_4 g_`x'_5 g_`x'_6, note("`x' items with NEEMSIS-2 (2020-21) data.", size(tiny)) name(comb_`x'_with, replace)
-graph save "$git\Analysis\Personality\Big-5\factor2020_`x'_with.gph", replace
-graph export "$git\RUME-NEEMSIS\Big-5\factor2020_`x'_with.svg", as(svg) replace
-graph export "$git\Analysis\Personality\Big-5\factor2020_`x'_with.pdf", as(pdf) replace
+graph combine g_1 g_2 g_3 g_4 g_5 g_6, note("Corrected items.", size(tiny)) name(comb_`j'_`x', replace)
+graph export "factor`j'_`x'.pdf", as(pdf) replace
+}
+}
+
+
+********** Without
+foreach x in without_panel {
+forvalues j=2016(4)2020 {
+import excel "EFA_`j'.xlsx", sheet("`x'") firstrow clear
+rename Variables var
+rename N n
+*Drop grit
+drop if NaiveBigFive=="Grit"
+
+gen Big5=""
+replace Big5="(OP)" if NaiveBigFive=="Openness"
+replace Big5="(CO)" if NaiveBigFive=="Conscientiousness"
+replace Big5="(EX)" if NaiveBigFive=="Extraversion"
+replace Big5="(AG)" if NaiveBigFive=="Agreeableness"
+replace Big5="(ES)" if NaiveBigFive=="Emotional stability"
+egen varbis=concat(var Big5), p(" ")
+drop var
+rename varbis var
+set graph off
+forvalues i=1(1)5{
+*Sort
+gsort - F`i'
+sencode var, gen(var_F`i') gsort(F`i')
+replace F`i'=round(F`i', 0.01)
+*Graph
+twoway ///
+(line var_F`i' F`i', xline(0, lcolor(gs10))) ///
+(scatter var_F`i' F`i', mlabel(F`i') mlabposition(11) mlabsize(*0.3) mlabangle(0) msymbol(i)), ///
+xlabel(, labsize(tiny) angle(0) nogrid) xtitle("")  ///
+ylabel(1(1)35, valuelabel labsize(tiny)) ytitle("") ///
+title("Factor `i'", size(small)) ///
+legend(order(1 "Correlation with factor") pos(6) col(3) size(vsmall) off) ///
+name(g_`i', replace)
+sort n
+}
+graph combine g_1 g_2 g_3 g_4 g_5, note("Corrected items.", size(tiny)) name(comb_`j'_`x', replace)
+graph export "factor`j'_`x'.pdf", as(pdf) replace
+}
 }
 
 
 
 ****************************************
 * END
-
-
-
-
-
-/*
-esttab res_2016 , ///
-	cells("b(fmt(3)star)" "se(fmt(3)par)") /// 
-	star(* 0.10 ** 0.05 *** 0.01) ///
-	drop() ///
-	legend label varlabels(_cons constant) ///
-	stats(N r2 r2_a p, fmt(0 3 3 3) labels(`"Observations"' `"\$R^2$"' `"Adjusted \$R^2$"' `"p-value"')) ///
-	replace	
-	
-preserve
-import delimited "_reg.csv", delimiter(",") varnames(nonames) clear
-qui des
-sca def k=r(k)
-forvalues i=1(1)`=scalar(k)'{
-replace v`i'=substr(v`i',3,.)
-replace v`i'=substr(v`i',1,strlen(v`i')-1)
-}
-export excel using "OLS_username.xlsx", sheet(Class2016,replace)
-restore

@@ -38,9 +38,37 @@ set scheme plotplain
 
 
 ********** Name of the NEEMSIS2 questionnaire version to clean
-global wave1 "RUME-HH_v8"
-global wave2 "NEEMSIS1-HH_v7"
-global wave3 "NEEMSIS2-HH_v17"
+*global wave1 "RUME-HH_v8"
+global wave2 "NEEMSIS1-HH_v8"
+global wave3 "NEEMSIS2-HH_v19"
+****************************************
+* END
+
+
+
+
+
+
+
+****************************************
+* Panel
+****************************************
+use"$wave3", clear
+gen year2020=2020
+rename egoid egoid2020
+keep HHID_panel INDID_panel egoid2020 year2020
+save"$wave3~_temp", replace
+
+use"$wave2", clear
+gen year2016=2016
+rename egoid egoid2016
+keep HHID_panel INDID_panel egoid2016 year2016
+merge 1:1 HHID_panel INDID_panel using "$wave3~_temp"
+gen panel_indiv=0
+replace panel_indiv=1 if _merge==3
+drop _merge
+save"panel_indiv", replace
+
 ****************************************
 * END
 
@@ -51,28 +79,19 @@ global wave3 "NEEMSIS2-HH_v17"
 
 
 
-
-
-
-
-
-
-
-
-
 ****************************************
-* Prépa 2020
+* EFA 2020
 ****************************************
 
 ********** 
 use"$wave3", clear
+merge 1:1 HHID_panel INDID_panel using "panel_indiv"
+keep if panel_indiv==1
+keep if egoid>0
+keep if egoid2016>0
 
-merge m:1 HHID_panel using "panel", nogen keep(3)
-*keep if egoid>0
-
-tab age
-fre sex
-
+order HHID_panel INDID_panel ars2 curious cr_curious
+sort HHID_panel INDID_panel
 
 ********** Imputation for non corrected one
 global big5 ///
@@ -83,161 +102,63 @@ workwithother  understandotherfeeling trustingofother rudetoother toleratefaults
 managestress  nervous  changemood feeldepressed easilyupset worryalot  staycalm ///
 tryhard  stickwithgoals   goaftergoal finishwhatbegin finishtasks  keepworking
 
-global big5raw raw_curious raw_interestedbyart raw_repetitivetasks raw_inventive raw_liketothink raw_newideas raw_activeimagination raw_organized raw_makeplans raw_workhard raw_appointmentontime raw_putoffduties raw_easilydistracted raw_completeduties raw_enjoypeople raw_sharefeelings raw_shywithpeople raw_enthusiastic raw_talktomanypeople raw_talkative raw_expressingthoughts raw_workwithother raw_understandotherfeeling raw_trustingofother raw_rudetoother raw_toleratefaults raw_forgiveother raw_helpfulwithothers raw_managestress raw_nervous raw_changemood raw_feeldepressed raw_easilyupset raw_worryalot raw_staycalm raw_tryhard raw_stickwithgoals raw_goaftergoal raw_finishwhatbegin raw_finishtasks raw_keepworking
 
-global big5cor cr_curious cr_interestedbyart cr_repetitivetasks cr_inventive cr_liketothink cr_newideas cr_activeimagination cr_organized cr_makeplans cr_workhard cr_appointmentontime cr_putoffduties cr_easilydistracted cr_completeduties cr_enjoypeople cr_sharefeelings cr_shywithpeople cr_enthusiastic cr_talktomanypeople cr_talkative cr_expressingthoughts cr_workwithother cr_understandotherfeeling cr_trustingofother cr_rudetoother cr_toleratefaults cr_forgiveother cr_helpfulwithothers cr_managestress cr_nervous cr_changemood cr_feeldepressed cr_easilyupset cr_worryalot cr_staycalm cr_tryhard cr_stickwithgoals cr_goaftergoal cr_finishwhatbegin cr_finishtasks cr_keepworking
+global big5cr cr_curious cr_interestedbyart cr_repetitivetasks cr_inventive cr_liketothink cr_newideas cr_activeimagination cr_organized cr_makeplans cr_workhard cr_appointmentontime cr_putoffduties cr_easilydistracted cr_completeduties cr_enjoypeople cr_sharefeelings cr_shywithpeople cr_enthusiastic cr_talktomanypeople cr_talkative cr_expressingthoughts cr_workwithother cr_understandotherfeeling cr_trustingofother cr_rudetoother cr_toleratefaults cr_forgiveother cr_helpfulwithothers cr_managestress cr_nervous cr_changemood cr_feeldepressed cr_easilyupset cr_worryalot cr_staycalm cr_tryhard cr_stickwithgoals cr_goaftergoal cr_finishwhatbegin cr_finishtasks cr_keepworking
 
-foreach x in $big5 $big5raw $big5cor{
-gen im_`x'=`x'
+foreach x in $big5cr{
+gen im`x'=`x'
 }
 
 
 forvalues j=1(1)3{
 forvalues i=1(1)2{
-foreach x in $big5 $big5raw $big5cor{
-sum im_`x' if sex==`i' & caste==`j' & egoid!=0 & egoid!=.
-replace im_`x'=r(mean) if im_`x'==. & sex==`i' & caste==`j' & egoid!=0 & egoid!=.
+foreach x in $big5cr{
+qui sum im`x' if sex==`i' & caste==`j' & egoid!=0 & egoid!=.
+replace im`x'=r(mean) if im`x'==. & sex==`i' & caste==`j' & egoid!=0 & egoid!=.
 }
 }
 }
 
-global imcorwith im_cr_curious im_cr_interestedbyart im_cr_repetitivetasks im_cr_inventive im_cr_liketothink im_cr_newideas im_cr_activeimagination im_cr_organized im_cr_makeplans im_cr_workhard im_cr_appointmentontime im_cr_putoffduties im_cr_easilydistracted im_cr_completeduties im_cr_enjoypeople im_cr_sharefeelings im_cr_shywithpeople im_cr_enthusiastic im_cr_talktomanypeople im_cr_talkative im_cr_expressingthoughts im_cr_workwithother im_cr_understandotherfeeling im_cr_trustingofother im_cr_rudetoother im_cr_toleratefaults im_cr_forgiveother im_cr_helpfulwithothers im_cr_managestress im_cr_nervous im_cr_changemood im_cr_feeldepressed im_cr_easilyupset im_cr_worryalot im_cr_staycalm im_cr_tryhard im_cr_stickwithgoals im_cr_goaftergoal im_cr_finishwhatbegin im_cr_finishtasks im_cr_keepworking
+global imcorwith imcr_curious imcr_interestedbyart imcr_repetitivetasks imcr_inventive imcr_liketothink imcr_newideas imcr_activeimagination imcr_organized imcr_makeplans imcr_workhard imcr_appointmentontime imcr_putoffduties imcr_easilydistracted imcr_completeduties imcr_enjoypeople imcr_sharefeelings imcr_shywithpeople imcr_enthusiastic imcr_talktomanypeople imcr_talkative imcr_expressingthoughts imcr_workwithother imcr_understandotherfeeling imcr_trustingofother imcr_rudetoother imcr_toleratefaults imcr_forgiveother imcr_helpfulwithothers imcr_managestress imcr_nervous imcr_changemood imcr_feeldepressed imcr_easilyupset imcr_worryalot imcr_staycalm imcr_tryhard imcr_stickwithgoals imcr_goaftergoal imcr_finishwhatbegin imcr_finishtasks imcr_keepworking
 
-global imrawwith im_raw_curious im_raw_interestedbyart im_raw_repetitivetasks im_raw_inventive im_raw_liketothink im_raw_newideas im_raw_activeimagination im_raw_organized im_raw_makeplans im_raw_workhard im_raw_appointmentontime im_raw_putoffduties im_raw_easilydistracted im_raw_completeduties im_raw_enjoypeople im_raw_sharefeelings im_raw_shywithpeople im_raw_enthusiastic im_raw_talktomanypeople im_raw_talkative im_raw_expressingthoughts im_raw_workwithother im_raw_understandotherfeeling im_raw_trustingofother im_raw_rudetoother im_raw_toleratefaults im_raw_forgiveother im_raw_helpfulwithothers im_raw_managestress im_raw_nervous im_raw_changemood im_raw_feeldepressed im_raw_easilyupset im_raw_worryalot im_raw_staycalm  im_raw_tryhard im_raw_stickwithgoals im_raw_goaftergoal im_raw_finishwhatbegin im_raw_finishtasks im_raw_keepworking
 
-global imcor im_cr_curious im_cr_interestedbyart im_cr_repetitivetasks im_cr_inventive im_cr_liketothink im_cr_newideas im_cr_activeimagination im_cr_organized im_cr_makeplans im_cr_workhard im_cr_appointmentontime im_cr_putoffduties im_cr_easilydistracted im_cr_completeduties im_cr_enjoypeople im_cr_sharefeelings im_cr_shywithpeople im_cr_enthusiastic im_cr_talktomanypeople im_cr_talkative im_cr_expressingthoughts im_cr_workwithother im_cr_understandotherfeeling im_cr_trustingofother im_cr_rudetoother im_cr_toleratefaults im_cr_forgiveother im_cr_helpfulwithothers im_cr_managestress im_cr_nervous im_cr_changemood im_cr_feeldepressed im_cr_easilyupset im_cr_worryalot im_cr_staycalm
+global imcor imcr_curious imcr_interestedbyart imcr_repetitivetasks imcr_inventive imcr_liketothink imcr_newideas imcr_activeimagination imcr_organized imcr_makeplans imcr_workhard imcr_appointmentontime imcr_putoffduties imcr_easilydistracted imcr_completeduties imcr_enjoypeople imcr_sharefeelings imcr_shywithpeople imcr_enthusiastic imcr_talktomanypeople imcr_talkative imcr_expressingthoughts imcr_workwithother imcr_understandotherfeeling imcr_trustingofother imcr_rudetoother imcr_toleratefaults imcr_forgiveother imcr_helpfulwithothers imcr_managestress imcr_nervous imcr_changemood imcr_feeldepressed imcr_easilyupset imcr_worryalot imcr_staycalm 
 
-global imraw im_raw_curious im_raw_interestedbyart im_raw_repetitivetasks im_raw_inventive im_raw_liketothink im_raw_newideas im_raw_activeimagination im_raw_organized im_raw_makeplans im_raw_workhard im_raw_appointmentontime im_raw_putoffduties im_raw_easilydistracted im_raw_completeduties im_raw_enjoypeople im_raw_sharefeelings im_raw_shywithpeople im_raw_enthusiastic im_raw_talktomanypeople im_raw_talkative im_raw_expressingthoughts im_raw_workwithother im_raw_understandotherfeeling im_raw_trustingofother im_raw_rudetoother im_raw_toleratefaults im_raw_forgiveother im_raw_helpfulwithothers im_raw_managestress im_raw_nervous im_raw_changemood im_raw_feeldepressed im_raw_easilyupset im_raw_worryalot im_raw_staycalm 
 
-foreach x in imcorwith imrawwith {
-*minap $`x'
-*fsum $`x', stat(n mean sd)
-qui factor $`x', pcf fa(6) 
+********** With grit
+minap $imcorwith  // Kaiser=14, minap=2
+qui factor $imcorwith, pcf fa(6) 
 rotate, promax
-*putexcel set "EFA_2020.xlsx", modify sheet(`x')
-*putexcel (E2)=matrix(e(r_L))
+putexcel set "EFA_2020.xlsx", modify sheet(imcorwith)
+putexcel (E2)=matrix(e(r_L))
 
-predict factor_`x'_1 factor_`x'_2 factor_`x'_3 factor_`x'_4 factor_`x'_5 factor_`x'_6
-cpcorr $`x' \ factor_`x'_1 factor_`x'_2 factor_`x'_3 factor_`x'_4 factor_`x'_5 factor_`x'_6
+predict factor_imcorwith_1 factor_imcorwith_2 factor_imcorwith_3 factor_imcorwith_4 factor_imcorwith_5 factor_imcorwith_6
+cpcorr $imcorwith \ factor_imcorwith_1 factor_imcorwith_2 factor_imcorwith_3 factor_imcorwith_4 factor_imcorwith_5 factor_imcorwith_6
 matrix list r(p)
 
 *Correlation with big-5 and cronbach
-cpcorr cr_OP cr_EX cr_ES cr_CO cr_AG cr_Grit OP EX ES CO AG Grit factor_`x'_1 factor_`x'_2 factor_`x'_3 factor_`x'_4 factor_`x'_5 factor_`x'_6
+cpcorr cr_OP cr_EX cr_ES cr_CO cr_AG cr_Grit OP EX ES CO AG Grit factor_imcorwith_1 factor_imcorwith_2 factor_imcorwith_3 factor_imcorwith_4 factor_imcorwith_5 factor_imcorwith_6
 matrix list r(p)
-}
 
 
-foreach x in imcor imraw {
-minap $`x'
-fsum $`x', stat(n mean sd)
-qui factor $`x', pcf fa(5) 
+
+********** Without grit
+minap $imcor
+factor $imcor, pcf fa(5) 
 rotate, promax
-*putexcel set "EFA_2020.xlsx", modify sheet(`x')
-*putexcel (E2)=matrix(e(r_L))
+putexcel set "EFA_2020.xlsx", modify sheet(imcor)
+putexcel (E2)=matrix(e(r_L))
 
-predict factor_`x'_1 factor_`x'_2 factor_`x'_3 factor_`x'_4 factor_`x'_5
-cpcorr $`x' \ factor_`x'_1 factor_`x'_2 factor_`x'_3 factor_`x'_4 factor_`x'_5
+predict factor_imcor_1 factor_imcor_2 factor_imcor_3 factor_imcor_4 factor_imcor_5
+cpcorr $imcor \ factor_imcor_1 factor_imcor_2 factor_imcor_3 factor_imcor_4 factor_imcor_5
 matrix list r(p)
 
 *Correlation with big-5 and cronbach
-cpcorr cr_OP cr_EX cr_ES cr_CO cr_AG cr_Grit OP EX ES CO AG Grit factor_`x'_1 factor_`x'_2 factor_`x'_3 factor_`x'_4 factor_`x'_5
+cpcorr cr_OP cr_EX cr_ES cr_CO cr_AG cr_Grit OP EX ES CO AG Grit factor_imcor_1 factor_imcor_2 factor_imcor_3 factor_imcor_4 factor_imcor_5
 matrix list r(p)
-}
 
 
-********** Graph rpz
-/*
-preserve
-import delimited "factor2020.csv", delimiter(";") clear
-drop v46
-gen n=_n
-drop if n==42
-order n var
-gen threshold=0.05
-*Clean
-forvalues i=1(1)6{
-rename factor_imcrwith_`i' factor_Corrwith_`i'
-rename pvalue_imcrwith_`i' pvalue_Corrwith_`i'
-rename factor_imrawwith_`i' factor_Rawwith_`i'
-rename pvalue_imrawwith_`i' pvalue_Rawwith_`i'
-}
-
-forvalues i=1(1)5{
-rename factor_imcr_`i' factor_Corr_`i'
-rename pvalue_imcr_`i' pvalue_Corr_`i'
-rename factor_imraw_`i' factor_Raw_`i'
-rename pvalue_imraw_`i' pvalue_Raw_`i'
-}
-gen big5=""
-replace big5="Openness" if n>=1 & n<=7
-replace big5="Conscientiousness" if n>=8 & n<=14
-replace big5="Extraversion" if n>=15 & n<=21
-replace big5="Agreeableness" if n>=22 & n<=28
-replace big5="Emotional stability / Neuroticism" if n>=29 & n<=35
-replace big5="Grit" if n>=36 & n<=41
-order n var big5
-save"factor2020.dta", replace
-
-use"factor2020.dta", clear
-
-set graph off
-* With
-foreach x in Raw Corr {
-forvalues i=1(1)6{
-*Sort
-gsort - factor_`x'with_`i'
-sencode var, gen(var_factor_`x'with_`i') gsort(factor_`x'with_`i')
-replace factor_`x'with_`i'=round(factor_`x'with_`i', 0.01)
-*Graph
-twoway ///
-(bar factor_`x'with_`i' var_factor_`x'with_`i', barw(0.6) yline(0, lcolor(gs10) lpattern(solid) lwidth(*0.8))) ///
-(scatter factor_`x'with_`i' var_factor_`x'with_`i', mlabel(factor_`x'with_`i') mlabposition(12) mlabsize(*0.3) mlabangle(0) msymbol(i)) ///
-(scatter pvalue_`x'with_`i' var_factor_`x'with_`i', msymbol(o) mcolor(gs1) msize(*0.2)) ///
-(line threshold var_factor_`x'with_`i', lcolor(gs1) lpattern(solid) lwidth(*0.2)), ///
-xlabel(1(1)41, valuelabel labsize(tiny) angle(45) nogrid) xtitle("")  ///
-ylabel(, labsize(tiny)) ///
-title("Factor `i'", size(small)) ///
-legend(order(1 "Correlation with factor" 3 "p-value" 4 ".05 threshold") pos(6) col(3) size(vsmall) off) ///
-name(g_`x'_`i', replace)
-drop var_factor_`x'with_`i'
-sort n
-}
-grc1leg g_`x'_1 g_`x'_2 g_`x'_3 g_`x'_4 g_`x'_5 g_`x'_6, note("`x' items with NEEMSIS-2 (2020-21) data.", size(tiny)) name(comb_`x'_with, replace)
-graph save "$git\Analysis\Personality\Big-5\factor2020_`x'_with.gph", replace
-graph export "$git\RUME-NEEMSIS\Big-5\factor2020_`x'_with.svg", as(svg) replace
-graph export "$git\Analysis\Personality\Big-5\factor2020_`x'_with.pdf", as(pdf) replace
-}
-
-* Without
-drop if n>=36
-foreach x in Raw Corr {
-forvalues i=1(1)5{
-*Sort
-gsort - factor_`x'_`i'
-sencode var, gen(var_factor_`x'_`i') gsort(factor_`x'_`i')
-replace factor_`x'_`i'=round(factor_`x'_`i', 0.01)
-*Graph
-twoway ///
-(bar factor_`x'_`i' var_factor_`x'_`i', barw(0.6) yline(0, lcolor(gs10) lpattern(solid) lwidth(*0.8))) ///
-(scatter factor_`x'_`i' var_factor_`x'_`i', mlabel(factor_`x'_`i') mlabposition(12) mlabsize(*0.3) mlabangle(0) msymbol(i)) ///
-(scatter pvalue_`x'_`i' var_factor_`x'_`i', msymbol(o) mcolor(gs1) msize(*0.2)) ///
-(line threshold var_factor_`x'_`i', lcolor(gs1) lpattern(solid) lwidth(*0.2)), ///
-xlabel(1(1)35,valuelabel labsize(tiny) angle(45) nogrid) xtitle("")  ///
-ylabel(,labsize(tiny)) ///
-title("Factor `i'", size(small)) ///
-legend(order(1 "Correlation with factor" 3 "p-value" 4 ".05 threshold") pos(6) col(3) size(vsmall) off) ///
-name(g_`x'_`i', replace)
-drop var_factor_`x'_`i'
-sort n
-}
-grc1leg g_`x'_1 g_`x'_2 g_`x'_3 g_`x'_4 g_`x'_5, note("`x' items with NEEMSIS-2 (2020-21) data.", size(tiny)) col(2) name(comb_`x', replace)
-graph save "$git\Analysis\Personality\Big-5\factor2020_`x'.gph", replace
-graph export "$git\RUME-NEEMSIS\Big-5\factor2020_`x'.svg", as(svg) replace
-graph export "$git\Analysis\Personality\Big-5\factor2020_`x'.pdf", as(pdf) replace
-}
-restore
-set graph on
-*/
+keep $imcorwith HHID_panel INDID_panel factor_imcorwith_1 factor_imcorwith_2 factor_imcorwith_3 factor_imcorwith_4 factor_imcorwith_5 factor_imcorwith_6 factor_imcor_1 factor_imcor_2 factor_imcor_3 factor_imcor_4 factor_imcor_5
 
 
 
@@ -261,27 +182,112 @@ omega im_forgiveother im_toleratefaults im_helpfulwithothers im_trustingofother 
 */
 
 
+save"$wave3~_ego.dta", replace
 
+
+
+
+
+********** Graph rpz
+*** With
+set graph off
+import excel "EFA_2020.xlsx", sheet("imcorwith") firstrow clear
+rename Variables var
+rename N n
+gen Big5=""
+replace Big5="(OP)" if NaiveBigFive=="Openness"
+replace Big5="(CO)" if NaiveBigFive=="Conscientiousness"
+replace Big5="(EX)" if NaiveBigFive=="Extraversion"
+replace Big5="(AG)" if NaiveBigFive=="Agreeableness"
+replace Big5="(ES)" if NaiveBigFive=="Emotional stability"
+replace Big5="(GR)" if NaiveBigFive=="Grit"
+egen varbis=concat(var Big5), p(" ")
+drop var
+rename varbis var
+forvalues i=1(1)6{
+*Sort
+gsort - F`i'
+sencode var, gen(var_F`i') gsort(F`i')
+replace F`i'=round(F`i', 0.01)
+*Graph
+twoway ///
+(line var_F`i' F`i', xline(0, lcolor(gs10))) ///
+(scatter var_F`i' F`i', mlabel(F`i') mlabposition(11) mlabsize(*0.3) mlabangle(0) msymbol(i)), ///
+xlabel(, labsize(tiny) angle(0) nogrid) xtitle("")  ///
+ylabel(1(1)41, valuelabel labsize(tiny)) ytitle("") ///
+title("Factor `i'", size(small)) ///
+legend(order(1 "Correlation with factor") pos(6) col(3) size(vsmall) off) ///
+name(g_`i', replace)
+sort n
+}
+graph combine g_1 g_2 g_3 g_4 g_5 g_6, note("cr items with NEEMSIS-2 (2020-21) data.", size(tiny)) name(comb_cr_with, replace)
+graph export "factor2020_cr_with.pdf", as(pdf) replace
+
+
+* Without
+import excel "EFA_2020.xlsx", sheet("imcor") firstrow clear
+rename Variables var
+rename N n
+gen Big5=""
+replace Big5="(OP)" if NaiveBigFive=="Openness"
+replace Big5="(CO)" if NaiveBigFive=="Conscientiousness"
+replace Big5="(EX)" if NaiveBigFive=="Extraversion"
+replace Big5="(AG)" if NaiveBigFive=="Agreeableness"
+replace Big5="(ES)" if NaiveBigFive=="Emotional stability"
+replace Big5="(GR)" if NaiveBigFive=="Grit"
+egen varbis=concat(var Big5), p(" ")
+drop var
+rename varbis var
+forvalues i=1(1)5{
+*Sort
+gsort - F`i'
+sencode var, gen(var_F`i') gsort(F`i')
+replace F`i'=round(F`i', 0.01)
+*Graph
+twoway ///
+(line var_F`i' F`i', xline(0, lcolor(gs10))) ///
+(scatter var_F`i' F`i', mlabel(F`i') mlabposition(11) mlabsize(*0.3) mlabangle(0) msymbol(i)), ///
+xlabel(, labsize(tiny) angle(0) nogrid) xtitle("")  ///
+ylabel(1(1)35, valuelabel labsize(tiny)) ytitle("") ///
+title("Factor `i'", size(small)) ///
+legend(order(1 "Correlation with factor") pos(6) col(3) size(vsmall) off) ///
+name(g_`i', replace)
+drop var_F`i'
+sort n
+}
+graph combine g_1 g_2 g_3 g_4 g_5, note("cr items with NEEMSIS-2 (2020-21) data.", size(tiny)) name(comb_cr_with, replace)
+graph export "factor2020_cr_without.pdf", as(pdf) replace
+
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Prepa 2020
+****************************************
+
+********** 
+use"$wave3", clear
 *HH size
 drop if INDID_left!=.
 keep if livinghome==1 | livinghome==2
 bysort HHID_panel: gen hhsize=_N
 
 *
-sum sum_borrowerservices_3 sum_plantorepay_6 sum_settleloanstrategy_8
 sum loanamount_indiv
 
-/*
-*Reshape ego
-preserve
-drop if egoid==0
-drop if egoid==3
-keep f1_2020 f2_2020 f3_2020 f4_2020 f5_2020 egoid HHID_panel maritalstatus edulevel relationshiptohead sex age readystartjob methodfindjob jobpreference moveoutsideforjob moveoutsideforjobreason aspirationminimumwage dummyaspirationmorehours aspirationminimumwage2 name num_tt raven_tt lit_tt OP CO EX AG ES Grit cr_OP cr_CO cr_EX cr_AG cr_ES cr_Grit
-rename aspirationminimumwage2 aspirationminimumwageTWO
-reshape wide f1_2020 f2_2020 f3_2020 f4_2020 f5_2020 maritalstatus edulevel relationshiptohead sex age readystartjob methodfindjob jobpreference moveoutsideforjob moveoutsideforjobreason aspirationminimumwage  aspirationminimumwageTWO dummyaspirationmorehours  name num_tt raven_tt lit_tt OP CO EX AG ES Grit cr_OP cr_CO cr_EX cr_AG cr_ES cr_Grit, i(HHID_panel) j(egoid)
-save"$wave3~efa_ego.dta", replace
-restore
-*/
 
 *Nb children
 gen child=0
@@ -361,21 +367,21 @@ replace investequip_plowingmach=equipmentcost_plowingmach if equipementyear4>="2
 egen investequiptot_HH=rowtotal(investequip_tractor investequip_bullockcart investequip_plowingmach)
 
 
-* Ratio de dépendance à la dette : 
+*** Dependency ratio :
+* Debt
 gen debtor=0
 replace debtor=1 if loanamount_indiv>0 & loanamount_indiv!=.
 gen nondebtor=0
 replace nondebtor=1 if debtor==0 & debtor!=.
 
-gen worker=0
-replace worker=1 if annualincome_indiv>0 & annualincome_indiv!=.
+* Worker
 gen nonworker=0
 replace nonworker=1 if worker==0 & worker!=.
 
+* HH level
 foreach x in debtor nondebtor worker nonworker {
 bysort HHID_panel: egen `x'_HH=sum(`x')
 }
-
 gen debtorratio=debtor_HH/nondebtor_HH
 clonevar debtorratio2=debtorratio
 replace debtorratio2=debtor_HH if debtorratio==.
@@ -397,6 +403,7 @@ drop if egoid==0
 rename amoutlent amountlent
 
 *Services and repayment 
+/*
 global newvar sum_borrowerservices_1 sum_borrowerservices_2 sum_borrowerservices_3 sum_borrowerservices_4 sum_plantorepay_1 sum_plantorepay_2 sum_plantorepay_3 sum_plantorepay_4 sum_plantorepay_5 sum_plantorepay_6 sum_settleloanstrategy_1 sum_settleloanstrategy_2 sum_settleloanstrategy_3 sum_settleloanstrategy_4 sum_settleloanstrategy_5 sum_settleloanstrategy_6 sum_settleloanstrategy_7 sum_settleloanstrategy_8 sum_settleloanstrategy_9 sum_settleloanstrategy_10
 
 foreach x in $newvar{
@@ -408,23 +415,22 @@ replace `x'_r=1 if `x'>=1 & `x'!=.
 }
 
 tab1 sum_borrowerservices_1_r sum_borrowerservices_2_r sum_borrowerservices_3_r sum_borrowerservices_4_r sum_plantorepay_1_r sum_plantorepay_2_r sum_plantorepay_3_r sum_plantorepay_4_r sum_plantorepay_5_r sum_plantorepay_6_r sum_settleloanstrategy_1_r sum_settleloanstrategy_2_r sum_settleloanstrategy_3_r sum_settleloanstrategy_4_r sum_settleloanstrategy_5_r sum_settleloanstrategy_6_r sum_settleloanstrategy_7_r sum_settleloanstrategy_8_r sum_settleloanstrategy_9_r sum_settleloanstrategy_10_r
-
+*/
 
 *Macro for rename
-
 global charactindiv maritalstatus edulevel relationshiptohead sex age readystartjob methodfindjob jobpreference moveoutsideforjob moveoutsideforjobreason aspirationminimumwage dummyaspirationmorehours aspirationminimumwage2 name
  
-global characthh villageid villageid_new assets ownland house jatis caste dummymarriage hhsize nbchild nbfemale nbmale dummydemonetisation interviewplace address religion dummyeverhadland
+global characthh villageid assets assets_noland sizeownland ownland house jatis caste dummymarriage hhsize nbchild nbfemale nbmale interviewplace address religion dummyeverhadland
 
-global wealthindiv annualincome_indiv totalincome_indiv mainoccupation_hours_indiv mainoccupation_income_indiv mainoccupation_indiv mainoccupationname_indiv nboccupation_indiv
+global wealthindiv annualincome_indiv totalincome_indiv mainocc_kindofwork_indiv mainocc_profession_indiv mainocc_occupation_indiv mainocc_annualincome_indiv nboccupation_indiv
 
-global wealthhh annualincome_HH totalincome_HH mainoccupation_HH nboccupation_HH foodexpenses healthexpenses ceremoniesexpenses ceremoniesrelativesexpenses deathexpenses marriageexpenses businessexpenses
+global wealthhh annualincome_HH totalincome_HH nboccupation_HH foodexpenses healthexpenses ceremoniesexpenses ceremoniesrelativesexpenses deathexpenses marriageexpenses businessexpenses 
 
-global debtindiv imp1_ds_tot_indiv imp1_is_tot_indiv semiformal_indiv formal_indiv economic_indiv current_indiv humancap_indiv social_indiv house_indiv incomegen_indiv noincomegen_indiv economic_amount_indiv current_amount_indiv humancap_amount_indiv social_amount_indiv house_amount_indiv incomegen_amount_indiv noincomegen_amount_indiv informal_amount_indiv formal_amount_indiv semiformal_amount_indiv loanamount_indiv dummyproblemtorepay_indiv dummyhelptosettleloan_indiv dummyinterest_indiv loans_indiv loanbalance_indiv marriageloanamount_indiv mean_yratepaid_indiv mean_monthlyinterestrate_indiv nbsavingaccounts savingsamount1 savingsamount2 savingsamount3 savingsamount4 dummydebitcard1 dummydebitcard2 dummydebitcard3 dummydebitcard4 datedebitcard1 datedebitcard2 datedebitcard3 datedebitcard4 dummychitfund amountlent interestlending goldquantity goldquantitypledge nbinsurance dummycreditcard1 dummycreditcard2 dummycreditcard3 dummycreditcard4 nbchitfunds chitfundamount1 chitfundamount2 chitfundamount3 marriageloan_indiv sum_borrowerservices_1_r sum_borrowerservices_2_r sum_borrowerservices_3_r sum_borrowerservices_4_r sum_plantorepay_1_r sum_plantorepay_2_r sum_plantorepay_3_r sum_plantorepay_4_r sum_plantorepay_5_r sum_plantorepay_6_r sum_settleloanstrategy_1_r sum_settleloanstrategy_2_r sum_settleloanstrategy_3_r sum_settleloanstrategy_4_r sum_settleloanstrategy_5_r sum_settleloanstrategy_6_r sum_settleloanstrategy_7_r sum_settleloanstrategy_8_r sum_settleloanstrategy_9_r sum_settleloanstrategy_10_r sum_otherlenderservices_1 sum_otherlenderservices_2 sum_otherlenderservices_3 sum_otherlenderservices_4 sum_otherlenderservices_5 sum_debtrelation_shame
+global debtindiv imp1_ds_tot_indiv imp1_is_tot_indiv loanamount_indiv loans_indiv debtor nondebtor worker nonworker
 
-global debthh imp1_ds_tot_HH imp1_is_tot_HH informal_HH semiformal_HH formal_HH economic_HH current_HH humancap_HH social_HH house_HH incomegen_HH noincomegen_HH economic_amount_HH current_amount_HH humancap_amount_HH social_amount_HH house_amount_HH incomegen_amount_HH noincomegen_amount_HH informal_amount_HH formal_amount_HH semiformal_amount_HH marriageloanamount_HH loanamount_HH dummyproblemtorepay_HH dummyhelptosettleloan_HH dummyinterest_HH loans_HH loanbalance_HH mean_yratepaid_HH mean_monthlyinterestrate_HH marriageloan_HH debtorratio workerratio debtorratio2 workerratio2
+global debthh imp1_ds_tot_HH imp1_is_tot_HH loanamount_HH loans_HH debtorratio workerratio debtorratio2 workerratio2 debtor_HH nondebtor_HH worker_HH nonworker_HH
 
-global perso cr_OP cr_CO cr_EX cr_AG cr_ES cr_Grit OP CO EX AG ES Grit raven_tt num_tt lit_tt factor_imcorwith_1 factor_imcorwith_2 factor_imcorwith_3 factor_imcorwith_4 factor_imcorwith_5 factor_imcorwith_6 factor_imrawwith_1 factor_imrawwith_2 factor_imrawwith_3 factor_imrawwith_4 factor_imrawwith_5 factor_imrawwith_6 factor_imcor_1 factor_imcor_2 factor_imcor_3 factor_imcor_4 factor_imcor_5 factor_imraw_1 factor_imraw_2 factor_imraw_3 factor_imraw_4 factor_imraw_5
+global perso cr_OP cr_CO cr_EX cr_AG cr_ES cr_Grit OP CO EX AG ES Grit raven_tt num_tt lit_tt 
 
 global expenses savingsamount_HH educationexpenses_HH productexpenses_HH businessexpenses_HH foodexpenses_HH healthexpenses_HH ceremoniesexpenses_HH deathexpenses_HH chitfundpaymentamount_HH chitfundamount_HH chitfundamounttot_HH nbchitfunds_HH amountlent_HH interestlending_HH problemrepayment_HH goldquantity_HH goldquantitypledge_HH nbinsurance_HH insuranceamount_HH insuranceamounttot_HH insurancebenefitamount_HH insurancebenefitamounttot_HH landpurchased investequiptot_HH 
 
@@ -448,8 +454,16 @@ tab caste_2
 *Tous les HH ont un égo donc je suis censé en avoir plus car 485 HH en panel avec un peu de chance, 483 sinon minimum !
 restore
 
-**********drop 
-drop factor_imcorwith_1_2 factor_imcorwith_2_2 factor_imcorwith_3_2 factor_imcorwith_4_2 factor_imcorwith_5_2 factor_imcorwith_6_2 factor_imrawwith_1_2 factor_imrawwith_2_2 factor_imrawwith_3_2 factor_imrawwith_4_2 factor_imrawwith_5_2 factor_imrawwith_6_2 factor_imcor_1_2 factor_imcor_2_2 factor_imcor_3_2 factor_imcor_4_2 factor_imcor_5_2 factor_imraw_1_2 factor_imraw_2_2 factor_imraw_3_2 factor_imraw_4_2 factor_imraw_5_2
+
+
+********** Merge factor
+merge 1:1 HHID_panel INDID_panel using "$wave3~_ego.dta"
+keep if _merge==3
+drop _merge
+
+foreach x in factor_imcorwith_1 factor_imcorwith_2 factor_imcorwith_3 factor_imcorwith_4 factor_imcorwith_5 factor_imcorwith_6 factor_imcor_1 factor_imcor_2 factor_imcor_3 factor_imcor_4 factor_imcor_5 {
+rename `x' `x'_2
+}
 
 save"$wave3~panel", replace
 ****************************************
@@ -469,29 +483,16 @@ save"$wave3~panel", replace
 
 
 
-
-
 ****************************************
-* Prepa 2016
+* EFA 2016
 ****************************************
-cls
-********** Verif type of job
-use"$dropbox/RUME-NEEMSIS/NEEMSIS1/NEEMSIS-occupation_alllong.dta", clear
-fre kindofwork
-tab joblocation
-tab jobdistance
-
-
-
 
 ********** 
 use"$wave2", clear
-
-
-*ER test with network
-tab nbercontactphone
-tab dummycontactleaders
-tab1 nbcontact_headbusiness nbcontact_policeman nbcontact_civilserv nbcontact_bankemployee nbcontact_panchayatcommittee nbcontact_peoplecouncil nbcontact_recruiter nbcontact_headunion
+merge 1:1 HHID_panel INDID_panel using "panel_indiv"
+keep if panel_indiv==1
+keep if egoid>0
+keep if egoid2020>0
 
 
 ********** Imputation for non corrected one
@@ -503,304 +504,210 @@ workwithother  understandotherfeeling trustingofother rudetoother toleratefaults
 managestress  nervous  changemood feeldepressed easilyupset worryalot  staycalm ///
 tryhard  stickwithgoals   goaftergoal finishwhatbegin finishtasks  keepworking
 
-global big5raw raw_curious raw_interestedbyart raw_repetitivetasks raw_inventive raw_liketothink raw_newideas raw_activeimagination raw_organized raw_makeplans raw_workhard raw_appointmentontime raw_putoffduties raw_easilydistracted raw_completeduties raw_enjoypeople raw_sharefeelings raw_shywithpeople raw_enthusiastic raw_talktomanypeople raw_talkative raw_expressingthoughts raw_workwithother raw_understandotherfeeling raw_trustingofother raw_rudetoother raw_toleratefaults raw_forgiveother raw_helpfulwithothers raw_managestress raw_nervous raw_changemood raw_feeldepressed raw_easilyupset raw_worryalot raw_staycalm raw_tryhard raw_stickwithgoals raw_goaftergoal raw_finishwhatbegin raw_finishtasks raw_keepworking
 
-global big5rawrec raw_rec_curious raw_rec_interestedbyart raw_rec_repetitivetasks raw_rec_inventive raw_rec_liketothink raw_rec_newideas raw_rec_activeimagination raw_rec_organized raw_rec_makeplans raw_rec_workhard raw_rec_appointmentontime raw_rec_putoffduties raw_rec_easilydistracted raw_rec_completeduties raw_rec_enjoypeople raw_rec_sharefeelings raw_rec_shywithpeople raw_rec_enthusiastic raw_rec_talktomanypeople raw_rec_talkative raw_rec_expressingthoughts raw_rec_workwithother raw_rec_understandotherfeeling raw_rec_trustingofother raw_rec_rudetoother raw_rec_toleratefaults raw_rec_forgiveother raw_rec_helpfulwithothers raw_rec_managestress raw_rec_nervous raw_rec_changemood raw_rec_feeldepressed raw_rec_easilyupset raw_rec_worryalot raw_rec_staycalm raw_rec_tryhard raw_rec_stickwithgoals raw_rec_goaftergoal raw_rec_finishwhatbegin raw_rec_finishtasks raw_rec_keepworking
+global big5cr cr_curious cr_interestedbyart cr_repetitivetasks cr_inventive cr_liketothink cr_newideas cr_activeimagination cr_organized cr_makeplans cr_workhard cr_appointmentontime cr_putoffduties cr_easilydistracted cr_completeduties cr_enjoypeople cr_sharefeelings cr_shywithpeople cr_enthusiastic cr_talktomanypeople cr_talkative cr_expressingthoughts cr_workwithother cr_understandotherfeeling cr_trustingofother cr_rudetoother cr_toleratefaults cr_forgiveother cr_helpfulwithothers cr_managestress cr_nervous cr_changemood cr_feeldepressed cr_easilyupset cr_worryalot cr_staycalm cr_tryhard cr_stickwithgoals cr_goaftergoal cr_finishwhatbegin cr_finishtasks cr_keepworking
 
-*** Identify the way of ES/NE questions when they are non-corrected for reverse coded & acquiesence bias
-*OP
-fre raw_curious raw_interestedbyart raw_repetitivetasks raw_inventive raw_liketothink raw_newideas raw_activeimagination
-
-*ES/NE
-fre raw_managestress raw_nervous raw_changemood raw_feeldepressed raw_easilyupset raw_worryalot raw_staycalm
-
-global big5cor cr_curious cr_interestedbyart cr_repetitivetasks cr_inventive cr_liketothink cr_newideas cr_activeimagination cr_organized cr_makeplans cr_workhard cr_appointmentontime cr_putoffduties cr_easilydistracted cr_completeduties cr_enjoypeople cr_sharefeelings cr_shywithpeople cr_enthusiastic cr_talktomanypeople cr_talkative cr_expressingthoughts cr_workwithother cr_understandotherfeeling cr_trustingofother cr_rudetoother cr_toleratefaults cr_forgiveother cr_helpfulwithothers cr_managestress cr_nervous cr_changemood cr_feeldepressed cr_easilyupset cr_worryalot cr_staycalm cr_tryhard cr_stickwithgoals cr_goaftergoal cr_finishwhatbegin cr_finishtasks cr_keepworking
-
-foreach x in $big5 {
-rename raw_rec_`x' rr_`x'
-}
-
-global big5rr rr_curious rr_interestedbyart rr_repetitivetasks rr_inventive rr_liketothink rr_newideas rr_activeimagination rr_organized rr_makeplans rr_workhard rr_appointmentontime rr_putoffduties rr_easilydistracted rr_completeduties rr_enjoypeople rr_sharefeelings rr_shywithpeople rr_enthusiastic rr_talktomanypeople rr_talkative rr_expressingthoughts rr_workwithother rr_understandotherfeeling rr_trustingofother rr_rudetoother rr_toleratefaults rr_forgiveother rr_helpfulwithothers rr_managestress rr_nervous rr_changemood rr_feeldepressed rr_easilyupset rr_worryalot rr_staycalm rr_tryhard rr_stickwithgoals rr_goaftergoal rr_finishwhatbegin rr_finishtasks rr_keepworking
-
-/*
-cls
-fre rr_managestress rr_nervous rr_changemood rr_feeldepressed rr_easilyupset rr_worryalot rr_staycalm
-cls
-fre raw_managestress raw_nervous raw_changemood raw_feeldepressed raw_easilyupset raw_worryalot raw_staycalm
-cls
-fre managestress  nervous  changemood feeldepressed easilyupset worryalot  staycalm 
-*/
-cls
-fre rr_curious rr_interestedbyart rr_repetitivetasks rr_inventive rr_liketothink rr_newideas rr_activeimagination
-fre raw_curious raw_interestedbyart raw_repetitivetasks raw_inventive raw_liketothink raw_newideas raw_activeimagination
-fre curious interestedbyart repetitivetasks inventive liketothink newideas activeimagination
-
-cls
-fre rr_curious rr_interestedbyart rr_repetitivetasks rr_inventive rr_liketothink rr_newideas rr_activeimagination rr_organized rr_makeplans rr_workhard rr_appointmentontime rr_putoffduties rr_easilydistracted rr_completeduties rr_enjoypeople rr_sharefeelings rr_shywithpeople rr_enthusiastic rr_talktomanypeople rr_talkative rr_expressingthoughts rr_workwithother rr_understandotherfeeling rr_trustingofother rr_rudetoother rr_toleratefaults rr_forgiveother rr_helpfulwithothers rr_managestress rr_nervous rr_changemood rr_feeldepressed rr_easilyupset rr_worryalot rr_staycalm
-
-*****************************************************************************
-*****************************************************************************
-*****************************************************************************
-*****************************************************************************
-*****************************************************************************
-*** Recoder ES dans rr pour que tout fonctionne dans le bon sens et que pour ceux de ES ca capte ES en max et non NE comme ca fait normalement.
-*** Dans ce que j'avais fait, c'était ES et tout le reste dans l'ordre du questionnaire, donc à l'envers...
-*** rr_ et raw_ fonctionne parfaitement en sens inverse, je prends rr car 4 dans le bon sens, je recode juste NE en ES
-*** rr_ max = NE donc à recoder pour ES
-*** raw max = ES
-fre rr_managestress rr_nervous rr_changemood rr_feeldepressed rr_easilyupset rr_worryalot rr_staycalm
-foreach x in rr_managestress rr_nervous rr_changemood rr_feeldepressed rr_easilyupset rr_worryalot rr_staycalm {
-recode `x' (5=1) (4=2) (3=3) (2=4) (1=5)
-}
-fre rr_managestress rr_nervous rr_changemood rr_feeldepressed rr_easilyupset rr_worryalot rr_staycalm
-label define b5new 1"1 - Almost always" 2"2 - Quite often" 3"3 - Sometimes" 4"4 - Rarely" 5"5 - Almost never"
-foreach x in rr_managestress rr_nervous rr_changemood rr_feeldepressed rr_easilyupset rr_worryalot rr_staycalm {
-label values `x' b5new
-}
-
-fre managestress nervous changemood feeldepressed easilyupset worryalot staycalm 
-cls
-fre rr_curious rr_interestedbyart rr_repetitivetasks rr_inventive rr_liketothink rr_newideas rr_activeimagination 
-fre rr_organized  rr_makeplans rr_workhard rr_appointmentontime rr_putoffduties rr_easilydistracted rr_completeduties 
-fre rr_enjoypeople rr_sharefeelings rr_shywithpeople rr_enthusiastic rr_talktomanypeople  rr_talkative rr_expressingthoughts 
-fre rr_workwithother rr_understandotherfeeling rr_trustingofother rr_rudetoother rr_toleratefaults rr_forgiveother rr_helpfulwithothers 
-fre rr_managestress  rr_nervous  rr_changemood rr_feeldepressed rr_easilyupset rr_worryalot rr_staycalm 
-
-global big5rrok rr_curious rr_interestedbyart rr_repetitivetasks rr_inventive rr_liketothink rr_newideas rr_activeimagination rr_organized rr_makeplans rr_workhard rr_appointmentontime rr_putoffduties rr_easilydistracted rr_completeduties rr_enjoypeople rr_sharefeelings rr_shywithpeople rr_enthusiastic rr_talktomanypeople rr_talkative rr_expressingthoughts rr_workwithother rr_understandotherfeeling rr_trustingofother rr_rudetoother rr_toleratefaults rr_forgiveother rr_helpfulwithothers rr_managestress rr_nervous rr_changemood rr_feeldepressed rr_easilyupset rr_worryalot rr_staycalm rr_tryhard rr_stickwithgoals rr_goaftergoal rr_finishwhatbegin rr_finishtasks rr_keepworking
-
-
-foreach x in $big5 $big5raw $big5cor $big5rrok{
+foreach x in $big5cr{
 gen im`x'=`x'
 }
 
 
 forvalues j=1(1)3{
 forvalues i=1(1)2{
-foreach x in $big5 {
-sum im`x' if sex==`i' & caste==`j' & egoid!=0 & egoid!=.
-replace im`x'=r(mean) if `x'==. & sex==`i' & caste==`j' & egoid!=0 & egoid!=.
+foreach x in $big5cr{
+qui sum im`x' if sex==`i' & caste==`j' & egoid!=0 & egoid!=.
+replace im`x'=r(mean) if im`x'==. & sex==`i' & caste==`j' & egoid!=0 & egoid!=.
 }
 }
 }
 
-*Tester le sens 
 
-global imcorwith im_cr_curious im_cr_interestedbyart im_cr_repetitivetasks im_cr_inventive im_cr_liketothink im_cr_newideas im_cr_activeimagination im_cr_organized im_cr_makeplans im_cr_workhard im_cr_appointmentontime im_cr_putoffduties im_cr_easilydistracted im_cr_completeduties im_cr_enjoypeople im_cr_sharefeelings im_cr_shywithpeople im_cr_enthusiastic im_cr_talktomanypeople im_cr_talkative im_cr_expressingthoughts im_cr_workwithother im_cr_understandotherfeeling im_cr_trustingofother im_cr_rudetoother im_cr_toleratefaults im_cr_forgiveother im_cr_helpfulwithothers im_cr_managestress im_cr_nervous im_cr_changemood im_cr_feeldepressed im_cr_easilyupset im_cr_worryalot im_cr_staycalm im_cr_tryhard im_cr_stickwithgoals im_cr_goaftergoal im_cr_finishwhatbegin im_cr_finishtasks im_cr_keepworking
-
-global imrawwith im_raw_curious im_raw_interestedbyart im_raw_repetitivetasks im_raw_inventive im_raw_liketothink im_raw_newideas im_raw_activeimagination im_raw_organized im_raw_makeplans im_raw_workhard im_raw_appointmentontime im_raw_putoffduties im_raw_easilydistracted im_raw_completeduties im_raw_enjoypeople im_raw_sharefeelings im_raw_shywithpeople im_raw_enthusiastic im_raw_talktomanypeople im_raw_talkative im_raw_expressingthoughts im_raw_workwithother im_raw_understandotherfeeling im_raw_trustingofother im_raw_rudetoother im_raw_toleratefaults im_raw_forgiveother im_raw_helpfulwithothers im_raw_managestress im_raw_nervous im_raw_changemood im_raw_feeldepressed im_raw_easilyupset im_raw_worryalot im_raw_staycalm  im_raw_tryhard im_raw_stickwithgoals im_raw_goaftergoal im_raw_finishwhatbegin im_raw_finishtasks im_raw_keepworking
-
-global imcor im_cr_curious im_cr_interestedbyart im_cr_repetitivetasks im_cr_inventive im_cr_liketothink im_cr_newideas im_cr_activeimagination im_cr_organized im_cr_makeplans im_cr_workhard im_cr_appointmentontime im_cr_putoffduties im_cr_easilydistracted im_cr_completeduties im_cr_enjoypeople im_cr_sharefeelings im_cr_shywithpeople im_cr_enthusiastic im_cr_talktomanypeople im_cr_talkative im_cr_expressingthoughts im_cr_workwithother im_cr_understandotherfeeling im_cr_trustingofother im_cr_rudetoother im_cr_toleratefaults im_cr_forgiveother im_cr_helpfulwithothers im_cr_managestress im_cr_nervous im_cr_changemood im_cr_feeldepressed im_cr_easilyupset im_cr_worryalot im_cr_staycalm
-
-global imraw im_raw_curious im_raw_interestedbyart im_raw_repetitivetasks im_raw_inventive im_raw_liketothink im_raw_newideas im_raw_activeimagination im_raw_organized im_raw_makeplans im_raw_workhard im_raw_appointmentontime im_raw_putoffduties im_raw_easilydistracted im_raw_completeduties im_raw_enjoypeople im_raw_sharefeelings im_raw_shywithpeople im_raw_enthusiastic im_raw_talktomanypeople im_raw_talkative im_raw_expressingthoughts im_raw_workwithother im_raw_understandotherfeeling im_raw_trustingofother im_raw_rudetoother im_raw_toleratefaults im_raw_forgiveother im_raw_helpfulwithothers im_raw_managestress im_raw_nervous im_raw_changemood im_raw_feeldepressed im_raw_easilyupset im_raw_worryalot im_raw_staycalm 
-
-global imraw2 im_rr_curious im_rr_interestedbyart im_rr_repetitivetasks im_rr_inventive im_rr_liketothink im_rr_newideas im_rr_activeimagination im_rr_organized im_rr_makeplans im_rr_workhard im_rr_appointmentontime im_rr_putoffduties im_rr_easilydistracted im_rr_completeduties im_rr_enjoypeople im_rr_sharefeelings im_rr_shywithpeople im_rr_enthusiastic im_rr_talktomanypeople im_rr_talkative im_rr_expressingthoughts im_rr_workwithother im_rr_understandotherfeeling im_rr_trustingofother im_rr_rudetoother im_rr_toleratefaults im_rr_forgiveother im_rr_helpfulwithothers im_rr_managestress im_rr_nervous im_rr_changemood im_rr_feeldepressed im_rr_easilyupset im_rr_worryalot im_rr_staycalm
-
-*fre $big5rrok
-cls
-foreach x in curious interestedbyart repetitivetasks inventive liketothink newideas activeimagination organized  makeplans workhard appointmentontime putoffduties easilydistracted completeduties enjoypeople sharefeelings shywithpeople enthusiastic talktomanypeople  talkative expressingthoughts  workwithother  understandotherfeeling trustingofother rudetoother toleratefaults  forgiveother  helpfulwithothers managestress  nervous  changemood feeldepressed easilyupset worryalot  staycalm {
-label var raw_`x' "raw_`x'"
-label var rr_`x' "rr_`x'"
-tab raw_`x' rr_`x'
-}
-
-fre imrr_curious imrr_interestedbyart imrr_repetitivetasks imrr_inventive imrr_liketothink imrr_newideas imrr_activeimagination rr_curious rr_interestedbyart rr_repetitivetasks rr_inventive rr_liketothink rr_newideas rr_activeimagination 
-
-cls
-foreach x in imraw2 { //imcor imraw {
-qui factor $`x', pcf fa(5) 
-*loadingplot
-*scoreplot
-*screeplot
-rotate, promax
-*putexcel set "EFA_2016.xlsx", modify sheet(`x')
-*putexcel (E2)=matrix(e(r_L))
-
-
-predict factor_`x'_1 factor_`x'_2 factor_`x'_3 factor_`x'_4 factor_`x'_5
-cpcorr $`x' \ factor_`x'_1 factor_`x'_2 factor_`x'_3 factor_`x'_4 factor_`x'_5
 /*
+order HHID_panel INDID_panel cr_curious imcr_curious
+sort HHID_panel INDID_panel
+preserve
+keep if HHID_panel=="KAR20"
+*/
+
+global imcorwith imcr_curious imcr_interestedbyart imcr_repetitivetasks imcr_inventive imcr_liketothink imcr_newideas imcr_activeimagination imcr_organized imcr_makeplans imcr_workhard imcr_appointmentontime imcr_putoffduties imcr_easilydistracted imcr_completeduties imcr_enjoypeople imcr_sharefeelings imcr_shywithpeople imcr_enthusiastic imcr_talktomanypeople imcr_talkative imcr_expressingthoughts imcr_workwithother imcr_understandotherfeeling imcr_trustingofother imcr_rudetoother imcr_toleratefaults imcr_forgiveother imcr_helpfulwithothers imcr_managestress imcr_nervous imcr_changemood imcr_feeldepressed imcr_easilyupset imcr_worryalot imcr_staycalm imcr_tryhard imcr_stickwithgoals imcr_goaftergoal imcr_finishwhatbegin imcr_finishtasks imcr_keepworking
+
+
+global imcor imcr_curious imcr_interestedbyart imcr_repetitivetasks imcr_inventive imcr_liketothink imcr_newideas imcr_activeimagination imcr_organized imcr_makeplans imcr_workhard imcr_appointmentontime imcr_putoffduties imcr_easilydistracted imcr_completeduties imcr_enjoypeople imcr_sharefeelings imcr_shywithpeople imcr_enthusiastic imcr_talktomanypeople imcr_talkative imcr_expressingthoughts imcr_workwithother imcr_understandotherfeeling imcr_trustingofother imcr_rudetoother imcr_toleratefaults imcr_forgiveother imcr_helpfulwithothers imcr_managestress imcr_nervous imcr_changemood imcr_feeldepressed imcr_easilyupset imcr_worryalot imcr_staycalm 
+
+
+
+
+********** With grit
+minap $imcorwith  // Kaiser=14, minap=2
+factor $imcorwith, pcf fa(6) 
+rotate, promax
+putexcel set "EFA_2016.xlsx", modify sheet(imcorwith)
+putexcel (E2)=matrix(e(r_L))
+
+predict factor_imcorwith_1 factor_imcorwith_2 factor_imcorwith_3 factor_imcorwith_4 factor_imcorwith_5 factor_imcorwith_6
+cpcorr $imcorwith \ factor_imcorwith_1 factor_imcorwith_2 factor_imcorwith_3 factor_imcorwith_4 factor_imcorwith_5 factor_imcorwith_6
 matrix list r(p)
 
 *Correlation with big-5 and cronbach
-cpcorr cr_OP cr_EX cr_ES cr_CO cr_AG cr_Grit OP EX ES CO AG Grit factor_`x'_1 factor_`x'_2 factor_`x'_3 factor_`x'_4 factor_`x'_5
+cpcorr cr_OP cr_EX cr_ES cr_CO cr_AG cr_Grit OP EX ES CO AG Grit factor_imcorwith_1 factor_imcorwith_2 factor_imcorwith_3 factor_imcorwith_4 factor_imcorwith_5 factor_imcorwith_6
 matrix list r(p)
+
+
+
+********** Without grit
+minap $imcor
+factor $imcor, pcf fa(5) 
+rotate, promax
+putexcel set "EFA_2016.xlsx", modify sheet(imcor)
+putexcel (E2)=matrix(e(r_L))
+
+predict factor_imcor_1 factor_imcor_2 factor_imcor_3 factor_imcor_4 factor_imcor_5
+cpcorr $imcor \ factor_imcor_1 factor_imcor_2 factor_imcor_3 factor_imcor_4 factor_imcor_5
+matrix list r(p)
+
+*Correlation with big-5 and cronbach
+cpcorr cr_OP cr_EX cr_ES cr_CO cr_AG cr_Grit OP EX ES CO AG Grit factor_imcor_1 factor_imcor_2 factor_imcor_3 factor_imcor_4 factor_imcor_5
+matrix list r(p)
+
+
+
+keep $imcorwith HHID_panel INDID_panel factor_imcorwith_1 factor_imcorwith_2 factor_imcorwith_3 factor_imcorwith_4 factor_imcorwith_5 factor_imcorwith_6 factor_imcor_1 factor_imcor_2 factor_imcor_3 factor_imcor_4 factor_imcor_5
+
+
+
+**********Correlation + omega
+/*
+*Factor 1
+omega im_expressingthoughts im_liketothink im_talktomanypeople im_activeimagination im_sharefeelings im_newideas im_curious im_inventive
+
+*Factor 2
+omega im_completeduties im_appointmentontime im_enthusiastic im_makeplans im_workhard im_workwithother im_organized
+
+
+*Factor 3
+omega im_changemood im_easilydistracted im_putoffduties im_staycalm im_nervous im_rudetoother im_managestress
+
+*Factor 4
+omega im_worryalot im_easilyupset im_feeldepressed im_nervous im_shywithpeople im_easilydistracted im_changemood
+
+*Factor 5
+omega im_forgiveother im_toleratefaults im_helpfulwithothers im_trustingofother im_talkative im_workwithother im_changemood im_understandotherfeeling im_curious im_repetitivetasks im_interestedbyart im_staycalm im_shywithpeople im_completeduties
 */
-}
 
-forvalues i=1(1)5 {
-rename factor_imraw2_`i' factor_imraw_`i'
-}
 
-pwcorr cr_OP cr_EX cr_ES cr_CO cr_AG cr_Grit OP EX ES CO AG Grit factor_imraw_1 factor_imraw_2 factor_imraw_3 factor_imraw_4 factor_imraw_5, star(.01)
+save"$wave2~_ego.dta", replace
+
 
 
 
 
 
 ********** Graph rpz
-
-preserve
-import delimited "factor2016.csv", delimiter(";") clear
-gen n=_n
-drop if n==42
-order n var
-gen threshold=0.05
-*Clean
-/*
-forvalues i=1(1)6{
-rename factor_imcrwith_`i' factor_Corrwith_`i'
-rename pvalue_imcrwith_`i' pvalue_Corrwith_`i'
-rename factor_imrawwith_`i' factor_Rawwith_`i'
-rename pvalue_imrawwith_`i' pvalue_Rawwith_`i'
-}
-*/
-
-forvalues i=1(1)5{
-*rename factor_imcr_`i' factor_Corr_`i'
-*rename pvalue_imcr_`i' pvalue_Corr_`i'
-rename factor_imraw_`i' factor_Raw_`i'
-rename pvalue_imraw_`i' pvalue_Raw_`i'
-}
-gen big5=""
-replace big5="max -> OP" if n>=1 & n<=7
-replace big5="max -> CO" if n>=8 & n<=14
-replace big5="max -> EX" if n>=15 & n<=21
-replace big5="max -> AG" if n>=22 & n<=28
-replace big5="max -> ES" if n>=29 & n<=35
-replace big5="max -> GR" if n>=36 & n<=41
-order n var big5
-
-
-*Identitfy reverse questions
-gen reverse=0
-foreach x in rudetoother putoffduties easilydistracted shywithpeople repetitivetasks staycalm managestress  {
-replace reverse=1 if var=="`x'"
-}
-/*
-Etant donné que j'ai changé le sens, sur les 7 questions ESNE, 5 captent au max ES (car j'ai changé le sens) et les deux autres (staycalm et managestress) captent NE au max
-*/
-
-foreach x in curious interestedbyart repetitivetasks inventive liketothink newideas activeimagination organized  makeplans workhard appointmentontime putoffduties easilydistracted completeduties enjoypeople sharefeelings shywithpeople enthusiastic talktomanypeople  talkative expressingthoughts  workwithother  understandotherfeeling trustingofother rudetoother toleratefaults  forgiveother  helpfulwithothers managestress  nervous  changemood feeldepressed easilyupset worryalot  staycalm {
-replace var="`x' (r)" if var=="`x'" & reverse==1
-}
-
-*Interpretation
-*F1
-gsort - factor_Raw_1
-list n var big5 reverse factor_Raw_1, clean noobs  // OPEX
-*F2
-gsort - factor_Raw_2
-list n var big5 reverse factor_Raw_2, clean noobs  // 
-*F3
-gsort - factor_Raw_3
-list n var big5 reverse factor_Raw_3, clean noobs
-*F4
-gsort - factor_Raw_4
-list n var big5 reverse factor_Raw_4, clean noobs
-*F5
-gsort - factor_Raw_5
-list n var big5 reverse factor_Raw_5, clean noobs
-
-save"factor2016.dta", replace
-
-use"factor2016.dta", clear
-
+*** With
 set graph off
-* With
-/*
-foreach x in Raw Corr {
+import excel "EFA_2016.xlsx", sheet("imcorwith") firstrow clear
+rename Variables var
+rename N n
+gen Big5=""
+replace Big5="(OP)" if NaiveBigFive=="Openness"
+replace Big5="(CO)" if NaiveBigFive=="Conscientiousness"
+replace Big5="(EX)" if NaiveBigFive=="Extraversion"
+replace Big5="(AG)" if NaiveBigFive=="Agreeableness"
+replace Big5="(ES)" if NaiveBigFive=="Emotional stability"
+replace Big5="(GR)" if NaiveBigFive=="Grit"
+egen varbis=concat(var Big5), p(" ")
+drop var
+rename varbis var
 forvalues i=1(1)6{
 *Sort
-gsort - factor_`x'with_`i'
-sencode var, gen(var_factor_`x'with_`i') gsort(factor_`x'with_`i')
-replace factor_`x'with_`i'=round(factor_`x'with_`i', 0.01)
+gsort - F`i'
+sencode var, gen(var_F`i') gsort(F`i')
+replace F`i'=round(F`i', 0.01)
 *Graph
 twoway ///
-(bar factor_`x'with_`i' var_factor_`x'with_`i', barw(0.6) yline(0, lcolor(gs10) lpattern(solid) lwidth(*0.8))) ///
-(scatter factor_`x'with_`i' var_factor_`x'with_`i', mlabel(factor_`x'with_`i') mlabposition(12) mlabsize(*0.3) mlabangle(0) msymbol(i)) ///
-(scatter pvalue_`x'with_`i' var_factor_`x'with_`i', msymbol(o) mcolor(gs1) msize(*0.2)) ///
-(line threshold var_factor_`x'with_`i', lcolor(gs1) lpattern(solid) lwidth(*0.2)), ///
-xlabel(1(1)41, valuelabel labsize(tiny) angle(45) nogrid) xtitle("")  ///
-ylabel(, labsize(tiny)) ///
+(line var_F`i' F`i', xline(0, lcolor(gs10))) ///
+(scatter var_F`i' F`i', mlabel(F`i') mlabposition(11) mlabsize(*0.3) mlabangle(0) msymbol(i)), ///
+xlabel(, labsize(tiny) angle(0) nogrid) xtitle("")  ///
+ylabel(1(1)41, valuelabel labsize(tiny)) ytitle("") ///
 title("Factor `i'", size(small)) ///
-legend(order(1 "Correlation with factor" 3 "p-value" 4 ".05 threshold") pos(6) col(3) size(vsmall) off) ///
-name(g_`x'_`i', replace) aspectratio(0.5)
-drop var_factor_`x'with_`i'
+legend(order(1 "Correlation with factor") pos(6) col(3) size(vsmall) off) ///
+name(g_`i', replace)
 sort n
 }
-}
-set graph on
-grc1leg g_Raw_1 g_Raw_2 g_Raw_3, note("Raw items with NEEMSIS-1 (2016-17) data.", size(tiny)) col(1) name(comb_`x'_with, replace) 
+graph combine g_1 g_2 g_3 g_4 g_5 g_6, note("cr items with NEEMSIS-1 (2016-17) data.", size(tiny)) name(comb_cr_with, replace)
+graph export "factor2016_cr_with.pdf", as(pdf) replace
 
-g_Raw_4 g_Raw_5 g_Raw_6, note("Raw items with NEEMSIS-1 (2016-17) data.", size(tiny)) col(1) name(comb_`x'_with, replace)
-graph save "$git\Analysis\Personality\Big-5\factor2016_`x'_with.gph", replace
-graph export "$git\RUME-NEEMSIS\Big-5\factor2016_`x'_with.svg", as(svg) replace
-graph export "$git\Analysis\Personality\Big-5\factor2016_`x'_with.pdf", as(pdf) replace
-*/
+
 * Without
-set graph off
-drop if n>=36
-foreach x in Raw { // Corr {
+import excel "EFA_2016.xlsx", sheet("imcor") firstrow clear
+rename Variables var
+rename N n
+gen Big5=""
+replace Big5="(OP)" if NaiveBigFive=="Openness"
+replace Big5="(CO)" if NaiveBigFive=="Conscientiousness"
+replace Big5="(EX)" if NaiveBigFive=="Extraversion"
+replace Big5="(AG)" if NaiveBigFive=="Agreeableness"
+replace Big5="(ES)" if NaiveBigFive=="Emotional stability"
+replace Big5="(GR)" if NaiveBigFive=="Grit"
+egen varbis=concat(var Big5), p(" ")
+drop var
+rename varbis var
 forvalues i=1(1)5{
 *Sort
-gsort - factor_`x'_`i'
-sencode var, gen(var_factor_`x'_`i') gsort(factor_`x'_`i')
-replace factor_`x'_`i'=round(factor_`x'_`i', 0.01)
+gsort - F`i'
+sencode var, gen(var_F`i') gsort(F`i')
+replace F`i'=round(F`i', 0.01)
 *Graph
 twoway ///
-(connected var_factor_`x'_`i' factor_`x'_`i', msymbol(o) msize(*0.2) lwidth(*0.2)) ///
-(scatter var_factor_`x'_`i' factor_`x'_`i', mlabel(factor_`x'_`i') mlabposition(3) mlabsize(*0.5) mlabangle(0) msymbol(i) xline(0.05, lpattern(solid) lcolor(gs12) lwidth(*0.5))) ///
-(scatter var_factor_`x'_`i' pvalue_`x'_`i', msymbol(X) mcolor(gs1) msize(*.5) xline(0, lpattern(solid) lcolor(gs1) lwidth(*0.5))) ///
-, ylabel(1(1)35, valuelabel labsize(tiny) angle(0)) ytitle("")  ///
-xlabel(, labsize(tiny) nogrid) xmtick() ///
+(line var_F`i' F`i', xline(0, lcolor(gs10))) ///
+(scatter var_F`i' F`i', mlabel(F`i') mlabposition(11) mlabsize(*0.3) mlabangle(0) msymbol(i)), ///
+xlabel(, labsize(tiny) angle(0) nogrid) xtitle("")  ///
+ylabel(1(1)35, valuelabel labsize(tiny)) ytitle("") ///
 title("Factor `i'", size(small)) ///
-legend(order(1 "Correlation with factor" 3 "p-value" 4 ".05 threshold") pos(6) col(3) size(vsmall) off) ///
-name(g_`x'_`i', replace)  // aspectratio(10)
-drop var_factor_`x'_`i'
+legend(order(1 "Correlation with factor") pos(6) col(3) size(vsmall) off) ///
+name(g_`i', replace)
+drop var_F`i'
+sort n
 }
-set graph on
-grc1leg g_Raw_1 g_Raw_2 g_Raw_3 g_Raw_4 g_Raw_5, note("Raw items with NEEMSIS-1 (2016-17) data." "items (r) are reverse coded according to Big-5 taxonomy.", size(tiny)) col(3) name(comb_`x'_with, replace) 
-}
-graph save "$git\Analysis\Personality\Big-5\factor2016_2.gph", replace
-graph export "$git\RUME-NEEMSIS\Big-5\factor2016_2.svg", as(svg) replace
-graph export "$git\Analysis\Personality\Big-5\factor2016_2.pdf", as(pdf) replace
+graph combine g_1 g_2 g_3 g_4 g_5, note("cr items with NEEMSIS-1 (2016-17) data.", size(tiny)) name(comb_cr_with, replace)
+graph export "factor2016_cr_without.pdf", as(pdf) replace
 
 
-restore
-set graph on
-*/
+
+****************************************
+* END
 
 
-**********Correlation + omega
-
-*Factor 1 - 0.91
-omega im_rr_liketothink im_rr_expressingthoughts im_rr_activeimagination im_rr_sharefeelings im_rr_newideas im_rr_curious im_rr_inventive im_rr_talktomanypeople     
-
-*Factor 2 - 0.88
-omega im_rr_appointmentontime im_rr_enthusiastic im_rr_makeplans im_rr_completeduties im_rr_workhard im_rr_organized im_rr_repetitivetasks 
-
-*Factor 3 - 0.69
-omega im_rr_easilydistracted im_rr_putoffduties im_rr_talkative im_rr_helpfulwithothers
-
-*Factor 4 - 0.78
-omega im_rr_worryalot im_rr_easilyupset im_rr_feeldepressed im_rr_nervous 
-*im_rr_staycalm
-
-*Factor 5 - 0.62
-omega im_rr_toleratefaults im_rr_forgiveother im_rr_repetitivetasks im_rr_trustingofother im_rr_helpfulwithothers
-*im_rr_expressingthoughts
 
 
-********** Other variables
-*Y
-sum sum_borrowerservices_3 sum_plantorepay_6 sum_settleloanstrategy_8
-sum loanamount_indiv
 
+
+
+
+
+
+
+
+
+****************************************
+* Prepa 2016
+****************************************
+
+********** 
+use"$wave2", clear
 *HH size
 keep if livinghome==1 | livinghome==2
+/*
+drop if egoid==0
+duplicates drop HHID_panel, force
+
+2 HH without ego
+*/
 bysort HHID_panel: gen hhsize=_N
 
-ta hhsize
+*
+sum loanamount_indiv
+
 
 *Nb children
 gen child=0
@@ -871,21 +778,22 @@ replace investequip_`x'=equiowncost_`x' if equiownyear_`x'>=2010
 }
 egen investequiptot_HH=rowtotal(investequip_tractor investequip_bullockcart investequip_ploughmach)
 
-* Ratio de dépendance à la dette : 
+
+*** Dependency ratio :
+* Debt
 gen debtor=0
 replace debtor=1 if loanamount_indiv>0 & loanamount_indiv!=.
 gen nondebtor=0
 replace nondebtor=1 if debtor==0 & debtor!=.
 
-gen worker=0
-replace worker=1 if annualincome_indiv>0 & annualincome_indiv!=.
+* Worker
 gen nonworker=0
 replace nonworker=1 if worker==0 & worker!=.
 
+* HH level
 foreach x in debtor nondebtor worker nonworker {
 bysort HHID_panel: egen `x'_HH=sum(`x')
 }
-
 gen debtorratio=debtor_HH/nondebtor_HH
 clonevar debtorratio2=debtorratio
 replace debtorratio2=debtor_HH if debtorratio==.
@@ -901,12 +809,13 @@ fre workerratio workerratio2
 restore
 
 
-
-********** Keep my sample
+*Only ego
 fre egoid
 drop if egoid==0
 
+
 *Services and repayment 
+/*
 global newvar sum_borrowerservices_1 sum_borrowerservices_2 sum_borrowerservices_3 sum_borrowerservices_4 sum_plantorepay_1 sum_plantorepay_2 sum_plantorepay_3 sum_plantorepay_4 sum_plantorepay_5 sum_plantorepay_6 sum_settleloanstrategy_1 sum_settleloanstrategy_2 sum_settleloanstrategy_3 sum_settleloanstrategy_4 sum_settleloanstrategy_5 sum_settleloanstrategy_6 sum_settleloanstrategy_7 sum_settleloanstrategy_8 sum_settleloanstrategy_9 sum_settleloanstrategy_10
 
 foreach x in $newvar{
@@ -917,33 +826,31 @@ foreach x in $newvar{
 replace `x'_r=1 if `x'>=1 & `x'!=.
 }
 
-*Macro for rename
+tab1 sum_borrowerservices_1_r sum_borrowerservices_2_r sum_borrowerservices_3_r sum_borrowerservices_4_r sum_plantorepay_1_r sum_plantorepay_2_r sum_plantorepay_3_r sum_plantorepay_4_r sum_plantorepay_5_r sum_plantorepay_6_r sum_settleloanstrategy_1_r sum_settleloanstrategy_2_r sum_settleloanstrategy_3_r sum_settleloanstrategy_4_r sum_settleloanstrategy_5_r sum_settleloanstrategy_6_r sum_settleloanstrategy_7_r sum_settleloanstrategy_8_r sum_settleloanstrategy_9_r sum_settleloanstrategy_10_r
+*/
 
+*Macro for rename
 global charactindiv maritalstatus edulevel relationshiptohead sex age readystartjob methodfindjob jobpreference moveoutsideforjob moveoutsideforjobreason aspirationminimumwage dummyaspirationmorehours aspirationminimumwage2 name
  
-global characthh villageid villageid_new assets ownland house jatis caste dummymarriage hhsize nbchild nbfemale nbmale dummydemonetisation interviewplace address religion dummyeverhadland
+global characthh villageid assets assets_noland sizeownland ownland house jatis caste dummymarriage hhsize nbchild nbfemale nbmale interviewplace address religion dummyeverhadland villageid_new dummydemonetisation
 
-global wealthindiv annualincome_indiv totalincome_indiv mainoccupation_hours_indiv mainoccupation_income_indiv mainoccupation_indiv mainoccupationname_indiv nboccupation_indiv
+global wealthindiv annualincome_indiv totalincome_indiv mainocc_kindofwork_indiv mainocc_profession_indiv mainocc_occupation_indiv mainocc_annualincome_indiv nboccupation_indiv
 
-global wealthhh annualincome_HH totalincome_HH mainoccupation_HH nboccupation_HH foodexpenses healthexpenses ceremoniesexpenses ceremoniesrelativesexpenses deathexpenses marriageexpenses businessexpenses
+global wealthhh annualincome_HH totalincome_HH nboccupation_HH foodexpenses healthexpenses ceremoniesexpenses ceremoniesrelativesexpenses deathexpenses marriageexpenses businessexpenses
 
-global debtindiv imp1_ds_tot_indiv imp1_is_tot_indiv semiformal_indiv formal_indiv economic_indiv current_indiv humancap_indiv social_indiv house_indiv incomegen_indiv noincomegen_indiv economic_amount_indiv current_amount_indiv humancap_amount_indiv social_amount_indiv house_amount_indiv incomegen_amount_indiv noincomegen_amount_indiv informal_amount_indiv formal_amount_indiv semiformal_amount_indiv loanamount_indiv loanamount_wm_indiv dummyproblemtorepay_indiv dummyhelptosettleloan_indiv dummyinterest_indiv loans_indiv loanbalance_indiv marriageloanamount_indiv mean_yratepaid_indiv mean_monthlyinterestrate_indiv nbsavingaccounts savingsamount1 savingsamount2 savingsamount3 savingsamount4 dummydebitcard1 dummydebitcard2 dummydebitcard3 dummydebitcard4 datedebitcard1 datedebitcard2 datedebitcard3 datedebitcard4 dummychitfund amountlent interestlending goldquantity goldquantitypledge nbinsurance dummycreditcard1 dummycreditcard2 dummycreditcard3 dummycreditcard4 nbchitfunds chitfundamount1 chitfundamount2 marriageloan_indiv sum_borrowerservices_1_r sum_borrowerservices_2_r sum_borrowerservices_3_r sum_borrowerservices_4_r sum_plantorepay_1_r sum_plantorepay_2_r sum_plantorepay_3_r sum_plantorepay_4_r sum_plantorepay_5_r sum_plantorepay_6_r sum_settleloanstrategy_1_r sum_settleloanstrategy_2_r sum_settleloanstrategy_3_r sum_settleloanstrategy_4_r sum_settleloanstrategy_5_r sum_settleloanstrategy_6_r sum_settleloanstrategy_7_r sum_settleloanstrategy_8_r sum_settleloanstrategy_9_r sum_settleloanstrategy_10_r sum_otherlenderservices_1 sum_otherlenderservices_2 sum_otherlenderservices_3 sum_otherlenderservices_4 sum_otherlenderservices_5
+global debtindiv imp1_ds_tot_indiv imp1_is_tot_indiv loanamount_indiv loans_indiv debtor nondebtor worker nonworker
 
-global debthh imp1_ds_tot_HH imp1_is_tot_HH informal_HH semiformal_HH formal_HH economic_HH current_HH humancap_HH social_HH house_HH incomegen_HH noincomegen_HH economic_amount_HH current_amount_HH humancap_amount_HH social_amount_HH house_amount_HH incomegen_amount_HH noincomegen_amount_HH informal_amount_HH formal_amount_HH semiformal_amount_HH marriageloanamount_HH loanamount_HH loanamount_wm_HH dummyproblemtorepay_HH dummyhelptosettleloan_HH dummyinterest_HH loans_HH loanbalance_HH mean_yratepaid_HH mean_monthlyinterestrate_HH marriageloan_HH debtorratio workerratio debtorratio2 workerratio2
+global debthh imp1_ds_tot_HH imp1_is_tot_HH loanamount_HH loans_HH debtorratio workerratio debtorratio2 workerratio2 debtor_HH nondebtor_HH worker_HH nonworker_HH
 
-*global perso factor_imcor_1 factor_imcor_2 factor_imcor_3 factor_imcor_4 factor_imcor_5 factor_imcorwith_1 factor_imcorwith_2 factor_imcorwith_3 factor_imcorwith_4 factor_imcorwith_5 factor_imcorwith_6 factor_imraw_1 factor_imraw_2 factor_imraw_3 factor_imraw_4 factor_imraw_5 factor_imrawwith_1 factor_imrawwith_2 factor_imrawwith_3 factor_imrawwith_4 factor_imrawwith_5 factor_imrawwith_6 cr_OP cr_CO cr_EX cr_AG cr_ES cr_Grit OP CO EX AG ES Grit raven_tt num_tt lit_tt
-global perso factor_imraw_1 factor_imraw_2 factor_imraw_3 factor_imraw_4 factor_imraw_5 cr_OP cr_CO cr_EX cr_AG cr_ES cr_Grit OP CO EX AG ES Grit raven_tt num_tt lit_tt
+global perso cr_OP cr_CO cr_EX cr_AG cr_ES cr_Grit OP CO EX AG ES Grit raven_tt num_tt lit_tt 
 
+global expenses savingsamount_HH educationexpenses_HH productexpenses_HH businessexpenses_HH foodexpenses_HH healthexpenses_HH ceremoniesexpenses_HH deathexpenses_HH chitfundpaymentamount_HH chitfundamount_HH chitfundamounttot_HH nbchitfunds_HH amountlent_HH interestlending_HH problemrepayment_HH goldquantity_HH goldquantitypledge_HH nbinsurance_HH insuranceamount_HH insuranceamounttot_HH insurancebenefitamount_HH insurancebenefitamounttot_HH landpurchased investequiptot_HH 
 
-global expenses savingsamount_HH educationexpenses_HH productexpenses_HH businessexpenses_HH foodexpenses_HH healthexpenses_HH ceremoniesexpenses_HH deathexpenses_HH livestockexpenses_HH chitfundpaymentamount_HH chitfundamount_HH chitfundamounttot_HH nbchitfunds_HH amountlent_HH interestlending_HH problemrepayment_HH goldquantity_HH goldquantitypledge_HH nbinsurance_HH insuranceamount_HH insuranceamounttot_HH insurancebenefitamount_HH insurancebenefitamounttot_HH landpurchased investequiptot_HH 
-
-global network nbercontactphone dummycontactleaders nbcontact_headbusiness nbcontact_policeman nbcontact_civilserv nbcontact_bankemployee nbcontact_panchayatcommittee nbcontact_peoplecouncil nbcontact_recruiter nbcontact_headunion nberpersonfamilyevent associationlist networkhelpkinmember demotrustbank_ego trustneighborhood trustemployees networkpeoplehelping raw_trustingofother mainoccupation_distance_indiv sum_ext_HH
-
-global all $charactindiv $characthh $wealthindiv $wealthhh $debtindiv $debthh $perso $expenses $network
+global all $charactindiv $characthh $wealthindiv $wealthhh $debtindiv $debthh $perso $expenses nbercontactphone dummycontactleaders nbcontact_headbusiness nbcontact_policeman nbcontact_civilserv nbcontact_bankemployee nbcontact_panchayatcommittee nbcontact_peoplecouncil nbcontact_recruiter nbcontact_headunion nberpersonfamilyevent associationlist networkhelpkinmember demotrustbank_ego trustneighborhood trustemployees networkpeoplehelping trustingofother_backup
 
 keep $all HHID_panel INDID_panel egoid
 
-*merge m:1 HHID_panel using"$wave2~efa_ego.dta"
+*merge m:1 HHID_panel using"$wave3~efa_ego.dta"
 *drop _merge
 
 *Rename
@@ -951,18 +858,32 @@ foreach x in $all {
 rename `x' `x'_1
 }
 
-order HHID_panel INDID_panel dummyeverhadland_1 ownland_1
+order HHID_panel INDID_panel
 
 preserve
 duplicates drop HHID_panel, force
 tab caste_1
-*2 HH sans égos donc 490 là
+*Tous les HH ont un égo donc je suis censé en avoir plus car 485 HH en panel avec un peu de chance, 483 sinon minimum !
 restore
 
+
+
+********** Merge factor
+merge 1:1 HHID_panel INDID_panel using "$wave2~_ego.dta"
+keep if _merge==3
+drop _merge
+
+foreach x in factor_imcorwith_1 factor_imcorwith_2 factor_imcorwith_3 factor_imcorwith_4 factor_imcorwith_5 factor_imcorwith_6 factor_imcor_1 factor_imcor_2 factor_imcor_3 factor_imcor_4 factor_imcor_5 {
+rename `x' `x'_1
+}
 
 save"$wave2~panel", replace
 ****************************************
 * END
+
+
+
+
 
 
 
@@ -989,11 +910,6 @@ use"$wave2~panel", clear
 rename egoid egoid_1
 tab egoid
 
-preserve
-duplicates drop HHID_panel, force
-tab caste_1
-restore
-*490
 
 merge 1:1 HHID_panel INDID_panel using "$wave3~panel"
 rename egoid egoid_2
@@ -1002,148 +918,9 @@ tab egoid_1 egoid_2, m
 order HHID_panel INDID_panel name_1 name_2 _merge
 sort HHID_panel INDID_panel
 
-*Verif le merging avec les noms car il y en a peu qui ont effectivement merge
-preserve
-*Garder que ceux pour qui il y a des gens que là en 2016 et que là en 2020
-gen ok=1 if _merge==1
-gen ok2=1 if _merge==2
-bysort HHID_panel: egen sum_ok=sum(ok)
-bysort HHID_panel: egen sum_ok2=sum(ok2)
-replace sum_ok=1 if sum_ok>1
-replace sum_ok2=1 if sum_ok2>1
-gen todrop=sum_ok+sum_ok2
-drop ok ok2 sum_ok sum_ok2
-keep if todrop>1
-*Virer ceux qui ont au moins 1 mb qui colle
-gen ok=1 if name_1!="" & name_2!=""
-bysort HHID_panel: egen sum_ok=sum(ok)
-*br
-restore
-
-/*
-**********
-use"panel_indiv_2010_2016_2020_wide", replace
-/*
-Sur la base panel indiv vérifier les dix HH concernés: ceux où les égos ont changés
-GOV13-19-20-28-33
-MANAM16-9
-ORA25
-SEM37-50
-*/
-preserve
-gen tokeep=0
-replace tokeep=1 if HHID_panel=="GOV33"
-replace tokeep=1 if HHID_panel=="GOV28"
-replace tokeep=1 if HHID_panel=="GOV20"
-replace tokeep=1 if HHID_panel=="GOV19"
-replace tokeep=1 if HHID_panel=="GOV13"
-replace tokeep=1 if HHID_panel=="MANAM16"
-replace tokeep=1 if HHID_panel=="MANAM9"
-replace tokeep=1 if HHID_panel=="ORA25"
-replace tokeep=1 if HHID_panel=="SEM37"
-replace tokeep=1 if HHID_panel=="SEM50"
-
-keep if tokeep==1
-sort HHID_panel INDID_panel
-order HHID_panel INDID_panel INDID2016 INDID2020 name2016 name2020 egoid2016 egoid2020
-
-/*
-Les egos ne collent pas entre les deux dates.
-Exprés ? ou pas ?
-Vérifier dans les bases HH2016 & HH2020
-
-Ce sont des gens qui sont parti entre 2016 et 2020.
-Peut-être faire un petit tableau pour expliquer
-*/
-restore
-
-merge 1:1 HHID_panel INDID_panel using "$wave3~efa", keepusing(INDID_left livinghome)
-gen pan=1 if name2016!="" & name2020!=""
-keep if pan==1
-preserve
-keep if INDID_left!=.
-tab egoid2016
-restore
-drop if INDID_left!=.
-tab egoid2016  // 454+387=841 sauf que j'en ai 835 moi
-tab livinghome
-drop if livinghome==3 
-tab egoid2016  // 1 qui est leftpermanently donc 601
-drop if livinghome==4
-tab egoid2016
-drop if egoid2016==0
-order HHID_panel INDID_panel INDID2016 INDID2020 name2016 name2020 egoid2016 egoid2020
-
-
-preserve
-*Maybe diff in ego nb?
-gen test=0
-replace test=1 if egoid2016==egoid2020
-drop if test==1
-restore
-
-preserve
-keep HHID_panel INDID_panel
-gen explication=1
-save"temp_explication", replace
-restore
-**********
-*/
-
-/*
-use"$wave2~panel", clear
-rename egoid egoid_1
-tab egoid
-
-preserve
-use"$wave2~efa", clear
-duplicates drop HHID_panel, force
-tab caste_1
-restore
-*490
-
-*Qui sont les deux HH?
-preserve
-use"C:\Users\Arnaud\Dropbox\RUME-NEEMSIS\NEEMSIS1\NEEMSIS1-HH_v7", clear
-bysort HHID_panel: egen sum_ego=sum(egoid)
-tab sum_ego
-keep if sum_ego==0
-tab HHID_panel
-*MANAM18 & MANAM6
-restore
-
-merge 1:1 HHID_panel INDID_panel using "$wave3~panel"
-keep if _merge==3
-drop _merge
-merge 1:1 HHID_panel INDID_panel using "temp_explication"
-list HHID_panel INDID_panel if _merge==2, clean noobs
-/*
-  HHID_panel      INDID_panel  
-        GOV3      Ind_3    --> Muthaiyyan d'après NEEMSIS1
-								C'est égo 1 en 2016
-								Pas égo en 2020
-      MANAM9      Ind_2    --> Cauvery@gowri
-								C'est égo 1 en 2016
-								Pas égo en 2020
-       ORA12      Ind_3    --> Veeran S/o Mannu
-   								C'est égo 1 en 2016
-								Pas égo en 2020
-       ORA18      Ind_8    --> Chithra
-								C'est égo 2 en 2016
-								Pas égo en 2020
-       ORA41      Ind_4    --> Annamalai
-								C'est égo 2 en 2016
-								Pas égo en 2020
-*/
-*/
-
-keep if _merge==3
-drop _merge
-
 ********** Missings for lit_tt
 mdesc lit_tt_1 lit_tt_2
 list HHID_panel INDID_panel if lit_tt_2==., clean noobs
-
 
 
 
@@ -1159,24 +936,21 @@ egen HHINDID=concat(HHID_panel INDID_panel), p(/)
 encode HHINDID, gen(panelvar)
 encode HHID_panel, gen(HHFE)
 encode villageid_new, gen(villagenewFE)
-drop villageid_2 villageid_new_2
+drop villageid_2
 rename caste_1 caste
 rename jatis_1 jatis
 drop caste_2 jatis_2
 
 
-*foreach x in factor_imcor_1 factor_imcor_2 factor_imcor_3 factor_imcor_4 factor_imcor_5 factor_imcorwith_1 factor_imcorwith_2 factor_imcorwith_3 factor_imcorwith_4 factor_imcorwith_5 factor_imcorwith_6 factor_imraw_1 factor_imraw_2 factor_imraw_3 factor_imraw_4 factor_imraw_5 factor_imrawwith_1 factor_imrawwith_2 factor_imrawwith_3 factor_imrawwith_4 factor_imrawwith_5 factor_imrawwith_6 cr_OP cr_CO cr_EX cr_AG cr_ES cr_Grit OP CO EX AG ES Grit raven_tt num_tt lit_tt{
-foreach x in factor_imraw_1 factor_imraw_2 factor_imraw_3 factor_imraw_4 factor_imraw_5 cr_OP cr_CO cr_EX cr_AG cr_ES cr_Grit OP CO EX AG ES Grit raven_tt num_tt lit_tt{
+
+foreach x in factor_imcorwith_1 factor_imcorwith_2 factor_imcorwith_3 factor_imcorwith_4 factor_imcorwith_5 factor_imcorwith_6 factor_imcor_1 factor_imcor_2 factor_imcor_3 factor_imcor_4 factor_imcor_5 cr_OP cr_CO cr_EX cr_AG cr_ES cr_Grit OP CO EX AG ES Grit raven_tt num_tt lit_tt{
 clonevar base_`x'=`x'_1
 }
 
 
-*global indivcontrol age agesq dummyhead cat_mainoccupation_indiv_1 cat_mainoccupation_indiv_2 cat_mainoccupation_indiv_3 cat_mainoccupation_indiv_4 cat_mainoccupation_indiv_5 dummyedulevel maritalstatus2 dummymultipleoccupation_indiv
-*global hhcontrol4 assets1000 sexratiocat_1 sexratiocat_2 sexratiocat_3 hhsize shock incomeHH1000
 
-
-********** Déflater
-global amount aspirationminimumwage2_2 aspirationminimumwage_2 businessexpenses_2 amountlent_2 chitfundamount1_2 chitfundamount2_2 chitfundamount3_2 savingsamount1_2 savingsamount2_2 savingsamount3_2 savingsamount4_2 marriageexpenses_2 foodexpenses_2 healthexpenses_2  ceremoniesexpenses_2 ceremoniesrelativesexpenses_2 deathexpenses_2 mainoccupation_income_indiv_2 annualincome_indiv_2 annualincome_HH_2 assets_2 totalincome_indiv_2 totalincome_HH_2 imp1_ds_tot_indiv_2 imp1_is_tot_indiv_2 economic_amount_indiv_2 current_amount_indiv_2 humancap_amount_indiv_2 social_amount_indiv_2 house_amount_indiv_2 incomegen_amount_indiv_2 noincomegen_amount_indiv_2 informal_amount_indiv_2 formal_amount_indiv_2 semiformal_amount_indiv_2 marriageloanamount_indiv_2 loanamount_indiv_2 loanbalance_indiv_2 imp1_ds_tot_HH_2 imp1_is_tot_HH_2 economic_amount_HH_2 current_amount_HH_2 humancap_amount_HH_2 social_amount_HH_2 house_amount_HH_2 incomegen_amount_HH_2 noincomegen_amount_HH_2 informal_amount_HH_2 formal_amount_HH_2 semiformal_amount_HH_2 marriageloanamount_HH_2 loanamount_HH_2 loanbalance_HH_2
+********** Deflate
+global amount aspirationminimumwage2_2 aspirationminimumwage_2 businessexpenses_2 marriageexpenses_2 foodexpenses_2 healthexpenses_2 ceremoniesexpenses_2 ceremoniesrelativesexpenses_2 deathexpenses_2 assets_2 assets_noland_2 mainocc_annualincome_indiv_2 annualincome_indiv_2 annualincome_HH_2 totalincome_indiv_2 totalincome_HH_2 imp1_ds_tot_indiv_2 imp1_is_tot_indiv_2 loanamount_indiv_2 imp1_ds_tot_HH_2 imp1_is_tot_HH_2 loanamount_HH_2 savingsamount_HH_2 educationexpenses_HH_2 productexpenses_HH_2 businessexpenses_HH_2 foodexpenses_HH_2 healthexpenses_HH_2 ceremoniesexpenses_HH_2 deathexpenses_HH_2 chitfundpaymentamount_HH_2 chitfundamount_HH_2 chitfundamounttot_HH_2 amountlent_HH_2 insuranceamount_HH_2 insuranceamounttot_HH_2 insurancebenefitamount_HH_2 insurancebenefitamounttot_HH_2
 
 foreach x in $amount {
 replace `x'=`x'*(1/(180/155))
@@ -1227,15 +1001,15 @@ replace totalincome_HH_2=2000 if totalincome_HH_2<2000
 
 ********** Recode everything
 forvalues i=1(1)2{
-recode imp1_ds_tot_indiv_`i' imp1_is_tot_indiv_`i' loanamount_indiv_`i' formal_amount_indiv_`i' informal_amount_indiv_`i' semiformal_amount_indiv_`i' incomegen_indiv_`i' noincomegen_indiv_`i' loans_indiv_`i' (.=0)
+recode imp1_ds_tot_indiv_`i' imp1_is_tot_indiv_`i' loanamount_indiv_`i' loans_indiv_`i' (.=0)
 
-recode imp1_ds_tot_HH_`i' imp1_is_tot_HH_`i' loanamount_HH_`i' formal_amount_HH_`i' informal_amount_HH_`i' semiformal_amount_HH_`i' incomegen_HH_`i' noincomegen_HH_`i' loans_HH_`i' (.=0)
+recode imp1_ds_tot_HH_`i' imp1_is_tot_HH_`i' loanamount_HH_`i' loans_HH_`i' (.=0)
 
-recode nbsavingaccounts_`i' nbinsurance_`i' nbchitfunds_`i' (.=0)
+recode  savingsamount_HH_`i' nbchitfunds_HH_`i' nbinsurance_HH_`i' (.=0)
 }
 
-tab formal_amount_indiv_1
-tab loanamount_indiv_1
+
+
 
 ********** Ratio construction
 forvalues i=1(1)2{
@@ -1248,39 +1022,8 @@ gen ISR_HH_`i'=(imp1_is_tot_HH_`i'/totalincome_HH_`i')*100
 gen DAR_indiv_`i'=(loanamount_indiv_`i'/assets_`i')*100
 gen DAR_HH_`i'=(loanamount_HH_`i'/assets_`i')*100
 
-gen FormR_indiv_`i'=(formal_amount_indiv_`i'/loanamount_indiv_`i')*100
-gen InformR_indiv_`i'=(informal_amount_indiv_`i'/loanamount_indiv_`i')*100
-gen SemiformR_indiv_`i'=(semiformal_amount_indiv_`i'/loanamount_indiv_`i')*100
-gen FormR_HH_`i'=(formal_amount_HH_`i'/loanamount_HH_`i')*100
-gen InformR_HH_`i'=(informal_amount_HH_`i'/loanamount_HH_`i')*100
-gen SemiformR_HH_`i'=(semiformal_amount_HH_`i'/loanamount_HH_`i')*100
-
-gen IncogenR_indiv_`i'=(incomegen_amount_indiv_`i'/loanamount_indiv_`i')*100
-gen NoincogenR_indiv_`i'=(noincomegen_amount_indiv_`i'/loanamount_indiv_`i')*100
-gen IncogenR_HH_`i'=(incomegen_amount_HH_`i'/loanamount_HH_`i')*100
-gen NoincogenR_HH_`i'=(noincomegen_amount_HH_`i'/loanamount_HH_`i')*100
-
 gen debtshare_`i'=loanamount_indiv_`i'*100/loanamount_HH_`i'
 }
-
-
-
-********** Cleaning des new amount
-egen savingsamount_1=rowtotal(savingsamount1_1 savingsamount2_1 savingsamount3_1 savingsamount4_1)
-egen savingsamount_2=rowtotal(savingsamount1_2 savingsamount2_2 savingsamount3_2 savingsamount4_2)
-drop savingsamount1_1 savingsamount2_1 savingsamount3_1 savingsamount4_1 savingsamount1_2 savingsamount2_2 savingsamount3_2 savingsamount4_2
-
-egen dummydebitcard_1=rowtotal(dummydebitcard1_1 dummydebitcard2_1 dummydebitcard3_1 dummydebitcard4_1)
-egen dummydebitcard_2=rowtotal(dummydebitcard1_2 dummydebitcard2_2 dummydebitcard3_2 dummydebitcard4_2)
-drop dummydebitcard1_1 dummydebitcard2_1 dummydebitcard3_1 dummydebitcard4_1 dummydebitcard1_2 dummydebitcard2_2 dummydebitcard3_2 dummydebitcard4_2
-
-egen dummycreditcard_1=rowtotal(dummycreditcard1_1 dummycreditcard2_1 dummycreditcard3_1 dummycreditcard4_1)
-egen dummycreditcard_2=rowtotal(dummycreditcard1_2 dummycreditcard2_2 dummycreditcard3_2 dummycreditcard4_2)
-drop dummycreditcard1_1 dummycreditcard2_1 dummycreditcard3_1 dummycreditcard4_1 dummycreditcard1_2 dummycreditcard2_2 dummycreditcard3_2 dummycreditcard4_2
-
-egen chitfundamount_1=rowtotal(chitfundamount1_1 chitfundamount2_1)
-egen chitfundamount_2=rowtotal(chitfundamount1_2 chitfundamount2_2 chitfundamount3_2)
-drop chitfundamount1_1 chitfundamount2_1 chitfundamount1_2 chitfundamount2_2 chitfundamount3_2
 
 
 save"panel1.dta", replace
@@ -1290,13 +1033,11 @@ use"panel1.dta", clear
 ********** Check the 0
 tab debtpath
 
-rename mean_monthlyinterestrate_indiv_1 mean_monthly_indiv_1
-rename mean_monthlyinterestrate_indiv_2 mean_monthly_indiv_2
 
-global toclean debtshare loanamount_indiv imp1_ds_tot_indiv imp1_is_tot_indiv DSR_indiv ISR_indiv goldquantity goldquantitypledge mean_yratepaid_indiv mean_monthly_indiv informal_amount_indiv formal_amount_indiv semiformal_amount_indiv economic_amount_indiv current_amount_indiv humancap_amount_indiv social_amount_indiv house_amount_indiv noincomegen_amount_indiv incomegen_amount_indiv dummyinterest_indiv loans_indiv DAR_indiv FormR_indiv InformR_indiv SemiformR_indiv IncogenR_indiv NoincogenR_indiv savingsamount chitfundamount nbsavingaccounts nbinsurance nbchitfunds annualincome_indiv ///
+global toclean debtshare loanamount_indiv imp1_ds_tot_indiv imp1_is_tot_indiv DSR_indiv ISR_indiv DAR_indiv annualincome_indiv totalincome_indiv loans_indiv ///
 educationexpenses_HH productexpenses_HH businessexpenses_HH foodexpenses_HH healthexpenses_HH ceremoniesexpenses_HH deathexpenses_HH ///
-loanamount_HH imp1_ds_tot_HH imp1_is_tot_HH DSR_HH ISR_HH DAR_HH FormR_HH InformR_HH SemiformR_HH IncogenR_HH NoincogenR_HH  ///
-annualincome_HH totalincome_HH dummyproblemtorepay_HH dummyhelptosettleloan_HH dummyinterest_HH loans_HH savingsamount_HH chitfundpaymentamount_HH chitfundamount_HH chitfundamounttot_HH nbchitfunds_HH amountlent_HH interestlending_HH problemrepayment_HH goldquantity_HH goldquantitypledge_HH nbinsurance_HH insuranceamount_HH insuranceamounttot_HH insurancebenefitamount_HH investequiptot_HH
+loanamount_HH imp1_ds_tot_HH imp1_is_tot_HH DSR_HH ISR_HH DAR_HH  ///
+annualincome_HH totalincome_HH loans_HH
 
 *Then the variation rate
 foreach x in $toclean {
@@ -1325,16 +1066,6 @@ recode delta3_`x' (0=.) if debtpath==0
 }
 
 
-sum delta_debtshare delta_loanamount_indiv delta_imp1_ds_tot_indiv delta_imp1_is_tot_indiv delta_DSR_indiv delta_ISR_indiv delta_goldquantity delta_goldquantitypledge delta_mean_yratepaid_indiv delta_mean_monthly_indiv delta_informal_amount_indiv delta_formal_amount_indiv delta_semiformal_amount_indiv delta_economic_amount_indiv delta_current_amount_indiv delta_humancap_amount_indiv delta_social_amount_indiv delta_house_amount_indiv delta_noincomegen_amount_indiv delta_incomegen_amount_indiv delta_dummyinterest_indiv delta_loans_indiv delta_DAR_indiv delta_FormR_indiv delta_InformR_indiv delta_SemiformR_indiv delta_IncogenR_indiv delta_NoincogenR_indiv delta_savingsamount delta_chitfundamount delta_nbsavingaccounts delta_nbinsurance delta_nbchitfunds delta_annualincome_indiv
-
-
-foreach x in goldquantity mean_monthly_indiv mean_yratepaid_indiv mean_monthlyinterestrate_HH mean_yratepaid_HH {
-forvalues i=1(1)2{
-recode `x'_`i' (.=0)
-}
-}
-
-
 *Dummy
 foreach x in $toclean {
 gen bin_`x'=0 if `x'_1!=.
@@ -1349,9 +1080,6 @@ label values bin_`x' timevar2
 replace bin_`x'=. if debtpath==0
 }
 
-tab bin_goldquantity
-tab bin_mean_monthly_indiv
-tab bin_mean_yratepaid_indiv
 
 
 ********** Cleaning
@@ -1463,68 +1191,35 @@ replace dummyedulevel=1 if edulevel_1>0
 tab dummyedulevel
 
 *Main occupation
-fre mainoccupation_indiv_1
-
-gen cat_mainoccupation_indiv_1=.
-gen cat_mainoccupation_indiv_2=.
-
-forvalues i=1(1)2{
-replace cat_mainoccupation_indiv_`i'=1 if mainoccupation_indiv_`i'==1
-replace cat_mainoccupation_indiv_`i'=2 if mainoccupation_indiv_`i'==2
-replace cat_mainoccupation_indiv_`i'=3 if mainoccupation_indiv_`i'==3
-replace cat_mainoccupation_indiv_`i'=4 if mainoccupation_indiv_`i'==4
-replace cat_mainoccupation_indiv_`i'=5 if mainoccupation_indiv_`i'==5
-replace cat_mainoccupation_indiv_`i'=5 if mainoccupation_indiv_`i'==6
-replace cat_mainoccupation_indiv_`i'=5 if mainoccupation_indiv_`i'==7
-replace cat_mainoccupation_indiv_`i'=5 if mainoccupation_indiv_`i'==8
-replace cat_mainoccupation_indiv_`i'=5 if mainoccupation_indiv_`i'==0
-}
-label define cat_mainocc 1"Agri" 2"SE" 3"SJ agri" 4"SJ non agri" 5"UW or NW", replace
-label values cat_mainoccupation_indiv_1 cat_mainocc
-label values cat_mainoccupation_indiv_2 cat_mainocc
-tab cat_mainoccupation_indiv_1
-tab cat_mainoccupation_indiv_2
-
 drop villagenewFE
 
 
 
 **********Standardiser personality traits
 cls
-foreach x in base_factor_imraw_1 base_factor_imraw_2 base_factor_imraw_3 base_factor_imraw_4 base_factor_imraw_5 {
+foreach x in base_factor_imcorwith_1 base_factor_imcorwith_2 base_factor_imcorwith_3 base_factor_imcorwith_4 base_factor_imcorwith_5 base_factor_imcorwith_6 base_factor_imcor_1 base_factor_imcor_2 base_factor_imcor_3 base_factor_imcor_4 base_factor_imcor_5 base_cr_OP base_cr_CO base_cr_EX base_cr_AG base_cr_ES base_cr_Grit base_OP base_CO base_EX base_AG base_ES base_Grit {
 qui reg `x' age_1
 predict res_`x', residuals
 egen `x'_std=std(res_`x')
 }
 
 
-foreach x in base_cr_OP base_cr_CO base_cr_EX base_cr_AG base_cr_ES base_cr_Grit base_OP base_CO base_EX base_AG base_ES base_Grit {
-qui reg `x' age_1
-predict res_`x', residuals
-egen `x'_std=std(res_`x')
-}
 
 forvalues i=1(1)2 {
-foreach x in cr_OP cr_CO cr_ES cr_AG cr_EX cr_Grit OP CO ES AG EX Grit {
+foreach x in cr_OP cr_CO cr_ES cr_AG cr_EX cr_Grit OP CO ES AG EX Grit factor_imcorwith_1 factor_imcorwith_2 factor_imcorwith_3 factor_imcorwith_4 factor_imcorwith_5 factor_imcorwith_6 factor_imcor_1 factor_imcor_2 factor_imcor_3 factor_imcor_4 factor_imcor_5 {
 qui reg `x'_`i' age_`i'
 predict res_`x'_`i', residuals
 }
 }
 
 preserve
-keep HHID_panel INDID_panel res_cr_OP_1 res_cr_CO_1 res_cr_ES_1 res_cr_AG_1 res_cr_EX_1 res_cr_Grit_1 res_OP_1 res_CO_1 res_ES_1 res_AG_1 res_EX_1 res_Grit_1 res_cr_OP_2 res_cr_CO_2 res_cr_ES_2 res_cr_AG_2 res_cr_EX_2 res_cr_Grit_2 res_OP_2 res_CO_2 res_ES_2 res_AG_2 res_EX_2 res_Grit_2
+keep HHID_panel INDID_panel res_cr_OP_1 res_cr_CO_1 res_cr_ES_1 res_cr_AG_1 res_cr_EX_1 res_cr_Grit_1 res_OP_1 res_CO_1 res_ES_1 res_AG_1 res_EX_1 res_Grit_1 res_factor_imcorwith_1_1 res_factor_imcorwith_2_1 res_factor_imcorwith_3_1 res_factor_imcorwith_4_1 res_factor_imcorwith_5_1 res_factor_imcorwith_6_1 res_factor_imcor_1_1 res_factor_imcor_2_1 res_factor_imcor_3_1 res_factor_imcor_4_1 res_factor_imcor_5_1 res_cr_OP_2 res_cr_CO_2 res_cr_ES_2 res_cr_AG_2 res_cr_EX_2 res_cr_Grit_2 res_OP_2 res_CO_2 res_ES_2 res_AG_2 res_EX_2 res_Grit_2 res_factor_imcorwith_1_2 res_factor_imcorwith_2_2 res_factor_imcorwith_3_2 res_factor_imcorwith_4_2 res_factor_imcorwith_5_2 res_factor_imcorwith_6_2 res_factor_imcor_1_2 res_factor_imcor_2_2 res_factor_imcor_3_2 res_factor_imcor_4_2 res_factor_imcor_5_2
 egen HHINDID=concat(HHID_panel INDID_panel), p(/)
-reshape long res_cr_OP_ res_cr_CO_ res_cr_ES_ res_cr_AG_ res_cr_EX_ res_cr_Grit_ res_OP_ res_CO_ res_ES_ res_AG_ res_EX_ res_Grit_, i(HHINDID) j(num)
-tabstat res_cr_OP_ res_cr_CO_ res_cr_ES_ res_cr_AG_ res_cr_EX_ res_cr_Grit_ res_OP_ res_CO_ res_ES_ res_AG_ res_EX_ res_Grit_, stat(n mean sd p50)
-/*
-   stats |  res_c~P_  res_c~O_  res_c~S_  res_c~G_  res_c~X_  res_c~t_   res_OP_   res_CO_   res_ES_   res_AG_   res_EX_  res_Gr~_
----------+------------------------------------------------------------------------------------------------------------------------
-       N |      1668      1668      1668      1668      1668      1668      1668      1668      1668      1668      1668      1668
-    mean |  7.24e-10  3.48e-10  6.64e-10  1.60e-10 -9.22e-10  5.72e-10  3.15e-11  3.48e-09  3.99e-11  1.46e-10 -1.12e-10 -2.40e-10
-      sd |  .4695046  .5884246  .7123245  .4011361  .4670096  .5543762  .5743814  .5573983  .4510244  .4752726  .5665607  .6036053
-     p50 | -.0028035 -.0312275  .0027712  .0208227 -.0079332 -.0061333  .0565965  .0138466  .0352371    .02968  .0100178 -.0028547
-----------------------------------------------------------------------------------------------------------------------------------
-*/
+reshape long res_cr_OP_ res_cr_CO_ res_cr_ES_ res_cr_AG_ res_cr_EX_ res_cr_Grit_ res_OP_ res_CO_ res_ES_ res_AG_ res_EX_ res_Grit_ res_factor_imcorwith_1_ res_factor_imcorwith_2_ res_factor_imcorwith_3_ res_factor_imcorwith_4_ res_factor_imcorwith_5_ res_factor_imcorwith_6_ res_factor_imcor_1_ res_factor_imcor_2_ res_factor_imcor_3_ res_factor_imcor_4_ res_factor_imcor_5_, i(HHINDID) j(num)
+tabstat res_cr_OP_ res_cr_CO_ res_cr_ES_ res_cr_AG_ res_cr_EX_ res_cr_Grit_, stat(n mean sd p50)
+tabstat res_OP_ res_CO_ res_ES_ res_AG_ res_EX_ res_Grit_, stat(n mean sd p50)
+tabstat res_factor_imcorwith_1_ res_factor_imcorwith_2_ res_factor_imcorwith_3_ res_factor_imcorwith_4_ res_factor_imcorwith_5_ res_factor_imcorwith_6_, stat(n mean sd p50)
+tabstat res_factor_imcor_1_ res_factor_imcor_2_ res_factor_imcor_3_ res_factor_imcor_4_ res_factor_imcor_5_, stat(n mean sd p50)
 restore
 
 /*
@@ -1536,18 +1231,32 @@ egen std_each_`x'_`i'=std(res_`x'_`i')
 */
 
 forvalues i=1(1)2 {
-gen std_cr_OP_`i'=(res_cr_OP_`i'-7.24e-10)/.4695046
-gen std_cr_CO_`i'=(res_cr_CO_`i'-3.48e-10)/.5884246
-gen std_cr_ES_`i'=(res_cr_ES_`i'-6.64e-10)/.7123245
-gen std_cr_AG_`i'=(res_cr_AG_`i'-1.60e-10)/.4011361
-gen std_cr_EX_`i'=(res_cr_EX_`i'+9.22e-10)/.4670096
-gen std_cr_Grit_`i'=(res_cr_Grit_`i'-5.72e-10)/.5543762
-gen std_OP_`i'=(res_OP_`i'-3.15e-11)/.5743814
-gen std_CO_`i'=(res_CO_`i'-3.48e-09)/.5573983
-gen std_ES_`i'=(res_ES_`i'-3.99e-11)/.4510244
-gen std_AG_`i'=(res_AG_`i'-1.46e-10)/.4752726
-gen std_EX_`i'=(res_EX_`i'+1.12e-10)/.5665607
-gen std_Grit_`i'=(res_Grit_`i'+2.40e-10)/.6036053
+gen std_cr_OP_`i'=(res_cr_OP_`i'-6.40e-10)/.4695055
+gen std_cr_CO_`i'=(res_cr_CO_`i'-7.94e-10)/.5901779
+gen std_cr_ES_`i'=(res_cr_ES_`i'-5.04e-10)/.7104544
+gen std_cr_AG_`i'=(res_cr_AG_`i'-7.99e-11)/.40031
+gen std_cr_EX_`i'=(res_cr_EX_`i'+6.93e-10)/.4683449
+gen std_cr_Grit_`i'=(res_cr_Grit_`i'-2.53e-10)/.5564151
+
+gen std_OP_`i'=(res_OP_`i'+2.70e-10)/.5761487
+gen std_CO_`i'=(res_CO_`i'-8.53e-10)/.5596447
+gen std_ES_`i'=(res_ES_`i'+1.75e-10)/.4514791
+gen std_AG_`i'=(res_AG_`i'+4.30e-10)/.4752377
+gen std_EX_`i'=(res_EX_`i'+6.33e-10)/.5666251
+gen std_Grit_`i'=(res_Grit_`i'+4.08e-09)/.6034942
+
+gen std_f1_crwith_`i'=(res_factor_imcorwith_1_`i'+1.00e-10)/.9967619
+gen std_f2_crwith_`i'=(res_factor_imcorwith_2_`i'+1.42e-09)/.9993092
+gen std_f3_crwith_`i'=(res_factor_imcorwith_3_`i'+1.01e-09)/.9888102
+gen std_f4_crwith_`i'=(res_factor_imcorwith_4_`i'-7.09e-10)/.9908982
+gen std_f5_crwith_`i'=(res_factor_imcorwith_5_`i'+1.24e-09)/.990863
+gen std_f6_crwith_`i'=(res_factor_imcorwith_6_`i'-9.05e-10)/.9808956
+
+gen std_f1_cr_`i'=(res_factor_imcor_1_`i'+7.24e-10)/.993121
+gen std_f2_cr_`i'=(res_factor_imcor_2_`i'+1.10e-09)/1.000836
+gen std_f3_cr_`i'=(res_factor_imcor_3_`i'+3.41e-10)/.9884444 
+gen std_f4_cr_`i'=(res_factor_imcor_4_`i'-3.04e-10)/.9959425
+gen std_f5_cr_`i'=(res_factor_imcor_5_`i'+2.63e-10)/.9958991
 }
 
 label var base_cr_OP_std "OP cor (std)"
@@ -1564,6 +1273,18 @@ label var base_AG_std "AG (std)"
 label var base_ES_std "ES (std)"
 label var base_Grit_std "Grit (std)"
 
+label var base_factor_imcorwith_1_std "CO-GR (std)"
+label var base_factor_imcorwith_2_std "ES (std)"
+label var base_factor_imcorwith_3_std "OP-EX (std)"
+label var base_factor_imcorwith_4_std "AG-EX (std)"
+label var base_factor_imcorwith_5_std "ES-CO (std)"
+label var base_factor_imcorwith_6_std "AG (std)"
+
+label var base_factor_imcor_1_std "CO (std)"
+label var base_factor_imcor_2_std "ES (std)"
+label var base_factor_imcor_3_std "EX-OP (std)"
+label var base_factor_imcor_4_std "ES-CO (std)"
+label var base_factor_imcor_5_std "AG (std)"
 
 
 ********** Standardiser les compétences cognitives
@@ -1584,22 +1305,22 @@ preserve
 keep HHID_panel INDID_panel res_raven_tt_1 res_raven_tt_2 res_lit_tt_1 res_lit_tt_2 res_num_tt_1 res_num_tt_2 raven_tt_1 raven_tt_2 lit_tt_1 lit_tt_2 num_tt_1 num_tt_2
 egen HHINDID=concat(HHID_panel INDID_panel), p(/)
 reshape long res_raven_tt_ res_lit_tt_ res_num_tt_ raven_tt_ lit_tt_ num_tt_, i(HHINDID) j(num)
-tabstat res_raven_tt_ res_lit_tt_ res_num_tt_ raven_tt_ lit_tt_ num_tt_, stat(n mean sd p50)
+tabstat res_raven_tt_ res_lit_tt_ res_num_tt_, stat(n mean sd p50)
 /*
-   stats |  res_ra~_  res_li~_  res_nu~_  raven_~_   lit_tt_   num_tt_
----------+------------------------------------------------------------
-       N |      1670      1486      1643      1670      1486      1643
-    mean | -1.69e-09  3.54e-10  4.70e-11  11.37665  2.061575  2.738892
-      sd |  7.699597  1.541575  1.559463  8.675844    1.6993  1.892511
-     p50 | -1.712547  .0731145 -.0593502         8         2         2
-----------------------------------------------------------------------
+   stats |  res_ra~_  res_li~_  res_nu~_
+---------+------------------------------
+       N |      1646      1614      1645
+    mean | -8.27e-09  3.21e-09  1.12e-09
+      sd |  7.733731  1.563907  1.607305
+     p50 | -1.739282 -.0899114 -.0593502
+----------------------------------------
 */
 restore
 
 forvalues i=1(1)2 {
-gen std_raven_tt_`i'=(res_raven_tt_`i'+1.69e-09)/7.699597
-gen std_lit_tt_`i'=(res_lit_tt_`i'-3.54e-10)/1.541575
-gen std_num_tt_`i'=(res_num_tt_`i'-4.70e-11)/1.559463
+gen std_raven_tt_`i'=(res_raven_tt_`i'+8.27e-09)/7.733731
+gen std_lit_tt_`i'=(res_lit_tt_`i'-3.21e-09)/1.563907
+gen std_num_tt_`i'=(res_num_tt_`i'-1.12e-09)/1.607305
 }
 
 label var base_raven_tt_std "Raven (std)"
@@ -1662,12 +1383,16 @@ label var caste_1 "C: Dalits"
 label var caste_2 "C: Middle"
 label var caste_3 "C: Upper"
 
-tab cat_mainoccupation_indiv_1,gen(cat_mainoccupation_indiv_1_)
-label var cat_mainoccupation_indiv_1_1 "MO: Agri"
-label var cat_mainoccupation_indiv_1_2 "MO: SE"
-label var cat_mainoccupation_indiv_1_3 "MO: SJ agri"
-label var cat_mainoccupation_indiv_1_4 "MO: SJ non-agri"
-label var cat_mainoccupation_indiv_1_5 "MO: UW or NW"
+tab mainocc_occupation_indiv_1,gen(cat_mainocc_occupation_indiv_1_)
+label var cat_mainocc_occupation_indiv_1_1 "MO: No occ."
+label var cat_mainocc_occupation_indiv_1_2 "MO: Agri"
+label var cat_mainocc_occupation_indiv_1_3 "MO: Agri coolie"
+label var cat_mainocc_occupation_indiv_1_4 "MO: Coolie"
+label var cat_mainocc_occupation_indiv_1_5 "MO: Reg non-quali"
+label var cat_mainocc_occupation_indiv_1_6 "MO: Reg quali"
+label var cat_mainocc_occupation_indiv_1_7 "MO: SE"
+label var cat_mainocc_occupation_indiv_1_8 "MO: NREGA"
+
 
 fre relationshiptohead_1
 gen dummyhead_1=0
@@ -1739,9 +1464,6 @@ label var q_assets1000_1_2 "Assets Q2"
 label var q_assets1000_1_3 "Assets Q3"
 label var q_assets1000_1_4 "Assets Q4"
 
-forvalues i=1(1)5 {
-label var base_factor_imraw_`i'_std "Factor `i' (std)"
-}
 
 
 ********** gen FE
@@ -1783,17 +1505,12 @@ sdtest assets1000_1, by(ownhouse_1)
 
 
 ********** 1,000 INR variables
-foreach x in loanamount_indiv loanamount_HH imp1_ds_tot_indiv imp1_ds_tot_HH imp1_is_tot_indiv imp1_is_tot_HH savingsamount annualincome_indiv annualincome_HH totalincome_indiv {
+foreach x in loanamount_indiv loanamount_HH imp1_ds_tot_indiv imp1_ds_tot_HH imp1_is_tot_indiv imp1_is_tot_HH annualincome_indiv annualincome_HH totalincome_indiv {
 gen `x'1000_1=`x'_1/1000 
 gen `x'1000_2=`x'_2/1000 
 }
 
-
-
 ********** Recoder les dummy
-recode dummyproblemtorepay_indiv_1 dummyproblemtorepay_indiv_2 dummyhelptosettleloan_indiv_1 dummyhelptosettleloan_indiv_2 (2=1) (3=1) (4=1) (5=1)
-
-
 tab1 indebt_indiv_1 indebt_indiv_2
 tab DSR_indiv_2
 gen over30_indiv_1=0
@@ -1806,21 +1523,9 @@ replace over30_indiv_2=1 if DSR_indiv_2>30
 replace over40_indiv_1=1 if DSR_indiv_1>40
 replace over40_indiv_2=1 if DSR_indiv_2>40
 
-gen dichotomyinterest_indiv_1=0
-gen dichotomyinterest_indiv_2=0
-
-replace dichotomyinterest_indiv_1=1 if dummyinterest_indiv_1>0
-replace dichotomyinterest_indiv_2=1 if dummyinterest_indiv_2>0
-
-replace dichotomyinterest_indiv_1=. if indebt_indiv_1==0
-replace dichotomyinterest_indiv_2=. if indebt_indiv_2==0
-
-tab1 dichotomyinterest_indiv_1 dichotomyinterest_indiv_2
-
-
 
 ********** Variation de la dette
-global delta delta_debtshare delta_loanamount_indiv delta_imp1_ds_tot_indiv delta_imp1_is_tot_indiv delta_DSR_indiv delta_ISR_indiv delta_goldquantity delta_mean_yratepaid_indiv delta_loans_indiv delta_InformR_indiv delta_NoincogenR_indiv delta_savingsamount delta_annualincome_indiv
+global delta delta_debtshare delta_loanamount_indiv delta_imp1_ds_tot_indiv delta_imp1_is_tot_indiv delta_DSR_indiv delta_ISR_indiv delta_DAR_indiv delta_annualincome_indiv delta_totalincome_indiv delta_loans_indiv delta_educationexpenses_HH delta_productexpenses_HH delta_businessexpenses_HH delta_foodexpenses_HH delta_healthexpenses_HH delta_ceremoniesexpenses_HH delta_deathexpenses_HH delta_loanamount_HH delta_imp1_ds_tot_HH delta_imp1_is_tot_HH delta_DSR_HH delta_ISR_HH delta_DAR_HH delta_annualincome_HH delta_totalincome_HH delta_loans_HH
 foreach x in $delta {
 gen abs_`x'=abs(`x')
 }
@@ -1836,6 +1541,7 @@ replace bin_`x'=1 if `x'>0
 tabstat abs_delta_debtshare, stat(n mean sd p50) by(bin_delta_debtshare)
 
 
+/*
 foreach x in $delta {
 forvalues i=1(1)5 {
 gen `x'_f`i'=bin_`x'*base_factor_imraw_`i'_std
@@ -1844,7 +1550,7 @@ gen `x'_r1=bin_`x'*base_raven_tt
 gen `x'_n1=bin_`x'*base_num_tt
 gen `x'_l1=bin_`x'*base_lit_tt
 }
-
+*/
 
 
 
@@ -1870,13 +1576,13 @@ tab nboccupation_indiv_1 dummymultipleoccupation_indiv_1, m
 
 
 **
-foreach x in debtshare InformR_indiv FormR_indiv NoincogenR_indiv IncogenR_indiv {
+foreach x in debtshare {
 forvalues i=1(1)2{
 clonevar `x'_`i'_old=`x'_`i'
 }
 }
 
-foreach x in debtshare InformR_indiv FormR_indiv NoincogenR_indiv IncogenR_indiv {
+foreach x in debtshare {
 forvalues i=1(1)2{
 replace `x'_`i'=`x'_`i'/100
 }
@@ -1886,18 +1592,7 @@ recode dummymultipleoccupation_indiv_1 (.=0)
 label var dummymultipleoccupation_indiv_1 "Multiple occupation (=1)"
 
 
-
-**********Combien de prêts sans services de la part du prêteur 1?
-tab1  sum_otherlenderservices_5_2
-
-gen sharenoservices_1=sum_otherlenderservices_5_1/loans_indiv_1
-gen sharenoservices_2=sum_otherlenderservices_5_2/loans_indiv_2
-
-tab sharenoservices_1
-tab sharenoservices_2
-
-
-********** Taux de varation de la personnalité
+********** Variation rate of personality
 foreach x in CO OP ES EX AG {
 gen diff_`x'=cr_`x'_2-cr_`x'_1
 gen delta_`x'=(cr_`x'_2-cr_`x'_1)*100/cr_`x'_1
@@ -1914,10 +1609,10 @@ replace dalits=1 if caste2==1
 tab dalits female
 label var dalits "Dalits (=1)"
 
-foreach x in base_factor_imraw_1_std base_factor_imraw_2_std base_factor_imraw_3_std base_factor_imraw_4_std base_factor_imraw_5_std base_raven_tt_std base_num_tt_std base_lit_tt_std base_cr_OP_std base_cr_CO_std base_cr_EX_std base_cr_AG_std base_cr_ES_std base_OP_std base_CO_std base_EX_std base_AG_std base_ES_std {
+foreach x in base_raven_tt_std base_factor_imcorwith_3_std base_cr_OP_std base_OP_std base_num_tt_std base_lit_tt_std base_cr_Grit_std base_Grit_std base_factor_imcor_3_std base_cr_EX_std base_EX_std base_factor_imcorwith_5_std base_factor_imcor_4_std base_cr_ES_std base_factor_imcorwith_2_std base_factor_imcor_2_std base_ES_std base_factor_imcorwith_1_std base_cr_CO_std base_factor_imcor_1_std base_CO_std base_factor_imcorwith_4_std base_cr_AG_std base_factor_imcorwith_6_std base_factor_imcor_5_std base_AG_std {
 gen fem_`x'=`x'*female
 gen dal_`x'=`x'*dalits
-gen threeway_`x'=`x'*female*dalits
+gen thr_`x'=`x'*female*dalits
 }
 gen femXdal=female*dalits
 
@@ -1933,19 +1628,6 @@ gen over50_indiv_2=0
 replace over50_indiv_2=1 if DSR_indiv_2>=50
 
 
-	
-********** Username
-preserve
-use "NEEMSIS2-HH_v17", clear
-duplicates drop HHID_panel, force
-keep HHID_panel username
-save"NEEMSIS2-username", replace
-restore
-
-merge m:1 HHID_panel using "NEEMSIS2-username"
-drop if _merge==2
-drop _merge
-
 
 save"panel_wide_v2", replace
 ****************************************
@@ -1955,8 +1637,7 @@ save"panel_wide_v2", replace
 
 
 
-
-
+/*
 ****************************************
 * Reshaper 
 ****************************************

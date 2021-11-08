@@ -32,11 +32,14 @@ set scheme plotplain, perm
 
 
 ********** Name of the NEEMSIS2 questionnaire version to clean
-global wave1 "RUME-HH_v8"
-global wave2 "NEEMSIS1-HH_v7"
-global wave3 "NEEMSIS2-HH_v17"
+*global wave1 "RUME-HH_v8"
+global wave2 "NEEMSIS1-HH_v8"
+global wave3 "NEEMSIS2-HH_v19"
 ****************************************
 * END
+
+
+
 
 
 
@@ -44,57 +47,38 @@ global wave3 "NEEMSIS2-HH_v17"
 ****************************************
 * PANEL
 ***************************************
-use"C:\Users\Arnaud\Dropbox\RUME-NEEMSIS\RUME\RUME-HH_v8", clear
-save"$wave1", replace
-duplicates drop HHID_panel, force
-keep HHID_panel year
-rename year year2010
-save"$wave1~hh", replace
-
-use"C:\Users\Arnaud\Dropbox\RUME-NEEMSIS\NEEMSIS1\NEEMSIS1-HH_v7", clear
-save"$wave2", replace
+use"$directory\\$wave2", clear
 duplicates drop HHID_panel, force
 keep HHID_panel year
 rename year year2016
 save"$wave2~hh", replace
 
-use"C:\Users\Arnaud\Dropbox\RUME-NEEMSIS\NEEMSIS2\NEEMSIS2-HH_v17", clear
-save"$wave3", replace
-duplicates drop HHID_panel, force
+use"$directory\\$wave3", clear
 duplicates drop HHID_panel, force
 keep HHID_panel year
 rename year year2020
 save"$wave3~hh", replace
 
 *Merge all
-use"$wave1~hh", clear
-merge 1:1 HHID_panel using "$wave2~hh"
-rename _merge merge_1016
+use"$wave2~hh", clear
 merge 1:1 HHID_panel using "$wave3~hh"
-rename _merge merge_101620
+rename _merge merge_1620
 
 *One var
 gen panel=0
 replace panel=2 if year2016!=. & year2020!=.
-replace panel=1 if year2010!=. & year2016!=. & year2020!=.
 tab panel
 
-keep HHID_panel year2010 year2016 year2020 panel
+keep HHID_panel year2016 year2020 panel
 
-foreach x in 2010 2016 2020{
+foreach x in 2016 2020{
 recode year`x' (.=0) (`x'=1)
 }
 
-cls
-tab year2010
+*
 tab year2016
 tab year2020
-tab year2010 year2016
-tab year2010 year2020  // 392 en panel 2010-2020
 tab year2016 year2020   // 485 en panel 2016-2020
-
-tab year2016 year2020 if year2010==0
-tab year2016 year2020 if year2010==1
 
 save"panel", replace
 ****************************************
@@ -104,7 +88,7 @@ save"panel", replace
 
 
 
-
+/*
 
 ****************************************
 * PREPA

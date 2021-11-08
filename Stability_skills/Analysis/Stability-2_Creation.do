@@ -75,17 +75,24 @@ workwithother  understandotherfeeling trustingofother rudetoother toleratefaults
 managestress  nervous  changemood feeldepressed easilyupset worryalot  staycalm ///
 tryhard  stickwithgoals   goaftergoal finishwhatbegin finishtasks  keepworking
 
+********* Rename _backup 
+foreach x in $big5grit {
+rename `x' `x'_bkcl
+rename `x'_backup `x'
+}
 
 
+
+********* Rename old cr to check if new cr is good
+foreach x in cr_curious cr_interestedbyart cr_repetitivetasks cr_inventive cr_liketothink cr_newideas cr_activeimagination cr_organized cr_makeplans cr_workhard cr_appointmentontime cr_putoffduties cr_easilydistracted cr_completeduties cr_enjoypeople cr_sharefeelings cr_shywithpeople cr_enthusiastic cr_talktomanypeople cr_talkative cr_expressingthoughts cr_workwithother cr_understandotherfeeling cr_trustingofother cr_rudetoother cr_toleratefaults cr_forgiveother cr_helpfulwithothers cr_managestress cr_nervous cr_changemood cr_feeldepressed cr_easilyupset cr_worryalot cr_staycalm cr_tryhard cr_stickwithgoals cr_goaftergoal cr_finishwhatbegin cr_finishtasks cr_keepworking {
+rename `x' `x'_bkcl
+}
 
 
 ********** Recode 1: replace 99 with missing
 foreach x in $big5grit {
-clonevar `x'_recode=`x'
-replace `x'_recode=. if `x'_recode==99 | `x'_recode==6
+replace `x'=. if `x'==99 | `x'==6
 }
-
-
 
 
 
@@ -93,27 +100,13 @@ replace `x'_recode=. if `x'_recode==99 | `x'_recode==6
 
 ********** Recode 2: all so that more is better! 
 foreach x of varlist $big5grit {
-clonevar `x'_rec_rev=`x'_recode 
-recode `x'_rec_rev (5=1) (4=2) (3=3) (2=4) (1=5)
-recode `x'_rec_rev (5=1) (4=2) (3=3) (2=4) (1=5)
+recode `x' (5=1) (4=2) (3=3) (2=4) (1=5)
 }
 
 label define big5n 1"5 - Almost never" 2"4 - Rarely" 3"3 - Sometimes" 4"2 - Quite often" 5"1 - Almost always", replace
 foreach x in $big5grit {
-label values `x'_rec_rev big5n
+label values `x' big5n
 }
-
-
-
-
-
-
-********** Passe-passe pour travailler
-foreach x in $big5grit {
-rename `x' `x'_backup 
-rename `x'_rec_rev `x'
-}
-
 
 
 
@@ -124,7 +117,6 @@ rename `x'_rec_rev `x'
 forvalues i=16(4)20 {
 mdesc $big5grit if year==20`i'
 }
-
 
 mdesc $big5grit if year==2020
 mdesc rudetoother helpfulwithothers  ///
@@ -450,9 +442,6 @@ worryalot managestress  // _7_--> ES2
 
 ********** Recode 3: Reverse coded les items reverses pour que tu sois dans le même sens dans un seul et même trait: que les var tendent vers le traits pour lequel elles ont été posées
 
-foreach x in $big5grit {
-clonevar `x'_rec_rev=`x'
-}
 foreach x of varlist rudetoother putoffduties easilydistracted shywithpeople repetitive~s nervous changemood feeldepressed easilyupset worryalot {
 recode `x' (5=1) (4=2) (3=3) (2=4) (1=5)
 }
@@ -460,13 +449,10 @@ label define big5n2 5"5 - Almost never" 4"4 - Rarely" 3"3 - Sometimes" 2"2 - Qui
 foreach x in rudetoother putoffduties easilydistracted shywithpeople repetitive~s nervous changemood feeldepressed easilyupset worryalot {
 label values `x' big5n2
 }
-
-
-
-
-
-
-
+*corrected items: 
+foreach var of varlist $big5grit {
+gen cr_`var'=`var'-ars2 if ars!=. 
+}
 
 
 
@@ -517,44 +503,6 @@ pwcorr tryhard  stickwithgoals   goaftergoal finishwhatbegin finishtasks  keepwo
 restore
 
 
-
-
-
-
-
-
-
-
-
-********** Recode 4: corr from acquiescence bias
-foreach x of varlist $big5grit {
-gen cr_`x'=`x'-ars2 if ars!=.
-*gen cr2_`x'=.
-*gen cr4_`x'=`x'-ars4 if ars!=.
-*gen cr5_`x'=`x'-ars5 if ars!=.
-}
-
-/*
-foreach x in curious interestedbyart  repetitivetasks inventive liketothink newideas activeimagination {
-replace cr2_`x'=`x'-ars2_OP if ars!=.
-}
-foreach x in organized  makeplans workhard appointmentontime putoffduties easilydistracted completeduties {
-replace cr2_`x'=`x'-ars2_CO if ars!=.
-}
-foreach x in enjoypeople sharefeelings shywithpeople enthusiastic talktomanypeople  talkative expressingthoughts {
-replace cr2_`x'=`x'-ars2_EX if ars!=.
-}
-foreach x in workwithother understandotherfeeling trustingofother rudetoother toleratefaults forgiveother helpfulwithothers {
-replace cr2_`x'=`x'-ars2_AG if ars!=.
-}
-foreach x in managestress nervous changemood feeldepressed easilyupset worryalot staycalm {
-replace cr2_`x'=`x'-ars2_ES if ars!=.
-}
-
-foreach x of varlist $big5grit {
-replace cr2_`x'=0 if cr2_`x'<0
-}
-*/
 
 
 
@@ -716,30 +664,7 @@ egen cr_CO = rowmean(cr_organized  cr_makeplans cr_workhard cr_appointmen~e cr_p
 egen cr_EX = rowmean(cr_enjoypeople cr_sharefeeli~s cr_shywithpeo~e  cr_enthusiastic  cr_talktomany~e  cr_talkative cr_expressing~s ) 
 egen cr_AG = rowmean(cr_workwithot~r   cr_understand~g cr_trustingof~r cr_rudetoother cr_toleratefa~s  cr_forgiveother  cr_helpfulwit~s) 
 egen cr_ES = rowmean(cr_managestress  cr_nervous  cr_changemood cr_feeldepres~d cr_easilyupset cr_worryalot  cr_staycalm) 
-egen cr_Grit = rowmean(cr_tryhard  cr_stickwithg~s   cr_goaftergoal cr_finishwhat~n cr_finishtasks  cr_keepworking)
-
-
-
-
-
-
-********** Imputation for missings
-fre sex
-fre caste
-foreach x in $big5grit{
-clonevar imcr_`x'=cr_`x'
-}
-
-forvalues i=1(1)2{
-forvalues j=1(1)3{
-forvalues k=16(4)20 {
-foreach x in $big5grit{
-sum imcr_`x' if sex==`i' & caste==`j' & year==20`k'
-replace imcr_`x'=r(mean) if cr_`x'==. & sex==`i' & caste==`j' & year==20`k'
-}
-}
-}
-}
+egen cr_Grit = rowmean(cr_tryhard  cr_stickwithgoals   cr_goaftergoal cr_finishwhatbegin cr_finishtasks  cr_keepworking)
 
 
 
@@ -783,9 +708,10 @@ save"panel_stab_v2", replace
 * END
 
 
+order HHID_panel INDID_panel ars2 curious_bkcl cr_curious_bkcl curious cr_curious
+sort HHID_panel INDID_panel
 
-
-
+/*
 
 
 
@@ -797,9 +723,9 @@ save"panel_stab_v2", replace
 use"panel_stab_v2", clear
 keep if panel==1
 
-drop curious_backup interestedbyart_backup repetitivetasks_backup inventive_backup liketothink_backup newideas_backup activeimagination_backup organized_backup makeplans_backup workhard_backup appointmentontime_backup putoffduties_backup easilydistracted_backup completeduties_backup enjoypeople_backup sharefeelings_backup shywithpeople_backup enthusiastic_backup talktomanypeople_backup talkative_backup expressingthoughts_backup workwithother_backup understandotherfeeling_backup trustingofother_backup rudetoother_backup toleratefaults_backup forgiveother_backup helpfulwithothers_backup managestress_backup nervous_backup changemood_backup feeldepressed_backup easilyupset_backup worryalot_backup staycalm_backup tryhard_backup stickwithgoals_backup goaftergoal_backup finishwhatbegin_backup finishtasks_backup keepworking_backup curious_recode interestedbyart_recode repetitivetasks_recode inventive_recode liketothink_recode newideas_recode activeimagination_recode organized_recode makeplans_recode workhard_recode appointmentontime_recode putoffduties_recode easilydistracted_recode completeduties_recode enjoypeople_recode sharefeelings_recode shywithpeople_recode enthusiastic_recode talktomanypeople_recode talkative_recode expressingthoughts_recode workwithother_recode understandotherfeeling_recode trustingofother_recode rudetoother_recode toleratefaults_recode forgiveother_recode helpfulwithothers_recode managestress_recode nervous_recode changemood_recode feeldepressed_recode easilyupset_recode worryalot_recode staycalm_recode tryhard_recode stickwithgoals_recode goaftergoal_recode finishwhatbegin_recode finishtasks_recode keepworking_recode curious_rec_rev interestedbyart_rec_rev repetitivetasks_rec_rev inventive_rec_rev liketothink_rec_rev newideas_rec_rev activeimagination_rec_rev organized_rec_rev makeplans_rec_rev workhard_rec_rev appointmentontime_rec_rev putoffduties_rec_rev easilydistracted_rec_rev completeduties_rec_rev enjoypeople_rec_rev sharefeelings_rec_rev shywithpeople_rec_rev enthusiastic_rec_rev talktomanypeople_rec_rev talkative_rec_rev expressingthoughts_rec_rev workwithother_rec_rev understandotherfeeling_rec_rev trustingofother_rec_rev rudetoother_rec_rev toleratefaults_rec_rev forgiveother_rec_rev helpfulwithothers_rec_rev managestress_rec_rev nervous_rec_rev changemood_rec_rev feeldepressed_rec_rev easilyupset_rec_rev worryalot_rec_rev staycalm_rec_rev tryhard_rec_rev stickwithgoals_rec_rev goaftergoal_rec_rev finishwhatbegin_rec_rev finishtasks_rec_rev keepworking_rec_rev ars_CO1_temp ars_CO2_temp ars_ES1_temp ars_ES2_temp
+drop curious_backup interestedbyart_backup repetitivetasks_backup inventive_backup liketothink_backup newideas_backup activeimagination_backup organized_backup makeplans_backup workhard_backup appointmentontime_backup putoffduties_backup easilydistracted_backup completeduties_backup enjoypeople_backup sharefeelings_backup shywithpeople_backup enthusiastic_backup talktomanypeople_backup talkative_backup expressingthoughts_backup workwithother_backup understandotherfeeling_backup trustingofother_backup rudetoother_backup toleratefaults_backup forgiveother_backup helpfulwithothers_backup managestress_backup nervous_backup changemood_backup feeldepressed_backup easilyupset_backup worryalot_backup staycalm_backup tryhard_backup stickwithgoals_backup goaftergoal_backup finishwhatbegin_backup finishtasks_backup keepworking_backup ars_CO1_temp ars_CO2_temp ars_ES1_temp ars_ES2_temp cr_curious_backup cr_interestedbyart_backup cr_repetitivetasks_backup cr_inventive_backup cr_liketothink_backup cr_newideas_backup cr_activeimagination_backup cr_organized_backup cr_makeplans_backup cr_workhard_backup cr_appointmentontime_backup cr_putoffduties_backup cr_easilydistracted_backup cr_completeduties_backup cr_enjoypeople_backup cr_sharefeelings_backup cr_shywithpeople_backup cr_enthusiastic_backup cr_talktomanypeople_backup cr_talkative_backup cr_expressingthoughts_backup cr_workwithother_backup cr_understandotherfeeling_backup cr_trustingofother_backup cr_rudetoother_backup cr_toleratefaults_backup cr_forgiveother_backup cr_helpfulwithothers_backup cr_managestress_backup cr_nervous_backup cr_changemood_backup cr_feeldepressed_backup cr_easilyupset_backup cr_worryalot_backup cr_staycalm_backup cr_tryhard_backup cr_stickwithgoals_backup cr_goaftergoal_backup cr_finishwhatbegin_backup cr_finishtasks_backup cr_keepworking_backup
 
-reshape wide HHID_panel INDID_panel egoid name sex age jatis caste edulevel villageid villageareaid villageid_new username panel dummydemonetisation relationshiptohead maritalstatus canread everattendedschool reasonneverattendedschool converseinenglish house housetype electricity water toiletfacility noowntoilet readystartjob aspirationminimumwage dummyaspirationmorehours aspirationminimumwage2 nbercontactphone nberpersonfamilyevent contactlist dummycontactleaders contactleaders trustneighborhood trustemployees networkpeoplehelping networkhelpkinmember demotrustneighborhood demotrustemployees_ego demotrustbank_ego demonetworkpeoplehelping_ego demonetworkhelpkinmember_ego canreadcard1a canreadcard1b canreadcard1c canreadcard2 numeracy1 numeracy2 numeracy3 numeracy4 a1 a2 a3 a4 a5 a6 a7 a8 a9 a10 a11 a12 ab1 ab2 ab3 ab4 ab5 ab6 ab7 ab8 ab9 ab10 ab11 ab12 b1 b2 b3 b4 b5 b6 b7 b8 b9 b10 b11 b12 demogeneralperception demogoodexpectations demobadexpectations annualincome_indiv annualincome_HH mainocc_kindofwork_indiv mainocc_occupation_indiv assets ra1 rab1 rb1 ra2 rab2 rb2 ra3 rab3 rb3 ra4 rab4 rb4 ra5 rab5 rb5 ra6 rab6 rb6 ra7 rab7 rb7 ra8 rab8 rb8 ra9 rab9 rb9 ra10 rab10 rb10 ra11 rab11 rb11 ra12 rab12 rb12 set_a set_ab set_b raven_tt refuse num_tt lit_tt covsellland covsubsistence covsick time curious interestedbyart repetitivetasks inventive liketothink newideas activeimagination organized makeplans workhard appointmentontime putoffduties easilydistracted completeduties enjoypeople sharefeelings shywithpeople enthusiastic talktomanypeople talkative expressingthoughts workwithother understandotherfeeling trustingofother rudetoother toleratefaults forgiveother helpfulwithothers managestress nervous changemood feeldepressed easilyupset worryalot staycalm tryhard stickwithgoals goaftergoal finishwhatbegin finishtasks keepworking ars ars2 ars3 _1_ars _1_ars2 _1_ars3 _2_ars _2_ars2 _2_ars3 _3_ars _3_ars2 _3_ars3 _4_ars _4_ars2 _4_ars3 _5_ars _5_ars2 _5_ars3 _6_ars _6_ars2 _6_ars3 _7_ars _7_ars2 _7_ars3 cr_curious cr_interestedbyart cr_repetitivetasks cr_inventive cr_liketothink cr_newideas cr_activeimagination cr_organized cr_makeplans cr_workhard cr_appointmentontime cr_putoffduties cr_easilydistracted cr_completeduties cr_enjoypeople cr_sharefeelings cr_shywithpeople cr_enthusiastic cr_talktomanypeople cr_talkative cr_expressingthoughts cr_workwithother cr_understandotherfeeling cr_trustingofother cr_rudetoother cr_toleratefaults cr_forgiveother cr_helpfulwithothers cr_managestress cr_nervous cr_changemood cr_feeldepressed cr_easilyupset cr_worryalot cr_staycalm cr_tryhard cr_stickwithgoals cr_goaftergoal cr_finishwhatbegin cr_finishtasks cr_keepworking OP CO EX AG ES Grit cr_OP cr_CO cr_EX cr_AG cr_ES cr_Grit imcr_curious imcr_interestedbyart imcr_repetitivetasks imcr_inventive imcr_liketothink imcr_newideas imcr_activeimagination imcr_organized imcr_makeplans imcr_workhard imcr_appointmentontime imcr_putoffduties imcr_easilydistracted imcr_completeduties imcr_enjoypeople imcr_sharefeelings imcr_shywithpeople imcr_enthusiastic imcr_talktomanypeople imcr_talkative imcr_expressingthoughts imcr_workwithother imcr_understandotherfeeling imcr_trustingofother imcr_rudetoother imcr_toleratefaults imcr_forgiveother imcr_helpfulwithothers imcr_managestress imcr_nervous imcr_changemood imcr_feeldepressed imcr_easilyupset imcr_worryalot imcr_staycalm imcr_tryhard imcr_stickwithgoals imcr_goaftergoal imcr_finishwhatbegin imcr_finishtasks imcr_keepworking username_backup username_2016 username_2020 username_2016_code username_2020_code edulevel_backup ars2_AG ars3_AG ars2_CO ars2_EX ars2_ES ars2_OP ars3_CO ars3_EX ars3_OP ars3_ES, i(HHINDID) j(year)
+reshape wide HHID_panel INDID_panel egoid name sex age jatis caste edulevel villageid villageareaid villageid_new username panel dummydemonetisation relationshiptohead maritalstatus canread everattendedschool reasonneverattendedschool converseinenglish house housetype electricity water toiletfacility noowntoilet readystartjob aspirationminimumwage dummyaspirationmorehours aspirationminimumwage2 nbercontactphone nberpersonfamilyevent contactlist dummycontactleaders contactleaders trustneighborhood trustemployees networkpeoplehelping networkhelpkinmember demotrustneighborhood demotrustemployees_ego demotrustbank_ego demonetworkpeoplehelping_ego demonetworkhelpkinmember_ego canreadcard1a canreadcard1b canreadcard1c canreadcard2 numeracy1 numeracy2 numeracy3 numeracy4 a1 a2 a3 a4 a5 a6 a7 a8 a9 a10 a11 a12 ab1 ab2 ab3 ab4 ab5 ab6 ab7 ab8 ab9 ab10 ab11 ab12 b1 b2 b3 b4 b5 b6 b7 b8 b9 b10 b11 b12 demogeneralperception demogoodexpectations demobadexpectations annualincome_indiv annualincome_HH mainocc_kindofwork_indiv mainocc_occupation_indiv assets ra1 rab1 rb1 ra2 rab2 rb2 ra3 rab3 rb3 ra4 rab4 rb4 ra5 rab5 rb5 ra6 rab6 rb6 ra7 rab7 rb7 ra8 rab8 rb8 ra9 rab9 rb9 ra10 rab10 rb10 ra11 rab11 rb11 ra12 rab12 rb12 set_a set_ab set_b raven_tt refuse num_tt lit_tt covsellland covsubsistence covsick time curious interestedbyart repetitivetasks inventive liketothink newideas activeimagination organized makeplans workhard appointmentontime putoffduties easilydistracted completeduties enjoypeople sharefeelings shywithpeople enthusiastic talktomanypeople talkative expressingthoughts workwithother understandotherfeeling trustingofother rudetoother toleratefaults forgiveother helpfulwithothers managestress nervous changemood feeldepressed easilyupset worryalot staycalm tryhard stickwithgoals goaftergoal finishwhatbegin finishtasks keepworking ars ars2 ars3 _1_ars _1_ars2 _1_ars3 _2_ars _2_ars2 _2_ars3 _3_ars _3_ars2 _3_ars3 _4_ars _4_ars2 _4_ars3 _5_ars _5_ars2 _5_ars3 _6_ars _6_ars2 _6_ars3 _7_ars _7_ars2 _7_ars3 cr_curious cr_interestedbyart cr_repetitivetasks cr_inventive cr_liketothink cr_newideas cr_activeimagination cr_organized cr_makeplans cr_workhard cr_appointmentontime cr_putoffduties cr_easilydistracted cr_completeduties cr_enjoypeople cr_sharefeelings cr_shywithpeople cr_enthusiastic cr_talktomanypeople cr_talkative cr_expressingthoughts cr_workwithother cr_understandotherfeeling cr_trustingofother cr_rudetoother cr_toleratefaults cr_forgiveother cr_helpfulwithothers cr_managestress cr_nervous cr_changemood cr_feeldepressed cr_easilyupset cr_worryalot cr_staycalm cr_tryhard cr_stickwithgoals cr_goaftergoal cr_finishwhatbegin cr_finishtasks cr_keepworking OP CO EX AG ES Grit cr_OP cr_CO cr_EX cr_AG cr_ES cr_Grit  username_backup username_2016 username_2020 username_2016_code username_2020_code edulevel_backup ars2_AG ars3_AG ars2_CO ars2_EX ars2_ES ars2_OP ars3_CO ars3_EX ars3_OP ars3_ES, i(HHINDID) j(year)
 
 replace age2020=age2016+4 if age2020==.
 

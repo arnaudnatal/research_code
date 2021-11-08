@@ -39,9 +39,9 @@ set scheme plotplain
 
 
 ********** Name of the NEEMSIS2 questionnaire version to clean
-global wave1 "RUME-HH_v8"
-global wave2 "NEEMSIS1-HH_v7"
-global wave3 "NEEMSIS2-HH_v16"
+*global wave1 "RUME-HH_v8"
+global wave2 "NEEMSIS1-HH_v8"
+global wave3 "NEEMSIS2-HH_v19"
 
 
 ********** Stata package
@@ -61,7 +61,7 @@ global wave3 "NEEMSIS2-HH_v16"
 ****************************************
 * Préparation database
 ****************************************
-use"panel_wide_v3.dta", clear
+use"panel_wide_v2.dta", clear
 
 tab debtpath
 
