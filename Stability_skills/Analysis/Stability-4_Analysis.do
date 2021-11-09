@@ -41,53 +41,6 @@ global wave3 "NEEMSIS2-HH_v21"
 
 
 
-****************************************
-* EFA interpretations
-****************************************
-/*
-********** 2016
-*** with
-F1 as CO-GR
-F2 as ES
-F3 as OP-EX
-F4 as mix
-F5 as ES-CO
-F6 as AG
-
-*** without
-F1 as CO
-F2 as ES
-F3 as EX-OP
-F4 as ES-CO
-F5 as AG
-
-
-********** 2020
-*** with
-F1 as ES
-F2 as mix
-F3 as mix
-F4 as OP
-F5 as mix
-F6 as mix
-
-*** without
-F1 as ES
-F2 as EX-CO
-F3 as OP (OP-EX)
-F4 as mix
-F5 as EX-mix
-
-*/
-****************************************
-* END
-
-
-
-
-
-
-
 
 
 
@@ -141,39 +94,261 @@ save "panel_stab_wide_v3", replace
 * Stability of ES
 ****************************************
 use "panel_stab_wide_v3", clear
-set graph on
 
-********** Decile construction var
-*** Initialization
+********** Gen new var
+*** Evo traits
 rename f2_without_2016 fa_ES2016
 rename f1_without_2020 fa_ES2020
+gen diff_cr_ES=cr_ES2020-cr_ES2016
+gen diff_fa_ES=fa_ES2020-fa_ES2016
 
 foreach x in cr_ES2016 cr_ES2020 fa_ES2016 fa_ES2020 {
 xtile `x'_cat=`x', n(10)
 }
 
 
-********** Cross table in 2016 and 2020 between EFA and naïve
+tabstat cr_ES2016 cr_ES2020 fa_ES2016 fa_ES2020, stat(n mean sd p50 min max range)
+egen cr_ES2016_cut=cut(cr_ES2016), at(0,1,2,3,4,5,6)
+egen cr_ES2020_cut=cut(cr_ES2020), at(0,1,2,3,4,5,6)
+egen fa_ES2016_cut=cut(fa_ES2016), at(-4,-3,-2,-1,0,1,2,3,4)
+egen fa_ES2020_cut=cut(fa_ES2020), at(-4,-3,-2,-1,0,1,2,3,4)
+
+tabstat diff_cr_ES diff_fa_ES, stat(n mean sd p50 min max range)
+dis 6.285715*0.05
+dis 8.883403*0.05
+egen diff_cr_ES_cat5=cut(diff_cr_ES), at(-4,-.314,.314,7) icodes
+egen diff_fa_ES_cat5=cut(diff_fa_ES), at(-4,-.444,.444,9) icodes
+egen diff_cr_ES_cat10=cut(diff_cr_ES), at(-4,-.628,.628,7) icodes
+egen diff_fa_ES_cat10=cut(diff_fa_ES), at(-4,-.888,.888,9) icodes
+
+label define stab 0"Decrease" 1"Stable" 2"Increase"
+foreach x in diff_cr_ES_cat5 diff_cr_ES_cat10 diff_fa_ES_cat5 diff_fa_ES_cat10{
+label values `x' stab
+}
+
+* Gen path in one var
+gen decrease_cr_ES=.
+gen increase_cr_ES=.
+gen decrease_fa_ES=.
+gen increase_fa_ES=.
+
+replace decrease_cr_ES=diff_cr_ES if diff_cr_ES_cat5==0
+replace decrease_cr_ES=abs(decrease_cr_ES)
+replace increase_cr_ES=diff_cr_ES if diff_cr_ES_cat5==2
+replace decrease_fa_ES=diff_fa_ES if diff_fa_ES_cat5==0
+replace decrease_fa_ES=abs(decrease_fa_ES)
+replace increase_fa_ES=diff_fa_ES if diff_fa_ES_cat5==2
+
+
+
+*** Controle var
+* Age
+egen age_cat=cut(age2016), at(18,25,35,45,55,65,82) icodes
+label define age 0"Age: [18;25[" 1"Age: [25;35[" 2"Age: [35;45[" 3"Age: [45;55[" 4"Age: [55;65[" 5"Age: [65;]", modify
+label values age_cat age
+* Edu
+clonevar educode=edulevel2016
+recode educode (3=2) (4=2)
+label define edulevel 0"Edu: Below prim" 1"Edu: Primary" 2"Edu: High school", modify 
+* MOC
+rename mainocc_occupation_indiv2016 moc_indiv
+label define occupcode 0"Occ: No occup" 1"Occ: Agri" 2"Occ: Agri coolie" 3"Occ: Coolie" 4"Occ: Reg non-qual" 5"Occ: Reg qualif" 6"Occ: SE" 7"Occ: NREGA", modify
+* Bias
+gen diff_ars3=ars32020-ars32016
+tabstat diff_ars3, stat(n mean sd p50 min max range)
+dis 2.428571*0.05
+egen diff_ars3_cat5=cut(diff_ars3), at(-1,-.121,.121,1.5) icodes
+label define ars3cat 0"Bias: Decrease" 1"Bias: Stable" 2"Bias: Increase"
+label values diff_ars3_cat5 ars3cat
+* HH
+encode HHID_panel, gen(cluster)
+* Marital
+fre maritalstatus2016
+clonevar marital=maritalstatus2016
+recode marital (3=2) (4=2)
+recode marital (1=0) (2=1)
+ta maritalstatus2016 marital
+label define maritalstatus 0"Married: Yes" 1"Married: No", modify 
+* Female
+fre sex
+gen female=sex-1
+fre female
+label define female 0"Sex: Male" 1"Sex: Female"
+label values female female
+* Username
+encode username_backup2016, gen(username_encode_2016)
+encode username_backup2020, gen(username_encode_2020)
+* Caste
+label define castecat 1"Caste: Dalits" 2"Caste: Middle" 3"Caste: Upper", modify
+* Demonetisation
+label define demo 0"Demonetisation: No" 1"Demonetisation: Yes"
+label values dummydemonetisation2016 demo
+* Villages
+label define villageid 1"Vill: ELA" 2"Vill: GOV" 3"Vill: KAR" 4"Vill: KOR" 5"Vill: KUV" 6"Vill: MAN" 7"Vill: MANAM" 8"Vill: NAT" 9"Vill: ORA" 10"Vill: SEM", modify
+* Wealth
+xtile assets2016_q=assets2016, n(5)
+xtile annualincome_HH2016_q=annualincome_HH2016, n(5)
+label define assets 1"Assets: Q1" 2"Assets: Q2" 3"Assets: Q3" 4"Assets: Q4" 5"Assets: Q5"
+label values assets2016_q assets
+label define income 1"Income: Q1" 2"Income: Q2" 3"Income: Q3" 4"Income: Q4" 5"Income: Q5"
+label values annualincome_HH2016_q income
+* Username
+label define username_2020_code 1"Enum: Ant" 2"Enum: Chi" 3"Enum: May" 4"Enum: Paz" 5"Enum: Rai" 6"Enum: Raj" 7"Enum: Sug" 8"Enum: Viv", modify
+label values username_encode_2020 username_2020_code
+
+* Dummy
+foreach x in sex age_cat educode moc_indiv caste {
+tab `x', gen(`x'_)
+}
+
+
+
+
+
+********** Are individuals at the same place with EFA and naive?
+*** Cross table in 2016 and 2020 between EFA and naïve
 tab cr_ES2016_cat fa_ES2016_cat, row nofreq
 tab cr_ES2020_cat fa_ES2020_cat, row nofreq
 
 
 
+********** Difference
+*** Stat
+tabstat diff_cr_ES diff_fa_ES, stat(n mean sd p50)
 
-********** Calculation
-*** Naive Big-5
-gen diff_cr_ES=cr_ES2020-cr_ES2016
-xtile diff_cr_ES_cat=diff_cr_ES, n(10)
-tabstat diff_cr_ES, stat(n mean sd p50 min max range) by(diff_cr_ES_cat)
+*** Graph: histogram
+histogram diff_cr_ES, ///
+percent width(0.1) ///
+xlabel(-4(1)4, labsize(vsmall) ang(0)) xmtick(-4(0.2)4) xtitle("ΔES", size(small)) ///
+ylabel(, labsize(vsmall)) ymtick() ytitle(, size(small)) ///
+note("") title("") legend(off) ///
+note("", size(tiny)) ///
+name(histo_naive, replace)
+graph export "histo_naive.pdf", replace
 
+histogram diff_fa_ES, ///
+percent width(0.1) ///
+xlabel(-4(1)4, labsize(vsmall) ang(0)) xmtick(-4(0.2)4) xtitle("ΔES", size(small)) ///
+ylabel(, labsize(vsmall)) ymtick() ytitle(, size(small)) ///
+note("") title("") legend(off) ///
+note("", size(tiny)) ///
+name(histo_factor, replace)
+graph export "histo_factor.pdf", replace
+
+*** Graph: kernel
+twoway (kdensity diff_cr_ES, bwidth(0.3)) (kdensity diff_fa_ES, bwidth(0.3)), ///
+xline(0) ///
+xlabel(, labsize(vsmall) ang(0)) xtitle("ΔES", size(small)) ///
+ylabel(, labsize(vsmall)) ymtick() ytitle(, size(small)) ///
+note("") title("") legend(order(1 "Naïve measure" 2 "Factor analysis measure") pos(6) col(2)) ///
+note("Kernel: Epanechnikov" "Bandwidth: 0.3", size(tiny)) ///
+name(kdensity_diff, replace)
+graph export "kdensity_diff.pdf", replace
+
+
+
+
+********** Transition matrix
+*** Transition for naïve
+tab cr_ES2016_cut cr_ES2020_cut
+tab cr_ES2016_cut cr_ES2020_cut, nofreq row
+
+
+*** Transition for factor
+tab fa_ES2016_cut fa_ES2020_cut
+tab fa_ES2016_cut fa_ES2020_cut, nofreq row
+
+
+********** Paths
+tab diff_cr_ES_cat5 diff_fa_ES_cat5
+tab diff_cr_ES_cat5 diff_fa_ES_cat5, row nofreq
+tab diff_cr_ES_cat5 diff_fa_ES_cat5, col nofreq
+
+*** Descriptive statistics for naïve Big-5
+tab sex diff_cr_ES_cat5, col nofreq
+tab caste diff_cr_ES_cat5, col nofreq
+tab age_cat diff_cr_ES_cat5, col nofreq
+tab edulevel2016 diff_cr_ES_cat5, col nofreq
+tab username_backup2020 diff_cr_ES_cat5, col nofreq
+tab diff_ars3_cat5 diff_cr_ES_cat5, col nofreq
+
+*** Descriptive statistics for factor Big-5
+tab sex diff_fa_ES_cat5, col nofreq
+tab caste diff_fa_ES_cat5, col nofreq
+tab age_cat diff_fa_ES_cat5, col nofreq
+tab edulevel2016 diff_fa_ES_cat5, col nofreq
+tab username_backup2020 diff_fa_ES_cat5, col nofreq
+tab diff_ars3_cat5 diff_fa_ES_cat5, col nofreq
+
+
+
+********** OLS
 *** Factor analysis
-gen diff_fa_ES=fa_ES2020-fa_ES2016
-xtile diff_fa_ES_cat=diff_fa_ES, n(10)
-tabstat diff_fa_ES, stat(n mean sd p50 min max range) by(diff_fa_ES_cat)
+reg increase_fa_ES i.female i.caste i.age_cat i.educode i.moc_indiv i.marital i.dummydemonetisation2016 i.villageid2016 i.annualincome_HH2016_q i.assets2016_q i.diff_ars3_cat5 i.username_encode_2020, cluster(cluster) allbase
+est store fa_inc
 
-*** Are individuals the same?
-tab diff_cr_ES_cat diff_fa_ES_cat
-tab diff_cr_ES_cat diff_fa_ES_cat, nofreq row
+reg decrease_fa_ES i.female i.caste i.age_cat i.educode i.moc_indiv i.marital i.dummydemonetisation2016 i.villageid2016 i.annualincome_HH2016_q i.assets2016_q i.diff_ars3_cat5 i.username_encode_2020, cluster(cluster) allbase
+est store fa_dec
+
+*** Naive
+reg increase_cr_ES i.female i.caste i.age_cat i.educode i.moc_indiv i.marital i.dummydemonetisation2016 i.villageid2016 i.annualincome_HH2016_q i.assets2016_q i.diff_ars3_cat5 i.username_encode_2020, cluster(cluster) allbase
+est store cr_inc
+
+reg decrease_cr_ES i.female i.caste i.age_cat i.educode i.moc_indiv i.marital i.dummydemonetisation2016 i.villageid2016 i.annualincome_HH2016_q i.assets2016_q i.diff_ars3_cat5 i.username_encode_2020, cluster(cluster) allbase
+est store cr_dec
+
+esttab fa_inc fa_dec cr_inc cr_dec using "_reg.csv", ///
+	star(* 0.10 ** 0.05 *** 0.01) ///
+	cells(b(fmt(2)star) /// 
+	se(par fmt(2))) ///
+	drop() ///	
+	legend label varlabels(_cons constant) ///
+	stats(N r2 F, fmt(0 3 3) labels(`"Observations"' `"\$R^2$"' `"F"')) ///
+	replace
+
+
+
+
+********** Quantile
+*** Factor analysis
+* Decrease
+sqreg decrease_fa_ES sex_2 age_cat_2 age_cat_3 age_cat_4 age_cat_5 age_cat_6 educode_2 educode_3 moc_indiv_1 moc_indiv_2 moc_indiv_4 moc_indiv_5 moc_indiv_6 moc_indiv_7 moc_indiv_8 caste_2 caste_3 marital  i.dummydemonetisation2016 i.villageid2016 c.annualincome_HH2016 c.assets2016, quantile(.1 .2 .3 .4 .5 .6 .7 .8 .9) reps(5)
+
+preserve
+gen q = _n*10 in 1/9
+
+foreach var of varlist sex_2 age_cat_2 age_cat_3 age_cat_4 age_cat_5 age_cat_6 educode_2 educode_3 moc_indiv_1 moc_indiv_2 moc_indiv_4 moc_indiv_5 moc_indiv_6 moc_indiv_7 moc_indiv_8 caste_2 caste_3 {
+gen _b_`var'=.
+gen _lb_`var'=.
+gen _ub_`var'=.
+
+local i = 1
+foreach q of numlist 10(10)90 {
+replace _b_`var' = _b[q`q':`var'] in `i'
+replace _lb_`var' = _b[q`q':`var'] - _se[q`q':`var']*invnormal(.975) in `i'
+replace _ub_`var' = _b[q`q':`var'] + _se[q`q':`var']*invnormal(.975) in `i++'
+}
+}
+keep q _b_* _lb_* _ub_*
+keep in 1/9
+reshape long _b_ _lb_ _ub_, i(q) j(var) string
+twoway rarea _lb_ _ub_ q, astyle(ci) yline(0) acolor(%70) || ///
+   line _b_ q,                                               ///
+   by(var, yrescale xrescale note("") legend(at(14) pos(0)))  ///
+   legend(order(2 "Effect" 1 "95% c.i.") cols(2) pos(6))   ///
+   ytitle(effect on percentile of price)                       ///
+   ylab(,angle(0) format(%7.0gc))                            ///    
+   xlab(10(10)90) xtitle("Decile of emotional stability") ///
+   name(qreg_decrease_fa, replace)
+restore
+
+
+
+
+
+****************************************
+* END
+
 
 
 
@@ -220,40 +395,3 @@ legend(order(1 "P0-10" 2 "P10-20" 3 "P20-30" 4 "P30-40" 5 "P40-50" 6 "P50-60" 7 
 b1title(Naïve Big-5 taxonomy) ///
 ytitle("% in Factor analysis taxonomy") ylabel(0(1)10) ymtick(0(.5)10)
 */
-
-
-
-
-*** Stat
-tabstat diff_cr_ES diff_fa_ES, stat(n mean sd p50)
-
-*** Graph: histogram
-histogram diff_cr_ES, percent width(0.1) xlabel(-4(1)4, labsize(vsmall) ang(0)) xmtick(-4(0.2)4) ylabel(, labsize(vsmall)) ymtick() xtitle("Δ ES", size(small)) ytitle(, size(small)) note("") title("") legend(off)
-
-histogram diff_fa_ES, percent width(0.1) xlabel(-4(1)4, labsize(vsmall) ang(0)) xmtick(-4(0.2)4) ylabel(, labsize(vsmall)) ymtick() xtitle("Δ ES", size(small)) ytitle(, size(small)) note("") title("") legend(off)
-
-
-*** Graph: boxplot
-stripplot diff_cr_ES, over() separate() ///
-cumul cumprob box centre vertical refline /// 
-xsize(5) xtitle("") xlabel(,angle(0))  ///
-msymbol(+ + +) mcolor(black black black)  ///
-ylabel() ymtick() ytitle("") ///
-note("2016: n=835" "2020: n=835", size(vsmall)) ///
-legend(order(1 "Mean" 5 "Individual"))
-
-
-
-
-
-********** Categorisation + matrix
-*** Categorisation
-tabstat cr_ES2016 cr_ES2020, stat(n mean sd p50 min max range)
-egen cr_ES2016_cut=cut(cr_ES2016), at(0,1,2,3,4,5,6)
-egen cr_ES2020_cut=cut(cr_ES2020), at(0,1,2,3,4,5,6)
-
-tab cr_ES2016_cut cr_ES2020_cut
-tab cr_ES2016_cut cr_ES2020_cut, nofreq row
-
-****************************************
-* END
