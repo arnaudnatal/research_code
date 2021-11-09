@@ -143,6 +143,23 @@ save "panel_stab_wide_v3", replace
 use "panel_stab_wide_v3", clear
 set graph on
 
+********** Decile construction var
+*** Initialization
+rename f2_without_2016 fa_ES2016
+rename f1_without_2020 fa_ES2020
+
+foreach x in cr_ES2016 cr_ES2020 fa_ES2016 fa_ES2020 {
+xtile `x'_cat=`x', n(10)
+}
+
+
+********** Cross table in 2016 and 2020 between EFA and naïve
+tab cr_ES2016_cat fa_ES2016_cat, row nofreq
+tab cr_ES2020_cat fa_ES2020_cat, row nofreq
+
+
+
+
 ********** Calculation
 *** Naive Big-5
 gen diff_cr_ES=cr_ES2020-cr_ES2016
@@ -150,14 +167,61 @@ xtile diff_cr_ES_cat=diff_cr_ES, n(10)
 tabstat diff_cr_ES, stat(n mean sd p50 min max range) by(diff_cr_ES_cat)
 
 *** Factor analysis
-rename f2_without_2016 fa_ES2016
-rename f1_without_2020 fa_ES2020
 gen diff_fa_ES=fa_ES2020-fa_ES2016
 xtile diff_fa_ES_cat=diff_fa_ES, n(10)
 tabstat diff_fa_ES, stat(n mean sd p50 min max range) by(diff_fa_ES_cat)
 
 *** Are individuals the same?
 tab diff_cr_ES_cat diff_fa_ES_cat
+tab diff_cr_ES_cat diff_fa_ES_cat, nofreq row
+
+
+
+*** Matrix to graph
+/*
+tab diff_cr_ES_cat diff_fa_ES_cat, row nofreq matcell(Freq)
+clear
+svmat Freq
+gen NA=_n
+reshape long Freq, i(NA) j(FA)
+bys NA: egen Freq_tot=total(Freq)
+gen percent=(Freq/Freq_tot)*100
+bys NA: egen Perc_tot=total(percent)
+
+bys NA (FA): gen A=cond(FA==1, percent, 0)
+bys NA (FA): gen B=cond(FA==2, percent, 0)
+bys NA (FA): gen C=cond(FA==3, percent, 0)
+bys NA (FA): gen D=cond(FA==4, percent, 0)
+bys NA (FA): gen E=cond(FA==5, percent, 0)
+bys NA (FA): gen F=cond(FA==6, percent, 0)
+bys NA (FA): gen G=cond(FA==7, percent, 0)
+bys NA (FA): gen H=cond(FA==8, percent, 0)
+bys NA (FA): gen I=cond(FA==9, percent, 0)
+bys NA (FA): gen J=cond(FA==10, percent, 0)
+
+*Label
+label define per 1"P0-10" 2"P10-20" 3"P20-30" 4"P30-40" 5"P40-50" 6"P50-60" 7"P60-70" 8"P70-80" 9"P80-90" 10"P90-100"
+label values NA per
+label values FA per
+
+graph bar A B C D E F G H I J, ///
+over(NA, label(angle(45)) ) stack ///
+bar(1, color(black)) ///
+bar(2, color(plr1)) ///
+bar(3, color(ply1)) ///
+bar(4, color(plg1)) ///
+bar(5, color(plb1)) /// 
+bar(6, color(pll1)) /// 
+bar(7, color(plr2)) /// 
+bar(8, color(ply2)) /// 
+bar(9, color(plg2)) /// 
+bar(10, color(plb2)) ///
+legend(order(1 "P0-10" 2 "P10-20" 3 "P20-30" 4 "P30-40" 5 "P40-50" 6 "P50-60" 7 "P60-70" 8 "P70-80" 9 "P80-90" 10 "P90-100")) ///
+b1title(Naïve Big-5 taxonomy) ///
+ytitle("% in Factor analysis taxonomy") ylabel(0(1)10) ymtick(0(.5)10)
+*/
+
+
 
 
 *** Stat
