@@ -299,15 +299,11 @@ est store cr_dec
 
 esttab fa_inc fa_dec cr_inc cr_dec using "_reg.csv", ///
 	star(* 0.10 ** 0.05 *** 0.01) ///
-	cells(b(fmt(2)star) /// 
-	se(par fmt(2))) ///
+	cells("b(fmt(2)star) se(fmt(2)par)") /// 
 	drop() ///	
 	legend label varlabels(_cons constant) ///
 	stats(N r2 F, fmt(0 3 3) labels(`"Observations"' `"\$R^2$"' `"F"')) ///
 	replace
-
-
-
 
 ********** Quantile
 *** Factor analysis
