@@ -146,6 +146,8 @@ replace increase_fa_ES=diff_fa_ES if diff_fa_ES_cat5==2
 egen age_cat=cut(age2016), at(18,25,35,45,55,65,82) icodes
 label define age 0"Age: [18;25[" 1"Age: [25;35[" 2"Age: [35;45[" 3"Age: [45;55[" 4"Age: [55;65[" 5"Age: [65;]", modify
 label values age_cat age
+recode age_cat (3=2) (4=2) (5=2)
+label define age 0"Age: [18;25[" 1"Age: [25;35[" 2"Age: [35;+[", modify
 * Edu
 clonevar educode=edulevel2016
 recode educode (3=2) (4=2)
@@ -181,7 +183,7 @@ encode username_backup2020, gen(username_encode_2020)
 * Caste
 label define castecat 1"Caste: Dalits" 2"Caste: Middle" 3"Caste: Upper", modify
 * Demonetisation
-label define demo 0"Demonetisation: No" 1"Demonetisation: Yes"
+label define demo 0"Demo: No" 1"Demo: Yes"
 label values dummydemonetisation2016 demo
 * Villages
 label define villageid 1"Vill: ELA" 2"Vill: GOV" 3"Vill: KAR" 4"Vill: KOR" 5"Vill: KUV" 6"Vill: MAN" 7"Vill: MANAM" 8"Vill: NAT" 9"Vill: ORA" 10"Vill: SEM", modify
@@ -195,13 +197,45 @@ label values annualincome_HH2016_q income
 * Username
 label define username_2020_code 1"Enum: Ant" 2"Enum: Chi" 3"Enum: May" 4"Enum: Paz" 5"Enum: Rai" 6"Enum: Raj" 7"Enum: Sug" 8"Enum: Viv", modify
 label values username_encode_2020 username_2020_code
-
+* Cov expo
+destring covsellland2020, replace
+recode covsellland2020 (66=2)
+recode covsellland2020 (2=0)
+label define cov 0 "Cov: Not exp" 1 "Cov: Exposed"
+label values covsellland2020 cov
+fre covsellland2020
+* Marriage
+fre dummymarriage2016 dummymarriage2020
+label define marriage 0"Marriage: No" 1"Marriage: Yes"
+label values dummymarriage2020 marriage
+* Health
+gen shockhealth=.
+replace shockhealth=0 if healthexpenses2020<=healthexpenses2016
+replace shockhealth=1 if healthexpenses2020>healthexpenses2016
+label define shockhealth 0"Health: No shock" 1"Health: Shock"
+label values shockhealth shockhealth
+* General shock
+gen shock=shockhealth+dummydemonetisation2016+covsellland2020
+fre shock
+* Dummy shock
+gen dummyshock=shock
+recode dummyshock (4=1) (3=1) (2=1)
+label define dummyshock 0"Shock: No" 1"Shock: Yes"
+label values dummyshock dummyshock
+* Recode shock
+gen shock_recode=shock
+recode shock_recode (4=2) (3=2)
+label define shock_recode 0"Shock: No" 1"Shock: One" 2"Shock: Two or more"
+label values shock_recode shock_recode
 * Dummy
 foreach x in sex age_cat educode moc_indiv caste {
 tab `x', gen(`x'_)
 }
 
 
+*** Shock var
+fre dummymarriage2020 shockhealth dummydemonetisation2016 covsellland2020
+fre shock dummyshock shock_recode
 
 
 
@@ -217,35 +251,21 @@ tab cr_ES2020_cat fa_ES2020_cat, row nofreq
 tabstat diff_cr_ES diff_fa_ES, stat(n mean sd p50)
 
 *** Graph: histogram
-histogram diff_cr_ES, ///
-percent width(0.1) ///
-xlabel(-4(1)4, labsize(vsmall) ang(0)) xmtick(-4(0.2)4) xtitle("ΔES", size(small)) ///
-ylabel(, labsize(vsmall)) ymtick() ytitle(, size(small)) ///
-note("") title("") legend(off) ///
-note("", size(tiny)) ///
-name(histo_naive, replace)
-graph export "histo_naive.pdf", replace
-
-histogram diff_fa_ES, ///
-percent width(0.1) ///
-xlabel(-4(1)4, labsize(vsmall) ang(0)) xmtick(-4(0.2)4) xtitle("ΔES", size(small)) ///
-ylabel(, labsize(vsmall)) ymtick() ytitle(, size(small)) ///
-note("") title("") legend(off) ///
-note("", size(tiny)) ///
-name(histo_factor, replace)
-graph export "histo_factor.pdf", replace
-
-*** Graph: kernel
-twoway (kdensity diff_cr_ES, bwidth(0.3)) (kdensity diff_fa_ES, bwidth(0.3)), ///
-xline(0) ///
-xlabel(, labsize(vsmall) ang(0)) xtitle("ΔES", size(small)) ///
-ylabel(, labsize(vsmall)) ymtick() ytitle(, size(small)) ///
-note("") title("") legend(order(1 "Naïve measure" 2 "Factor analysis measure") pos(6) col(2)) ///
-note("Kernel: Epanechnikov" "Bandwidth: 0.3", size(tiny)) ///
-name(kdensity_diff, replace)
-graph export "kdensity_diff.pdf", replace
-
-
+/*
+twoway__histogram_gen diff_fa_ES, percent width(0.1) gen(h x, replace)
+twoway ///
+(bar h x if x<-.444, color(gs8) barwidth(0.1)) ///
+(bar h x if x>=-.444 & x<=.444, color(gs10) barwidth(0.1)) ///
+(bar h x if x>.444, color(gs4) barwidth(0.1)) ///
+(kdensity diff_fa_ES, bwidth(0.15) lcolor(gs1) lpattern(solid) yaxis(2)) ///
+, ///
+xlabel(-4(1)5) xmtick(-4.5(.5)5.5) xtitle("ΔES") ///
+ytitle("%", axis(1))  ///
+ytitle("Density", axis(2)) ///
+note("Kernel: Epanechnikov" "Bandwidth: 0.15" "Histogram can be read with the left-hand y-axis." "Kernel curve can be read with the right-hand y-axis.", size(tiny)) ///
+plotregion(margin(none)) legend(pos(6) col(4) order(1 "Decrease" 2 "Stable" 3 "Increase" 4 "Kernel density")) name(histo, replace) 
+graph export "Histo_kernel_instab.pdf", replace
+*/
 
 
 ********** Transition matrix
@@ -264,13 +284,6 @@ tab diff_cr_ES_cat5 diff_fa_ES_cat5
 tab diff_cr_ES_cat5 diff_fa_ES_cat5, row nofreq
 tab diff_cr_ES_cat5 diff_fa_ES_cat5, col nofreq
 
-*** Descriptive statistics for naïve Big-5
-tab sex diff_cr_ES_cat5, col nofreq
-tab caste diff_cr_ES_cat5, col nofreq
-tab age_cat diff_cr_ES_cat5, col nofreq
-tab edulevel2016 diff_cr_ES_cat5, col nofreq
-tab username_backup2020 diff_cr_ES_cat5, col nofreq
-tab diff_ars3_cat5 diff_cr_ES_cat5, col nofreq
 
 *** Descriptive statistics for factor Big-5
 tab sex diff_fa_ES_cat5, col nofreq
@@ -279,25 +292,19 @@ tab age_cat diff_fa_ES_cat5, col nofreq
 tab edulevel2016 diff_fa_ES_cat5, col nofreq
 tab username_backup2020 diff_fa_ES_cat5, col nofreq
 tab diff_ars3_cat5 diff_fa_ES_cat5, col nofreq
-
+tab shock_recode diff_fa_ES_cat5, col nofreq
 
 
 ********** OLS
 *** Factor analysis
-reg increase_fa_ES i.female i.caste i.age_cat i.educode i.moc_indiv i.marital i.dummydemonetisation2016 i.villageid2016 i.annualincome_HH2016_q i.assets2016_q i.diff_ars3_cat5 i.username_encode_2020, cluster(cluster) allbase
-est store fa_inc
-
-reg decrease_fa_ES i.female i.caste i.age_cat i.educode i.moc_indiv i.marital i.dummydemonetisation2016 i.villageid2016 i.annualincome_HH2016_q i.assets2016_q i.diff_ars3_cat5 i.username_encode_2020, cluster(cluster) allbase
+reg decrease_fa_ES i.female ib(1).age_cat ib(1).educode ib(3).moc_indiv i.marital ib(1).caste ib(1).shock_recode ib(3).annualincome_HH2016_q ib(3).assets2016_q i.villageid2016 ib(1).diff_ars3_cat5 i.username_encode_2020, cluster(cluster) allbase
 est store fa_dec
 
-*** Naive
-reg increase_cr_ES i.female i.caste i.age_cat i.educode i.moc_indiv i.marital i.dummydemonetisation2016 i.villageid2016 i.annualincome_HH2016_q i.assets2016_q i.diff_ars3_cat5 i.username_encode_2020, cluster(cluster) allbase
-est store cr_inc
+reg increase_fa_ES i.female ib(1).age_cat ib(1).educode ib(3).moc_indiv i.marital ib(1).caste ib(1).shock_recode ib(3).annualincome_HH2016_q ib(3).assets2016_q i.villageid2016 ib(1).diff_ars3_cat5 i.username_encode_2020, cluster(cluster) allbase
+est store fa_inc
 
-reg decrease_cr_ES i.female i.caste i.age_cat i.educode i.moc_indiv i.marital i.dummydemonetisation2016 i.villageid2016 i.annualincome_HH2016_q i.assets2016_q i.diff_ars3_cat5 i.username_encode_2020, cluster(cluster) allbase
-est store cr_dec
 
-esttab fa_inc fa_dec cr_inc cr_dec using "_reg.csv", ///
+esttab fa_dec fa_inc using "_reg.csv", ///
 	star(* 0.10 ** 0.05 *** 0.01) ///
 	cells("b(fmt(2)star) se(fmt(2)par)") /// 
 	drop() ///	
@@ -305,6 +312,7 @@ esttab fa_inc fa_dec cr_inc cr_dec using "_reg.csv", ///
 	stats(N r2 F, fmt(0 3 3) labels(`"Observations"' `"\$R^2$"' `"F"')) ///
 	replace
 
+	
 ********** Quantile
 *** Factor analysis
 * Decrease
