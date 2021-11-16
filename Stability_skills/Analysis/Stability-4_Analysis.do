@@ -18,7 +18,7 @@ Stability over time of personality traits
 ****************************************
 clear all
 macro drop _all
-set scheme plotplain
+set scheme white_tableau
 
 ********** Path to folder "data" folder.
 *** PC
@@ -446,6 +446,106 @@ twoway ///
 * ECON OLS
 ****************************************
 use "panel_stab_wide_v4", clear
+
+********** Clean
+**** Username
+* 2016
+rename username_2016_code2016 username_neemsis1
+desc username_neemsis1
+fre username_neemsis1
+label define username_2016_code 1"Enum: Ant" 2"Enum: Kum" 3"Enum: May" 4"Enum: Paz" 5"Enum: Raj" 6"Enum: Sit" 7"Enum: Viv", modify
+* 2020
+rename username_encode_2020 username_neemsis2
+fre username_neemsis2
+
+
+********** Assessment: bias higher in 2020-21 than in 2016-17.
+stripplot ars32016 ars32020, over() separate() ///
+cumul cumprob box centre vertical refline /// 
+xsize(5) xtitle("") xlabel(1 "2016-17" 2 "2020-21",angle(0))  ///
+msymbol(oh oh oh oh oh oh oh) mcolor()  ///
+ylabel() ymtick() ytitle("") ///
+legend(order(1 "Mean" 5 "Individual") off) name(ars_global, replace)
+
+stripplot ars32016, over(username_neemsis1) separate() ///
+cumul cumprob box centre vertical refline /// 
+xsize(5) xtitle("2016-17") xlabel(,angle(45))  ///
+msymbol(oh oh oh oh oh oh oh) mcolor()  ///
+ylabel(0(.2)1.7) ymtick(0(.1)1.7) ytitle("") ///
+legend(order(1 "Mean" 5 "Individual") off) name(ars_2016, replace)
+
+stripplot ars32020, over(username_neemsis2) separate() ///
+cumul cumprob box centre vertical refline /// 
+xsize(5) xtitle("2020-21") xlabel(,angle(45))  ///
+msymbol(oh oh oh oh oh oh oh) mcolor()  ///
+ylabel(0(.2)1.6) ymtick(0(.1)1.7) ytitle("") ///
+legend(order(1 "Mean" 5 "Individual") off) name(ars_2020, replace)
+
+graph combine ars_2016 ars_2020, name(ars_enumyear_box, replace)
+
+*** Kernel
+* 2016-17
+twoway ///
+(kdensity ars32016 if username_neemsis1==1, bwidth(.1)) ///
+(kdensity ars32016 if username_neemsis1==2, bwidth(.1)) ///
+(kdensity ars32016 if username_neemsis1==3, bwidth(.1)) ///
+(kdensity ars32016 if username_neemsis1==4, bwidth(.1)) ///
+(kdensity ars32016 if username_neemsis1==5, bwidth(.1)) ///
+(kdensity ars32016 if username_neemsis1==6, bwidth(.1)) ///
+(kdensity ars32016 if username_neemsis1==7, bwidth(.1)) ///
+, ///
+xtitle("Absolut acquiescence score") ///
+ytitle("Kernel") ///
+title("2016-17") ///
+legend(order(1 "Enum 1" 2 "Enum 2" 3 "Enum 3" 4 "Enum 4" 5 "Enum 5" 6 "Enum 6" 7 "Enum 7") col(4) pos(6)) ///
+name(ars_2016_kernel, replace)
+
+* 2020-21
+twoway ///
+(kdensity ars32020 if username_neemsis2==1, bwidth(.3)) ///
+(kdensity ars32020 if username_neemsis2==2, bwidth(.2)) ///
+(kdensity ars32020 if username_neemsis2==3, bwidth(.2)) ///
+(kdensity ars32020 if username_neemsis2==4, bwidth(.2)) ///
+(kdensity ars32020 if username_neemsis2==5, bwidth(.2)) ///
+(kdensity ars32020 if username_neemsis2==6, bwidth(.2)) ///
+(kdensity ars32020 if username_neemsis2==7, bwidth(.2)) ///
+(kdensity ars32020 if username_neemsis2==8, bwidth(.2)) ///
+, ///
+xtitle("Absolut acquiescence score") ///
+ytitle("Kernel") ///
+title("2020-21") ///
+legend(order(1 "Enum 1" 2 "Enum 2" 3 "Enum 3" 4 "Enum 4" 5 "Enum 5" 6 "Enum 6" 7 "Enum 7" 8 "Enum 8") col(4) pos(6)) ///
+name(ars_2020_kernel, replace)
+
+graph combine ars_2016_kernel ars_2020_kernel, name(ars_enumyear_kernel, replace)
+
+
+*** Role of enumerator in 2016-17
+reg ars32016 i.sex i.caste i.age_cat ib(0).educode i.villageid2016, allbase
+*--> R2=3.7
+reg ars32016 i.sex i.caste i.age_cat ib(0).educode i.villageid2016 ib(4).username_neemsis1, allbase
+*--> R2=26.3
+dis (26.3-3.7)*100/3.7
+*610.8%
+
+
+*** Role of enumerator in 2020-21
+reg ars32020 i.sex i.caste i.age_cat ib(0).educode i.villageid2020, allbase
+*--> R2=6.3
+reg ars32020 i.sex i.caste i.age_cat ib(0).educode i.villageid2020 ib(4).username_neemsis2, allbase
+*--> R2=15.4
+dis (15.4-6.3)*100/6.3
+*144.4%
+
+********** ES distribution
+stripplot cr_ES2016 cr_ES2020 fa_ES2016 fa_ES2020 , over() separate() ///
+cumul cumprob box centre vertical refline /// 
+xsize(5) xtitle("") xlabel(,angle(0))  ///
+msymbol(oh oh oh oh oh oh oh) mcolor()  ///
+ylabel() ymtick() ytitle("") ///
+legend(order(1 "Mean" 5 "Individual"))
+
+
 
 ********** Naïve Big-5
 *** Abs instability 

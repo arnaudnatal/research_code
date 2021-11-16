@@ -1,148 +1,189 @@
-<!doctype html>
-<html lang="fr">
+<!DOCTYPE html>
+
+<html lang="en">
+
+
+
 <head>
-  <meta charset="utf-8">
-  <title></title>
-  <meta name="description" content="">
-  <meta name="viewport" content="width=device-width">
-  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
-  <style>
-  </style>
+<title>Arnaud Natal</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+<link href='https://fonts.googleapis.com/css?family=Oswald:700' rel='stylesheet' type='text/css'>
 
+
+
+
+<style>
+body, html {
+  font-family: Georgia;
+  margin: 0;
+}
+
+.header {
+  padding:20px;
+  text-align: left;
+  background: transparent;
+  color: black;
+  font-size: 30px;
+  font-family: Georgia;
+}
+
+.content {padding:50px;}
+
+.header-img {
+  width: 100%;
+  height: 250px;
+  background: url("header.jpg");
+  background-size: cover;
+  vertical-align: top;
+}
+
+.navbar{
+  background: transparent;
+  margin-bottom: 200px !important;
+  border: 0 !important;
+}
+
+
+nav .navbar-nav li a{
+  color: black !important;
+  }
+  
+
+nav a {
+  display: inline-block;
+  font-weight: bold;
+  font-family: Georgia;
+  font-size: 18px;
+}
+
+
+#cover {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 250px;
+  background: url("header.jpg") no-repeat 50% 50% / cover;
+}
+
+
+</style>
 </head>
+
 <body>
+<div id="cover">
 
-  <div class="header">
-      <!--
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-      <div class="navbar-header">
-        <a class="navbar-brand" href="#/">Christian Chacua</a>
-        <a href="#research">Research</a>
-      </div>
-      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-        <div class="navbar-nav">
-          <a class="nav-item nav-link active" href="#">Home <span class="sr-only">(current)</span></a>
-          <a class="nav-item nav-link" href="#">Features</a>
-          <a class="nav-item nav-link" href="#">Pricing</a>
-          <a class="nav-item nav-link disabled" href="#">Disabled</a>
-        </div>
-      </div>
-    </nav>
-     -->
-  <!--
+<!-- Navigation -->
+	<nav class="navbar navbar-inverse navbar-static-top" role="navigation">
+	  <div class="container">
+		<div class="navbar-header">
+		  <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+						<span class="sr-only">Toggle navigation</span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+					</button>
+		</div>
 
+		<!-- Collect the nav links, forms, and other content for toggling -->
+		<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+		  <ul class="nav navbar-nav">
+				  <li><a href="index.html">Home</a></li>
+				  <li><a href="#">CV</a></li> 
+				  <li><a href="#research">Research</a></li> 
+				  <li><a href="#project">Projects</a></li>
+				  <li><a href="#contact">Contact</a></li> 
+		  </ul>
+		</div>
+	  </div>
+	</nav>
 
- -->
+  
+  <!-- Page Content -->
+    <div class="container">
 
- <div class="navbar navbar-dark bg-dark" role="navigation">
-   <div class="container">
-     <div class="navbar-header">
-       <a class="navbar-brand" href="#/">Arnaud Natal</a>
-     </div>
-     <span class="navbar-text">
-      <a href="#research">Research</a>
-    </span>
-   </div>
- </div>
+<div class="header">
+  <h1 style="font-size:70px">Arnaud Natal</h1>
+</div>
 
-  </div>
-  <div class="container">
-    <div class="jumbotron">
-      <h1 class="display-3 text-center"><strong>Arnaud Natal</strong></h1>
-    </div>
-
-    <div class="row">
-      <div class="col-xs-12 col-sm-4">
-        <img src="https://static.scholar.harvard.edu/files/styles/os_files_large/public/cchacua/files/profile_picture_0.jpg?m=1573513717&itok=fRou7BB0" class="img-fluid" alt="Profile picture">
-      </div>
-      <div class="col-xs-12 col-sm-8">
-        <h1>About me</h1>
-        <br>
-        <p class="lead">
-
-          I am a PhD candidate in development economics at the
-          <a href="https://gretha.cnrs.fr/arnaud-natal/" target="_blank">GREThA - University of Bordeaux  (France)</a>
-          and member of the <a href="https://neemsis.hypotheses.org/team/arnaud-natal" target="_blank"> NEEMSIS team.</a>
-        </p>
-        <p class="lead">
-          My fields of interest cover the economics of development.
-        </p>
-        <br>
-        <p class="lead">
-          <strong>Contact:</strong>
-          <br><a href="mailto:arnaud.natal@u-bordeaux.fr">arnaud.natal@u-bordeaux.fr</a>
-        </p>
-        <br/>
         <div class="row">
-          <div class="col-xs-3 col-sm-2">
-                   <a href="https://drive.google.com/file/d/1MxGXKkH2iXTrheCnJOG9cJAEqZXtDlxJ/view" target="_blank" title="CV"><img height="60" width="60" alt="CV" title="CV" class="img-fluid" src="https://static.scholar.harvard.edu/files/styles/os_files_small/public/cchacua/files/cv.png?m=1573019828&amp;itok=tWcyryHJ"></a>
-          </div>
-          <div class="col-xs-3 col-sm-2">
+			<div class="col-xs-12 col-sm-4">
+			<img src="https://uc03ff3753d06fb9f41e875cdeb7.previews.dropboxusercontent.com/p/thumb/ABV8Y04wOEo2pKusr-QHmR6hQ0x_uZuvPPaMUkB3CJc2gdV9jKFq10KudlsawZgZAgZ6o77rwgCLxwYgePoalAQlNAQLIfMRCqBdd3MJi49u9irRr42RhCFEMc5O_oIaciWYVR-r7xIrBNzD-txe2p-CCPVt0PXZZ5ibdgaF8AgLS9ZU5ZId3HWbZUTO1lVxecARlyUcrCUTFFR5tIH6uDowTZOpQvZRPIL2ZYSe1DfieqjuFnrY7spSsP2N2VxFw65MQRDnvimZ9mv3YxVDUm3HZymCtNdyQJE_ZrKVVbMxle1lRgpWu1feS--J7qjv2oPXpft3EjPLaMofc6YInpbeNeMFWS41HQ1HhCUM7UOO0ecU2gv9xpMEyiIbMOiqBZE/p.jpeg" class="img-fluid" alt="Profile picture" width="250">
+			</div>
+       
+            <!-- Entries Column -->
+			<div class="col-xs-12 col-sm-8">
+			        <h1>About me</h1>
+        <br>
+					<p>Lorem ipsum dolor sit amet, consectetur adipiscing <a href="#">elit</a>, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+					
+					<p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>
+					
+					<p>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum</p>
+                </div>
+            </div> 
 
-          </div>
-          <div class="col-xs-3 col-sm-2">
-            <a href="https://orcid.org/0000-0002-0093-1847" target="_blank" title="ORCID"><img height="60" width="60" alt="ORCID" class="img-fluid" title="ORCID" src="https://static.scholar.harvard.edu/files/styles/os_files_small/public/cchacua/files/64px-orcid_id.svg_.png?m=1616785866&itok=-X-w2i2w"></a>
-          </div>
-          <div class="col-xs-3 col-sm-2">
-            <a href="https://www.researchgate.net/profile/Christian_Chacua" target="_blank" title="Research Gate"><img height="60" width="60" alt="Research Gate" class="img-fluid" title="Research Gate" src="https://static.scholar.harvard.edu/files/styles/os_files_small/public/cchacua/files/researchgate.png?m=1573019871&amp;itok=AJcY4gbB"></a>
-          </div>
-          <div class="col-xs-3 col-sm-2">
-            <a href="https://fr.linkedin.com/in/cchacua" target="_blank" title="LinkedIn"><img height="60" width="60" alt="LinkedIn" title="LinkedIn"  class="img-fluid" src="https://static.scholar.harvard.edu/files/styles/os_files_small/public/cchacua/files/linkedin.png?m=1573019918&amp;itok=CWMbD6MN"></a>
-          </div>
-          <div class="col-xs-3 col-sm-2">
-            <a href="https://github.com/cchacua" target="_blank" title="Github"><img height="60" width="60" alt="Github" title="Github" class="img-fluid" src="https://static.scholar.harvard.edu/files/styles/os_files_small/public/cchacua/files/github.png?m=1573019897&amp;itok=NtfJvo__"></a>
-          </div>
+			<hr style="height:2px; width:100%; border-width:0; color:black; background-color:black">
+            <!-- Research -->
+            <div class="col-md-8" style="height: 100vh;">    
+                <h2 id="research">Research</h2>
+                
+                <strong>Peer-reviewed</strong><br/>
+                <ul>
+                <li class="paper" words="add, your, keywords, here"><a href="#">Full title</a> Names of the authors</li>
+                </ul>
+            
+                <strong>Technical Reports</strong><br/>
+                <ul>
+                <li class="paper" words="add, your, keywords, here"><a href="#">Full title</a>. Details of the report</li>
+                </ul>
+            </div>
+
+
+			<hr style="height:2px; width:100%; border-width:0; color:black; background-color:black">
+            <!-- Project -->
+            <div class="col-md-8" style="height: 100vh;">    
+                <h2 id="project">Project</h2>
+                
+                <strong>Peer-reviewed</strong><br/>
+                <ul>
+                <li class="paper" words="add, your, keywords, here"><a href="#">Full title</a> Names of the authors</li>
+                </ul>
+            
+                <strong>Technical Reports</strong><br/>
+                <ul>
+                <li class="paper" words="add, your, keywords, here"><a href="#">Full title</a>. Details of the report</li>
+                </ul>
+            </div>
+
+
+			<hr style="height:2px; width:100%; border-width:0; color:black; background-color:black">
+            <!-- Contact -->
+            <div class="col-md-8" style="height: 100vh;">    
+                <h2 id="contact">Contact</h2>
+                <ul>
+               <p>Random Department<br>
+                University of Randomness<br>
+                Street<br>
+                City <br>
+                Country<br>
+                </ul>
+            </div>
+
+            
         </div>
-      </div>
-    </div>
-    <br />
-    <br />
 
-    <hr class="mt-2 mb-3"/>
-    <div class="row">
-      <div id="research" class="col-sm-12">
-        <h1>Research</h1>
-        <ul>
-          <li>
-            <p>
-            Chacua, C., Lissoni, F., Miguelez, E. (In Preparation). Homophily and collaboration in inventor networks: The role of ethnic-cultural proximity.
-            </p>
-          </li>
-          <li>
-            <p>
-            Chacua, C., Freeman, R. (In Preparation). The Life Cycle of Research Interest.
-            </p>
-          </li>
-          <li>
-            <p>
-            Coda-Zabetta, M., Chacua, C., Lissoni, F., Miguelez, E., Yin, D., & Raffo, J. (Forthcoming in 2021). The missing link: international migration in global clusters of innovation. In D. Castellani, A. Perri, V. Scalera, & A. Zanfei (Ed.), <em>Cross-border Innovation in a Changing World. Players, Places and Policies</em>. Oxford University Press.
-            <a href="http://bordeauxeconomicswp.u-bordeaux.fr/2021/2021-02.pdf" target="_blank">(Preprint).</a>
-            </p>
-          </li>
-          <li>
-            <p>
-           Miguelez, E., Raffo, J., Chacua, C., Coda-Zabetta, M., Yin, D., Lissoni, F., & Tarasconi, G. (2019). Tied In: The Global Network of Local Innovation. <em>WIPO Economic Research Working Paper, No. 58</em>.
-            <a href="https://www.wipo.int/publications/en/details.jsp?id=4472&plang=EN" target="_blank">(Working paper).</a>
-            </p>
-          </li>
-        </ul>
-      </div>
+
     </div>
-  </div>
-<br />
-<br />
-  <footer class="page-footer font-small bg-dark text-white-50">
-    <!-- fixed-bottom -->
 
     <!-- Copyright -->
     <div class="footer-copyright text-center py-3">© 2021 Copyright:
-      <a href="http://www.christianchacua.com/"> christianchacua.com</a>
+      <a href="http://www.arnaudnatal.com/"> arnaudnatal.com</a>
     </div>
-    <!-- Copyright -->
   </footer>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
