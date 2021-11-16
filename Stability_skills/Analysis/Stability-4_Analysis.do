@@ -520,6 +520,15 @@ name(ars_2020_kernel, replace)
 graph combine ars_2016_kernel ars_2020_kernel, name(ars_enumyear_kernel, replace)
 
 
+/*
+Save graph to show role of enumerator
+
+Then, create reg table with role of enumerator
+
+Then Stability
+*/
+
+
 *** Role of enumerator in 2016-17
 reg ars32016 i.sex i.caste i.age_cat ib(0).educode i.villageid2016, allbase
 *--> R2=3.7
