@@ -1,0 +1,68 @@
+body, html {
+  font-family: Georgia;
+  font-size: 18px;
+  margin: 0;
+}
+
+.header {
+  padding:20px;
+  text-align: left;
+  background: transparent;
+  color: black;
+  font-size: 30px;
+  font-family: Georgia;
+}
+
+.content {padding:50px;}
+
+.navbar{
+  background: transparent;
+  margin-bottom: 200px !important;
+  border: 0 !important;
+}
+
+
+nav .navbar-nav li a{
+  color: black !important;
+  }
+  
+
+nav a {
+  display: inline-block;
+  font-weight: bold;
+  font-family: Georgia;
+  font-size: 18px;
+}
+
+
+#cover {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 250px;
+  background: url("../images/header.jpg") no-repeat 50% 50% / cover;
+}
+
+
+ol {
+    counter-reset: foo;
+    display: table;
+}
+
+ol > li {
+    counter-increment: foo;
+    display: table-row;
+}
+
+ol > li::before {
+    content: "[" counter(foo) "]  ";
+    display: table-cell;
+    text-align: right;
+
+}
+
+li span {
+  position: relative;
+  left: 0;
+}

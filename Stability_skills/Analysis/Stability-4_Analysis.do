@@ -466,22 +466,7 @@ xsize(5) xtitle("") xlabel(1 "2016-17" 2 "2020-21",angle(0))  ///
 msymbol(oh oh oh oh oh oh oh) mcolor()  ///
 ylabel() ymtick() ytitle("") ///
 legend(order(1 "Mean" 5 "Individual") off) name(ars_global, replace)
-
-stripplot ars32016, over(username_neemsis1) separate() ///
-cumul cumprob box centre vertical refline /// 
-xsize(5) xtitle("2016-17") xlabel(,angle(45))  ///
-msymbol(oh oh oh oh oh oh oh) mcolor()  ///
-ylabel(0(.2)1.7) ymtick(0(.1)1.7) ytitle("") ///
-legend(order(1 "Mean" 5 "Individual") off) name(ars_2016, replace)
-
-stripplot ars32020, over(username_neemsis2) separate() ///
-cumul cumprob box centre vertical refline /// 
-xsize(5) xtitle("2020-21") xlabel(,angle(45))  ///
-msymbol(oh oh oh oh oh oh oh) mcolor()  ///
-ylabel(0(.2)1.6) ymtick(0(.1)1.7) ytitle("") ///
-legend(order(1 "Mean" 5 "Individual") off) name(ars_2020, replace)
-
-graph combine ars_2016 ars_2020, name(ars_enumyear_box, replace)
+graph export "bias_panel.pdf", replace
 
 *** Kernel
 * 2016-17
@@ -518,33 +503,40 @@ legend(order(1 "Enum 1" 2 "Enum 2" 3 "Enum 3" 4 "Enum 4" 5 "Enum 5" 6 "Enum 6" 7
 name(ars_2020_kernel, replace)
 
 graph combine ars_2016_kernel ars_2020_kernel, name(ars_enumyear_kernel, replace)
-
-
-/*
-Save graph to show role of enumerator
-
-Then, create reg table with role of enumerator
-
-Then Stability
-*/
+graph export "bias_enum_panel.pdf", replace
 
 
 *** Role of enumerator in 2016-17
-reg ars32016 i.sex i.caste i.age_cat ib(0).educode i.villageid2016, allbase
-*--> R2=3.7
-reg ars32016 i.sex i.caste i.age_cat ib(0).educode i.villageid2016 ib(4).username_neemsis1, allbase
-*--> R2=26.3
-dis (26.3-3.7)*100/3.7
-*610.8%
+label define usercode 1"Enum: 1" 2"Enum: 2" 3"Enum: 3" 4"Enum: 4" 5"Enum: 5" 6"Enum: 6" 7"Enum: 7" 8"Enum: 8"
+label values username_neemsis1 usercode
+label values username_neemsis2 usercode
+
+reg ars32016 i.sex i.caste ib(1).age_cat ib(0).educode i.villageid2016, allbase
+est store ars1_1
+
+reg ars32016 i.sex i.caste ib(1).age_cat ib(0).educode i.villageid2016 ib(4).username_neemsis1, allbase
+est store ars1_2
 
 
 *** Role of enumerator in 2020-21
-reg ars32020 i.sex i.caste i.age_cat ib(0).educode i.villageid2020, allbase
-*--> R2=6.3
-reg ars32020 i.sex i.caste i.age_cat ib(0).educode i.villageid2020 ib(4).username_neemsis2, allbase
-*--> R2=15.4
-dis (15.4-6.3)*100/6.3
-*144.4%
+reg ars32020 i.sex i.caste ib(1).age_cat ib(0).educode i.villageid2020, allbase
+est store ars2_1
+
+reg ars32020 i.sex i.caste ib(1).age_cat ib(0).educode i.villageid2020 ib(4).username_neemsis2, allbase
+est store ars2_2
+
+
+esttab ars1_1 ars1_2 ars2_1 ars2_2 using "_reg.csv", ///
+	star(* 0.10 ** 0.05 *** 0.01) ///
+	cells("b(fmt(2)) t(fmt(2)par)") /// 
+	drop() ///	
+	legend label varlabels(_cons constant) ///
+	stats(N r2 F, fmt(0 3 3) labels(`"Observations"' `"\$R^2$"' `"F"')) ///
+	replace
+
+
+
+
 
 ********** ES distribution
 stripplot cr_ES2016 cr_ES2020 fa_ES2016 fa_ES2020 , over() separate() ///
