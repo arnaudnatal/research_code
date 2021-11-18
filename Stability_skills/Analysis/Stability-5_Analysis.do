@@ -103,6 +103,9 @@ dis (284+105+62)*100/738
 
 twoway (scatter diff_fa_ES diff_cr_ES, xline(-.314 .314) yline(-.444 .444)), xtitle("Naïve approach") ytitle("Factor analysis approach")
 
+/*
+Display graph with the absolut instab
+*/
 
 
 ********** Age and diff
@@ -242,6 +245,11 @@ twoway ///
 ****************************************
 use "panel_stab_wide_v4", clear
 
+
+/*
+Transform abs instab for reg
+and then dummy var for trajectory and interaction with sex age caste wealth
+*/
 
 
 
