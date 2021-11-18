@@ -126,28 +126,66 @@ foreach x in diff_cr_ES_cat5 diff_cr_ES_cat10 diff_fa_ES_cat5 diff_fa_ES_cat10{
 label values `x' stab
 }
 
-* Gen path in one var
-gen decrease_cr_ES=.
-gen increase_cr_ES=.
-gen decrease_fa_ES=.
-gen increase_fa_ES=.
 
-replace decrease_cr_ES=diff_cr_ES if diff_cr_ES_cat5==0
-replace decrease_cr_ES=abs(decrease_cr_ES)
-replace increase_cr_ES=diff_cr_ES if diff_cr_ES_cat5==2
-replace decrease_fa_ES=diff_fa_ES if diff_fa_ES_cat5==0
-replace decrease_fa_ES=abs(decrease_fa_ES)
-replace increase_fa_ES=diff_fa_ES if diff_fa_ES_cat5==2
+********** Absolute evolution
+foreach x in cr_ES fa_ES{
+gen abs_`x'=abs(diff_`x')
+tabstat abs_`x', stat(n mean sd min max range)
+}
+dis 3.428572*0.05
+dis 3.428572*0.1
+dis 5.00422*0.05
+dis 5.00422*0.1
 
-gen abs_instab_cr=.
-replace abs_instab_cr=decrease_cr_ES if decrease_cr_ES!=.
-replace abs_instab_cr=increase_cr_ES if increase_cr_ES!=.
-tab abs_instab_cr diff_cr_ES_cat5, m
+/*
+Changer le 5%, prendre le 5% de l'amplitude de la variable et non de l'amplitude de
+la distribution de la variable
+*/
 
-gen abs_instab_fa=.
-replace abs_instab_fa=decrease_fa_ES if decrease_fa_ES!=.
-replace abs_instab_fa=increase_fa_ES if increase_fa_ES!=.
-tab abs_instab_fa diff_fa_ES_cat5, m
+gen abs_cr_ES_cat5=0
+gen abs_fa_ES_cat5=0
+gen abs_cr_ES_cat10=0
+gen abs_fa_ES_cat10=0
+replace abs_cr_ES_cat5=1 if abs_cr_ES>.1714286
+replace abs_fa_ES_cat5=1 if abs_fa_ES>.250211
+replace abs_cr_ES_cat10=1 if abs_cr_ES>.3428572
+replace abs_fa_ES_cat10=1 if abs_fa_ES>.500422
+
+gen abs_instab5=0
+gen abs_instab10=0
+replace abs_instab5=1 if abs_cr_ES_cat5==1 & abs_fa_ES_cat5==1
+replace abs_instab10=1 if abs_cr_ES_cat10==1 & abs_fa_ES_cat10==1
+
+tab abs_cr_ES_cat5 abs_fa_ES_cat5
+ta abs_instab5
+tab abs_cr_ES_cat10 abs_fa_ES_cat10
+ta abs_instab10
+
+*** Increase or decrease
+gen path_abs_cr5=0
+gen path_abs_fa5=0
+gen path_abs_cr10=0
+gen path_abs_fa10=0
+
+replace path_abs_cr5=1 if cr_ES2016>cr_ES2020 & abs_cr_ES_cat5==1
+replace path_abs_cr5=2 if cr_ES2016<cr_ES2020 & abs_cr_ES_cat5==1
+replace path_abs_cr10=1 if cr_ES2016>cr_ES2020 & abs_cr_ES_cat10==1
+replace path_abs_cr10=2 if cr_ES2016<cr_ES2020 & abs_cr_ES_cat10==1
+
+replace path_abs_fa5=1 if fa_ES2016>fa_ES2020 & abs_fa_ES_cat5==1
+replace path_abs_fa5=2 if fa_ES2016<fa_ES2020 & abs_fa_ES_cat5==1
+replace path_abs_fa10=1 if fa_ES2016>fa_ES2020 & abs_fa_ES_cat10==1
+replace path_abs_fa10=2 if fa_ES2016<fa_ES2020 & abs_fa_ES_cat10==1
+
+label define path 0 "Stability" 1 "Decreasing" 2 "Increasing"
+foreach x in path_abs_cr5 path_abs_fa5 path_abs_cr10 path_abs_fa10{
+label values `x' path
+recode `x' (0=.)
+}
+
+fre abs_cr_ES_cat5
+fre path_abs_cr5 path_abs_fa5 path_abs_cr10 path_abs_fa10
+
 
 
 *** Controle var

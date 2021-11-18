@@ -19,6 +19,8 @@ Stability over time of personality traits
 clear all
 macro drop _all
 set scheme white_tableau
+set scheme plotplain
+
 
 ********** Path to folder "data" folder.
 *** PC
@@ -51,9 +53,10 @@ use "panel_stab_wide_v4", clear
 keep if age25==1
 *740 individuals
 
+
 ********** Difference
-*** Graph: histogram
 /*
+*** Evo fa
 twoway__histogram_gen diff_fa_ES, percent width(0.1) gen(h x, replace)
 twoway ///
 (bar h x if x<-.444, color(gs8) barwidth(0.1)) ///
@@ -66,9 +69,9 @@ ytitle("%", axis(1))  ///
 ytitle("Density", axis(2)) ///
 note("Kernel: Epanechnikov" "Bandwidth: 0.15" "Histogram can be read with the left-hand y-axis." "Kernel curve can be read with the right-hand y-axis.", size(tiny)) ///
 plotregion(margin(none)) legend(pos(6) col(4) order(1 "Decrease" 2 "Stable" 3 "Increase" 4 "Kernel density")) name(histo, replace) 
-graph export "Histo_kernel_instab.pdf", replace
+graph export "histo_fa.pdf", replace
 
-
+*** Evo cr
 twoway__histogram_gen diff_cr_ES, percent width(0.1) gen(h x, replace)
 twoway ///
 (bar h x if x<-.314, color(gs8) barwidth(0.1)) ///
@@ -81,9 +84,36 @@ ytitle("%", axis(1))  ///
 ytitle("Density", axis(2)) ///
 note("Kernel: Epanechnikov" "Bandwidth: 0.15" "Histogram can be read with the left-hand y-axis." "Kernel curve can be read with the right-hand y-axis.", size(tiny)) ///
 plotregion(margin(none)) legend(pos(6) col(4) order(1 "Decrease" 2 "Stable" 3 "Increase" 4 "Kernel density")) name(histo, replace) 
-graph export "Histo_kernel_instab_naive.pdf", replace
-*/
+graph export "histo_cr.pdf", replace
 
+*** Evo abs fa
+twoway__histogram_gen abs_fa_ES, percent width(0.1) gen(h x, replace)
+twoway ///
+(bar h x if x<=.250211, color(gs10) barwidth(0.1)) ///
+(bar h x if x>.250211, color(gs4) barwidth(0.1)) ///
+(kdensity abs_fa_ES, bwidth(0.15) lcolor(gs1) lpattern(solid) yaxis(2)) ///
+, ///
+xlabel() xmtick() xtitle("|ΔES|") ///
+ytitle("%", axis(1))  ///
+ytitle("Density", axis(2)) ///
+note("Kernel: Epanechnikov" "Bandwidth: 0.15" "Histogram can be read with the left-hand y-axis." "Kernel curve can be read with the right-hand y-axis.", size(tiny)) ///
+plotregion(margin(none)) legend(pos(6) col(4) order(1 "Stable" 2 "Non-stable" 3 "Kernel density")) name(histo, replace) 
+graph export "histo_abs_fa.pdf", replace
+
+*** Evo abs cr
+twoway__histogram_gen abs_cr_ES, percent width(0.1) gen(h x, replace)
+twoway ///
+(bar h x if x<=.1714286, color(gs10) barwidth(0.1)) ///
+(bar h x if x>.1714286, color(gs4) barwidth(0.1)) ///
+(kdensity abs_cr_ES, bwidth(0.15) lcolor(gs1) lpattern(solid) yaxis(2)) ///
+, ///
+xlabel() xmtick() xtitle("|ΔES|") ///
+ytitle("%", axis(1))  ///
+ytitle("Density", axis(2)) ///
+note("Kernel: Epanechnikov" "Bandwidth: 0.15" "Histogram can be read with the left-hand y-axis." "Kernel curve can be read with the right-hand y-axis.", size(tiny)) ///
+plotregion(margin(none)) legend(pos(6) col(4) order(1 "Stable" 2 "Non-stable" 3 "Kernel density")) name(histo, replace) 
+graph export "histo_abs_cr.pdf", replace
+*/
 
 
 ********** Transition matrix
@@ -96,24 +126,50 @@ tab fa_ES2016_cut fa_ES2020_cut, nofreq row
 
 
 ********** Difference between FA and NA
-fre diff_cr_ES_cat5 diff_fa_ES_cat5
-tab diff_cr_ES_cat5 diff_fa_ES_cat5, m
-dis (284+105+62)*100/738
-*61%
+tab abs_cr_ES_cat5 abs_fa_ES_cat5, cell
+tab abs_cr_ES_cat10 abs_fa_ES_cat10, cell
 
-twoway (scatter diff_fa_ES diff_cr_ES, xline(-.314 .314) yline(-.444 .444)), xtitle("Naïve approach") ytitle("Factor analysis approach")
+fre abs_fa_ES
+replace abs_fa_ES=4.97 if abs_fa_ES>=5  // 5.005795
 
-/*
-Display graph with the absolut instab
-*/
+*** Scatter
+twoway ///
+(scatter abs_fa_ES abs_cr_ES, xline(.171) yline(.250) msymbol() msize(vsmall)) ///
+(lfit abs_fa_ES abs_cr_ES, lpattern(solid)), ///
+xtitle("|ΔES| - Naïve appr.") ytitle("|ΔES| - Factor app.") ///
+xlabel(, grid gmin gmax) ylabel(, grid gmax gmin) ///
+plotregion(margin(none)) ///
+legend(order(1 "Indiv." 2 "Fit.") pos(11) col(2) off) name(scatter_cent, replace) ysc(alt) xsc(alt)
 
+*** histo x
+twoway__histogram_gen abs_cr_ES, percent bin(50) gen(h x, replace)
+twoway ///
+(bar h x if x<=.1714286, color() barwidth(0.07)) ///
+(bar h x if x>.1714286, color() barwidth(0.07)) ///
+, ///
+xtitle("|ΔES| - Naïve app.") ytitle("%") ///
+ylabel(, nogrid gmax gmin) xlabel(, grid gmax gmin) ///
+plotregion(margin(none)) legend(order(1 "Stab." 2 "Instab.") pos(6) col(2) off) name(histo_x, replace) ysc(reverse alt)
 
-********** Age and diff
-*** FA
-twoway (scatter diff_fa_ES age2016, yline(-.444 .444)), xtitle("Age") ytitle("Factor analysis approach")
+*** histo y
+twoway__histogram_gen abs_fa_ES, percent bin(50) gen(h x, replace)
+twoway ///
+(bar h x if x<=.250211, color() barwidth(0.1) horizontal) ///
+(bar h x if x>.250211, color() barwidth(0.1) horizontal) ///
+, ///
+xtitle("%") ytitle("|ΔES| - Factor app.") ///
+ylabel(, grid gmax gmin) xlabel(, nogrid gmax gmin) ///
+plotregion(margin(none)) legend(order(1 "Stab." 2 "Instab.") pos(1) col(2) off) name(histo_y, replace) xsc(reverse alt)
 
-*** Na
-twoway (scatter diff_cr_ES age2016, yline(-.314 .314)), xtitle("Age") ytitle("Naïve approach")
+*** Combine
+grc1leg histo_y scatter_cent histo_x ///
+, hole(3) imargin(0 0 0 0) graphregion(margin(l=0 r=0)) ///
+leg(histo_y) ///
+name(scatter_histo_new, replace) scale(1.3)
+graph export "histo_abs.pdf", replace
+
+*graph combine histo_y scatter_cent histo_x, hole(3) imargin(0 0 0 0) graphregion(margin(l=0 r=0)) name(scatter_histo_new, replace) scale(1.3)
+
 
 
 
@@ -160,8 +216,8 @@ label define castecat 1"Dalits" 2"Middle" 3"Upper", modify
 egen caste_sex=group(sex caste), lab
 fre caste_sex
 
-set graph off
 /*
+set graph off
 ********** Decrease, naïve
 *** Boxplot
 * Sex
@@ -214,17 +270,6 @@ legend(order(1 "Mean" 5 "Individual"))
 
 set graph on
 */
-
-
-*** Kernel
-twoway ///
-(kdensity decrease_cr_ES if caste==1, bwidth(.4)) ///
-(kdensity decrease_cr_ES if caste==2, bwidth(.4)) ///
-(kdensity decrease_cr_ES if caste==3, bwidth(.4)) ///
-, legend(order(1 "Dalits" 2 "Middle" 3 "Upper"))
-
-
-
 ****************************************
 * END
 
@@ -241,15 +286,9 @@ twoway ///
 
 
 ****************************************
-* ECON OLS
+* ECON on bias
 ****************************************
 use "panel_stab_wide_v4", clear
-
-
-/*
-Transform abs instab for reg
-and then dummy var for trajectory and interaction with sex age caste wealth
-*/
 
 
 
@@ -266,6 +305,7 @@ fre username_neemsis2
 
 
 ********** Assessment: bias higher in 2020-21 than in 2016-17.
+/*
 stripplot ars32016 ars32020, over() separate() ///
 cumul cumprob box centre vertical refline /// 
 xsize(5) xtitle("") xlabel(1 "2016-17" 2 "2020-21",angle(0))  ///
@@ -310,7 +350,7 @@ name(ars_2020_kernel, replace)
 
 graph combine ars_2016_kernel ars_2020_kernel, name(ars_enumyear_kernel, replace)
 graph export "bias_enum_panel.pdf", replace
-
+*/
 
 *** Role of enumerator in 2016-17
 label define usercode 1"Enum: 1" 2"Enum: 2" 3"Enum: 3" 4"Enum: 4" 5"Enum: 5" 6"Enum: 6" 7"Enum: 7" 8"Enum: 8"
@@ -340,9 +380,49 @@ esttab ars1_1 ars1_2 ars2_1 ars2_2 using "_reg.csv", ///
 	stats(N r2 F, fmt(0 3 3) labels(`"Observations"' `"\$R^2$"' `"F"')) ///
 	replace
 
+****************************************
+* END
 
 
 
+
+
+
+
+
+
+****************************************
+* ECON on abs var
+****************************************
+use "panel_stab_wide_v4", clear
+
+*** Naïve taxonomy
+* Total sample
+reg abs_cr_ES i.female b(1).caste ib(0).age_cat ib(0).educode ib(2).moc_indiv ib(2).annualincome_indiv2016_q i.dummydemonetisation2016 i.covsellland2020 i.villageid2016 ib(1).diff_ars3_cat5 i.username_encode_2020 if abs_instab5==1, cluster(cluster) allbase
+
+* Interaction var
+qui reg abs_cr_ES i.path_abs_cr5##i.female i.path_abs_cr5##i.caste i.path_abs_cr5##i.age_cat i.path_abs_cr5##i.educode i.path_abs_cr5##i.moc_indiv i.path_abs_cr5##i.annualincome_indiv2016_q i.dummydemonetisation2016 i.covsellland2020 i.villageid2016 i.diff_ars3_cat5 i.username_encode_2020 if abs_instab5==1, cluster(cluster)
+margins, dydx(female caste age_cat educode moc_indiv) at(path_abs_cr5=(1 2)) atmeans
+
+
+
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* ECON on var
+****************************************
+use "panel_stab_wide_v4", clear
 
 ********** ES distribution
 stripplot cr_ES2016 cr_ES2020 fa_ES2016 fa_ES2020 , over() separate() ///
