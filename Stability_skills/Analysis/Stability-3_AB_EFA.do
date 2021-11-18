@@ -237,17 +237,21 @@ global imcorgrit imcr_curious imcr_interestedbyart imcr_repetitivetasks imcr_inv
 
 global imcor imcr_curious imcr_interestedbyart imcr_repetitivetasks imcr_inventive imcr_liketothink imcr_newideas imcr_activeimagination imcr_organized imcr_makeplans imcr_workhard imcr_appointmentontime imcr_putoffduties imcr_easilydistracted imcr_completeduties imcr_enjoypeople imcr_sharefeelings imcr_shywithpeople imcr_enthusiastic imcr_talktomanypeople imcr_talkative imcr_expressingthoughts imcr_workwithother imcr_understandotherfeeling imcr_trustingofother imcr_rudetoother imcr_toleratefaults imcr_forgiveother imcr_helpfulwithothers imcr_managestress imcr_nervous imcr_changemood imcr_feeldepressed imcr_easilyupset imcr_worryalot imcr_staycalm
 
+*foreach x in $imcor {
+*replace `x'=`x'*100
+*}
 
 
 ********** Factor analyses: without grit
 minap $imcor
-qui factor $imcor, pcf fa(5) // 5
+factor $imcor, pcf fa(5) // 5
+predict f1_without_2016 f2_without_2016 f3_without_2016 f4_without_2016 f5_without_2016
+
 rotate, promax
 *putexcel set "EFA_2016.xlsx", modify sheet(without_panel)
 *putexcel (E2)=matrix(e(r_L))
-predict f1_without_2016 f2_without_2016 f3_without_2016 f4_without_2016 f5_without_2016
-
-
+*predict f1_without_2016 f2_without_2016 f3_without_2016 f4_without_2016 f5_without_2016
+tabstat f1_without_2016 f2_without_2016 f3_without_2016 f4_without_2016 f5_without_2016, stat(n mean sd p50 min max)
 
 ********** Factor analyses: with grit
 minap $imcorgrit
