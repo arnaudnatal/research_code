@@ -258,7 +258,6 @@ recode instab_cr_ES instab_fa_ES (1=.)
 tab diff_cr_ES instab_cr_ES, m
 
 
-
 ********** Are individuals at the same place with EFA and naive?
 *** Cross table in 2016 and 2020 between EFA and naïve
 tab cr_ES2016_cat fa_ES2016_cat, row nofreq
@@ -266,82 +265,7 @@ tab cr_ES2020_cat fa_ES2020_cat, row nofreq
 
 
 
-********** Difference
-*** Stat
-tabstat diff_cr_ES diff_fa_ES, stat(n mean sd p50 min max range)
-
-*** Graph: histogram
-/*
-twoway__histogram_gen diff_fa_ES, percent width(0.1) gen(h x, replace)
-twoway ///
-(bar h x if x<-.444, color(gs8) barwidth(0.1)) ///
-(bar h x if x>=-.444 & x<=.444, color(gs10) barwidth(0.1)) ///
-(bar h x if x>.444, color(gs4) barwidth(0.1)) ///
-(kdensity diff_fa_ES, bwidth(0.15) lcolor(gs1) lpattern(solid) yaxis(2)) ///
-, ///
-xlabel(-4(1)5) xmtick(-4.5(.5)5.5) xtitle("ΔES") ///
-ytitle("%", axis(1))  ///
-ytitle("Density", axis(2)) ///
-note("Kernel: Epanechnikov" "Bandwidth: 0.15" "Histogram can be read with the left-hand y-axis." "Kernel curve can be read with the right-hand y-axis.", size(tiny)) ///
-plotregion(margin(none)) legend(pos(6) col(4) order(1 "Decrease" 2 "Stable" 3 "Increase" 4 "Kernel density")) name(histo, replace) 
-graph export "Histo_kernel_instab.pdf", replace
-
-
-twoway__histogram_gen diff_cr_ES, percent width(0.1) gen(h x, replace)
-twoway ///
-(bar h x if x<-.314, color(gs8) barwidth(0.1)) ///
-(bar h x if x>=-.314 & x<=.314, color(gs10) barwidth(0.1)) ///
-(bar h x if x>.314, color(gs4) barwidth(0.1)) ///
-(kdensity diff_cr_ES, bwidth(0.15) lcolor(gs1) lpattern(solid) yaxis(2)) ///
-, ///
-xlabel(-3(1)3) xmtick(-3.5(.5)3) xtitle("ΔES") ///
-ytitle("%", axis(1))  ///
-ytitle("Density", axis(2)) ///
-note("Kernel: Epanechnikov" "Bandwidth: 0.15" "Histogram can be read with the left-hand y-axis." "Kernel curve can be read with the right-hand y-axis.", size(tiny)) ///
-plotregion(margin(none)) legend(pos(6) col(4) order(1 "Decrease" 2 "Stable" 3 "Increase" 4 "Kernel density")) name(histo, replace) 
-graph export "Histo_kernel_instab_naive.pdf", replace
-*/
-
-
-
-********** Transition matrix
-tab cr_ES2016_cut cr_ES2020_cut
-tab cr_ES2016_cut cr_ES2020_cut, nofreq row
-
-tab fa_ES2016_cut fa_ES2020_cut
-tab fa_ES2016_cut fa_ES2020_cut, nofreq row
-
-tab diff_cr_ES_cat5 diff_fa_ES_cat5
-tab diff_cr_ES_cat5 diff_fa_ES_cat5, row nofreq
-tab diff_cr_ES_cat5 diff_fa_ES_cat5, col nofreq
-
-
-*** Descriptive statistics for naïve Big-5
-tab sex diff_cr_ES_cat5, col nofreq
-tab caste diff_cr_ES_cat5, col nofreq
-tab age_cat diff_cr_ES_cat5, col nofreq
-tab edulevel2016 diff_cr_ES_cat5, col nofreq
-tab username_backup2020 diff_cr_ES_cat5, col nofreq
-tab diff_ars3_cat5 diff_cr_ES_cat5, col nofreq
-tab shock_recode diff_cr_ES_cat5, col nofreq
-
-
-*** Descriptive statistics for factor Big-5
-tab sex diff_fa_ES_cat5, col nofreq
-tab caste diff_fa_ES_cat5, col nofreq
-tab age_cat diff_fa_ES_cat5, col nofreq
-tab edulevel2016 diff_fa_ES_cat5, col nofreq
-tab username_backup2020 diff_fa_ES_cat5, col nofreq
-tab diff_ars3_cat5 diff_fa_ES_cat5, col nofreq
-tab shock_recode diff_fa_ES_cat5, col nofreq
-
-
-
-
-********** Cross EFA and naïve Big-5
-tab diff_cr_ES_cat5 diff_fa_ES_cat5, m
-fre diff_cr_ES_cat5 diff_fa_ES_cat5
-
 save "panel_stab_wide_v4", replace
 ****************************************
 * END
+
