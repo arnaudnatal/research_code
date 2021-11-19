@@ -237,49 +237,43 @@ global imcorgrit imcr_curious imcr_interestedbyart imcr_repetitivetasks imcr_inv
 
 global imcor imcr_curious imcr_interestedbyart imcr_repetitivetasks imcr_inventive imcr_liketothink imcr_newideas imcr_activeimagination imcr_organized imcr_makeplans imcr_workhard imcr_appointmentontime imcr_putoffduties imcr_easilydistracted imcr_completeduties imcr_enjoypeople imcr_sharefeelings imcr_shywithpeople imcr_enthusiastic imcr_talktomanypeople imcr_talkative imcr_expressingthoughts imcr_workwithother imcr_understandotherfeeling imcr_trustingofother imcr_rudetoother imcr_toleratefaults imcr_forgiveother imcr_helpfulwithothers imcr_managestress imcr_nervous imcr_changemood imcr_feeldepressed imcr_easilyupset imcr_worryalot imcr_staycalm
 
-*foreach x in $imcor {
-*replace `x'=`x'*100
-*}
 
 
 ********** Factor analyses: without grit
 minap $imcor
-factor $imcor, pcf fa(5) // 5
-predict f1_without_2016 f2_without_2016 f3_without_2016 f4_without_2016 f5_without_2016
-
-rotate, promax
-*putexcel set "EFA_2016.xlsx", modify sheet(without_panel)
-*putexcel (E2)=matrix(e(r_L))
+qui factor $imcor, pcf fa(5) // 5
+*rotate, promax
+rotate, quartimin
+putexcel set "EFA_2016.xlsx", modify sheet(without_panel)
+putexcel (E2)=matrix(e(r_L))
 *predict f1_without_2016 f2_without_2016 f3_without_2016 f4_without_2016 f5_without_2016
-tabstat f1_without_2016 f2_without_2016 f3_without_2016 f4_without_2016 f5_without_2016, stat(n mean sd p50 min max)
 
 ********** Factor analyses: with grit
+/*
 minap $imcorgrit
 qui factor $imcorgrit, pcf fa(6)  // 5
 rotate, promax
 *putexcel set "EFA_2016.xlsx", modify sheet(with_panel)
 *putexcel (E2)=matrix(e(r_L))
 predict f1_with_2016 f2_with_2016 f3_with_2016 f4_with_2016 f5_with_2016 f6_with_2016
+*/
 
+********** Omega with Laajaj approach for factor analysis and Cobb Clark
+omega imcr_appointmentontime imcr_makeplans imcr_completeduties imcr_enthusiastic imcr_organized imcr_workhard imcr_workwithother imcr_putoffduties  // 0.8571
 
+omega imcr_easilyupset imcr_worryalot imcr_feeldepressed imcr_nervous imcr_repetitivetasks imcr_shywithpeople imcr_changemood imcr_easilydistracted imcr_rudetoother  // 0.8755
 
-********** Omega without grit
-omega imcr_appointmentontime imcr_makeplans imcr_completeduties imcr_enthusiastic imcr_organized imcr_workhard  // 0.8342
+omega imcr_expressingthoughts imcr_liketothink imcr_sharefeelings imcr_activeimagination imcr_newideas imcr_talktomanypeople imcr_inventive imcr_curious imcr_talkative imcr_understandotherfeeling imcr_interestedbyart  // 0.8136
 
-omega imcr_easilyupset imcr_worryalot imcr_feeldepressed imcr_nervous imcr_repetitivetasks imcr_shywithpeople imcr_changemood imcr_easilydistracted  // 0.8771
+alpha imcr_staycalm imcr_managestress  // 0.5391
 
-omega imcr_expressingthoughts imcr_liketothink imcr_sharefeelings imcr_activeimagination imcr_newideas imcr_talktomanypeople imcr_inventive imcr_curious  // 0.8424
+omega imcr_forgiveother imcr_toleratefaults imcr_trustingofother imcr_helpfulwithothers imcr_enjoypeople  // 0.5613
 
-omega imcr_staycalm imcr_managestress imcr_changemood imcr_easilydistracted imcr_putoffduties  // 0.7867
-
-omega imcr_forgiveother imcr_toleratefaults imcr_trustingofother imcr_enjoypeople imcr_rudetoother imcr_workwithother  // 0.6875
 
 keep HHID_panel INDID_panel f1_without_2016 f2_without_2016 f3_without_2016 f4_without_2016 f5_without_2016 f1_with_2016 f2_with_2016 f3_with_2016 f4_with_2016 f5_with_2016 f6_with_2016
 save "panel_stab_v2_2016", replace
 ****************************************
 * END
-
-
 
 
 
@@ -323,35 +317,50 @@ global imcorgrit imcr_curious imcr_interestedbyart imcr_repetitivetasks imcr_inv
 global imcor imcr_curious imcr_interestedbyart imcr_repetitivetasks imcr_inventive imcr_liketothink imcr_newideas imcr_activeimagination imcr_organized imcr_makeplans imcr_workhard imcr_appointmentontime imcr_putoffduties imcr_easilydistracted imcr_completeduties imcr_enjoypeople imcr_sharefeelings imcr_shywithpeople imcr_enthusiastic imcr_talktomanypeople imcr_talkative imcr_expressingthoughts imcr_workwithother imcr_understandotherfeeling imcr_trustingofother imcr_rudetoother imcr_toleratefaults imcr_forgiveother imcr_helpfulwithothers imcr_managestress imcr_nervous imcr_changemood imcr_feeldepressed imcr_easilyupset imcr_worryalot imcr_staycalm
 
 
+********** CFA first
+/*
+sem ///
+(imcr_appointmentontime imcr_makeplans imcr_completeduties imcr_enthusiastic imcr_organized imcr_workhard imcr_workwithother imcr_putoffduties <- CO) ///
+(imcr_easilyupset imcr_worryalot imcr_feeldepressed imcr_nervous imcr_repetitivetasks imcr_shywithpeople imcr_changemood imcr_easilydistracted imcr_rudetoother <- ES) ///
+(imcr_expressingthoughts imcr_liketothink imcr_sharefeelings imcr_activeimagination imcr_newideas imcr_talktomanypeople imcr_inventive imcr_curious imcr_talkative imcr_understandotherfeeling imcr_interestedbyart <- EXOP) ///
+(imcr_forgiveother imcr_toleratefaults imcr_trustingofother imcr_helpfulwithothers imcr_enjoypeople <-AG) ///
+, method(ml) standardized 
+*/
+
 ********** Factor analyses: without grit
 minap $imcor
 qui factor $imcor, pcf fa(5) // 2
-rotate, promax
-*putexcel set "EFA_2020.xlsx", modify sheet(without_panel)
-*putexcel (E2)=matrix(e(r_L))
-predict f1_without_2020 f2_without_2020 f3_without_2020 f4_without_2020 f5_without_2020
+*rotate, promax
+rotate, quartimin
+putexcel set "EFA_2020.xlsx", modify sheet(without_panel)
+putexcel (E2)=matrix(e(r_L))
+*predict f1_without_2020 f2_without_2020 f3_without_2020 f4_without_2020 f5_without_2020
 
 
 ********** Factor analyses: with grit
+/*
 minap $imcorgrit
 qui factor $imcorgrit, pcf fa(6)  // 2
 rotate, promax
 *putexcel set "EFA_2020.xlsx", modify sheet(with_panel)
 *putexcel (E2)=matrix(e(r_L))
 predict f1_with_2020 f2_with_2020 f3_with_2020 f4_with_2020 f5_with_2020 f6_with_2020
+*/
 
 
 
-********** Omega without grit
-omega imcr_worryalot imcr_easilydistracted imcr_feeldepressed imcr_easilyupset imcr_repetitivetasks imcr_changemood imcr_nervous imcr_putoffduties  // 0.9084
+********** Omega with Laajaj approach for factor analysis and Cobb Clark
+omega imcr_worryalot imcr_easilydistracted imcr_feeldepressed imcr_easilyupset imcr_repetitivetasks imcr_changemood imcr_nervous imcr_putoffduties imcr_shywithpeople imcr_toleratefaults imcr_enjoypeople  // 0.8841
 
-omega imcr_talktomanypeople imcr_enthusiastic imcr_workhard imcr_appointmentontime imcr_interestedbyart imcr_expressingthoughts imcr_forgiveother imcr_rudetoother  // 0.5374
+omega imcr_talktomanypeople imcr_enthusiastic imcr_workhard imcr_appointmentontime imcr_interestedbyart imcr_expressingthoughts imcr_forgiveother imcr_makeplans imcr_understandotherfeeling imcr_newideas  // 0.5226
 
-omega imcr_trustingofother imcr_inventive imcr_liketothink imcr_curious imcr_talkative imcr_activeimagination  // 0.4759
 
-omega imcr_organized imcr_helpfulwithothers imcr_staycalm imcr_enthusiastic imcr_activeimagination imcr_talkative imcr_workwithother  // 0.4374
+omega imcr_trustingofother imcr_inventive imcr_liketothink imcr_curious imcr_sharefeelings  // 0.3997
 
-omega imcr_managestress imcr_rudetoother imcr_staycalm imcr_shywithpeople imcr_talkative imcr_talktomanypeople imcr_enjoypeople  // 0.4723
+omega imcr_organized imcr_helpfulwithothers imcr_staycalm imcr_activeimagination imcr_talkative imcr_workwithother imcr_completeduties  // 0.4002
+
+alpha imcr_managestress imcr_rudetoother  // 0.2213
+
 
 keep HHID_panel INDID_panel f1_without_2020 f2_without_2020 f3_without_2020 f4_without_2020 f5_without_2020 f1_with_2020 f2_with_2020 f3_with_2020 f4_with_2020 f5_with_2020 f6_with_2020
 save "panel_stab_v2_2020", replace

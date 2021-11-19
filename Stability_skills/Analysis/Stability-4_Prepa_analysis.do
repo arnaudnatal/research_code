@@ -132,10 +132,19 @@ foreach x in cr_ES fa_ES{
 gen abs_`x'=abs(diff_`x')
 tabstat abs_`x', stat(n mean sd min max range)
 }
-dis 3.428572*0.05
-dis 3.428572*0.1
-dis 5.00422*0.05
-dis 5.00422*0.1
+
+ta fa_ES2016
+ge fa_ES2016_r=round(fa_ES2016,.1)
+ge fa_ES2020_r=round(fa_ES2020,.1)
+
+
+
+gen absdelta_cr_ES=abs((cr_ES2020-cr_ES2016)/cr_ES2016)
+gen absdelta_fa_ES=abs((fa_ES2020-fa_ES2016)/fa_ES2016)
+gen absdelta_fa_r_ES=abs((fa_ES2020_r-fa_ES2016_r)/fa_ES2016_r)
+
+tabstat absdelta_cr_ES absdelta_fa_ES absdelta_fa_r_ES, stat(n mean sd min p1 p5 p10 q p90 p95 p99 max)
+
 
 /*
 Changer le 5%, prendre le 5% de l'amplitude de la variable et non de l'amplitude de
@@ -146,10 +155,21 @@ gen abs_cr_ES_cat5=0
 gen abs_fa_ES_cat5=0
 gen abs_cr_ES_cat10=0
 gen abs_fa_ES_cat10=0
-replace abs_cr_ES_cat5=1 if abs_cr_ES>.1714286
-replace abs_fa_ES_cat5=1 if abs_fa_ES>.250211
-replace abs_cr_ES_cat10=1 if abs_cr_ES>.3428572
-replace abs_fa_ES_cat10=1 if abs_fa_ES>.500422
+replace abs_cr_ES_cat5=1 if abs_cr_ES>.25
+replace abs_fa_ES_cat5=1 if abs_fa_ES>.3
+replace abs_cr_ES_cat10=1 if abs_cr_ES>.5
+replace abs_fa_ES_cat10=1 if abs_fa_ES>.6
+
+gen absdelta_cr_ES_cat5=0
+gen absdelta_fa_ES_cat5=0
+gen absdelta_cr_ES_cat10=0
+gen absdelta_fa_ES_cat10=0
+replace absdelta_cr_ES_cat5=1 if absdelta_cr_ES>.05
+replace absdelta_fa_ES_cat5=1 if absdelta_fa_ES>.05
+replace absdelta_cr_ES_cat10=1 if absdelta_cr_ES>.1
+replace absdelta_fa_ES_cat10=1 if absdelta_fa_ES>.1
+
+fre absdelta_cr_ES_cat5 absdelta_cr_ES_cat10 absdelta_fa_ES_cat5 absdelta_fa_ES_cat10
 
 gen abs_instab5=0
 gen abs_instab10=0
