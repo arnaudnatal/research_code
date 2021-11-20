@@ -95,120 +95,166 @@ save "panel_stab_wide_v3", replace
 ****************************************
 use "panel_stab_wide_v3", clear
 
-********** Gen new var
-*** Evo traits
-rename f2_without_2016 fa_ES2016
-rename f1_without_2020 fa_ES2020
+
+rename f1_2016 fa_ES2016
+rename f1_2020 fa_ES2020
+
+tab1 cr_ES2016 cr_ES2020
+tab1 fa_ES2016 fa_ES2020
+
+foreach x in cr_ES2016 cr_ES2020 fa_ES2016 fa_ES2020 {
+replace `x'=5 if `x'>5
+}
+
+tabstat cr_ES2016 cr_ES2020 fa_ES2016 fa_ES2020, stat(n mean sd p50 min max)
+* Min = 0
+* Max = 5
+
+********** DIFF
 gen diff_cr_ES=cr_ES2020-cr_ES2016
 gen diff_fa_ES=fa_ES2020-fa_ES2016
 
-foreach x in cr_ES2016 cr_ES2020 fa_ES2016 fa_ES2020 {
-xtile `x'_cat=`x', n(10)
+foreach x in diff_cr_ES diff_fa_ES {
+gen abs_`x'=abs(`x')
 }
 
+tabstat diff_cr_ES diff_fa_ES abs_diff_cr_ES abs_diff_fa_ES, stat(n mean sd p50 min max range)
+* Min = -5
+* Max = +5
+* Range = 10
 
-tabstat cr_ES2016 cr_ES2020 fa_ES2016 fa_ES2020, stat(n mean sd p50 min max range)
-egen cr_ES2016_cut=cut(cr_ES2016), at(0,1,2,3,4,5,6)
-egen cr_ES2020_cut=cut(cr_ES2020), at(0,1,2,3,4,5,6)
-egen fa_ES2016_cut=cut(fa_ES2016), at(-4,-3,-2,-1,0,1,2,3,4)
-egen fa_ES2020_cut=cut(fa_ES2020), at(-4,-3,-2,-1,0,1,2,3,4)
+egen diff_cr_ES_cat5=cut(diff_cr_ES), at(-5,-.25,.25,5) icodes
+egen diff_cr_ES_cat10=cut(diff_cr_ES), at(-5,-.5,.5,5) icodes
+egen diff_fa_ES_cat5=cut(diff_fa_ES), at(-5,-.25,.25,5) icodes
+egen diff_fa_ES_cat10=cut(diff_fa_ES), at(-5,-.5,.5,5) icodes
+fre diff_cr_ES_cat5 diff_cr_ES_cat10 diff_fa_ES_cat5 diff_fa_ES_cat10
 
-tabstat diff_cr_ES diff_fa_ES, stat(n mean sd p50 min max range)
-dis 6.285715*0.05
-dis 8.883403*0.05
-egen diff_cr_ES_cat5=cut(diff_cr_ES), at(-4,-.314,.314,7) icodes
-egen diff_fa_ES_cat5=cut(diff_fa_ES), at(-4,-.444,.444,9) icodes
-egen diff_cr_ES_cat10=cut(diff_cr_ES), at(-4,-.628,.628,7) icodes
-egen diff_fa_ES_cat10=cut(diff_fa_ES), at(-4,-.888,.888,9) icodes
+egen abs_diff_cr_ES_cat5=cut(abs_diff_cr_ES), at(0,.25,5) icodes
+egen abs_diff_cr_ES_cat10=cut(abs_diff_cr_ES), at(0,.5,5) icodes
+egen abs_diff_fa_ES_cat5=cut(abs_diff_fa_ES), at(0,.25,5) icodes
+egen abs_diff_fa_ES_cat10=cut(abs_diff_fa_ES), at(0,.5,5) icodes
+fre abs_diff_cr_ES_cat5 abs_diff_cr_ES_cat10 abs_diff_fa_ES_cat5 abs_diff_fa_ES_cat10
 
+
+
+
+********** DELTA
+gen delta_cr_ES=(cr_ES2020-cr_ES2016)/cr_ES2016
+gen delta_fa_ES=(fa_ES2020-fa_ES2016)/fa_ES2016
+
+foreach x in delta_cr_ES delta_fa_ES {
+gen abs_`x'=abs(`x')
+}
+
+tabstat delta_cr_ES delta_fa_ES abs_delta_cr_ES abs_delta_fa_ES, stat(n mean sd min p1 p5 p10 q p90 p95 p99 max)
+
+egen delta_cr_ES_cat5=cut(delta_cr_ES), at(-2,-.05,.05,7) icodes
+egen delta_cr_ES_cat10=cut(delta_cr_ES), at(-2,-.1,.1,7) icodes
+egen delta_fa_ES_cat5=cut(delta_fa_ES), at(-2,-.05,.05,7) icodes
+egen delta_fa_ES_cat10=cut(delta_fa_ES), at(-2,-.1,.1,7) icodes
+fre delta_cr_ES_cat5 delta_cr_ES_cat10 delta_fa_ES_cat5 delta_fa_ES_cat10
+
+egen abs_delta_cr_ES_cat5=cut(abs_delta_cr_ES), at(0,.05,7) icodes
+egen abs_delta_cr_ES_cat10=cut(abs_delta_cr_ES), at(0,.1,7) icodes
+egen abs_delta_fa_ES_cat5=cut(abs_delta_fa_ES), at(0,.05,7) icodes
+egen abs_delta_fa_ES_cat10=cut(abs_delta_fa_ES), at(0,.1,7) icodes
+fre abs_delta_cr_ES_cat5 abs_delta_cr_ES_cat10 abs_delta_fa_ES_cat5 abs_delta_fa_ES_cat10
+
+
+********** LABEL
 label define stab 0"Decrease" 1"Stable" 2"Increase"
-foreach x in diff_cr_ES_cat5 diff_cr_ES_cat10 diff_fa_ES_cat5 diff_fa_ES_cat10{
+foreach x in diff_cr_ES_cat5 diff_cr_ES_cat10 diff_fa_ES_cat5 diff_fa_ES_cat10 delta_cr_ES_cat5 delta_cr_ES_cat10 delta_fa_ES_cat5 delta_fa_ES_cat10 {
 label values `x' stab
 }
+fre diff_cr_ES_cat5 diff_cr_ES_cat10 diff_fa_ES_cat5 diff_fa_ES_cat10 delta_cr_ES_cat5 delta_cr_ES_cat10 delta_fa_ES_cat5 delta_fa_ES_cat10
 
-
-********** Absolute evolution
-foreach x in cr_ES fa_ES{
-gen abs_`x'=abs(diff_`x')
-tabstat abs_`x', stat(n mean sd min max range)
+label define stab2 0"Stable" 1"Instable"
+foreach x in abs_diff_cr_ES_cat5 abs_diff_cr_ES_cat10 abs_diff_fa_ES_cat5 abs_diff_fa_ES_cat10 abs_delta_cr_ES_cat5 abs_delta_cr_ES_cat10 abs_delta_fa_ES_cat5 abs_delta_fa_ES_cat10 {
+label values `x' stab2
 }
-
-ta fa_ES2016
-ge fa_ES2016_r=round(fa_ES2016,.1)
-ge fa_ES2020_r=round(fa_ES2020,.1)
+fre abs_diff_cr_ES_cat5 abs_diff_cr_ES_cat10 abs_diff_fa_ES_cat5 abs_diff_fa_ES_cat10 abs_delta_cr_ES_cat5 abs_delta_cr_ES_cat10 abs_delta_fa_ES_cat5 abs_delta_fa_ES_cat10
 
 
+********** INSTAB
+gen abs_diff_instab5=0
+gen abs_diff_instab10=0
+gen abs_delta_instab5=0
+gen abs_delta_instab10=0
 
-gen absdelta_cr_ES=abs((cr_ES2020-cr_ES2016)/cr_ES2016)
-gen absdelta_fa_ES=abs((fa_ES2020-fa_ES2016)/fa_ES2016)
-gen absdelta_fa_r_ES=abs((fa_ES2020_r-fa_ES2016_r)/fa_ES2016_r)
+replace abs_diff_instab5=1 if abs_diff_cr_ES_cat5==1 & abs_diff_fa_ES_cat5==1
+replace abs_diff_instab10=1 if abs_diff_cr_ES_cat10==1 & abs_diff_fa_ES_cat10==1
 
-tabstat absdelta_cr_ES absdelta_fa_ES absdelta_fa_r_ES, stat(n mean sd min p1 p5 p10 q p90 p95 p99 max)
+replace abs_delta_instab5=1 if abs_delta_cr_ES_cat5==1 & abs_delta_fa_ES_cat5==1
+replace abs_delta_instab10=1 if abs_delta_cr_ES_cat10==1 & abs_delta_fa_ES_cat10==1
 
+label define stab3 0"Stable" 1"Instable"
+foreach x in abs_diff_instab5 abs_diff_instab10 abs_delta_instab5 abs_delta_instab10 {
+label values `x' stab3
+} 
+fre abs_diff_instab5 abs_diff_instab10 abs_delta_instab5 abs_delta_instab10
 
-/*
-Changer le 5%, prendre le 5% de l'amplitude de la variable et non de l'amplitude de
-la distribution de la variable
-*/
-
-gen abs_cr_ES_cat5=0
-gen abs_fa_ES_cat5=0
-gen abs_cr_ES_cat10=0
-gen abs_fa_ES_cat10=0
-replace abs_cr_ES_cat5=1 if abs_cr_ES>.25
-replace abs_fa_ES_cat5=1 if abs_fa_ES>.3
-replace abs_cr_ES_cat10=1 if abs_cr_ES>.5
-replace abs_fa_ES_cat10=1 if abs_fa_ES>.6
-
-gen absdelta_cr_ES_cat5=0
-gen absdelta_fa_ES_cat5=0
-gen absdelta_cr_ES_cat10=0
-gen absdelta_fa_ES_cat10=0
-replace absdelta_cr_ES_cat5=1 if absdelta_cr_ES>.05
-replace absdelta_fa_ES_cat5=1 if absdelta_fa_ES>.05
-replace absdelta_cr_ES_cat10=1 if absdelta_cr_ES>.1
-replace absdelta_fa_ES_cat10=1 if absdelta_fa_ES>.1
-
-fre absdelta_cr_ES_cat5 absdelta_cr_ES_cat10 absdelta_fa_ES_cat5 absdelta_fa_ES_cat10
-
-gen abs_instab5=0
-gen abs_instab10=0
-replace abs_instab5=1 if abs_cr_ES_cat5==1 & abs_fa_ES_cat5==1
-replace abs_instab10=1 if abs_cr_ES_cat10==1 & abs_fa_ES_cat10==1
-
-tab abs_cr_ES_cat5 abs_fa_ES_cat5
-ta abs_instab5
-tab abs_cr_ES_cat10 abs_fa_ES_cat10
-ta abs_instab10
 
 *** Increase or decrease
-gen path_abs_cr5=0
-gen path_abs_fa5=0
-gen path_abs_cr10=0
-gen path_abs_fa10=0
+gen pathabs_diff_cr_cat5=0
+gen pathabs_diff_cr_cat10=0
+gen pathabs_delta_cr_cat5=0
+gen pathabs_delta_cr_cat10=0
 
-replace path_abs_cr5=1 if cr_ES2016>cr_ES2020 & abs_cr_ES_cat5==1
-replace path_abs_cr5=2 if cr_ES2016<cr_ES2020 & abs_cr_ES_cat5==1
-replace path_abs_cr10=1 if cr_ES2016>cr_ES2020 & abs_cr_ES_cat10==1
-replace path_abs_cr10=2 if cr_ES2016<cr_ES2020 & abs_cr_ES_cat10==1
+gen pathabs_diff_fa_cat5=0
+gen pathabs_diff_fa_cat10=0
+gen pathabs_delta_fa_cat5=0
+gen pathabs_delta_fa_cat10=0
 
-replace path_abs_fa5=1 if fa_ES2016>fa_ES2020 & abs_fa_ES_cat5==1
-replace path_abs_fa5=2 if fa_ES2016<fa_ES2020 & abs_fa_ES_cat5==1
-replace path_abs_fa10=1 if fa_ES2016>fa_ES2020 & abs_fa_ES_cat10==1
-replace path_abs_fa10=2 if fa_ES2016<fa_ES2020 & abs_fa_ES_cat10==1
+replace pathabs_diff_cr_cat5=1 if cr_ES2016>cr_ES2020 & abs_diff_cr_ES_cat5==1
+replace pathabs_diff_cr_cat10=1 if cr_ES2016>cr_ES2020 & abs_diff_cr_ES_cat10==1
+replace pathabs_delta_cr_cat5=1 if cr_ES2016>cr_ES2020 & abs_delta_cr_ES_cat5==1
+replace pathabs_delta_cr_cat10=1 if cr_ES2016>cr_ES2020 & abs_delta_cr_ES_cat10==1
+replace pathabs_diff_cr_cat5=2 if cr_ES2016<cr_ES2020 & abs_diff_cr_ES_cat5==1
+replace pathabs_diff_cr_cat10=2 if cr_ES2016<cr_ES2020 & abs_diff_cr_ES_cat10==1
+replace pathabs_delta_cr_cat5=2 if cr_ES2016<cr_ES2020 & abs_delta_cr_ES_cat5==1
+replace pathabs_delta_cr_cat10=2 if cr_ES2016<cr_ES2020 & abs_delta_cr_ES_cat10==1
 
-label define path 0 "Stability" 1 "Decreasing" 2 "Increasing"
-foreach x in path_abs_cr5 path_abs_fa5 path_abs_cr10 path_abs_fa10{
-label values `x' path
+replace pathabs_diff_fa_cat5=1 if fa_ES2016>fa_ES2020 & abs_diff_fa_ES_cat5==1
+replace pathabs_diff_fa_cat10=1 if fa_ES2016>fa_ES2020 & abs_diff_fa_ES_cat10==1
+replace pathabs_delta_fa_cat5=1 if fa_ES2016>fa_ES2020 & abs_delta_fa_ES_cat5==1
+replace pathabs_delta_fa_cat10=1 if fa_ES2016>fa_ES2020 & abs_delta_fa_ES_cat10==1
+replace pathabs_diff_fa_cat5=2 if fa_ES2016<fa_ES2020 & abs_diff_fa_ES_cat5==1
+replace pathabs_diff_fa_cat10=2 if fa_ES2016<fa_ES2020 & abs_diff_fa_ES_cat10==1
+replace pathabs_delta_fa_cat5=2 if fa_ES2016<fa_ES2020 & abs_delta_fa_ES_cat5==1
+replace pathabs_delta_fa_cat10=2 if fa_ES2016<fa_ES2020 & abs_delta_fa_ES_cat10==1
+
+
+label define path 1 "Decreasing" 2 "Increasing"
+foreach x in pathabs_diff_cr_cat5 pathabs_diff_cr_cat10 pathabs_delta_cr_cat5 pathabs_delta_cr_cat10 pathabs_diff_fa_cat5 pathabs_diff_fa_cat10 pathabs_delta_fa_cat5 pathabs_delta_fa_cat10 {
 recode `x' (0=.)
+label values `x' path
 }
-
-fre abs_cr_ES_cat5
-fre path_abs_cr5 path_abs_fa5 path_abs_cr10 path_abs_fa10
+fre pathabs_diff_cr_cat5 pathabs_diff_cr_cat10 pathabs_delta_cr_cat5 pathabs_delta_cr_cat10 pathabs_diff_fa_cat5 pathabs_diff_fa_cat10 pathabs_delta_fa_cat5 pathabs_delta_fa_cat10
 
 
+save "panel_stab_wide_v4", replace
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Control var
+****************************************
+use "panel_stab_wide_v4", clear
 
 *** Controle var
+* Sex
+desc sex
+label define sex 1"Sex: Male" 2"Sex: Female", modify
+fre sex
 * Age
 egen age_cat=cut(age2016), at(18,25,35,45,55,65,82) icodes
 label define age 0"Age: [18;25[" 1"Age: [25;35[" 2"Age: [35;45[" 3"Age: [45;55[" 4"Age: [55;65[" 5"Age: [65;]", modify
@@ -221,8 +267,10 @@ gen age25=0 if age2016<25
 replace age25=1 if age2016>=25
 * Edu
 clonevar educode=edulevel2016
-recode educode (3=2) (4=2)
-label define edulevel 0"Edu: Below prim" 1"Edu: Primary" 2"Edu: High school", modify 
+recode educode (4=3)
+fre educode
+label define edulevel 0"Edu: Below prim" 1"Edu: Primary" 2"Edu: High school" 3"Edu: HSC/Diploma or more", modify 
+fre educode
 * MOC
 rename mainocc_occupation_indiv2016 moc_indiv
 label define occupcode 0"Occ: No occup" 1"Occ: Agri" 2"Occ: Agri coolie" 3"Occ: Coolie" 4"Occ: Reg non-qual" 5"Occ: Reg qualif" 6"Occ: SE" 7"Occ: NREGA", modify
@@ -306,24 +354,9 @@ foreach x in sex age_cat educode moc_indiv caste annualincome_indiv2016_q {
 tab `x', gen(`x'_)
 }
 
-*** Gen instability
-fre diff_cr_ES_cat5
-gen instab_cr_ES=diff_cr_ES_cat5
-gen instab_fa_ES=diff_fa_ES_cat5
-
-recode instab_cr_ES instab_fa_ES (1=.)
-
-tab diff_cr_ES instab_cr_ES, m
-
-
-********** Are individuals at the same place with EFA and naive?
-*** Cross table in 2016 and 2020 between EFA and naïve
-tab cr_ES2016_cat fa_ES2016_cat, row nofreq
-tab cr_ES2020_cat fa_ES2020_cat, row nofreq
 
 
 
-save "panel_stab_wide_v4", replace
+save "panel_stab_wide_v5", replace
 ****************************************
 * END
-

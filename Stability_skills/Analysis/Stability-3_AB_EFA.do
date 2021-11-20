@@ -244,33 +244,38 @@ minap $imcor
 qui factor $imcor, pcf fa(5) // 5
 *rotate, promax
 rotate, quartimin
-putexcel set "EFA_2016.xlsx", modify sheet(without_panel)
-putexcel (E2)=matrix(e(r_L))
-*predict f1_without_2016 f2_without_2016 f3_without_2016 f4_without_2016 f5_without_2016
-
-********** Factor analyses: with grit
-/*
-minap $imcorgrit
-qui factor $imcorgrit, pcf fa(6)  // 5
-rotate, promax
-*putexcel set "EFA_2016.xlsx", modify sheet(with_panel)
+*putexcel set "EFA_2016.xlsx", modify sheet(without_panel)
 *putexcel (E2)=matrix(e(r_L))
-predict f1_with_2016 f2_with_2016 f3_with_2016 f4_with_2016 f5_with_2016 f6_with_2016
-*/
+
 
 ********** Omega with Laajaj approach for factor analysis and Cobb Clark
-omega imcr_appointmentontime imcr_makeplans imcr_completeduties imcr_enthusiastic imcr_organized imcr_workhard imcr_workwithother imcr_putoffduties  // 0.8571
+** F1
+global f1 imcr_easilyupset imcr_nervous imcr_worryalot imcr_feeldepressed imcr_changemood imcr_easilydistracted imcr_shywithpeople imcr_putoffduties imcr_rudetoother imcr_repetitivetasks
+** F2
+global f2 imcr_makeplans imcr_appointmentontime imcr_completeduties imcr_enthusiastic imcr_organized imcr_workhard imcr_workwithother
+** F3
+global f3 imcr_liketothink imcr_activeimagination imcr_expressingthoughts imcr_sharefeelings imcr_newideas imcr_inventive imcr_curious imcr_talktomanypeople imcr_talkative imcr_interestedbyart imcr_understandotherfeeling
+** F4
+global f4 imcr_staycalm imcr_managestress
+** F5
+global f5 imcr_forgiveother imcr_toleratefaults imcr_trustingofother imcr_enjoypeople imcr_helpfulwithothers
 
-omega imcr_easilyupset imcr_worryalot imcr_feeldepressed imcr_nervous imcr_repetitivetasks imcr_shywithpeople imcr_changemood imcr_easilydistracted imcr_rudetoother  // 0.8755
+*** Omega
+omega $f1
+omega $f2
+omega $f3
+alpha $f4
+omega $f5
 
-omega imcr_expressingthoughts imcr_liketothink imcr_sharefeelings imcr_activeimagination imcr_newideas imcr_talktomanypeople imcr_inventive imcr_curious imcr_talkative imcr_understandotherfeeling imcr_interestedbyart  // 0.8136
+*** Score
+egen f1_2016=rowmean($f1)
+egen f2_2016=rowmean($f2)
+egen f3_2016=rowmean($f3)
+egen f4_2016=rowmean($f4)
+egen f5_2016=rowmean($f5)
 
-alpha imcr_staycalm imcr_managestress  // 0.5391
-
-omega imcr_forgiveother imcr_toleratefaults imcr_trustingofother imcr_helpfulwithothers imcr_enjoypeople  // 0.5613
-
-
-keep HHID_panel INDID_panel f1_without_2016 f2_without_2016 f3_without_2016 f4_without_2016 f5_without_2016 f1_with_2016 f2_with_2016 f3_with_2016 f4_with_2016 f5_with_2016 f6_with_2016
+* To keep
+keep HHID_panel INDID_panel f1_2016 f2_2016 f3_2016 f4_2016 f5_2016
 save "panel_stab_v2_2016", replace
 ****************************************
 * END
@@ -332,181 +337,35 @@ minap $imcor
 qui factor $imcor, pcf fa(5) // 2
 *rotate, promax
 rotate, quartimin
-putexcel set "EFA_2020.xlsx", modify sheet(without_panel)
-putexcel (E2)=matrix(e(r_L))
-*predict f1_without_2020 f2_without_2020 f3_without_2020 f4_without_2020 f5_without_2020
-
-
-********** Factor analyses: with grit
-/*
-minap $imcorgrit
-qui factor $imcorgrit, pcf fa(6)  // 2
-rotate, promax
-*putexcel set "EFA_2020.xlsx", modify sheet(with_panel)
+*putexcel set "EFA_2020.xlsx", modify sheet(without_panel)
 *putexcel (E2)=matrix(e(r_L))
-predict f1_with_2020 f2_with_2020 f3_with_2020 f4_with_2020 f5_with_2020 f6_with_2020
-*/
 
 
 
 ********** Omega with Laajaj approach for factor analysis and Cobb Clark
-omega imcr_worryalot imcr_easilydistracted imcr_feeldepressed imcr_easilyupset imcr_repetitivetasks imcr_changemood imcr_nervous imcr_putoffduties imcr_shywithpeople imcr_toleratefaults imcr_enjoypeople  // 0.8841
+** F1
+global f1 imcr_worryalot imcr_easilydistracted imcr_feeldepressed imcr_easilyupset imcr_changemood imcr_repetitivetasks imcr_nervous imcr_putoffduties imcr_shywithpeople imcr_rudetoother imcr_enjoypeople imcr_toleratefaults
+** F2
+global f2 imcr_workhard imcr_enthusiastic imcr_talktomanypeople imcr_appointmentontime imcr_forgiveother imcr_expressingthoughts imcr_interestedbyart imcr_newideas imcr_understandotherfeeling imcr_makeplans imcr_completeduties
+** F3
+global f3 imcr_trustingofother imcr_inventive imcr_liketothink imcr_curious imcr_sharefeelings imcr_workwithother
+** F4
+global f4 imcr_organized imcr_helpfulwithothers imcr_staycalm imcr_activeimagination imcr_talkative
 
-omega imcr_talktomanypeople imcr_enthusiastic imcr_workhard imcr_appointmentontime imcr_interestedbyart imcr_expressingthoughts imcr_forgiveother imcr_makeplans imcr_understandotherfeeling imcr_newideas  // 0.5226
+*** Omega
+omega $f1
+omega $f2
+omega $f3
+omega $f4
 
+*** Score
+egen f1_2020=rowmean($f1)
+egen f2_2020=rowmean($f2)
+egen f3_2020=rowmean($f3)
+egen f4_2020=rowmean($f4)
 
-omega imcr_trustingofother imcr_inventive imcr_liketothink imcr_curious imcr_sharefeelings  // 0.3997
-
-omega imcr_organized imcr_helpfulwithothers imcr_staycalm imcr_activeimagination imcr_talkative imcr_workwithother imcr_completeduties  // 0.4002
-
-alpha imcr_managestress imcr_rudetoother  // 0.2213
-
-
-keep HHID_panel INDID_panel f1_without_2020 f2_without_2020 f3_without_2020 f4_without_2020 f5_without_2020 f1_with_2020 f2_with_2020 f3_with_2020 f4_with_2020 f5_with_2020 f6_with_2020
+* To keep
+keep HHID_panel INDID_panel f1_2020 f2_2020 f3_2020 f4_2020
 save "panel_stab_v2_2020", replace
-****************************************
-* END
-
-
-
-
-
-
-
-
-****************************************
-* Graphical representation
-****************************************
-set graph off
-
-********** With
-foreach x in with_panel {
-forvalues j=2016(4)2020 {
-import excel "EFA_`j'.xlsx", sheet("`x'") firstrow clear
-rename Variables var
-rename N n
-gen Big5=""
-replace Big5="(OP)" if NaiveBigFive=="Openness"
-replace Big5="(CO)" if NaiveBigFive=="Conscientiousness"
-replace Big5="(EX)" if NaiveBigFive=="Extraversion"
-replace Big5="(AG)" if NaiveBigFive=="Agreeableness"
-replace Big5="(ES)" if NaiveBigFive=="Emotional stability"
-replace Big5="(GR)" if NaiveBigFive=="Grit"
-egen varbis=concat(var Big5), p(" ")
-drop var
-rename varbis var
-set graph off
-forvalues i=1(1)6{
-*Sort
-gsort - F`i'
-sencode var, gen(var_F`i') gsort(F`i')
-replace F`i'=round(F`i', 0.01)
-*Graph
-twoway ///
-(line var_F`i' F`i', xline(0, lcolor(gs10))) ///
-(scatter var_F`i' F`i', mlabel(F`i') mlabposition(11) mlabsize(*0.3) mlabangle(0) msymbol(i)), ///
-xlabel(, labsize(tiny) angle(0) nogrid) xtitle("")  ///
-ylabel(1(1)41, valuelabel labsize(tiny)) ytitle("") ///
-title("Factor `i'", size(small)) ///
-legend(order(1 "Correlation with factor") pos(6) col(3) size(vsmall) off) ///
-name(g_`i', replace)
-sort n
-}
-graph combine g_1 g_2 g_3 g_4 g_5 g_6, note("Corrected items.", size(tiny)) name(comb_`j'_`x', replace)
-graph export "factor`j'_`x'.pdf", as(pdf) replace
-}
-}
-
-
-********** Without
-foreach x in without_panel {
-forvalues j=2016(4)2020 {
-import excel "EFA_`j'.xlsx", sheet("`x'") firstrow clear
-rename Variables var
-rename N n
-*Drop grit
-drop if NaiveBigFive=="Grit"
-
-gen Big5=""
-replace Big5="(OP)" if NaiveBigFive=="Openness"
-replace Big5="(CO)" if NaiveBigFive=="Conscientiousness"
-replace Big5="(EX)" if NaiveBigFive=="Extraversion"
-replace Big5="(AG)" if NaiveBigFive=="Agreeableness"
-replace Big5="(ES)" if NaiveBigFive=="Emotional stability"
-egen varbis=concat(var Big5), p(" ")
-drop var
-rename varbis var
-set graph off
-forvalues i=1(1)5{
-*Sort
-gsort - F`i'
-sencode var, gen(var_F`i') gsort(F`i')
-replace F`i'=round(F`i', 0.01)
-*Graph
-twoway ///
-(line var_F`i' F`i', xline(0, lcolor(gs10))) ///
-(scatter var_F`i' F`i', mlabel(F`i') mlabposition(11) mlabsize(*0.3) mlabangle(0) msymbol(i)), ///
-xlabel(, labsize(tiny) angle(0) nogrid) xtitle("")  ///
-ylabel(1(1)35, valuelabel labsize(tiny)) ytitle("") ///
-title("Factor `i'", size(small)) ///
-legend(order(1 "Correlation with factor") pos(6) col(3) size(vsmall) off) ///
-name(g_`i', replace)
-sort n
-}
-graph combine g_1 g_2 g_3 g_4 g_5, note("Corrected items.", size(tiny)) name(comb_`j'_`x', replace)
-graph export "factor`j'_`x'.pdf", as(pdf) replace
-}
-}
-****************************************
-* END
-
-
-
-
-
-
-
-
-
-
-
-****************************************
-* EFA interpretations
-****************************************
-/*
-********** 2016
-*** with
-F1 as CO-GR
-F2 as ES
-F3 as OP-EX
-F4 as mix
-F5 as ES-CO
-F6 as AG
-
-*** without
-F1 as CO
-F2 as ES
-F3 as EX-OP
-F4 as ES-CO
-F5 as AG
-
-
-********** 2020
-*** with
-F1 as ES
-F2 as mix
-F3 as mix
-F4 as OP
-F5 as mix
-F6 as mix
-
-*** without
-F1 as ES
-F2 as EX-CO
-F3 as OP (OP-EX)
-F4 as mix
-F5 as EX-mix
-
-*/
 ****************************************
 * END

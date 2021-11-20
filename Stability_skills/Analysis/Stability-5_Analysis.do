@@ -49,149 +49,93 @@ global wave3 "NEEMSIS2-HH_v21"
 ****************************************
 * Desc p1
 ****************************************
-use "panel_stab_wide_v4", clear
+use "panel_stab_wide_v5", clear
 keep if age25==1
 *740 individuals
 
 
+********** Cross table
+*** Diff at 5%
+ta diff_cr_ES_cat5 diff_fa_ES_cat5
+ta diff_cr_ES_cat5 diff_fa_ES_cat5, cell nofreq
+
+*** Diff at 10%
+ta diff_cr_ES_cat10 diff_fa_ES_cat10, cell nofreq
+
+*** Delta at 5%
+ta delta_cr_ES_cat5 delta_fa_ES_cat5, cell nofreq
+
+*** Delta at 10%
+ta delta_cr_ES_cat10 delta_fa_ES_cat10, cell nofreq
+
+
+
+
 ********** Difference
+tabstat diff_fa_ES diff_cr_ES, stat(min max)
+replace diff_cr_ES=2 if diff_cr_ES>2
+
 /*
-*** Evo fa
-twoway__histogram_gen diff_fa_ES, percent width(0.1) gen(h x, replace)
-twoway ///
-(bar h x if x<-.444, color(gs8) barwidth(0.1)) ///
-(bar h x if x>=-.444 & x<=.444, color(gs10) barwidth(0.1)) ///
-(bar h x if x>.444, color(gs4) barwidth(0.1)) ///
-(kdensity diff_fa_ES, bwidth(0.15) lcolor(gs1) lpattern(solid) yaxis(2)) ///
-, ///
-xlabel(-4(1)5) xmtick(-4.5(.5)5.5) xtitle("ΔES") ///
-ytitle("%", axis(1))  ///
-ytitle("Density", axis(2)) ///
-note("Kernel: Epanechnikov" "Bandwidth: 0.15" "Histogram can be read with the left-hand y-axis." "Kernel curve can be read with the right-hand y-axis.", size(tiny)) ///
-plotregion(margin(none)) legend(pos(6) col(4) order(1 "Decrease" 2 "Stable" 3 "Increase" 4 "Kernel density")) name(histo, replace) 
-graph export "histo_fa.pdf", replace
-
-*** Evo cr
-twoway__histogram_gen diff_cr_ES, percent width(0.1) gen(h x, replace)
-twoway ///
-(bar h x if x<-.314, color(gs8) barwidth(0.1)) ///
-(bar h x if x>=-.314 & x<=.314, color(gs10) barwidth(0.1)) ///
-(bar h x if x>.314, color(gs4) barwidth(0.1)) ///
-(kdensity diff_cr_ES, bwidth(0.15) lcolor(gs1) lpattern(solid) yaxis(2)) ///
-, ///
-xlabel(-3(1)3) xmtick(-3.5(.5)3) xtitle("ΔES") ///
-ytitle("%", axis(1))  ///
-ytitle("Density", axis(2)) ///
-note("Kernel: Epanechnikov" "Bandwidth: 0.15" "Histogram can be read with the left-hand y-axis." "Kernel curve can be read with the right-hand y-axis.", size(tiny)) ///
-plotregion(margin(none)) legend(pos(6) col(4) order(1 "Decrease" 2 "Stable" 3 "Increase" 4 "Kernel density")) name(histo, replace) 
-graph export "histo_cr.pdf", replace
-
-*** Evo abs fa
-twoway__histogram_gen abs_fa_ES, percent width(0.1) gen(h x, replace)
-twoway ///
-(bar h x if x<=.250211, color(gs10) barwidth(0.1)) ///
-(bar h x if x>.250211, color(gs4) barwidth(0.1)) ///
-(kdensity abs_fa_ES, bwidth(0.15) lcolor(gs1) lpattern(solid) yaxis(2)) ///
-, ///
-xlabel() xmtick() xtitle("|ΔES|") ///
-ytitle("%", axis(1))  ///
-ytitle("Density", axis(2)) ///
-note("Kernel: Epanechnikov" "Bandwidth: 0.15" "Histogram can be read with the left-hand y-axis." "Kernel curve can be read with the right-hand y-axis.", size(tiny)) ///
-plotregion(margin(none)) legend(pos(6) col(4) order(1 "Stable" 2 "Non-stable" 3 "Kernel density")) name(histo, replace) 
-graph export "histo_abs_fa.pdf", replace
-
-*** Evo abs cr
-twoway__histogram_gen abs_cr_ES, percent width(0.1) gen(h x, replace)
-twoway ///
-(bar h x if x<=.1714286, color(gs10) barwidth(0.1)) ///
-(bar h x if x>.1714286, color(gs4) barwidth(0.1)) ///
-(kdensity abs_cr_ES, bwidth(0.15) lcolor(gs1) lpattern(solid) yaxis(2)) ///
-, ///
-xlabel() xmtick() xtitle("|ΔES|") ///
-ytitle("%", axis(1))  ///
-ytitle("Density", axis(2)) ///
-note("Kernel: Epanechnikov" "Bandwidth: 0.15" "Histogram can be read with the left-hand y-axis." "Kernel curve can be read with the right-hand y-axis.", size(tiny)) ///
-plotregion(margin(none)) legend(pos(6) col(4) order(1 "Stable" 2 "Non-stable" 3 "Kernel density")) name(histo, replace) 
-graph export "histo_abs_cr.pdf", replace
-*/
-
-
-********** Transition matrix
-tab cr_ES2016_cut cr_ES2020_cut
-tab cr_ES2016_cut cr_ES2020_cut, nofreq row
-
-tab fa_ES2016_cut fa_ES2020_cut
-tab fa_ES2016_cut fa_ES2020_cut, nofreq row
-
-
-
-********** Difference between FA and NA
-tab abs_cr_ES_cat5 abs_fa_ES_cat5, cell
-tab abs_cr_ES_cat10 abs_fa_ES_cat10, cell
-
-fre abs_fa_ES
-replace abs_fa_ES=4.97 if abs_fa_ES>=5  // 5.005795
-
 *** Scatter
 twoway ///
-(scatter abs_fa_ES abs_cr_ES, xline(.171) yline(.250) msymbol() msize(vsmall)) ///
-(lfit abs_fa_ES abs_cr_ES, lpattern(solid)), ///
-xtitle("|ΔES| - Naïve appr.") ytitle("|ΔES| - Factor app.") ///
-xlabel(, grid gmin gmax) ylabel(, grid gmax gmin) ///
+(scatter diff_fa_ES diff_cr_ES, xline(-.25 .25) yline(-.25 .25) msymbol() msize(vsmall)) ///
+(lfit diff_fa_ES diff_cr_ES, lpattern(solid)), ///
+xtitle("ΔES - Naïve appr.") ytitle("ΔES - Factor app.") ///
+xlabel(-4"0" -2"-2" 0"0" 2"2", gmax gmin grid) ylabel(-4"" -2"-2" 0"0" 2"2" 4"4", gmin gmax grid) ///
 plotregion(margin(none)) ///
 legend(order(1 "Indiv." 2 "Fit.") pos(11) col(2) off) name(scatter_cent, replace) ysc(alt) xsc(alt)
 
+
 *** histo x
-twoway__histogram_gen abs_cr_ES, percent bin(50) gen(h x, replace)
+twoway__histogram_gen diff_cr_ES, percent bin(71) gen(h x, replace)
 twoway ///
-(bar h x if x<=.1714286, color() barwidth(0.07)) ///
-(bar h x if x>.1714286, color() barwidth(0.07)) ///
+(bar h x if x<-.25, color() barwidth(0.08)) ///
+(bar h x if x>=-.25 & x<=.25, color() barwidth(0.08)) ///
+(bar h x if x>.25, color() barwidth(0.08)) ///
 , ///
-xtitle("|ΔES| - Naïve app.") ytitle("%") ///
-ylabel(, nogrid gmax gmin) xlabel(, grid gmax gmin) ///
+xtitle("ΔES - Naïve app.") ytitle("Percent") ///
+ylabel(0" 0" 1"1" 2"2" 3"3" 4"4" 5"5", nogrid gmax gmin labsize(small)) xlabel(, grid gmax gmin) ///
 plotregion(margin(none)) legend(order(1 "Stab." 2 "Instab.") pos(6) col(2) off) name(histo_x, replace) ysc(reverse alt)
 
+
 *** histo y
-twoway__histogram_gen abs_fa_ES, percent bin(50) gen(h x, replace)
+twoway__histogram_gen diff_fa_ES, percent bin(70) gen(h x, replace)
 twoway ///
-(bar h x if x<=.250211, color() barwidth(0.1) horizontal) ///
-(bar h x if x>.250211, color() barwidth(0.1) horizontal) ///
+(bar h x if x<-.25, color() barwidth(0.1) horizontal) ///
+(bar h x if x>=-.25 & x<=.25, color() barwidth(0.1) horizontal) ///
+(bar h x if x>.25, color() barwidth(0.1) horizontal) ///
 , ///
-xtitle("%") ytitle("|ΔES| - Factor app.") ///
+xtitle("Percent") ytitle("ΔES - Factor app.") ///
 ylabel(, grid gmax gmin) xlabel(, nogrid gmax gmin) ///
-plotregion(margin(none)) legend(order(1 "Stab." 2 "Instab.") pos(1) col(2) off) name(histo_y, replace) xsc(reverse alt)
+plotregion(margin(none)) legend(order(1 "Decreasing" 2 "Stable" 3 "Increasing") pos(1) col(3) off) name(histo_y, replace) xsc(reverse alt)
+
 
 *** Combine
 grc1leg histo_y scatter_cent histo_x ///
 , hole(3) imargin(0 0 0 0) graphregion(margin(l=0 r=0)) ///
 leg(histo_y) ///
-name(scatter_histo_new, replace) scale(1.3)
+name(scatter_histo_new, replace) scale(1)
 graph export "histo_abs.pdf", replace
-
-*graph combine histo_y scatter_cent histo_x, hole(3) imargin(0 0 0 0) graphregion(margin(l=0 r=0)) name(scatter_histo_new, replace) scale(1.3)
-
+*/
 
 
 
 ********** Difference over trajectory
-*** Descriptive statistics for naïve Big-5
-tab sex diff_cr_ES_cat5, col nofreq
-tab caste diff_cr_ES_cat5, col nofreq
-tab age_cat diff_cr_ES_cat5, col nofreq
-tab edulevel2016 diff_cr_ES_cat5, col nofreq
-tab username_backup2020 diff_cr_ES_cat5, col nofreq
-tab diff_ars3_cat5 diff_cr_ES_cat5, col nofreq
-tab shock_recode diff_cr_ES_cat5, col nofreq
-
 *** Descriptive statistics for factor Big-5
+cls
 tab sex diff_fa_ES_cat5, col nofreq
 tab caste diff_fa_ES_cat5, col nofreq
 tab age_cat diff_fa_ES_cat5, col nofreq
-tab edulevel2016 diff_fa_ES_cat5, col nofreq
-tab username_backup2020 diff_fa_ES_cat5, col nofreq
-tab diff_ars3_cat5 diff_fa_ES_cat5, col nofreq
-tab shock_recode diff_fa_ES_cat5, col nofreq
+tab educode diff_fa_ES_cat5, col nofreq
+tab dummydemonetisation2016 diff_fa_ES_cat5, col nofreq
+tab covsellland2020 diff_fa_ES_cat5, col nofreq
 
+tab sex diff_fa_ES_cat5, chi2 nofreq
+tab caste diff_fa_ES_cat5, chi2 nofreq
+tab age_cat diff_fa_ES_cat5, chi2 nofreq
+tab educode diff_fa_ES_cat5, chi2 nofreq
+tab dummydemonetisation2016 diff_fa_ES_cat5, chi2 nofreq
+tab covsellland2020 diff_fa_ES_cat5, chi2 nofreq
 ****************************************
 * END
 
@@ -202,76 +146,6 @@ tab shock_recode diff_fa_ES_cat5, col nofreq
 
 
 
-
-
-
-****************************************
-* Desc p2
-****************************************
-use "panel_stab_wide_v4", clear
-
-label define castecat 1"Dalits" 2"Middle" 3"Upper", modify
-
-*** Caste and sex
-egen caste_sex=group(sex caste), lab
-fre caste_sex
-
-/*
-set graph off
-********** Decrease, naïve
-*** Boxplot
-* Sex
-stripplot decrease_cr_ES, over(sex) separate() ///
-cumul cumprob box centre vertical refline /// 
-xsize(5) xtitle("") xlabel(,angle(0))  ///
-msymbol(oh oh oh oh oh oh oh) mcolor()  ///
-ylabel() ymtick() ytitle("") ///
-legend(order(1 "Mean" 5 "Individual"))
-
-* Caste
-stripplot decrease_cr_ES, over(caste) separate() ///
-cumul cumprob box centre vertical refline /// 
-xsize(5) xtitle("") xlabel(,angle(0))  ///
-msymbol(oh oh oh oh oh oh oh) mcolor()  ///
-ylabel() ymtick() ytitle("") ///
-legend(order(1 "Mean" 5 "Individual"))
-
-* Caste & sex
-stripplot decrease_cr_ES, over(caste_sex) separate() ///
-cumul cumprob box centre vertical refline /// 
-xsize(5) xtitle("") xlabel(,angle(45))  ///
-msymbol(oh oh oh oh oh oh oh) mcolor()  ///
-ylabel() ymtick() ytitle("") ///
-legend(order(1 "Mean" 5 "Individual"))
-
-* Moc
-stripplot decrease_cr_ES, over(moc_indiv) separate() ///
-cumul cumprob box centre vertical refline /// 
-xsize(5) xtitle("") xlabel(,angle(45))  ///
-msymbol(oh oh oh oh oh oh oh) mcolor()  ///
-ylabel() ymtick() ytitle("") ///
-legend(order(1 "Mean" 5 "Individual"))
-
-* Caste
-stripplot decrease_cr_ES, over(caste) separate() ///
-cumul cumprob box centre vertical refline /// 
-xsize(5) xtitle("") xlabel(,angle(0))  ///
-msymbol(oh oh oh oh oh oh oh) mcolor()  ///
-ylabel() ymtick() ytitle("") ///
-legend(order(1 "Mean" 5 "Individual"))
-
-* Caste
-stripplot decrease_cr_ES, over(caste) separate() ///
-cumul cumprob box centre vertical refline /// 
-xsize(5) xtitle("") xlabel(,angle(0))  ///
-msymbol(oh oh oh oh oh oh oh) mcolor()  ///
-ylabel() ymtick() ytitle("") ///
-legend(order(1 "Mean" 5 "Individual"))
-
-set graph on
-*/
-****************************************
-* END
 
 
 
@@ -394,7 +268,9 @@ esttab ars1_1 ars1_2 ars2_1 ars2_2 using "_reg.csv", ///
 ****************************************
 * ECON on abs var
 ****************************************
-use "panel_stab_wide_v4", clear
+use "panel_stab_wide_v5", clear
+keep if age25==1
+
 
 *** Naïve taxonomy
 * Total sample
@@ -422,7 +298,9 @@ margins, dydx(female caste age_cat educode moc_indiv) at(path_abs_cr5=(1 2)) atm
 ****************************************
 * ECON on var
 ****************************************
-use "panel_stab_wide_v4", clear
+use "panel_stab_wide_v5", clear
+keep if age25==1
+
 
 ********** ES distribution
 stripplot cr_ES2016 cr_ES2020 fa_ES2016 fa_ES2020 , over() separate() ///
