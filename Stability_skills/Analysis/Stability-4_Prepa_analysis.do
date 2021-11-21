@@ -79,6 +79,28 @@ drop _1_ars2020 _1_ars22020 _1_ars32020 _2_ars2020 _2_ars22020 _2_ars32020 _3_ar
 
 drop cr_curious2020 cr_interestedbyart2020 cr_repetitivetasks2020 cr_inventive2020 cr_liketothink2020 cr_newideas2020 cr_activeimagination2020 cr_organized2020 cr_makeplans2020 cr_workhard2020 cr_appointmentontime2020 cr_putoffduties2020 cr_easilydistracted2020 cr_completeduties2020 cr_enjoypeople2020 cr_sharefeelings2020 cr_shywithpeople2020 cr_enthusiastic2020 cr_talktomanypeople2020 cr_talkative2020 cr_expressingthoughts2020 cr_workwithother2020 cr_understandotherfeeling2020 cr_trustingofother2020 cr_rudetoother2020 cr_toleratefaults2020 cr_forgiveother2020 cr_helpfulwithothers2020 cr_managestress2020 cr_nervous2020 cr_changemood2020 cr_feeldepressed2020 cr_easilyupset2020 cr_worryalot2020 cr_staycalm2020 cr_tryhard2020 cr_stickwithgoals2020 cr_goaftergoal2020 cr_finishwhatbegin2020 cr_finishtasks2020 cr_keepworking2020
 
+*** Username
+* 2016
+rename username_2016_code2016 username_neemsis1
+desc username_neemsis1
+fre username_neemsis1
+label define username_2016_code 1"Enum: Ant" 2"Enum: Kum" 3"Enum: May" 4"Enum: Paz" 5"Enum: Raj" 6"Enum: Sit" 7"Enum: Viv", modify
+
+* 2020
+rename username_2020_code2020 username_neemsis2
+fre username_neemsis2
+desc username_neemsis2
+recode username_neemsis2 (1=4)
+fre username_neemsis2
+label define userneemsis2 1"Chithra-Radhika" 2"Mayan" 3"Pazani" 4"Raichal" 5"Rajalakschmi" 6"Suganya-Malarvizhi" 7"Vivek-Radja"
+fre username_neemsis2
+replace username_neemsis2=username_neemsis2-1
+label values username_neemsis2 userneemsis2
+fre username_neemsis2
+
+drop username2016 username_20162016 username_20202016 username_2020_code2016 username2020 username_20162020 username_20202020 username_2016_code2020
+
+fre username_backup2016 username_neemsis1 username_backup2020 username_neemsis2
 
 save "panel_stab_wide_v3", replace
 ****************************************
@@ -255,6 +277,8 @@ use "panel_stab_wide_v4", clear
 desc sex
 label define sex 1"Sex: Male" 2"Sex: Female", modify
 fre sex
+
+
 * Age
 egen age_cat=cut(age2016), at(18,25,35,45,55,65,82) icodes
 label define age 0"Age: [18;25[" 1"Age: [25;35[" 2"Age: [35;45[" 3"Age: [45;55[" 4"Age: [55;65[" 5"Age: [65;]", modify
@@ -262,18 +286,26 @@ label values age_cat age
 recode age_cat (5=4)
 label define age 0"Age: [18;25[" 1"Age: [25;35[" 2"Age: [35;45[" 3"Age: [45;55[" 4"Age: [55;+]", modify
 tab age2016 age_cat
+
+
 * Age2
 gen age25=0 if age2016<25
 replace age25=1 if age2016>=25
+
+
 * Edu
 clonevar educode=edulevel2016
 recode educode (4=3)
 fre educode
 label define edulevel 0"Edu: Below prim" 1"Edu: Primary" 2"Edu: High school" 3"Edu: HSC/Diploma or more", modify 
 fre educode
+
+
 * MOC
 rename mainocc_occupation_indiv2016 moc_indiv
 label define occupcode 0"Occ: No occup" 1"Occ: Agri" 2"Occ: Agri coolie" 3"Occ: Coolie" 4"Occ: Reg non-qual" 5"Occ: Reg qualif" 6"Occ: SE" 7"Occ: NREGA", modify
+
+
 * Bias
 gen diff_ars3=ars32020-ars32016
 tabstat diff_ars3, stat(n mean sd p50 min max range)
@@ -281,8 +313,12 @@ dis 2.428571*0.05
 egen diff_ars3_cat5=cut(diff_ars3), at(-1,-.121,.121,1.5) icodes
 label define ars3cat 0"Bias: Decrease" 1"Bias: Stable" 2"Bias: Increase"
 label values diff_ars3_cat5 ars3cat
+
+
 * HH
 encode HHID_panel, gen(cluster)
+
+
 * Marital
 fre maritalstatus2016
 clonevar marital=maritalstatus2016
@@ -290,34 +326,41 @@ recode marital (3=2) (4=2)
 recode marital (1=0) (2=1)
 ta maritalstatus2016 marital
 label define maritalstatus 0"Married: Yes" 1"Married: No", modify 
+
+
 * Female
 fre sex
 gen female=sex-1
 fre female
 label define female 0"Sex: Male" 1"Sex: Female"
 label values female female
-* Username
-encode username_backup2016, gen(username_encode_2016)
-encode username_backup2020, gen(username_encode_2020)
+
+
 * Caste
 label define castecat 1"Caste: Dalits" 2"Caste: Middle" 3"Caste: Upper", modify
+
+
 * Demonetisation
 label define demo 0"Demo: No" 1"Demo: Yes"
 label values dummydemonetisation2016 demo
+
+
 * Villages
 label define villageid 1"Vill: ELA" 2"Vill: GOV" 3"Vill: KAR" 4"Vill: KOR" 5"Vill: KUV" 6"Vill: MAN" 7"Vill: MANAM" 8"Vill: NAT" 9"Vill: ORA" 10"Vill: SEM", modify
+
+
 * Wealth
 xtile assets2016_q=assets2016, n(3)
 xtile annualincome_HH2016_q=annualincome_HH2016, n(3)
+recode annualincome_indiv2016 (.=0)
 xtile annualincome_indiv2016_q=annualincome_indiv2016, n(3)
 label define assets 1"Assets: T1" 2"Assets: T2" 3"Assets: T3"
 label values assets2016_q assets
 label define income 1"Income: T1" 2"Income: T2" 3"Income: T3"
 label values annualincome_HH2016_q income
 label values annualincome_indiv2016_q income
-* Username
-label define username_2020_code 1"Enum: Ant" 2"Enum: Chi" 3"Enum: May" 4"Enum: Paz" 5"Enum: Rai" 6"Enum: Raj" 7"Enum: Sug" 8"Enum: Viv", modify
-label values username_encode_2020 username_2020_code
+
+
 * Cov expo
 destring covsellland2020, replace
 recode covsellland2020 (66=2)
@@ -325,24 +368,34 @@ recode covsellland2020 (2=0)
 label define cov 0 "Cov: Not exp" 1 "Cov: Exposed"
 label values covsellland2020 cov
 fre covsellland2020
+
+
 * Marriage
 fre dummymarriage2016 dummymarriage2020
 label define marriage 0"Marriage: No" 1"Marriage: Yes"
 label values dummymarriage2020 marriage
+
+
 * Health
 gen shockhealth=.
 replace shockhealth=0 if healthexpenses2020<=healthexpenses2016
 replace shockhealth=1 if healthexpenses2020>healthexpenses2016
 label define shockhealth 0"Health: No shock" 1"Health: Shock"
 label values shockhealth shockhealth
+
+
 * General shock
 gen shock=shockhealth+dummydemonetisation2016+covsellland2020
 fre shock
+
+
 * Dummy shock
 gen dummyshock=shock
 recode dummyshock (4=1) (3=1) (2=1)
 label define dummyshock 0"Shock: No" 1"Shock: Yes"
 label values dummyshock dummyshock
+
+
 * Recode shock
 gen shock_recode=shock
 recode shock_recode (4=2) (3=2)
@@ -353,8 +406,6 @@ label values shock_recode shock_recode
 foreach x in sex age_cat educode moc_indiv caste annualincome_indiv2016_q {
 tab `x', gen(`x'_)
 }
-
-
 
 
 save "panel_stab_wide_v5", replace
