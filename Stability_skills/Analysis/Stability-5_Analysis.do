@@ -122,27 +122,6 @@ keep if age25==1
 * 740 individuals on 835
 
 
-********** Cross table
-*** Diff at 5%
-ta diff_cr_ES_cat5 diff_fa_ES_cat5
-ta diff_cr_ES_cat5 diff_fa_ES_cat5, cell nofreq
-
-*** Diff at 10%
-ta diff_cr_ES_cat10 diff_fa_ES_cat10, cell nofreq
-
-*** Delta at 5%
-ta delta_cr_ES_cat5 delta_fa_ES_cat5, cell nofreq
-
-*** Delta at 10%
-ta delta_cr_ES_cat10 delta_fa_ES_cat10, cell nofreq
-
-
-
-
-********** Difference
-tabstat diff_fa_ES diff_cr_ES, stat(min max)
-replace diff_cr_ES=2 if diff_cr_ES>2
-
 /*
 *** Scatter
 twoway ///
@@ -187,10 +166,8 @@ graph export "histo_abs.pdf", replace
 */
 
 
-
 ********** Difference over trajectory
 *** Descriptive statistics for factor Big-5
-cls
 ta sex diff_fa_ES_cat5, col nofreq chi2
 ta caste diff_fa_ES_cat5, col nofreq chi2
 ta age_cat diff_fa_ES_cat5, col nofreq chi2
@@ -204,7 +181,24 @@ ta villageid2016 diff_fa_ES_cat5, col nofreq chi2
 ta diff_ars3_cat5 diff_fa_ES_cat5, col nofreq chi2
 ta username_neemsis2 diff_fa_ES_cat5, col nofreq chi2
 
-tabstat diff_ars3, stat(n mean sd p50 min max) by(diff_fa_ES_cat5)
+tabstat age2016 annualincome_indiv2016 assets2016 diff_ars3 ars32016 ars32020, stat(n mean sd p50) by(diff_fa_ES_cat5)
+
+
+*** How much the bias explain?
+reg abs_diff_fa_ES_cat5 i.sex i.caste ib(1).age_cat ib(0).educode i.villageid2020, allbase
+* R2 --> 3.85
+reg abs_diff_fa_ES_cat5 diff_ars3 i.sex i.caste ib(1).age_cat ib(0).educode i.villageid2020, allbase
+* R2 --> 3.74
+
+
+reg abs_diff_fa_ES i.sex i.caste ib(1).age_cat ib(0).educode i.villageid2020, allbase
+* R2 --> 7.40
+reg abs_diff_fa_ES diff_ars3 i.sex i.caste ib(1).age_cat ib(0).educode i.villageid2020, allbase
+* R2 --> 3.74
+
+
+
+
 
 ****************************************
 * END
@@ -213,39 +207,6 @@ tabstat diff_ars3, stat(n mean sd p50 min max) by(diff_fa_ES_cat5)
 
 
 
-
-
-
-
-
-
-
-****************************************
-* ECON on cat
-****************************************
-use "panel_stab_wide_v5", clear
-keep if age25==1
-
-fre diff_fa_ES_cat5
-
-mprobit diff_fa_ES_cat5 ///
-i.female ///
-ib(1).caste ///
-ib(0).age_cat ///
-ib(0).educode ///
-ib(2).moc_indiv ///
-ib(2).annualincome_indiv2016_q ///
-i.dummydemonetisation2016 ///
-i.covsellland2020 ///
-i.villageid2016 ///
-ib(1).diff_ars3_cat5 ///
-i.username_neemsis2 ///
-, cluster(cluster) allbase
-
-margins, dydx(female caste age_cat educode annualincome_indiv2016_q dummydemonetisation2016 covsellland2020) atmeans predict(outcome(0))
-
-****************************************
-* END
 
 
 
@@ -264,7 +225,7 @@ keep if age25==1
 
 *** Naïve taxonomy
 * Interaction var
-reg abs_diff_fa_ES i.pathabs_diff_fa_cat5##i.female i.pathabs_diff_fa_cat5##i.caste i.pathabs_diff_fa_cat5##i.age_cat i.pathabs_diff_fa_cat5##i.educode i.moc_indiv i.annualincome_indiv2016_q i.dummydemonetisation2016 i.covsellland2020 i.villageid2016 i.diff_ars3_cat5 i.username_encode_2020, cluster(cluster)
+reg abs_diff_fa_ES i.pathabs_diff_fa_cat5##i.female i.pathabs_diff_fa_cat5##i.caste i.pathabs_diff_fa_cat5##i.age_cat i.pathabs_diff_fa_cat5##i.educode i.moc_indiv i.annualincome_indiv2016_q i.dummydemonetisation2016 i.covsellland2020 i.villageid2016 i.diff_ars3_cat5 i.username_neemsis2, cluster(cluster)
 margins, dydx(female caste age_cat educode) at(pathabs_diff_fa_cat5=(1 2)) atmeans
 ****************************************
 * END
@@ -285,23 +246,21 @@ margins, dydx(female caste age_cat educode) at(pathabs_diff_fa_cat5=(1 2)) atmea
 use "panel_stab_wide_v5", clear
 keep if age25==1
 
-tabstat diff_fa_ES, stat(n mean sd p50 min max) by(diff_fa_ES_cat5)
-fre diff_fa_ES_cat5
+fre age_cat
 
 ********** EFA
 *** Decrease
 reg diff_fa_ES ///
 i.female ///
 ib(1).caste ///
-ib(0).age_cat ///
+ib(1).age_cat ///
 ib(0).educode ///
 ib(2).moc_indiv ///
 ib(2).annualincome_indiv2016_q ///
 i.dummydemonetisation2016 ///
 i.covsellland2020 ///
 i.villageid2016 ///
-ib(1).diff_ars3_cat5 ///
-i.username_encode_2020 ///
+i.username_neemsis2 ///
 if diff_fa_ES_cat5==0, cluster(cluster) allbase
 est store fa_dec
 
@@ -309,53 +268,23 @@ est store fa_dec
 reg diff_fa_ES ///
 i.female ///
 ib(1).caste ///
-ib(0).age_cat ///
+ib(1).age_cat ///
 ib(0).educode ///
 ib(2).moc_indiv ///
 ib(2).annualincome_indiv2016_q ///
 i.dummydemonetisation2016 ///
 i.covsellland2020 ///
 i.villageid2016 ///
-ib(1).diff_ars3_cat5 ///
-i.username_encode_2020 ///
+i.username_neemsis2 ///
 if diff_fa_ES_cat5==2, cluster(cluster) allbase
 est store fa_inc
 
-esttab cr_abs cr_dec cr_inc fa_abs fa_dec fa_inc using "_reg.csv", ///
+esttab fa_dec fa_inc using "_reg.csv", ///
 	star(* 0.10 ** 0.05 *** 0.01) ///
 	cells("b(fmt(2)star) se(fmt(2)par)") /// 
 	drop() ///	
 	legend label varlabels(_cons constant) ///
 	stats(N r2 F, fmt(0 3 3) labels(`"Observations"' `"\$R^2$"' `"F"')) ///
 	replace
-****************************************
-* END
-
-
-
-
-
-
-
-
-
-
-
-****************************************
-* Enumerator bias
-****************************************
-use "panel_stab_wide_v5", clear
-cls
-
-ta username_neemsis2
-ta sex username_neemsis2, col nofreq chi2
-ta caste username_neemsis2, col nofreq chi2
-ta age_cat username_neemsis2, col nofreq chi2
-ta educode username_neemsis2, col nofreq chi2
-ta dummydemonetisation2016 username_neemsis2, col nofreq chi2
-ta covsellland2020 username_neemsis2, col nofreq chi2
-ta villageid2020 username_neemsis2, col nofreq chi2
-
-
 ****************************************
 * END

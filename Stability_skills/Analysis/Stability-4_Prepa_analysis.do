@@ -198,6 +198,7 @@ fre abs_diff_cr_ES_cat5 abs_diff_cr_ES_cat10 abs_diff_fa_ES_cat5 abs_diff_fa_ES_
 
 
 ********** INSTAB
+/*
 gen abs_diff_instab5=0
 gen abs_diff_instab10=0
 gen abs_delta_instab5=0
@@ -214,7 +215,7 @@ foreach x in abs_diff_instab5 abs_diff_instab10 abs_delta_instab5 abs_delta_inst
 label values `x' stab3
 } 
 fre abs_diff_instab5 abs_diff_instab10 abs_delta_instab5 abs_delta_instab10
-
+*/
 
 *** Increase or decrease
 gen pathabs_diff_cr_cat5=0
