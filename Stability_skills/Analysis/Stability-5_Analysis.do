@@ -121,10 +121,6 @@ tab age25
 keep if age25==1
 * 740 individuals on 835
 
-fre username_neemsis2
-clonevar username_2020_test=username_neemsis2
-recode username_2020_test (1=4)
-fre username_2020_test
 
 ********** Cross table
 *** Diff at 5%
@@ -195,19 +191,21 @@ graph export "histo_abs.pdf", replace
 ********** Difference over trajectory
 *** Descriptive statistics for factor Big-5
 cls
-tab sex diff_fa_ES_cat5, col nofreq
-tab caste diff_fa_ES_cat5, col nofreq
-tab age_cat diff_fa_ES_cat5, col nofreq
-tab educode diff_fa_ES_cat5, col nofreq
-tab dummydemonetisation2016 diff_fa_ES_cat5, col nofreq
-tab covsellland2020 diff_fa_ES_cat5, col nofreq
+ta sex diff_fa_ES_cat5, col nofreq chi2
+ta caste diff_fa_ES_cat5, col nofreq chi2
+ta age_cat diff_fa_ES_cat5, col nofreq chi2
+ta educode diff_fa_ES_cat5, col nofreq chi2
+ta moc_indiv diff_fa_ES_cat5, col nofreq chi2
+ta annualincome_indiv2016_q diff_fa_ES_cat5, col nofreq chi2
+ta dummydemonetisation2016 diff_fa_ES_cat5, col nofreq chi2
+ta covsellland2020 diff_fa_ES_cat5, col nofreq chi2
 
-tab sex diff_fa_ES_cat5, chi2 nofreq
-tab caste diff_fa_ES_cat5, chi2 nofreq
-tab age_cat diff_fa_ES_cat5, chi2 nofreq
-tab educode diff_fa_ES_cat5, chi2 nofreq
-tab dummydemonetisation2016 diff_fa_ES_cat5, chi2 nofreq
-tab covsellland2020 diff_fa_ES_cat5, chi2 nofreq
+ta villageid2016 diff_fa_ES_cat5, col nofreq chi2
+ta diff_ars3_cat5 diff_fa_ES_cat5, col nofreq chi2
+ta username_neemsis2 diff_fa_ES_cat5, col nofreq chi2
+
+tabstat diff_ars3, stat(n mean sd p50 min max) by(diff_fa_ES_cat5)
+
 ****************************************
 * END
 
