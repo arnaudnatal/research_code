@@ -222,11 +222,31 @@ reg abs_diff_fa_ES diff_ars3 i.sex i.caste ib(1).age_cat ib(0).educode i.village
 use "panel_stab_wide_v5", clear
 keep if age25==1
 
+recode pathabs_diff_fa_cat5 (1=0) (2=1)
+label define pathabs_diff_fa_cat5 0"Decreasing" 1"Increasing"
+label values pathabs_diff_fa_cat5 pathabs_diff_fa_cat5
 
 *** Naïve taxonomy
 * Interaction var
-reg abs_diff_fa_ES i.pathabs_diff_fa_cat5##i.female i.pathabs_diff_fa_cat5##i.caste i.pathabs_diff_fa_cat5##i.age_cat i.pathabs_diff_fa_cat5##i.educode i.moc_indiv i.annualincome_indiv2016_q i.dummydemonetisation2016 i.covsellland2020 i.villageid2016 i.diff_ars3_cat5 i.username_neemsis2, cluster(cluster)
-margins, dydx(female caste age_cat educode) at(pathabs_diff_fa_cat5=(1 2)) atmeans
+reg abs_diff_fa_ES ///
+i.female##i.pathabs_diff_fa_cat5 ///
+i.caste##i.pathabs_diff_fa_cat5 ///
+i.educode##i.pathabs_diff_fa_cat5 ///
+c.age2016 ///
+i.moc_indiv##i.pathabs_diff_fa_cat5 ///
+i.marital ///
+i.annualincome_indiv2016_q ///
+i.dummydemonetisation2016 ///
+i.covsellland2020 ///
+i.assets2016_q ///
+i.villageid2016 ///
+i.diff_ars3_cat5 ///
+i.username_neemsis2 ///
+, cluster(cluster)
+
+
+
+margins, dydx(female caste age educode moc_indiv) at(pathabs_diff_fa_cat5=(1 2)) atmeans
 ****************************************
 * END
 
