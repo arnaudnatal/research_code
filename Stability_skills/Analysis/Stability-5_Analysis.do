@@ -226,27 +226,59 @@ recode pathabs_diff_fa_cat5 (1=0) (2=1)
 label define pathabs_diff_fa_cat5 0"Decreasing" 1"Increasing"
 label values pathabs_diff_fa_cat5 pathabs_diff_fa_cat5
 
+
 *** Naïve taxonomy
-* Interaction var
+* No interraction
 reg abs_diff_fa_ES ///
-i.female##i.pathabs_diff_fa_cat5 ///
-i.caste##i.pathabs_diff_fa_cat5 ///
-i.educode##i.pathabs_diff_fa_cat5 ///
-c.age2016 ///
-i.moc_indiv##i.pathabs_diff_fa_cat5 ///
+i.female ///
+ib(1).caste ///
+i.educode ///
+i.age_cat ///
+ib(2).moc_indiv ///
 i.marital ///
-i.annualincome_indiv2016_q ///
+ib(2).annualincome_indiv2016_q ///
 i.dummydemonetisation2016 ///
 i.covsellland2020 ///
-i.assets2016_q ///
+ib(2).assets2016_q ///
 i.villageid2016 ///
-i.diff_ars3_cat5 ///
+ib(2).diff_ars3_cat5 ///
+i.username_neemsis2 ///
+, cluster(cluster) allbase
+est store abs_diff
+
+
+* Interaction
+reg abs_diff_fa_ES ///
+i.female##pathabs_diff_fa_cat5 ///
+ib(1).caste##pathabs_diff_fa_cat5 ///
+i.educode##pathabs_diff_fa_cat5 ///
+i.age_cat##pathabs_diff_fa_cat5 ///
+ib(2).moc_indiv##pathabs_diff_fa_cat5 ///
+i.marital##pathabs_diff_fa_cat5 ///
+ib(2).annualincome_indiv2016_q##pathabs_diff_fa_cat5 ///
+i.dummydemonetisation2016 ///
+i.covsellland2020 ///
+ib(2).assets2016_q ///
+i.villageid2016 ///
+ib(2).diff_ars3_cat5 ///
 i.username_neemsis2 ///
 , cluster(cluster)
+est store abs_diff_int
+
+margins, dydx(female caste age_cat educode moc_indiv marital annualincome_indiv2016_q) at(pathabs_diff_fa_cat5=(0 1)) atmeans allbase saving(margin, replace)
 
 
+esttab abs_diff using "_reg.csv", ///
+	star(* 0.10 ** 0.05 *** 0.01) ///
+	cells("b(fmt(2)star) se(fmt(2)par)") /// 
+	drop() ///	
+	legend label varlabels(_cons constant) ///
+	stats(N r2 F, fmt(0 3 3) labels(`"Observations"' `"\$R^2$"' `"F"')) ///
+	replace
 
-margins, dydx(female caste age educode moc_indiv) at(pathabs_diff_fa_cat5=(1 2)) atmeans
+
+fre female caste educode age_cat moc_indiv marital annualincome_indiv2016_q
+
 ****************************************
 * END
 
@@ -260,51 +292,117 @@ margins, dydx(female caste age educode moc_indiv) at(pathabs_diff_fa_cat5=(1 2))
 
 
 
+
+
 ****************************************
-* ECON on var
+* Format
 ****************************************
-use "panel_stab_wide_v5", clear
-keep if age25==1
+use"margin", clear
 
-fre age_cat
+label define cat 2"Sex: Female" 4"Caste: Middle" 5"Caste: Upper" 7"Edu: Primary" 8"Edu: High school" 9"Edu: HSC-Diploma or more" 11"Age: [35;45[" 12"Age: [45;55[" 13"Age: [55;+[" 14"Occ: No occupation" 15"Occ: Agriculture" 17"Occ: Coolie" 18"Occ: Regular" 19"Occ: SE" 20"Occ: NREGA" 22"Married: No" 23"Income: T1" 25"Income: T3", replace
+label values _deriv cat
+decode _deriv, gen(deriv)
+tostring _at, gen(at)
+replace at="1" if _at==1
+replace at="2" if _at==2
+keep _deriv at _margin _se _statistic _pvalue _ci_lb _ci_ub
+foreach y in margin se statistic pvalue ci_lb ci_ub {
+gen `y'=_`y'
+}
+keep _deriv margin se pvalue at
 
-********** EFA
-*** Decrease
-reg diff_fa_ES ///
-i.female ///
-ib(1).caste ///
-ib(1).age_cat ///
-ib(0).educode ///
-ib(2).moc_indiv ///
-ib(2).annualincome_indiv2016_q ///
-i.dummydemonetisation2016 ///
-i.covsellland2020 ///
-i.villageid2016 ///
-i.username_neemsis2 ///
-if diff_fa_ES_cat5==0, cluster(cluster) allbase
-est store fa_dec
+gen margin_str=strofreal(margin, "%9.2f")
+gen se_str=strofreal(se, "%9.2f")
+gen pvalue_str=strofreal(pvalue, "%9.2f")
+foreach x in margin se pvalue {
+drop `x'
+rename `x'_str `x'
+}
 
-*** Increase
-reg diff_fa_ES ///
-i.female ///
-ib(1).caste ///
-ib(1).age_cat ///
-ib(0).educode ///
-ib(2).moc_indiv ///
-ib(2).annualincome_indiv2016_q ///
-i.dummydemonetisation2016 ///
-i.covsellland2020 ///
-i.villageid2016 ///
-i.username_neemsis2 ///
-if diff_fa_ES_cat5==2, cluster(cluster) allbase
-est store fa_inc
+gen xo="("
+gen xc=")"
+egen se_par=concat(xo se xc)
+drop se xo xc
+rename se_par se
+order se, after(margin)
+reshape wide margin se pvalue, i(_deriv) j(at) string
+decode _deriv, gen(cat)
+drop _deriv
+order cat
 
-esttab fa_dec fa_inc using "_reg.csv", ///
-	star(* 0.10 ** 0.05 *** 0.01) ///
-	cells("b(fmt(2)star) se(fmt(2)par)") /// 
-	drop() ///	
-	legend label varlabels(_cons constant) ///
-	stats(N r2 F, fmt(0 3 3) labels(`"Observations"' `"\$R^2$"' `"F"')) ///
-	replace
+gen nstr=""
+order nstr, after(pvalue1)
+
+gen n=_n
+set obs `=_N+1'
+recode n (.=0)
+sort n
+replace cat="Sex: Male (ref.)" if cat==""
+drop n
+
+gen n=_n
+set obs `=_N+1'
+recode n (.=2.5)
+sort n
+replace cat="Caste: Dalit (ref.)" if cat==""
+drop n
+
+gen n=_n
+set obs `=_N+1'
+recode n (.=5.5)
+sort n
+replace cat="Edu: Below primary (ref.)" if cat==""
+drop n
+
+gen n=_n
+set obs `=_N+1'
+recode n (.=9.5)
+sort n
+replace cat="Age: [25;35[ (ref.)" if cat==""
+drop n
+
+gen n=_n
+set obs `=_N+1'
+recode n (.=15.5)
+sort n
+replace cat="Occ: Agri coolie (ref.)" if cat==""
+drop n
+
+gen n=_n
+set obs `=_N+1'
+recode n (.=20.5)
+sort n
+replace cat="Married: Yes (ref.)" if cat==""
+drop n
+
+gen n=_n
+set obs `=_N+1'
+recode n (.=23.5)
+sort n
+replace cat="Income: T2 (ref.)" if cat==""
+drop n
+
+gen n=_n
+set obs `=_N+1'
+recode n (.=0)
+sort n
+forvalues i=1(1)2 {
+replace margin`i'="ME" if margin`i'=="" & n==0
+replace se`i'="Std. Err." if se`i'=="" & n==0
+replace pvalue`i'="p-value" if pvalue`i'=="" & n==0
+}
+drop n
+
+gen n=_n
+set obs `=_N+1'
+recode n (.=0)
+sort n
+replace margin1="Average decreasing indiv." if n==0
+replace margin2="Average increasing indiv." if n==0
+drop n
+replace margin1="." if margin1==""
+replace margin2="." if margin2==""
+
+export excel "margin.xlsx", replace
 ****************************************
 * END

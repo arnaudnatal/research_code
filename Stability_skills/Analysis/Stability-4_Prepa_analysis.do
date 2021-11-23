@@ -408,6 +408,12 @@ foreach x in sex age_cat educode moc_indiv caste annualincome_indiv2016_q {
 tab `x', gen(`x'_)
 }
 
+* Recode moc_indiv
+recode moc_indiv (5=4)
+des moc_indiv
+fre moc_indiv
+label define occupcode 4"Occ: Reg", modify
+fre moc_indiv
 
 save "panel_stab_wide_v5", replace
 ****************************************
