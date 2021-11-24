@@ -57,7 +57,7 @@ global wave3 "NEEMSIS2-HH_v19"
 ****************************************
 * Descriptive statistics
 ****************************************
-use"panel_wide_v2.dta", clear
+use"panel_wide_v3.dta", clear
 
 tab segmana 
 

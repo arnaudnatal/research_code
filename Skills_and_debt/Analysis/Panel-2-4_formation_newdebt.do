@@ -488,28 +488,13 @@ save"NEEMSIS2-newloans_v3.dta", replace
 
 
 
-*************************************
-* To keep
-*************************************
-use"NEEMSIS2-newloans_v3.dta", clear
-
-keep HHID_panel INDID_panel imp1_ds_tot_indiv imp1_is_tot_indiv imp1_ds_tot_good_indiv imp1_is_tot_good_indiv imp1_ds_tot_bad_indiv imp1_is_tot_bad_indiv loanamount_indiv loanamount_good_indiv loanamount_bad_indiv
-
-duplicates drop
-
-save"NEEMSIS2_newvar.dta", replace
-*************************************
-* END
-
-
-
 
 
 
 
 
 ****************************************
-* Cleaning loans database
+* Services + problem + help + interest
 ****************************************
 use"NEEMSIS2-newloans_v3.dta", clear
 order HHID_panel INDID_panel
@@ -558,29 +543,52 @@ duplicates drop HHID_panel INDID_panel, force
 tab1 s_borrowerservices_freeserv s_borrowerservices_worklesswage s_borrowerservices_suppwhenever s_borrowerservices_none s_borrowerservices_other
 restore
 
-tab loanlender_new2020
 
-***** Garder que mes individus
-merge m:1 HHID_panel INDID_panel using "panel_wide_v2.dta", keepusing(caste_1)
-keep if _merge==3
-drop _merge
-drop caste_1
+save"NEEMSIS2-newloans_v4.dta", replace
+*************************************
+* END
 
-*Intermediate
-save "NEEMSIS2-loans_v13~desc", replace
 
-*Gen borrowerservices
-tab1 s_borrowerservices_freeserv s_borrowerservices_worklesswage s_borrowerservices_suppwhenever s_borrowerservices_none s_borrowerservices_other
-preserve 
-keep HHID_panel INDID_panel s_borrowerservices_freeserv s_borrowerservices_worklesswage s_borrowerservices_suppwhenever s_borrowerservices_none s_borrowerservices_other
+
+
+
+
+
+
+
+*************************************
+* To keep
+*************************************
+use"NEEMSIS2-newloans_v4.dta", clear
+
+keep HHID_panel INDID_panel imp1_ds_tot_indiv imp1_is_tot_indiv imp1_ds_tot_good_indiv imp1_is_tot_good_indiv imp1_ds_tot_bad_indiv imp1_is_tot_bad_indiv loanamount_indiv loanamount_good_indiv loanamount_bad_indiv s_borrowerservices_freeserv s_borrowerservices_worklesswage s_borrowerservices_suppwhenever s_borrowerservices_none s_borrowerservices_other
+
 duplicates drop
-save"NEEMSIS2_services", replace
-restore
 
+
+save"NEEMSIS2_newvar.dta", replace
+*************************************
+* END
+
+
+
+
+
+
+
+
+
+
+*************************************
+* To keep
+*************************************
 use"panel_wide_v2", clear
-merge 1:1 HHID_panel INDID_panel using "NEEMSIS2_services"
+fre _merge
 drop _merge
 
+merge 1:1 HHID_panel INDID_panel using "NEEMSIS2_newvar.dta"
+drop if _merge==2
+drop _merge
 
 *Creation dummy
 tab1 s_borrowerservices_freeserv s_borrowerservices_worklesswage s_borrowerservices_suppwhenever s_borrowerservices_none s_borrowerservices_other
@@ -588,71 +596,66 @@ tab1 s_borrowerservices_freeserv s_borrowerservices_worklesswage s_borrowerservi
 clonevar dummysuppwhenever=s_borrowerservices_suppwhenever
 recode dummysuppwhenever (3=1) (2=1)
 
-tab1 dummysuppwhenever dummyhelptosettleloan_indiv_2 dummyproblemtorepay_indiv_2
 
 *Clonevar
-fre dummyproblemtorepay_indiv_1 dummyproblemtorepay_indiv_2
-foreach x in dummyproblemtorepay_indiv_1 dummyproblemtorepay_indiv_2{
-clonevar n_`x'=`x'
-recode n_`x' (.=0)
-}
+fre dummyproblemtorepay_indiv_2
+clonevar n_dummyproblemtorepay_indiv_2=dummyproblemtorepay_indiv_2
+recode n_dummyproblemtorepay_indiv_2 (.=0)
 
-fre dummyproblemtorepay_indiv_1 n_dummyproblemtorepay_indiv_1 dummyproblemtorepay_indiv_2 n_dummyproblemtorepay_indiv_2
 
 
 *Gen dummy for interest
-tab1 dummyinterest_indiv_1 dummyinterest_indiv_2
-tab1 dichotomyinterest_indiv_1 dichotomyinterest_indiv_2
-drop dichotomyinterest_indiv_1 dichotomyinterest_indiv_2
-
-forvalues i=1(1)2 {
-gen dichotomyinterest_indiv_`i'=0 if indebt_indiv_`i'==1
-}
-
-replace dichotomyinterest_indiv_1=1 if indebt_indiv_1==1 & dummyinterest_indiv_1>0
+tab1 dummyinterest_indiv_2
+gen dichotomyinterest_indiv_2=0 if indebt_indiv_2==1
 replace dichotomyinterest_indiv_2=1 if indebt_indiv_2==1 & dummyinterest_indiv_2>0
 
-*verif
-tab1 dummyhelptosettleloan_indiv_1 dummyhelptosettleloan_indiv_2
-tab dummyhelptosettleloan_indiv_2 segmana
+
+********** DSR good and bad
+foreach x in good bad {
+gen DSR_`x'_indiv=imp1_ds_tot_`x'_indiv*100/totalincome_indiv_2
+gen ISR_`x'_indiv=imp1_is_tot_`x'_indiv*100/totalincome_indiv_2
+}
 
 
-*Dummy for formal
-tab FormR_indiv_2
-gen dummyformal_2=1 	if FormR_indiv_2>0 & FormR_indiv_2!=.
-replace dummyformal_2=0 if FormR_indiv_2==0 & FormR_indiv_2!=.
-replace dummyformal_2=. if indebt_indiv_2==0
-tab dummyformal_2
+********** proba good
+gen dummy_good=0
+gen dummy_bad=0
 
-tab InformR_indiv_2
-gen dummyinformal_2=1 	if InformR_indiv_2>0 & InformR_indiv_2!=.
-replace dummyinformal_2=0 if InformR_indiv_2==0 & InformR_indiv_2!=.
-replace dummyinformal_2=. if indebt_indiv_2==0
-tab dummyinformal_2
+replace dummy_good=1 if loanamount_good>0 & loanamount_good!=.
+replace dummy_bad=1 if loanamount_bad>0 & loanamount_bad!=.
 
-tab IncogenR_indiv_2
-gen dummyincomegen_2=1 	if IncogenR_indiv_2>0 & IncogenR_indiv_2!=.
-replace dummyincomegen_2=0 if IncogenR_indiv_2==0 & IncogenR_indiv_2!=.
-replace dummyincomegen_2=. if indebt_indiv_2==0
-tab dummyincomegen_2
+fre dummy_good dummy_bad
 
-tab NoincogenR_indiv_2
-gen dummynoincomegen_2=1 	if NoincogenR_indiv_2>0 & NoincogenR_indiv_2!=.
-replace dummynoincomegen_2=0 if NoincogenR_indiv_2==0 & NoincogenR_indiv_2!=.
-replace dummynoincomegen_2=. if indebt_indiv_2==0
-tab dummynoincomegen_2
+gen dummy_debt=dummy_good+dummy_bad
+replace dummy_debt=1 if dummy_debt>1
+gen test=dummy_debt-indebt_indiv_2
+ta test
+order dummy_good dummy_bad dummy_debt indebt_indiv_2 test loanamount_indiv_2 loanamount_indiv loanamount_good_indiv loanamount_bad_indiv
+sort test
 
-tab1 dummyformal_2 dummyinformal_2 dummyincomegen_2 dummynoincomegen_2
 
-*Nb interest/nb tot
-ta dummyinterest_indiv_2
-gen interestratio_2=dummyinterest_indiv_2/loans_indiv_2
-tab interestratio_2
-gen dummyinterestratio_2=0 if interestratio_2<1 & interestratio_2!=.
-replace dummyinterestratio_2=1 if interestratio_2==1 & interestratio_2!=.
+********** Deflate
+foreach x in loanamount_indiv loanamount_good_indiv loanamount_bad_indiv {
+replace `x'=`x'*(155/180)
+}
 
-tab segmana dummyinterestratio_2, row nofreq
+/*
+HHID_panel	INDID_panel
+MANAM47	Ind_4
+KAR50	Ind_2
+SEM18	Ind_1
+KAR4	Ind_2
+NAT28	Ind_4
+*/
 
-save"panel_wide_v3.dta", replace
+
+********** Pb to repay
+fre dummyproblemtorepay_indiv_2
+clonevar dummypbrepay=dummyproblemtorepay_indiv_2
+recode dummypbrepay (3=1) (2=1)
+fre dummypbrepay
+
+
+save"panel_wide_v3", replace
 ****************************************
 * END

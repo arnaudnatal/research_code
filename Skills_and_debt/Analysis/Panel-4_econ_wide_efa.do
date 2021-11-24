@@ -60,7 +60,7 @@ global wave3 "NEEMSIS2-HH_v19"
 ****************************************
 * Préparation database
 ****************************************
-use"panel_wide_v2.dta", clear
+use"panel_wide_v3.dta", clear
 
 tab debtpath
 
@@ -210,6 +210,19 @@ label var base_f5_std "AG (std)"
 
 
 
+
+****************************************
+* New Y
+****************************************
+*** Quali
+fre indebt_indiv_2 dummy_good dummy_bad over30_indiv_2 over40_indiv_2 over50_indiv_2  dummysuppwhenever dummypbrepay
+
+
+*** Quanti
+tabstat loanamount_indiv1000 DSR_indiv ISR_indiv DSR_good_indiv DSR_bad_indiv ISR_good_indiv ISR_bad_indiv loanamount_good_indiv loanamount_bad_indiv, stat(n mean sd p50)
+
+****************************************
+* END
 
 
 
