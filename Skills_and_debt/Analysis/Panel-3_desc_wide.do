@@ -25,7 +25,6 @@ set scheme plotplain
 global directory = "D:\Documents\_Thesis\Research-Skills_and_debt\Analysis"
 cd"$directory"
 global git "C:\Users\Arnaud\Documents\GitHub"
-global dropbox "C:\Users\Arnaud\Dropbox"
 
 
 *Fac
@@ -156,91 +155,78 @@ replace delta2_labinc=-(annualincome_indiv1000_1)/100 if annualincome_indiv1000_
 
 tabstat delta2_labinc, stat(n mean sd p50) by(female)
 
-
+/*
 *** EFA
 set graph off
 twoway ///
-(kdensity base_factor_imcor_1_std if female==0, bwidth(0.32) lpattern(solid) lcolor(gs4)) ///
-(kdensity base_factor_imcor_1_std if female==1, bwidth(0.32) lpattern(shortdash) lcolor(gs0)), ///
-xsize() xtitle("F1 -- CO (std)", size(medsmall)) xlabel(,angle() labsize(small))  ///
+(kdensity base_f1_std if female==0, bwidth(0.25) lpattern(solid) lcolor(gs4)) ///
+(kdensity base_f1_std if female==1, bwidth(0.25) lpattern(shortdash) lcolor(gs0)), ///
+xsize() xtitle("Factor: ES (std)", size(medsmall)) xlabel(,angle() labsize(small))  ///
 ylabel(,labsize(small)) ymtick() ytitle("Density", size(small)) ///
-legend(position(6) col(4) order(1 "Male in 2016-17" 2 "Female in 2016-17") off) name(f1, replace) aspect(0)
+legend(position(6) col(4) order(1 "Male in 2016-17" 2 "Female in 2016-17") off) name(f1, replace) aspectratio(1) plotregion(margin(none))
 
 twoway ///
-(kdensity base_factor_imcor_2_std if female==0, bwidth(0.32) lpattern(solid) lcolor(gs4)) ///
-(kdensity base_factor_imcor_2_std if female==1, bwidth(0.32) lpattern(shortdash) lcolor(gs0)), ///
-xsize() xtitle("F2 -- ES (std)", size(medsmall)) xlabel(,angle() labsize(small))  ///
+(kdensity base_f2_std if female==0, bwidth(0.25) lpattern(solid) lcolor(gs4)) ///
+(kdensity base_f2_std if female==1, bwidth(0.25) lpattern(shortdash) lcolor(gs0)), ///
+xsize() xtitle("Factor: CO (std)", size(medsmall)) xlabel(,angle() labsize(small))  ///
 ylabel(,labsize(small)) ymtick() ytitle("Density", size(small)) ///
-legend(position(6) col(4) order(1 "Male in 2016-17" 2 "Female in 2016-17") off) name(f2, replace) aspect(0)
+legend(position(6) col(4) order(1 "Male in 2016-17" 2 "Female in 2016-17") off) name(f2, replace) aspectratio(1) plotregion(margin(none))
 
 twoway ///
-(kdensity base_factor_imcor_3_std if female==0, bwidth(0.32) lpattern(solid) lcolor(gs4)) ///
-(kdensity base_factor_imcor_3_std if female==1, bwidth(0.32) lpattern(shortdash) lcolor(gs0)), ///
-xsize() xtitle("F3 -- EX-OP (std)", size(medsmall)) xlabel(,angle() labsize(small))  ///
+(kdensity base_f3_std if female==0, bwidth(0.25) lpattern(solid) lcolor(gs4)) ///
+(kdensity base_f3_std if female==1, bwidth(0.25) lpattern(shortdash) lcolor(gs0)), ///
+xsize() xtitle("Factor: OP-EX (std)", size(medsmall)) xlabel(,angle() labsize(small))  ///
 ylabel(,labsize(small)) ymtick() ytitle("Density", size(small)) ///
-legend(position(6) col(4) order(1 "Male in 2016-17" 2 "Female in 2016-17") off) name(f3, replace) aspect(0)
+legend(position(6) col(4) order(1 "Male in 2016-17" 2 "Female in 2016-17") off) name(f3, replace) aspectratio(1) plotregion(margin(none))
 
 twoway ///
-(kdensity base_factor_imcor_4_std if female==0, bwidth(0.32) lpattern(solid) lcolor(gs4)) ///
-(kdensity base_factor_imcor_4_std if female==1, bwidth(0.32) lpattern(shortdash) lcolor(gs0)), ///
-xsize() xtitle("F4 -- ES-CO (std)", size(medsmall)) xlabel(,angle() labsize(small))  ///
+(kdensity base_f5_std if female==0, bwidth(0.25) lpattern(solid) lcolor(gs4)) ///
+(kdensity base_f5_std if female==1, bwidth(0.25) lpattern(shortdash) lcolor(gs0)), ///
+xsize() xtitle("Factor: AG (std)", size(medsmall)) xlabel(,angle() labsize(small))  ///
 ylabel(,labsize(small)) ymtick() ytitle("Density", size(small)) ///
-legend(position(6) col(4) order(1 "Male in 2016-17" 2 "Female in 2016-17") off) name(f4, replace) aspect(0)
+legend(position(6) col(4) order(1 "Male in 2016-17" 2 "Female in 2016-17") off) name(f5, replace) aspectratio(1) plotregion(margin(none))
 
+
+*** Big-5
+foreach x in OP CO EX AG ES { 
 twoway ///
-(kdensity base_factor_imcor_5_std if female==0, bwidth(0.32) lpattern(solid) lcolor(gs4)) ///
-(kdensity base_factor_imcor_5_std if female==1, bwidth(0.32) lpattern(shortdash) lcolor(gs0)), ///
-xsize() xtitle("F5 -- AG (std)", size(medsmall)) xlabel(,angle() labsize(small))  ///
+(kdensity base_cr_`x'_std if female==0, bwidth(0.35) lpattern(solid) lcolor(gs4)) ///
+(kdensity base_cr_`x'_std if female==1, bwidth(0.35) lpattern(shortdash) lcolor(gs0)), ///
+xsize() xtitle("Naïve: `x' (std)", size(medsmall)) xlabel(,angle() labsize(small))  ///
 ylabel(,labsize(small)) ymtick() ytitle("Density", size(small)) ///
-legend(position(6) col(4) order(1 "Male in 2016-17" 2 "Female in 2016-17") off) name(f5, replace) aspect(0)
-
-
-*** Big-5 raw
-foreach x in cr_OP cr_CO cr_EX cr_AG cr_ES { 
-twoway ///
-(kdensity std_`x'_1 if female==0, bwidth(0.50) lpattern(solid) lcolor(gs4)) ///
-(kdensity std_`x'_1 if female==1, bwidth(0.50) lpattern(shortdash) lcolor(gs0)), ///
-xsize() xtitle("`x' (std)", size(medsmall)) xlabel(,angle() labsize(small))  ///
-ylabel(,labsize(small)) ymtick() ytitle("Density", size(small)) ///
-legend(position(6) col(4) order(1 "Male in 2016-17" 2 "Female in 2016-17") size(small) off) name(f_`x', replace)
+legend(position(6) col(4) order(1 "Male in 2016-17" 2 "Female in 2016-17") size(small) off) name(f_`x', replace) aspectratio(1) plotregion(margin(none))
 }
+
 
 *** Cog
 twoway ///
-(kdensity std_raven_tt_1 if female==0, bwidth(.5) lpattern(solid) lcolor(gs4)) ///
-(kdensity std_raven_tt_1 if female==1, bwidth(.5) lpattern(shortdash) lcolor(gs0)), ///
-xsize() xtitle("Raven (std)", size(medsmall)) xlabel(,angle() labsize(small))  ///
+(kdensity base_raven_tt_std if female==0, bwidth(.5) lpattern(solid) lcolor(gs4)) ///
+(kdensity base_raven_tt_std if female==1, bwidth(.5) lpattern(shortdash) lcolor(gs0)), ///
+xsize() xtitle("Cog: Raven (std)", size(medsmall)) xlabel(,angle() labsize(small))  ///
 ylabel(,labsize(small)) ymtick() ytitle("Density", size(small)) ///
-legend(position(6) col(4) order(1 "Male in 2016-17" 2 "Female in 2016-17") off) name(f_rav, replace)
+legend(position(6) col(4) order(1 "Male in 2016-17" 2 "Female in 2016-17") off) name(f_rav, replace) aspectratio(1) plotregion(margin(none))
 
 twoway ///
-(kdensity std_num_tt_1 if female==0, bwidth(.5) lpattern(solid) lcolor(gs4)) ///
-(kdensity std_num_tt_1 if female==1, bwidth(.5) lpattern(shortdash) lcolor(gs0)), ///
-xsize() xtitle("Numeracy (std)", size(medsmall)) xlabel(,angle() labsize(small))  ///
+(kdensity base_num_tt_std if female==0, bwidth(.5) lpattern(solid) lcolor(gs4)) ///
+(kdensity base_num_tt_std if female==1, bwidth(.5) lpattern(shortdash) lcolor(gs0)), ///
+xsize() xtitle("Cog: Numeracy (std)", size(medsmall)) xlabel(,angle() labsize(small))  ///
 ylabel(,labsize(small)) ymtick() ytitle("Density", size(small)) ///
-legend(position(6) col(4) order(1 "Male in 2016-17" 2 "Female in 2016-17") off) name(f_num, replace)
+legend(position(6) col(4) order(1 "Male in 2016-17" 2 "Female in 2016-17") off) name(f_num, replace) aspectratio(1) plotregion(margin(none))
 
 twoway ///
-(kdensity std_lit_tt_1 if female==0, bwidth(.5) lpattern(solid) lcolor(gs4)) ///
-(kdensity std_lit_tt_1 if female==1, bwidth(.5) lpattern(shortdash) lcolor(gs0)), ///
-xsize() xtitle("Literacy (std)", size(medsmall)) xlabel(,angle() labsize(small)) ///
+(kdensity base_lit_tt_std if female==0, bwidth(.5) lpattern(solid) lcolor(gs4)) ///
+(kdensity base_lit_tt_std if female==1, bwidth(.5) lpattern(shortdash) lcolor(gs0)), ///
+xsize() xtitle("Cog: Literacy (std)", size(medsmall)) xlabel(,angle() labsize(small)) ///
 ylabel(,labsize(small)) ymtick() ytitle("Density", size(small)) ///
-legend(position(6) col(4) order(1 "Male in 2016-17" 2 "Female in 2016-17") off) name(f_lit, replace)
+legend(position(6) col(4) order(1 "Male in 2016-17" 2 "Female in 2016-17") off) name(f_lit, replace) aspectratio(1) plotregion(margin(none))
 
-*** Joint
-*Factor & Big5
-grc1leg f1 f2 f3 f4 f5 f_cr_OP f_cr_CO f_cr_EX f_cr_AG f_cr_ES, cols(5) leg(f_cr_OP) name(perso_cor, replace) 
-*Cog
-grc1leg f_rav f_num f_lit, cols(3) leg(f_rav) name(cog, replace)
+
 *All
+grc1leg f_OP f_CO f_EX f_AG f_ES f1 f2 f3 f5 f_rav f_num f_lit, cols(5) holes(10) leg(f_OP) note("Kernel: Epanechnikov" "Bandwidth: 0.25 for factors; 0.35 for Big-5; 0.50 for raven, numeracy and literacy." "Items corrected from acquiesence biais." "NEEMSIS-1 (2016-17) & NEEMSIS-2 (2020-21).", size(tiny))
+graph save "Kernel_PTCS.gph", replace
+graph export "Kernel_PTCS.pdf", as(pdf) replace
 set graph on
-grc1leg f1 f2 f3 f4 f5 f_cr_OP f_cr_CO f_cr_EX f_cr_AG f_cr_ES f_rav f_num f_lit, cols(5) leg(f_cr_OP) note("Kernel: Epanechnikov" "Bandwidth: 0.32 for factors, 0.50 for Big-5, raven, numeracy and literacy." "Items corrected from acquiesence biais for factor analysis." "Big-5 traits corrected from acquiesence bias." "NEEMSIS-1 (2016-17) & NEEMSIS-2 (2020-21).", size(tiny))
-graph save "Kernel_PTCS_cor_new.gph", replace
-graph export "Kernel_PTCS_cor_new.pdf", as(pdf) replace
-
-
-
-
+*/
 
 
 ********** Debt
@@ -256,9 +242,6 @@ tabstat del_DSR_indiv delta_DSR_indiv delta2_DSR_indiv, stat(n mean sd p50) by(f
 
 tabstat delta2_loanamount_indiv delta2_DSR_indiv, stat(mean sd p50) by(female)
 tab debtpath female, col nofreq
-
-
-
 ****************************************
 * END
 

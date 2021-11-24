@@ -39,7 +39,7 @@ set scheme plotplain
 ********** Name of the NEEMSIS2 questionnaire version to clean
 *global wave1 "RUME-HH_v8"
 global wave2 "NEEMSIS1-HH_v8"
-global wave3 "NEEMSIS2-HH_v20"
+global wave3 "NEEMSIS2-HH_v19"
 
 
 ********** Stata package
@@ -64,7 +64,7 @@ i=3 --> at=1 (middle-upper male) at=2 (dalits male) at=3 (middle-upper female) a
 */
 
 *cap ssc inst sxpose
-foreach x in indebt_indiv loanamount_indiv1000 DSR_indiv FE_loanamount_indiv1000 FE_DSR_indiv { //b5_indebt_indiv b5_loanamount_indiv1000 b5_DSR_indiv {
+foreach x in indebt_indiv loanamount_indiv1000 DSR_indiv {
 
 forvalues i=1(1)4{
 *****
@@ -72,7 +72,7 @@ forvalues i=1(1)4{
 preserve
 use"margin_`x'`i'", clear
 
-label define cog 1"C-1" 2"C-2" 3"C-3" 4"C-4" 5"C-5" 6"Raven (std)" 7"Numeracy (std)" 8"Literacy (std)", replace
+label define cog 1"A1" 2"A2" 3"A3" 4"A5" 5"Raven (std)" 6"Numeracy (std)" 7"Literacy (std)", replace
 label values _deriv cog
 decode _deriv, gen(deriv)
 tostring _at, gen(at)
@@ -121,12 +121,12 @@ gen nstr2=""
 gen nstr3=""
 gen nstr4=""
 
-replace nstr2=nstr[_n+16]
-replace nstr3=nstr[_n+32]
-replace nstr4=nstr[_n+48]
+replace nstr2=nstr[_n+14]
+replace nstr3=nstr[_n+28]
+replace nstr4=nstr[_n+42]
 
 gen n=_n
-drop if n>16
+drop if n>14
 
 replace deriv="" if num==2
 
@@ -170,7 +170,7 @@ set obs `=_N+1'
 set obs `=_N+1'
 set obs `=_N+1'
 
-replace n=17-_n if n==.
+replace n=15-_n if n==.
 sort n
 
 replace All="(1)" if n==-2
@@ -192,6 +192,7 @@ replace Dalit_male="Dalits male" if n==0
 replace Midup_female="MUC female" if n==0
 replace Dalit_female="Dalits female" if n==0
 
+/*
 replace deriv="OP cor (std)" if deriv=="C-1" & strpos("`x'", "b5")  
 replace deriv="CO cor (std)" if deriv=="C-2" & strpos("`x'", "b5")  
 replace deriv="EX cor (std)" if deriv=="C-3" & strpos("`x'", "b5")  
@@ -203,12 +204,12 @@ replace deriv="CO (std)" if deriv=="C-2" & strpos("`x'", "FE")
 replace deriv="EX (std)" if deriv=="C-3" & strpos("`x'", "FE")  
 replace deriv="AG (std)" if deriv=="C-4" & strpos("`x'", "FE")  
 replace deriv="ES (std)" if deriv=="C-5" & strpos("`x'", "FE") 
+*/
+replace deriv="ES (std)" if deriv=="A1"
+replace deriv="CO (std)" if deriv=="A2"
+replace deriv="OP-EX (std)" if deriv=="A3"
+replace deriv="AG (std)" if deriv=="A5"
 
-replace deriv="F1 - OP-EX (std)" if deriv=="C-1"
-replace deriv="F2 - CO (std)" if deriv=="C-2"
-replace deriv="F3 - Porupillatavan (std)" if deriv=="C-3"
-replace deriv="F4 - ES (std)" if deriv=="C-4"
-replace deriv="F5 - AG (std)" if deriv=="C-5"
 
 drop n
 export excel using "margins.xlsx", sheet("`x'", replace) firstrow(varlabels)

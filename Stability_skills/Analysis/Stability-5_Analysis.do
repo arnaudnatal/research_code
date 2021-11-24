@@ -53,6 +53,7 @@ global wave3 "NEEMSIS2-HH_v21"
 ****************************************
 use "panel_stab_wide_v5", clear
 
+fre moc_indiv
 
 ********** Assessment: bias higher in 2020-21 than in 2016-17.
 /*
