@@ -498,11 +498,14 @@ save"NEEMSIS2-newloans_v3.dta", replace
 ****************************************
 use"NEEMSIS2-newloans_v3.dta", clear
 order HHID_panel INDID_panel
-*Id for ML
+
+********** Id for ML
 gen dummymainloan=0
 replace dummymainloan=1 if lenderfirsttime!=.
 tab dummymainloan
 
+
+********** Lender service
 tab otherlenderservices
 gen otherlenderservices_politsupp=0
 gen otherlenderservices_finansupp=0
@@ -519,6 +522,11 @@ replace otherlenderservices_other=1 if strpos(otherlenderservices,"77")
 
 tab1 otherlenderservices_politsupp otherlenderservices_finansupp otherlenderservices_guarantor otherlenderservices_generainf otherlenderservices_none otherlenderservices_other
 
+
+
+
+
+********** Borrower services
 tab borrowerservices
 gen borrowerservices_freeserv=0 if dummymainloan==1
 gen borrowerservices_worklesswage=0 if dummymainloan==1
@@ -533,15 +541,122 @@ replace borrowerservices_other=1 if strpos(borrowerservices,"77") & dummymainloa
 
 tab1 borrowerservices_freeserv borrowerservices_worklesswage borrowerservices_suppwhenever borrowerservices_none borrowerservices_other
 
-*New Y through borrowerservices?
-foreach x in borrowerservices_freeserv borrowerservices_worklesswage borrowerservices_suppwhenever borrowerservices_none borrowerservices_other {
+
+
+
+********** Guarantee
+ta guarantee
+gen guarantee_doc=0
+gen guarantee_chittu=0
+gen guarantee_shg=0
+gen guarantee_perso=0
+gen guarantee_jewel=0
+gen guarantee_none=0
+gen guarantee_other=0
+
+replace guarantee_doc=1 if strpos(guarantee,"1") & dummymainloan==1
+replace guarantee_chittu=1 if strpos(guarantee,"2") & dummymainloan==1
+replace guarantee_shg=1 if strpos(guarantee,"3") & dummymainloan==1
+replace guarantee_perso=1 if strpos(guarantee,"4") & dummymainloan==1
+replace guarantee_jewel=1 if strpos(guarantee,"5") & dummymainloan==1
+replace guarantee_none=1 if strpos(guarantee,"6") & dummymainloan==1
+replace guarantee_other=1 if strpos(guarantee,"77") & dummymainloan==1
+
+
+
+********** Plan to repay
+ta plantorepay
+gen plantorepay_chit=0
+gen plantorepay_work=0
+gen plantorepay_migr=0
+gen plantorepay_asse=0
+gen plantorepay_inco=0
+gen plantorepay_borr=0
+gen plantorepay_othe=0
+
+replace plantorepay_chit=1 if strpos(plantorepay,"1") & dummymainloan==1
+replace plantorepay_work=1 if strpos(plantorepay,"2") & dummymainloan==1
+replace plantorepay_migr=1 if strpos(plantorepay,"3") & dummymainloan==1
+replace plantorepay_asse=1 if strpos(plantorepay,"4") & dummymainloan==1
+replace plantorepay_inco=1 if strpos(plantorepay,"5") & dummymainloan==1
+replace plantorepay_borr=1 if strpos(plantorepay,"6") & dummymainloan==1
+replace plantorepay_othe=1 if strpos(plantorepay,"77") & dummymainloan==1
+
+
+
+********** Settle loan strategy
+ta settleloanstrategy
+gen settleloanstrat_inco=0
+gen settleloanstrat_sche=0
+gen settleloanstrat_borr=0
+gen settleloanstrat_sell=0
+gen settleloanstrat_land=0
+gen settleloanstrat_cons=0
+gen settleloanstrat_addi=0
+gen settleloanstrat_work=0
+gen settleloanstrat_supp=0
+gen settleloanstrat_harv=0
+gen settleloanstrat_othe=0
+
+replace settleloanstrat_inco=1 if strpos(settleloanstrategy,"1") & dummymainloan==1
+replace settleloanstrat_sche=1 if strpos(settleloanstrategy,"2") & dummymainloan==1
+replace settleloanstrat_borr=1 if strpos(settleloanstrategy,"3") & dummymainloan==1
+replace settleloanstrat_sell=1 if strpos(settleloanstrategy,"4") & dummymainloan==1
+replace settleloanstrat_land=1 if strpos(settleloanstrategy,"5") & dummymainloan==1
+replace settleloanstrat_cons=1 if strpos(settleloanstrategy,"6") & dummymainloan==1
+replace settleloanstrat_addi=1 if strpos(settleloanstrategy,"7") & dummymainloan==1
+replace settleloanstrat_work=1 if strpos(settleloanstrategy,"8") & dummymainloan==1
+replace settleloanstrat_supp=1 if strpos(settleloanstrategy,"9") & dummymainloan==1
+replace settleloanstrat_harv=1 if strpos(settleloanstrategy,"10") & dummymainloan==1
+replace settleloanstrat_othe=1 if strpos(settleloanstrategy,"77") & dummymainloan==1
+
+
+********** Loan product pledge
+ta loanproductpledge
+gen loanproductpledge_gold=0
+gen loanproductpledge_land=0
+gen loanproductpledge_car=0
+gen loanproductpledge_bike=0
+gen loanproductpledge_fridge=0
+gen loanproductpledge_furnit=0
+gen loanproductpledge_tailor=0
+gen loanproductpledge_cell=0
+gen loanproductpledge_line=0
+gen loanproductpledge_dvd=0
+gen loanproductpledge_camera=0
+gen loanproductpledge_gas=0
+gen loanproductpledge_computer=0
+gen loanproductpledge_dish=0
+gen loanproductpledge_none=0
+gen loanproductpledge_other=0
+
+replace loanproductpledge_gold=1 if strpos(loanproductpledge,"1") & dummymainloan==1
+replace loanproductpledge_land=1 if strpos(loanproductpledge,"2") & dummymainloan==1
+replace loanproductpledge_car=1 if strpos(loanproductpledge,"3") & dummymainloan==1
+replace loanproductpledge_bike=1 if strpos(loanproductpledge,"4") & dummymainloan==1
+replace loanproductpledge_fridge=1 if strpos(loanproductpledge,"5") & dummymainloan==1
+replace loanproductpledge_furnit=1 if strpos(loanproductpledge,"6") & dummymainloan==1
+replace loanproductpledge_tailor=1 if strpos(loanproductpledge,"7") & dummymainloan==1
+replace loanproductpledge_cell=1 if strpos(loanproductpledge,"8") & dummymainloan==1
+replace loanproductpledge_line=1 if strpos(loanproductpledge,"9") & dummymainloan==1
+replace loanproductpledge_dvd=1 if strpos(loanproductpledge,"10") & dummymainloan==1
+replace loanproductpledge_camera=1 if strpos(loanproductpledge,"11") & dummymainloan==1
+replace loanproductpledge_gas=1 if strpos(loanproductpledge,"12") & dummymainloan==1
+replace loanproductpledge_computer=1 if strpos(loanproductpledge,"13") & dummymainloan==1
+replace loanproductpledge_dish=1 if strpos(loanproductpledge,"14") & dummymainloan==1
+replace loanproductpledge_none=1 if strpos(loanproductpledge,"15") & dummymainloan==1
+replace loanproductpledge_other=1 if strpos(loanproductpledge,"77") & dummymainloan==1
+
+
+
+
+********** New Y
+foreach x in otherlenderservices_politsupp otherlenderservices_finansupp otherlenderservices_guarantor otherlenderservices_generainf otherlenderservices_none otherlenderservices_other borrowerservices_freeserv borrowerservices_worklesswage borrowerservices_suppwhenever borrowerservices_none borrowerservices_other guarantee_doc guarantee_chittu guarantee_shg guarantee_perso guarantee_jewel guarantee_none guarantee_other plantorepay_chit plantorepay_work plantorepay_migr plantorepay_asse plantorepay_inco plantorepay_borr plantorepay_othe settleloanstrat_inco settleloanstrat_sche settleloanstrat_borr settleloanstrat_sell settleloanstrat_land settleloanstrat_cons settleloanstrat_addi settleloanstrat_work settleloanstrat_supp settleloanstrat_harv settleloanstrat_othe loanproductpledge_gold loanproductpledge_land loanproductpledge_car loanproductpledge_bike loanproductpledge_fridge loanproductpledge_furnit loanproductpledge_tailor loanproductpledge_cell loanproductpledge_line loanproductpledge_dvd loanproductpledge_camera loanproductpledge_gas loanproductpledge_computer loanproductpledge_dish loanproductpledge_none loanproductpledge_other {
 bysort HHID_panel INDID_panel: egen s_`x'=sum(`x')
 }
 
-preserve
-duplicates drop HHID_panel INDID_panel, force
-tab1 s_borrowerservices_freeserv s_borrowerservices_worklesswage s_borrowerservices_suppwhenever s_borrowerservices_none s_borrowerservices_other
-restore
+
+
 
 
 save"NEEMSIS2-newloans_v4.dta", replace
@@ -561,9 +676,35 @@ save"NEEMSIS2-newloans_v4.dta", replace
 *************************************
 use"NEEMSIS2-newloans_v4.dta", clear
 
-keep HHID_panel INDID_panel imp1_ds_tot_indiv imp1_is_tot_indiv imp1_ds_tot_good_indiv imp1_is_tot_good_indiv imp1_ds_tot_bad_indiv imp1_is_tot_bad_indiv loanamount_indiv loanamount_good_indiv loanamount_bad_indiv s_borrowerservices_freeserv s_borrowerservices_worklesswage s_borrowerservices_suppwhenever s_borrowerservices_none s_borrowerservices_other
+global psycho s_otherlenderservices_politsupp s_otherlenderservices_finansupp s_otherlenderservices_guarantor s_otherlenderservices_generainf s_otherlenderservices_none s_otherlenderservices_other s_borrowerservices_freeserv s_borrowerservices_worklesswage s_borrowerservices_suppwhenever s_borrowerservices_none s_borrowerservices_other s_guarantee_doc s_guarantee_chittu s_guarantee_shg s_guarantee_perso s_guarantee_jewel s_guarantee_none s_guarantee_other s_plantorepay_chit s_plantorepay_work s_plantorepay_migr s_plantorepay_asse s_plantorepay_inco s_plantorepay_borr s_plantorepay_othe s_settleloanstrat_inco s_settleloanstrat_sche s_settleloanstrat_borr s_settleloanstrat_sell s_settleloanstrat_land s_settleloanstrat_cons s_settleloanstrat_addi s_settleloanstrat_work s_settleloanstrat_supp s_settleloanstrat_harv s_settleloanstrat_othe s_loanproductpledge_gold s_loanproductpledge_land s_loanproductpledge_car s_loanproductpledge_bike s_loanproductpledge_fridge s_loanproductpledge_furnit s_loanproductpledge_tailor s_loanproductpledge_cell s_loanproductpledge_line s_loanproductpledge_dvd s_loanproductpledge_camera s_loanproductpledge_gas s_loanproductpledge_computer s_loanproductpledge_dish s_loanproductpledge_none s_loanproductpledge_other
+
+keep HHID_panel INDID_panel imp1_ds_tot_indiv imp1_is_tot_indiv imp1_ds_tot_good_indiv imp1_is_tot_good_indiv imp1_ds_tot_bad_indiv imp1_is_tot_bad_indiv loanamount_indiv loanamount_good_indiv loanamount_bad_indiv $psycho
 
 duplicates drop
+
+cls
+tab1 $psycho
+
+foreach x in $psycho {
+clonevar d`x'=`x'
+}
+foreach x in $psycho {
+replace d`x'=1 if `x'>1
+}
+
+cls
+foreach x in $psycho {
+tab1 d`x'
+}
+
+global tokeep ds_otherlenderservices_finansupp ds_otherlenderservices_generainf ds_borrowerservices_suppwhenever ds_borrowerservices_none ds_guarantee_doc ds_guarantee_perso ds_guarantee_none ds_plantorepay_work ds_plantorepay_inco ds_plantorepay_borr ds_settleloanstrat_inco ds_settleloanstrat_borr ds_settleloanstrat_work ds_loanproductpledge_gold ds_loanproductpledge_furnit
+
+keep HHID_panel INDID_panel imp1_ds_tot_indiv imp1_is_tot_indiv imp1_ds_tot_good_indiv imp1_is_tot_good_indiv imp1_ds_tot_bad_indiv imp1_is_tot_bad_indiv loanamount_indiv loanamount_good_indiv loanamount_bad_indiv $tokeep
+
+foreach x in $tokeep {
+local new=substr("`x'",4,99)
+rename `x' `new'
+}
 
 
 save"NEEMSIS2_newvar.dta", replace
@@ -590,11 +731,6 @@ merge 1:1 HHID_panel INDID_panel using "NEEMSIS2_newvar.dta"
 drop if _merge==2
 drop _merge
 
-*Creation dummy
-tab1 s_borrowerservices_freeserv s_borrowerservices_worklesswage s_borrowerservices_suppwhenever s_borrowerservices_none s_borrowerservices_other
-
-clonevar dummysuppwhenever=s_borrowerservices_suppwhenever
-recode dummysuppwhenever (3=1) (2=1)
 
 
 *Clonevar
@@ -635,8 +771,8 @@ sort test
 
 
 ********** Deflate
-foreach x in loanamount_indiv loanamount_good_indiv loanamount_bad_indiv {
-replace `x'=`x'*(155/180)
+foreach x in loanamount_indiv loanamount_good_indiv loanamount_bad_indiv imp1_is_tot_good_indiv imp1_is_tot_bad_indiv{
+replace `x'=(`x'*(155/180))/1000
 }
 
 /*
