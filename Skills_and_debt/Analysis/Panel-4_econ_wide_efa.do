@@ -217,7 +217,19 @@ label var base_f5_std "AG (std)"
 *** Quali
 global quali indebt_indiv_2 dummy_good dummy_bad dichotomyinterest_indiv_2 dummypbrepay otherlenderservices_finansupp otherlenderservices_generainf borrowerservices_suppwhenever borrowerservices_none guarantee_doc guarantee_perso guarantee_none plantorepay_work plantorepay_inco plantorepay_borr settleloanstrat_inco settleloanstrat_borr settleloanstrat_work loanproductpledge_gold loanproductpledge_furnit
 fre $quali
+/*1
+Not to keep:1
+guarantee_doc
+guarantee_none
+plantorepay_work
+plantorepay_inco
+settleloanstrat_borr
+settleloanstrat_work
+loanproductpledge_gold
 
+*/
+
+ta loanproductpledge_gold loanproductpledge_furnit
 
 *** Quanti
 global quanti loanamount_indiv1000_2 loanamount_good_indiv loanamount_bad_indiv DSR_indiv_2 DSR_good_indiv DSR_bad_indiv ISR_indiv_2 ISR_good_indiv ISR_bad_indiv imp1_is_tot_indiv1000_2 imp1_is_tot_good_indiv imp1_is_tot_bad_indiv
