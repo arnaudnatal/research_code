@@ -59,78 +59,58 @@ global wave3 "NEEMSIS2-HH_v19"
 * Descriptive statistics
 ****************************************
 use"panel_wide_v3.dta", clear
+label define female 0"Male" 1"Female"
+label values female female
+label define dalits 0"Middle-upper" 1"Dalits"
+label values dalits dalits
+egen dal_fem=group(female dalit), la
+fre dal_fem
+drop test
 
-tab segmana 
-
-********** HH characteristics
-*** 2016-17
+********** HH
 preserve
-recode caste (3=2)
 bysort HHID_panel: egen nbego=sum(1)
 duplicates drop HHID_panel, force
-*473 HH, in panel, 835 egos
-tabstat hhsize_1 nbego, stat(n mean) by(caste)
-tab nbego caste, col nofreq
-tab sexratiocat_1_1 caste, col nofreq 
-tab sexratiocat_1_2 caste, col nofreq 
-tab  sexratiocat_1_3 caste, col nofreq
-tabstat assets1000_1, stat(mean sd p50) by(caste)
-tab shock_1 caste, col nofreq
-tabstat annualincome_HH1000_1 incomeHH1000_1, stat(n mean sd p50) by(caste)
-tab indebt_HH_1 caste, col nofreq
-cls
-foreach x in near_panruti near_villupur near_tirup near_chengal near_kanchip near_chennai {
-tab `x' caste, col nofreq
-}
-restore
 
-*** 2020-21
-cls
-preserve
-recode caste (3=2)
-bysort HHID_panel: egen nbego=sum(1)
-duplicates drop HHID_panel, force
-*473 HH, in panel, 835 egos
-tabstat hhsize_2 nbego, stat(n mean) by(caste)
-tab nbego caste, col nofreq
-tab sexratiocat_2 caste, col nofreq
-tabstat assets1000_2, stat(mean sd p50) by(caste)
-tab shock_2 caste, col nofreq
-tabstat annualincome_HH1000_2 incomeHH1000_2, stat(n mean sd p50) by(caste)
-tab indebt_HH_2 caste, col nofreq
-foreach x in near_panruti near_villupur near_tirup near_chengal near_kanchip near_chennai {
-tab `x' caste, col nofreq
-}
+global hhvar hhsize_1 nbego sexratiocat_1_1 sexratiocat_1_2 sexratiocat_1_3 near_panruti near_villupur near_tirup near_chengal near_kanchip near_chennai assets1000_1 incomeHH1000_1 shock_1
+
+tabstat $hhvar if dalit==1, stat(mean sd)
+tabstat $hhvar if dalit==0, stat(mean sd)
 restore
 
 
 ********** Indiv characteristics
-*** 2016-17
-cls
-tab caste2 female, col
-tabstat age_1, stat(n mean) by(female)
-tab dummyhead_1 female, col nofreq
-tab relationshiptohead_1 female, col nofreq
-tab mainocc_occupation_indiv_1 female, col nofreq
-tab dummyedulevel female, col nofreq
-tab edulevel_1 female, col nofreq
-tab maritalstatus_1 female, col nofreq
-tab maritalstatus2_1 female, col nofreq
-tab dummymultipleoccupation_indiv_1 female, col nofreq
-tabstat annualincome_indiv1000_1, stat(mean sd p50) by(female)
+replace indebt_indiv_2=0
+replace indebt_indiv_2=1 if loanamount_good_indiv>0 & loanamount_good_indiv!=.
+replace indebt_indiv_2=1 if loanamount_bad_indiv>0 & loanamount_bad_indiv!=.
 
-*** 2020-21
-cls
-tabstat age_2, stat(n mean) by(female)
-tab dummyhead_2 female, col nofreq
-tab mainocc_occupation_indiv_2 female, col nofreq
-tab maritalstatus_2 female, col  nofreq
-tab dummymultipleoccupation_indiv_2 female, col nofreq
-tabstat annualincome_indiv1000_2, stat(mean sd p50) by(female)
+
+global indivvar dalits age_1 dummyhead_1 maritalstatus2_1 dummyedulevel cat_mainocc_occupation_indiv_1_1 cat_mainocc_occupation_indiv_1_2 cat_mainocc_occupation_indiv_1_3 cat_mainocc_occupation_indiv_1_4 cat_mainocc_occupation_indiv_1_5 cat_mainocc_occupation_indiv_1_6 cat_mainocc_occupation_indiv_1_7 dummymultipleoccupation_indiv_1 indebt_indiv_2
+
+tabstat $indivvar if female==0, stat(n mean sd)
+tabstat $indivvar if female==1, stat(n mean sd)
+
+tabstat $indivvar if dal_fem==1, stat(n mean sd)
+tabstat $indivvar if dal_fem==2, stat(n mean sd)
+tabstat $indivvar if dal_fem==3, stat(n mean sd)
+tabstat $indivvar if dal_fem==4, stat(n mean sd)
+
+global depvar loanamount_good_indiv loanamount_bad_indiv plantorepay_borr settleloanstrat_inco dummypbrepay loanproductpledge_furnit imp1_is_tot_good_indiv imp1_is_tot_bad_indiv otherlenderservices_finansupp borrowerservices_suppwhenever guarantee_perso
+
+tabstat $depvar if female==0, stat(n mean sd)
+tabstat $depvar if female==1, stat(n mean sd)
+
+tabstat $depvar if dal_fem==1, stat(n mean sd)
+tabstat $depvar if dal_fem==2, stat(n mean sd)
+tabstat $depvar if dal_fem==3, stat(n mean sd)
+tabstat $depvar if dal_fem==4, stat(n mean sd)
+
+
+
 
 
 /*
-*** EFA
+********** EFA
 set graph off
 twoway ///
 (kdensity base_f1_std if female==0, bwidth(0.25) lpattern(solid) lcolor(gs4)) ///

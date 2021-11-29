@@ -110,10 +110,12 @@ replace typeofdebt=1 if loanreasongiven==10 & typeofdebt==.
 replace typeofdebt=1 if loanreasongiven==12 & typeofdebt==.
 
 fre typeofdebt
-
+list loanlender loanreasongiven if typeofdebt==.
+replace typeofdebt=0 if typeofdebt==.
 
 ********** Good debt
-gen loanamount_good=loanamount if typeofdebt==0
+gen loanamount_good=.
+replace loanamount_good=loanamount if typeofdebt==0
 gen loan_good=1 if typeofdebt==0
 
 gen yratepaid_good=interestpaid*100/loanamount if loanduration<=365 & typeofdebt==0
@@ -149,7 +151,8 @@ Moneylenders |        15   12.5068        10  .7272727        40
 
 
 ********** Bad debt
-gen loanamount_bad=loanamount if typeofdebt==1
+gen loanamount_bad=.
+replace loanamount_bad=loanamount if typeofdebt==1
 gen loan_bad=1 if typeofdebt==1
 
 gen yratepaid_bad=interestpaid*100/loanamount if loanduration<=365 & typeofdebt==1
@@ -182,6 +185,9 @@ Moneylenders |        11  14.89285     13.32  3.055556        30
        Total |       552  27.19517        20  .0057143       600
 ----------------------------------------------------------------
 */
+
+********** Test
+tabstat loanamount_good loanamount_bad loanamount, stat(n)
 
 
 ********** All loans
@@ -731,6 +737,7 @@ merge 1:1 HHID_panel INDID_panel using "NEEMSIS2_newvar.dta"
 drop if _merge==2
 drop _merge
 
+fre loanamount_indiv loanamount_good_indiv loanamount_bad_indiv
 
 
 *Clonevar
@@ -790,6 +797,11 @@ fre dummyproblemtorepay_indiv_2
 clonevar dummypbrepay=dummyproblemtorepay_indiv_2
 recode dummypbrepay (3=1) (2=1)
 fre dummypbrepay
+
+
+
+********** Loan amount
+fre loanamount_good_indiv loanamount_bad_indiv
 
 
 save"panel_wide_v3", replace
