@@ -36,6 +36,7 @@ set scheme plotplain
 *global thesis "C:\Users\anatal\Downloads\_Thesis\Research-Skills_and_debt\Analysis"
 
 
+
 ********** Name of the NEEMSIS2 questionnaire version to clean
 *global wave1 "RUME-HH_v8"
 global wave2 "NEEMSIS1-HH_v8"
@@ -103,27 +104,6 @@ tab `x' caste, col nofreq
 restore
 
 
-*** Delta HH
-cls
-preserve
-foreach x in assets1000 incomeHH1000 {
-gen delta2_`x'=(`x'_2-`x'_1)*100/`x'_1
-replace delta2_`x'=`x'_2/100 if `x'_1==0
-replace delta2_`x'=-(`x'_1)/100 if `x'_2==0
-}
-
-fre indebt_HH_1 indebt_HH_2
-
-gen debtpath_HH=0
-replace debtpath_HH=1 if indebt_HH_1==0 & indebt_HH_2==0
-replace debtpath_HH=2 if indebt_HH_1==1 & indebt_HH_2==0
-replace debtpath_HH=3 if indebt_HH_1==0 & indebt_HH_2==1
-replace debtpath_HH=4 if indebt_HH_1==1 & indebt_HH_2==1
-
-tab debtpath_HH caste2, col nofreq
-tabstat delta2_assets1000 delta2_incomeHH1000, stat(n mean sd p50) by(caste2)
-restore
-
 ********** Indiv characteristics
 *** 2016-17
 cls
@@ -148,12 +128,6 @@ tab maritalstatus_2 female, col  nofreq
 tab dummymultipleoccupation_indiv_2 female, col nofreq
 tabstat annualincome_indiv1000_2, stat(mean sd p50) by(female)
 
-*** Delta income
-gen delta2_labinc=(annualincome_indiv1000_2-annualincome_indiv1000_1)*100/annualincome_indiv1000_1
-replace delta2_labinc=annualincome_indiv1000_2/100 if annualincome_indiv1000_1==0
-replace delta2_labinc=-(annualincome_indiv1000_1)/100 if annualincome_indiv1000_2==0
-
-tabstat delta2_labinc, stat(n mean sd p50) by(female)
 
 /*
 *** EFA
@@ -231,17 +205,29 @@ set graph on
 
 ********** Debt
 cls
-tabstat indebt_indiv_1 indebt_indiv_2, stat(mean) by(female)
-forvalues i=1(1)2{
-tabstat loanamount_indiv1000_`i' DSR_indiv_`i' if indebt_indiv_`i'==1, stat(n mean sd p50) by(female)
-}
-tab debtpath female, col nofreq
 
-tabstat del_loanamount_indiv delta_loanamount_indiv delta2_loanamount_indiv, stat(n mean sd p50) by(female)
-tabstat del_DSR_indiv delta_DSR_indiv delta2_DSR_indiv, stat(n mean sd p50) by(female)
+global quali indebt_indiv_2 dummy_good dummy_bad dichotomyinterest_indiv_2 dummypbrepay otherlenderservices_finansupp otherlenderservices_generainf borrowerservices_suppwhenever borrowerservices_none guarantee_doc guarantee_perso guarantee_none plantorepay_work plantorepay_inco plantorepay_borr settleloanstrat_inco settleloanstrat_borr settleloanstrat_work loanproductpledge_gold loanproductpledge_furnit
+fre $quali
+/*1
+Not to keep:1
+guarantee_doc
+guarantee_none
+plantorepay_work
+plantorepay_inco
+settleloanstrat_borr
+settleloanstrat_work
+loanproductpledge_gold
 
-tabstat delta2_loanamount_indiv delta2_DSR_indiv, stat(mean sd p50) by(female)
-tab debtpath female, col nofreq
+*/
+
+ta loanproductpledge_gold loanproductpledge_furnit
+
+*** Quanti
+global quanti loanamount_good_indiv loanamount_bad_indiv imp1_is_tot_good_indiv imp1_is_tot_bad_indiv
+tabstat $quanti, stat(n mean sd p50) by(female)
+
+
+
 ****************************************
 * END
 
