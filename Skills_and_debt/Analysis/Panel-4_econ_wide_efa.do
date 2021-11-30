@@ -214,26 +214,19 @@ label var base_f5_std "AG (std)"
 ****************************************
 * New Y
 ****************************************
-*** Quali
-global quali indebt_indiv_2 dummy_good dummy_bad dichotomyinterest_indiv_2 dummypbrepay otherlenderservices_finansupp otherlenderservices_generainf borrowerservices_suppwhenever borrowerservices_none guarantee_doc guarantee_perso guarantee_none plantorepay_work plantorepay_inco plantorepay_borr settleloanstrat_inco settleloanstrat_borr settleloanstrat_work loanproductpledge_gold loanproductpledge_furnit
-fre $quali
-/*1
-Not to keep:1
-guarantee_doc
-guarantee_none
-plantorepay_work
-plantorepay_inco
-settleloanstrat_borr
-settleloanstrat_work
-loanproductpledge_gold
 
-*/
+global quali otherlenderservices_finansupp
 
-ta loanproductpledge_gold loanproductpledge_furnit
+global qualiml plantorepay_borr dummypbrepay borrowerservices_suppwhenever guarantee_perso  
 
-*** Quanti
-global quanti loanamount_indiv1000_2 loanamount_good_indiv loanamount_bad_indiv DSR_indiv_2 DSR_good_indiv DSR_bad_indiv ISR_indiv_2 ISR_good_indiv ISR_bad_indiv imp1_is_tot_indiv1000_2 imp1_is_tot_good_indiv imp1_is_tot_bad_indiv
-tabstat $quanti, stat(n mean sd p50)
+global quanti loanamount_good_indiv loanamount_bad_indiv imp1_is_tot_good_indiv imp1_is_tot_bad_indiv
+
+mdesc $villagesFE $hhcontrol4 $indivcontrol $cog $efa $quali $qualiml $quanti
+foreach x in $qualiml {
+replace `x'=. if dummyml_indiv==0
+}
+
+mdesc $villagesFE $hhcontrol4 $indivcontrol $cog $efa $quali $qualiml $quanti
 
 ****************************************
 * END
@@ -246,31 +239,33 @@ tabstat $quanti, stat(n mean sd p50)
 ****************************************
 * Analysis
 ****************************************
-/*
+
 ********** 1.
 ********** Proba of being in debt, or overindebted, interest in t+1
-probit indebt_indiv_2 indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits, vce(cluster HHFE)
+foreach x in $quali $qualiml{
+
+qui probit `x' indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits, vce(cluster HHFE)
 est store res_1
 *predict probitxb_noint, xb
 *ge pdf_noint=normalden(probitxb_noint)
 *ge cdf_noint=normal(probitxb_noint)
 *ge imr_noint=pdf_noint/cdf_noint
 
-probit indebt_indiv_2 indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits $intfem, vce(cluster HHFE)
+qui probit `x' indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits $intfem, vce(cluster HHFE)
 est store res_2
 *predict probitxb_intfem, xb
 *ge pdf_intfem=normalden(probitxb_intfem)
 *ge cdf_intfem=normal(probitxb_intfem)
 *ge imr_intfem=pdf_intfem/cdf_intfem
 
-probit indebt_indiv_2 indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits $intdal, vce(cluster HHFE)
+qui probit `x' indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits $intdal, vce(cluster HHFE)
 est store res_3
 *predict probitxb_intdal, xb
 *ge pdf_intdal=normalden(probitxb_intdal)
 *ge cdf_intdal=normal(probitxb_intdal)
 *ge imr_intdal=pdf_intdal/cdf_intdal
 
-probit indebt_indiv_2 indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits femXdal $intfem $intdal $three, vce(cluster HHFE)
+qui probit `x' indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits femXdal $intfem $intdal $three, vce(cluster HHFE)
 est store res_4
 *predict probitxb_three, xb
 *ge pdf_three=normalden(probitxb_three)
@@ -278,8 +273,7 @@ est store res_4
 *ge imr_three=pdf_three/cdf_three
 
 esttab res_1 res_2 res_3 res_4 using "_reg.csv", ///
-	cells(b(fmt(3)) /// 
-	t(par fmt(3))) ///
+	cells("b(fmt(2) star)" se(par fmt(2))) ///
 	drop() ///
 	legend label varlabels(_cons constant) ///
 	stats(N r2_p ll chi2 p, fmt(0 3 3 3 3) labels(`"Observations"' `"Pseudo \$R^2$"' `"Log-likelihood"' `"$\upchi^2$"' `"p-value"')) /// //starlevels(* 0.10 ** 0.05 *** 0.01) ///
@@ -294,9 +288,9 @@ forvalues i=1(1)`=scalar(k)'{
 replace v`i'=substr(v`i',3,.)
 replace v`i'=substr(v`i',1,strlen(v`i')-1)
 }
-export excel using "Probit_indebt.xlsx", sheet("Indebt", replace)
+export excel using "Probit_indebt.xlsx", sheet("`x'", replace)
 restore
-*/
+}
 
 *********** Marges
 cls
@@ -304,27 +298,49 @@ foreach x in $quali {
 *** No int
 probit `x' indebt_indiv_1 $indivcontrol $hhcontrol4 $villagesFE c.base_f1_std c.base_f2_std c.base_f3_std c.base_f5_std c.base_raven_tt_std c.base_num_tt_std c.base_lit_tt_std dalits female, vce(cluster HHFE)
 *dy/dx
-margins, dydx(base_f1_std base_f2_std base_f3_std base_f5_std base_raven_tt_std base_num_tt_std base_lit_tt_std) atmeans saving(margin_`x'1, replace)
-*marginscontplot base_f1_std base_f2_std, ci at(dalits=(0) female=(0))
+qui margins, dydx(base_f1_std base_f2_std base_f3_std base_f5_std base_raven_tt_std base_num_tt_std base_lit_tt_std) atmeans saving(margin_`x'1, replace)
 
 *** Female
-probit `x' indebt_indiv_1 $indivcontrol $hhcontrol4 $villagesFE c.base_f1_std##i.female c.base_f2_std##i.female c.base_f3_std##i.female c.base_f5_std##i.female c.base_raven_tt_std##i.female c.base_num_tt_std##i.female c.base_lit_tt_std##i.female dalits, vce(cluster HHFE)
+qui probit `x' indebt_indiv_1 $indivcontrol $hhcontrol4 $villagesFE c.base_f1_std##i.female c.base_f2_std##i.female c.base_f3_std##i.female c.base_f5_std##i.female c.base_raven_tt_std##i.female c.base_num_tt_std##i.female c.base_lit_tt_std##i.female dalits, vce(cluster HHFE)
 *dy/dx
-margins, dydx(base_f1_std base_f2_std base_f3_std base_f5_std base_raven_tt_std base_num_tt_std base_lit_tt_std) at(female=(0 1)) atmeans saving(margin_`x'2, replace)
-*marginsplot, yline(0) level(95) xlabel(,angle(45)) name(`x'_2, replace)
+qui margins, dydx(base_f1_std base_f2_std base_f3_std base_f5_std base_raven_tt_std base_num_tt_std base_lit_tt_std) at(female=(0 1)) atmeans saving(margin_`x'2, replace)
 
 *** Dalits
-probit `x' indebt_indiv_1 $indivcontrol $hhcontrol4 $villagesFE c.base_f1_std##i.dalits c.base_f2_std##i.dalits c.base_f3_std##i.dalits c.base_f5_std##i.dalits c.base_raven_tt_std##i.dalits c.base_num_tt_std##i.dalits c.base_lit_tt_std##i.dalits female, vce(cluster HHFE)
+qui probit `x' indebt_indiv_1 $indivcontrol $hhcontrol4 $villagesFE c.base_f1_std##i.dalits c.base_f2_std##i.dalits c.base_f3_std##i.dalits c.base_f5_std##i.dalits c.base_raven_tt_std##i.dalits c.base_num_tt_std##i.dalits c.base_lit_tt_std##i.dalits female, vce(cluster HHFE)
 *dy/dx
-margins, dydx(base_f1_std base_f2_std base_f3_std base_f5_std base_raven_tt_std base_num_tt_std base_lit_tt_std) at(dalits=(0 1)) atmeans saving(margin_`x'3, replace)
-*marginsplot, yline(0) level(95) xlabel(,angle(45)) name(`x'_3, replace)
+qui margins, dydx(base_f1_std base_f2_std base_f3_std base_f5_std base_raven_tt_std base_num_tt_std base_lit_tt_std) at(dalits=(0 1)) atmeans saving(margin_`x'3, replace)
 
 *** Three
-probit `x' indebt_indiv_1 $indivcontrol $hhcontrol4 $villagesFE c.base_f1_std##i.female##i.dalits c.base_f2_std##i.female##i.dalits c.base_f3_std##i.female##i.dalits c.base_f5_std##i.female##i.dalits c.base_raven_tt_std##i.female##i.dalits c.base_num_tt_std##i.female##i.dalits c.base_lit_tt_std##i.female##i.dalits, vce(cluster HHFE)
+qui probit `x' indebt_indiv_1 $indivcontrol $hhcontrol4 $villagesFE c.base_f1_std##i.female##i.dalits c.base_f2_std##i.female##i.dalits c.base_f3_std##i.female##i.dalits c.base_f5_std##i.female##i.dalits c.base_raven_tt_std##i.female##i.dalits c.base_num_tt_std##i.female##i.dalits c.base_lit_tt_std##i.female##i.dalits, vce(cluster HHFE)
 *dy/dx
-margins, dydx(base_f1_std base_f2_std base_f3_std base_f5_std base_raven_tt_std base_num_tt_std base_lit_tt_std) at(dalits=(0 1) female=(0 1)) atmeans saving(margin_`x'4, replace)
-*marginsplot, yline(0) level(95) xlabel(,angle(45)) name(`x'_4, replace)
+qui margins, dydx(base_f1_std base_f2_std base_f3_std base_f5_std base_raven_tt_std base_num_tt_std base_lit_tt_std) at(dalits=(0 1) female=(0 1)) atmeans saving(margin_`x'4, replace)
 }
+
+
+foreach x in $qualiml {
+*** No int
+qui probit `x' indebt_indiv_1 $indivcontrol $hhcontrol4 $villagesFE c.base_f1_std c.base_f2_std c.base_f3_std c.base_f5_std c.base_raven_tt_std c.base_num_tt_std c.base_lit_tt_std dalits female if dummyml_indiv==1, vce(cluster HHFE)
+*dy/dx
+qui margins, dydx(base_f1_std base_f2_std base_f3_std base_f5_std base_raven_tt_std base_num_tt_std base_lit_tt_std) atmeans saving(margin_`x'1, replace)
+
+*** Female
+qui probit `x' indebt_indiv_1 $indivcontrol $hhcontrol4 $villagesFE c.base_f1_std##i.female c.base_f2_std##i.female c.base_f3_std##i.female c.base_f5_std##i.female c.base_raven_tt_std##i.female c.base_num_tt_std##i.female c.base_lit_tt_std##i.female dalits if dummyml_indiv==1, vce(cluster HHFE)
+*dy/dx
+qui margins, dydx(base_f1_std base_f2_std base_f3_std base_f5_std base_raven_tt_std base_num_tt_std base_lit_tt_std) at(female=(0 1)) atmeans saving(margin_`x'2, replace)
+
+*** Dalits
+qui probit `x' indebt_indiv_1 $indivcontrol $hhcontrol4 $villagesFE c.base_f1_std##i.dalits c.base_f2_std##i.dalits c.base_f3_std##i.dalits c.base_f5_std##i.dalits c.base_raven_tt_std##i.dalits c.base_num_tt_std##i.dalits c.base_lit_tt_std##i.dalits female if dummyml_indiv==1, vce(cluster HHFE)
+*dy/dx
+qui margins, dydx(base_f1_std base_f2_std base_f3_std base_f5_std base_raven_tt_std base_num_tt_std base_lit_tt_std) at(dalits=(0 1)) atmeans saving(margin_`x'3, replace)
+
+*** Three
+probit `x' indebt_indiv_1 $indivcontrol $hhcontrol4 $villagesFE c.base_f1_std##i.female##i.dalits c.base_f2_std##i.female##i.dalits c.base_f3_std##i.female##i.dalits c.base_f5_std##i.female##i.dalits c.base_raven_tt_std##i.female##i.dalits c.base_num_tt_std##i.female##i.dalits c.base_lit_tt_std##i.female##i.dalits if dummyml_indiv==1, vce(cluster HHFE)
+*dy/dx
+qui margins, dydx(base_f1_std base_f2_std base_f3_std base_f5_std base_raven_tt_std base_num_tt_std base_lit_tt_std) at(dalits=(0 1) female=(0 1)) atmeans saving(margin_`x'4, replace)
+}
+
+
+
 
 
 ********** Label IMR
@@ -354,24 +370,23 @@ margins, dydx(base_f1_std base_f2_std base_f3_std base_f5_std base_raven_tt_std 
 ****************************************
 ********** 2.
 ********** Level of debt in t+1
-/*
+
 cls
-foreach var in loanamount_indiv1000 DSR_indiv {
-reg `var'_2 indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits if indebt_indiv_2==1, vce(cluster HHFE)
+foreach var in $quanti {
+qui reg `var' indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits if indebt_indiv_2==1, vce(cluster HHFE)
 est store res_1
 
-reg `var'_2 indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits $intfem if indebt_indiv_2==1, vce(cluster HHFE)
+qui reg `var' indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits $intfem if indebt_indiv_2==1, vce(cluster HHFE)
 est store res_2
 
-reg `var'_2 indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits $intdal if indebt_indiv_2==1, vce(cluster HHFE)
+qui reg `var' indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits $intdal if indebt_indiv_2==1, vce(cluster HHFE)
 est store res_3
 
-reg `var'_2 indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits femXdal $intfem $intdal $three if indebt_indiv_2==1, vce(cluster HHFE)
+qui reg `var' indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits femXdal $intfem $intdal $three if indebt_indiv_2==1, vce(cluster HHFE)
 est store res_4
 
 esttab res_1 res_2 res_3 res_4 using "_reg.csv", ///
-	cells(b(fmt(3)) /// 
-	t(par fmt(3))) ///
+	cells("b(fmt(2) star)" se(par fmt(2))) ///
 	drop() ///	
 	legend label varlabels(_cons constant) ///
 	stats(N r2 r2_a F p, fmt(0 3 3 3 3) labels(`"Observations"' `"\$R^2$"' `"Adjusted \$R^2$"' `"F-stat"' `"p-value"')) ///
@@ -388,28 +403,28 @@ replace v`i'=substr(v`i',1,strlen(v`i')-1)
 export excel using "OLS_indebt.xlsx", sheet("`var'", replace)
 restore
 }
-*/
+
 
 ********** Margins
 cls
 foreach var in $quanti {
 *** No int
-qui reg `var' indebt_indiv_1 $indivcontrol $hhcontrol4 $villagesFE c.base_f1_std c.base_f2_std c.base_f3_std c.base_f5_std c.base_raven_tt_std c.base_num_tt_std c.base_lit_tt_std dalits female if indebt_indiv_2==1, vce(cluster HHFE)
+qui reg `var' indebt_indiv_1 $indivcontrol $hhcontrol4 $villagesFE c.base_f1_std c.base_f2_std c.base_f3_std c.base_f5_std c.base_raven_tt_std c.base_num_tt_std c.base_lit_tt_std dalits female, vce(cluster HHFE)
 *dy/dx
 qui margins, dydx(base_f1_std base_f2_std base_f3_std base_f5_std base_raven_tt_std base_num_tt_std base_lit_tt_std) atmeans saving(margin_`var'1, replace)
 
 *** Female
-qui reg `var' indebt_indiv_1 $indivcontrol $hhcontrol4 $villagesFE c.base_f1_std##i.female c.base_f2_std##i.female c.base_f3_std##i.female c.base_f5_std##i.female c.base_raven_tt_std##i.female c.base_num_tt_std##i.female c.base_lit_tt_std##i.female dalits if indebt_indiv_2==1, vce(cluster HHFE)
+qui reg `var' indebt_indiv_1 $indivcontrol $hhcontrol4 $villagesFE c.base_f1_std##i.female c.base_f2_std##i.female c.base_f3_std##i.female c.base_f5_std##i.female c.base_raven_tt_std##i.female c.base_num_tt_std##i.female c.base_lit_tt_std##i.female dalits, vce(cluster HHFE)
 *dy/dx
 qui margins, dydx(base_f1_std base_f2_std base_f3_std base_f5_std base_raven_tt_std base_num_tt_std base_lit_tt_std) at(female=(0 1)) atmeans saving(margin_`var'2, replace)
 
 *** Dalits
-qui reg `var' indebt_indiv_1 $indivcontrol $hhcontrol4 $villagesFE c.base_f1_std##i.dalits c.base_f2_std##i.dalits c.base_f3_std##i.dalits c.base_f5_std##i.dalits c.base_raven_tt_std##i.dalits c.base_num_tt_std##i.dalits c.base_lit_tt_std##i.dalits female if indebt_indiv_2==1, vce(cluster HHFE)
+qui reg `var' indebt_indiv_1 $indivcontrol $hhcontrol4 $villagesFE c.base_f1_std##i.dalits c.base_f2_std##i.dalits c.base_f3_std##i.dalits c.base_f5_std##i.dalits c.base_raven_tt_std##i.dalits c.base_num_tt_std##i.dalits c.base_lit_tt_std##i.dalits female, vce(cluster HHFE)
 *dy/dx
 qui margins, dydx(base_f1_std base_f2_std base_f3_std base_f5_std base_raven_tt_std base_num_tt_std base_lit_tt_std) at(dalits=(0 1)) atmeans saving(margin_`var'3, replace)
 
 *** Three
-qui reg `var' indebt_indiv_1 $indivcontrol $hhcontrol4 $villagesFE c.base_f1_std##i.female##i.dalits c.base_f2_std##i.female##i.dalits c.base_f3_std##i.female##i.dalits c.base_f5_std##i.female##i.dalits c.base_raven_tt_std##i.female##i.dalits c.base_num_tt_std##i.female##i.dalits c.base_lit_tt_std##i.female##i.dalits if indebt_indiv_2==1, vce(cluster HHFE)
+qui reg `var' indebt_indiv_1 $indivcontrol $hhcontrol4 $villagesFE c.base_f1_std##i.female##i.dalits c.base_f2_std##i.female##i.dalits c.base_f3_std##i.female##i.dalits c.base_f5_std##i.female##i.dalits c.base_raven_tt_std##i.female##i.dalits c.base_num_tt_std##i.female##i.dalits c.base_lit_tt_std##i.female##i.dalits, vce(cluster HHFE)
 *dy/dx
 qui margins, dydx(base_f1_std base_f2_std base_f3_std base_f5_std base_raven_tt_std base_num_tt_std base_lit_tt_std) at(dalits=(0 1) female=(0 1)) atmeans saving(margin_`var'4, replace)
 }
@@ -508,100 +523,3 @@ set graph on
 
 
 */
-
-
-
-
-
-
-
-
-
-/*
-
-
-****************************************
-* Analysis
-****************************************
-********** 3.
-********** Path of debt
-cls
-foreach var in debtpath {
-
-qui mprobit `var' $efa $cog $indivcontrol $hhcontrol4 female dalits, vce(cluster HHFE)
-est store res_1
-
-qui mprobit `var' $efa $cog $indivcontrol $hhcontrol4 female dalits $intfem, vce(cluster HHFE)
-est store res_2
-
-qui mprobit `var' $efa $cog $indivcontrol $hhcontrol4 female dalits $intdal, vce(cluster HHFE)
-est store res_3
-
-qui mprobit `var' $efa $cog $indivcontrol $hhcontrol4 female dalits femXdal $intfem $intdal $three, vce(cluster HHFE)
-est store res_5
-
-esttab res_1 res_2 res_3 res_5 using "_reg.csv", ///
-	cells(b(fmt(3)) /// 
-	t(par fmt(3))) ///
-	drop() ///
-	legend label varlabels(_cons constant) ///
-	stats(N ll chi2 p, fmt(0 3 3 3) labels(`"Observations"' `"Log-likelihood"' `"\$\upchi^2$"' `"p-value"')) ///
-	replace
-estimates clear
-preserve
-import delimited "_reg.csv", delimiter(",") varnames(nonames) clear
-qui des
-sca def k=r(k)
-forvalues i=1(1)`=scalar(k)'{
-replace v`i'=substr(v`i',3,.)
-replace v`i'=substr(v`i',1,strlen(v`i')-1)
-}
-export excel using "MProbit_indebt.xlsx", sheet("`var'", replace)
-restore
-
-
-********** Margins
-
-*** No int
-qui mprobit `var' $indivcontrol $hhcontrol4 c.base_f1_std c.base_f2_std c.base_f3_std c.base_f4_std c.base_f5_std c.base_raven_tt_std c.base_num_tt_std c.base_lit_tt_std dalits female, vce(cluster HHFE)
-*dy/dx
-qui margins, dydx(base_f1_std base_f2_std base_f3_std base_f4_std base_f5_std base_raven_tt_std base_num_tt_std base_lit_tt_std) atmeans saving(margin_`var'1, replace)
-
-*** Female
-qui mprobit `var' $indivcontrol $hhcontrol4 c.base_f1_std##i.female c.base_f2_std##i.female c.base_f3_std##i.female c.base_f4_std##i.female c.base_f5_std##i.female c.base_raven_tt_std##i.female c.base_num_tt_std##i.female c.base_lit_tt_std##i.female dalits, vce(cluster HHFE)
-*dy/dx
-qui margins, dydx(base_f1_std base_f2_std base_f3_std base_f4_std base_f5_std base_raven_tt_std base_num_tt_std base_lit_tt_std) at(female=(0 1)) atmeans saving(margin_`var'2, replace)
-
-*** Dalits
-qui mprobit `var' $indivcontrol $hhcontrol4 c.base_f1_std##i.dalits c.base_f2_std##i.dalits c.base_f3_std##i.dalits c.base_f4_std##i.dalits c.base_f5_std##i.dalits c.base_raven_tt_std##i.dalits c.base_num_tt_std##i.dalits c.base_lit_tt_std##i.dalits female, vce(cluster HHFE)
-*dy/dx
-qui margins, dydx(base_f1_std base_f2_std base_f3_std base_f4_std base_f5_std base_raven_tt_std base_num_tt_std base_lit_tt_std) at(dalits=(0 1)) atmeans saving(margin_`var'3, replace)
-
-*** Three
-qui mprobit `var' $indivcontrol $hhcontrol4 c.base_f1_std##i.female##i.dalits c.base_f2_std##i.female##i.dalits c.base_f3_std##i.female##i.dalits c.base_f4_std##i.female##i.dalits c.base_f5_std##i.female##i.dalits c.base_raven_tt_std##i.female##i.dalits c.base_num_tt_std##i.female##i.dalits c.base_lit_tt_std##i.female##i.dalits, vce(cluster HHFE)
-*dy/dx
-qui margins, dydx(base_f1_std base_f2_std base_f3_std base_f4_std base_f5_std base_raven_tt_std base_num_tt_std base_lit_tt_std) at(dalits=(0 1) female=(0 1)) atmeans saving(margin_`var'4, replace)
-
-}
-****************************************
-* END
-
-
-****************************************
-* Graph mprobit
-****************************************
-use"margin_debtpath4", clear
-set graph off
-forvalues i=1(1)4{
-forvalues j=1(1)8{
-twoway ///
-(line _margin _predict if _at==`i' & _deriv==`j') ///
-(rcap _ci_ub _ci_lb _predict if _at==`i' & _deriv==`j'), name(g_`i'_x`j', replace)
-}
-}
-set graph on
-grc1leg g_1_x1 g_2_x1 g_3_x1 g_4_x1 g_1_x2 g_2_x2 g_3_x2 g_4_x2  g_1_x3 g_2_x3 g_3_x3 g_4_x3  g_1_x4 g_2_x4 g_3_x4 g_4_x4  g_1_x5 g_2_x5 g_3_x5 g_4_x5  g_1_x6 g_2_x6 g_3_x6 g_4_x6  g_1_x7 g_2_x7 g_3_x7 g_4_x7  g_1_x8 g_2_x8 g_3_x8 g_4_x8, col(4)
-
-
-****************************************
-* END

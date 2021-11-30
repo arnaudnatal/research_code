@@ -66,6 +66,19 @@ tab loanduration_month
 drop if loanduration_month>48
 drop if loansettled==1
 
+preserve
+keep if mainloanname!=""
+bysort HHID_panel INDID_panel: egen sum_dummyproblemtorepay=sum(dummyproblemtorepay)
+keep HHID_panel INDID_panel egoid sex sum_dummyproblemtorepay
+drop if egoid==0
+ta egoid sex
+
+ta sum_dummyproblemtorepay sex, col nofreq
+recode sum_dummyproblemtorepay (2=1) (3=1)
+ta sum_dummyproblemtorepay sex
+ta sum_dummyproblemtorepay sex, col nofreq
+restore
+
 save"NEEMSIS2-newloans_v1.dta", replace
 ****************************************
 * END
@@ -682,11 +695,15 @@ save"NEEMSIS2-newloans_v4.dta", replace
 *************************************
 use"NEEMSIS2-newloans_v4.dta", clear
 
-global psycho s_otherlenderservices_politsupp s_otherlenderservices_finansupp s_otherlenderservices_guarantor s_otherlenderservices_generainf s_otherlenderservices_none s_otherlenderservices_other s_borrowerservices_freeserv s_borrowerservices_worklesswage s_borrowerservices_suppwhenever s_borrowerservices_none s_borrowerservices_other s_guarantee_doc s_guarantee_chittu s_guarantee_shg s_guarantee_perso s_guarantee_jewel s_guarantee_none s_guarantee_other s_plantorepay_chit s_plantorepay_work s_plantorepay_migr s_plantorepay_asse s_plantorepay_inco s_plantorepay_borr s_plantorepay_othe s_settleloanstrat_inco s_settleloanstrat_sche s_settleloanstrat_borr s_settleloanstrat_sell s_settleloanstrat_land s_settleloanstrat_cons s_settleloanstrat_addi s_settleloanstrat_work s_settleloanstrat_supp s_settleloanstrat_harv s_settleloanstrat_othe s_loanproductpledge_gold s_loanproductpledge_land s_loanproductpledge_car s_loanproductpledge_bike s_loanproductpledge_fridge s_loanproductpledge_furnit s_loanproductpledge_tailor s_loanproductpledge_cell s_loanproductpledge_line s_loanproductpledge_dvd s_loanproductpledge_camera s_loanproductpledge_gas s_loanproductpledge_computer s_loanproductpledge_dish s_loanproductpledge_none s_loanproductpledge_other
+bysort HHID_panel INDID_panel: egen s_dummymainloan=sum(dummymainloan)
+fre s_dummymainloan
 
-keep HHID_panel INDID_panel imp1_ds_tot_indiv imp1_is_tot_indiv imp1_ds_tot_good_indiv imp1_is_tot_good_indiv imp1_ds_tot_bad_indiv imp1_is_tot_bad_indiv loanamount_indiv loanamount_good_indiv loanamount_bad_indiv $psycho
+global psycho s_otherlenderservices_politsupp s_otherlenderservices_finansupp s_otherlenderservices_guarantor s_otherlenderservices_generainf s_otherlenderservices_none s_otherlenderservices_other s_borrowerservices_freeserv s_borrowerservices_worklesswage s_borrowerservices_suppwhenever s_borrowerservices_none s_borrowerservices_other s_guarantee_doc s_guarantee_chittu s_guarantee_shg s_guarantee_perso s_guarantee_jewel s_guarantee_none s_guarantee_other s_plantorepay_chit s_plantorepay_work s_plantorepay_migr s_plantorepay_asse s_plantorepay_inco s_plantorepay_borr s_plantorepay_othe s_settleloanstrat_inco s_settleloanstrat_sche s_settleloanstrat_borr s_settleloanstrat_sell s_settleloanstrat_land s_settleloanstrat_cons s_settleloanstrat_addi s_settleloanstrat_work s_settleloanstrat_supp s_settleloanstrat_harv s_settleloanstrat_othe s_loanproductpledge_gold s_loanproductpledge_land s_loanproductpledge_car s_loanproductpledge_bike s_loanproductpledge_fridge s_loanproductpledge_furnit s_loanproductpledge_tailor s_loanproductpledge_cell s_loanproductpledge_line s_loanproductpledge_dvd s_loanproductpledge_camera s_loanproductpledge_gas s_loanproductpledge_computer s_loanproductpledge_dish s_loanproductpledge_none s_loanproductpledge_other s_dummymainloan
+
+keep HHID_panel INDID_panel imp1_ds_tot_indiv imp1_is_tot_indiv imp1_ds_tot_good_indiv imp1_is_tot_good_indiv imp1_ds_tot_bad_indiv imp1_is_tot_bad_indiv loanamount_indiv loanamount_good_indiv loanamount_bad_indiv $psycho sex egoid
 
 duplicates drop
+
 
 cls
 tab1 $psycho
@@ -703,7 +720,8 @@ foreach x in $psycho {
 tab1 d`x'
 }
 
-global tokeep ds_otherlenderservices_finansupp ds_otherlenderservices_generainf ds_borrowerservices_suppwhenever ds_borrowerservices_none ds_guarantee_doc ds_guarantee_perso ds_guarantee_none ds_plantorepay_work ds_plantorepay_inco ds_plantorepay_borr ds_settleloanstrat_inco ds_settleloanstrat_borr ds_settleloanstrat_work ds_loanproductpledge_gold ds_loanproductpledge_furnit
+global tokeep ds_otherlenderservices_finansupp ds_otherlenderservices_generainf ds_borrowerservices_suppwhenever ds_borrowerservices_none ds_guarantee_doc ds_guarantee_perso ds_guarantee_none ds_plantorepay_work ds_plantorepay_inco ds_plantorepay_borr ds_settleloanstrat_inco ds_settleloanstrat_borr ds_settleloanstrat_work ds_loanproductpledge_gold ds_loanproductpledge_furnit ds_dummymainloan
+
 
 keep HHID_panel INDID_panel imp1_ds_tot_indiv imp1_is_tot_indiv imp1_ds_tot_good_indiv imp1_is_tot_good_indiv imp1_ds_tot_bad_indiv imp1_is_tot_bad_indiv loanamount_indiv loanamount_good_indiv loanamount_bad_indiv $tokeep
 
@@ -712,6 +730,7 @@ local new=substr("`x'",4,99)
 rename `x' `new'
 }
 
+rename dummymainloan dummyml_indiv
 
 save"NEEMSIS2_newvar.dta", replace
 *************************************
@@ -736,6 +755,10 @@ drop _merge
 merge 1:1 HHID_panel INDID_panel using "NEEMSIS2_newvar.dta"
 drop if _merge==2
 drop _merge
+
+ta dummyproblemtorepay_indiv_2 sex_2
+recode dummyproblemtorepay_indiv_2 (3=1) (2=1)
+ta dummyproblemtorepay_indiv_2 sex_2, col nofreq
 
 fre loanamount_indiv loanamount_good_indiv loanamount_bad_indiv
 

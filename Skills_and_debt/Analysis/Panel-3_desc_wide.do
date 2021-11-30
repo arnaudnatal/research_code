@@ -76,6 +76,11 @@ global hhvar hhsize_1 nbego sexratiocat_1_1 sexratiocat_1_2 sexratiocat_1_3 near
 
 tabstat $hhvar if dalit==1, stat(mean sd)
 tabstat $hhvar if dalit==0, stat(mean sd)
+
+cls
+foreach x in $hhvar {
+reg `x' i.dalit
+}
 restore
 
 
@@ -83,28 +88,41 @@ restore
 replace indebt_indiv_2=0
 replace indebt_indiv_2=1 if loanamount_good_indiv>0 & loanamount_good_indiv!=.
 replace indebt_indiv_2=1 if loanamount_bad_indiv>0 & loanamount_bad_indiv!=.
+replace totalincome_indiv_1=totalincome_indiv_1/1000
 
-
-global indivvar dalits age_1 dummyhead_1 maritalstatus2_1 dummyedulevel cat_mainocc_occupation_indiv_1_1 cat_mainocc_occupation_indiv_1_2 cat_mainocc_occupation_indiv_1_3 cat_mainocc_occupation_indiv_1_4 cat_mainocc_occupation_indiv_1_5 cat_mainocc_occupation_indiv_1_6 cat_mainocc_occupation_indiv_1_7 dummymultipleoccupation_indiv_1 indebt_indiv_2
+global indivvar dalits age_1 dummyhead_1 maritalstatus2_1 dummyedulevel cat_mainocc_occupation_indiv_1_1 cat_mainocc_occupation_indiv_1_2 cat_mainocc_occupation_indiv_1_3 cat_mainocc_occupation_indiv_1_4 cat_mainocc_occupation_indiv_1_5 cat_mainocc_occupation_indiv_1_6 cat_mainocc_occupation_indiv_1_7 dummymultipleoccupation_indiv_1 totalincome_indiv_1
 
 tabstat $indivvar if female==0, stat(n mean sd)
 tabstat $indivvar if female==1, stat(n mean sd)
 
-tabstat $indivvar if dal_fem==1, stat(n mean sd)
-tabstat $indivvar if dal_fem==2, stat(n mean sd)
-tabstat $indivvar if dal_fem==3, stat(n mean sd)
-tabstat $indivvar if dal_fem==4, stat(n mean sd)
+cls
+foreach x in $indivvar {
+reg `x' i.female
+}
 
-global depvar loanamount_good_indiv loanamount_bad_indiv plantorepay_borr settleloanstrat_inco dummypbrepay loanproductpledge_furnit imp1_is_tot_good_indiv imp1_is_tot_bad_indiv otherlenderservices_finansupp borrowerservices_suppwhenever guarantee_perso
+********** Debt for all
+global depvar loanamount_good_indiv loanamount_bad_indiv imp1_is_tot_good_indiv imp1_is_tot_bad_indiv otherlenderservices_finansupp
 
 tabstat $depvar if female==0, stat(n mean sd)
 tabstat $depvar if female==1, stat(n mean sd)
 
-tabstat $depvar if dal_fem==1, stat(n mean sd)
-tabstat $depvar if dal_fem==2, stat(n mean sd)
-tabstat $depvar if dal_fem==3, stat(n mean sd)
-tabstat $depvar if dal_fem==4, stat(n mean sd)
+cls
+foreach x in $depvar {
+reg `x' i.female
+}
 
+
+
+********** Debt for ML
+global depvarml plantorepay_borr dummypbrepay borrowerservices_suppwhenever guarantee_perso  
+
+tabstat $depvarml if dummyml_indiv==1 & female==0, stat(n mean sd)
+tabstat $depvarml if dummyml_indiv==1 & female==1, stat(n mean sd)
+
+cls
+foreach x in $depvarml {
+reg `x' i.female if dummyml_indiv==1
+}
 
 
 
