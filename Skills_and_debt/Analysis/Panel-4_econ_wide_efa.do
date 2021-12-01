@@ -217,7 +217,7 @@ global quali indebt_indiv_2 indiv_interest otherlenderservices_finansupp guarant
  
 global qualiml borrowerservices_none plantorepay_borr settleloanstrat_addi dummyproblemtorepay
 
-global quanti loanamount_indiv
+global quanti DSR_indiv
 
 
 *** Desc

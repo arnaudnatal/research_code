@@ -700,6 +700,13 @@ replace indebt_bad_indiv_2=1 if nbloan_bad>0 & nbloan_bad!=.
 gen DSR_indiv=imp1_ds_tot_indiv/totalincome_indiv_2
 gen ISR_indiv=imp1_is_tot_indiv/totalincome_indiv_2
 
+order DSR_indiv female imp1_ds_tot_indiv totalincome_indiv_2
+sort DSR_indiv
+replace DSR_indiv=10 if DSR_indiv>10 & DSR_indiv!=.
+
+tabstat DSR_indiv, stat(n mean sd) by(female)
+
+
 foreach x in good bad {
 gen DSR_`x'_indiv=imp1_ds_tot_`x'_indiv/totalincome_indiv_2
 gen ISR_`x'_indiv=imp1_is_tot_`x'_indiv/totalincome_indiv_2

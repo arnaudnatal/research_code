@@ -103,9 +103,12 @@ reg `x' i.female
 
 ********** Debt for all
 cls
-global yvar indebt_indiv_2 loanamount_indiv indiv_interest otherlenderservices_finansupp guarantee_none borrowerservices_none plantorepay_borr settleloanstrat_addi dummyproblemtorepay
+global yvar indebt_indiv_2 DSR_indiv indiv_interest otherlenderservices_finansupp guarantee_none borrowerservices_none plantorepay_borr settleloanstrat_addi dummyproblemtorepay
 
 tabstat $yvar, stat(n mean sd) by(female)
+
+ta plantorepay_borr female, col nofreq 
+ta settleloanstrat_addi female, col nofreq
 
 foreach x in $yvar{
 reg `x' i.female
