@@ -50,14 +50,44 @@ global wave3 "NEEMSIS2-HH_v19"
 * END
 
 
-global quali indebt_indiv_2 indebt_good_indiv_2 indebt_bad_indiv_2 otherlenderservices_finansupp indiv_interest plantorepay_borr dummyproblemtorepay borrowerservices_suppwhenever guarantee_perso 
-
-global quanti loanamount_good_indiv loanamount_bad_indiv loanamount_indiv DSR_indiv DSR_good_indiv DSR_bad_indiv ISR_indiv ISR_good_indiv ISR_bad_indiv nbloan_good nbloan_bad nbloan
 
 
 
-********** Quali
-foreach x in $quali {
+
+
+****************************************
+* Y
+****************************************
+********** To check
+global quali indebt_indiv_2 indiv_interest otherlenderservices_finansupp guarantee_none
+ 
+global qualiml borrowerservices_none plantorepay_borr settleloanstrat_addi dummyproblemtorepay
+
+global quanti loanamount_indiv
+
+
+********** Auto
+global varquali $quali $qualiml
+global varquanti $quanti
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Quali
+****************************************
+foreach x in $varquali {
 
 forvalues i=1(1)4{
 *****
@@ -224,14 +254,25 @@ export excel using "margins_probit.xlsx", sheet("`x'", replace) //firstrow(varla
 *export excel using "margins_`x'.xlsx", sheet("`x'", replace) firstrow(varlabels)
 *export delimited using "margins_`x'.csv"
 }
+****************************************
+* END
 
 
 
 
 
 
-********** Quanti
-foreach x in $quanti {
+
+
+
+
+
+
+
+****************************************
+* Quanti
+****************************************
+foreach x in $varquanti {
 
 forvalues i=1(1)4{
 *****
@@ -398,18 +439,8 @@ export excel using "margins_ols.xlsx", sheet("`x'", replace) //firstrow(varlabel
 *export excel using "margins_`x'.xlsx", sheet("`x'", replace) firstrow(varlabels)
 *export delimited using "margins_`x'.csv"
 }
-
-
-
-
-
-
-
-
-
-
-
-
+****************************************
+* END
 
 
 
@@ -423,11 +454,9 @@ export excel using "margins_ols.xlsx", sheet("`x'", replace) //firstrow(varlabel
 
 
 /*
-
-
-
-
-***QREG
+****************************************
+* QREG
+****************************************
 foreach x in loanamount_indiv1000 DSR_indiv { //b5_loanamount_indiv1000 b5_DSR_indiv {
 foreach i in 10 25 50 75 90{
 *****
@@ -525,15 +554,24 @@ export excel using "margins.xlsx", sheet("qreg_`x'", replace) firstrow(varlabels
 *export excel using "margins_`x'.xlsx", sheet("`x'", replace) firstrow(varlabels)
 *export delimited using "margins_`x'.csv"
 }
+****************************************
+* END
 
 
 
 
 
 
-/*
 
 
+
+
+
+
+
+****************************************
+* Mprobit
+****************************************
 ******* Debtpath
 foreach x in debtpath b5_debtpath { 
 forvalues i=1(1)4{
@@ -688,3 +726,5 @@ export excel using "margins.xlsx", sheet("`x'", replace) firstrow(varlabels)
 *export excel using "margins_`x'.xlsx", sheet("`x'", replace) firstrow(varlabels)
 *export delimited using "margins_`x'.csv"
 }
+****************************************
+* END

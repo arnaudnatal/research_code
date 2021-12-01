@@ -213,11 +213,11 @@ label var base_f5_std "AG (std)"
 * Y
 ****************************************
 
-global quali indebt_indiv_2 indebt_good_indiv_2 indebt_bad_indiv_2 otherlenderservices_finansupp indiv_interest
+global quali indebt_indiv_2 indiv_interest otherlenderservices_finansupp guarantee_none
+ 
+global qualiml borrowerservices_none plantorepay_borr settleloanstrat_addi dummyproblemtorepay
 
-global qualiml plantorepay_borr dummyproblemtorepay borrowerservices_suppwhenever guarantee_perso dummyhelptosettleloan
-
-global quanti loanamount_good_indiv loanamount_bad_indiv loanamount_indiv DSR_indiv DSR_good_indiv DSR_bad_indiv ISR_indiv ISR_good_indiv ISR_bad_indiv nbloan_good nbloan_bad nbloan
+global quanti loanamount_indiv
 
 
 *** Desc

@@ -464,9 +464,6 @@ replace otherlenderservices_generainf=1 if strpos(otherlenderservices,"4")
 replace otherlenderservices_none=1 if strpos(otherlenderservices,"5")
 replace otherlenderservices_other=1 if strpos(otherlenderservices,"77")
 
-tab1 otherlenderservices_politsupp otherlenderservices_finansupp otherlenderservices_guarantor otherlenderservices_generainf otherlenderservices_none otherlenderservices_other
-
-
 
 
 ********** Guarantee
@@ -709,6 +706,10 @@ gen ISR_`x'_indiv=imp1_is_tot_`x'_indiv/totalincome_indiv_2
 }
 
 
+********** Loan amount
+replace loanamount_indiv=loanamount_indiv/1000
+
+
 ********** New measures of ISR
 gen intamt_good=interestpaid_good_indiv/loanamount_good_indiv
 gen intamt_bad=interestpaid_bad_indiv/loanamount_bad_indiv
@@ -752,6 +753,7 @@ fre dummyproblemtorepay dummyhelptosettleloan dummyrecommendation dummyguarantor
 *otherlenderservices_generainf otherlenderservices_guarantor otherlenderservices_finansupp guarantee_jewel guarantee_perso guarantee_doc
 
 *borrowerservices_suppwhenever plantorepay_borr plantorepay_work settleloanstrat_work settleloanstrat_addi settleloanstrat_cons settleloanstrat_borr dummyhelptosettleloan dummyproblemtorepay
+
 
 
 save"panel_wide_v3", replace

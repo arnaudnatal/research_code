@@ -65,17 +65,6 @@ label define dalits 0"Middle-upper" 1"Dalits"
 label values dalits dalits
 egen dal_fem=group(female dalit), la
 fre dal_fem
-drop test
-
-
-
-
-********** New measures
-tabstat s_int_serv_bad s_int_serv_good inttoamt_good inttoamt_bad nbloan_good nbloan_bad, stat(n mean sd p50 min max) by(female)
-
-tabstat s_int_serv_bad s_int_serv_good inttoamt_good inttoamt_bad nbloan_good nbloan_bad, stat(n mean sd p50 min max) by(female)
-
-tabstat DSR_indiv_2 DSR_good_indiv DSR_bad_indiv ISR_indiv_2 ISR_good_indiv ISR_bad_indiv, stat(n mean sd p50) by(female)
 
 
 
@@ -113,27 +102,13 @@ reg `x' i.female
 }
 
 ********** Debt for all
-global depvar loanamount_good_indiv loanamount_bad_indiv imp1_is_tot_good_indiv imp1_is_tot_bad_indiv otherlenderservices_finansupp
-
-tabstat $depvar if female==0, stat(n mean sd)
-tabstat $depvar if female==1, stat(n mean sd)
-
 cls
-foreach x in $depvar {
+global yvar indebt_indiv_2 loanamount_indiv indiv_interest otherlenderservices_finansupp guarantee_none borrowerservices_none plantorepay_borr settleloanstrat_addi dummyproblemtorepay
+
+tabstat $yvar, stat(n mean sd) by(female)
+
+foreach x in $yvar{
 reg `x' i.female
-}
-
-
-
-********** Debt for ML
-global depvarml plantorepay_borr dummypbrepay borrowerservices_suppwhenever guarantee_perso  
-
-tabstat $depvarml if dummyml_indiv==1 & female==0, stat(n mean sd)
-tabstat $depvarml if dummyml_indiv==1 & female==1, stat(n mean sd)
-
-cls
-foreach x in $depvarml {
-reg `x' i.female if dummyml_indiv==1
 }
 
 
