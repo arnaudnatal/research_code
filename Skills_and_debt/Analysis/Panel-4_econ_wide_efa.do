@@ -58,11 +58,9 @@ global wave3 "NEEMSIS2-HH_v19"
 
 
 ****************************************
-* Préparation database
+* Prepa db
 ****************************************
 use"panel_wide_v3.dta", clear
-
-tab debtpath
 
 
 ********** Instrument for Heckman
@@ -212,22 +210,18 @@ label var base_f5_std "AG (std)"
 
 
 ****************************************
-* New Y
+* Y
 ****************************************
 
-global quali otherlenderservices_finansupp
+global quali indebt_indiv_2 indebt_good_indiv_2 indebt_bad_indiv_2 otherlenderservices_finansupp indiv_interest
 
-global qualiml plantorepay_borr dummypbrepay borrowerservices_suppwhenever guarantee_perso  
+global qualiml plantorepay_borr dummyproblemtorepay borrowerservices_suppwhenever guarantee_perso dummyhelptosettleloan
 
-global quanti loanamount_good_indiv loanamount_bad_indiv imp1_is_tot_good_indiv imp1_is_tot_bad_indiv
+global quanti loanamount_good_indiv loanamount_bad_indiv loanamount_indiv DSR_indiv DSR_good_indiv DSR_bad_indiv ISR_indiv ISR_good_indiv ISR_bad_indiv nbloan_good nbloan_bad nbloan
 
-mdesc $villagesFE $hhcontrol4 $indivcontrol $cog $efa $quali $qualiml $quanti
-foreach x in $qualiml {
-replace `x'=. if dummyml_indiv==0
-}
 
-mdesc $villagesFE $hhcontrol4 $indivcontrol $cog $efa $quali $qualiml $quanti
-
+*** Desc
+mdesc $quali $qualiml $quanti
 ****************************************
 * END
 
@@ -296,7 +290,7 @@ restore
 cls
 foreach x in $quali {
 *** No int
-probit `x' indebt_indiv_1 $indivcontrol $hhcontrol4 $villagesFE c.base_f1_std c.base_f2_std c.base_f3_std c.base_f5_std c.base_raven_tt_std c.base_num_tt_std c.base_lit_tt_std dalits female, vce(cluster HHFE)
+qui probit `x' indebt_indiv_1 $indivcontrol $hhcontrol4 $villagesFE c.base_f1_std c.base_f2_std c.base_f3_std c.base_f5_std c.base_raven_tt_std c.base_num_tt_std c.base_lit_tt_std dalits female, vce(cluster HHFE)
 *dy/dx
 qui margins, dydx(base_f1_std base_f2_std base_f3_std base_f5_std base_raven_tt_std base_num_tt_std base_lit_tt_std) atmeans saving(margin_`x'1, replace)
 
@@ -319,22 +313,22 @@ qui margins, dydx(base_f1_std base_f2_std base_f3_std base_f5_std base_raven_tt_
 
 foreach x in $qualiml {
 *** No int
-qui probit `x' indebt_indiv_1 $indivcontrol $hhcontrol4 $villagesFE c.base_f1_std c.base_f2_std c.base_f3_std c.base_f5_std c.base_raven_tt_std c.base_num_tt_std c.base_lit_tt_std dalits female if dummyml_indiv==1, vce(cluster HHFE)
+qui probit `x' indebt_indiv_1 $indivcontrol $hhcontrol4 $villagesFE c.base_f1_std c.base_f2_std c.base_f3_std c.base_f5_std c.base_raven_tt_std c.base_num_tt_std c.base_lit_tt_std dalits female, vce(cluster HHFE)
 *dy/dx
 qui margins, dydx(base_f1_std base_f2_std base_f3_std base_f5_std base_raven_tt_std base_num_tt_std base_lit_tt_std) atmeans saving(margin_`x'1, replace)
 
 *** Female
-qui probit `x' indebt_indiv_1 $indivcontrol $hhcontrol4 $villagesFE c.base_f1_std##i.female c.base_f2_std##i.female c.base_f3_std##i.female c.base_f5_std##i.female c.base_raven_tt_std##i.female c.base_num_tt_std##i.female c.base_lit_tt_std##i.female dalits if dummyml_indiv==1, vce(cluster HHFE)
+qui probit `x' indebt_indiv_1 $indivcontrol $hhcontrol4 $villagesFE c.base_f1_std##i.female c.base_f2_std##i.female c.base_f3_std##i.female c.base_f5_std##i.female c.base_raven_tt_std##i.female c.base_num_tt_std##i.female c.base_lit_tt_std##i.female dalits, vce(cluster HHFE)
 *dy/dx
 qui margins, dydx(base_f1_std base_f2_std base_f3_std base_f5_std base_raven_tt_std base_num_tt_std base_lit_tt_std) at(female=(0 1)) atmeans saving(margin_`x'2, replace)
 
 *** Dalits
-qui probit `x' indebt_indiv_1 $indivcontrol $hhcontrol4 $villagesFE c.base_f1_std##i.dalits c.base_f2_std##i.dalits c.base_f3_std##i.dalits c.base_f5_std##i.dalits c.base_raven_tt_std##i.dalits c.base_num_tt_std##i.dalits c.base_lit_tt_std##i.dalits female if dummyml_indiv==1, vce(cluster HHFE)
+qui probit `x' indebt_indiv_1 $indivcontrol $hhcontrol4 $villagesFE c.base_f1_std##i.dalits c.base_f2_std##i.dalits c.base_f3_std##i.dalits c.base_f5_std##i.dalits c.base_raven_tt_std##i.dalits c.base_num_tt_std##i.dalits c.base_lit_tt_std##i.dalits female, vce(cluster HHFE)
 *dy/dx
 qui margins, dydx(base_f1_std base_f2_std base_f3_std base_f5_std base_raven_tt_std base_num_tt_std base_lit_tt_std) at(dalits=(0 1)) atmeans saving(margin_`x'3, replace)
 
 *** Three
-probit `x' indebt_indiv_1 $indivcontrol $hhcontrol4 $villagesFE c.base_f1_std##i.female##i.dalits c.base_f2_std##i.female##i.dalits c.base_f3_std##i.female##i.dalits c.base_f5_std##i.female##i.dalits c.base_raven_tt_std##i.female##i.dalits c.base_num_tt_std##i.female##i.dalits c.base_lit_tt_std##i.female##i.dalits if dummyml_indiv==1, vce(cluster HHFE)
+qui probit `x' indebt_indiv_1 $indivcontrol $hhcontrol4 $villagesFE c.base_f1_std##i.female##i.dalits c.base_f2_std##i.female##i.dalits c.base_f3_std##i.female##i.dalits c.base_f5_std##i.female##i.dalits c.base_raven_tt_std##i.female##i.dalits c.base_num_tt_std##i.female##i.dalits c.base_lit_tt_std##i.female##i.dalits, vce(cluster HHFE)
 *dy/dx
 qui margins, dydx(base_f1_std base_f2_std base_f3_std base_f5_std base_raven_tt_std base_num_tt_std base_lit_tt_std) at(dalits=(0 1) female=(0 1)) atmeans saving(margin_`x'4, replace)
 }
@@ -373,16 +367,16 @@ qui margins, dydx(base_f1_std base_f2_std base_f3_std base_f5_std base_raven_tt_
 
 cls
 foreach var in $quanti {
-qui reg `var' indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits if indebt_indiv_2==1, vce(cluster HHFE)
+qui reg `var' indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits, vce(cluster HHFE)
 est store res_1
 
-qui reg `var' indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits $intfem if indebt_indiv_2==1, vce(cluster HHFE)
+qui reg `var' indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits $intfem, vce(cluster HHFE)
 est store res_2
 
-qui reg `var' indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits $intdal if indebt_indiv_2==1, vce(cluster HHFE)
+qui reg `var' indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits $intdal, vce(cluster HHFE)
 est store res_3
 
-qui reg `var' indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits femXdal $intfem $intdal $three if indebt_indiv_2==1, vce(cluster HHFE)
+qui reg `var' indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits femXdal $intfem $intdal $three, vce(cluster HHFE)
 est store res_4
 
 esttab res_1 res_2 res_3 res_4 using "_reg.csv", ///

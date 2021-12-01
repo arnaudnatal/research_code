@@ -98,34 +98,12 @@ clonevar base_`x'=`x'_1
 
 
 ********** Deflate
-global amount aspirationminimumwage2_2 aspirationminimumwage_2 businessexpenses_2 marriageexpenses_2 foodexpenses_2 healthexpenses_2 ceremoniesexpenses_2 ceremoniesrelativesexpenses_2 deathexpenses_2 assets_2 assets_noland_2 mainocc_annualincome_indiv_2 annualincome_indiv_2 annualincome_HH_2 totalincome_indiv_2 totalincome_HH_2 imp1_ds_tot_indiv_2 imp1_is_tot_indiv_2 loanamount_indiv_2 imp1_ds_tot_HH_2 imp1_is_tot_HH_2 loanamount_HH_2 savingsamount_HH_2 educationexpenses_HH_2 productexpenses_HH_2 businessexpenses_HH_2 foodexpenses_HH_2 healthexpenses_HH_2 ceremoniesexpenses_HH_2 deathexpenses_HH_2 chitfundpaymentamount_HH_2 chitfundamount_HH_2 chitfundamounttot_HH_2 amountlent_HH_2 insuranceamount_HH_2 insuranceamounttot_HH_2 insurancebenefitamount_HH_2 insurancebenefitamounttot_HH_2
+global amount aspirationminimumwage2_2 aspirationminimumwage_2 businessexpenses_2 marriageexpenses_2 foodexpenses_2 healthexpenses_2 ceremoniesexpenses_2 ceremoniesrelativesexpenses_2 deathexpenses_2 assets_2 assets_noland_2 mainocc_annualincome_indiv_2 annualincome_indiv_2 annualincome_HH_2 totalincome_indiv_2 totalincome_HH_2 educationexpenses_HH_2 productexpenses_HH_2 businessexpenses_HH_2 foodexpenses_HH_2 healthexpenses_HH_2 ceremoniesexpenses_HH_2 deathexpenses_HH_2        
 
 foreach x in $amount {
 replace `x'=`x'*(1/(180/155))
 }
 
-
-
-
-********** Indebt
-recode loanamount_indiv_1 loanamount_HH_1 loanamount_indiv_2 loanamount_HH_2 (.=0)
-gen indebt_indiv_1=0
-replace indebt_indiv_1=1 if loanamount_indiv_1>0
-gen indebt_indiv_2=0
-replace indebt_indiv_2=1 if loanamount_indiv_2>0
-gen indebt_HH_1=0
-replace indebt_HH_1=1 if loanamount_HH_1>0
-gen indebt_HH_2=0
-replace indebt_HH_2=1 if loanamount_HH_2>0
-recode loanamount_indiv_1 loanamount_HH_1 loanamount_indiv_2 loanamount_HH_2 (0=.)
-
-gen reallyindebt=0 if indebt_indiv_1==0 & indebt_indiv_2==0
-replace reallyindebt=1 if indebt_indiv_1==1 & indebt_indiv_2==0
-replace reallyindebt=2 if indebt_indiv_1==0 & indebt_indiv_2==1
-replace reallyindebt=3 if indebt_indiv_1==1 & indebt_indiv_2==1
-label define reallyindebt 0"Never in debt" 1"Out of debt" 2"Becomes in debt" 3"Always in debt"
-label values reallyindebt reallyindebt
-rename reallyindebt debtpath
 
 
 ********** Total income for indiv (zero issue) & for HH
@@ -143,90 +121,6 @@ tab totalincome_HH_1
 *2020
 tab totalincome_HH_2
 replace totalincome_HH_2=2000 if totalincome_HH_2<2000
-
-
-
-
-********** Recode everything
-forvalues i=1(1)2{
-recode imp1_ds_tot_indiv_`i' imp1_is_tot_indiv_`i' loanamount_indiv_`i' loans_indiv_`i' (.=0)
-
-recode imp1_ds_tot_HH_`i' imp1_is_tot_HH_`i' loanamount_HH_`i' loans_HH_`i' (.=0)
-
-recode  savingsamount_HH_`i' nbchitfunds_HH_`i' nbinsurance_HH_`i' (.=0)
-}
-
-
-
-
-********** Ratio construction
-forvalues i=1(1)2{
-gen DSR_indiv_`i'=(imp1_ds_tot_indiv_`i'/totalincome_indiv_`i')*100
-gen DSR_HH_`i'=(imp1_ds_tot_HH_`i'/totalincome_HH_`i')*100
-
-gen ISR_indiv_`i'=(imp1_is_tot_indiv_`i'/totalincome_indiv_`i')*100
-gen ISR_HH_`i'=(imp1_is_tot_HH_`i'/totalincome_HH_`i')*100
-
-gen DAR_indiv_`i'=(loanamount_indiv_`i'/assets_`i')*100
-gen DAR_HH_`i'=(loanamount_HH_`i'/assets_`i')*100
-
-gen debtshare_`i'=loanamount_indiv_`i'*100/loanamount_HH_`i'
-}
-
-
-save"panel1.dta", replace
-
-
-use"panel1.dta", clear
-********** Check the 0
-tab debtpath
-
-
-global toclean debtshare loanamount_indiv imp1_ds_tot_indiv imp1_is_tot_indiv DSR_indiv ISR_indiv DAR_indiv annualincome_indiv totalincome_indiv loans_indiv ///
-educationexpenses_HH productexpenses_HH businessexpenses_HH foodexpenses_HH healthexpenses_HH ceremoniesexpenses_HH deathexpenses_HH ///
-loanamount_HH imp1_ds_tot_HH imp1_is_tot_HH DSR_HH ISR_HH DAR_HH  ///
-annualincome_HH totalincome_HH loans_HH
-
-*Then the variation rate
-foreach x in $toclean {
-recode `x'_2 (.=0)
-gen del_`x'=(`x'_2-`x'_1)*100/`x'_1
-gen delta_`x'=(`x'_2-`x'_1)*100/`x'_1
-replace delta_`x'=`x'_2 if `x'_1==0
-replace delta_`x'=-(`x'_1) if `x'_2==0
-recode delta_`x' (0=.) if debtpath==0
-}
-
-foreach x in $toclean {
-recode `x'_2 (.=0)
-gen delta2_`x'=(`x'_2-`x'_1)*100/`x'_1
-replace delta2_`x'=`x'_2/100 if `x'_1==0
-replace delta2_`x'=-(`x'_1)/100 if `x'_2==0
-recode delta2_`x' (0=.) if debtpath==0
-}
-
-foreach x in $toclean {
-recode `x'_2 (.=0)
-gen delta3_`x'=(`x'_2-`x'_1)*100/`x'_1
-replace delta3_`x'=100 if `x'_1==0 & delta_`x'!=.
-replace delta3_`x'=-100 if `x'_2==0 & delta_`x'!=.
-recode delta3_`x' (0=.) if debtpath==0
-}
-
-
-*Dummy
-foreach x in $toclean {
-gen bin_`x'=0 if `x'_1!=.
-}
-
-foreach x in $toclean {
-replace bin_`x'=1 if `x'_2>`x'_1
-}
-label define timevar2 0"Stable or decrease" 1"Increase"
-foreach x in $toclean{
-label values bin_`x' timevar2
-replace bin_`x'=. if debtpath==0
-}
 
 
 
@@ -532,19 +426,6 @@ fre villageid villages2016 villageid2016FE
 
 
 
-**********Dummy for debt or not
-fre debtpath
-gen dummydebt=0 if debtpath==0
-replace dummydebt=0 if debtpath==1
-replace dummydebt=1 if debtpath==2
-replace dummydebt=1 if debtpath==3
-
-label define debt 0"Not in debt" 1"Indebted"
-label values dummydebt debt
-
-tab debtpath dummydebt, row nofreq
-tab debtpath dummydebt, col nofreq
-
 
 ********** Correlation
 *Correlation with assets and house
@@ -560,52 +441,10 @@ sdtest assets1000_1, by(ownhouse_1)
 
 
 ********** 1,000 INR variables
-foreach x in loanamount_indiv loanamount_HH imp1_ds_tot_indiv imp1_ds_tot_HH imp1_is_tot_indiv imp1_is_tot_HH annualincome_indiv annualincome_HH totalincome_indiv {
+foreach x in annualincome_indiv annualincome_HH totalincome_indiv {
 gen `x'1000_1=`x'_1/1000 
 gen `x'1000_2=`x'_2/1000 
 }
-
-********** Recoder les dummy
-tab1 indebt_indiv_1 indebt_indiv_2
-tab DSR_indiv_2
-gen over30_indiv_1=0
-gen over30_indiv_2=0
-gen over40_indiv_1=0
-gen over40_indiv_2=0
-
-replace over30_indiv_1=1 if DSR_indiv_1>30
-replace over30_indiv_2=1 if DSR_indiv_2>30
-replace over40_indiv_1=1 if DSR_indiv_1>40
-replace over40_indiv_2=1 if DSR_indiv_2>40
-
-
-********** Variation de la dette
-global delta delta_debtshare delta_loanamount_indiv delta_imp1_ds_tot_indiv delta_imp1_is_tot_indiv delta_DSR_indiv delta_ISR_indiv delta_DAR_indiv delta_annualincome_indiv delta_totalincome_indiv delta_loans_indiv delta_educationexpenses_HH delta_productexpenses_HH delta_businessexpenses_HH delta_foodexpenses_HH delta_healthexpenses_HH delta_ceremoniesexpenses_HH delta_deathexpenses_HH delta_loanamount_HH delta_imp1_ds_tot_HH delta_imp1_is_tot_HH delta_DSR_HH delta_ISR_HH delta_DAR_HH delta_annualincome_HH delta_totalincome_HH delta_loans_HH
-foreach x in $delta {
-gen abs_`x'=abs(`x')
-}
-
-foreach x in $delta {
-gen bin_`x'=0 if `x'<0
-}
-
-foreach x in $delta {
-replace bin_`x'=1 if `x'>0
-}
-
-tabstat abs_delta_debtshare, stat(n mean sd p50) by(bin_delta_debtshare)
-
-
-/*
-foreach x in $delta {
-forvalues i=1(1)5 {
-gen `x'_f`i'=bin_`x'*base_factor_imraw_`i'_std
-}
-gen `x'_r1=bin_`x'*base_raven_tt
-gen `x'_n1=bin_`x'*base_num_tt
-gen `x'_l1=bin_`x'*base_lit_tt
-}
-*/
 
 
 
@@ -614,8 +453,6 @@ clonevar caste2=caste
 recode caste2 (3=2)
 
 tab caste2 female
-
-
 
 
 
@@ -630,30 +467,8 @@ replace dummymultipleoccupation_indiv_2=1 if nboccupation_indiv_2>1 & nboccupati
 tab nboccupation_indiv_1 dummymultipleoccupation_indiv_1, m
 
 
-**
-foreach x in debtshare {
-forvalues i=1(1)2{
-clonevar `x'_`i'_old=`x'_`i'
-}
-}
-
-foreach x in debtshare {
-forvalues i=1(1)2{
-replace `x'_`i'=`x'_`i'/100
-}
-}
-
 recode dummymultipleoccupation_indiv_1 (.=0)
 label var dummymultipleoccupation_indiv_1 "Multiple occupation (=1)"
-
-
-********** Variation rate of personality
-foreach x in CO OP ES EX AG {
-gen diff_`x'=cr_`x'_2-cr_`x'_1
-gen delta_`x'=(cr_`x'_2-cr_`x'_1)*100/cr_`x'_1
-}
-tabstat diff_CO diff_OP diff_ES diff_EX diff_AG delta_CO delta_OP delta_ES delta_EX delta_AG, stat(n mean sd q)
-
 
 
 
@@ -672,17 +487,6 @@ gen dal_`x'=`x'*dalits
 gen thr_`x'=`x'*female*dalits
 }
 gen femXdal=female*dalits
-
-drop over30_indiv_2 over40_indiv_2
-
-gen over30_indiv_2=0
-replace over30_indiv_2=1 if DSR_indiv_2>=30
-
-gen over40_indiv_2=0
-replace over40_indiv_2=1 if DSR_indiv_2>=40
-
-gen over50_indiv_2=0
-replace over50_indiv_2=1 if DSR_indiv_2>=50
 
 
 save"panel_wide_v2", replace

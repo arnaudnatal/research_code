@@ -67,6 +67,18 @@ egen dal_fem=group(female dalit), la
 fre dal_fem
 drop test
 
+
+
+
+********** New measures
+tabstat s_int_serv_bad s_int_serv_good inttoamt_good inttoamt_bad nbloan_good nbloan_bad, stat(n mean sd p50 min max) by(female)
+
+tabstat s_int_serv_bad s_int_serv_good inttoamt_good inttoamt_bad nbloan_good nbloan_bad, stat(n mean sd p50 min max) by(female)
+
+tabstat DSR_indiv_2 DSR_good_indiv DSR_bad_indiv ISR_indiv_2 ISR_good_indiv ISR_bad_indiv, stat(n mean sd p50) by(female)
+
+
+
 ********** HH
 preserve
 bysort HHID_panel: egen nbego=sum(1)

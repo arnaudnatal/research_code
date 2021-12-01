@@ -50,13 +50,9 @@ global wave3 "NEEMSIS2-HH_v19"
 * END
 
 
-global quali otherlenderservices_finansupp otherlenderservices_generainf dummypbrepay borrowerservices_suppwhenever guarantee_doc guarantee_perso plantorepay_work plantorepay_inco plantorepay_borr settleloanstrat_inco settleloanstrat_borr settleloanstrat_work
+global quali indebt_indiv_2 indebt_good_indiv_2 indebt_bad_indiv_2 otherlenderservices_finansupp indiv_interest plantorepay_borr dummyproblemtorepay borrowerservices_suppwhenever guarantee_perso 
 
-global quanti loanamount_good_indiv loanamount_bad_indiv imp1_is_tot_good_indiv imp1_is_tot_bad_indiv
-
-
-global dependent $quali $quanti
-
+global quanti loanamount_good_indiv loanamount_bad_indiv loanamount_indiv DSR_indiv DSR_good_indiv DSR_bad_indiv ISR_indiv ISR_good_indiv ISR_bad_indiv nbloan_good nbloan_bad nbloan
 
 
 

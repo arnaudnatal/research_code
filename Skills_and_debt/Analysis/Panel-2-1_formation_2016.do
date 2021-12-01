@@ -219,6 +219,7 @@ gen ceremoniesexpenses_HH=ceremoniesexpenses
 gen deathexpenses_HH=deathexpenses
 egen livestockexpenses_HH=rowtotal(livestockspent_cow livestockspent_goat livestockspent_chicken livestockspent_bullock)
 
+/*
 *Chitfunds
 egen chitfundpaymentamount_temp_HH=rowmean(chitfundpaymentamount1 chitfundpaymentamount2)
 egen chitfundamount_temp_HH=rowmean(chitfundamount1 chitfundamount2)
@@ -245,6 +246,7 @@ bysort HHID_panel: egen insuranceamount_HH=mean(insuranceamountm)
 bysort HHID_panel: egen insuranceamounttot_HH=sum(insuranceamount)
 bysort HHID_panel: egen insurancebenefitamount_HH=mean(insurancebenefitamount)
 bysort HHID_panel: egen insurancebenefitamounttot_HH=sum(insurancebenefitamount)
+*/
 
 *Land purchased as investment
 tab landpurchased
@@ -357,7 +359,7 @@ global debthh imp1_ds_tot_HH imp1_is_tot_HH loanamount_HH loans_HH debtorratio w
 
 global perso cr_OP cr_CO cr_EX cr_AG cr_ES cr_Grit OP CO EX AG ES Grit raven_tt num_tt lit_tt 
 
-global expenses savingsamount_HH educationexpenses_HH productexpenses_HH businessexpenses_HH foodexpenses_HH healthexpenses_HH ceremoniesexpenses_HH deathexpenses_HH chitfundpaymentamount_HH chitfundamount_HH chitfundamounttot_HH nbchitfunds_HH amountlent_HH interestlending_HH problemrepayment_HH goldquantity_HH goldquantitypledge_HH nbinsurance_HH insuranceamount_HH insuranceamounttot_HH insurancebenefitamount_HH insurancebenefitamounttot_HH landpurchased investequiptot_HH 
+global expenses educationexpenses_HH productexpenses_HH businessexpenses_HH foodexpenses_HH healthexpenses_HH ceremoniesexpenses_HH deathexpenses_HH landpurchased investequiptot_HH 
 
 global all $charactindiv $characthh $wealthindiv $wealthhh $debtindiv $debthh $perso $expenses nbercontactphone dummycontactleaders nbcontact_headbusiness nbcontact_policeman nbcontact_civilserv nbcontact_bankemployee nbcontact_panchayatcommittee nbcontact_peoplecouncil nbcontact_recruiter nbcontact_headunion nberpersonfamilyevent associationlist networkhelpkinmember demotrustbank_ego trustneighborhood trustemployees networkpeoplehelping trustingofother_backup
 
@@ -389,6 +391,9 @@ drop _merge
 foreach x in f1 f2 f3 f4 f5 {
 rename `x'_2016 `x'_1
 }
+
+gen indebt_indiv_1=0
+replace indebt_indiv_1=1 if loanamount_indiv_1>0 & loanamount_indiv_1!=.
 
 save"$wave2~panel", replace
 ****************************************
