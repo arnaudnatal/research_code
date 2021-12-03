@@ -301,7 +301,7 @@ replace v1="\begin{tabular}{lcccccccccccc}" if v1==""
 set obs `=_N+1'
 replace v1="\resizebox{\columnwidth}{!}{%" if v1==""
 set obs `=_N+1'
-replace v1="\caption{}" if v1==""
+replace v1="\caption{`x'}" if v1==""
 set obs `=_N+1'
 replace v1="\raggedright" if v1==""
 set obs `=_N+1'
@@ -321,7 +321,7 @@ replace v1="\end{tabular}" if v1==""
 set obs `=_N+1'
 replace v1="}" if v1==""
 set obs `=_N+1'
-replace v1="\label{tab:}" if v1==""
+replace v1="\label{tab:ame_}" if v1==""
 set obs `=_N+1'
 replace v1="\notetab{ME/(Std Err.). * p<0.05, ** p<0.01, *** p<0.001.}" if v1==""
 set obs `=_N+1'
@@ -359,7 +359,7 @@ egen tab=concat(v1 lb), p("")
 drop v1 lb
 drop n
 
-export delimited using "tex/`x'.tex", delimiter("") novarnames  replace
+export delimited using "tex/ame_`x'.tex", delimiter("") novarnames  replace
 }
 ****************************************
 * END
@@ -596,7 +596,7 @@ replace v1="\begin{tabular}{lcccccccccccc}" if v1==""
 set obs `=_N+1'
 replace v1="\resizebox{\columnwidth}{!}{%" if v1==""
 set obs `=_N+1'
-replace v1="\caption{}" if v1==""
+replace v1="\caption{`x'}" if v1==""
 set obs `=_N+1'
 replace v1="\raggedright" if v1==""
 set obs `=_N+1'
@@ -616,7 +616,7 @@ replace v1="\end{tabular}" if v1==""
 set obs `=_N+1'
 replace v1="}" if v1==""
 set obs `=_N+1'
-replace v1="\label{tab:}" if v1==""
+replace v1="\label{tab:ame_}" if v1==""
 set obs `=_N+1'
 replace v1="\notetab{ME/(Std Err.). * p<0.05, ** p<0.01, *** p<0.001.}" if v1==""
 set obs `=_N+1'
@@ -654,7 +654,7 @@ egen tab=concat(v1 lb), p("")
 drop v1 lb
 drop n
 
-export delimited using "tex/`x'.tex", delimiter("") novarnames  replace
+export delimited using "tex/ame_`x'.tex", delimiter("") novarnames  replace
 }
 ****************************************
 * END
