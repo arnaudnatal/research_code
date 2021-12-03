@@ -231,11 +231,8 @@ mdesc $quali $qualiml $quanti
 
 
 ****************************************
-* Analysis
+* PROBIT
 ****************************************
-
-********** 1.
-********** Proba of being in debt, or overindebted, interest in t+1
 foreach x in $quali $qualiml{
 
 qui probit `x' indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits, vce(cluster HHFE)
@@ -270,7 +267,7 @@ esttab res_1 res_2 res_3 res_4 using "_reg.csv", ///
 	cells("b(fmt(2) star)" se(par fmt(2))) ///
 	drop() ///
 	legend label varlabels(_cons constant) ///
-	stats(N r2_p ll chi2 p, fmt(0 3 3 3 3) labels(`"Observations"' `"Pseudo \$R^2$"' `"Log-likelihood"' `"$\upchi^2$"' `"p-value"')) /// //starlevels(* 0.10 ** 0.05 *** 0.01) ///
+	stats(N r2_p ll chi2 p, fmt(0 2 2 2 2) labels(`"Observations"' `"Pseudo \$R^2$"' `"Log-likelihood"' `"$\upchi^2$"' `"p-value"')) /// //starlevels(* 0.10 ** 0.05 *** 0.01) ///
 	replace	
 estimates clear
 
@@ -286,9 +283,12 @@ export excel using "Probit_indebt.xlsx", sheet("`x'", replace)
 restore
 }
 
+
+
+
 *********** Marges
 cls
-foreach x in $quali {
+foreach x in $quali $qualiml {
 *** No int
 qui probit `x' indebt_indiv_1 $indivcontrol $hhcontrol4 $villagesFE c.base_f1_std c.base_f2_std c.base_f3_std c.base_f5_std c.base_raven_tt_std c.base_num_tt_std c.base_lit_tt_std dalits female, vce(cluster HHFE)
 *dy/dx
@@ -309,32 +309,6 @@ qui probit `x' indebt_indiv_1 $indivcontrol $hhcontrol4 $villagesFE c.base_f1_st
 *dy/dx
 qui margins, dydx(base_f1_std base_f2_std base_f3_std base_f5_std base_raven_tt_std base_num_tt_std base_lit_tt_std) at(dalits=(0 1) female=(0 1)) atmeans saving(margin_`x'4, replace)
 }
-
-
-foreach x in $qualiml {
-*** No int
-qui probit `x' indebt_indiv_1 $indivcontrol $hhcontrol4 $villagesFE c.base_f1_std c.base_f2_std c.base_f3_std c.base_f5_std c.base_raven_tt_std c.base_num_tt_std c.base_lit_tt_std dalits female, vce(cluster HHFE)
-*dy/dx
-qui margins, dydx(base_f1_std base_f2_std base_f3_std base_f5_std base_raven_tt_std base_num_tt_std base_lit_tt_std) atmeans saving(margin_`x'1, replace)
-
-*** Female
-qui probit `x' indebt_indiv_1 $indivcontrol $hhcontrol4 $villagesFE c.base_f1_std##i.female c.base_f2_std##i.female c.base_f3_std##i.female c.base_f5_std##i.female c.base_raven_tt_std##i.female c.base_num_tt_std##i.female c.base_lit_tt_std##i.female dalits, vce(cluster HHFE)
-*dy/dx
-qui margins, dydx(base_f1_std base_f2_std base_f3_std base_f5_std base_raven_tt_std base_num_tt_std base_lit_tt_std) at(female=(0 1)) atmeans saving(margin_`x'2, replace)
-
-*** Dalits
-qui probit `x' indebt_indiv_1 $indivcontrol $hhcontrol4 $villagesFE c.base_f1_std##i.dalits c.base_f2_std##i.dalits c.base_f3_std##i.dalits c.base_f5_std##i.dalits c.base_raven_tt_std##i.dalits c.base_num_tt_std##i.dalits c.base_lit_tt_std##i.dalits female, vce(cluster HHFE)
-*dy/dx
-qui margins, dydx(base_f1_std base_f2_std base_f3_std base_f5_std base_raven_tt_std base_num_tt_std base_lit_tt_std) at(dalits=(0 1)) atmeans saving(margin_`x'3, replace)
-
-*** Three
-qui probit `x' indebt_indiv_1 $indivcontrol $hhcontrol4 $villagesFE c.base_f1_std##i.female##i.dalits c.base_f2_std##i.female##i.dalits c.base_f3_std##i.female##i.dalits c.base_f5_std##i.female##i.dalits c.base_raven_tt_std##i.female##i.dalits c.base_num_tt_std##i.female##i.dalits c.base_lit_tt_std##i.female##i.dalits, vce(cluster HHFE)
-*dy/dx
-qui margins, dydx(base_f1_std base_f2_std base_f3_std base_f5_std base_raven_tt_std base_num_tt_std base_lit_tt_std) at(dalits=(0 1) female=(0 1)) atmeans saving(margin_`x'4, replace)
-}
-
-
-
 
 
 ********** Label IMR
@@ -360,11 +334,8 @@ qui margins, dydx(base_f1_std base_f2_std base_f3_std base_f5_std base_raven_tt_
 
 
 ****************************************
-* Analysis
+* OLS
 ****************************************
-********** 2.
-********** Level of debt in t+1
-
 cls
 foreach var in $quanti {
 qui reg `var' indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits, vce(cluster HHFE)
@@ -383,7 +354,7 @@ esttab res_1 res_2 res_3 res_4 using "_reg.csv", ///
 	cells("b(fmt(2) star)" se(par fmt(2))) ///
 	drop() ///	
 	legend label varlabels(_cons constant) ///
-	stats(N r2 r2_a F p, fmt(0 3 3 3 3) labels(`"Observations"' `"\$R^2$"' `"Adjusted \$R^2$"' `"F-stat"' `"p-value"')) ///
+	stats(N r2 r2_a F p, fmt(0 2 2 2 2) labels(`"Observations"' `"\$R^2$"' `"Adjusted \$R^2$"' `"F-stat"' `"p-value"')) ///
 	replace
 estimates clear
 preserve
@@ -424,96 +395,3 @@ qui margins, dydx(base_f1_std base_f2_std base_f3_std base_f5_std base_raven_tt_
 }
 ****************************************
 * END
-
-
-
-
-
-
-
-
-
-
-
-
-/*
-
-
-
-****************************************
-* Analysis
-****************************************
-********** 4.
-********** Level of debt in t+1 
-cls
-foreach var in loanamount_indiv1000 DSR_indiv {
-foreach quant in 10 25 50 75 90 {
-qreg2 `var'_2 indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits if indebt_indiv_2==1, cluster(HHFE) q(.`quant')
-est store res_`quant'
-
-esttab res_`quant' using "_reg_`var'.csv", ///
-	cells(b(fmt(3)) /// 
-	t(par fmt(3))) ///
-	drop() ///	
-	legend label varlabels(_cons constant) ///
-	stats(N sum_adev sum_rdev r2, fmt(0 3 3 3) labels(`"Observations"' `"\$\sum$|Dev|"' `"\$\sum$Dev"' `"\$R^2$"')) ///
-	replace
-estimates clear
-
-preserve
-import delimited "_reg_`var'.csv", delimiter(",") varnames(nonames) clear
-qui des
-sca def k=r(k)
-forvalues i=1(1)`=scalar(k)'{
-replace v`i'=substr(v`i',3,.)
-replace v`i'=substr(v`i',1,strlen(v`i')-1)
-}
-export excel using "QREG_indebt.xlsx", sheet("`var'_`quant'", replace)
-restore
-}
-
-********** Margin
-foreach quant in 10 25 50 75 90 {
-qreg2 `var'_2 indebt_indiv_1 $indivcontrol $hhcontrol4 $villagesFE base_f1_std base_f2_std base_f3_std base_f5_std base_raven_tt_std base_num_tt_std base_lit_tt_std dalits female if indebt_indiv_2==1, cluster(HHFE) q(.`quant')
-*dy/dx
-margins, dydx(base_f1_std base_f2_std base_f3_std base_f5_std base_raven_tt_std base_num_tt_std base_lit_tt_std) atmeans saving(margin_qreg_`quant'_`var', replace)
-}
-}
-
-set graph off
-foreach y in loanamount_indiv1000_2 DSR_indiv_2 {
-foreach x in base_f1_std base_f2_std base_f3_std base_f5_std base_raven_tt_std base_num_tt_std base_lit_tt_std {
-preserve
-tempname memhold
-tempfile results
-postfile `memhold' q b cilow95 cihigh95 cilow90 cihigh90 using `results'
-local laby="`: var label `x''"
-forv i = .1(.1).9 {
-qreg2 `y' indebt_indiv_1 $indivcontrol $hhcontrol4 $villagesFE base_f1_std base_f2_std base_f3_std base_f5_std base_raven_tt_std base_num_tt_std base_lit_tt_std dalits female if indebt_indiv_2==1, cluster(HHFE) q(`i')
-	local b = _b[`x']
-    local cilow90  = _b[`x']-_se[`x']*invttail(e(df_r),.05)    
-    local cihigh90  = _b[`x']+_se[`x']*invttail(e(df_r),.05)    
-    local cilow95  = _b[`x']-_se[`x']*invttail(e(df_r),.025)    
-    local cihigh95  = _b[`x']+_se[`x']*invttail(e(df_r),.025)    
-    post `memhold' (`i') (`b') (`cilow90') (`cihigh90') (`cilow95') (`cihigh95')
-}
-postclose `memhold'
-use `results', clear
-twoway ///
-(rarea cihigh90 cilow90 q, fcolor(%5)) ///
-(rarea cihigh95 cilow95 q, fcolor(%5)) ///
-(line b q, yline(0, lcolor(black) lpattern(solid) lwidth(0.1))) ///
-, xtitle("Quantile") legend(order(1 "95% cl" 2 "90% cl" 3 "Coef.") col(3) pos(6)) xlabel(.1(.1).9) title("`laby'", size(large)) aspectratio(0.5) scale(0.7) name(g_`x', replace)
-restore
-}
-grc1leg g_base_f1_std g_base_f2_std g_base_f3_std g_base_f5_std g_base_raven_tt_std g_base_num_tt_std g_base_lit_tt_std, leg(g_base_f1_std) name(g_`y', replace) note("`y'", size(half_tiny))
-graph save "qreg_`y'.gph", replace
-graph export "qreg_`y'.pdf", as(pdf) replace
-}
-set graph on
-
-****************************************
-* END
-
-
-*/
