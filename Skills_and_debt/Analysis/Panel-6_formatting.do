@@ -240,18 +240,16 @@ replace deriv="AG (std)" if deriv=="A5"
 drop n
 export excel using "margins_probit.xlsx", sheet("`x'", replace) //firstrow(varlabels)
 
-
 ********** Tex
 import excel "margins_probit.xlsx", sheet("`x'") all clear
 
 preserve
 import excel "Probit_indebt.xlsx", sheet("`x'") clear
-keep if ///
-A=="Observations" | ///
-A=="Pseudo $R^2$" | ///
-A=="Log-likelihood" | ///
-A=="$\upchi^2$" | ///
-A=="p-value"
+*import excel "Probit_indebt.xlsx", sheet("indebt_indiv_2") clear
+gen n=_n
+keep if n>=121 & n<=125
+drop n
+
 
 gen sp1=""
 gen sp2=""
@@ -321,7 +319,7 @@ replace v1="\end{tabular}" if v1==""
 set obs `=_N+1'
 replace v1="}" if v1==""
 set obs `=_N+1'
-replace v1="\label{tab:ame_}" if v1==""
+replace v1="\label{tab:ame_`x'}" if v1==""
 set obs `=_N+1'
 replace v1="\notetab{ME/(Std Err.). * p<0.05, ** p<0.01, *** p<0.001.}" if v1==""
 set obs `=_N+1'
@@ -352,7 +350,7 @@ replace lb="\\" if ///
 n==7 | ///
 n==9 | ///
 (n>=11 & n<=24) | ///
-(n>=26 & n<=29)
+(n>=26 & n<=30)
 
 * Order
 egen tab=concat(v1 lb), p("")
@@ -616,7 +614,7 @@ replace v1="\end{tabular}" if v1==""
 set obs `=_N+1'
 replace v1="}" if v1==""
 set obs `=_N+1'
-replace v1="\label{tab:ame_}" if v1==""
+replace v1="\label{tab:ame_`x'}" if v1==""
 set obs `=_N+1'
 replace v1="\notetab{ME/(Std Err.). * p<0.05, ** p<0.01, *** p<0.001.}" if v1==""
 set obs `=_N+1'
