@@ -86,18 +86,22 @@ tabstat nboccupation_HH if year==2010, stat(mean) by(caste)
 tabstat nboccupation_HH if year==2016, stat(mean) by(caste)
 tabstat nboccupation_HH if year==2020, stat(mean) by(caste)
 
-tabstat shareagri_HH annualincome_HH1000 assets1000 assets_noland1000 if year==2010, stat(mean sd p50) by(caste)
-tabstat shareagri_HH annualincome_HH1000 assets1000 assets_noland1000 if year==2016, stat(mean sd p50) by(caste)
-tabstat shareagri_HH annualincome_HH1000 assets1000 assets_noland1000 if year==2020, stat(mean sd p50) by(caste)
+tabstat shareagri_HH annualincome_HH1000 if year==2010, stat(mean sd p50) by(caste)
+tabstat shareagri_HH annualincome_HH1000 if year==2016, stat(mean sd p50) by(caste)
+tabstat shareagri_HH annualincome_HH1000 if year==2020, stat(mean sd p50) by(caste)
+
+
 
 
 
 ********** Graph line
+global toana assets_noland1000 assetsnew_noland1000 livestock housevalue housevalue_new goldquantityamount goldquantityamount_new goodtotalamount
+
 foreach y in mean median {
 set graph off
 preserve
-collapse (`y') annualincome_HH1000 assets1000 assets_noland1000, by(caste year)
-foreach x in annualincome_HH1000 assets1000 assets_noland1000 {
+collapse (`y') $toana, by(caste year)
+foreach x in $toana {
 twoway ///
 (line `x' year if caste==1) ///
 (line `x' year if caste==2) ///
@@ -108,13 +112,36 @@ xlabel(2010 2016 2020, ang(45)) ///
 legend(order(1 "Dalits" 2 "Middle" 3 "Upper") col(3)) ///
 name(`x', replace)
 }
-grc1leg annualincome_HH1000 assets1000 assets_noland1000, name(comb_`y', replace) title("`y'") col(3)
+grc1leg $toana, name(comb_`y', replace) title("`y'") col(3)
+graph export "graph/line_desc_`y'.pdf", replace
 restore
 set graph on
 }
 
-grc1leg comb_mean comb_median, col(1) name(comb_desc, replace)
-graph export "graph/line_desc.pdf", replace
+
+********** xt
+global depvar loanamount_HH1000 DSR_r DAR_with_r DAR_without_r DAR_with_new_r DAR_without_new_r
+foreach y in mean median {
+set graph off
+preserve
+collapse (`y') $depvar, by(caste year)
+foreach x in $depvar {
+twoway ///
+(line `x' year if caste==1) ///
+(line `x' year if caste==2) ///
+(line `x' year if caste==3) ///
+, ///
+ytitle("`x'") xtitle("Year") ///
+xlabel(2010 2016 2020,ang(45)) ///
+legend(order(1 "Dalits" 2 "Middle" 3 "Upper") col(3)) ///
+name(`x', replace)
+}
+grc1leg $depvar, name(comb_`y', replace) title("`y'") col(6)
+restore
+}
+grc1leg comb_mean comb_median, col(1) name(comb_debt, replace)
+graph export "graph/line_debt.pdf", replace
+set graph on
 
 
 
@@ -156,21 +183,23 @@ ta head_occupation caste if year==2020, col nofreq
 
 
 
-
-
 ****************************************
 * Evo
 ****************************************
 use"panel_v3", clear
 
-*** Rename
-rename annualincome_HH1000 income
 rename assets1000 assets
 rename assets_noland1000 assetsnl
+rename assetsnew1000 assetsnew 
+rename assetsnew_noland1000 assetsnewnl
+
+rename annualincome_HH1000 income
+
 rename loanamount_HH1000 loanamount
 
+
 *** Macro
-global var income assets assetsnl loanamount DSR_r DAR_with_r DAR_without_r
+global var income assets assetsnl assetsnew assetsnewnl loanamount DAR_with_r DAR_without_r DAR_with_new_r DAR_without_new_r DSR_r ISR_r
 
 *** Select+reshape
 keep HHID_panel year caste $var
@@ -187,10 +216,29 @@ foreach x in  $var {
 xtile `x'_q=`x'2010, n(3)
 }
 
-
 *** Order
-order b2_DAR_without_r DAR_without_r2016 DAR_without_r2020 b2_loanamount loanamount2016 loanamount2020 b2_assetsnl assetsnl2010 assetsnl2016 assetsnl2020 HHID_panel b1_DAR_without_r
-sort b2_DAR_without_r
+order b1_loanamount b2_loanamount loanamount2010 loanamount2016 loanamount2020 HHID_panel caste
+sort b2_loanamount
+
+
+preserve
+/*
+gen pb=0
+replace pb=1 if housevalue2016>3*housevalue2010 & housevalue2016>3*housevalue2020
+replace pb=1 if housevalue2016>3*housevalue2010 & housevalue2016>2*housevalue2020
+list HHID_panel if pb==1, clean noobs
+*/
+/*
+gen pb=0
+replace pb=1 if goldquantityamount2016>3*goldquantityamount2010 & goldquantityamount2016>3*goldquantityamount2020
+replace pb=1 if goldquantityamount2016>3*goldquantityamount2010 & goldquantityamount2016>2*goldquantityamount2020
+list HHID_panel if pb==1, clean noobs
+*/
+restore
+
+
+
+
 
 
 
@@ -297,9 +345,9 @@ set graph on
 
 
 
-
 ****************************************
 * END
+
 
 
 
@@ -324,28 +372,6 @@ xtset panelvar time
 
 
 
-********** xt
-foreach y in mean median {
-set graph off
-preserve
-collapse (`y') loanamount_HH1000 DSR_r DAR_with_r DAR_without_r, by(caste year)
-foreach x in loanamount_HH1000 DSR_r DAR_with_r DAR_without_r {
-twoway ///
-(line `x' year if caste==1) ///
-(line `x' year if caste==2) ///
-(line `x' year if caste==3) ///
-, ///
-ytitle("`x'") xtitle("Year") ///
-xlabel(2010 2016 2020,ang(45)) ///
-legend(order(1 "Dalits" 2 "Middle" 3 "Upper") col(3)) ///
-name(`x', replace)
-}
-grc1leg loanamount_HH1000 DSR_r DAR_with_r DAR_without_r, name(comb_`y', replace) title("`y'") col(6)
-restore
-set graph on
-}
-grc1leg comb_mean comb_median, col(1) name(comb_debt, replace)
-graph export "graph/line_debt.pdf", replace
 
 ********** Kernel
 foreach y in 2010 2016 2020 {

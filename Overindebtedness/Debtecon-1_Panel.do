@@ -261,23 +261,26 @@ label values wifehusb_edulevel edulevel
 label values wifehusb_sex sex
 
 *Assets
-*assets --> amountownlanddry amountownlandwet livestockamount_goat livestockamount_cow housevalue goldquantityamount goodtotalamount
-*assetsnoland --> livestockamount_goat livestockamount_cow housevalue goldquantityamount goodtotalamount
-
+global asse amountownlanddry amountownlandwet livestockamount_goat livestockamount_cow housevalue goldquantityamount goodtotalamount
+global nature houseroom housetitle goldquantity
 
 *Variables to keep
-global dep loanamount_HH loans_HH imp1_ds_tot_HH imp1_is_tot_HH
-global indep villageid villagearea religion jatis caste assets1000 annualincome_HH nboccupation_HH foodexpenses educationexpenses healthexpenses ceremoniesexpenses deathexpenses HHsize housetype housetitle houseroom nbchildren_HH nontoworkers_HH femtomale_HH head_sex head_maritalstatus head_age head_edulevel head_occupation wifehusb_sex wifehusb_maritalstatus wifehusb_age wifehusb_edulevel wifehusb_occupation sizeownland amountownland ownland goldquantity goldquantityamount effectcrisislostjob mainocc_occupation_HH occinc_HH_agri occinc_HH_agricasual occinc_HH_nonagricasual occinc_HH_nonagriregnonqual occinc_HH_nonagriregqual occinc_HH_selfemp occinc_HH_nrega assets_noland1000
- 
+global dep loanamount_HH loans_HH imp1_ds_tot_HH imp1_is_tot_HH loans_HH
+global indep villageid villagearea religion jatis caste assets1000 annualincome_HH nboccupation_HH foodexpenses educationexpenses healthexpenses ceremoniesexpenses deathexpenses HHsize housetype housetitle houseroom nbchildren_HH nontoworkers_HH femtomale_HH head_sex head_maritalstatus head_age head_edulevel head_occupation wifehusb_sex wifehusb_maritalstatus wifehusb_age wifehusb_edulevel wifehusb_occupation sizeownland amountownland ownland goldquantity goldquantityamount effectcrisislostjob mainocc_occupation_HH occinc_HH_agri occinc_HH_agricasual occinc_HH_nonagricasual occinc_HH_nonagriregnonqual occinc_HH_nonagriregqual occinc_HH_selfemp occinc_HH_nrega assets_noland1000 $asse $nature
+
 keep HHID_panel year $dep $indep
 
 duplicates drop
 
 merge 1:1 HHID_panel using "panel"
-drop _merge
-keep if panel==1
+*drop _merge
+*keep if panel==1
 
 mdesc
+
+foreach x in $asse {
+rename `x' `x'_2010
+}
 
 save"$wave1-_temp", replace
 ****************************************
@@ -302,6 +305,14 @@ use "$wave2", clear
 *Individual who not live in the HH = to drop
 fre livinghome
 drop if livinghome==3 | livinghome==4
+
+
+********** Test gold
+order goldquantity goldquantityamount HHID_panel INDID_panel INDID2016 goldownerlist
+sort HHID_panel INDID_panel
+drop goldquantity
+rename s_goldquantity goldquantity
+
 
 /*
 HHID_panel	HHID2010
@@ -477,22 +488,21 @@ replace marriageexpenses_HH=. if dummymarriage==0
 
 
 *Gold+education at HH level
-foreach x in goldquantity educationexpenses {
+foreach x in educationexpenses {
 bysort HHID_panel: egen `x'_HH=sum(`x')
 drop `x'
 rename `x'_HH `x'
 }
 
 *Assets
-*assets --> amountownland livestockamount_cow livestockamount_goat livestockamount_chicken livestockamount_bullock housevalue goldquantityamount goodtotalamount
-*assets_as2010 --> amountownland_as2010 livestockamount_cow livestockamount_goat livestockamount_chicken livestockamount_bullock housevalue goldquantityamount goodtotalamount
-*assets_noland --> livestockamount_cow livestockamount_goat livestockamount_chicken livestockamount_bullock housevalue goldquantityamount goodtotalamount
+global asse amountownland livestockamount_cow livestockamount_goat livestockamount_chicken livestockamount_bullock housevalue goldquantityamount goodtotalamount
+global nature houseroom housetitle housesize goldquantity
 
 
 
 *Variables to keep
-global dep loanamount_HH loans_HH imp1_ds_tot_HH imp1_is_tot_HH
-global indep villageid villagearea religion jatis caste assets1000 annualincome_HH nboccupation_HH foodexpenses educationexpenses healthexpenses ceremoniesexpenses deathexpenses HHsize housetype housetitle houseroom nbchildren_HH nontoworkers_HH femtomale_HH head_sex head_maritalstatus head_age head_edulevel head_occupation wifehusb_sex wifehusb_maritalstatus wifehusb_age wifehusb_edulevel wifehusb_occupation sizeownland amountownland ownland goldquantity goldquantityamount dummydemonetisation dummymarriage marriageexpenses_HH mainocc_occupation_HH occinc_HH_agri occinc_HH_agricasual occinc_HH_nonagricasual occinc_HH_nonagriregnonqual occinc_HH_nonagriregqual occinc_HH_selfemp occinc_HH_nrega assets_noland1000
+global dep imp1_ds_tot_HH imp1_is_tot_HH loans_HH loanamount_g_HH loanamount_gm_HH loanamount_HH loans_HH
+global indep villageid villagearea religion jatis caste assets1000 annualincome_HH nboccupation_HH foodexpenses educationexpenses healthexpenses ceremoniesexpenses deathexpenses HHsize housetype housetitle houseroom nbchildren_HH nontoworkers_HH femtomale_HH head_sex head_maritalstatus head_age head_edulevel head_occupation wifehusb_sex wifehusb_maritalstatus wifehusb_age wifehusb_edulevel wifehusb_occupation sizeownland amountownland ownland goldquantity goldquantityamount dummydemonetisation dummymarriage marriageexpenses_HH mainocc_occupation_HH occinc_HH_agri occinc_HH_agricasual occinc_HH_nonagricasual occinc_HH_nonagriregnonqual occinc_HH_nonagriregqual occinc_HH_selfemp occinc_HH_nrega assets_noland1000 $asse $nature
  
 keep HHID_panel year $dep $indep
 
@@ -509,8 +519,8 @@ restore
 duplicates drop
 
 merge 1:1 HHID_panel using "panel"
-drop _merge
-keep if panel==1
+*drop _merge
+*keep if panel==1
 
 mdesc
 
@@ -518,6 +528,12 @@ mdesc
 recode imp1_ds_tot_HH imp1_is_tot_HH loans_HH loanamount_HH marriageexpenses_HH (.=0)
 
 mdesc
+
+
+*
+foreach x in $asse {
+rename `x' `x'_2016
+}
 
 save"$wave2-_temp", replace
 ****************************************
@@ -559,6 +575,16 @@ drop age
 merge 1:1 HHID_panel INDID_panel using "NEEMSIS2-HH_v24.dta", keepusing(age)
 drop _merge
 ta age
+
+********** Test gold
+order goldquantity goldquantityamount HHID_panel INDID_panel goldownerid
+sort HHID_panel INDID_panel
+drop goldquantity
+rename s_goldquantity goldquantity
+
+
+
+
 
 *Individual who not live in the HH = to drop
 preserve
@@ -760,6 +786,7 @@ label values wifehusb_sex sex
 gen assets1000=assets/1000
 gen assets_noland1000=assets_noland/1000
 
+
 *Crisis
 tab1 dummymarriage
 bysort HHID_panel: egen marriageexpenses_HH=sum(marriageexpenses)
@@ -767,11 +794,12 @@ replace marriageexpenses_HH=. if dummymarriage==0
 
 
 *Gold+education at HH level
-foreach x in goldquantity educationexpenses {
+foreach x in educationexpenses {
 bysort HHID_panel: egen `x'_HH=sum(`x')
 drop `x'
 rename `x'_HH `x'
 }
+
 
 
 *Destring
@@ -781,13 +809,35 @@ destring religion housetype housetitle, replace
 
 
 *Assets
-*assets --> amountownland livestockamount_cow livestockamount_goat livestockamount_chicken livestockamount_bullock livestockamount_bullforploughing housevalue goldquantityamount goodtotalamount2
-*assets_noland --> livestockamount_cow livestockamount_goat livestockamount_chicken livestockamount_bullock housevalue goldquantityamount goodtotalamount2
+rename livestockamount_bullforploughing livestockamount_bull
+global asse amountownland livestockamount_cow livestockamount_goat livestockamount_chicken livestockamount_bullock livestockamount_bull housevalue goldquantityamount goodtotalamount2
+
+egen test=rowtotal(livestockamount_cow livestockamount_goat livestockamount_chicken livestockamount_bullock livestockamount_bull housevalue goldquantityamount goodtotalamount2)
+gen test2=test-assets_noland
+ta test2
+ta HHID_panel if test2>1000
+
+preserve
+keep if HHID_panel=="KOR16" | HHID_panel=="KOR23"
+order HHID_panel assets_noland test test2 $asse
+restore
+drop assets assets_noland assets1000 assets_noland1000
+
+rename goodtotalamount2 goodtotalamount
+
+egen assets=rowtotal(amountownland livestockamount_cow livestockamount_goat livestockamount_chicken livestockamount_bullock livestockamount_bull housevalue goldquantityamount goodtotalamount)
+egen assets_noland=rowtotal(livestockamount_cow livestockamount_goat livestockamount_chicken livestockamount_bullock livestockamount_bull housevalue goldquantityamount goodtotalamount)
+
+gen assets1000=assets/1000
+gen assets_noland1000=assets_noland/1000
+
+global asse amountownland livestockamount_cow livestockamount_goat livestockamount_chicken livestockamount_bullock livestockamount_bull housevalue goldquantityamount goodtotalamount
+global nature houseroom housetitle housesize goldquantity
 
 
 *Variables to keep
-global dep loanamount_HH loans_HH imp1_ds_tot_HH imp1_is_tot_HH
-global indep villageid villagearea religion jatis caste assets1000 annualincome_HH nboccupation_HH foodexpenses educationexpenses healthexpenses ceremoniesexpenses deathexpenses HHsize housetype housetitle houseroom nbchildren_HH nontoworkers_HH femtomale_HH head_sex head_maritalstatus head_age head_edulevel head_occupation wifehusb_sex wifehusb_maritalstatus wifehusb_age wifehusb_edulevel wifehusb_occupation sizeownland amountownland ownland goldquantity goldquantityamount dummymarriage marriageexpenses_HH assets_noland1000 occinc_HH_agri occinc_HH_agricasual occinc_HH_nonagricasual occinc_HH_nonagriregnonqual occinc_HH_nonagriregqual occinc_HH_selfemp occinc_HH_nrega
+global dep loanamount_HH loans_HH imp1_ds_tot_HH imp1_is_tot_HH loans_HH
+global indep villageid villagearea religion jatis caste assets1000 annualincome_HH nboccupation_HH foodexpenses educationexpenses healthexpenses ceremoniesexpenses deathexpenses HHsize housetype housetitle houseroom nbchildren_HH nontoworkers_HH femtomale_HH head_sex head_maritalstatus head_age head_edulevel head_occupation wifehusb_sex wifehusb_maritalstatus wifehusb_age wifehusb_edulevel wifehusb_occupation sizeownland amountownland ownland goldquantity goldquantityamount dummymarriage marriageexpenses_HH assets_noland1000 occinc_HH_agri occinc_HH_agricasual occinc_HH_nonagricasual occinc_HH_nonagriregnonqual occinc_HH_nonagriregqual occinc_HH_selfemp occinc_HH_nrega $asse $nature
  
 keep HHID_panel year $dep $indep
 
@@ -802,8 +852,8 @@ duplicates drop
 
 
 merge 1:1 HHID_panel using "panel"
-drop _merge
-keep if panel==1
+*drop _merge
+*keep if panel==1
 
 mdesc, abbreviate(32)
 
@@ -816,6 +866,10 @@ GOV22
 GOV4
 */
 recode amountownland nboccupation_HH  occinc_HH_agri occinc_HH_agricasual occinc_HH_nonagricasual occinc_HH_nonagriregnonqual occinc_HH_nonagriregqual occinc_HH_selfemp occinc_HH_nrega imp1_ds_tot_HH imp1_is_tot_HH loans_HH loanamount_HH marriageexpenses_HH (.=0)
+
+foreach x in $asse {
+rename `x' `x'_2020
+}
 
 
 save"$wave3-_temp", replace
@@ -853,22 +907,24 @@ append using "$wave3-_temp"
 
 
 *Panel
-merge m:1 HHID_panel using "panel"
-keep if _merge==3
-drop _merge
+*merge m:1 HHID_panel using "panel"
+*keep if _merge==3
+*drop _merge
 
 
 *Only keep full panel
 tab panel
 dis 1146/3
-keep if panel==1
-drop year2010 year2016 year2020 panel
+*keep if panel==1
+*drop year2010 year2016 year2020 panel
 
 * 1000
 foreach x in loanamount_HH annualincome_HH amountownland {
 gen `x'1000=`x'/1000
 }
 
+drop if year==.
+ta year
 
 save"panel_v2", replace
 ****************************************
@@ -902,95 +958,68 @@ save"panel_v2", replace
 use"panel_v2", clear
 
 
-*Occupation
-preserve
-egen test=rowtotal(occinc_HH_agri occinc_HH_agricasual occinc_HH_nonagricasual occinc_HH_nonagriregnonqual occinc_HH_nonagriregqual occinc_HH_selfemp occinc_HH_nrega)
-gen test2=test-annualincome_HH
-ta test2
-restore
+********** Assets
+/*
+Thanks to analysis that i have already done, i observe that assets are strange
+Indeed, very big increasing (2010-2016) and then very big decreasing (2016-2020).
+Pb with the amount of house for a number of HH
+Pb with the amount of gold for a number of HH
+Because of *3 between 2010 and 2016 then /2
+45 HH concerned
+*/
+egen livestock_2010=rowtotal(livestockamount_goat_2010 livestockamount_cow_2010)
+egen livestock_2016=rowtotal(livestockamount_cow_2016 livestockamount_goat_2016 livestockamount_chicken_2016 livestockamount_bullock_2016)
+egen livestock_2020=rowtotal(livestockamount_cow_2020 livestockamount_goat_2020 livestockamount_chicken_2020 livestockamount_bullock_2020 livestockamount_bull_2020)
+drop livestockamount_goat_2010 livestockamount_cow_2010 livestockamount_cow_2016 livestockamount_goat_2016 livestockamount_chicken_2016 livestockamount_bullock_2016 livestockamount_cow_2020 livestockamount_goat_2020 livestockamount_chicken_2020 livestockamount_bullock_2020 livestockamount_bull_2020
 
+global asse2010 livestock_2010 housevalue_2010 goldquantityamount_2010 goodtotalamount_2010
+global asse2016 livestock_2016 housevalue_2016 goldquantityamount_2016 goodtotalamount_2016
+global asse2020 livestock_2020 housevalue_2020 goldquantityamount_2020 goodtotalamount_2020
 
-
-**********Deflate: all in 2010 value 
-***https://data.worldbank.org/indicator/FP.CPI.TOTL?locations=IN
-foreach x in foodexpenses educationexpenses healthexpenses ceremoniesexpenses deathexpenses goldquantityamount amountownland assets1000 annualincome_HH1000 imp1_ds_tot_HH imp1_is_tot_HH loanamount_HH1000 marriageexpenses_HH assets_noland1000 amountownland1000 occinc_HH_agri occinc_HH_agricasual occinc_HH_nonagricasual occinc_HH_nonagriregnonqual occinc_HH_nonagriregqual occinc_HH_selfemp occinc_HH_nrega annualincome_HH {
-clonevar `x'_raw=`x'
-replace `x'=`x'*(100/158) if year==2016 & `x'!=.
-replace `x'=`x'*(100/184) if year==2020 & `x'!=.
+foreach x in livestock housevalue goldquantityamount goodtotalamount {
+gen `x'=.
+}
+foreach x in livestock housevalue goldquantityamount goodtotalamount {
+foreach i in 2010 2016 2020 {
+replace `x'=`x'_`i' if year==`i'
+}
+}
+drop $asse2010 $asse2016 $asse2020
+global asse livestock housevalue goldquantityamount goodtotalamount
+foreach x in $asse {
+recode `x' (.=0)
 }
 
 
- 
-
-**********Agri income
-egen agri_HH=rowtotal(occinc_HH_agri occinc_HH_agricasual)
-egen nagri_HH=rowtotal(occinc_HH_nonagricasual occinc_HH_nonagriregnonqual occinc_HH_nonagriregqual occinc_HH_selfemp occinc_HH_nrega)
-preserve
-egen income_HH=rowtotal(agri_HH nagri_HH)
-gen test=income_HH-annualincome_HH
-ta test
-restore
-
-gen shareagri_HH=agri_HH/annualincome_HH
-gen sharenagri_HH=nagri_HH/annualincome_HH
-preserve
-egen test=rowtotal(shareagri_HH sharenagri_HH)
-ta test
-restore
 
 
-
-
-**********Debt measure
-*Continuous
-gen DIR=loanamount_HH/annualincome_HH
-gen DAR_without=loanamount_HH/(assets_noland1000*1000)
-gen DAR_with=loanamount_HH/(assets1000*1000)
-gen DSR=imp1_ds_tot_HH/annualincome_HH
-gen ISR=imp1_is_tot_HH/annualincome_HH
-
-
-*Dummy for overindebtedness
-foreach x in DSR DAR_with DAR_without {
-forvalues i=30(10)50{
-gen `x'`i'=0
+********** Land
+cls
+foreach x in amountownlanddry_2010 amountownlandwet_2010 amountownland amountownland_2016 amountownland_2020 amountownland1000 {
+ta `x' year
 }
+drop amountownlanddry_2010 amountownlandwet_2010 amountownland1000
+rename amountownland amountownland_2010
+gen amountownland=.
+foreach i in 2010 2016 2020 {
+replace amountownland=amountownland_`i' if year==`i'
 }
-
-foreach x in DSR DAR_with DAR_without {
-forvalues i=30(10)50{
-replace `x'`i'=1 if `x'>=.`i' & `x'!=.
-}
+drop amountownland_2010 amountownland_2016 amountownland_2020
+global asse amountownland livestock housevalue goldquantityamount goodtotalamount
+foreach x in $asse {
+recode `x' (.=0)
 }
 
 
-*** Recode for extreme
-tabstat DIR DAR_with DAR_without DSR ISR, stat(n mean sd p50 p75 p90 p95 p99 max) by(year) long
-
-foreach x in DIR DAR_with DAR_without DSR ISR {
-clonevar `x'_r=`x'
-}
-
-replace DIR_r=9.5 if DIR>=10 & year==2010
-replace DIR_r=25.51 if DIR>=26 & year==2016
-replace DIR_r=50 if DIR>=51 & year==2020
-
-replace DAR_with_r=2 if DAR_with>=2.2 & year==2010
-replace DAR_with_r=10.41 if DAR_with>=11 & year==2016
-replace DAR_with_r=2.32 if DAR_with>=2.5 & year==2020
-
-replace DAR_without_r=2 if DAR_without>=2.2 & year==2010
-replace DAR_without_r=10.41 if DAR_without>=11 & year==2016
-replace DAR_without_r=2.32 if DAR_without>=2.5 & year==2020
 
 
-replace DSR_r=2.66 if DSR>=2.7 & year==2010
-replace DSR_r=3.7 if DSR>=3.8 & year==2016
-replace DSR_r=7.22 if DSR>=7.3 & year==2020
+********** Nature assets
+ta housetitle
+ta houseroom
+ta housesize, m
 
-replace ISR_r=0.74 if ISR>=0.75 & year==2010
-replace ISR_r=2.34 if ISR>=2.35 & year==2016
-replace ISR_r=3.11 if ISR>=3.13 & year==2020
+ta goldquantity, m
+
 
 
 
@@ -1024,6 +1053,326 @@ fre caste
 
 ********** Shock
 recode dummydemonetisation dummymarriage (.=0)
+
+
+********** Occupation
+preserve
+egen test=rowtotal(occinc_HH_agri occinc_HH_agricasual occinc_HH_nonagricasual occinc_HH_nonagriregnonqual occinc_HH_nonagriregqual occinc_HH_selfemp occinc_HH_nrega)
+gen test2=test-annualincome_HH
+ta test2
+restore
+
+
+**********Agri income
+egen agri_HH=rowtotal(occinc_HH_agri occinc_HH_agricasual)
+egen nagri_HH=rowtotal(occinc_HH_nonagricasual occinc_HH_nonagriregnonqual occinc_HH_nonagriregqual occinc_HH_selfemp occinc_HH_nrega)
+preserve
+egen income_HH=rowtotal(agri_HH nagri_HH)
+gen test=income_HH-annualincome_HH
+ta test
+restore
+
+gen shareagri_HH=agri_HH/annualincome_HH
+gen sharenagri_HH=nagri_HH/annualincome_HH
+preserve
+egen test=rowtotal(shareagri_HH sharenagri_HH)
+ta test
+restore
+
+
+********** 1000
+foreach x in amountownland livestock housevalue goldquantityamount goodtotalamount loanamount_g_HH loanamount_gm_HH{
+replace `x'=`x'/1000
+rename `x' `x'1000
+}
+
+
+save"panel_v3", replace
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* How assets evo?
+****************************************
+use"panel_v3", clear
+
+order HHID_panel year
+sort HHID_panel year
+
+xtset time panelvar
+
+rename assets1000 assets
+rename assets_noland1000 assetsnl
+rename amountownland1000 amountownland
+rename livestock1000 livestock
+rename housevalue1000 housevalue
+rename goldquantityamount1000 goldquantityamount
+rename goodtotalamount1000 goodtotalamount
+
+rename loanamount_HH1000 loanamount
+rename loanamount_g_HH1000 loanamount_g
+rename loanamount_gm_HH1000 loanamount_gm
+rename loans_HH loans
+
+**********Deflate: all in 2010 value 
+***https://data.worldbank.org/indicator/FP.CPI.TOTL?locations=IN
+foreach x in assets assetsnl amountownland livestock housevalue goldquantityamount goodtotalamount loanamount loanamount_g loanamount_gm {
+clonevar `x'_raw=`x'
+replace `x'=`x'*(100/158) if year==2016 & `x'!=.
+replace `x'=`x'*(100/184) if year==2020 & `x'!=.
+}
+
+
+global toana assets assetsnl amountownland livestock housevalue goldquantityamount goodtotalamount loanamount loans
+
+
+tabstat $toana, stat(n mean sd p50) by(year)
+
+********** Graph
+/*
+foreach y in mean median {
+set graph off
+preserve
+collapse (`y') $toana, by(caste year)
+foreach x in $toana {
+twoway ///
+(line `x' year if caste==1) ///
+(line `x' year if caste==2) ///
+(line `x' year if caste==3) ///
+, ///
+ytitle("`x'") xtitle("Year") ///
+xlabel(2010 2016 2020, ang(45)) ///
+legend(order(1 "Dalits" 2 "Middle" 3 "Upper") col(3)) ///
+name(`x', replace)
+}
+grc1leg $toana, name(comb_`y', replace) title("`y'") col(3)
+graph export "graph/line_desc_`y'.pdf", replace
+restore
+set graph on
+}
+*/
+
+
+*** Macro
+global var $toana houseroom housetitle housetype goldquantity
+
+*** Select+reshape
+keep HHID_panel year caste $var
+reshape wide $var, i(HHID_panel) j(year)
+
+*** Evol
+foreach x in $var {
+gen b1_`x'=`x'2016-`x'2010
+gen b2_`x'=`x'2020-`x'2016
+}
+
+
+
+
+
+********** Desc var
+order b1_assetsnl b2_assetsnl housevalue* houseroom* goldquantityamount* goldquantity* HHID_panel caste
+sort b2_assetsnl
+
+* Bell for house value
+gen pb1=0
+replace pb1=1 if (housevalue2016>3*housevalue2010 & housevalue2016>2*housevalue2020)
+
+* Bell for gold
+gen pb2=0
+replace pb2=1 if (goldquantity2016>3*goldquantity2010 & goldquantity2016>1.5*goldquantity2020)
+
+* Gold to high (higher than 500 grams)
+gen pb3=0
+replace pb3=1 if goldquantity2010>500 | goldquantity2016>500 | goldquantity2020>500
+
+
+order b1_assetsnl b2_assetsnl pb1 housevalue* houseroom* goldquantityamount* pb2 pb3 goldquantity* HHID_panel caste
+sort b2_assetsnl
+
+sort pb2 goldquantity2016
+
+
+
+********** Loanamount
+order b1_loanamount b2_loanamount loanamount2010 loanamount2016 loanamount2020 b1_loans b2_loans loans2010 loans2016 loans2020 HHID_panel caste
+sort b2_loanamount
+
+*
+
+
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Verif evo assets
+****************************************
+use"panel_v3", clear
+
+
+********** To change
+gen pb2=0
+foreach x in KAR27	ORA23	GOV22	ORA14	ORA9	MANAM4	GOV23	KAR3	MAN28	KUV52	GOV11	GOV14	GOV44	ELA39	SEM17	NAT28	MANAM32	ORA1	SEM52	KUV37	KUV34	SEM8	KUV40	MAN22	ELA21	ELA19	NAT6	MANAM22	KUV12	MANAM39	GOV48	GOV6	MANAM48	ELA30	NAT50 {
+replace pb2=1 if HHID_panel=="`x'" & year==2016
+}
+foreach x in ORA23	MAN19	GOV42	KOR24	GOV18	SEM32	KOR9	MAN41	NAT9	KUV6	KOR33 {
+replace pb2=2 if HHID_panel=="`x'" & year==2016
+}
+ta pb2
+
+
+
+********** Replace house value
+clonevar housevalue_new=housevalue
+replace housevalue_new=housevalue/10 if pb2==1
+order HHID_panel year housevalue housevalue_new pb2
+sort pb2 HHID_panel year
+
+
+
+
+********** Replace gold
+clonevar goldquantityamount_new=goldquantityamount
+replace goldquantityamount_new=goldquantityamount/10 if pb2==2
+replace goldquantityamount_new=goldquantityamount/10 if goldquantity>1000
+order HHID_panel year goldquantityamount goldquantityamount_new pb2
+sort pb2 HHID_panel year
+
+
+
+
+********** Replace assets
+egen assetsnew=rowtotal(amountownland livestock housevalue_new goldquantityamount_new goodtotalamount)
+egen assetsnew_noland=rowtotal(livestock housevalue_new goldquantityamount_new goodtotalamount)
+gen assetsnew1000=assetsnew/1000
+gen assetsnew_noland1000=assetsnew_noland/1000
+drop assetsnew assetsnew_noland
+
+tabstat assets1000 assetsnew1000 assets_noland1000 assetsnew_noland1000, stat(n mean sd p50) by(year)
+
+global assecalc assets1000 assetsnew1000 assets_noland1000 assetsnew_noland1000
+
+
+
+
+**********Debt measure
+*Continuous
+gen DIR=loanamount_HH/annualincome_HH
+
+gen DAR_without=loanamount_HH/(assets_noland1000*1000)
+gen DAR_with=loanamount_HH/(assets1000*1000)
+
+gen DAR_with_new=loanamount_HH/(assetsnew1000*1000)
+gen DAR_without_new=loanamount_HH/(assetsnew_noland1000*1000)
+
+gen DSR=imp1_ds_tot_HH/annualincome_HH
+gen ISR=imp1_is_tot_HH/annualincome_HH
+
+
+*Dummy for overindebtedness
+foreach x in DSR DAR_with DAR_without DAR_with_new DAR_without_new {
+forvalues i=30(10)50{
+gen `x'`i'=0
+}
+}
+
+foreach x in DSR DAR_with DAR_without DAR_with_new DAR_without_new {
+forvalues i=30(10)50{
+replace `x'`i'=1 if `x'>=.`i' & `x'!=.
+}
+}
+
+
+*** Recode for extreme
+tabstat DIR DAR_with DAR_without DAR_with_new DAR_without_new DSR ISR, stat(n mean sd p50 p75 p90 p95 p99 max) by(year) long
+
+foreach x in DIR DAR_with DAR_without DAR_with_new DAR_without_new DSR ISR {
+clonevar `x'_r=`x'
+}
+
+replace DIR_r=9.5 if DIR>=10 & year==2010
+replace DIR_r=25.51 if DIR>=26 & year==2016
+replace DIR_r=50 if DIR>=51 & year==2020
+
+replace DAR_with_r=2 if DAR_with>=2.2 & year==2010
+replace DAR_with_r=10.41 if DAR_with>=11 & year==2016
+replace DAR_with_r=2.32 if DAR_with>=2.5 & year==2020
+
+replace DAR_without_r=2 if DAR_without>=2.2 & year==2010
+replace DAR_without_r=10.41 if DAR_without>=11 & year==2016
+replace DAR_without_r=2.32 if DAR_without>=2.5 & year==2020
+
+replace DAR_with_new_r=2 if DAR_with_new>=2.2 & year==2010
+replace DAR_with_new_r=10.41 if DAR_with_new>=11 & year==2016
+replace DAR_with_new_r=2.32 if DAR_with_new>=2.5 & year==2020
+
+replace DAR_without_new_r=2 if DAR_without_new>=2.2 & year==2010
+replace DAR_without_new_r=10.41 if DAR_without_new>=11 & year==2016
+replace DAR_without_new_r=2.32 if DAR_without_new>=2.5 & year==2020
+
+replace DSR_r=2.66 if DSR>=2.7 & year==2010
+replace DSR_r=3.7 if DSR>=3.8 & year==2016
+replace DSR_r=7.22 if DSR>=7.3 & year==2020
+
+replace ISR_r=0.74 if ISR>=0.75 & year==2010
+replace ISR_r=2.34 if ISR>=2.35 & year==2016
+replace ISR_r=3.11 if ISR>=3.13 & year==2020
+
+
+
+
+
+********* Desc
+tabstat loanamount_HH1000 DAR_with_r DAR_with_new_r DAR_without_r DAR_without_new_r, stat(n mean sd p50) by(year)
+
+ta caste year
+forvalues i=1(1)3{
+tabstat loanamount_HH1000 DAR_with_r DAR_with_new_r DAR_without_r DAR_without_new_r if caste==`i', stat(n mean sd p50) by(year)
+}
+
+
+
+
+
+
+
+**********Deflate: all in 2010 value 
+***https://data.worldbank.org/indicator/FP.CPI.TOTL?locations=IN
+foreach x in foodexpenses educationexpenses healthexpenses ceremoniesexpenses deathexpenses annualincome_HH1000 imp1_ds_tot_HH imp1_is_tot_HH loanamount_HH1000 marriageexpenses_HH occinc_HH_agri occinc_HH_agricasual occinc_HH_nonagricasual occinc_HH_nonagriregnonqual occinc_HH_nonagriregqual occinc_HH_selfemp occinc_HH_nrega annualincome_HH amountownland livestock housevalue housevalue_new goldquantityamount goldquantityamount_new goodtotalamount assets1000 assetsnew1000 assets_noland1000 assetsnew_noland1000 {
+clonevar `x'_raw=`x'
+replace `x'=`x'*(100/158) if year==2016 & `x'!=.
+replace `x'=`x'*(100/184) if year==2020 & `x'!=.
+}
+
+
+
+
+
 
 
 save"panel_v3", replace
