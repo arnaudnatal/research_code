@@ -260,6 +260,10 @@ label values head_sex sex
 label values wifehusb_edulevel edulevel
 label values wifehusb_sex sex
 
+*Assets
+*assets --> amountownlanddry amountownlandwet livestockamount_goat livestockamount_cow housevalue goldquantityamount goodtotalamount
+*assetsnoland --> livestockamount_goat livestockamount_cow housevalue goldquantityamount goodtotalamount
+
 
 *Variables to keep
 global dep loanamount_HH loans_HH imp1_ds_tot_HH imp1_is_tot_HH
@@ -479,7 +483,10 @@ drop `x'
 rename `x'_HH `x'
 }
 
-
+*Assets
+*assets --> amountownland livestockamount_cow livestockamount_goat livestockamount_chicken livestockamount_bullock housevalue goldquantityamount goodtotalamount
+*assets_as2010 --> amountownland_as2010 livestockamount_cow livestockamount_goat livestockamount_chicken livestockamount_bullock housevalue goldquantityamount goodtotalamount
+*assets_noland --> livestockamount_cow livestockamount_goat livestockamount_chicken livestockamount_bullock housevalue goldquantityamount goodtotalamount
 
 
 
@@ -771,6 +778,11 @@ rename `x'_HH `x'
 ta house
 ta housetype
 destring religion housetype housetitle, replace
+
+
+*Assets
+*assets --> amountownland livestockamount_cow livestockamount_goat livestockamount_chicken livestockamount_bullock livestockamount_bullforploughing housevalue goldquantityamount goodtotalamount2
+*assets_noland --> livestockamount_cow livestockamount_goat livestockamount_chicken livestockamount_bullock housevalue goldquantityamount goodtotalamount2
 
 
 *Variables to keep
