@@ -42,6 +42,11 @@ set scheme plotplain
 global wave1 "RUME-HH_v8"
 global wave2 "NEEMSIS1-HH_v8"
 global wave3 "NEEMSIS2-HH_v19"
+
+
+global loan1 "RUME-loans_v8"
+global loan2 "NEEMSIS1-loans_v4"
+global loan3 "NEEMSIS2-all_loans"
 ****************************************
 * END
 
