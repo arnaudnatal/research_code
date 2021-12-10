@@ -41,7 +41,7 @@ set scheme plotplain
 ********** Name of the NEEMSIS2 questionnaire version to clean
 global wave1 "RUME-HH_v8"
 global wave2 "NEEMSIS1-HH_v8"
-global wave3 "NEEMSIS2-HH_v19"
+global wave3 "NEEMSIS2-HH"
 
 global loan1 "RUME-loans_v8"
 global loan2 "NEEMSIS1-loans_v4"
@@ -63,40 +63,46 @@ global loan3 "NEEMSIS2-all_loans"
 
 
 
+
+
+
+
+
 ****************************************
 * How assets evo?
 ****************************************
-use"panel_v3", clear
+use"panel_v4", clear
 
+*** Initialization
 xtset time panelvar
 
+global assetsanalysis assets assets_noland livestock housevalue goldquantityamount goodtotalamount amountownland
 
-rename assets1000 assets
-rename assets_noland1000 assetsnl
-rename amountownland1000 amountownland
-rename livestock1000 livestock
-rename housevalue1000 housevalue
-rename goldquantityamount1000 goldquantityamount
-rename goodtotalamount1000 goodtotalamount
 
-rename loanamount_HH1000 loanamount
-rename loanamount_g_HH1000 loanamount_g
-rename loanamount_gm_HH1000 loanamount_gm
-rename loans_HH loans
-
-**********Deflate: all in 2010 value 
-***https://data.worldbank.org/indicator/FP.CPI.TOTL?locations=IN
-foreach x in assets assetsnl amountownland livestock housevalue goldquantityamount goodtotalamount loanamount loanamount_g loanamount_gm {
-clonevar `x'_raw=`x'
-replace `x'=`x'*(100/158) if year==2016 & `x'!=.
-replace `x'=`x'*(100/184) if year==2020 & `x'!=.
+********** Balanced
+cls
+ta caste year
+*** Evo amt
+tabstat $assetsanalysis, stat(mean sd p50) by(year)
+*** Over caste
+forvalues i=1(1)3{
+tabstat $assetsanalysis if caste==`i', stat(mean sd p50) by(year)
 }
 
 
-global toana assets assetsnl amountownland livestock housevalue goldquantityamount goodtotalamount loanamount loans
+
+********** Balanced
+cls
+keep if panel==1
+ta caste year
+*** Evo amt
+tabstat $assetsanalysis, stat(mean sd p50) by(year)
+*** Over caste
+forvalues i=1(1)3{
+tabstat $assetsanalysis if caste==`i', stat(mean sd p50) by(year)
+}
 
 
-tabstat $toana, stat(n mean sd p50) by(year)
 
 ********** Graph
 /*
@@ -122,14 +128,70 @@ set graph on
 }
 */
 
+****************************************
+* END
 
-*** Macro
-global var $toana houseroom housetitle housetype goldquantity
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Reshape for strange evolution
+****************************************
+use"panel_v4", clear
+
+********** Initialization
+xtset time panelvar
+
+ta housevalue
+
+global var assets assets_noland livestock housevalue goldquantityamount goodtotalamount amountownland goldquantity
+
 
 *** Select+reshape
-keep HHID_panel year caste $var
-reshape wide $var, i(HHID_panel) j(year)
+keep HHID_panel year caste panel $var houseroom housetitle housetype
+reshape wide $var houseroom housetitle housetype, i(HHID_panel) j(year)
 
+tab1 livestock2010 livestock2016 livestock2020
+
+********** Graph1
+/*
+foreach y in assets assets_noland livestock housevalue goldquantityamount goodtotalamount amountownland {
+set graph off
+forvalues i=1(1)3 {
+
+foreach j in 10 16 20 {
+qui sum `y'20`j' if caste==`i', det
+local med`j'=round(r(p50),1)
+local n`j'=r(N)
+}
+
+stripplot `y'2010 `y'2016 `y'2020 if caste==`i', over() separate() ///
+cumul cumprob box centre refline vertical /// 
+xsize(3) xtitle("Caste `i'") xlabel(1"2010" 2"2016-17" 3"2020-21",angle(45))  ///
+ylabel(#10) ymtick(#20) ytitle("`y'") ///
+msymbol(oh) mcolor(ply`i') ///
+note("N--Median" "2010: `n10'--`med10'" "2016: `n16'--`med16'" "2020: `n20'--`med20'", size(small)) ///
+legend(off) ///
+name(`y'`i', replace) 
+}
+graph combine `y'1 `y'2 `y'3, title("`y'") col(3) name(`y'_comb, replace)
+graph export "graph/evo_`y'.pdf", replace
+set graph on
+}
+*/
+
+
+********** Observe strange households
+keep if panel==1
 *** Evol
 foreach x in $var {
 gen b1_`x'=`x'2016-`x'2010
@@ -137,10 +199,34 @@ gen b2_`x'=`x'2020-`x'2016
 }
 
 
+*** Graph
+foreach cat in caste {
+foreach x in $var {
+forvalues i=1(1)3 {
+set graph off
+
+twoway ///
+(scatter b2_`x' b1_`x' if `cat'==`i', xline(0) yline(0) msymbol(oh) msize(medsmall)) ///
+(function y=-x if `cat'==`i', range(b1_`x')) ///
+, ///
+xlabel(#5) ylabel(#5) ///
+xmtick(#10) ymtick(#10) ///
+xtitle("β1=2016-2010") ytitle("β2=2020-2016") ///
+title("`cat' `i'") ///
+legend(pos(6) col(2) order(2 "Second bisector")) name(`x'_`i', replace)
+}
+grc1leg `x'_1 `x'_2 `x'_3, col(3) title("`x'") name(comb_`x', replace)
+graph export "graph/comb`cat'_`x'.pdf", replace
+set graph on
+}
+}
 
 
 
-********** Desc var
+
+
+
+*** Desc var
 order b1_assetsnl b2_assetsnl housevalue* houseroom* goldquantityamount* goldquantity* HHID_panel caste
 sort b2_assetsnl
 
@@ -164,12 +250,14 @@ sort pb2 goldquantity2016
 
 
 
-********** Loanamount
+*** Loanamount
 order b1_loanamount b2_loanamount loanamount2010 loanamount2016 loanamount2020 b1_loans b2_loans loans2010 loans2016 loans2020 HHID_panel caste
 sort b2_loanamount
 
 *
 
+****************************************
+* END
 
 
 
@@ -179,6 +267,16 @@ sort b2_loanamount
 
 
 
+
+
+
+
+
+
+****************************************
+* Change
+****************************************
+use"panel_v3", clear
 
 
 ********** To change

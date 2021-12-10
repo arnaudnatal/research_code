@@ -41,7 +41,7 @@ set scheme plotplain
 ********** Name of the NEEMSIS2 questionnaire version to clean
 global wave1 "RUME-HH_v8"
 global wave2 "NEEMSIS1-HH_v8"
-global wave3 "NEEMSIS2-HH_v19"
+global wave3 "NEEMSIS2-HH"
 
 global loan1 "RUME-loans_v8"
 global loan2 "NEEMSIS1-loans_v4"
@@ -517,7 +517,7 @@ global nature houseroom housetitle housesize goldquantity
 
 *Variables to keep
 global dep imp1_ds_tot_HH imp1_is_tot_HH loans_HH loanamount_g_HH loanamount_gm_HH loanamount_HH loans_HH
-global indep villageid villagearea religion jatis caste assets1000 annualincome_HH nboccupation_HH foodexpenses educationexpenses healthexpenses ceremoniesexpenses deathexpenses HHsize housetype housetitle houseroom nbchildren_HH nontoworkers_HH femtomale_HH head_sex head_maritalstatus head_age head_edulevel head_occupation wifehusb_sex wifehusb_maritalstatus wifehusb_age wifehusb_edulevel wifehusb_occupation sizeownland amountownland ownland goldquantity goldquantityamount dummydemonetisation dummymarriage marriageexpenses_HH mainocc_occupation_HH occinc_HH_agri occinc_HH_agricasual occinc_HH_nonagricasual occinc_HH_nonagriregnonqual occinc_HH_nonagriregqual occinc_HH_selfemp occinc_HH_nrega assets_noland1000 $asse $nature
+global indep villageid villagearea religion jatis caste assets1000 annualincome_HH nboccupation_HH foodexpenses educationexpenses healthexpenses ceremoniesexpenses deathexpenses HHsize housetype housetitle houseroom nbchildren_HH nontoworkers_HH femtomale_HH head_sex head_maritalstatus head_age head_edulevel head_occupation wifehusb_sex wifehusb_maritalstatus wifehusb_age wifehusb_edulevel wifehusb_occupation sizeownland amountownland ownland goldquantity goldquantityamount dummydemonetisation dummymarriage marriageexpenses_HH mainocc_occupation_HH occinc_HH_agri occinc_HH_agricasual occinc_HH_nonagricasual occinc_HH_nonagriregnonqual occinc_HH_nonagriregqual occinc_HH_selfemp occinc_HH_nrega assets_noland1000 $asse $nature villageareaid
  
 keep HHID_panel year $dep $indep
 
@@ -549,6 +549,9 @@ mdesc
 foreach x in $asse {
 rename `x' `x'_2016
 }
+
+*
+rename villageareaid villagearea
 
 save"$wave2-_temp", replace
 ****************************************
@@ -586,18 +589,20 @@ save"$wave2-_temp", replace
 ****************************************
 use "$wave3", clear
 
-drop age
-merge 1:1 HHID_panel INDID_panel using "NEEMSIS2-HH_v24.dta", keepusing(age)
+
+preserve
+use "NEEMSIS2-HH_v19.dta", clear
+restore
+
+merge 1:1 HHID_panel INDID_panel using "NEEMSIS2-HH_v19.dta", keepusing(imp1_ds_tot_HH imp1_is_tot_HH loans_HH occinc_HH_agri occinc_HH_agricasual occinc_HH_nonagricasual occinc_HH_nonagriregnonqual occinc_HH_nonagriregqual occinc_HH_selfemp occinc_HH_nrega)
+drop if _merge==2
 drop _merge
-ta age
 
 ********** Test gold
 order goldquantity goldquantityamount HHID_panel INDID_panel goldownerid
 sort HHID_panel INDID_panel
 drop goldquantity
 rename s_goldquantity goldquantity
-
-
 
 
 
@@ -627,30 +632,33 @@ tab decisionconsumption
 tab decisionhealth  // avec les gens du HH
 restore
 /*
+. tab decisionconsumption 
 
 Who usually makes decisions about |
 making major household purchases? |      Freq.     Percent        Cum.
 ----------------------------------+-----------------------------------
-        Yourself - Household head |        222       44.85       44.85
-            Spouse (Husband/Wife) |        250       50.51       95.35
- Your spouse and yourseld jointly |         14        2.83       98.18
-                     Someone else |          2        0.40       98.59
-Yourself and someone else jointly |          5        1.01       99.60
-                            Other |          2        0.40      100.00
+        Yourself - Household head |        270       43.97       43.97
+            Spouse (Husband/Wife) |        310       50.49       94.46
+ Your spouse and yourseld jointly |         22        3.58       98.05
+                     Someone else |          2        0.33       98.37
+Yourself and someone else jointly |          8        1.30       99.67
+                            Other |          2        0.33      100.00
 ----------------------------------+-----------------------------------
-                            Total |        495      100.00
+                            Total |        614      100.00
 
+. tab decisionhealth  // avec les gens du HH
 
  Who usually makes decision about |
     health care in the household? |      Freq.     Percent        Cum.
 ----------------------------------+-----------------------------------
-        Yourself - Household head |        215       43.43       43.43
-            Spouse (Husband/Wife) |        256       51.72       95.15
- Your spouse and yourseld jointly |         17        3.43       98.59
-                     Someone else |          1        0.20       98.79
-Yourself and someone else jointly |          6        1.21      100.00
+        Yourself - Household head |        259       42.18       42.18
+            Spouse (Husband/Wife) |        321       52.28       94.46
+ Your spouse and yourseld jointly |         22        3.58       98.05
+                     Someone else |          2        0.33       98.37
+Yourself and someone else jointly |          9        1.47       99.84
+                            Other |          1        0.16      100.00
 ----------------------------------+-----------------------------------
-                            Total |        495      100.00
+                            Total |        614      100.00
 
 						
 Given that, I choose to put in the regression spouse characteristics.
@@ -808,14 +816,12 @@ bysort HHID_panel: egen marriageexpenses_HH=sum(marriageexpenses)
 replace marriageexpenses_HH=. if dummymarriage==0
 
 
-*Gold+education at HH level
+*Education at HH level
 foreach x in educationexpenses {
 bysort HHID_panel: egen `x'_HH=sum(`x')
 drop `x'
 rename `x'_HH `x'
 }
-
-
 
 *Destring
 ta house
@@ -852,7 +858,7 @@ global nature houseroom housetitle housesize goldquantity
 
 *Variables to keep
 global dep loanamount_HH loans_HH imp1_ds_tot_HH imp1_is_tot_HH loans_HH
-global indep villageid villagearea religion jatis caste assets1000 annualincome_HH nboccupation_HH foodexpenses educationexpenses healthexpenses ceremoniesexpenses deathexpenses HHsize housetype housetitle houseroom nbchildren_HH nontoworkers_HH femtomale_HH head_sex head_maritalstatus head_age head_edulevel head_occupation wifehusb_sex wifehusb_maritalstatus wifehusb_age wifehusb_edulevel wifehusb_occupation sizeownland amountownland ownland goldquantity goldquantityamount dummymarriage marriageexpenses_HH assets_noland1000 occinc_HH_agri occinc_HH_agricasual occinc_HH_nonagricasual occinc_HH_nonagriregnonqual occinc_HH_nonagriregqual occinc_HH_selfemp occinc_HH_nrega $asse $nature
+global indep villageid villagearea religion jatis caste assets1000 annualincome_HH nboccupation_HH foodexpenses educationexpenses healthexpenses ceremoniesexpenses deathexpenses HHsize housetype housetitle houseroom nbchildren_HH nontoworkers_HH femtomale_HH head_sex head_maritalstatus head_age head_edulevel head_occupation wifehusb_sex wifehusb_maritalstatus wifehusb_age wifehusb_edulevel wifehusb_occupation sizeownland amountownland ownland goldquantity goldquantityamount dummymarriage marriageexpenses_HH assets_noland1000 occinc_HH_agri occinc_HH_agricasual occinc_HH_nonagricasual occinc_HH_nonagriregnonqual occinc_HH_nonagriregqual occinc_HH_selfemp occinc_HH_nrega $asse $nature religion
  
 keep HHID_panel year $dep $indep
 
@@ -880,7 +886,7 @@ HHID_panel
 GOV22
 GOV4
 */
-recode amountownland nboccupation_HH  occinc_HH_agri occinc_HH_agricasual occinc_HH_nonagricasual occinc_HH_nonagriregnonqual occinc_HH_nonagriregqual occinc_HH_selfemp occinc_HH_nrega imp1_ds_tot_HH imp1_is_tot_HH loans_HH loanamount_HH marriageexpenses_HH (.=0)
+recode nboccupation_HH  occinc_HH_agri occinc_HH_agricasual occinc_HH_nonagricasual occinc_HH_nonagriregnonqual occinc_HH_nonagriregqual occinc_HH_selfemp occinc_HH_nrega imp1_ds_tot_HH imp1_is_tot_HH loans_HH loanamount_HH marriageexpenses_HH (.=0)
 
 foreach x in $asse {
 rename `x' `x'_2020
