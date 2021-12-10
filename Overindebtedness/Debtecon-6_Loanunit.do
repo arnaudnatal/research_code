@@ -67,106 +67,250 @@ global loan3 "NEEMSIS2-all_loans"
 
 
 
+****************************************
+* ALL LOANS in same db
+****************************************
+
+********** Cleaning loans before append
+*2010
+use"$loan1", clear
+ta dummyproblemtorepay
+rename dummyproblemtorepay problemtorepay
+gen dummyproblemtorepay=.
+replace dummyproblemtorepay=0 if problemtorepay==9
+replace dummyproblemtorepay=1 if problemtorepay!=9 & problemtorepay!=.
+
+ta problemtorepay dummyproblemtorepay, m
+
+preserve
+use"$wave1", clear
+keep HHID_panel caste HHID2010
+duplicates drop
+ta caste
+save"$wave1~_temp2", replace
+restore
+merge m:1 HHID2010 using "$wave1~_temp2"
+drop if _merge==2
+drop _merge
+rename loaneffectivereason loaneffectivereason2010
+rename guarantorloanrelation guarantorloanrelation2010
+rename lenderrelation lenderrelation2010
+tab loansettled // 156
+save"$loan1~_2", replace
+
+*2016
+use"$loan2", clear
+drop caste
+rename parent_key HHID2016
+preserve
+use"$wave2", clear
+keep HHID_panel caste HHID2016
+duplicates drop
+ta caste
+save"$wave2~_temp2", replace
+restore
+merge m:1 HHID2016 using "$wave2~_temp2"
+drop if _merge==2
+drop _merge
+rename loaneffectivereason loaneffectivereason2016
+rename guarantorloanrelation guarantorloanrelation2016
+rename lenderrelation lenderrelation2016
+tab loansettled  // 15
+save"$loan2~_2", replace
+
+*2020
+use"$loan3", clear
+
+preserve
+use"$wave3", clear
+keep HHID_panel caste
+duplicates drop
+ta caste
+save"$wave3~_temp2", replace
+restore
+merge m:1 HHID_panel using "$wave3~_temp2"
+drop if _merge==2
+drop _merge
+rename loaneffectivereason loaneffectivereason2020
+rename guarantorloanrelation guarantorloanrelation2020
+rename lenderrelation lenderrelation2020
+tab loansettled  // 
+drop loanlender
+rename loanlender_rec loanlender
+save"$loan3~_2", replace
+
+ta caste
+
+********** Append
+use"$loan3~_2", clear
+append using "$loan2~_2"
+append using "$loan1~_2"
+
+tab HHID_panel, m
+keep if loanamount!=.
+
+save"panel_loan", replace
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
 
 ****************************************
-* Source of loans
+* CLEANING
 ****************************************
+use"panel_loan", clear
+
+*** Lender & reason
+label define reason 1"Agriculture" 2"Investment" 3"Family" 4"Repay previous loan" 5"Relatives" 6"Health" 7"Education" 8"Ceremonies" 9"Marriage" 10"Death" 11"Housing" 12"No reason" 13"Other"
+gen reasongiven=.
+replace reasongiven=1 if loanreasongiven==1
+replace reasongiven=3 if loanreasongiven==2
+replace reasongiven=6 if loanreasongiven==3
+replace reasongiven=4 if loanreasongiven==4
+replace reasongiven=11 if loanreasongiven==5
+replace reasongiven=2 if loanreasongiven==6
+replace reasongiven=8 if loanreasongiven==7
+replace reasongiven=9 if loanreasongiven==8
+replace reasongiven=7 if loanreasongiven==9
+replace reasongiven=5 if loanreasongiven==10
+replace reasongiven=10 if loanreasongiven==11
+replace reasongiven=12 if loanreasongiven==12
+replace reasongiven=13 if loanreasongiven==77
+label values reasongiven reason
+
+label define reasonrec 1"Economic" 2"Current" 3"Human capital" 4"Social" 5"Housing" 6"No reason" 7"Other"
+gen reasongiven_cat=.
+replace reasongiven_cat=1 if loanreasongiven==1
+replace reasongiven_cat=2 if loanreasongiven==2
+replace reasongiven_cat=3 if loanreasongiven==3
+replace reasongiven_cat=2 if loanreasongiven==4
+replace reasongiven_cat=5 if loanreasongiven==5
+replace reasongiven_cat=1 if loanreasongiven==6
+replace reasongiven_cat=4 if loanreasongiven==7
+replace reasongiven_cat=4 if loanreasongiven==8
+replace reasongiven_cat=3 if loanreasongiven==9
+replace reasongiven_cat=2 if loanreasongiven==10
+replace reasongiven_cat=4 if loanreasongiven==11
+replace reasongiven_cat=6 if loanreasongiven==12
+replace reasongiven_cat=7 if loanreasongiven==77
+label values reasongiven_cat reasonrec
+
+label define lender 1"WKP" 2"Relatives" 3"Employer" 4"Maistry" 5"Colleague" 6"Shop keeper" 7"Friends" 8"Sugar mill loan" 9"Pawn Broker" 10"SHG" 11"Finance" 12"Banks" 13"Coop bank" 14"Group finance" 15"Thandal"
+gen lender=.
+replace lender=1 if loanlender==1
+replace lender=2 if loanlender==2
+replace lender=3 if loanlender==3
+replace lender=4 if loanlender==4
+replace lender=5 if loanlender==5
+replace lender=9 if loanlender==6
+replace lender=6 if loanlender==7
+replace lender=11 if loanlender==8
+replace lender=7 if loanlender==9
+replace lender=10 if loanlender==10
+replace lender=12 if loanlender==11
+replace lender=13 if loanlender==12
+replace lender=8 if loanlender==13
+replace lender=14 if loanlender==14
+replace lender=15 if loanlender==15
+label values lender lender
+
+label define lenderrec 1"Informal" 2"Semi formal" 3"Formal" 4"Thandal"
+gen lender_cat=.
+replace lender_cat=1 if loanlender==1
+replace lender_cat=1 if loanlender==2
+replace lender_cat=1 if loanlender==3
+replace lender_cat=1 if loanlender==4
+replace lender_cat=1 if loanlender==5
+replace lender_cat=2 if loanlender==6
+replace lender_cat=1 if loanlender==7
+replace lender_cat=3 if loanlender==8
+replace lender_cat=1 if loanlender==9
+replace lender_cat=2 if loanlender==10
+replace lender_cat=3 if loanlender==11
+replace lender_cat=3 if loanlender==12
+replace lender_cat=1 if loanlender==13
+replace lender_cat=3 if loanlender==14
+replace lender_cat=4 if loanlender==15
+label values lender_cat lenderrec
+
+
+*** Gen id for main loans
+gen mainloan=0
+replace mainloan=1 if lendername!="" & year==2010
+replace mainloan=1 if lendersex!=. & year==2016
+replace mainloan=1 if lenderfirsttime!=. & year==2020
+
+tab mainloan year
+
+
+*** Loan analysis
+ta loansettled
+recode loansettled (.=1)
+replace loansettled=0 if year==2016 & loan_database=="GOLD"
+
+ta loansettled year
+
+*** drop
+drop informal semiformal formal economic current humancap social house incomegen noincomegen economic_amount current_amount humancap_amount social_amount house_amount incomegen_amount noincomegen_amount informal_amount formal_amount semiformal_amount lender2 lender3 totalrepaid2 interestpaid2 principalpaid2 yratepaid monthlyinterestrate
+
+
+
+replace loanamount=(loanamount*(100/158))/1000 if year==2016
+replace loanamount=(loanamount*(100/184))/1000 if year==2020
+
+replace loan_database="FINANCE" if year==2010
+
+order HHID_panel year caste loan_database loanamount lender lender_cat reasongiven reasongiven_cat otherlenderservices
+sort HHID_panel year
+
+ta dummyproblemtorepay year
+
+save"panel_loan_v2", replace
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* USE AND LENDER 2020 
+****************************************
+use "panel_loan_v2", clear
+
+
+********** Condition
+drop if loansettled==1
+
+ta caste year
+
+ta lender year
+ta reasongiven year
 
 /*
-	1	WKP	1971	37.00	37.00	37.00
-	
-	2	Relatives	654	12.28	12.28	49.28
-	3	Employer	71	1.33	1.33	50.61
-	4	Maistry	19	0.36	0.36	50.97
-	5	Colleague	91	1.71	1.71	52.68
-	
-	6	Pawn Broker	285	5.35	5.35	58.03
-	7	Shop keeper	22	0.41	0.41	58.44
-	8	Finance (moneylenders)	171	3.21	3.21	61.65
-	
-	9	Friends	336	6.31	6.31	67.96
-	
-	10	SHG	88	1.65	1.65	69.61
-	
-	11	Banks	564	10.59	10.59	80.20
-	12	Coop bank	66	1.24	1.24	81.43
-	
-	13	Sugar mill loan	1	0.02	0.02	81.45
-	
-	14	Group finance	801	15.04	15.04	96.49
-	
-	15	Thandal	187	3.51	3.51	100.00
-*/
-
-label define reason 1"Agriculture" 2"Investment" 3"Family" 4"Repay previous loan" 5"Relatives" 6"Health" 7"Education" 8"Ceremonies" 9"Marriage" 10"Death" 11"Housing" 12"No reason" 77"Other"
-gen loanreasongiven_rec=.
-replace loanreasongiven_rec=1 if loanreasongive==1
-replace loanreasongiven_rec=3 if loanreasongive==2
-replace loanreasongiven_rec=6 if loanreasongive==3
-replace loanreasongiven_rec=4 if loanreasongive==4
-replace loanreasongiven_rec=11 if loanreasongive==5
-replace loanreasongiven_rec=2 if loanreasongive==6
-replace loanreasongiven_rec=8 if loanreasongive==7
-replace loanreasongiven_rec=9 if loanreasongive==8
-replace loanreasongiven_rec=7 if loanreasongive==9
-replace loanreasongiven_rec=5 if loanreasongive==10
-replace loanreasongiven_rec=10 if loanreasongive==11
-replace loanreasongiven_rec=12 if loanreasongive==12
-replace loanreasongiven_rec=77 if loanreasongive==77
-
-label define lender 1"WKP" 2"Relatives" 3"Employer" 4"Maistry" 5"Colleague" 6"" 7"" 8"" 9"" 10"" 11"" 12"" 13"" 14"" 15""
-
-gen loanlender_rec=.
-replace loanlender_rec= if loanlender==1
-replace loanlender_rec= if loanlender==2
-replace loanlender_rec= if loanlender==3
-replace loanlender_rec= if loanlender==4
-replace loanlender_rec= if loanlender==5
-replace loanlender_rec= if loanlender==6
-replace loanlender_rec= if loanlender==7
-replace loanlender_rec= if loanlender==8
-replace loanlender_rec= if loanlender==9
-replace loanlender_rec= if loanlender==10
-replace loanlender_rec= if loanlender==11
-replace loanlender_rec= if loanlender==12
-replace loanlender_rec= if loanlender==13
-replace loanlender_rec= if loanlender==14
-replace loanlender_rec= if loanlender==15
-
-********** 2010
-use "$loan1", clear
-drop if loansettled==1
-ta loanlender
-
-
-
-********** 2016
-use "$loan2", clear
-drop if loansettled==1
-drop if loan_database=="MARRIAGE"
-ta loanlender
-
-*** Amount
-replace loanamount=(loanamount*(100/158))/1000
-tabstat loanamount, stat(n mean) by(loanlender)
-tabstat loanamount, stat(n mean) by(loanreasongiven)
-
-
-
-********** 2020
-use "$loan3", clear
-drop if loansettled==1
-replace loanlender=6 if loan_database=="GOLD"
-
-ta loanlender
-ta loanreasongiven
 *** Clientele using it
-fre loanlender
+fre lender
 forvalues i=1(1)15{
 gen lenders_`i'=0
 }
 forvalues i=1(1)15{
-replace lenders_`i'=1 if loanlender==`i'
+replace lenders_`i'=1 if lender==`i'
 }
 *
 cls
@@ -182,13 +326,12 @@ tab lendersHH_`i', m
 restore
 
 *** Reason given
-fre loanreasongiven
-recode loanreasongiven (77=13)
+fre reasongiven
 forvalues i=1(1)13{
 gen reason_`i'=0
 }
 forvalues i=1(1)13{
-replace reason_`i'=1 if loanreasongiven==`i'
+replace reason_`i'=1 if reasongiven==`i'
 }
 *
 cls
@@ -202,15 +345,258 @@ forvalues i=1(1)13{
 tab reasonHH_`i', m
 }
 restore
+*/
+
+*** Amount
+tabstat loanamount if year==2010, stat(n mean) by(lender)
+tabstat loanamount if year==2016, stat(n mean) by(lender)
+tabstat loanamount if year==2020, stat(n mean) by(lender)
+
+tabstat loanamount if year==2010, stat(n mean) by(reasongiven)
+tabstat loanamount if year==2016, stat(n mean) by(reasongiven)
+tabstat loanamount if year==2020, stat(n mean) by(reasongiven)
+
+
+*** By caste
+ta loan_database year
+foreach i in 2020 {
+ta lender_cat caste if year==`i'
+ta reasongiven_cat caste if year==`i'
+}
+
+
+*** Lender services
+keep if loan_database=="FINANCE"
+ta loansettled year
+tab otherlenderservices year
+replace otherlenderservices="" if otherlenderservices=="99"
+tab otherlenderservices2 year
+replace otherlenderservices2=. if otherlenderservices2==99
+tostring otherlenderservices2, replace
+tab otherlenderservices2
+replace otherlenderservices2="" if otherlenderservices2=="."
+egen otherlenderservices_torep=concat(otherlenderservices otherlenderservices2) if year==2010, p(" ")
+replace otherlenderservices=otherlenderservices_torep if year==2010
+drop otherlenderservices2 otherlenderservices_torep
+tab otherlenderservices
+split otherlenderservices
+gen services1=0
+gen services2=0
+gen services3=0
+gen services4=0
+gen services5=0
+gen services77=0
+forvalues i=1(1)5{
+destring otherlenderservices`i', replace
+}
+forvalues i=1(1)5{
+replace services1=1 if otherlenderservices`i'==1
+replace services2=1 if otherlenderservices`i'==2
+replace services3=1 if otherlenderservices`i'==3
+replace services4=1 if otherlenderservices`i'==4
+replace services5=1 if otherlenderservices`i'==5
+replace services77=1 if otherlenderservices`i'==77
+*replace services`i'=. if mainloan==0
+}
+sort HHID_panel year
+sort otherlenderservices
+ta otherlenderservices, m
+ta otherlenderservices
+cls
+foreach x in 1 2 3 4 5 77{
+tab services`x' year if caste==1, nofreq col
+tab services`x' year if caste==2, nofreq col
+tab services`x' year if caste==3, nofreq col
+}
+drop services1 services2 services3 services4 services5 services77 otherlenderservices1 otherlenderservices2 otherlenderservices3 otherlenderservices4 otherlenderservices5
+
+
+***Main loan
+ta mainloan year
+keep if mainloan==1
+ta caste year
+
+cls
+foreach i in 1 2 3 {
+ta dummyinterest year if caste==`i', col nofreq
+ta termsofrepayment year if caste==`i', col nofreq
+ta dummyguarantor year if caste==`i', col nofreq
+ta dummyrecommendation year if caste==`i', col nofreq
+ta dummyproblemtorepay year if caste==`i', col nofreq
+}
+
+
+*** Borrower services
+tab borrowerservices year
+replace borrowerservices="" if borrowerservices=="." | borrowerservices=="99"
+tab borrowerservices year
+split borrowerservices
+destring borrowerservices1 borrowerservices2 borrowerservices3, replace
+gen services1=0
+gen services2=0
+gen services3=0
+gen services4=0
+gen services77=0
+forvalues i=1(1)3{
+replace services1=1 if borrowerservices`i'==1
+replace services2=1 if borrowerservices`i'==2
+replace services3=1 if borrowerservices`i'==3
+replace services4=1 if borrowerservices`i'==4
+replace services77=1 if borrowerservices`i'==77
+}
+foreach i in 1 2 3 4 77{
+replace services`i'=. if mainloan==0
+}
+cls
+foreach x in 1 2 3 4 77{
+tab services`x' year if caste==1, col nofreq
+tab services`x' year if caste==2, col nofreq
+tab services`x' year if caste==3, col nofreq
+}
+drop services1 services2 services3 services4 services77 borrowerservices1 borrowerservices2 borrowerservices3
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* USE AND LENDER 2020 
+****************************************
+use "panel_loan_v2", clear
+
+********** Condition
+drop if loansettled==1
+fre lender_cat
+label values lenderscaste jatis
+ta lenderscaste year
+ta lenderscaste year, m
+
+drop if lender_cat==3
+drop if loan_database=="MARRIAGE" & year==2016
+drop if loan_database=="GOLD" & year==2016
+
+ta lenderscaste year, m
+ta lenderscaste loan_database if year==2016, m
+ta loanlender if lenderscaste==. & year==2016, m
+
+ta lenderscaste loan_database if year==2020, m
+ta loanlender if lenderscaste==. & year==2020, m
+
+
+*** Keep informal
+fre lender_cat
+keep if lender_cat==1
+ta lenderscaste year, m
+recode lenderscaste (66=.)
+recode lenderscaste (99=.)
+drop if lenderscaste==.
+
+
+*** Categories
+fre lenderscaste
+rename lenderscaste lendersjatis
+label values lendersjatis caste
+fre lendersjatis
+gen lenderscaste=.
+replace lenderscaste=1 if lendersjatis==2
+replace lenderscaste=1 if lendersjatis==3
+
+replace lenderscaste=2 if lendersjatis==1
+replace lenderscaste=2 if lendersjatis==5
+replace lenderscaste=2 if lendersjatis==7
+replace lenderscaste=2 if lendersjatis==8
+replace lenderscaste=2 if lendersjatis==10
+replace lenderscaste=2 if lendersjatis==12
+replace lenderscaste=2 if lendersjatis==15
+replace lenderscaste=2 if lendersjatis==16
+
+replace lenderscaste=3 if lendersjatis==4
+replace lenderscaste=3 if lendersjatis==6
+replace lenderscaste=3 if lendersjatis==9
+replace lenderscaste=3 if lendersjatis==11
+replace lenderscaste=3 if lendersjatis==13
+
+replace lenderscaste=77 if lendersjatis==14
+replace lenderscaste=77 if lendersjatis==17
+replace lenderscaste=77 if lendersjatis==77
+
+replace lenderscaste=88 if lendersjatis==88
+
+label values lenderscaste castecat
+label define castecat 1"Dalits" 2"Middle" 3"Upper" 77"Oth" 88"D/K", modify
+tab lendersjatis lenderscaste, m
+
+
+*** Number of loans
+tab lenderscaste year if caste==1, col nofreq
+tab lenderscaste year if caste==2, col nofreq
+tab lenderscaste year if caste==3, col nofreq
+
+tab lenderscaste if year==2010
+tab lenderscaste if year==2016
+tab lenderscaste if year==2020
+cls
+tab lenderscaste caste if year==2010, row nofreq
+tab lenderscaste caste if year==2016, row nofreq
+tab lenderscaste caste if year==2020, row nofreq
 
 
 *** Amount
-replace loanamount=(loanamount*(100/184))/1000
-tabstat loanamount, stat(n mean) by(loanlender)
-tabstat loanamount, stat(n mean) by(loanreasongiven)
+cls
+tabstat loanamount if caste==1 & year==2010, stat(sum) by(lenderscaste)
+tabstat loanamount if caste==2 & year==2010, stat(sum) by(lenderscaste)	
+tabstat loanamount if caste==3 & year==2010, stat(sum) by(lenderscaste)	
+tabstat loanamount if year==2010, stat(sum) by(lenderscaste) 
+
+cls
+tabstat loanamount if caste==1 & year==2016, stat(sum) by(lenderscaste)
+tabstat loanamount if caste==2 & year==2016, stat(sum) by(lenderscaste)	
+tabstat loanamount if caste==3 & year==2016, stat(sum) by(lenderscaste)	
+tabstat loanamount if year==2016, stat(sum) by(lenderscaste) 
+
+cls
+tabstat loanamount if caste==1 & year==2020, stat(sum) by(lenderscaste)
+tabstat loanamount if caste==2 & year==2020, stat(sum) by(lenderscaste)	
+tabstat loanamount if caste==3 & year==2020, stat(sum) by(lenderscaste)	
+tabstat loanamount if year==2020, stat(sum) by(lenderscaste) 
+
+****************************************
+* END
 
 
 
+
+
+
+
+
+
+
+****************************************
+* COVID-19
+****************************************
+use"$loan3~_2", clear
+
+keep if loan_database=="FINANCE"
+ta caste
+
+ta dummyinterest caste, col nofreq
+ta dummyinterest caste
+fre covfrequencyinterest
+ta covfrequencyinterest caste if dummyinterest==1, col nofreq
+ta covamountinterest caste if covfrequencyinterest==2, col nofreq
+
+ta covfrequencyrepayment caste, col nofreq
+
+ta covrepaymentstop caste, col nofreq
 
 ****************************************
 * END
