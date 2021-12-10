@@ -43,10 +43,19 @@ global wave1 "RUME-HH_v8"
 global wave2 "NEEMSIS1-HH_v8"
 global wave3 "NEEMSIS2-HH_v19"
 
-
 global loan1 "RUME-loans_v8"
 global loan2 "NEEMSIS1-loans_v4"
 global loan3 "NEEMSIS2-all_loans"
+
+
+
+********** Deflate
+*https://data.worldbank.org/indicator/FP.CPI.TOTL?locations=IN
+*(100/158) if year==2016
+*(100/184) if year==2020
+
+
+
 ****************************************
 * END
 
@@ -63,61 +72,31 @@ global loan3 "NEEMSIS2-all_loans"
 ****************************************
 * Evo finance
 ****************************************
-use"panel_v3", clear
+use"panel_v5", clear
 
 ta caste year
 
-********** HH
-tabstat HHsize if year==2010, stat(mean) by(caste) col(var)
-tabstat HHsize if year==2016, stat(mean) by(caste) col(var)
-tabstat HHsize if year==2020, stat(mean) by(caste) col(var)
+*** Not balanced
+cls
+ta ownland year if caste==1, col nofreq
+ta ownland year if caste==2, col nofreq
+ta ownland year if caste==3, col nofreq
 
-ta housetype caste if year==2010, col nofreq
-ta housetype caste if year==2016, col nofreq
-ta housetype caste if year==2020, col nofreq
-
-ta ownland caste if year==2010
-ta ownland caste if year==2016
-ta ownland caste if year==2020
-ta ownland caste if year==2010, col nofreq
-ta ownland caste if year==2016, col nofreq
-ta ownland caste if year==2020, col nofreq
-
-tabstat sizeownland if year==2010, stat(mean sd p50) by(caste) col(var)
-tabstat sizeownland if year==2016, stat(mean sd p50) by(caste) col(var)
-tabstat sizeownland if year==2020, stat(mean sd p50) by(caste) col(var)
-
-tabstat nboccupation_HH if year==2010, stat(mean) by(caste)
-tabstat nboccupation_HH if year==2016, stat(mean) by(caste)
-tabstat nboccupation_HH if year==2020, stat(mean) by(caste)
-
-tabstat shareagri_HH annualincome_HH1000 if year==2010, stat(mean sd p50) by(caste)
-tabstat shareagri_HH annualincome_HH1000 if year==2016, stat(mean sd p50) by(caste)
-tabstat shareagri_HH annualincome_HH1000 if year==2020, stat(mean sd p50) by(caste)
+tabstat sizeownland shareagri annualincome if caste==1, stat(n mean sd p50) by(year) col(var)
+tabstat sizeownland shareagri annualincome if caste==2, stat(n mean sd p50) by(year) col(var)
+tabstat sizeownland shareagri annualincome if caste==3, stat(n mean sd p50) by(year) col(var)
 
 
-********** Indiv
-/*
-ta head_sex caste if year==2010, col nofreq
-ta head_sex caste if year==2016, col nofreq
-ta head_sex caste if year==2020, col nofreq
+*** Strongly balanced
+keep if panel==1
+cls
+ta ownland year if caste==1, col nofreq
+ta ownland year if caste==2, col nofreq
+ta ownland year if caste==3, col nofreq
 
-ta head_maritalstatus caste if year==2010, col nofreq
-ta head_maritalstatus caste if year==2016, col nofreq
-ta head_maritalstatus caste if year==2020, col nofreq
-
-tabstat head_age if year==2010, stat(mean) 
-tabstat head_age if year==2016, stat(mean) 
-tabstat head_age if year==2020, stat(mean) 
-
-ta head_edulevel caste if year==2010, col nofreq
-ta head_edulevel caste if year==2016, col nofreq
-ta head_edulevel caste if year==2020, col nofreq
-
-ta head_occupation caste if year==2010, col nofreq
-ta head_occupation caste if year==2016, col nofreq
-ta head_occupation caste if year==2020, col nofreq
-*/
+tabstat sizeownland shareagri annualincome if caste==1, stat(n mean sd p50) by(year) col(var)
+tabstat sizeownland shareagri annualincome if caste==2, stat(n mean sd p50) by(year) col(var)
+tabstat sizeownland shareagri annualincome if caste==3, stat(n mean sd p50) by(year) col(var)
 ****************************************
 * END
 

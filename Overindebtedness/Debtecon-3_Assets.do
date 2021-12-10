@@ -192,6 +192,11 @@ set graph on
 
 ********** Observe strange households
 keep if panel==1
+
+foreach x in housetype2010 houseroom2010 housetitle2010 goldquantity2010 assets2010 assets_noland2010 livestock2010 housevalue2010 goldquantityamount2010 goodtotalamount2010 amountownland2010 housetype2016 houseroom2016 housetitle2016 goldquantity2016 assets2016 assets_noland2016 livestock2016 housevalue2016 goldquantityamount2016 goodtotalamount2016 amountownland2016 housetype2020 houseroom2020 housetitle2020 goldquantity2020 assets2020 assets_noland2020 livestock2020 housevalue2020 goldquantityamount2020 goodtotalamount2020 amountownland2020 {
+recode `x' (.=0)
+}
+
 *** Evol
 foreach x in $var {
 gen b1_`x'=`x'2016-`x'2010
@@ -200,6 +205,7 @@ gen b2_`x'=`x'2020-`x'2016
 
 
 *** Graph
+/*
 foreach cat in caste {
 foreach x in $var {
 forvalues i=1(1)3 {
@@ -220,12 +226,12 @@ graph export "graph/comb`cat'_`x'.pdf", replace
 set graph on
 }
 }
+*/
 
 
 
 
-
-
+/*
 *** Desc var
 order b1_assetsnl b2_assetsnl housevalue* houseroom* goldquantityamount* goldquantity* HHID_panel caste
 sort b2_assetsnl
@@ -253,7 +259,7 @@ sort pb2 goldquantity2016
 *** Loanamount
 order b1_loanamount b2_loanamount loanamount2010 loanamount2016 loanamount2020 b1_loans b2_loans loans2010 loans2016 loans2020 HHID_panel caste
 sort b2_loanamount
-
+*/
 *
 
 ****************************************
@@ -272,7 +278,7 @@ sort b2_loanamount
 
 
 
-
+/*
 ****************************************
 * Change
 ****************************************
