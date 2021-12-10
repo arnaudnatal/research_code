@@ -96,60 +96,6 @@ tabstat shareagri_HH annualincome_HH1000 if year==2016, stat(mean sd p50) by(cas
 tabstat shareagri_HH annualincome_HH1000 if year==2020, stat(mean sd p50) by(caste)
 
 
-
-
-
-********** Graph line
-global toana assets_noland1000 assetsnew_noland1000 livestock housevalue housevalue_new goldquantityamount goldquantityamount_new goodtotalamount
-
-foreach y in mean median {
-set graph off
-preserve
-collapse (`y') $toana, by(caste year)
-foreach x in $toana {
-twoway ///
-(line `x' year if caste==1) ///
-(line `x' year if caste==2) ///
-(line `x' year if caste==3) ///
-, ///
-ytitle("`x'") xtitle("Year") ///
-xlabel(2010 2016 2020, ang(45)) ///
-legend(order(1 "Dalits" 2 "Middle" 3 "Upper") col(3)) ///
-name(`x', replace)
-}
-grc1leg $toana, name(comb_`y', replace) title("`y'") col(3)
-graph export "graph/line_desc_`y'.pdf", replace
-restore
-set graph on
-}
-
-
-********** xt
-global depvar loanamount_HH1000 DSR_r DAR_with_r DAR_without_r DAR_with_new_r DAR_without_new_r
-foreach y in mean median {
-set graph off
-preserve
-collapse (`y') $depvar, by(caste year)
-foreach x in $depvar {
-twoway ///
-(line `x' year if caste==1) ///
-(line `x' year if caste==2) ///
-(line `x' year if caste==3) ///
-, ///
-ytitle("`x'") xtitle("Year") ///
-xlabel(2010 2016 2020,ang(45)) ///
-legend(order(1 "Dalits" 2 "Middle" 3 "Upper") col(3)) ///
-name(`x', replace)
-}
-grc1leg $depvar, name(comb_`y', replace) title("`y'") col(6)
-restore
-}
-grc1leg comb_mean comb_median, col(1) name(comb_debt, replace)
-graph export "graph/line_debt.pdf", replace
-set graph on
-
-
-
 ********** Indiv
 /*
 ta head_sex caste if year==2010, col nofreq
@@ -179,7 +125,85 @@ ta head_occupation caste if year==2020, col nofreq
 
 
 
+********** xt
+global depvar loanamount_HH1000 DSR_r DAR_with_r DAR_without_r DAR_with_new_r DAR_without_new_r
+foreach y in mean median {
+set graph off
+preserve
+collapse (`y') $depvar, by(caste year)
+foreach x in $depvar {
+twoway ///
+(line `x' year if caste==1) ///
+(line `x' year if caste==2) ///
+(line `x' year if caste==3) ///
+, ///
+ytitle("`x'") xtitle("Year") ///
+xlabel(2010 2016 2020,ang(45)) ///
+legend(order(1 "Dalits" 2 "Middle" 3 "Upper") col(3)) ///
+name(`x', replace)
+}
+grc1leg $depvar, name(comb_`y', replace) title("`y'") col(6)
+restore
+}
+grc1leg comb_mean comb_median, col(1) name(comb_debt, replace)
+graph export "graph/line_debt.pdf", replace
+set graph on
 
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Assets
+****************************************
+use"panel_v3", clear
+
+
+********** Initialization
+xtset panelvar time
+
+
+
+
+
+
+********** Graph line
+global toana assets_noland1000 assetsnew_noland1000 livestock housevalue housevalue_new goldquantityamount goldquantityamount_new goodtotalamount
+
+foreach y in mean median {
+set graph off
+preserve
+collapse (`y') $toana, by(caste year)
+foreach x in $toana {
+twoway ///
+(line `x' year if caste==1) ///
+(line `x' year if caste==2) ///
+(line `x' year if caste==3) ///
+, ///
+ytitle("`x'") xtitle("Year") ///
+xlabel(2010 2016 2020, ang(45)) ///
+legend(order(1 "Dalits" 2 "Middle" 3 "Upper") col(3)) ///
+name(`x', replace)
+}
+grc1leg $toana, name(comb_`y', replace) title("`y'") col(3)
+graph export "graph/line_desc_`y'.pdf", replace
+restore
+set graph on
+}
+
+
+
+
+****************************************
+* END
 
 
 
