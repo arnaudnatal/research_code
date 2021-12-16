@@ -39,12 +39,12 @@ set scheme plotplain
 
 
 ********** Name of the NEEMSIS2 questionnaire version to clean
-global wave1 "RUME-HH_v8"
-global wave2 "NEEMSIS1-HH_v8"
+global wave1 "RUME-HH"
+global wave2 "NEEMSIS1-HH"
 global wave3 "NEEMSIS2-HH"
 
-global loan1 "RUME-loans_v8"
-global loan2 "NEEMSIS1-loans_v4"
+global loan1 "RUME-all_loans"
+global loan2 "NEEMSIS1-all_loans"
 global loan3 "NEEMSIS2-all_loans"
 
 
@@ -169,8 +169,9 @@ ta panel3
 ta panel4
 
 * 1000
-foreach x in loanamount_HH annualincome_HH amountownland {
+foreach x in loanamount_HH annualincome_HH amountownland assets assets_noland {
 gen `x'1000=`x'/1000
+drop `x'
 }
 
 drop if year==.
@@ -267,25 +268,12 @@ recode `x' (.=0)
 }
 
 
-
-
-********** Land
-cls
-foreach x in amountownlanddry_2010 amountownlandwet_2010 amountownland amountownland_2016 amountownland_2020 amountownland1000 {
-ta `x' year
-}
-drop amountownlanddry_2010 amountownlandwet_2010 amountownland1000
-rename amountownland amountownland_2010
-gen amountownland=.
-foreach i in 2010 2016 2020 {
-replace amountownland=amountownland_`i' if year==`i'
-}
-drop amountownland_2010 amountownland_2016 amountownland_2020
 global asse amountownland livestock housevalue goldquantityamount goodtotalamount
 foreach x in $asse {
 recode `x' (0=.)
 }
 
+ta amountownland year
 tab1 amountownland livestock housevalue goldquantityamount goodtotalamount
 
 
@@ -297,8 +285,6 @@ ta housesize, m
 ta goldquantity, m
 
 
-
-
 ********** Shock
 recode dummydemonetisation dummymarriage (.=0)
 
@@ -306,8 +292,9 @@ recode dummydemonetisation dummymarriage (.=0)
 ********** Occupation
 preserve
 egen test=rowtotal(occinc_HH_agri occinc_HH_agricasual occinc_HH_nonagricasual occinc_HH_nonagriregnonqual occinc_HH_nonagriregqual occinc_HH_selfemp occinc_HH_nrega)
-gen test2=test-annualincome_HH
-ta test2
+gen test2=test/1000
+gen test3=test2-annualincome_HH1000
+ta test3
 restore
 
 
@@ -316,12 +303,14 @@ egen agri_HH=rowtotal(occinc_HH_agri occinc_HH_agricasual)
 egen nagri_HH=rowtotal(occinc_HH_nonagricasual occinc_HH_nonagriregnonqual occinc_HH_nonagriregqual occinc_HH_selfemp occinc_HH_nrega)
 preserve
 egen income_HH=rowtotal(agri_HH nagri_HH)
-gen test=income_HH-annualincome_HH
-ta test
+gen test=income_HH/1000
+gen test2=test-annualincome_HH1000
+ta test2
 restore
 
-gen shareagri_HH=agri_HH/annualincome_HH
-gen sharenagri_HH=nagri_HH/annualincome_HH
+
+gen shareagri_HH=agri_HH/(annualincome_HH1000*1000)
+gen sharenagri_HH=nagri_HH/(annualincome_HH1000*1000)
 preserve
 egen test=rowtotal(shareagri_HH sharenagri_HH)
 ta test
@@ -332,8 +321,7 @@ restore
 
 
 ********** 1000
-drop annualincome_HH loanamount_HH
-foreach x in amountownland livestock housevalue goldquantityamount goodtotalamount loanamount_g_HH loanamount_gm_HH foodexpenses educationexpenses healthexpenses ceremoniesexpenses deathexpenses marriageexpenses_HH occinc_HH_agri occinc_HH_agricasual occinc_HH_nonagricasual occinc_HH_nonagriregnonqual occinc_HH_nonagriregqual occinc_HH_selfemp occinc_HH_nrega imp1_ds_tot_HH imp1_is_tot_HH agri_HH nagri_HH{
+foreach x in livestock housevalue goldquantityamount goodtotalamount loanamount_g_HH loanamount_gm_HH foodexpenses educationexpenses healthexpenses ceremoniesexpenses deathexpenses marriageexpenses_HH occinc_HH_agri occinc_HH_agricasual occinc_HH_nonagricasual occinc_HH_nonagriregnonqual occinc_HH_nonagriregqual occinc_HH_selfemp occinc_HH_nrega imp1_ds_tot_HH imp1_is_tot_HH agri_HH nagri_HH{
 replace `x'=`x'/1000
 rename `x' `x'1000
 }
@@ -342,14 +330,15 @@ rename `x' `x'1000
 
 ********** Rename for easier reading
 *** drop 1000
-foreach x in foodexpenses1000 educationexpenses1000 healthexpenses1000 ceremoniesexpenses1000 deathexpenses1000 assets1000 assets_noland1000 occinc_HH_agri1000 occinc_HH_agricasual1000 occinc_HH_nonagricasual1000 occinc_HH_nonagriregnonqual1000 occinc_HH_nonagriregqual1000 occinc_HH_selfemp1000 occinc_HH_nrega1000 imp1_ds_tot_HH1000 imp1_is_tot_HH1000 loanamount_g_HH1000 loanamount_gm_HH1000 marriageexpenses_HH1000 loanamount_HH1000 annualincome_HH1000 livestock1000 housevalue1000 goldquantityamount1000 goodtotalamount1000 amountownland1000 agri_HH1000 nagri_HH1000 {
+foreach x in foodexpenses1000 healthexpenses1000 ceremoniesexpenses1000 deathexpenses1000 occinc_HH_agri1000 occinc_HH_agricasual1000 occinc_HH_nonagricasual1000 occinc_HH_nonagriregnonqual1000 occinc_HH_nonagriregqual1000 occinc_HH_selfemp1000 occinc_HH_nrega1000 imp1_ds_tot_HH1000 imp1_is_tot_HH1000 marriageexpenses_HH1000 educationexpenses1000 loanamount_gm_HH1000 loanamount_g_HH1000 loanamount_HH1000 annualincome_HH1000 amountownland1000 assets1000 assets_noland1000 livestock1000 housevalue1000 goldquantityamount1000 goodtotalamount1000 agri_HH1000 nagri_HH1000 {
 local x2=substr("`x'",1,strlen("`x'")-4)
 rename `x' `x2'
 }
 
+drop annualincome_HH2
 
 *** drop hh1
-foreach x in mainocc_occupation_HH nboccupation_HH imp1_ds_tot_HH imp1_is_tot_HH loans_HH nbchildren_HH nontoworkers_HH femtomale_HH loanamount_g_HH loanamount_gm_HH marriageexpenses_HH loanamount_HH annualincome_HH agri_HH nagri_HH shareagri_HH sharenagri_HH {
+foreach x in nboccupation_HH loans_HH imp1_ds_tot_HH imp1_is_tot_HH nbchildren_HH nontoworkers_HH femtomale_HH marriageexpenses_HH mainocc_occupation_HH loanamount_gm_HH loanamount_g_HH loanamount_HH annualincome_HH agri_HH nagri_HH shareagri_HH sharenagri_HH {
 local x2=substr("`x'",1,strlen("`x'")-3)
 rename `x' `x2'
 }
@@ -364,7 +353,7 @@ rename `x' occinc_`x2'
 
 
 ********** Macro amt
-global amt foodexpenses educationexpenses healthexpenses ceremoniesexpenses deathexpenses assets assets_noland occinc_agri occinc_agricasual occinc_nonagricasual occinc_nonagriregnonqual occinc_nonagriregqual occinc_selfemp occinc_nrega imp1_ds_tot imp1_is_tot loanamount_g loanamount_gm marriageexpenses loanamount annualincome livestock housevalue goldquantityamount goodtotalamount amountownland agri nagri
+global amt foodexpenses healthexpenses ceremoniesexpenses deathexpenses occinc_agri occinc_agricasual occinc_nonagricasual occinc_nonagriregnonqual occinc_nonagriregqual occinc_selfemp occinc_nrega imp1_ds_tot imp1_is_tot marriageexpenses educationexpenses loanamount_gm loanamount_g loanamount annualincome amountownland assets assets_noland livestock housevalue goldquantityamount goodtotalamount agri nagri
 
 
 

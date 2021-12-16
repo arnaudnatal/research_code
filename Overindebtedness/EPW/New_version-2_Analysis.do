@@ -1421,3 +1421,43 @@ tab covrepaymentstop caste, col nofreq
 
 ****************************************
 * END
+
+
+
+
+
+
+
+
+****************************************
+* Graph keep only data
+****************************************
+cd"D:\Documents\_Thesis\Research-Overindebtedness\Surviving_debt_survival_debt\EPW_submission\Graph"
+
+clear all
+macro drop _all
+graph use "DAR_caste.gph"
+
+
+cd"C:\Users\Arnaud\Desktop"
+clear all
+macro drop _all
+graph use "D2010.gph"
+graph describe
+return list
+local vn: serset varnames
+di "`vn'"
+serset use
+list, noobs
+
+clear all
+graph use "contengency_borrower_amount_stata.gph"
+graph describe
+return list
+local vn: serset varnames
+di "`vn'"
+serset use
+list, noobs
+
+****************************************
+* END

@@ -97,9 +97,177 @@ save"$directory\_paneldata\panel_comp.dta", replace
 
 
 
+******--TEMP
+cd"D:\Documents\_Thesis\Research-Overindebtedness\Statistiques_CEPED\Data"
+use "RUME-HH_v8.dta", clear
+drop n
+duplicates drop HHID_panel, force
+keep caste assets assets_noland loanamount_HH HHID_panel
+sort HHID_panel caste loanamount_HH assets*
+gen year=2010
+order HHID_panel year caste loanamount_HH assets*
+save"RUME-DAR_data.dta", replace
+
+use "NEEMSIS1-HH_v7.dta", clear
+duplicates drop HHID_panel, force
+keep caste assets assets_noland loanamount_HH HHID_panel
+sort HHID_panel caste loanamount_HH assets*
+gen year=2016
+order HHID_panel year caste loanamount_HH assets*
+append using "RUME-DAR_data"
+
+gen DAR=loanamount_HH*100/assets
+
+reshape wide caste loanamount_HH assets assets_noland DAR, i(HHID_panel) j(year)
+
+xtile assets_q2010=assets2010, n(3)
+xtile assets_q2016=assets2016, n(3)
+
+drop caste2010
+rename caste2016 caste
+order HHID_panel caste
+sort HHID_panel caste
+keep caste DAR2010 DAR2016 assets_q2010 assets_q2016
+gen n=_n
+rename assets_q2010 tercile_assets_2010
+rename assets_q2016 tercile_assets_2016
+order n caste tercile_assets_2010 tercile_assets_2016 DAR2010 DAR2016
+save"RUME-NEEMSIS1-DAR_data.dta", replace
+
+use"RUME-NEEMSIS1-DAR_data.dta", clear
+set scheme plotplain
+
+
+rename tercile_assets_2010 t10
+rename tercile_assets_2016 t16
+drop n
 
 
 
+forvalues j=1(1)3 {
+foreach x in caste t10 {
+preserve 
+keep if `x'==`j'
+sort DAR2010
+range atx 0 400
+kdensity DAR2010 ///
+, bwidth(6) ///
+at(atx) ///
+g(x `x'_`j'_2010_y)
+keep x `x'_`j'_2010_y
+save "tomerge2010_`x'_`j'.dta", replace
+restore
+}
+}
+
+forvalues j=1(1)3 {
+foreach x in caste t16 {
+preserve 
+keep if `x'==`j'
+sort DAR2016
+range atx 0 400
+kdensity DAR2016 ///
+, bwidth(15) ///
+at(atx) ///
+g(x `x'_`j'_2016_y)
+keep x `x'_`j'_2016_y
+save "tomerge2016_`x'_`j'.dta", replace
+restore
+}
+}
+
+
+use"tomerge2010_caste_1.dta", clear
+forvalues j=1(1)3 {
+foreach x in caste t10 {
+merge 1:1 x using "tomerge2010_`x'_`j'.dta"
+drop _merge
+}
+}
+save"tomerge2010.dta", replace
+
+
+use"tomerge2016_caste_1.dta", clear
+forvalues j=1(1)3 {
+foreach x in caste t16 {
+merge 1:1 x using "tomerge2016_`x'_`j'.dta"
+drop _merge
+}
+}
+save"tomerge2016.dta", replace
+
+use"tomerge2010.dta", clear
+merge 1:1 x using "tomerge2016.dta"
+drop _merge
+
+
+order x
+sort x
+
+global var caste_1_2010_y t10_1_2010_y caste_2_2010_y t10_2_2010_y caste_3_2010_y t10_3_2010_y caste_1_2016_y t16_1_2016_y caste_2_2016_y t16_2_2016_y caste_3_2016_y t16_3_2016_y
+
+foreach x in $var {
+egen max_x_`x'=max(x) if `x'!=0 & `x'!=.
+}
+
+foreach x in $var {
+egen max_max_x_`x'=max(max_x_`x')
+drop max_x_`x'
+rename max_max_x_`x' max_`x'
+}
+
+
+foreach x in $var {
+replace `x'=. if x>max_`x'
+drop max_`x'
+}
+
+egen nbmiss=rowmiss($var)
+ta nbmiss
+drop if nbmiss==12
+drop nbmiss
+
+rename caste_1_2010_y dalits_2010
+rename t10_1_2010_y t1_2010
+rename caste_2_2010_y middle_2010
+rename t10_2_2010_y t2_2010
+rename caste_3_2010_y upper_2010
+rename t10_3_2010_y t3_2010
+
+rename caste_1_2016_y dalits_2016
+rename t16_1_2016_y t1_2016
+rename caste_2_2016_y middle_2016
+rename t16_2_2016_y t2_2016
+rename caste_3_2016_y upper_2016
+rename t16_3_2016_y t3_2016
+
+order x dalits_2010 middle_2010 upper_2010 dalits_2016 middle_2016 upper_2016
+
+preserve
+global caste dalits_2010 middle_2010 upper_2010 dalits_2016 middle_2016 upper_2016
+keep x $caste
+egen nbmiss=rowmiss($caste)
+ta nbmiss
+drop if nbmiss==6
+drop nbmiss
+restore
+
+
+preserve
+global tercile t1_2010 t2_2010 t3_2010 t1_2016 t2_2016 t3_2016
+keep x $tercile
+egen nbmiss=rowmiss($tercile)
+ta nbmiss
+drop if nbmiss==6
+drop nbmiss
+restore
+
+
+
+
+
+
+*/
 
 
 

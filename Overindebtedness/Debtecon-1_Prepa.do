@@ -39,14 +39,13 @@ set scheme plotplain
 
 
 ********** Name of the NEEMSIS2 questionnaire version to clean
-global wave1 "RUME-HH_v8"
-global wave2 "NEEMSIS1-HH_v8"
+global wave1 "RUME-HH"
+global wave2 "NEEMSIS1-HH"
 global wave3 "NEEMSIS2-HH"
 
-global loan1 "RUME-loans_v8"
-global loan2 "NEEMSIS1-loans_v4"
+global loan1 "RUME-all_loans"
+global loan2 "NEEMSIS1-all_loans"
 global loan3 "NEEMSIS2-all_loans"
-
 
 
 ********** Deflate
@@ -132,28 +131,8 @@ erase "$directory\_temp$wave3.dta"
 ****************************************
 use "$wave1", clear
 
-* Test
-preserve
-egen test=rowtotal(occinc_HH_agri occinc_HH_agricasual occinc_HH_nonagricasual occinc_HH_nonagriregnonqual occinc_HH_nonagriregqual occinc_HH_selfemp occinc_HH_nrega)
-gen test2=test-annualincome_HH
-ta test2
-sort test2
-order test2 test annualincome_HH occinc_HH_agri occinc_HH_agricasual occinc_HH_nonagricasual occinc_HH_nonagriregnonqual occinc_HH_nonagriregqual occinc_HH_selfemp occinc_HH_nrega
-
-
-egen test3=rowtotal(jobinc_HH_agri jobinc_HH_coolie jobinc_HH_agricoolie jobinc_HH_nregs jobinc_HH_invest jobinc_HH_employee jobinc_HH_selfemp jobinc_HH_pension)
-gen test4=test3-annualincome_HH
-ta test4
-sort test4
-order test4 test annualincome_HH jobinc_HH_agri jobinc_HH_coolie jobinc_HH_agricoolie jobinc_HH_nregs jobinc_HH_invest jobinc_HH_employee jobinc_HH_selfemp jobinc_HH_pension
-
-gen test5=test4-test2
-sort test5
-order test5
-restore
-
 drop annualincome_HH
-egen annualincome_HH=rowtotal(occinc_HH_agri occinc_HH_agricasual occinc_HH_nonagricasual occinc_HH_nonagriregnonqual occinc_HH_nonagriregqual occinc_HH_selfemp occinc_HH_nrega)
+egen annualincome_HH2=rowtotal(occinc_HH_agri occinc_HH_agricasual occinc_HH_nonagricasual occinc_HH_nonagriregnonqual occinc_HH_nonagriregqual occinc_HH_selfemp occinc_HH_nrega)
 
 
 
@@ -281,7 +260,7 @@ global nature houseroom housetitle goldquantity
 
 *Variables to keep
 global dep loanamount_HH loans_HH imp1_ds_tot_HH imp1_is_tot_HH loans_HH
-global indep villageid villagearea religion jatis caste assets1000 annualincome_HH nboccupation_HH foodexpenses educationexpenses healthexpenses ceremoniesexpenses deathexpenses HHsize housetype housetitle houseroom nbchildren_HH nontoworkers_HH femtomale_HH head_sex head_maritalstatus head_age head_edulevel head_occupation wifehusb_sex wifehusb_maritalstatus wifehusb_age wifehusb_edulevel wifehusb_occupation sizeownland amountownland ownland goldquantity goldquantityamount effectcrisislostjob mainocc_occupation_HH occinc_HH_agri occinc_HH_agricasual occinc_HH_nonagricasual occinc_HH_nonagriregnonqual occinc_HH_nonagriregqual occinc_HH_selfemp occinc_HH_nrega assets_noland1000 $asse $nature
+global indep villageid villagearea religion jatis caste assets annualincome_HH nboccupation_HH foodexpenses educationexpenses healthexpenses ceremoniesexpenses deathexpenses HHsize housetype housetitle houseroom nbchildren_HH nontoworkers_HH femtomale_HH head_sex head_maritalstatus head_age head_edulevel head_occupation wifehusb_sex wifehusb_maritalstatus wifehusb_age wifehusb_edulevel wifehusb_occupation sizeownland amountownland ownland goldquantity goldquantityamount effectcrisislostjob mainocc_occupation_HH occinc_HH_agri occinc_HH_agricasual occinc_HH_nonagricasual occinc_HH_nonagriregnonqual occinc_HH_nonagriregqual occinc_HH_selfemp occinc_HH_nrega assets_noland  $asse $nature
 
 keep HHID_panel year $dep $indep
 
@@ -293,9 +272,13 @@ merge 1:1 HHID_panel using "panel"
 
 mdesc
 
-foreach x in $asse {
+foreach x in $asse amountownland{
 rename `x' `x'_2010
 }
+
+drop amountownlanddry_2010 amountownlandwet_2010
+
+rename amountownland_2010 amountownland
 
 save"$wave1-_temp", replace
 ****************************************
@@ -323,31 +306,10 @@ drop if livinghome==3 | livinghome==4
 
 
 ********** Test gold
-order goldquantity goldquantityamount HHID_panel INDID_panel INDID2016 goldownerlist
+order goldquantity goldquantityamount HHID_panel INDID_panel goldownerlist
 sort HHID_panel INDID_panel
 drop goldquantity
 rename s_goldquantity goldquantity
-
-
-/*
-HHID_panel	HHID2010
-MANAM6	28
-MANAM18	37
-ORA34	51
-NAT21	76
-MAN11	92
-MAN33	ADMPO10
-ORA23	ANDOR405
-ELA11	ANTEP240
-GOV29	ANTGP238
-ELA16	PSEP79
-SEM12	PSSEM96
-KAR29	RAKARU259
-KAR3	VENKARU274
-MANAM9	VENMTP315
-NAT5	VENNAT350
-ORA52	VENOR395
-*/
 
 
 *Villagearea+religion+HH debt
@@ -492,10 +454,6 @@ label values head_sex sex
 label values wifehusb_edulevel edulevel
 label values wifehusb_sex sex
 
-*Assets
-gen assets1000=assets/1000
-gen assets_noland1000=assets_noland/1000
-
 *Crisis
 tab1 dummydemonetisation dummymarriage
 bysort HHID_panel: egen marriageexpenses_HH=sum(marriageexpenses)
@@ -517,7 +475,7 @@ global nature houseroom housetitle housesize goldquantity
 
 *Variables to keep
 global dep imp1_ds_tot_HH imp1_is_tot_HH loans_HH loanamount_g_HH loanamount_gm_HH loanamount_HH loans_HH
-global indep villageid villagearea religion jatis caste assets1000 annualincome_HH nboccupation_HH foodexpenses educationexpenses healthexpenses ceremoniesexpenses deathexpenses HHsize housetype housetitle houseroom nbchildren_HH nontoworkers_HH femtomale_HH head_sex head_maritalstatus head_age head_edulevel head_occupation wifehusb_sex wifehusb_maritalstatus wifehusb_age wifehusb_edulevel wifehusb_occupation sizeownland amountownland ownland goldquantity goldquantityamount dummydemonetisation dummymarriage marriageexpenses_HH mainocc_occupation_HH occinc_HH_agri occinc_HH_agricasual occinc_HH_nonagricasual occinc_HH_nonagriregnonqual occinc_HH_nonagriregqual occinc_HH_selfemp occinc_HH_nrega assets_noland1000 $asse $nature villageareaid
+global indep villageid villagearea religion jatis caste assets annualincome_HH nboccupation_HH foodexpenses educationexpenses healthexpenses ceremoniesexpenses deathexpenses HHsize housetype housetitle houseroom nbchildren_HH nontoworkers_HH femtomale_HH head_sex head_maritalstatus head_age head_edulevel head_occupation wifehusb_sex wifehusb_maritalstatus wifehusb_age wifehusb_edulevel wifehusb_occupation sizeownland amountownland ownland goldquantity goldquantityamount dummydemonetisation dummymarriage marriageexpenses_HH mainocc_occupation_HH occinc_HH_agri occinc_HH_agricasual occinc_HH_nonagricasual occinc_HH_nonagriregnonqual occinc_HH_nonagriregqual occinc_HH_selfemp occinc_HH_nrega assets_noland $asse $nature villageareaid
  
 keep HHID_panel year $dep $indep
 
@@ -553,21 +511,11 @@ rename `x' `x'_2016
 *
 rename villageareaid villagearea
 
+rename amountownland_2016 amountownland
+
 save"$wave2-_temp", replace
 ****************************************
 * END
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -590,20 +538,11 @@ save"$wave2-_temp", replace
 use "$wave3", clear
 
 
-preserve
-use "NEEMSIS2-HH_v19.dta", clear
-restore
-
-merge 1:1 HHID_panel INDID_panel using "NEEMSIS2-HH_v19.dta", keepusing(imp1_ds_tot_HH imp1_is_tot_HH loans_HH occinc_HH_agri occinc_HH_agricasual occinc_HH_nonagricasual occinc_HH_nonagriregnonqual occinc_HH_nonagriregqual occinc_HH_selfemp occinc_HH_nrega)
-drop if _merge==2
-drop _merge
-
 ********** Test gold
 order goldquantity goldquantityamount HHID_panel INDID_panel goldownerid
 sort HHID_panel INDID_panel
 drop goldquantity
 rename s_goldquantity goldquantity
-
 
 
 *Individual who not live in the HH = to drop
@@ -805,11 +744,6 @@ label values wifehusb_edulevel edulevel
 label values wifehusb_sex sex
 
 
-*Assets
-gen assets1000=assets/1000
-gen assets_noland1000=assets_noland/1000
-
-
 *Crisis
 tab1 dummymarriage
 bysort HHID_panel: egen marriageexpenses_HH=sum(marriageexpenses)
@@ -842,15 +776,13 @@ preserve
 keep if HHID_panel=="KOR16" | HHID_panel=="KOR23"
 order HHID_panel assets_noland test test2 $asse
 restore
-drop assets assets_noland assets1000 assets_noland1000
 
 rename goodtotalamount2 goodtotalamount
 
+drop assets assets_noland
 egen assets=rowtotal(amountownland livestockamount_cow livestockamount_goat livestockamount_chicken livestockamount_bullock livestockamount_bull housevalue goldquantityamount goodtotalamount)
 egen assets_noland=rowtotal(livestockamount_cow livestockamount_goat livestockamount_chicken livestockamount_bullock livestockamount_bull housevalue goldquantityamount goodtotalamount)
 
-gen assets1000=assets/1000
-gen assets_noland1000=assets_noland/1000
 
 global asse amountownland livestockamount_cow livestockamount_goat livestockamount_chicken livestockamount_bullock livestockamount_bull housevalue goldquantityamount goodtotalamount
 global nature houseroom housetitle housesize goldquantity
@@ -858,7 +790,7 @@ global nature houseroom housetitle housesize goldquantity
 
 *Variables to keep
 global dep loanamount_HH loans_HH imp1_ds_tot_HH imp1_is_tot_HH loans_HH
-global indep villageid villagearea religion jatis caste assets1000 annualincome_HH nboccupation_HH foodexpenses educationexpenses healthexpenses ceremoniesexpenses deathexpenses HHsize housetype housetitle houseroom nbchildren_HH nontoworkers_HH femtomale_HH head_sex head_maritalstatus head_age head_edulevel head_occupation wifehusb_sex wifehusb_maritalstatus wifehusb_age wifehusb_edulevel wifehusb_occupation sizeownland amountownland ownland goldquantity goldquantityamount dummymarriage marriageexpenses_HH assets_noland1000 occinc_HH_agri occinc_HH_agricasual occinc_HH_nonagricasual occinc_HH_nonagriregnonqual occinc_HH_nonagriregqual occinc_HH_selfemp occinc_HH_nrega $asse $nature religion
+global indep villageid villagearea religion jatis caste assets annualincome_HH nboccupation_HH foodexpenses educationexpenses healthexpenses ceremoniesexpenses deathexpenses HHsize housetype housetitle houseroom nbchildren_HH nontoworkers_HH femtomale_HH head_sex head_maritalstatus head_age head_edulevel head_occupation wifehusb_sex wifehusb_maritalstatus wifehusb_age wifehusb_edulevel wifehusb_occupation sizeownland amountownland ownland goldquantity goldquantityamount dummymarriage marriageexpenses_HH assets_noland occinc_HH_agri occinc_HH_agricasual occinc_HH_nonagricasual occinc_HH_nonagriregnonqual occinc_HH_nonagriregqual occinc_HH_selfemp occinc_HH_nrega $asse $nature religion
  
 keep HHID_panel year $dep $indep
 
@@ -891,6 +823,8 @@ recode nboccupation_HH  occinc_HH_agri occinc_HH_agricasual occinc_HH_nonagricas
 foreach x in $asse {
 rename `x' `x'_2020
 }
+
+rename amountownland_2020 amountownland
 
 
 save"$wave3-_temp", replace
