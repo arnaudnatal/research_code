@@ -39,12 +39,12 @@ set scheme plotplain
 
 
 ********** Name of the NEEMSIS2 questionnaire version to clean
-global wave1 "RUME-HH_v8"
-global wave2 "NEEMSIS1-HH_v8"
-global wave3 "NEEMSIS2-HH_v19"
+global wave1 "RUME-HH"
+global wave2 "NEEMSIS1-HH"
+global wave3 "NEEMSIS2-HH"
 
-global loan1 "RUME-loans_v8"
-global loan2 "NEEMSIS1-loans_v6"
+global loan1 "RUME-all_loans"
+global loan2 "NEEMSIS1-all_loans"
 global loan3 "NEEMSIS2-all_loans"
 
 
@@ -100,7 +100,6 @@ save"$loan1~_2", replace
 
 *2016
 use"$loan2", clear
-drop caste
 *rename parent_key HHID2016
 preserve
 use"$wave2", clear
@@ -152,6 +151,15 @@ append using "$loan1~_2"
 tab HHID_panel, m
 keep if loanamount!=.
 
+replace lender4=lender4_rec if year==2020
+ta lender4 year
+drop lender4_rec
+
+replace dummymainloans=dummymainloan if year==2016
+drop dummymainloan
+
+recode dummymainloans (.=0)
+
 save"panel_loan", replace
 ****************************************
 * END
@@ -165,8 +173,7 @@ save"panel_loan", replace
 
 
 
-
-
+/*
 ****************************************
 * ALL LOANS in same db
 ****************************************
@@ -175,60 +182,53 @@ use"$loan1", clear
 *Merge sex, caste, nom, village, age
 *Add dummy main loan to be sure
 
-drop loanduration informal semiformal formal economic current humancap social house incomegen noincomegen economic_amount current_amount humancap_amount social_amount house_amount incomegen_amount noincomegen_amount informal_amount formal_amount semiformal_amount lender2 lender3 lender4 totalrepaid totalrepaid2 interestpaid2 principalpaid2 yratepaid monthlyinterestrate
-
 rename repayduration22 repayduration2
-
-gen dummymainloan=0
-replace dummymainloan=1 if lendername!="." & lendername!=""
-order dummymainloan, before(lendername)
-sort dummymainloan
 
 
 *** Label
 destring loanreasongiven, replace
-label define loanreasongiven 1"Agri" 2"Family" 3"Health" 4"Repay" 5"House" 6"Investment" 7"Ceremonies" 8"Marriage" 9"Education" 10"Relatives" 11"Death" 66"Irr" 77"Oth" 88"D/K" 99"N/R"
+label define loanreasongiven 1"Agri" 2"Family" 3"Health" 4"Repay" 5"House" 6"Investment" 7"Ceremonies" 8"Marriage" 9"Education" 10"Relatives" 11"Death" 66"Irr" 77"Oth" 88"D/K" 99"N/R", replace
 label values loanreasongiven loanreasongiven
 
 destring loanlender, replace
-label define loanlender 1"WKP" 2"Relatives" 3"Employer" 4"Maistry" 5"Colleague" 6"Pawn broker" 7"Shop keeper" 8"Finance" 9"Friends" 10"SHG" 11"Banks" 12"Coop bank" 13"Sugar mill loan" 14"Nobody" 66"Irr" 77"Oth" 88"D/K" 99"N/R"
+label define loanlender 1"WKP" 2"Relatives" 3"Employer" 4"Maistry" 5"Colleague" 6"Pawn broker" 7"Shop keeper" 8"Finance" 9"Friends" 10"SHG" 11"Banks" 12"Coop bank" 13"Sugar mill loan" 14"Nobody" 66"Irr" 77"Oth" 88"D/K" 99"N/R", replace
 label values loanlender loanlender
 
 destring relativerelation, replace
-label define relativerelation 1"Maternal uncle" 2"Brother" 3"Paternal uncle" 4"Cousin" 5"Nephew" 6"Father/mother-in-law" 7"Brother-in-law" 8"Wife relatives" 9"Father brother" 10"No relation" 11"Father" 66"Irr" 77"Oth" 88"D/K" 99"N/R"
+label define relativerelation 1"Maternal uncle" 2"Brother" 3"Paternal uncle" 4"Cousin" 5"Nephew" 6"Father/mother-in-law" 7"Brother-in-law" 8"Wife relatives" 9"Father brother" 10"No relation" 11"Father" 66"Irr" 77"Oth" 88"D/K" 99"N/R", replace
 label values relativerelation relativerelation
 
 destring lenderscaste, replace
-label define lenderscaste 1"Vanniyar" 2"SC" 3"Arunthatthiyar" 4"Rediyar" 5"Gramani" 6"Naidu" 7"Navithar" 8"Asarai" 9"Settu" 10"Nattar" 12"Muthaliyar" 13"Kulalar" 66"Irr" 77"Oth" 88"D/K" 99"N/R"
+label define lenderscaste 1"Vanniyar" 2"SC" 3"Arunthatthiyar" 4"Rediyar" 5"Gramani" 6"Naidu" 7"Navithar" 8"Asarai" 9"Settu" 10"Nattar" 12"Muthaliyar" 13"Kulalar" 66"Irr" 77"Oth" 88"D/K" 99"N/R", replace
 label values lenderscaste lenderscaste
 
 destring lendernativevillage, replace
-label define lendernativevillage 1"Inside the village" 2"Outside the village"
+label define lendernativevillage 1"Inside the village" 2"Outside the village", replace
 label values lendernativevillage lendernativevillage
 
 destring otherlenderservices, replace
-label define otherlenderservices 1"Political support" 2"Financial support" 3"Guarantor" 4"General informant" 5"Other" 6"None"
+label define otherlenderservices 1"Political support" 2"Financial support" 3"Guarantor" 4"General informant" 5"Other" 6"None", replace
 label values otherlenderservices otherlenderservices
 label values otherlenderservices otherlenderservices2
 
 destring borrowerservices, replace
-label define borrowerservices 1"Free service" 2"Work for less wage" 3"Provide support whenever he need" 4"Other"
+label define borrowerservices 1"Free service" 2"Work for less wage" 3"Provide support whenever he need" 4"Other", replace
 label values borrowerservices borrowerservices
 
 destring interestfrequency, replace
-label define interestfrequency 1"Monthly" 2"Weekly" 3"Yearly" 4"Once in six months" 5"Pay whenever have money" 6"Other"
+label define interestfrequency 1"Monthly" 2"Weekly" 3"Yearly" 4"Once in six months" 5"Pay whenever have money" 6"Other", replace
 label values interestfrequency interestfrequency
 
 destring repayduration1, replace
-label define repayduration1 1"Monthly" 2"Weekly" 3"Yearly" 4"Once in six months" 5"Pay whenever have money" 6"Other"
+label define repayduration1 1"Monthly" 2"Weekly" 3"Yearly" 4"Once in six months" 5"Pay whenever have money" 6"Other", replace
 label values repayduration1 repayduration1
 
 destring repaydecide, replace
-label define repaydecide 1"Myself" 2"Lender"
+label define repaydecide 1"Myself" 2"Lender", replace
 label values repaydecide repaydecide
 
 destring termsofrepayment, replace
-label define termsofrepayment 1"Fixed duration" 2"Repay when have money" 3"Repay when asked by the lender"
+label define termsofrepayment 1"Fixed duration" 2"Repay when have money" 3"Repay when asked by the lender", replace
 label values termsofrepayment termsofrepayment
 
 export excel "RUME-loans.xlsx", replace firstrow(variables)
@@ -325,7 +325,7 @@ export excel "NEEMSIS2-loans.xlsx", replace firstrow(variables)
 
 ****************************************
 * END
-
+*/
 
 
 
@@ -358,22 +358,6 @@ replace reasongiven=12 if loanreasongiven==12
 replace reasongiven=13 if loanreasongiven==77
 label values reasongiven reason
 
-label define reasonrec 1"Economic" 2"Current" 3"Human capital" 4"Social" 5"Housing" 6"No reason" 7"Other"
-gen reasongiven_cat=.
-replace reasongiven_cat=1 if loanreasongiven==1
-replace reasongiven_cat=2 if loanreasongiven==2
-replace reasongiven_cat=3 if loanreasongiven==3
-replace reasongiven_cat=2 if loanreasongiven==4
-replace reasongiven_cat=5 if loanreasongiven==5
-replace reasongiven_cat=1 if loanreasongiven==6
-replace reasongiven_cat=4 if loanreasongiven==7
-replace reasongiven_cat=4 if loanreasongiven==8
-replace reasongiven_cat=3 if loanreasongiven==9
-replace reasongiven_cat=2 if loanreasongiven==10
-replace reasongiven_cat=4 if loanreasongiven==11
-replace reasongiven_cat=6 if loanreasongiven==12
-replace reasongiven_cat=7 if loanreasongiven==77
-label values reasongiven_cat reasonrec
 
 label define lender 1"WKP" 2"Relatives" 3"Employer" 4"Maistry" 5"Colleague" 6"Shop keeper" 7"Friends" 8"Sugar mill loan" 9"Pawn Broker" 10"SHG" 11"Finance" 12"Banks" 13"Coop bank" 14"Group finance" 15"Thandal"
 gen lender=.
@@ -394,32 +378,10 @@ replace lender=14 if loanlender==14
 replace lender=15 if loanlender==15
 label values lender lender
 
-label define lenderrec 1"Informal" 2"Semi formal" 3"Formal" 4"Thandal"
-gen lender_cat=.
-replace lender_cat=1 if loanlender==1
-replace lender_cat=1 if loanlender==2
-replace lender_cat=1 if loanlender==3
-replace lender_cat=1 if loanlender==4
-replace lender_cat=1 if loanlender==5
-replace lender_cat=2 if loanlender==6
-replace lender_cat=1 if loanlender==7
-replace lender_cat=3 if loanlender==8
-replace lender_cat=1 if loanlender==9
-replace lender_cat=2 if loanlender==10
-replace lender_cat=3 if loanlender==11
-replace lender_cat=3 if loanlender==12
-replace lender_cat=1 if loanlender==13
-replace lender_cat=3 if loanlender==14
-replace lender_cat=4 if loanlender==15
-label values lender_cat lenderrec
 
 
 *** Gen id for main loans
-gen mainloan=0
-replace mainloan=1 if lendername!="" & year==2010
-replace mainloan=1 if lendersex!=. & year==2016
-replace mainloan=1 if lenderfirsttime!=. & year==2020
-
+rename dummymainloans mainloan
 tab mainloan year
 
 
@@ -430,17 +392,13 @@ replace loansettled=0 if year==2016 & loan_database=="GOLD"
 
 ta loansettled year
 
-*** drop
-drop informal semiformal formal economic current humancap social house incomegen noincomegen economic_amount current_amount humancap_amount social_amount house_amount incomegen_amount noincomegen_amount informal_amount formal_amount semiformal_amount lender2 lender3 totalrepaid2 interestpaid2 principalpaid2 yratepaid monthlyinterestrate
-
-
 
 replace loanamount=(loanamount*(100/158))/1000 if year==2016
 replace loanamount=(loanamount*(100/184))/1000 if year==2020
 
 replace loan_database="FINANCE" if year==2010
 
-order HHID_panel year caste loan_database loanamount lender lender_cat reasongiven reasongiven_cat otherlenderservices
+order HHID_panel year caste loan_database loanamount lender lender_cat reasongiven reason_cat otherlenderservices
 sort HHID_panel year
 
 ta dummyproblemtorepay year
@@ -461,7 +419,7 @@ save"panel_loan_v2", replace
 
 
 ****************************************
-* USE AND LENDER 2020 
+* USE AND LENDER 
 ****************************************
 use "panel_loan_v2", clear
 
@@ -472,26 +430,28 @@ drop if loansettled==1
 ta caste year
 
 ta lender year
+ta lender4 year
+fre lender lender4
 ta reasongiven year
 
 /*
 *** Clientele using it
 fre lender
-forvalues i=1(1)15{
+forvalues i=1(1)10{
 gen lenders_`i'=0
 }
-forvalues i=1(1)15{
+forvalues i=1(1)10{
 replace lenders_`i'=1 if lender==`i'
 }
 *
 cls
 preserve 
-forvalues i=1(1)15{
+forvalues i=1(1)10{
 bysort HHID_panel: egen lendersHH_`i'=max(lenders_`i')
 } 
 bysort HHID_panel: gen n=_n
 keep if n==1
-forvalues i=1(1)15{
+forvalues i=1(1)10{
 tab lendersHH_`i', m
 }
 restore
@@ -519,9 +479,9 @@ restore
 */
 
 *** Amount
-tabstat loanamount if year==2010, stat(n mean) by(lender)
-tabstat loanamount if year==2016, stat(n mean) by(lender)
-tabstat loanamount if year==2020, stat(n mean) by(lender)
+tabstat loanamount if year==2010, stat(n mean) by(lender4)
+tabstat loanamount if year==2016, stat(n mean) by(lender4)
+tabstat loanamount if year==2020, stat(n mean) by(lender4)
 
 tabstat loanamount if year==2010, stat(n mean) by(reasongiven)
 tabstat loanamount if year==2016, stat(n mean) by(reasongiven)
@@ -532,7 +492,7 @@ tabstat loanamount if year==2020, stat(n mean) by(reasongiven)
 ta loan_database year
 foreach i in 2020 {
 ta lender_cat caste if year==`i'
-ta reasongiven_cat caste if year==`i'
+ta reason_cat caste if year==`i'
 }
 
 
@@ -639,7 +599,7 @@ drop services1 services2 services3 services4 services77 borrowerservices1 borrow
 
 
 ****************************************
-* USE AND LENDER 2020 
+* SUITE
 ****************************************
 use "panel_loan_v2", clear
 

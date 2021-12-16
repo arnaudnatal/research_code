@@ -39,12 +39,12 @@ set scheme plotplain
 
 
 ********** Name of the NEEMSIS2 questionnaire version to clean
-global wave1 "RUME-HH_v8"
-global wave2 "NEEMSIS1-HH_v8"
-global wave3 "NEEMSIS2-HH_v19"
+global wave1 "RUME-HH"
+global wave2 "NEEMSIS1-HH"
+global wave3 "NEEMSIS2-HH"
 
-global loan1 "RUME-loans_v8"
-global loan2 "NEEMSIS1-loans_v4"
+global loan1 "RUME-all_loans"
+global loan2 "NEEMSIS1-all_loans"
 global loan3 "NEEMSIS2-all_loans"
 
 
