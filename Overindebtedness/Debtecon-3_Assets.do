@@ -78,6 +78,9 @@ xtset time panelvar
 
 global assetsanalysis assets assets_noland livestock housevalue goldquantityamount goodtotalamount amountownland
 
+foreach x in $assetsanalysis {
+recode `x' (0=.)
+}
 
 ********** Not balanced
 cls
@@ -88,6 +91,7 @@ tabstat $assetsanalysis, stat(mean sd p50) by(year)
 forvalues i=1(1)3{
 tabstat $assetsanalysis if caste==`i', stat(mean sd p50) by(year)
 }
+
 
 
 

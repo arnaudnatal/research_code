@@ -93,7 +93,10 @@ global assecalc assets1000 assetsnew1000 assets_noland1000 assetsnew_noland1000
 
 
 **********Debt measure
-tabstat loanamount annualincome assets assets_noland imp1_ds_tot imp1_is_tot, stat(n mean sd p50 min max) by(year)
+tabstat loanamount loanamount_g loanamount_gm, stat(mean sd p50) by(year)
+forvalues i=1(1)3{
+tabstat loanamount loanamount_g loanamount_gm if caste==`i', stat(mean sd p50) by(year)
+}
 
 *Continuous
 gen DIR=loanamount/annualincome
@@ -127,6 +130,8 @@ foreach x in DIR DAR_with DAR_without DSR ISR {
 clonevar `x'_r=`x'
 }
 
+tabstat DIR DAR_with DAR_without DSR ISR, stat(n mean sd p50 p95 p99 max) by(year)
+
 replace DIR_r=9.5 if DIR>=10 & year==2010
 replace DIR_r=25.51 if DIR>=26 & year==2016
 replace DIR_r=50 if DIR>=51 & year==2020
@@ -154,6 +159,16 @@ replace DSR_r=7.22 if DSR>=7.3 & year==2020
 replace ISR_r=0.74 if ISR>=0.75 & year==2010
 replace ISR_r=2.34 if ISR>=2.35 & year==2016
 replace ISR_r=3.11 if ISR>=3.13 & year==2020
+
+
+
+********** Analysis
+cls
+forvalues i=1(1)3{
+tabstat DAR_with_r DAR_without_r DSR_r if caste==`i', stat(mean sd p50) by(year)
+}
+
+
 
 
 

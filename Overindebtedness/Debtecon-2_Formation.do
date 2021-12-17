@@ -335,7 +335,6 @@ local x2=substr("`x'",1,strlen("`x'")-4)
 rename `x' `x2'
 }
 
-drop annualincome_HH2
 
 *** drop hh1
 foreach x in nboccupation_HH loans_HH imp1_ds_tot_HH imp1_is_tot_HH nbchildren_HH nontoworkers_HH femtomale_HH marriageexpenses_HH mainocc_occupation_HH loanamount_gm_HH loanamount_g_HH loanamount_HH annualincome_HH agri_HH nagri_HH shareagri_HH sharenagri_HH {
