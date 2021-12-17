@@ -393,7 +393,7 @@ replace loansettled=0 if year==2016 & loan_database=="GOLD"
 
 ta loansettled year
 
-
+replace loanamount=loanamount/1000 if year==2010
 replace loanamount=(loanamount*(100/158))/1000 if year==2016
 replace loanamount=(loanamount*(100/184))/1000 if year==2020
 

@@ -82,14 +82,16 @@ ta lender4 year
 fre lender lender4
 ta reasongiven year
 
+ta loan_database year, m
+
 /*
 *** Clientele using it
-fre lender
+fre lender4
 forvalues i=1(1)10{
 gen lenders_`i'=0
 }
 forvalues i=1(1)10{
-replace lenders_`i'=1 if lender==`i'
+replace lenders_`i'=1 if lender4==`i'
 }
 *
 cls
@@ -97,10 +99,10 @@ preserve
 forvalues i=1(1)10{
 bysort HHID_panel: egen lendersHH_`i'=max(lenders_`i')
 } 
-bysort HHID_panel: gen n=_n
+bysort HHID_panel year: gen n=_n
 keep if n==1
 forvalues i=1(1)10{
-tab lendersHH_`i', m
+tab lendersHH_`i' year, m col nofreq
 }
 restore
 
@@ -118,10 +120,14 @@ preserve
 forvalues i=1(1)13{
 bysort HHID_panel: egen reasonHH_`i'=max(reason_`i')
 } 
-bysort HHID_panel: gen n=_n
+bysort HHID_panel year: gen n=_n
 keep if n==1
+tab caste year
+cls
 forvalues i=1(1)13{
-tab reasonHH_`i', m
+tab reasonHH_`i' year if caste==1, m col nofreq
+tab reasonHH_`i' year if caste==2, m col nofreq
+tab reasonHH_`i' year if caste==3, m col nofreq
 }
 restore
 */

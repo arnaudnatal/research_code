@@ -234,11 +234,9 @@ set graph on
 
 
 
-
-/*
 *** Desc var
-order b1_assetsnl b2_assetsnl housevalue* houseroom* goldquantityamount* goldquantity* HHID_panel caste
-sort b2_assetsnl
+order b1_assets_noland b2_assets_noland housevalue* houseroom* goldquantityamount* goldquantity* HHID_panel caste
+sort b2_assets_noland
 
 * Bell for house value
 gen pb1=0
@@ -253,8 +251,8 @@ gen pb3=0
 replace pb3=1 if goldquantity2010>500 | goldquantity2016>500 | goldquantity2020>500
 
 
-order b1_assetsnl b2_assetsnl pb1 housevalue* houseroom* goldquantityamount* pb2 pb3 goldquantity* HHID_panel caste
-sort b2_assetsnl
+order b1_assets_noland b2_assets_noland pb1 housevalue* houseroom* goldquantityamount* pb2 pb3 goldquantity* HHID_panel caste
+sort b2_assets_noland
 
 sort pb2 goldquantity2016
 
