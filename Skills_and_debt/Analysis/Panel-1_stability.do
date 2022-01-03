@@ -18,7 +18,7 @@ Stability over time of personality traits
 clear all
 macro drop _all
 ********** Path to folder "data" folder.
-global directory = "D:\Documents\_Thesis\Research-Skills_and_debt\Analysis"
+global directory = "C:\Users\Arnaud\Documents\_Thesis\Research-Skills_and_debt\Analysis"
 cd"$directory"
 global git "C:\Users\Arnaud\Documents\GitHub"
 

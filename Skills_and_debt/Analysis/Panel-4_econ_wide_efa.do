@@ -22,7 +22,7 @@ clear all
 macro drop _all
 set scheme plotplain
 ********** Path to folder "data" folder.
-global directory = "D:\Documents\_Thesis\Research-Skills_and_debt\Analysis"
+global directory = "C:\Users\Arnaud\Documents\_Thesis\Research-Skills_and_debt\Analysis"
 cd"$directory"
 global git "C:\Users\Arnaud\Documents\GitHub"
 
@@ -217,7 +217,7 @@ global quali indebt_indiv_2 indiv_interest otherlenderservices_finansupp guarant
  
 global qualiml borrowerservices_none plantorepay_borr settleloanstrat_addi dummyproblemtorepay
 
-global quanti DSR_indiv
+global quanti DSR_indiv loanamount_indiv ISR_indiv
 
 
 *** Desc
