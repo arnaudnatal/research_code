@@ -25,7 +25,7 @@ Stat for indebtedness and over-indebtedness
 clear all
 macro drop _all
 ********** Path to folder "data" folder.
-global directory = "D:\Documents\_Thesis\Research-Overindebtedness\Persistence_over"
+global directory = "C:\Users\Arnaud\Documents\_Thesis\Research-Overindebtedness\Persistence_over"
 cd"$directory"
 global git "C:\Users\Arnaud\Documents\GitHub"
 

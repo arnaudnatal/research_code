@@ -321,7 +321,7 @@ replace v1="}" if v1==""
 set obs `=_N+1'
 replace v1="\label{tab:ame_`x'}" if v1==""
 set obs `=_N+1'
-replace v1="\notetab{ME/(Std Err.). * p<0.05, ** p<0.01, *** p<0.001.}" if v1==""
+replace v1="\notetab{ME/(Std Err.). *p<0.1~ **p<0.05~ ***p<0.01.}" if v1==""
 set obs `=_N+1'
 replace v1="\sourcetab{NEEMSIS-1 (2016-17) \& NEEMSIS-2 (2020-21); author's calculations.}" if v1==""
 set obs `=_N+1'
@@ -616,7 +616,7 @@ replace v1="}" if v1==""
 set obs `=_N+1'
 replace v1="\label{tab:ame_`x'}" if v1==""
 set obs `=_N+1'
-replace v1="\notetab{ME/(Std Err.). * p<0.05, ** p<0.01, *** p<0.001.}" if v1==""
+replace v1="\notetab{ME/(Std Err.). *p<0.1~ **p<0.05~ ***p<0.01.}" if v1==""
 set obs `=_N+1'
 replace v1="\sourcetab{NEEMSIS-1 (2016-17) \& NEEMSIS-2 (2020-21); author's calculations.}" if v1==""
 set obs `=_N+1'

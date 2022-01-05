@@ -158,9 +158,12 @@ global efa base_f1_std base_f2_std base_f3_std base_f5_std
 
 global cog base_raven_tt_std base_num_tt_std base_lit_tt_std
 
-global indivcontrol age_1 agesq_1 dummyhead_1 cat_mainocc_occupation_indiv_1_1 cat_mainocc_occupation_indiv_1_2 cat_mainocc_occupation_indiv_1_4 cat_mainocc_occupation_indiv_1_5 cat_mainocc_occupation_indiv_1_6 cat_mainocc_occupation_indiv_1_7 dummyedulevel maritalstatus2_1 dummymultipleoccupation_indiv_1
+*global indivcontrol age_1 agesq_1 dummyhead_1 cat_mainocc_occupation_indiv_1_1 cat_mainocc_occupation_indiv_1_2 cat_mainocc_occupation_indiv_1_4 cat_mainocc_occupation_indiv_1_5 cat_mainocc_occupation_indiv_1_6 cat_mainocc_occupation_indiv_1_7 dummyedulevel maritalstatus2_1 dummymultipleoccupation_indiv_1
+global indivcontrol age_1 agesq_1 dummyhead_1 cat_mainocc_occupation_indiv_1_1 cat_mainocc_occupation_indiv_1_2 cat_mainocc_occupation_indiv_1_4 cat_mainocc_occupation_indiv_1_5 cat_mainocc_occupation_indiv_1_6 cat_mainocc_occupation_indiv_1_7 dummyedulevel maritalstatus2_1
 
-global hhcontrol4 assets1000_1 sexratiocat_1_1 sexratiocat_1_2 sexratiocat_1_3 hhsize_1 shock_1 incomeHH1000_1
+
+*global hhcontrol4 assets1000_1 sexratiocat_1_1 sexratiocat_1_2 sexratiocat_1_3 hhsize_1 shock_1 incomeHH1000_1
+global hhcontrol4 assets1000_1 hhsize_1 shock_1 incomeHH1000_1
 
 global villagesFE near_panruti near_villupur near_tirup near_chengal near_kanchip near_chennai
 
@@ -267,7 +270,8 @@ esttab res_1 res_2 res_3 res_4 using "_reg.csv", ///
 	cells("b(fmt(2) star)" se(par fmt(2))) ///
 	drop() ///
 	legend label varlabels(_cons constant) ///
-	stats(N r2_p ll chi2 p, fmt(0 2 2 2 2) labels(`"Observations"' `"Pseudo \$R^2$"' `"Log-likelihood"' `"$\upchi^2$"' `"p-value"')) /// //starlevels(* 0.10 ** 0.05 *** 0.01) ///
+	stats(N r2_p ll chi2 p, fmt(0 2 2 2 2) labels(`"Observations"' `"Pseudo \$R^2$"' `"Log-likelihood"' `"$\upchi^2$"' `"p-value"')) ///
+	starlevels(* 0.10 ** 0.05 *** 0.01) ///
 	replace	
 estimates clear
 
@@ -355,6 +359,7 @@ esttab res_1 res_2 res_3 res_4 using "_reg.csv", ///
 	drop() ///	
 	legend label varlabels(_cons constant) ///
 	stats(N r2 r2_a F p, fmt(0 2 2 2 2) labels(`"Observations"' `"\$R^2$"' `"Adjusted \$R^2$"' `"F-stat"' `"p-value"')) ///
+	starlevels(* 0.10 ** 0.05 *** 0.01) ///
 	replace
 estimates clear
 preserve

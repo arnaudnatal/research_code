@@ -398,13 +398,13 @@ label var shock_2 "Shock (=1)"
 
 gen assets1000_1=assets_1/1000
 gen assets1000_2=assets_2/1000
-label var assets1000_1 "Assets (1,000 INR)"
-label var assets1000_2 "Assets (1,000 INR)"
+label var assets1000_1 "Assets (\rupee1k)"
+label var assets1000_2 "Assets (\rupee1k)"
 
 gen incomeHH1000_1=totalincome_HH_1/1000
 gen incomeHH1000_2=totalincome_HH_2/1000
-label var incomeHH1000_1 "Total income (1,000 INR)"
-label var incomeHH1000_2 "Total income (1,000 INR)"
+label var incomeHH1000_1 "Total income (\rupee1k)"
+label var incomeHH1000_2 "Total income (\rupee1k)"
 
 xtile q_assets1000_1=assets_1, n(4)
 tab q_assets1000_1, gen(q_assets1000_1_)
