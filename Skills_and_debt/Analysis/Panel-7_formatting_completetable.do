@@ -97,7 +97,7 @@ drop n
 gen n=_n
 
 foreach x in B C D E {
-replace `x'="β/(Std Err.)" if `x'=="b/se"
+replace `x'="$\upbeta$/(Std Err.)" if `x'=="b/se"
 
 replace `x'="Pr(In debt)" if `x'=="indebt_indiv_2"
 replace `x'="Pr(Interest)" if `x'=="indiv_interest"
@@ -143,15 +143,11 @@ sort n
 set obs `=_N+1'
 replace v1="\toprule" if v1==""
 set obs `=_N+1'
-replace v1="\begin{tabular}{lcccc}" if v1==""
+replace v1="\label{tab:ame_`var'}" if v1==""
 set obs `=_N+1'
-replace v1="\resizebox{\columnwidth}{!}{%" if v1==""
+replace v1="\caption{\detokenize{`var'}}" if v1==""
 set obs `=_N+1'
-replace v1="\caption{`x'}" if v1==""
-set obs `=_N+1'
-replace v1="\raggedright" if v1==""
-set obs `=_N+1'
-replace v1="\begin{table}[!h]" if v1==""
+replace v1="\begin{longtable}{@{}lcccc@{}}" if v1==""
 drop n
 gen n=1/_n
 sort n
@@ -161,7 +157,8 @@ drop n
 gen n=_n
 sort n
 set obs `=_N+1'
-replace v1="\bottomrule" if v1==""
+replace v1="\end{longtable}" if v1==""
+/*
 set obs `=_N+1'
 replace v1="\end{tabular}" if v1==""
 set obs `=_N+1'
@@ -174,6 +171,7 @@ set obs `=_N+1'
 replace v1="\sourcetab{NEEMSIS-1 (2016-17) \& NEEMSIS-2 (2020-21); author's calculations.}" if v1==""
 set obs `=_N+1'
 replace v1="\end{table}"  if v1==""
+*/
 drop n
 gen n=_n
 sort n
@@ -182,14 +180,76 @@ sort n
 
 *** Midrule
 set obs `=_N+1'
+replace n=5.5 if n==.
+sort n
+replace v1="\endfirsthead" if v1==""
+drop n
+gen n=_n
+
+set obs `=_N+1'
+replace n=6.5 if n==.
+sort n
+replace v1="%" if v1==""
+drop n
+gen n=_n
+
+set obs `=_N+1'
+replace n=7.5 if n==.
+sort n
+replace v1="\endhead" if v1==""
+drop n
+gen n=_n
+
+set obs `=_N+1'
+replace n=8.5 if n==.
+sort n
+replace v1="%" if v1==""
+drop n
+gen n=_n
+
+set obs `=_N+1'
 replace n=9.5 if n==.
 sort n
-replace v1="\midrule" if n==9.5
-set obs `=_N+1'
-replace n=117.5 if n==.
-sort n
-replace v1="\midrule" if v1==""
+replace v1="\bottomrule" if v1==""
 drop n
+gen n=_n
+
+set obs `=_N+1'
+replace n=10.5 if n==.
+sort n
+replace v1="\endfoot" if v1==""
+drop n
+gen n=_n
+
+set obs `=_N+1'
+replace n=11.5 if n==.
+sort n
+replace v1="%" if v1==""
+drop n
+gen n=_n
+
+set obs `=_N+1'
+replace n=12.5 if n==.
+sort n
+replace v1="\endlastfoot" if v1==""
+drop n
+gen n=_n
+
+set obs `=_N+1'
+replace n=13.5 if n==.
+sort n
+replace v1="%" if v1==""
+drop n
+
+gen n=_n
+gen ru=""
+replace ru="* \midrule" if n==16
+replace ru="* \midrule" if n==124
+replace ru="* \bottomrule" if n==129
+
+egen v2=concat(v1 ru)
+keep v2
+
 
 export delimited using "tex/tab_`var'.tex",  novarnames  replace //delimiter("")
 }
@@ -220,7 +280,7 @@ import excel "OLS_indebt.xlsx", sheet("DSR_indiv") clear
 gen n=_n
 
 foreach x in B C D E {
-replace `x'="β/(Std Err.)" if `x'=="b/se"
+replace `x'="$\upbeta$/(Std Err.)" if `x'=="b/se"
 
 replace `x'="DSR" if `x'=="DSR_indiv"
 replace `x'="Loan amount" if `x'=="loanamount_indiv"
@@ -261,15 +321,11 @@ sort n
 set obs `=_N+1'
 replace v1="\toprule" if v1==""
 set obs `=_N+1'
-replace v1="\begin{tabular}{lcccc}" if v1==""
+replace v1="\label{tab:ame_`var'}" if v1==""
 set obs `=_N+1'
-replace v1="\resizebox{\columnwidth}{!}{%" if v1==""
+replace v1="\caption{\detokenize{`var'}}" if v1==""
 set obs `=_N+1'
-replace v1="\caption{`x'}" if v1==""
-set obs `=_N+1'
-replace v1="\raggedright" if v1==""
-set obs `=_N+1'
-replace v1="\begin{table}[!h]" if v1==""
+replace v1="\begin{longtable}{@{}lcccc@{}}" if v1==""
 drop n
 gen n=1/_n
 sort n
@@ -279,7 +335,8 @@ drop n
 gen n=_n
 sort n
 set obs `=_N+1'
-replace v1="\bottomrule" if v1==""
+replace v1="\end{longtable}" if v1==""
+/*
 set obs `=_N+1'
 replace v1="\end{tabular}" if v1==""
 set obs `=_N+1'
@@ -292,6 +349,7 @@ set obs `=_N+1'
 replace v1="\sourcetab{NEEMSIS-1 (2016-17) \& NEEMSIS-2 (2020-21); author's calculations.}" if v1==""
 set obs `=_N+1'
 replace v1="\end{table}"  if v1==""
+*/
 drop n
 gen n=_n
 sort n
@@ -300,14 +358,75 @@ sort n
 
 *** Midrule
 set obs `=_N+1'
+replace n=5.5 if n==.
+sort n
+replace v1="\endfirsthead" if v1==""
+drop n
+gen n=_n
+
+set obs `=_N+1'
+replace n=6.5 if n==.
+sort n
+replace v1="%" if v1==""
+drop n
+gen n=_n
+
+set obs `=_N+1'
+replace n=7.5 if n==.
+sort n
+replace v1="\endhead" if v1==""
+drop n
+gen n=_n
+
+set obs `=_N+1'
+replace n=8.5 if n==.
+sort n
+replace v1="%" if v1==""
+drop n
+gen n=_n
+
+set obs `=_N+1'
 replace n=9.5 if n==.
 sort n
-replace v1="\midrule" if n==9.5
-set obs `=_N+1'
-replace n=117.5 if n==.
-sort n
-replace v1="\midrule" if v1==""
+replace v1="\bottomrule" if v1==""
 drop n
+gen n=_n
+
+set obs `=_N+1'
+replace n=10.5 if n==.
+sort n
+replace v1="\endfoot" if v1==""
+drop n
+gen n=_n
+
+set obs `=_N+1'
+replace n=11.5 if n==.
+sort n
+replace v1="%" if v1==""
+drop n
+gen n=_n
+
+set obs `=_N+1'
+replace n=12.5 if n==.
+sort n
+replace v1="\endlastfoot" if v1==""
+drop n
+gen n=_n
+
+set obs `=_N+1'
+replace n=13.5 if n==.
+sort n
+replace v1="%" if v1==""
+drop n
+
+gen n=_n
+gen ru=""
+replace ru="* \midrule" if n==16
+replace ru="* \midrule" if n==124
+replace ru="* \bottomrule" if n==129
+
+egen v2=concat(v1 ru)
+keep v2
 
 export delimited using "tex/tab_`var'.tex",  novarnames  replace //delimiter("")
 }

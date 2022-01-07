@@ -239,15 +239,18 @@ replace deriv="AG (std)" if deriv=="A5"
 
 drop n
 export excel using "margins_probit.xlsx", sheet("`x'", replace) //firstrow(varlabels)
+*}
 
+*foreach x in $varquali {
 ********** Tex
 import excel "margins_probit.xlsx", sheet("`x'") all clear
+*import excel "margins_probit.xlsx", sheet("indebt_indiv_2") all clear
 
 preserve
 import excel "Probit_indebt.xlsx", sheet("`x'") clear
 *import excel "Probit_indebt.xlsx", sheet("indebt_indiv_2") clear
 gen n=_n
-keep if n>=121 & n<=125
+keep if n>=113 & n<=117
 drop n
 
 
@@ -274,17 +277,21 @@ rename C D
 rename sp1 C
 
 save "_temp_`x'.dta", replace
+*save "_temp_indebt_indiv_2.dta", replace
 restore
 
 append using "_temp_`x'.dta"
+*append using "_temp_indebt_indiv_2.dta"
 foreach let in A B C D E F G H I J K L M {
 replace `let'=" "+`let'+" "
 }
 
 export delimited using "_temp_`x'.txt", delimiter("&") replace
+*export delimited using "_temp_indebt_indiv_2.txt", delimiter("&") replace
 
 ********** Table format
 import delimited "_temp_`x'.txt", clear 
+*import delimited "_temp_indebt_indiv_2.txt", clear 
 gen n=_n
 drop if n==1
 drop n 
@@ -299,7 +306,7 @@ replace v1="\begin{tabular}{lcccccccccccc}" if v1==""
 set obs `=_N+1'
 replace v1="\resizebox{\columnwidth}{!}{%" if v1==""
 set obs `=_N+1'
-replace v1="\caption{`x'}" if v1==""
+replace v1="\caption{\detokenize{`x'}}" if v1==""
 set obs `=_N+1'
 replace v1="\raggedright" if v1==""
 set obs `=_N+1'
@@ -534,16 +541,19 @@ replace deriv="AG (std)" if deriv=="A5"
 
 drop n
 export excel using "margins_ols.xlsx", sheet("`x'", replace) //firstrow(varlabels)
+}
 
+foreach x in $varquanti {
 
 ********** Tex
 import excel "margins_OLS.xlsx", sheet("`x'") all clear
+*import excel "margins_OLS.xlsx", sheet("DSR_indiv") all clear
 
 preserve
 import excel "OLS_indebt.xlsx", sheet("`x'") clear
 gen n=_n
-keep if n>=120
-drop if n==125
+keep if n>=112
+drop if n==117
 drop n
 
 gen sp1=""
@@ -594,7 +604,7 @@ replace v1="\begin{tabular}{lcccccccccccc}" if v1==""
 set obs `=_N+1'
 replace v1="\resizebox{\columnwidth}{!}{%" if v1==""
 set obs `=_N+1'
-replace v1="\caption{`x'}" if v1==""
+replace v1="\caption{\detokenize{`x'}}" if v1==""
 set obs `=_N+1'
 replace v1="\raggedright" if v1==""
 set obs `=_N+1'
