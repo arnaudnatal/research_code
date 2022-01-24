@@ -38,11 +38,11 @@ set scheme plotplain
 
 ********** Name of the NEEMSIS2 questionnaire version to clean
 *global wave1 "RUME-HH_v8"
-global wave2 "NEEMSIS1-HH_v8"
-global wave3 "NEEMSIS2-HH_v19"
+global wave2 "NEEMSIS1-HH"
+global wave3 "NEEMSIS2-HH"
 
-global loan "NEEMSIS2-loans_v14"
-global loan2 "NEEMSIS2-loans"
+global loan "NEEMSIS2-all_loans"
+*global loan2 "NEEMSIS2-loans"
 ****************************************
 * END
 
@@ -58,6 +58,24 @@ global loan2 "NEEMSIS2-loans"
 use"$loan", clear
 
 
+********** Following Elena cleaning
+drop loanamount
+drop totalrepaid
+drop interestpaid
+drop principalpaid
+drop loanbalance
+
+rename loanamount3 loanamount
+rename totalrepaid3 totalrepaid
+rename interestpaid3 interestpaid
+rename principalpaid4 principalpaid
+rename loanbalance3 loanbalance
+
+drop loanamount2
+drop totalrepaid2
+drop interestpaid2
+drop principalpaid2 principalpaid3
+drop loanbalance2
 
 ********** For 644
 bysort HHID_panel INDID_panel: egen sum_loanamount=sum(loanamount)
@@ -127,79 +145,22 @@ save"NEEMSIS2-newloans_v1.dta", replace
 
 
 
+
+
+
+
+
+
 ****************************************
 * DSR + ISR
 ****************************************
 use"NEEMSIS2-newloans_v1", clear
 
+foreach x in yratepaid monthlyinterestrate debt_service interest_service imp_principal imp1_interest imp1_totalrepaid_year imp1_debt_service imp1_interest_service imp1_ds_tot_indiv imp1_is_tot_indiv imp1_ds_tot_HH imp1_is_tot_HH loans_indiv loanamount_indiv loans_HH loanamount_HH {
+rename `x' `x'_tot
+}
 
 ********** YRATEPAID
-*** Good debt
-gen yratepaid_good=interestpaid*100/loanamount if loanduration<=365 & typeofdebt==0
-gen _yratepaid_good=interestpaid*365/loanduration if loanduration>365 & typeofdebt==0
-gen _loanamount_good=loanamount*365/loanduration if loanduration>365 & typeofdebt==0
-replace yratepaid_good=_yratepaid_good*100/_loanamount_good if loanduration>365 & typeofdebt==0
-drop _loanamount_good _yratepaid_good
-
-tab yratepaid_good
-sort yratepaid_good
-
-tabstat yratepaid_good if interestpaid>0 & interestpaid!=. & typeofdebt==0, by(lender4) stat(n mean p50 min max)
-gen monthlyinterestrate_good=.
-replace monthlyinterestrate_good=yratepaid_good if loanduration<=30.4167 & typeofdebt==0
-replace monthlyinterestrate_good=(yratepaid_good/loanduration)*30.4167 if loanduration>30.4167 & typeofdebt==0
-
-/*
-     lender4 |         N      mean       p50       min       max
--------------+--------------------------------------------------
-         WKP |       106  32.42069        30  .8333333       100
-   Relatives |        24  32.49625      24.5         3       144
-      Labour |        41  21.68293        16       2.4       108
- Shop keeper |         1  .9212121  .9212121  .9212121  .9212121
-Moneylenders |        15   12.5068        10  .7272727        40
-     Friends |       182  25.53982  16.33333        .5       240
- Microcredit |        42  16.44193        10   .007875       120
-        Bank |        68  16.10592  11.56467      .832  86.66667
-     Thandal |        40  11.61969        10      2.24        60
--------------+--------------------------------------------------
-       Total |       519  23.49292        15   .007875       240
-----------------------------------------------------------------
-*/
-
-
-*** Bad debt
-gen yratepaid_bad=interestpaid*100/loanamount if loanduration<=365 & typeofdebt==1
-gen _yratepaid_bad=interestpaid*365/loanduration if loanduration>365 & typeofdebt==1
-gen _loanamount_bad=loanamount*365/loanduration if loanduration>365 & typeofdebt==1
-replace yratepaid_bad=_yratepaid_bad*100/_loanamount_bad if loanduration>365 & typeofdebt==1
-drop _loanamount_bad _yratepaid_bad
-
-tab yratepaid_bad
-sort yratepaid_bad
-
-tabstat yratepaid_bad if interestpaid>0 & interestpaid!=. & typeofdebt==1, by(lender4) stat(n mean p50 min max)
-gen monthlyinterestrate_bad=.
-replace monthlyinterestrate_bad=yratepaid_bad if loanduration<=30.4167 & typeofdebt==1
-replace monthlyinterestrate_bad=(yratepaid_bad/loanduration)*30.4167 if loanduration>30.4167 & typeofdebt==1
-
-/*
-     lender4 |         N      mean       p50       min       max
--------------+--------------------------------------------------
-         WKP |       128  45.49089        36         2       600
-   Relatives |        18  27.10741        25         2        96
-      Labour |        51  25.58497        20         4       100
- Shop keeper |         3  25.33333        30        10        36
-Moneylenders |        11  14.89285     13.32  3.055556        30
-     Friends |       238  22.82115        18  .0057143       144
- Microcredit |        20   20.3919     13.75       1.5        80
-        Bank |        40  21.80919     14.95       .21       100
-     Thandal |        43  10.34119        10         2        25
--------------+--------------------------------------------------
-       Total |       552  27.19517        20  .0057143       600
-----------------------------------------------------------------
-*/
-
-
 *** All loans
 gen yratepaid=interestpaid*100/loanamount if loanduration<=365
 gen _yratepaid=interestpaid*365/loanduration if loanduration>365
@@ -218,22 +179,20 @@ replace monthlyinterestrate=(yratepaid/loanduration)*30.4167 if loanduration>30.
 /*
      lender4 |         N      mean       p50       min       max
 -------------+--------------------------------------------------
-         WKP |       234   39.5702        30  .8333333       600
-   Relatives |        42  30.18675        25         2       144
-      Labour |        92  23.84601        20       2.4       108
- Shop keeper |         4   19.2303        20  .9212121        36
-Moneylenders |        26  13.51629      12.5  .7272727        40
-     Friends |       420  23.99924        18  .0057143       240
- Microcredit |        62  17.71611        10   .007875       120
-        Bank |       108  18.21824   12.9575       .21       100
-     Thandal |        83  10.95734        10         2        60
+         WKP |       291  37.15597        30  .8333333       600
+   Relatives |        47  30.12433        25         2       144
+      Labour |        94  22.58865        19       2.4       108
+ Pawn broker |        11  32.16755  29.26829         3       100
+Moneylenders |         5  30.46996        30  .9212121  75.42857
+     Friends |       453  26.46605        18        .5       950
+ Microcredit |       653  24.51787        20       .21  133.3333
+        Bank |        90  21.36998  13.80952   .007875       100
+     Thandal |        99  11.36322        10         2        65
 -------------+--------------------------------------------------
-       Total |      1071  25.40108        18  .0057143       600
+       Total |      1743  26.33695        20   .007875       950
 ----------------------------------------------------------------
+
 */
-
-
-
 
 
 
@@ -241,6 +200,8 @@ Moneylenders |        26  13.51629      12.5  .7272727        40
 gen totalrepaid2=totalrepaid
 gen interestpaid2=interestpaid
 
+
+********** Moneylender (.305) and microcredit (0.245)
 *** All
 gen debt_service=.
 replace debt_service=totalrepaid2 if loanduration<=365
@@ -258,10 +219,13 @@ replace imp_principal=loanamount-loanbalance if loanduration<=365 & debt_service
 replace imp_principal=(loanamount-loanbalance)*365/loanduration if loanduration>365 & debt_service==.
 
 gen imp1_interest=.
-replace imp1_interest=0.14*loanamount if lender4==6 & loanduration<=365 & debt_service==.
-replace imp1_interest=0.14*loanamount*365/loanduration if lender4==6 & loanduration>365 & debt_service==.
-replace imp1_interest=0.18*loanamount if lender4==8 & loanduration<=365 & debt_service==.
-replace imp1_interest=0.18*loanamount*365/loanduration if lender4==8 & loanduration>365 & debt_service==.
+*** Moneylender
+replace imp1_interest=0.305*loanamount if lender4==6 & loanduration<=365 & debt_service==.
+replace imp1_interest=0.305*loanamount*365/loanduration if lender4==6 & loanduration>365 & debt_service==.
+*** Microcredit
+replace imp1_interest=0.245*loanamount if lender4==8 & loanduration<=365 & debt_service==.
+replace imp1_interest=0.245*loanamount*365/loanduration if lender4==8 & loanduration>365 & debt_service==.
+*** Autres
 replace imp1_interest=0 if lender4!=6 & lender4!=8 & debt_service==. & loandate!=.
 
 gen imp1_totalrepaid_year=imp_principal+imp1_interest
@@ -274,83 +238,6 @@ replace imp1_interest_service=imp1_interest if interest_service==.
 
 bysort HHID_panel INDID_panel: egen imp1_ds_tot_indiv=sum(imp1_debt_service)
 bysort HHID_panel INDID_panel: egen imp1_is_tot_indiv=sum(imp1_interest_service)
-
-
-
-
-
-*** Good
-gen debt_service_good=.
-replace debt_service_good=totalrepaid2 if loanduration<=365 & typeofdebt==0
-replace debt_service_good=totalrepaid2*365/loanduration if loanduration>365 & typeofdebt==0
-replace debt_service_good=0 if typeofdebt==0 & (loanduration==0 & totalrepaid2==0) | (loanduration==0 & totalrepaid2==.)
-
-gen interest_service_good=.
-replace interest_service_good=interestpaid2 if loanduration<=365 & typeofdebt==0
-replace interest_service_good=interestpaid2*365/loanduration if loanduration>365 & typeofdebt==0
-replace interest_service_good=0 if typeofdebt==0 & (loanduration==0 & totalrepaid2==0) | (loanduration==0 & totalrepaid2==.)
-replace interest_service_good=0 if typeofdebt==0 & (dummyinterest==0 & interestpaid2==0) | (dummyinterest==0 & interestpaid2==.)
-
-gen imp_principal_good=.
-replace imp_principal_good=loanamount-loanbalance if loanduration<=365 & debt_service_good==. & typeofdebt==0
-replace imp_principal_good=(loanamount-loanbalance)*365/loanduration if loanduration>365 & debt_service_good==. & typeofdebt==0
-
-gen imp1_interest_good=.
-replace imp1_interest_good=0.13*loanamount if lender4==6 & loanduration<=365 & debt_service_good==. & typeofdebt==0
-replace imp1_interest_good=0.13*loanamount*365/loanduration if lender4==6 & loanduration>365 & debt_service_good==. & typeofdebt==0
-replace imp1_interest_good=0.17*loanamount if lender4==8 & loanduration<=365 & debt_service_good==. & typeofdebt==0
-replace imp1_interest_good=0.17*loanamount*365/loanduration if lender4==8 & loanduration>365 & debt_service_good==. & typeofdebt==0
-replace imp1_interest_good=0 if lender4!=6 & lender4!=8 & debt_service_good==. & loandate!=. & typeofdebt==0
-
-gen imp1_totalrepaid_year_good=imp_principal_good+imp1_interest_good & typeofdebt==0
-
-gen imp1_debt_service_good=debt_service_good
-replace imp1_debt_service_good=imp1_totalrepaid_year_good if debt_service_good==. & typeofdebt==0
-
-gen imp1_interest_service_good=interest_service_good
-replace imp1_interest_service_good=imp1_interest_good if interest_service_good==. & typeofdebt==0
-
-bysort HHID_panel INDID_panel: egen imp1_ds_tot_good_indiv=sum(imp1_debt_service_good)
-bysort HHID_panel INDID_panel: egen imp1_is_tot_good_indiv=sum(imp1_interest_service_good)
-
-
-
-
-
-
-*** Bad
-gen debt_service_bad=.
-replace debt_service_bad=totalrepaid2 if loanduration<=365 & typeofdebt==1
-replace debt_service_bad=totalrepaid2*365/loanduration if loanduration>365 & typeofdebt==1
-replace debt_service_bad=0 if typeofdebt==1 & (loanduration==0 & totalrepaid2==0) | (loanduration==0 & totalrepaid2==.)
-
-gen interest_service_bad=.
-replace interest_service_bad=interestpaid2 if loanduration<=365 & typeofdebt==1
-replace interest_service_bad=interestpaid2*365/loanduration if loanduration>365 & typeofdebt==1
-replace interest_service_bad=0 if typeofdebt==1 & (loanduration==0 & totalrepaid2==0) | (loanduration==0 & totalrepaid2==.)
-replace interest_service_bad=0 if typeofdebt==1 & (dummyinterest==0 & interestpaid2==0) | (dummyinterest==0 & interestpaid2==.)
-
-gen imp_principal_bad=.
-replace imp_principal_bad=loanamount-loanbalance if loanduration<=365 & debt_service_bad==. & typeofdebt==1
-replace imp_principal_bad=(loanamount-loanbalance)*365/loanduration if loanduration>365 & debt_service_bad==. & typeofdebt==1
-
-gen imp1_interest_bad=.
-replace imp1_interest_bad=0.15*loanamount if lender4==6 & loanduration<=365 & debt_service_bad==. & typeofdebt==1
-replace imp1_interest_bad=0.15*loanamount*365/loanduration if lender4==6 & loanduration>365 & debt_service_bad==. & typeofdebt==1
-replace imp1_interest_bad=0.20*loanamount if lender4==8 & loanduration<=365 & debt_service_bad==. & typeofdebt==1
-replace imp1_interest_bad=0.20*loanamount*365/loanduration if lender4==8 & loanduration>365 & debt_service_bad==. & typeofdebt==1
-replace imp1_interest_bad=0 if lender4!=6 & lender4!=8 & debt_service_bad==. & loandate!=. & typeofdebt==1
-
-gen imp1_totalrepaid_year_bad=imp_principal_bad+imp1_interest_bad & typeofdebt==0
-
-gen imp1_debt_service_bad=debt_service_bad
-replace imp1_debt_service_bad=imp1_totalrepaid_year_bad if debt_service_bad==. & typeofdebt==1
-
-gen imp1_interest_service_bad=interest_service_bad
-replace imp1_interest_service_bad=imp1_interest_bad if interest_service_bad==. & typeofdebt==1
-
-bysort HHID_panel INDID_panel: egen imp1_ds_tot_bad_indiv=sum(imp1_debt_service_bad)
-bysort HHID_panel INDID_panel: egen imp1_is_tot_bad_indiv=sum(imp1_interest_service_bad)
 
 
 save"NEEMSIS2-newloans_v2.dta", replace
@@ -374,27 +261,12 @@ use"NEEMSIS2-newloans_v2.dta", clear
 
 
 ********** Amount of loan
-gen loanamount_good=.
-replace loanamount_good=loanamount if typeofdebt==0
-gen loanamount_bad=.
-replace loanamount_bad=loanamount if typeofdebt==1
-bysort HHID_panel INDID_panel: egen loanamount_good_indiv=sum(loanamount_good)
 bysort HHID_panel INDID_panel: egen loanamount_indiv=sum(loanamount)
-bysort HHID_panel INDID_panel: egen loanamount_bad_indiv=sum(loanamount_bad)
-drop loanamount_good loanamount_bad
 
 
 
 ********** Number of loans
-gen gooddebt=0
-gen baddebt=0
-replace gooddebt=1 if typeofdebt==0
-replace baddebt=1 if typeofdebt==1
-
-bysort HHID_panel INDID_panel: egen nbloan_good=sum(gooddebt)
-bysort HHID_panel INDID_panel: egen nbloan_bad=sum(baddebt)
 bysort HHID_panel INDID_panel: egen nbloan=sum(1)
-drop gooddebt baddebt
 
 
 
@@ -413,22 +285,6 @@ restore
 drop interestok
 
 
-
-********** Interestpaid
-*** Good
-gen int_serv_good=interestpaid2 if typeofdebt==0
-replace int_serv_good=0 if typeofdebt==0 & dummyinterest==0
-bysort HHID_panel INDID_panel: egen interestpaid_good_indiv=sum(int_serv_good)
-drop int_serv_good
-
-*** Bad
-gen int_serv_bad=interestpaid2 if typeofdebt==1
-replace int_serv_bad=0 if typeofdebt==1 & dummyinterest==0
-bysort HHID_panel INDID_panel: egen interestpaid_bad_indiv=sum(int_serv_bad)
-drop int_serv_bad
-
-*** All
-bysort HHID_panel INDID_panel: egen interestpaid_indiv=sum(interestpaid)
 
 save"NEEMSIS2-newloans_v3.dta", replace
 ****************************************
@@ -651,11 +507,11 @@ save"NEEMSIS2-newloans_v5.dta", replace
 *************************************
 use"NEEMSIS2-newloans_v5.dta", clear
 
-keep HHID_panel INDID_panel egoid imp1_ds_tot_indiv imp1_is_tot_indiv imp1_ds_tot_good_indiv imp1_is_tot_good_indiv imp1_ds_tot_bad_indiv imp1_is_tot_bad_indiv loanamount_good_indiv loanamount_indiv loanamount_bad_indiv nbloan_good nbloan_bad nbloan indiv_interest interestpaid_good_indiv interestpaid_bad_indiv interestpaid_indiv otherlenderservices_politsupp otherlenderservices_finansupp otherlenderservices_guarantor otherlenderservices_generainf otherlenderservices_none otherlenderservices_other guarantee_doc guarantee_chittu guarantee_shg guarantee_perso guarantee_jewel guarantee_none guarantee_other borrowerservices_freeserv borrowerservices_worklesswage borrowerservices_suppwhenever borrowerservices_none borrowerservices_other plantorepay_chit plantorepay_work plantorepay_migr plantorepay_asse plantorepay_inco plantorepay_borr plantorepay_othe settleloanstrat_inco settleloanstrat_sche settleloanstrat_borr settleloanstrat_sell settleloanstrat_land settleloanstrat_cons settleloanstrat_addi settleloanstrat_work settleloanstrat_supp settleloanstrat_harv settleloanstrat_othe loanproductpledge_gold loanproductpledge_land loanproductpledge_car loanproductpledge_bike loanproductpledge_fridge loanproductpledge_furnit loanproductpledge_tailor loanproductpledge_cell loanproductpledge_line loanproductpledge_dvd loanproductpledge_camera loanproductpledge_gas loanproductpledge_computer loanproductpledge_dish loanproductpledge_none loanproductpledge_other dummyproblemtorepay dummyhelptosettleloan dummyrecommendation dummyguarantor
+keep HHID_panel INDID_panel egoid imp1_ds_tot_indiv imp1_is_tot_indiv      loanamount_indiv nbloan indiv_interest otherlenderservices_politsupp otherlenderservices_finansupp otherlenderservices_guarantor otherlenderservices_generainf otherlenderservices_none otherlenderservices_other guarantee_doc guarantee_chittu guarantee_shg guarantee_perso guarantee_jewel guarantee_none guarantee_other borrowerservices_freeserv borrowerservices_worklesswage borrowerservices_suppwhenever borrowerservices_none borrowerservices_other plantorepay_chit plantorepay_work plantorepay_migr plantorepay_asse plantorepay_inco plantorepay_borr plantorepay_othe settleloanstrat_inco settleloanstrat_sche settleloanstrat_borr settleloanstrat_sell settleloanstrat_land settleloanstrat_cons settleloanstrat_addi settleloanstrat_work settleloanstrat_supp settleloanstrat_harv settleloanstrat_othe loanproductpledge_gold loanproductpledge_land loanproductpledge_car loanproductpledge_bike loanproductpledge_fridge loanproductpledge_furnit loanproductpledge_tailor loanproductpledge_cell loanproductpledge_line loanproductpledge_dvd loanproductpledge_camera loanproductpledge_gas loanproductpledge_computer loanproductpledge_dish loanproductpledge_none loanproductpledge_other dummyproblemtorepay dummyhelptosettleloan dummyrecommendation dummyguarantor
 
 duplicates drop
 
-global amount imp1_ds_tot_indiv imp1_is_tot_indiv imp1_ds_tot_good_indiv imp1_is_tot_good_indiv imp1_ds_tot_bad_indiv imp1_is_tot_bad_indiv loanamount_good_indiv loanamount_indiv loanamount_bad_indiv interestpaid_good_indiv interestpaid_bad_indiv interestpaid_indiv
+global amount imp1_ds_tot_indiv imp1_is_tot_indiv loanamount_indiv
 
 foreach x in $amount {
 replace `x'=`x'*(1/(180/155))
@@ -690,13 +546,15 @@ drop _merge
 gen indebt_indiv_2=0
 replace indebt_indiv_2=1 if nbloan>0 & nbloan!=.
 
+/*
 gen indebt_good_indiv_2=0
 replace indebt_good_indiv_2=1 if nbloan_good>0 & nbloan_good!=.
 
 gen indebt_bad_indiv_2=0
 replace indebt_bad_indiv_2=1 if nbloan_bad>0 & nbloan_bad!=.
+*/
 
-********** DSR good and bad
+********** DSR
 gen DSR_indiv=imp1_ds_tot_indiv/totalincome_indiv_2
 gen ISR_indiv=imp1_is_tot_indiv/totalincome_indiv_2
 
@@ -707,31 +565,18 @@ replace DSR_indiv=10 if DSR_indiv>10 & DSR_indiv!=.
 tabstat DSR_indiv, stat(n mean sd) by(female)
 
 
-foreach x in good bad {
-gen DSR_`x'_indiv=imp1_ds_tot_`x'_indiv/totalincome_indiv_2
-gen ISR_`x'_indiv=imp1_is_tot_`x'_indiv/totalincome_indiv_2
-}
-
-
 ********** Loan amount
 replace loanamount_indiv=loanamount_indiv/1000
-
-
-********** New measures of ISR
-gen intamt_good=interestpaid_good_indiv/loanamount_good_indiv
-gen intamt_bad=interestpaid_bad_indiv/loanamount_bad_indiv
-gen intamt=interestpaid_indiv/loanamount_indiv
-
 
 
 ********** Descriptive statistics for interest
 tabstat totalincome_indiv_2 annualincome_indiv_2 , stat(n mean sd) by(female)
 
-tabstat imp1_ds_tot_indiv imp1_ds_tot_good_indiv imp1_ds_tot_bad_indiv, stat(n mean sd) by(female)
+tabstat imp1_ds_tot_indiv, stat(n mean sd) by(female)
 
-tabstat imp1_is_tot_indiv imp1_is_tot_good_indiv imp1_is_tot_bad_indiv, stat(n mean sd) by(female)
+tabstat imp1_is_tot_indiv, stat(n mean sd) by(female)
 
-tabstat ISR_indiv ISR_good_indiv ISR_bad_indiv intamt_good intamt_bad intamt interestpaid_good_indiv interestpaid_bad_indiv interestpaid_indiv, stat(n mean sd) by(female)
+tabstat ISR_indiv, stat(n mean sd) by(female)
 
 
 /*
@@ -760,7 +605,6 @@ fre dummyproblemtorepay dummyhelptosettleloan dummyrecommendation dummyguarantor
 *otherlenderservices_generainf otherlenderservices_guarantor otherlenderservices_finansupp guarantee_jewel guarantee_perso guarantee_doc
 
 *borrowerservices_suppwhenever plantorepay_borr plantorepay_work settleloanstrat_work settleloanstrat_addi settleloanstrat_cons settleloanstrat_borr dummyhelptosettleloan dummyproblemtorepay
-
 
 
 save"panel_wide_v3", replace

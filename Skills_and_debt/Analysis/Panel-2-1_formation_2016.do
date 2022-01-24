@@ -20,7 +20,7 @@ Personality traits: EFA + panel
 clear all
 macro drop _all
 ********** Path to folder "data" folder.
-global directory = "C:\Users\Arnaud\_Thesis\Research-Skills_and_debt\Analysis"
+global directory = "C:\Users\Arnaud\Documents\_Thesis\Research-Skills_and_debt\Analysis"
 cd"$directory"
 global git "C:\Users\Arnaud\Documents\GitHub"
 
@@ -38,10 +38,10 @@ set scheme plotplain
 
 ********** Name of the NEEMSIS2 questionnaire version to clean
 *global wave1 "RUME-HH_v8"
-global wave2 "NEEMSIS1-HH_v8"
-global wave3 "NEEMSIS2-HH_v19"
+global wave2 "NEEMSIS1-HH"
+global wave3 "NEEMSIS2-HH"
 
-global loan "NEEMSIS2-loans_v14"
+global loan "NEEMSIS2-all_loans"
 ****************************************
 * END
 
@@ -280,6 +280,7 @@ gen dummy_chit=0
 replace dummy_chit=1 if chitfundbelongerlist1==INDID | chitfundbelongerlist2==INDID
 ta dummy_chit
 
+/*
 * SHG
 preserve
 use "NEEMSIS1-loans_v4", clear
@@ -301,12 +302,13 @@ drop if _merge==2
 drop _merge
 recode dummy_shg (.=0)
 
+
 * Global asso
 gen dummy_network=dummy_asso+dummy_chit+dummy_shg
 order dummy_asso dummy_chit dummy_shg dummy_network, last
 replace dummy_network=1 if dummy_network>1
 ta dummy_network egoid
-
+*/
 
 
 *** Dependency ratio :
@@ -363,7 +365,7 @@ global expenses educationexpenses_HH productexpenses_HH businessexpenses_HH food
 
 global all $charactindiv $characthh $wealthindiv $wealthhh $debtindiv $debthh $perso $expenses nbercontactphone dummycontactleaders nbcontact_headbusiness nbcontact_policeman nbcontact_civilserv nbcontact_bankemployee nbcontact_panchayatcommittee nbcontact_peoplecouncil nbcontact_recruiter nbcontact_headunion nberpersonfamilyevent associationlist networkhelpkinmember demotrustbank_ego trustneighborhood trustemployees networkpeoplehelping trustingofother_backup
 
-keep $all HHID_panel INDID_panel egoid dummy_asso dummy_shg dummy_chit dummy_network
+keep $all HHID_panel INDID_panel egoid //dummy_asso dummy_shg dummy_chit dummy_network
 
 *merge m:1 HHID_panel using"$wave3~efa_ego.dta"
 *drop _merge

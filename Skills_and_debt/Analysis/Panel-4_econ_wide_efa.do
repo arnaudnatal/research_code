@@ -39,8 +39,8 @@ set scheme plotplain
 
 ********** Name of the NEEMSIS2 questionnaire version to clean
 *global wave1 "RUME-HH_v8"
-global wave2 "NEEMSIS1-HH_v8"
-global wave3 "NEEMSIS2-HH_v19"
+global wave2 "NEEMSIS1-HH"
+global wave3 "NEEMSIS2-HH"
 
 
 ********** Stata package

@@ -39,8 +39,8 @@ set scheme plotplain
 
 ********** Name of the NEEMSIS2 questionnaire version to clean
 *global wave1 "RUME-HH_v8"
-global wave2 "NEEMSIS1-HH_v8"
-global wave3 "NEEMSIS2-HH_v19"
+global wave2 "NEEMSIS1-HH"
+global wave3 "NEEMSIS2-HH"
 
 
 ********** Stata package
@@ -87,8 +87,7 @@ restore
 
 ********** Indiv characteristics
 replace indebt_indiv_2=0
-replace indebt_indiv_2=1 if loanamount_good_indiv>0 & loanamount_good_indiv!=.
-replace indebt_indiv_2=1 if loanamount_bad_indiv>0 & loanamount_bad_indiv!=.
+replace indebt_indiv_2=1 if loanamount_indiv>0 & loanamount_indiv!=.
 replace totalincome_indiv_1=totalincome_indiv_1/1000
 
 global indivvar dalits age_1 dummyhead_1 maritalstatus2_1 dummyedulevel cat_mainocc_occupation_indiv_1_1 cat_mainocc_occupation_indiv_1_2 cat_mainocc_occupation_indiv_1_3 cat_mainocc_occupation_indiv_1_4 cat_mainocc_occupation_indiv_1_5 cat_mainocc_occupation_indiv_1_6 cat_mainocc_occupation_indiv_1_7 dummymultipleoccupation_indiv_1 totalincome_indiv_1
