@@ -73,10 +73,16 @@ preserve
 bysort HHID_panel: egen nbego=sum(1)
 duplicates drop HHID_panel, force
 
-global hhvar hhsize_1 nbego sexratiocat_1_1 sexratiocat_1_2 sexratiocat_1_3 near_panruti near_villupur near_tirup near_chengal near_kanchip near_chennai assets1000_1 incomeHH1000_1 shock_1
+global hhvar hhsize_1 assets1000_1 incomeHH1000_1 shock_1 near_panruti near_villupur near_tirup near_chengal near_kanchip near_chennai 
 
-tabstat $hhvar if dalit==1, stat(mean sd)
-tabstat $hhvar if dalit==0, stat(mean sd)
+cls
+foreach x in $hhvar {
+tabstat `x' if dalit==1, stat(mean sd)
+}
+cls
+foreach x in $hhvar {
+tabstat `x' if dalit==0, stat(mean sd)
+}
 
 cls
 foreach x in $hhvar {
@@ -92,9 +98,14 @@ replace totalincome_indiv_1=totalincome_indiv_1/1000
 
 global indivvar dalits age_1 dummyhead_1 maritalstatus2_1 dummyedulevel cat_mainocc_occupation_indiv_1_1 cat_mainocc_occupation_indiv_1_2 cat_mainocc_occupation_indiv_1_3 cat_mainocc_occupation_indiv_1_4 cat_mainocc_occupation_indiv_1_5 cat_mainocc_occupation_indiv_1_6 cat_mainocc_occupation_indiv_1_7 dummymultipleoccupation_indiv_1 totalincome_indiv_1
 
-tabstat $indivvar if female==0, stat(n mean sd)
-tabstat $indivvar if female==1, stat(n mean sd)
-
+cls
+foreach x in $indivvar {
+tabstat `x' if female==0, stat(mean sd)
+}
+cls
+foreach x in $indivvar {
+tabstat `x' if female==1, stat(n mean sd)
+}
 cls
 foreach x in $indivvar {
 reg `x' i.female
@@ -102,9 +113,16 @@ reg `x' i.female
 
 ********** Debt for all
 cls
-global yvar indebt_indiv_2 DSR_indiv indiv_interest otherlenderservices_finansupp guarantee_none borrowerservices_none plantorepay_borr settleloanstrat_addi dummyproblemtorepay
+global yvar indebt_indiv_2 loanamount_indiv ISR_indiv otherlenderservices_finansupp borrowerservices_none plantorepay_borr dummyproblemtorepay
 
-tabstat $yvar, stat(n mean sd) by(female)
+cls
+foreach x in $yvar {
+tabstat `x' if female==0, stat(n mean sd)
+}
+cls
+foreach x in $yvar {
+tabstat `x' if female==1, stat(n mean sd)
+}
 
 ta plantorepay_borr female, col nofreq 
 ta settleloanstrat_addi female, col nofreq

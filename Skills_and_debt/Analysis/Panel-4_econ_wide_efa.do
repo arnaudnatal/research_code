@@ -170,7 +170,6 @@ global villagesFE near_panruti near_villupur near_tirup near_chengal near_kanchi
 
 
 ********** Label
-
 label var fem_base_f1_std "Female*ES (std)"
 label var dal_base_f1_std "Dalit*ES (std)"
 label var thr_base_f1_std "Dalit*Female*ES (std)"
