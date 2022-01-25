@@ -430,3 +430,183 @@ export delimited using "tex/tab_`var'.tex",  novarnames  replace //delimiter("")
 ****************************************
 * END
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Quanti
+****************************************
+
+import excel "Stat_desc.xlsx", sheet("tab1") clear
+
+*Star
+foreach x in B C D E {
+gen `x'n=subinstr(`x',"***","\sym{***}",.)
+gen `x'n2=subinstr(`x',"**","\sym{**}",.)
+replace `x'n2="" if substr(`x'n2,strlen(`x'n2),1)=="*"
+replace `x'n=`x'n2 if `x'n2!=""
+drop `x'n2
+
+gen `x'n1=subinstr(`x',"*","\sym{*}",.)
+replace `x'n=`x'n1 if substr(`x'n,strlen(`x'n),1)=="*"
+drop `x'n1 `x'
+rename `x'n `x'
+}
+
+gen gui=" & "
+gen end=" \\"
+*replace end="" if n==1
+*replace end="" if n==2
+*replace end="" if n==3
+
+
+egen v1=concat(A gui B gui C gui D gui E end)
+keep v1
+
+*** Top of table
+gen n=1/_n
+sort n
+set obs `=_N+1'
+replace v1="\toprule" if v1==""
+set obs `=_N+1'
+replace v1="\label{tab:ame_`var'}" if v1==""
+set obs `=_N+1'
+replace v1="\caption{\detokenize{`var'}}" if v1==""
+set obs `=_N+1'
+replace v1="\begin{longtable}{@{}lcccc@{}}" if v1==""
+drop n
+gen n=1/_n
+sort n
+drop n
+
+*** Bottom of table
+gen n=_n
+sort n
+set obs `=_N+1'
+replace v1="\end{longtable}" if v1==""
+/*
+set obs `=_N+1'
+replace v1="\end{tabular}" if v1==""
+set obs `=_N+1'
+replace v1="}" if v1==""
+set obs `=_N+1'
+replace v1="\label{tab:ame_`var'}" if v1==""
+set obs `=_N+1'
+replace v1=`"\notetab{*p<0.1~ **p<0.05~ ***p<0.01.}"' if v1==""
+set obs `=_N+1'
+replace v1="\sourcetab{NEEMSIS-1 (2016-17) \& NEEMSIS-2 (2020-21); author's calculations.}" if v1==""
+set obs `=_N+1'
+replace v1="\end{table}"  if v1==""
+*/
+drop n
+gen n=_n
+sort n
+
+*`"""'
+
+*** Midrule
+set obs `=_N+1'
+replace n=5.5 if n==.
+sort n
+replace v1="\endfirsthead" if v1==""
+drop n
+gen n=_n
+
+set obs `=_N+1'
+replace n=6.5 if n==.
+sort n
+replace v1="%" if v1==""
+drop n
+gen n=_n
+
+set obs `=_N+1'
+replace n=7.5 if n==.
+sort n
+replace v1="\endhead" if v1==""
+drop n
+gen n=_n
+
+set obs `=_N+1'
+replace n=8.5 if n==.
+sort n
+replace v1="%" if v1==""
+drop n
+gen n=_n
+
+set obs `=_N+1'
+replace n=9.5 if n==.
+sort n
+replace v1="\bottomrule" if v1==""
+drop n
+gen n=_n
+
+set obs `=_N+1'
+replace n=10.5 if n==.
+sort n
+replace v1="\endfoot" if v1==""
+drop n
+gen n=_n
+
+set obs `=_N+1'
+replace n=11.5 if n==.
+sort n
+replace v1="%" if v1==""
+drop n
+gen n=_n
+
+set obs `=_N+1'
+replace n=12.5 if n==.
+sort n
+replace v1="\endlastfoot" if v1==""
+drop n
+gen n=_n
+
+set obs `=_N+1'
+replace n=13.5 if n==.
+sort n
+replace v1="%" if v1==""
+drop n
+
+gen n=_n
+gen ru=""
+replace ru="* \midrule" if n==16
+replace ru="* \midrule" if n==124
+replace ru="* \bottomrule" if n==129
+
+egen v2=concat(v1 ru)
+keep v2
+
+
+
+
+
+****************************************
+* END

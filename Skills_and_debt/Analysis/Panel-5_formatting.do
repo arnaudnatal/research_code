@@ -23,21 +23,15 @@ macro drop _all
 set scheme plotplain
 ********** Path to folder "data" folder.
 global directory = "C:\Users\Arnaud\Documents\_Thesis\Research-Skills_and_debt\Analysis"
+global git "C:\Users\Arnaud\Documents\GitHub"
+global dropbox "C:\Users\Arnaud\Documents\Dropbox\Arnaud\Thesis_Debt_skills\INPUT"
+
+***
+set scheme plotplain
 cd"$directory"
 
 
-*Fac
-*cd "C:\Users\anatal\Downloads\_Thesis\Research-Skills_and_debt\Analysis"
-set scheme plotplain
-
-*global git "C:\Users\anatal\Downloads\GitHub"
-*global dropbox "C:\Users\anatal\Downloads\Dropbox"
-*global thesis "C:\Users\anatal\Downloads\_Thesis\Research-Skills_and_debt\Analysis"
-
-
-
 ********** Name of the NEEMSIS2 questionnaire version to clean
-*global wave1 "RUME-HH_v8"
 global wave2 "NEEMSIS1-HH"
 global wave3 "NEEMSIS2-HH"
 
@@ -45,6 +39,13 @@ global wave3 "NEEMSIS2-HH"
 ********** Stata package
 
 *coefplot, horizontal xline(0) drop(_cons) levels(95 90 ) ciopts(recast(. rcap))mlabel mlabposition(12) mlabgap(*2)
+
+/*
+Pour avoir un box plot en colonne et 1 en ligne pour un nuage de points:
+graph7 mpg weight, twoway oneway box xla yla
+*/
+
+*stripplot
 
 ****************************************
 * END
@@ -328,9 +329,9 @@ replace v1="}" if v1==""
 set obs `=_N+1'
 replace v1="\label{tab:ame_`x'}" if v1==""
 set obs `=_N+1'
-replace v1="\notetab{ME/(Std Err.). *p<0.1~ **p<0.05~ ***p<0.01.}" if v1==""
+replace v1="\fignote{ME/(Std Err.). *p<0.1~ **p<0.05~ ***p<0.01.}" if v1==""
 set obs `=_N+1'
-replace v1="\sourcetab{NEEMSIS-1 (2016-17) \& NEEMSIS-2 (2020-21); author's calculations.}" if v1==""
+replace v1="\figsource{NEEMSIS-1 (2016-17) \& NEEMSIS-2 (2020-21); author's calculations.}" if v1==""
 set obs `=_N+1'
 replace v1="\end{table}"  if v1==""
 drop n
@@ -364,7 +365,7 @@ egen tab=concat(v1 lb), p("")
 drop v1 lb
 drop n
 
-export delimited using "tex/ame_`x'.tex", delimiter("") novarnames  replace
+export delimited using "$dropbox/ame_`x'.tex", delimiter("") novarnames  replace
 }
 ****************************************
 * END
@@ -626,9 +627,9 @@ replace v1="}" if v1==""
 set obs `=_N+1'
 replace v1="\label{tab:ame_`x'}" if v1==""
 set obs `=_N+1'
-replace v1="\notetab{ME/(Std Err.). *p<0.1~ **p<0.05~ ***p<0.01.}" if v1==""
+replace v1="\fignote{ME/(Std Err.). *p<0.1~ **p<0.05~ ***p<0.01.}" if v1==""
 set obs `=_N+1'
-replace v1="\sourcetab{NEEMSIS-1 (2016-17) \& NEEMSIS-2 (2020-21); author's calculations.}" if v1==""
+replace v1="\figsource{NEEMSIS-1 (2016-17) \& NEEMSIS-2 (2020-21); author's calculations.}" if v1==""
 set obs `=_N+1'
 replace v1="\end{table}"  if v1==""
 drop n
@@ -662,7 +663,7 @@ egen tab=concat(v1 lb), p("")
 drop v1 lb
 drop n
 
-export delimited using "tex/ame_`x'.tex", delimiter("") novarnames  replace
+export delimited using "$dropbox/ame_`x'.tex", delimiter("") novarnames  replace
 }
 ****************************************
 * END

@@ -23,22 +23,15 @@ macro drop _all
 set scheme plotplain
 ********** Path to folder "data" folder.
 global directory = "C:\Users\Arnaud\Documents\_Thesis\Research-Skills_and_debt\Analysis"
-cd"$directory"
 global git "C:\Users\Arnaud\Documents\GitHub"
+global dropbox "C:\Users\Arnaud\Documents\Dropbox\Arnaud\Thesis_Debt_skills\INPUT"
 
-
-*Fac
-*cd "C:\Users\anatal\Downloads\_Thesis\Research-Skills_and_debt\Analysis"
+***
 set scheme plotplain
-
-*global git "C:\Users\anatal\Downloads\GitHub"
-*global dropbox "C:\Users\anatal\Downloads\Dropbox"
-*global thesis "C:\Users\anatal\Downloads\_Thesis\Research-Skills_and_debt\Analysis"
-
+cd"$directory"
 
 
 ********** Name of the NEEMSIS2 questionnaire version to clean
-*global wave1 "RUME-HH_v8"
 global wave2 "NEEMSIS1-HH"
 global wave3 "NEEMSIS2-HH"
 
@@ -46,6 +39,13 @@ global wave3 "NEEMSIS2-HH"
 ********** Stata package
 
 *coefplot, horizontal xline(0) drop(_cons) levels(95 90 ) ciopts(recast(. rcap))mlabel mlabposition(12) mlabgap(*2)
+
+/*
+Pour avoir un box plot en colonne et 1 en ligne pour un nuage de points:
+graph7 mpg weight, twoway oneway box xla yla
+*/
+
+*stripplot
 
 ****************************************
 * END
@@ -288,7 +288,6 @@ restore
 
 
 
-
 *********** Marges
 cls
 foreach x in $quali $qualiml {
@@ -322,11 +321,6 @@ qui margins, dydx(base_f1_std base_f2_std base_f3_std base_f5_std base_raven_tt_
 
 ****************************************
 * END
-
-
-
-
-
 
 
 

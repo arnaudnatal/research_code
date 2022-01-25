@@ -23,22 +23,15 @@ macro drop _all
 set scheme plotplain
 ********** Path to folder "data" folder.
 global directory = "C:\Users\Arnaud\Documents\_Thesis\Research-Skills_and_debt\Analysis"
-cd"$directory"
 global git "C:\Users\Arnaud\Documents\GitHub"
+global dropbox "C:\Users\Arnaud\Documents\Dropbox\Arnaud\Thesis_Debt_skills\INPUT"
 
-
-*Fac
-*cd "C:\Users\anatal\Downloads\_Thesis\Research-Skills_and_debt\Analysis"
+***
 set scheme plotplain
-
-*global git "C:\Users\anatal\Downloads\GitHub"
-*global dropbox "C:\Users\anatal\Downloads\Dropbox"
-*global thesis "C:\Users\anatal\Downloads\_Thesis\Research-Skills_and_debt\Analysis"
-
+cd"$directory"
 
 
 ********** Name of the NEEMSIS2 questionnaire version to clean
-*global wave1 "RUME-HH_v8"
 global wave2 "NEEMSIS1-HH"
 global wave3 "NEEMSIS2-HH"
 
@@ -69,6 +62,15 @@ graph7 mpg weight, twoway oneway box xla yla
 * Descriptive statistics
 ****************************************
 use"panel_wide_v3.dta", clear
+
+*** Label
+label var indebt_indiv_2 "Prob. that individual is in debt"
+label var loanamount_indiv "Total amount of debt (\rupee1k)"
+label var ISR_indiv "Interest service ratio (\%)" 
+label var otherlenderservices_finansupp "Lender provide fin. supp. to borrower"
+label var borrowerservices_none "No need to provide services"
+label var plantorepay_borr "Borrow elsewhere to repay the debt"
+label var dummyproblemtorepay "Have a problem to repay the loan"
 label define female 0"Male" 1"Female"
 label values female female
 label define dalits 0"Middle-upper" 1"Dalits"
@@ -76,6 +78,17 @@ label values dalits dalits
 egen dal_fem=group(female dalit), la
 fre dal_fem
 
+*** Recode
+replace ISR_indiv=. if indebt_indiv_2==0
+replace ISR_indiv=. if indiv_interest==0
+clonevar ISR_indiv_backup=ISR_indiv
+tabstat ISR_indiv, stat(n mean sd min p1 p5 p10 q p90 p95 p99 max)
+replace ISR_indiv=4 if ISR_indiv>4 & ISR_indiv!=.
+tabstat ISR_indiv_backup ISR_indiv, stat(n mean sd min p1 p5 p10 q p90 p95 p99 max) by(female) long
+
+replace indebt_indiv_2=0
+replace indebt_indiv_2=1 if loanamount_indiv>0 & loanamount_indiv!=.
+replace totalincome_indiv_1=totalincome_indiv_1/1000
 
 
 ********** HH
@@ -86,78 +99,53 @@ duplicates drop HHID_panel, force
 global hhvar hhsize_1 assets1000_1 incomeHH1000_1 shock_1 near_panruti near_villupur near_tirup near_chengal near_kanchip near_chennai 
 
 cls
-foreach x in $hhvar {
-tabstat `x' if dalit==1, stat(mean sd)
-}
-cls
-foreach x in $hhvar {
-tabstat `x' if dalit==0, stat(mean sd)
-}
+est clear
+eststo ndal: estpost sum $hhvar if dalits==0
+eststo dalits: estpost sum $hhvar if dalits==1
+eststo diff: estpost ttest hhsize_1 assets1000_1 incomeHH1000_1 shock_1, by(dalits) unequal
 
-cls
-foreach x in $hhvar {
-reg `x' i.dalit
-}
+esttab ndal dalits diff using "$dropbox/desc_HH.tex", replace f ///
+	label booktabs nonumber noobs eqlabels(none) alignment(S S S S S) ///
+	collabels("\multicolumn{1}{c}{N}" "\multicolumn{1}{c}{Mean}" "\multicolumn{1}{c}{Std Err.}" "\multicolumn{1}{c}{t-stat}" "\multicolumn{1}{c}{p-value}") ///
+	cells("count(pattern(1 1 0) fmt(0)) mean(pattern(1 1 0) fmt(2)) sd(pattern(1 1 0) fmt(2)) t(pattern(0 0 1) fmt(2)) p(pattern(0 0 1) fmt(2))") ///
+	mtitle("Non-dalits" "Dalits" "Diff")
+
 restore
 
 
 ********** Indiv characteristics
-replace indebt_indiv_2=0
-replace indebt_indiv_2=1 if loanamount_indiv>0 & loanamount_indiv!=.
-replace totalincome_indiv_1=totalincome_indiv_1/1000
 
 global indivvar dalits age_1 dummyhead_1 maritalstatus2_1 dummyedulevel cat_mainocc_occupation_indiv_1_1 cat_mainocc_occupation_indiv_1_2 cat_mainocc_occupation_indiv_1_3 cat_mainocc_occupation_indiv_1_4 cat_mainocc_occupation_indiv_1_5 cat_mainocc_occupation_indiv_1_6 cat_mainocc_occupation_indiv_1_7 dummymultipleoccupation_indiv_1 totalincome_indiv_1
 
 cls
-foreach x in $indivvar {
-tabstat `x' if female==0, stat(mean sd)
-}
-cls
-foreach x in $indivvar {
-tabstat `x' if female==1, stat(n mean sd)
-}
-cls
-foreach x in $indivvar {
-reg `x' i.female
-}
+est clear
+eststo male: estpost sum $indivvar if female==0
+eststo female: estpost sum $indivvar if female==1
+eststo diff: estpost ttest $indivvar, by(female) unequal
+
+esttab male female diff using "$dropbox/desc_indiv.tex", replace f ///
+	label booktabs nonumber noobs eqlabels(none) alignment(S S S S S) ///
+	collabels("\multicolumn{1}{c}{N}" "\multicolumn{1}{c}{Mean}" "\multicolumn{1}{c}{Std Err.}" "\multicolumn{1}{c}{t-stat}" "\multicolumn{1}{c}{p-value}") ///
+	cells("count(pattern(1 1 0) fmt(0)) mean(pattern(1 1 0) fmt(2)) sd(pattern(1 1 0) fmt(2)) t(pattern(0 0 1) fmt(2)) p(pattern(0 0 1) fmt(2))") ///
+	mtitle("Male" "Female" "Diff")
+
+
+
 
 ********** Debt for all
 global yvar indebt_indiv_2 loanamount_indiv ISR_indiv otherlenderservices_finansupp borrowerservices_none plantorepay_borr dummyproblemtorepay
 
-*** ISR
-replace ISR_indiv=. if indebt_indiv_2==0
-replace ISR_indiv=. if indiv_interest==0
-clonevar ISR_indiv_backup=ISR_indiv
-tabstat ISR_indiv, stat(n mean sd min p1 p5 p10 q p90 p95 p99 max)
-replace ISR_indiv=4 if ISR_indiv>4 & ISR_indiv!=.
-tabstat ISR_indiv_backup ISR_indiv, stat(n mean sd min p1 p5 p10 q p90 p95 p99 max)
-
-*** Lender services
-foreach x in otherlenderservices_politsupp otherlenderservices_finansupp otherlenderservices_guarantor otherlenderservices_generainf otherlenderservices_none otherlenderservices_other {
-ta `x' sex_1, col nofreq
-}
-* test with guarantor, generainf
-
-
-********** Stat desc
 cls
-foreach x in $yvar otherlenderservices_guarantor otherlenderservices_generainf {
-tabstat `x' if female==0, stat(n mean sd)
-}
-cls
-foreach x in $yvar otherlenderservices_guarantor otherlenderservices_generainf {
-tabstat `x' if female==1, stat(n mean sd)
-}
+est clear
+eststo male: estpost sum $yvar if female==0
+eststo female: estpost sum $yvar if female==1
+eststo diff: estpost ttest $yvar, by(female) unequal
 
-ta plantorepay_borr female, col nofreq 
-ta settleloanstrat_addi female, col nofreq
-
-*** Test moyenne
-cls
-foreach x in $yvar otherlenderservices_guarantor otherlenderservices_generainf{
-reg `x' i.female
-}
-
+esttab male female diff using "$dropbox/desc_dep.tex", replace f ///
+	label booktabs nonumber noobs eqlabels(none) alignment(S S S S S) ///
+	collabels("\multicolumn{1}{c}{N}" "\multicolumn{1}{c}{Mean}" "\multicolumn{1}{c}{Std Err.}" "\multicolumn{1}{c}{t-stat}" "\multicolumn{1}{c}{p-value}") ///
+	cells("count(pattern(1 1 0) fmt(0)) mean(pattern(1 1 0) fmt(2)) sd(pattern(1 1 0) fmt(2)) t(pattern(0 0 1) fmt(2)) p(pattern(0 0 1) fmt(2))") ///
+	mtitle("Male" "Female" "Diff")
 
 
 
