@@ -38,8 +38,8 @@ set scheme plotplain
 
 ********** Name of the NEEMSIS2 questionnaire version to clean
 *global wave1 "RUME-HH_v8"
-global wave2 "NEEMSIS1-HH_v8"
-global wave3 "NEEMSIS2-HH_v19"
+global wave2 "NEEMSIS1-HH"
+global wave3 "NEEMSIS2-HH"
 
 
 ********** Stata package
@@ -59,11 +59,11 @@ global wave3 "NEEMSIS2-HH_v19"
 * Y
 ****************************************
 ********** To check
-global quali indebt_indiv_2 indiv_interest otherlenderservices_finansupp guarantee_none
+global quali indebt_indiv_2 otherlenderservices_finansupp otherlenderservices_generainf
  
-global qualiml borrowerservices_none plantorepay_borr settleloanstrat_addi dummyproblemtorepay
+global qualiml borrowerservices_none plantorepay_borr dummyproblemtorepay
 
-global quanti DSR_indiv loanamount_indiv ISR_indiv
+global quanti loanamount_indiv ISR_indiv
 
 
 ********** Auto

@@ -47,8 +47,18 @@ global wave3 "NEEMSIS2-HH"
 
 *coefplot, horizontal xline(0) drop(_cons) levels(95 90 ) ciopts(recast(. rcap))mlabel mlabposition(12) mlabgap(*2)
 
+/*
+Pour avoir un box plot en colonne et 1 en ligne pour un nuage de points:
+graph7 mpg weight, twoway oneway box xla yla
+*/
+
+*stripplot
+
 ****************************************
 * END
+
+
+
 
 
 
@@ -112,22 +122,32 @@ reg `x' i.female
 }
 
 ********** Debt for all
-cls
 global yvar indebt_indiv_2 loanamount_indiv ISR_indiv otherlenderservices_finansupp borrowerservices_none plantorepay_borr dummyproblemtorepay
 
+*** ISR
+replace ISR_indiv=. if indebt_indiv_2==0
+replace ISR_indiv=. if indiv_interest==0
+clonevar ISR_indiv_backup=ISR_indiv
+tabstat ISR_indiv, stat(n mean sd min p1 p5 p10 q p90 p95 p99 max)
+replace ISR_indiv=4.6 if ISR_indiv>4.6 & ISR_indiv!=.
+tabstat ISR_indiv_backup ISR_indiv, stat(n mean sd min p1 p5 p10 q p90 p95 p99 max)
+
+
+
 cls
-foreach x in $yvar {
+foreach x in $yvar otherlenderservices_generainf {
 tabstat `x' if female==0, stat(n mean sd)
 }
 cls
-foreach x in $yvar {
+foreach x in $yvar otherlenderservices_generainf {
 tabstat `x' if female==1, stat(n mean sd)
 }
 
 ta plantorepay_borr female, col nofreq 
 ta settleloanstrat_addi female, col nofreq
 
-foreach x in $yvar{
+cls
+foreach x in $yvar otherlenderservices_generainf{
 reg `x' i.female
 }
 
@@ -207,9 +227,9 @@ graph export "Kernel_PTCS.pdf", as(pdf) replace
 set graph on
 */
 
-global yvar indebt_indiv_2 DSR_indiv indiv_interest otherlenderservices_finansupp guarantee_none borrowerservices_none plantorepay_borr settleloanstrat_addi dummyproblemtorepay
+global yvar indebt_indiv_2 loanamount_indiv ISR_indiv otherlenderservices_finansupp borrowerservices_none plantorepay_borr dummyproblemtorepay otherlenderservices_generainf
 
-
+save"panel_wide_v4.dta", replace
 ****************************************
 * END
 

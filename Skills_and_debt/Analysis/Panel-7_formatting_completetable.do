@@ -38,8 +38,8 @@ set scheme plotplain
 
 ********** Name of the NEEMSIS2 questionnaire version to clean
 *global wave1 "RUME-HH_v8"
-global wave2 "NEEMSIS1-HH_v8"
-global wave3 "NEEMSIS2-HH_v19"
+global wave2 "NEEMSIS1-HH"
+global wave3 "NEEMSIS2-HH"
 
 
 ********** Stata package
@@ -59,11 +59,11 @@ global wave3 "NEEMSIS2-HH_v19"
 * Y
 ****************************************
 ********** To check
-global quali indebt_indiv_2 indiv_interest otherlenderservices_finansupp guarantee_none
+global quali indebt_indiv_2 otherlenderservices_finansupp otherlenderservices_generainf
  
-global qualiml borrowerservices_none plantorepay_borr settleloanstrat_addi dummyproblemtorepay
+global qualiml borrowerservices_none plantorepay_borr dummyproblemtorepay
 
-global quanti DSR_indiv loanamount_indiv ISR_indiv
+global quanti loanamount_indiv ISR_indiv
 
 
 ********** Auto
@@ -90,7 +90,7 @@ global varquanti $quanti
 foreach var in $varquali {
 
 import excel "Probit_indebt.xlsx", sheet("`var'") clear
-*import excel "Probit_indebt.xlsx", sheet("indebt_indiv_2") clear
+import excel "Probit_indebt.xlsx", sheet("indebt_indiv_2") clear
 gen n=_n
 drop if n==4
 drop n
@@ -100,12 +100,10 @@ foreach x in B C D E {
 replace `x'="$\upbeta$/(Std Err.)" if `x'=="b/se"
 
 replace `x'="Pr(In debt)" if `x'=="indebt_indiv_2"
-replace `x'="Pr(Interest)" if `x'=="indiv_interest"
 replace `x'="Pr(Finan. supp.)" if `x'=="otherlenderservices_finansupp"
-replace `x'="Pr(No guaran.)" if `x'=="guarantee_none"
+replace `x'="Pr(General inf.)" if `x'=="otherlenderservices_generainf"
 replace `x'="Pr(No serv.)" if `x'=="borrowerservices_none"
 replace `x'="Pr(Borrowing)" if `x'=="plantorepay_borr"
-replace `x'="Pr(Additional)" if `x'=="settleloanstrat_addi"
 replace `x'="Pr(Pb to repay)" if `x'=="dummyproblemtorepay"
 }
 
@@ -282,7 +280,6 @@ gen n=_n
 foreach x in B C D E {
 replace `x'="$\upbeta$/(Std Err.)" if `x'=="b/se"
 
-replace `x'="DSR" if `x'=="DSR_indiv"
 replace `x'="Loan amount" if `x'=="loanamount_indiv"
 replace `x'="ISR" if `x'=="ISR_indiv"
 }
