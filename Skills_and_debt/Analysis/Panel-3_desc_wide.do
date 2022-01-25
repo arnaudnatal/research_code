@@ -129,25 +129,32 @@ replace ISR_indiv=. if indebt_indiv_2==0
 replace ISR_indiv=. if indiv_interest==0
 clonevar ISR_indiv_backup=ISR_indiv
 tabstat ISR_indiv, stat(n mean sd min p1 p5 p10 q p90 p95 p99 max)
-replace ISR_indiv=4.6 if ISR_indiv>4.6 & ISR_indiv!=.
+replace ISR_indiv=4 if ISR_indiv>4 & ISR_indiv!=.
 tabstat ISR_indiv_backup ISR_indiv, stat(n mean sd min p1 p5 p10 q p90 p95 p99 max)
 
+*** Lender services
+foreach x in otherlenderservices_politsupp otherlenderservices_finansupp otherlenderservices_guarantor otherlenderservices_generainf otherlenderservices_none otherlenderservices_other {
+ta `x' sex_1, col nofreq
+}
+* test with guarantor, generainf
 
 
+********** Stat desc
 cls
-foreach x in $yvar otherlenderservices_generainf {
+foreach x in $yvar otherlenderservices_guarantor otherlenderservices_generainf {
 tabstat `x' if female==0, stat(n mean sd)
 }
 cls
-foreach x in $yvar otherlenderservices_generainf {
+foreach x in $yvar otherlenderservices_guarantor otherlenderservices_generainf {
 tabstat `x' if female==1, stat(n mean sd)
 }
 
 ta plantorepay_borr female, col nofreq 
 ta settleloanstrat_addi female, col nofreq
 
+*** Test moyenne
 cls
-foreach x in $yvar otherlenderservices_generainf{
+foreach x in $yvar otherlenderservices_guarantor otherlenderservices_generainf{
 reg `x' i.female
 }
 

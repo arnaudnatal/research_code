@@ -215,7 +215,7 @@ label var base_f5_std "AG (std)"
 * Y
 ****************************************
 
-global quali indebt_indiv_2 otherlenderservices_finansupp otherlenderservices_generainf
+global quali indebt_indiv_2 otherlenderservices_finansupp otherlenderservices_guarantor otherlenderservices_generainf
  
 global qualiml borrowerservices_none plantorepay_borr dummyproblemtorepay
 
