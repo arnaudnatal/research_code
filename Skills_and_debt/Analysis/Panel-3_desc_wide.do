@@ -59,7 +59,7 @@ graph7 mpg weight, twoway oneway box xla yla
 
 
 ****************************************
-* Descriptive statistics
+* Last recode
 ****************************************
 use"panel_wide_v3.dta", clear
 
@@ -90,6 +90,21 @@ replace indebt_indiv_2=0
 replace indebt_indiv_2=1 if loanamount_indiv>0 & loanamount_indiv!=.
 replace totalincome_indiv_1=totalincome_indiv_1/1000
 
+save"panel_wide_v4.dta", replace
+****************************************
+* END
+
+
+
+
+
+
+
+
+****************************************
+* Descriptive statistics
+****************************************
+use "panel_wide_v4.dta", clear
 
 ********** HH
 preserve
@@ -222,9 +237,52 @@ graph export "Kernel_PTCS.pdf", as(pdf) replace
 set graph on
 */
 
-global yvar indebt_indiv_2 loanamount_indiv ISR_indiv otherlenderservices_finansupp borrowerservices_none plantorepay_borr dummyproblemtorepay otherlenderservices_generainf
+********** Advanced descriptive statistics
+global efa base_f1_std base_f2_std base_f3_std base_f5_std
+global cog base_raven_tt_std base_num_tt_std base_lit_tt_std
 
-save"panel_wide_v4.dta", replace
+global quali indebt_indiv_2 otherlenderservices_finansupp otherlenderservices_guarantor otherlenderservices_generainf
+ 
+global qualiml borrowerservices_none plantorepay_borr dummyproblemtorepay
+
+global quanti loanamount_indiv ISR_indiv
+
+
+*** Scatter with lfit
+*graph7 loanamount_indiv base_f1_std, twoway oneway box xla yla
+
+graph drop _all
+foreach x in $cog $efa {
+forvalues i=0(1)1 {
+forvalues j=0(1)1 {
+set graph off
+twoway scatter loanamount_indiv `x' if female==`i' & dalits==`j', name(s_f`i'd`j'_amt_`x', replace)
+set graph on
+}
+}
+}
+graph dir
+
+forvalues i=0(1)1 {
+forvalues j=0(1)1 {
+set graph off
+graph combine s_f`i'd`j'_amt_base_lit_tt_std s_f`i'd`j'_amt_base_num_tt_std s_f`i'd`j'_amt_base_raven_tt_std s_f`i'd`j'_amt_base_f1_std s_f`i'd`j'_amt_base_f2_std s_f`i'd`j'_amt_base_f3_std s_f`i'd`j'_amt_base_f5_std, name(combine_f`i'd`j', replace)
+set graph on
+}
+}
+
+* Male middle upper
+graph display combine_f0d0
+
+* Male dalits
+graph display combine_f0d1
+
+* Female middle upper
+graph display combine_f1d0
+
+* Female dalits
+graph display combine_f1d1
+
 ****************************************
 * END
 
