@@ -77,6 +77,7 @@ label define dalits 0"Middle-upper" 1"Dalits"
 label values dalits dalits
 egen dal_fem=group(female dalit), la
 fre dal_fem
+label totalincome_indiv_1 "Total individual income (\rupee1k)"
 
 *** Recode
 replace ISR_indiv=. if indebt_indiv_2==0
