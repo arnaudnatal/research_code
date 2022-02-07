@@ -212,6 +212,8 @@ replace near_chennai=1 if (villageid_new=="Poonamallee")
 gen most_remote=0
 replace most_remote=1 if (villageid_new=="Chinnaputhur")
 
+fre near_panruti near_villupur near_tirup near_chengal near_kanchip near_chennai
+fre villageid
 
 *Edulevel
 tab edulevel_2 edulevel_1
@@ -375,6 +377,14 @@ label var near_tirup "Loc: near Tiruppur"
 label var near_chengal "Loc: near Chengalpattu"
 label var near_kanchip "Loc: near Kanchipuram"
 label var near_chennai "Loc: near Chennai"
+
+fre villageid
+label define village 1"Loc: ELA" 2"Loc: GOV" 3"Loc: KAR" 4"Loc: KOR" 5"Loc: KUV" 6"Loc: MAN" 7"Loc: MANAM" 8"Loc: NAT" 9"Loc: ORA" 10"Loc: SEM"
+label values villageid village
+fre villageid
+
+ta villageid, gen(villageid_)
+fre villageid_1
 
 gen nboccupation=2 if nboccupation_indiv_1==1
 replace nboccupation=3 if nboccupation_indiv_1==2

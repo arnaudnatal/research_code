@@ -134,6 +134,7 @@ list loanlender loanreasongiven if typeofdebt==.
 replace typeofdebt=0 if typeofdebt==.
 
 
+
 save"NEEMSIS2-newloans_v1.dta", replace
 ****************************************
 * END
@@ -263,11 +264,27 @@ use"NEEMSIS2-newloans_v2.dta", clear
 ********** Amount of loan
 bysort HHID_panel INDID_panel: egen loanamount_indiv=sum(loanamount)
 
+*+for caste and sex
+gen loanamountcaste=loanamount
+replace loanamountcaste=. if lenderscaste==.
+bysort HHID_panel INDID_panel: egen sum_loanamountcaste=sum(loanamountcaste)
+
+gen loanamountsex=loanamount
+replace loanamountsex=. if lendersex==.
+bysort HHID_panel INDID_panel: egen sum_loanamountsex=sum(loanamountsex)
 
 
 ********** Number of loans
 bysort HHID_panel INDID_panel: egen nbloan=sum(1)
 
+*+for caste and sex
+gen loancaste=1
+replace loancaste=. if lenderscaste==.
+bysort HHID_panel INDID_panel: egen sum_loancaste=sum(loancaste)
+
+gen loansex=1
+replace loansex=. if lendersex==.
+bysort HHID_panel INDID_panel: egen sum_loansex=sum(loansex)
 
 
 
@@ -284,6 +301,56 @@ ta indiv_interest
 restore
 drop interestok
 
+
+********** Add relation with lender
+*** Nb of loans
+* Sex
+gen same_sex_nb=0 if lendersex!=.
+replace same_sex_nb=1 if sex==lendersex & lendersex!=.
+ta same_sex_nb
+bysort HHID_panel INDID_panel: egen sum_same_sex_nb=sum(same_sex_nb)
+
+* Caste
+codebook jatis lenderscaste
+label list caste casteemployer
+ta jatis caste
+fre jatis
+clonevar lenderscastecat=lenderscaste
+recode lenderscastecat (2=1) (3=1) (1=2) (7=2) (8=2) (10=2) (12=2) (15=2) (16=2) (4=3) (6=3) (11=3) (13=3) (17=3) (5=3) (9=3) (14=3)
+label values lenderscastecat castecat
+ta lenderscaste lenderscastecat
+ta caste lenderscastecat
+ta jatis lenderscaste
+gen same_caste_nb=0 if lenderscastecat!=.
+replace same_caste_nb=1 if caste==lenderscastecat
+bysort HHID_panel INDID_panel: egen sum_same_caste_nb=sum(same_caste_nb)
+ta same_caste_nb
+ta sum_same_caste_nb
+
+*** Loanamount
+* Sex
+gen same_sex_amt=0
+replace same_sex_amt=loanamount if sex==lendersex & lendersex!=.
+bysort HHID_panel INDID_panel: egen sum_same_sex_amt=sum(same_sex_amt)
+
+* Caste
+gen same_caste_amt=0
+replace same_caste_amt=loanamount if caste==lenderscastecat & lenderscastecat!=.
+bysort HHID_panel INDID_panel: egen sum_same_caste_amt=sum(same_caste_amt)
+
+
+*** Share
+gen share_nb_samesex=sum_same_sex_nb/sum_loansex
+gen share_nb_samecaste=sum_same_caste_nb/sum_loancaste
+
+gen share_amt_samesex=sum_same_sex_amt/sum_loanamountsex
+gen share_amt_samecaste=sum_same_caste_amt/sum_loanamountcaste
+
+sum share_nb_samesex share_nb_samecaste share_amt_samesex share_amt_samecaste
+
+
+*** Croisons
+ta caste lenderscastecat
 
 
 save"NEEMSIS2-newloans_v3.dta", replace
@@ -507,7 +574,7 @@ save"NEEMSIS2-newloans_v5.dta", replace
 *************************************
 use"NEEMSIS2-newloans_v5.dta", clear
 
-keep HHID_panel INDID_panel egoid imp1_ds_tot_indiv imp1_is_tot_indiv      loanamount_indiv nbloan indiv_interest otherlenderservices_politsupp otherlenderservices_finansupp otherlenderservices_guarantor otherlenderservices_generainf otherlenderservices_none otherlenderservices_other guarantee_doc guarantee_chittu guarantee_shg guarantee_perso guarantee_jewel guarantee_none guarantee_other borrowerservices_freeserv borrowerservices_worklesswage borrowerservices_suppwhenever borrowerservices_none borrowerservices_other plantorepay_chit plantorepay_work plantorepay_migr plantorepay_asse plantorepay_inco plantorepay_borr plantorepay_othe settleloanstrat_inco settleloanstrat_sche settleloanstrat_borr settleloanstrat_sell settleloanstrat_land settleloanstrat_cons settleloanstrat_addi settleloanstrat_work settleloanstrat_supp settleloanstrat_harv settleloanstrat_othe loanproductpledge_gold loanproductpledge_land loanproductpledge_car loanproductpledge_bike loanproductpledge_fridge loanproductpledge_furnit loanproductpledge_tailor loanproductpledge_cell loanproductpledge_line loanproductpledge_dvd loanproductpledge_camera loanproductpledge_gas loanproductpledge_computer loanproductpledge_dish loanproductpledge_none loanproductpledge_other dummyproblemtorepay dummyhelptosettleloan dummyrecommendation dummyguarantor
+keep HHID_panel INDID_panel egoid imp1_ds_tot_indiv imp1_is_tot_indiv      loanamount_indiv nbloan indiv_interest otherlenderservices_politsupp otherlenderservices_finansupp otherlenderservices_guarantor otherlenderservices_generainf otherlenderservices_none otherlenderservices_other guarantee_doc guarantee_chittu guarantee_shg guarantee_perso guarantee_jewel guarantee_none guarantee_other borrowerservices_freeserv borrowerservices_worklesswage borrowerservices_suppwhenever borrowerservices_none borrowerservices_other plantorepay_chit plantorepay_work plantorepay_migr plantorepay_asse plantorepay_inco plantorepay_borr plantorepay_othe settleloanstrat_inco settleloanstrat_sche settleloanstrat_borr settleloanstrat_sell settleloanstrat_land settleloanstrat_cons settleloanstrat_addi settleloanstrat_work settleloanstrat_supp settleloanstrat_harv settleloanstrat_othe loanproductpledge_gold loanproductpledge_land loanproductpledge_car loanproductpledge_bike loanproductpledge_fridge loanproductpledge_furnit loanproductpledge_tailor loanproductpledge_cell loanproductpledge_line loanproductpledge_dvd loanproductpledge_camera loanproductpledge_gas loanproductpledge_computer loanproductpledge_dish loanproductpledge_none loanproductpledge_other dummyproblemtorepay dummyhelptosettleloan dummyrecommendation dummyguarantor share_nb_samesex share_nb_samecaste share_amt_samesex share_amt_samecaste
 
 duplicates drop
 
@@ -605,6 +672,9 @@ fre dummyproblemtorepay dummyhelptosettleloan dummyrecommendation dummyguarantor
 *otherlenderservices_generainf otherlenderservices_guarantor otherlenderservices_finansupp guarantee_jewel guarantee_perso guarantee_doc
 
 *borrowerservices_suppwhenever plantorepay_borr plantorepay_work settleloanstrat_work settleloanstrat_addi settleloanstrat_cons settleloanstrat_borr dummyhelptosettleloan dummyproblemtorepay
+
+*** Share
+tabstat share_nb_samesex share_amt_samesex share_nb_samecaste share_amt_samecaste, stat(n mean sd p50) by(female)
 
 
 save"panel_wide_v3", replace

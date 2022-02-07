@@ -60,7 +60,7 @@ graph7 mpg weight, twoway oneway box xla yla
 * Y
 ****************************************
 ********** To check
-global quali indebt_indiv_2 otherlenderservices_finansupp otherlenderservices_guarantor otherlenderservices_generainf
+global quali indebt_indiv_2 otherlenderservices_finansupp
  
 global qualiml borrowerservices_none plantorepay_borr dummyproblemtorepay
 

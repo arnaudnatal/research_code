@@ -78,6 +78,16 @@ label values dalits dalits
 egen dal_fem=group(female dalit), la
 fre dal_fem
 
+tabstat share_nb_samesex share_nb_samecaste share_amt_samesex share_amt_samecaste, stat(n mean sd p50)
+
+replace share_nb_samesex=0 if share_nb_samesex==. & indebt_indiv_2==1
+replace share_nb_samecaste=0 if share_nb_samecaste==. & indebt_indiv_2==1
+replace share_amt_samesex=0 if share_amt_samesex==. & indebt_indiv_2==1
+replace share_amt_samecaste=0 if share_amt_samecaste==. & indebt_indiv_2==1
+
+tabstat share_nb_samesex share_nb_samecaste share_amt_samesex share_amt_samecaste, stat(n mean sd p50)
+
+
 *** Recode
 replace ISR_indiv=. if indebt_indiv_2==0
 replace ISR_indiv=. if indiv_interest==0
@@ -250,7 +260,7 @@ global quanti loanamount_indiv ISR_indiv
 
 *** Scatter with lfit
 *graph7 loanamount_indiv base_f1_std, twoway oneway box xla yla
-
+/*
 graph drop _all
 foreach x in $cog $efa {
 forvalues i=0(1)1 {
@@ -282,7 +292,7 @@ graph display combine_f1d0
 
 * Female dalits
 graph display combine_f1d1
-
+*/
 ****************************************
 * END
 
