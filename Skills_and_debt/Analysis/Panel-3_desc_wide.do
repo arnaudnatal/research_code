@@ -77,6 +77,7 @@ label define dalits 0"Middle-upper" 1"Dalits"
 label values dalits dalits
 egen dal_fem=group(female dalit), la
 fre dal_fem
+label totalincome_indiv_1 "Total individual income (\rupee1k)"
 
 tabstat share_nb_samesex share_nb_samecaste share_amt_samesex share_amt_samecaste, stat(n mean sd p50)
 
