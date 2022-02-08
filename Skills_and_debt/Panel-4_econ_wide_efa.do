@@ -165,14 +165,9 @@ global efa base_f1_std base_f2_std base_f3_std base_f5_std
 
 global cog base_raven_tt_std base_num_tt_std base_lit_tt_std
 
-*global indivcontrol age_1 agesq_1 dummyhead_1 cat_mainocc_occupation_indiv_1_1 cat_mainocc_occupation_indiv_1_2 cat_mainocc_occupation_indiv_1_4 cat_mainocc_occupation_indiv_1_5 cat_mainocc_occupation_indiv_1_6 cat_mainocc_occupation_indiv_1_7 dummyedulevel maritalstatus2_1 dummymultipleoccupation_indiv_1
 global indivcontrol age_1 agesq_1 dummyhead_1 cat_mainocc_occupation_indiv_1_1 cat_mainocc_occupation_indiv_1_2 cat_mainocc_occupation_indiv_1_4 cat_mainocc_occupation_indiv_1_5 cat_mainocc_occupation_indiv_1_6 cat_mainocc_occupation_indiv_1_7 dummyedulevel maritalstatus2_1
 
-
-*global hhcontrol4 assets1000_1 sexratiocat_1_1 sexratiocat_1_2 sexratiocat_1_3 hhsize_1 shock_1 incomeHH1000_1
 global hhcontrol4 assets1000_1 hhsize_1 shock_1 incomeHH1000_1
-
-*global villagesFE near_panruti near_villupur near_tirup near_chengal near_kanchip near_chennai
 
 global villagesFE villageid_2 villageid_3 villageid_4 villageid_5 villageid_6 villageid_7 villageid_8 villageid_9 villageid_10
 
@@ -212,26 +207,20 @@ label var base_f1_std "ES (std)"
 label var base_f2_std "CO (std)"
 label var base_f3_std "OP-EX (std)"
 label var base_f5_std "AG (std)"
-****************************************
-* END
 
-
-
-
-
-****************************************
-* Y
-****************************************
 
 global quali indebt_indiv_2
+
+global qualinego otherlenderservices_finansupp borrowerservices_none
+
+global qualimana plantorepay_borr dummyproblemtorepay
+
+
  
 global quanti loanamount_indiv 
 
 global quantinego ISR_indiv
 
-global qualinego otherlenderservices_finansupp borrowerservices_none
-
-global qualimana plantorepay_borr dummyproblemtorepay
 
 *** Desc
 mdesc $quali $qualiml $quanti
@@ -243,39 +232,35 @@ mdesc $quali $qualiml $quanti
 
 
 
+
+
+
+
+
+
+
+
+
+
+
 ****************************************
 * PROBIT
 ****************************************
-/*
-foreach x in $quali $qualiml{
+
+********** Reg RECOURSE
+foreach x in $quali{
 
 qui probit `x' indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits, vce(cluster HHFE)
 est store res_1
-*predict probitxb_noint, xb
-*ge pdf_noint=normalden(probitxb_noint)
-*ge cdf_noint=normal(probitxb_noint)
-*ge imr_noint=pdf_noint/cdf_noint
 
 qui probit `x' indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits $intfem, vce(cluster HHFE)
 est store res_2
-*predict probitxb_intfem, xb
-*ge pdf_intfem=normalden(probitxb_intfem)
-*ge cdf_intfem=normal(probitxb_intfem)
-*ge imr_intfem=pdf_intfem/cdf_intfem
 
 qui probit `x' indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits $intdal, vce(cluster HHFE)
 est store res_3
-*predict probitxb_intdal, xb
-*ge pdf_intdal=normalden(probitxb_intdal)
-*ge cdf_intdal=normal(probitxb_intdal)
-*ge imr_intdal=pdf_intdal/cdf_intdal
 
 qui probit `x' indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits femXdal $intfem $intdal $three, vce(cluster HHFE)
 est store res_4
-*predict probitxb_three, xb
-*ge pdf_three=normalden(probitxb_three)
-*ge cdf_three=normal(probitxb_three)
-*ge imr_three=pdf_three/cdf_three
 
 esttab res_1 res_2 res_3 res_4 using "_reg.csv", ///
 	cells("b(fmt(2) star)" se(par fmt(2))) ///
@@ -297,11 +282,119 @@ replace v`i'=substr(v`i',1,strlen(v`i')-1)
 export excel using "Probit_indebt.xlsx", sheet("`x'", replace)
 restore
 }
-*/
+
+
+
+
+
+
+
+
+
+********** Reg NEGOTIATION
+foreach x in $qualinego{
+
+qui probit `x' indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits c.share_nb_samesex c.share_nb_samecaste, vce(cluster HHFE)
+est store res_1
+
+qui probit `x' indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits $intfem c.share_nb_samesex c.share_nb_samecaste, vce(cluster HHFE)
+est store res_2
+
+qui probit `x' indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits $intdal c.share_nb_samesex c.share_nb_samecaste, vce(cluster HHFE)
+est store res_3
+
+qui probit `x' indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits femXdal $intfem $intdal $three c.share_nb_samesex c.share_nb_samecaste, vce(cluster HHFE)
+est store res_4
+
+esttab res_1 res_2 res_3 res_4 using "_reg.csv", ///
+	cells("b(fmt(2) star)" se(par fmt(2))) ///
+	drop() ///
+	legend label varlabels(_cons constant) ///
+	stats(N r2_p ll chi2 p, fmt(0 2 2 2 2) labels(`"Observations"' `"Pseudo \$R^2$"' `"Log-likelihood"' `"$\upchi^2$"' `"p-value"')) ///
+	starlevels(* 0.10 ** 0.05 *** 0.01) ///
+	replace	
+estimates clear
+
+preserve
+import delimited "_reg.csv", delimiter(",") varnames(nonames) clear
+qui des
+sca def k=r(k)
+forvalues i=1(1)`=scalar(k)'{
+replace v`i'=substr(v`i',3,.)
+replace v`i'=substr(v`i',1,strlen(v`i')-1)
+}
+export excel using "Probit_indebt.xlsx", sheet("`x'", replace)
+restore
+}
+
+
+
+
+
+
+
+
+********** Reg MANAGEMENT
+foreach x in $qualimana{
+
+qui probit `x' indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits c.loanamount_indiv, vce(cluster HHFE)
+est store res_1
+
+qui probit `x' indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits $intfem c.loanamount_indiv, vce(cluster HHFE)
+est store res_2
+
+qui probit `x' indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits $intdal c.loanamount_indiv, vce(cluster HHFE)
+est store res_3
+
+qui probit `x' indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits femXdal $intfem $intdal $three c.loanamount_indiv, vce(cluster HHFE)
+est store res_4
+
+esttab res_1 res_2 res_3 res_4 using "_reg.csv", ///
+	cells("b(fmt(2) star)" se(par fmt(2))) ///
+	drop() ///
+	legend label varlabels(_cons constant) ///
+	stats(N r2_p ll chi2 p, fmt(0 2 2 2 2) labels(`"Observations"' `"Pseudo \$R^2$"' `"Log-likelihood"' `"$\upchi^2$"' `"p-value"')) ///
+	starlevels(* 0.10 ** 0.05 *** 0.01) ///
+	replace	
+estimates clear
+
+preserve
+import delimited "_reg.csv", delimiter(",") varnames(nonames) clear
+qui des
+sca def k=r(k)
+forvalues i=1(1)`=scalar(k)'{
+replace v`i'=substr(v`i',3,.)
+replace v`i'=substr(v`i',1,strlen(v`i')-1)
+}
+export excel using "Probit_indebt.xlsx", sheet("`x'", replace)
+restore
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 *********** Marges RECOURSE
-cls
 foreach x in $quali {
 *** No int
 qui probit `x' indebt_indiv_1 $indivcontrol $hhcontrol4 $villagesFE c.base_f1_std c.base_f2_std c.base_f3_std c.base_f5_std c.base_raven_tt_std c.base_num_tt_std c.base_lit_tt_std dalits female, vce(cluster HHFE)
@@ -323,6 +416,33 @@ qui probit `x' indebt_indiv_1 $indivcontrol $hhcontrol4 $villagesFE c.base_f1_st
 *dy/dx
 qui margins, dydx(base_f1_std base_f2_std base_f3_std base_f5_std base_raven_tt_std base_num_tt_std base_lit_tt_std) at(dalits=(0 1) female=(0 1)) atmeans saving(margin_`x'4, replace)
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -348,6 +468,33 @@ qui probit `x' indebt_indiv_1 $indivcontrol $hhcontrol4 $villagesFE c.base_f1_st
 *dy/dx
 qui margins, dydx(base_f1_std base_f2_std base_f3_std base_f5_std base_raven_tt_std base_num_tt_std base_lit_tt_std) at(dalits=(0 1) female=(0 1)) atmeans saving(margin_`x'4, replace)
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -387,11 +534,30 @@ qui margins, dydx(base_f1_std base_f2_std base_f3_std base_f5_std base_raven_tt_
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ****************************************
 * OLS
 ****************************************
-/*
-cls
+********** Reg RECOURSE
 foreach var in $quanti {
 qui reg `var' indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits, vce(cluster HHFE)
 est store res_1
@@ -424,7 +590,55 @@ replace v`i'=substr(v`i',1,strlen(v`i')-1)
 export excel using "OLS_indebt.xlsx", sheet("`var'", replace)
 restore
 }
-*/
+
+
+
+
+
+
+
+
+********** Reg NEGOTIATION
+foreach var in $quantinego {
+qui reg `var' indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits c.share_nb_samesex c.share_nb_samecaste, vce(cluster HHFE)
+est store res_1
+
+qui reg `var' indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits $intfem c.share_nb_samesex c.share_nb_samecaste, vce(cluster HHFE)
+est store res_2
+
+qui reg `var' indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits $intdal c.share_nb_samesex c.share_nb_samecaste, vce(cluster HHFE)
+est store res_3
+
+qui reg `var' indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits femXdal $intfem $intdal $three c.share_nb_samesex c.share_nb_samecaste, vce(cluster HHFE)
+est store res_4
+
+esttab res_1 res_2 res_3 res_4 using "_reg.csv", ///
+	cells("b(fmt(2) star)" se(par fmt(2))) ///
+	drop() ///	
+	legend label varlabels(_cons constant) ///
+	stats(N r2 r2_a F p, fmt(0 2 2 2 2) labels(`"Observations"' `"\$R^2$"' `"Adjusted \$R^2$"' `"F-stat"' `"p-value"')) ///
+	starlevels(* 0.10 ** 0.05 *** 0.01) ///
+	replace
+estimates clear
+preserve
+import delimited "_reg.csv", delimiter(",") varnames(nonames) clear
+qui des
+sca def k=r(k)
+forvalues i=1(1)`=scalar(k)'{
+replace v`i'=substr(v`i',3,.)
+replace v`i'=substr(v`i',1,strlen(v`i')-1)
+}
+export excel using "OLS_indebt.xlsx", sheet("`var'", replace)
+restore
+}
+
+
+
+
+
+
+
+
 
 ********** Margins RECOURSE
 cls
@@ -449,6 +663,22 @@ qui reg `var' indebt_indiv_1 $indivcontrol $hhcontrol4 $villagesFE c.base_f1_std
 *dy/dx
 qui margins, dydx(base_f1_std base_f2_std base_f3_std base_f5_std base_raven_tt_std base_num_tt_std base_lit_tt_std) at(dalits=(0 1) female=(0 1)) atmeans saving(margin_`var'4, replace)
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 ********** Margins NEGOTIATION
