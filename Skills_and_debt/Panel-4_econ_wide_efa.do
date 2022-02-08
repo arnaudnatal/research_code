@@ -64,94 +64,17 @@ use"panel_wide_v4.dta", clear
 
 
 /*
-Enlever les cluster pour voir si je n'ai pas plus de significativité !
-Ajouter binaire pour le lockdown
-Recoder les localisation pour éviter les 1%
+Instrument for Heckman;
+- debtor ratio ok
+- network nope
+- distance nope
+- network size nope
+- contact list nope
+- association nope
+- trust nope
 */
 
 
-********** Instrument for Heckman
-/*
-*** Debtor ratio
-reg c.debtorratio2_2 i.indebt_indiv_2
-est store indebt
-reg c.debtorratio2_2 c.loanamount_indiv1000_2
-est store loan
-reg c.debtorratio2_2 c.DSR_indiv_2
-est store dsr
-
-
-*** Network
-probit dummy_network i.indebt_indiv_2
-probit dummy_asso i.indebt_indiv_2
-probit dummy_chit i.indebt_indiv_2
-probit dummy_shg i.indebt_indiv_2
-
-*** Distance
-tab mainoccupation_distance_indiv_1
-recode mainoccupation_distance_indiv_1 (-5=0)
-
-*** Network size
-fre nbercontactphone_1 nbercontactphone_2
-
-tab nbercontactphone_1 indebt_indiv_2, col nofreq
-tab nbercontactphone_2 indebt_indiv_2, col nofreq
-
-recode nbercontactphone_1 (9=7) (.=7)
-fre nbercontactphone_1 
-gen dummyphone=nbercontactphone_1
-recode dummyphone (7=0) (2=1) (3=1) (4=1) (5=1) (6=1)
-tab dummyphone
-fre nbercontactphone_1
-clonevar nbercontact=nbercontactphone_1
-recode nbercontact (2=1) (5=4) (6=4)
-tab nbercontact
-
-fre sum_ext_HH_1
-clonevar dummy_ext_HH_1=sum_ext_HH_1
-replace dummy_ext_HH_1=1 if dummy_ext_HH_1>1
-tab dummy_ext_HH_1
-
-
-*** Contactlist
-egen nb_contact_impt=rowtotal(nbcontact_headbusiness_1 nbcontact_policeman_1 nbcontact_civilserv_1 nbcontact_bankemployee_1 nbcontact_panchayatcommittee_1 nbcontact_peoplecouncil_1 nbcontact_recruiter_1 nbcontact_headunion_1)
-
-tab nb_contact_impt
-foreach x in nbcontact_headbusiness_1 nbcontact_policeman_1 nbcontact_civilserv_1 nbcontact_bankemployee_1 nbcontact_panchayatcommittee_1 nbcontact_peoplecouncil_1 nbcontact_recruiter_1 nbcontact_headunion_1 {
-replace `x'=1 if `x'>1 & `x'!=.
-recode `x' (.=0)
-}
-cls
-tab1 nbcontact_headbusiness_1 nbcontact_policeman_1 nbcontact_civilserv_1 nbcontact_bankemployee_1 nbcontact_panchayatcommittee_1 nbcontact_peoplecouncil_1 nbcontact_recruiter_1 nbcontact_headunion_1
-egen contact_impt=rowtotal(nbcontact_headbusiness_1 nbcontact_policeman_1 nbcontact_civilserv_1 nbcontact_bankemployee_1 nbcontact_panchayatcommittee_1 nbcontact_peoplecouncil_1 nbcontact_recruiter_1 nbcontact_headunion_1)
-replace contact_impt=1 if contact_impt>1
-tab contact_impt
-
-
-*** Associationlist
-tab associationlist_1
-gen dummyassociation=0 if associationlist_1=="13" & associationlist_1!=""
-replace dummyassociation=1 if associationlist_1!="13" & associationlist_1!=""
-recode dummyassociation (.=0)
-tab dummyassociation
-
-*** Nberevents
-tab nberpersonfamilyevent_1
-
-
-*** Trust
-cls
-fre networkhelpkinmember_1 trustneighborhood_1 trustemployees_1 networkpeoplehelping_1
-recode trustneighborhood_1 trustemployees_1 networkpeoplehelping_1 networkhelpkinmember_1 (99=.)
-recode networkhelpkinmember_1 trustemployees_1 trustneighborhood_1 networkpeoplehelping_1 (1=5) (2=4) (3=3) (4=2) (5=1)
-
-egen trustreciprocity_1=rowtotal(networkhelpkinmember_1 trustemployees_1 trustneighborhood_1 networkpeoplehelping_1)
-egen trustreciprocity_2=rowtotal(networkhelpkinmember_1 trustemployees_1)
-egen trustreciprocity_3=rowtotal(networkhelpkinmember_1 trustneighborhood_1)
-egen trustreciprocity_4=rowtotal(networkhelpkinmember_1 networkpeoplehelping_1)
-
-tab trustreciprocity_1
-*/
 
 
 ********** Macro
@@ -172,6 +95,20 @@ global hhcontrol4 assets1000_1 hhsize_1 shock_1 incomeHH1000_1
 global villagesFE villageid_2 villageid_3 villageid_4 villageid_5 villageid_6 villageid_7 villageid_8 villageid_9 villageid_10
 
 
+
+********** Macro Y
+
+global quali indebt_indiv_2
+
+global qualinego otherlenderservices_finansupp borrowerservices_none
+
+global qualimana plantorepay_borr dummyproblemtorepay
+
+global quanti loanamount_indiv 
+
+global quantinego ISR_indiv
+
+
 ********** Label
 label var fem_base_f1_std "Female*ES (std)"
 label var dal_base_f1_std "Dalit*ES (std)"
@@ -188,7 +125,6 @@ label var thr_base_f3_std "Dalit*Female*OP-EX (std)"
 label var fem_base_f5_std "Female*AG (std)"
 label var dal_base_f5_std "Dalit*AG (std)"
 label var thr_base_f5_std "Dalit*Female*AG (std)"
-
 
 label var fem_base_raven_tt_std "Female*Raven (std)"
 label var dal_base_raven_tt_std "Dalit*Raven (std)"
@@ -208,18 +144,21 @@ label var base_f2_std "CO (std)"
 label var base_f3_std "OP-EX (std)"
 label var base_f5_std "AG (std)"
 
+label var villageid_1 "Loc: ELA"
+label var villageid_2 "Loc: GOV"
+label var villageid_3 "Loc: KAR"
+label var villageid_4 "Loc: KOR"
+label var villageid_5 "Loc: KUV"
+label var villageid_6 "Loc: MAN"
+label var villageid_7 "Loc: MANAM"
+label var villageid_8 "Loc: NAT"
+label var villageid_9 "Loc: ORA"
+label var villageid_10 "Loc: SEM"
 
-global quali indebt_indiv_2
-
-global qualinego otherlenderservices_finansupp borrowerservices_none
-
-global qualimana plantorepay_borr dummyproblemtorepay
-
-
- 
-global quanti loanamount_indiv 
-
-global quantinego ISR_indiv
+label var share_nb_samesex "Share loans same sex"
+label var share_nb_samecaste "Share loans same caste"
+label var share_nb_samesex "Share amount same sex"
+label var share_nb_samecaste "Share amount same caste"
 
 
 *** Desc

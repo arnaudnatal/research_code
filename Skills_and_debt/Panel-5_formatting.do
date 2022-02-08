@@ -247,13 +247,19 @@ export excel using "margins_probit.xlsx", sheet("`x'", replace) //firstrow(varla
 import excel "margins_probit.xlsx", sheet("`x'") all clear
 *import excel "margins_probit.xlsx", sheet("indebt_indiv_2") all clear
 
+
 preserve
 import excel "Probit_indebt.xlsx", sheet("`x'") clear
 *import excel "Probit_indebt.xlsx", sheet("indebt_indiv_2") clear
-gen n=_n
-keep if n>=113 & n<=117
-drop n
 
+gen tokeep=0
+replace tokeep=1 if A=="Observations"
+replace tokeep=1 if strpos(A,"Pseudo")
+replace tokeep=1 if A=="Log-likelihood"
+replace tokeep=1 if A=="$\upchi^2$"
+replace tokeep=1 if A=="p-value"
+keep if tokeep==1
+drop tokeep
 
 gen sp1=""
 gen sp2=""
@@ -552,10 +558,14 @@ import excel "margins_OLS.xlsx", sheet("`x'") all clear
 
 preserve
 import excel "OLS_indebt.xlsx", sheet("`x'") clear
-gen n=_n
-keep if n>=112
-drop if n==117
-drop n
+
+gen tokeep=0
+replace tokeep=1 if A=="Observations"
+replace tokeep=1 if strpos(A,"R^2")
+replace tokeep=1 if A=="F-stat"
+replace tokeep=1 if A=="p-value"
+keep if tokeep==1
+drop tokeep
 
 gen sp1=""
 gen sp2=""
