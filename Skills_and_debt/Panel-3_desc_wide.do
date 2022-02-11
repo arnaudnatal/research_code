@@ -77,7 +77,9 @@ label define dalits 0"Middle-upper" 1"Dalits"
 label values dalits dalits
 egen dal_fem=group(female dalit), la
 fre dal_fem
-label totalincome_indiv_1 "Total individual income (\rupee1k)"
+label var totalincome_indiv_1 "Total individual income (\rupee1k)"
+
+label var covsell "Sell assets to face lockdown"
 
 tabstat share_nb_samesex share_nb_samecaste share_amt_samesex share_amt_samecaste, stat(n mean sd p50)
 
@@ -122,7 +124,7 @@ preserve
 bysort HHID_panel: egen nbego=sum(1)
 duplicates drop HHID_panel, force
 
-global hhvar hhsize_1 assets1000_1 incomeHH1000_1 shock_1 near_panruti near_villupur near_tirup near_chengal near_kanchip near_chennai 
+global hhvar hhsize_1 assets1000_1 incomeHH1000_1 shock_1 covsell villageid_1 villageid_2 villageid_3 villageid_4 villageid_5 villageid_6 villageid_7 villageid_8 villageid_9 villageid_10
 
 cls
 est clear

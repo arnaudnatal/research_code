@@ -303,6 +303,18 @@ drop if egoid==0
 rename amoutlent amountlent
 
 
+
+
+********** cov
+fre covsellland covselllivestock_none covsellequipment_none covsellgoods_none covsellhouse covsellplot
+destring covsellland covsellhouse covsellplot, replace
+recode covsellland covsellhouse covsellplot (66=0) (2=0)
+recode covselllivestock_none covsellequipment_none covsellgoods_none (0=1) (1=0)
+egen covsell=rowtotal(covsellland covselllivestock_none covsellequipment_none covsellgoods_none covsellhouse covsellplot)
+replace covsell=1 if covsell>=1 & covsell!=.
+ta covsell
+
+
 /*
 *Services and repayment 
 global newvar sum_borrowerservices_1 sum_borrowerservices_2 sum_borrowerservices_3 sum_borrowerservices_4 sum_plantorepay_1 sum_plantorepay_2 sum_plantorepay_3 sum_plantorepay_4 sum_plantorepay_5 sum_plantorepay_6 sum_settleloanstrategy_1 sum_settleloanstrategy_2 sum_settleloanstrategy_3 sum_settleloanstrategy_4 sum_settleloanstrategy_5 sum_settleloanstrategy_6 sum_settleloanstrategy_7 sum_settleloanstrategy_8 sum_settleloanstrategy_9 sum_settleloanstrategy_10
@@ -337,7 +349,7 @@ global expenses educationexpenses_HH productexpenses_HH businessexpenses_HH food
 
 global all $charactindiv $characthh $wealthindiv $wealthhh $debtindiv $debthh $perso $expenses nbercontactphone networkhelpkinmember
 
-keep $all HHID_panel INDID_panel egoid
+keep $all HHID_panel INDID_panel egoid covsell
 
 *merge m:1 HHID_panel using"$wave3~efa_ego.dta"
 *drop _merge
