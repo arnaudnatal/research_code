@@ -81,6 +81,60 @@ label var totalincome_indiv_1 "Total individual income (\rupee1k)"
 
 label var covsell "Sell assets to face lockdown"
 
+
+label var villageid_1 "Loc: ELA"
+label var villageid_2 "Loc: GOV"
+label var villageid_3 "Loc: KAR"
+label var villageid_4 "Loc: KOR"
+label var villageid_5 "Loc: KUV"
+label var villageid_6 "Loc: MAN"
+label var villageid_7 "Loc: MANAM"
+label var villageid_8 "Loc: NAT"
+label var villageid_9 "Loc: ORA"
+label var villageid_10 "Loc: SEM"
+
+
+label var fem_base_f1_std "Female*ES (std)"
+label var dal_base_f1_std "Dalit*ES (std)"
+label var thr_base_f1_std "Dalit*Female*ES (std)"
+
+label var fem_base_f2_std "Female*CO (std)"
+label var dal_base_f2_std "Dalit*CO (std)"
+label var thr_base_f2_std "Dalit*Female*CO (std)"
+
+label var fem_base_f3_std "Female*OP-EX (std)"
+label var dal_base_f3_std "Dalit*OP-EX (std)"
+label var thr_base_f3_std "Dalit*Female*OP-EX (std)"
+
+label var fem_base_f5_std "Female*AG (std)"
+label var dal_base_f5_std "Dalit*AG (std)"
+label var thr_base_f5_std "Dalit*Female*AG (std)"
+
+label var fem_base_raven_tt_std "Female*Raven (std)"
+label var dal_base_raven_tt_std "Dalit*Raven (std)"
+label var thr_base_raven_tt_std "Dalit*Female*Raven (std)"
+label var fem_base_num_tt_std "Female*Numeracy (std)"
+label var dal_base_num_tt_std "Dalit*Numeracy (std)"
+label var thr_base_num_tt_std "Dalit*Female*Numeracy (std)"
+label var fem_base_lit_tt_std "Female*Literacy (std)"
+label var dal_base_lit_tt_std "Dalit*Literacy (std)"
+label var thr_base_lit_tt_std "Dalit*Female*Literacy (std)"
+label var femXdal "Female*Dalit"
+label var debtorratio2_1 "Debtor ratio in 2016-17"
+label var indebt_indiv_1 "Indebted (=1) in 2016-17"
+
+label var base_f1_std "ES (std)"
+label var base_f2_std "CO (std)"
+label var base_f3_std "OP-EX (std)"
+label var base_f5_std "AG (std)"
+
+
+label var share_nb_samesex "Share loans same sex"
+label var share_nb_samecaste "Share loans same caste"
+label var share_nb_samesex "Share amount same sex"
+label var share_nb_samecaste "Share amount same caste"
+
+
 tabstat share_nb_samesex share_nb_samecaste share_amt_samesex share_amt_samecaste, stat(n mean sd p50)
 
 replace share_nb_samesex=0 if share_nb_samesex==. & indebt_indiv_2==1
