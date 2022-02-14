@@ -22,7 +22,7 @@ set scheme plotplain
 
 ********** Path to folder "data" folder.
 *** PC
-global directory = "D:\Documents\_Thesis\Research-Stability_skills\Analysis"
+global directory = "C:\Users\Arnaud\Documents\_Thesis\Research-Stability_skills\Analysis"
 cd"$directory"
 global git "C:\Users\Arnaud\Documents\GitHub"
 
@@ -32,8 +32,8 @@ global git "C:\Users\Arnaud\Documents\GitHub"
 *global git "C:\Users\anatal\Downloads\GitHub"
 
 ********** Name of the NEEMSIS2 questionnaire version to clean
-global wave2 "NEEMSIS1-HH_v9"
-global wave3 "NEEMSIS2-HH_v21"
+global wave2 "NEEMSIS1-HH"
+global wave3 "NEEMSIS2-HH"
 ****************************************
 * END
 

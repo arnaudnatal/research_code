@@ -22,7 +22,7 @@ set scheme plotplain
 
 ********** Path to folder "data" folder.
 *** PC
-global directory = "D:\Documents\_Thesis\Research-Stability_skills\Analysis"
+global directory = "C:\Users\Arnaud\Documents\_Thesis\Research-Stability_skills\Analysis"
 cd"$directory"
 global git "C:\Users\Arnaud\Documents\GitHub"
 
@@ -32,8 +32,8 @@ global git "C:\Users\Arnaud\Documents\GitHub"
 *global git "C:\Users\anatal\Downloads\GitHub"
 
 ********** Name of the NEEMSIS2 questionnaire version to clean
-global wave2 "NEEMSIS1-HH_v9"
-global wave3 "NEEMSIS2-HH_v21"
+global wave2 "NEEMSIS1-HH"
+global wave3 "NEEMSIS2-HH"
 ****************************************
 * END
 
@@ -248,7 +248,7 @@ rotate, quartimin
 *putexcel (E2)=matrix(e(r_L))
 
 
-********** Omega with Laajaj approach for factor analysis and Cobb Clark
+********** omegacoef with Laajaj approach for factor analysis and Cobb Clark
 ** F1
 global f1 imcr_easilyupset imcr_nervous imcr_worryalot imcr_feeldepressed imcr_changemood imcr_easilydistracted imcr_shywithpeople imcr_putoffduties imcr_rudetoother imcr_repetitivetasks
 ** F2
@@ -260,12 +260,12 @@ global f4 imcr_staycalm imcr_managestress
 ** F5
 global f5 imcr_forgiveother imcr_toleratefaults imcr_trustingofother imcr_enjoypeople imcr_helpfulwithothers
 
-*** Omega
-omega $f1
-omega $f2
-omega $f3
+*** omegacoef
+omegacoef $f1
+omegacoef $f2
+omegacoef $f3
 alpha $f4
-omega $f5
+omegacoef $f5
 
 *** Score
 egen f1_2016=rowmean($f1)
@@ -342,7 +342,7 @@ rotate, quartimin
 
 
 
-********** Omega with Laajaj approach for factor analysis and Cobb Clark
+********** omegacoef with Laajaj approach for factor analysis and Cobb Clark
 ** F1
 global f1 imcr_worryalot imcr_easilydistracted imcr_feeldepressed imcr_easilyupset imcr_changemood imcr_repetitivetasks imcr_nervous imcr_putoffduties imcr_shywithpeople imcr_rudetoother imcr_enjoypeople imcr_toleratefaults
 ** F2
@@ -352,11 +352,11 @@ global f3 imcr_trustingofother imcr_inventive imcr_liketothink imcr_curious imcr
 ** F4
 global f4 imcr_organized imcr_helpfulwithothers imcr_staycalm imcr_activeimagination imcr_talkative
 
-*** Omega
-omega $f1
-omega $f2
-omega $f3
-omega $f4
+*** omegacoef
+omegacoef $f1
+omegacoef $f2
+omegacoef $f3
+omegacoef $f4
 
 *** Score
 egen f1_2020=rowmean($f1)
