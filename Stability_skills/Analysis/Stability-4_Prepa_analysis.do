@@ -112,6 +112,16 @@ save "panel_stab_wide_v3", replace
 
 
 
+
+
+
+
+
+
+
+
+
+
 ****************************************
 * Stability of ES
 ****************************************
@@ -416,5 +426,59 @@ label define occupcode 4"Occ: Reg", modify
 fre moc_indiv
 
 save "panel_stab_wide_v5", replace
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* reshape + intraclass correlation
+****************************************
+use "panel_stab_wide_v5", clear
+
+keep HHID_panel INDID_panel fa_ES2016 fa_ES2020 sex age2016 caste jatis edulevel2016 edulevel2020 villageid2016 mainocc_occupation_indiv2020
+
+reshape long fa_ES edulevel, i(HHID_panel INDID_panel) j(year)
+
+egen HHINDID=concat(HHID_panel INDID_panel), p(/)
+encode HHINDID, gen(HHINDID2)
+drop HHINDID
+rename HHINDID2 HHINDID
+
+xtset HHINDID year
+
+icc fa_ES HHINDID
+/*
+Intraclass correlations
+One-way random-effects model
+Absolute agreement
+
+Random effects: HHINDID          Number of targets =       835
+                                 Number of raters  =         2
+
+--------------------------------------------------------------
+                 fa_ES |        ICC       [95% Conf. Interval]
+-----------------------+--------------------------------------
+            Individual |  -.2116272      -.2754639   -.1459294
+               Average |  -.5368708      -.7603871   -.3417269
+--------------------------------------------------------------
+F test that
+  ICC=0.00: F(834.0, 835.0) = 0.65            Prob > F = 1.000
+
+Note: ICCs estimate correlations between individual measurements
+      and between average measurements made on the same target.
+*/
+
+
+save "panel_stab_v4", replace
 ****************************************
 * END

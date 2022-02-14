@@ -104,8 +104,19 @@ esttab ars1_1 ars1_2 ars2_1 ars2_2 using "_reg.csv", ///
 
 
 
+****************************************
+* Reliability
+****************************************
+use "panel_stab_wide_v5", clear
+
+canon (fa_ES2016) (fa_ES2020), lc(1)
+*0.0307
 
 
+pwcorr fa_ES2016 fa_ES2020
+
+****************************************
+* END
 
 
 
@@ -244,6 +255,28 @@ ib(2).diff_ars3_cat5 ///
 i.username_neemsis2 ///
 , cluster(cluster) allbase
 est store abs_diff
+predict res, res
+
+
+********** Contribution of enumerator in score of personality traits
+
+***** 2016-17
+reg fa_ES2016 i.female ib(1).caste i.educode i.age_cat ib(2).moc_indiv i.marital ib(2).annualincome_indiv2016_q, allbase
+*R2a=0.0892
+reg fa_ES2016 i.username_neemsis1 i.female ib(1).caste i.educode i.age_cat ib(2).moc_indiv i.marital ib(2).annualincome_indiv2016_q, allbase
+*R2a=0.3036
+dis (30.36-8.92)*100/8.92
+
+***** 2020-21
+reg fa_ES2020 i.female ib(1).caste i.educode i.age_cat ib(2).moc_indiv i.marital ib(2).annualincome_indiv2016_q, allbase
+*R2a=0.0285
+reg fa_ES2020 i.username_neemsis2 i.female ib(1).caste i.educode i.age_cat ib(2).moc_indiv i.marital ib(2).annualincome_indiv2016_q, allbase
+*R2a=0.4093
+dis (40.93-2.85)*100/2.85
+
+
+
+
 
 
 * Interaction
