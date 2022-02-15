@@ -138,6 +138,11 @@ replace username="Pazhani" if username=="7"
 order HHINDID HHID_panel INDID_panel
 sort HHINDID
 
+
+
+********** Enumerator / respondent
+ta username sex
+
 save"$wave2-_ego", replace
 ****************************************
 * END

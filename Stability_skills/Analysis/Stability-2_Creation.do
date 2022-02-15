@@ -745,6 +745,11 @@ rename caste2016 caste
 rename jatis2016 jatis
 
 
+********** Enumerator / respondent
+
+
+
+
 save"panel_stab_v2_wide", replace
 ****************************************
 * END

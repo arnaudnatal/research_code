@@ -306,10 +306,11 @@ replace age25=1 if age2016>=25
 
 * Edu
 clonevar educode=edulevel2016
-recode educode (4=3)
-fre educode
+clonevar educode20=edulevel2020
+recode educode educode20 (4=3)
+fre educode educode20
 label define edulevel 0"Edu: Below prim" 1"Edu: Primary" 2"Edu: High school" 3"Edu: HSC/Diploma or more", modify 
-fre educode
+
 
 
 * MOC
@@ -424,6 +425,84 @@ des moc_indiv
 fre moc_indiv
 label define occupcode 4"Occ: Reg", modify
 fre moc_indiv
+
+
+
+
+********** Enumerator / respondent
+ta sex username_neemsis1, col nofreq
+ta caste username_neemsis1, col nofreq
+ta edulevel2016 username_neemsis1, col nofreq
+ta moc_indiv username_neemsis1, col nofreq
+
+ta username_neemsis1 sex
+
+
+
+********** Matrices de transition
+***** AB
+xtile AB2016_q=ars32016, n(5)
+xtile AB2020_q=ars32020, n(5)
+
+ta AB2016_q AB2020_q, row nofreq chi2
+
+
+***** FA
+* Creation
+xtile fa_ES2016_q=fa_ES2016, n(5)
+xtile fa_ES2020_q=fa_ES2020, n(5)
+
+ta fa_ES2016_q fa_ES2020_q, row nofreq chi2
+
+* Graph 1
+*tabplot fa_ES2016_q fa_ES2020_q
+
+
+********** Absolut variation of AB
+corr ars32020 ars32016
+scatter ars32020 ars32016, msymbol(oh) ///
+note("Pearson correlation coefficient: r=-0.0851", pos(7) size(small)) ///
+xtitle("Absolut acquiescence score in 2016-17") ///
+ytitle("Absolut acquiescence score in 2020-21") 
+
+
+
+********** Cross section analysis for AB
+reg ars32016 ib(0).educode, allbase
+reg ars32020 ib(0).educode20, allbase
+
+ta educode, gen(educode_c)
+
+sqreg ars32016 educode_c2 educode_c3 educode_c4, quantile(.1 .2 .3 .4 .5 .6 .7 .8 .9) reps(100)
+
+preserve
+gen q = _n*10 in 1/9
+
+foreach var of varlist educode_c2 educode_c3 educode_c4 {
+    gen _b_`var'  = .
+    gen _lb_`var' = .
+    gen _ub_`var' = .
+
+    local i = 1
+    foreach q of numlist 10(10)90 {
+        replace _b_`var' = _b[q`q':`var'] in `i'
+        replace _lb_`var' = _b[q`q':`var'] - _se[q`q':`var']*invnormal(.975) in `i'
+        replace _ub_`var' = _b[q`q':`var'] + _se[q`q':`var']*invnormal(.975) in `i++'
+    }
+}
+keep q _b_* _lb_* _ub_*
+keep in 1/9
+reshape long _b_ _lb_ _ub_, i(q) j(var) string
+twoway rarea _lb_ _ub_ q, astyle(ci) yline(0) acolor(%90) || ///
+   line _b_ q,                                               ///
+   by(var, yrescale xrescale note("") legend(at(4) pos(0)))  ///
+   legend(order(2 "effect"                                   ///      
+                1 "95% confidence" "interval")               ///
+          cols(1))                                           ///
+   ytitle("")                       ///
+   ylab(,angle(0) format(%7.0gc))                            ///    
+   xlab(10(10)90) xtitle("")
+restore
 
 save "panel_stab_wide_v5", replace
 ****************************************
