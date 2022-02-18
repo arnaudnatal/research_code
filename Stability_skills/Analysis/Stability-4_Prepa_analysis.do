@@ -426,8 +426,27 @@ fre moc_indiv
 label define occupcode 4"Occ: Reg", modify
 fre moc_indiv
 
+save "panel_stab_wide_v5", replace
+****************************************
+* END
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Vérifications
+****************************************
+use "panel_stab_wide_v5", clear
 
 ********** Enumerator / respondent
 ta sex username_neemsis1, col nofreq
@@ -473,6 +492,11 @@ reg ars32020 ib(0).educode20, allbase
 
 ta educode, gen(educode_c)
 
+
+
+
+********** qreg AB 2016
+/*
 sqreg ars32016 educode_c2 educode_c3 educode_c4, quantile(.1 .2 .3 .4 .5 .6 .7 .8 .9) reps(100)
 
 preserve
@@ -503,8 +527,9 @@ twoway rarea _lb_ _ub_ q, astyle(ci) yline(0) acolor(%90) || ///
    ylab(,angle(0) format(%7.0gc))                            ///    
    xlab(10(10)90) xtitle("")
 restore
+*/
 
-save "panel_stab_wide_v5", replace
+save "panel_stab_wide_v6", replace
 ****************************************
 * END
 
@@ -522,7 +547,7 @@ save "panel_stab_wide_v5", replace
 ****************************************
 * reshape + intraclass correlation
 ****************************************
-use "panel_stab_wide_v5", clear
+use "panel_stab_wide_v6", clear
 
 keep HHID_panel INDID_panel fa_ES2016 fa_ES2020 sex age2016 caste jatis edulevel2016 edulevel2020 villageid2016 mainocc_occupation_indiv2020
 
@@ -558,6 +583,6 @@ Note: ICCs estimate correlations between individual measurements
 */
 
 
-save "panel_stab_v4", replace
+save "panel_stab_v6", replace
 ****************************************
 * END

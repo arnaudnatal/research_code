@@ -49,9 +49,11 @@ global wave3 "NEEMSIS2-HH"
 ****************************************
 * ECON on bias
 ****************************************
-use "panel_stab_wide_v5", clear
+use "panel_stab_wide_v6", clear
 
 fre moc_indiv
+
+fre pathabs_delta_fa_cat5 pathabs_delta_fa_cat10
 
 ********** Assessment: bias higher in 2020-21 than in 2016-17.
 /*
@@ -107,7 +109,7 @@ esttab ars1_1 ars1_2 ars2_1 ars2_2 using "_reg.csv", ///
 ****************************************
 * Reliability
 ****************************************
-use "panel_stab_wide_v5", clear
+use "panel_stab_wide_v6", clear
 
 canon (fa_ES2016) (fa_ES2020), lc(1)
 *0.0307
@@ -122,20 +124,27 @@ pwcorr fa_ES2016 fa_ES2020
 
 
 
+
+
+
+
+
+
+
 ****************************************
 * Desc p1
 ****************************************
-use "panel_stab_wide_v5", clear
+use "panel_stab_wide_v6", clear
 
 tab age25
-keep if age25==1
+*keep if age25==1
 * 740 individuals on 835
 
 
-/*
+
 *** Scatter
 twoway ///
-(scatter diff_fa_ES diff_cr_ES, xline(-.25 .25) yline(-.25 .25) msymbol() msize(vsmall)) ///
+(scatter diff_fa_ES diff_cr_ES, xline(-.5 .5) yline(-.5 .5) msymbol() msize(vsmall)) ///
 (lfit diff_fa_ES diff_cr_ES, lpattern(solid)), ///
 xtitle("ΔES - Naïve appr.") ytitle("ΔES - Factor app.") ///
 xlabel(-4"0" -2"-2" 0"0" 2"2", gmax gmin grid) ylabel(-4"" -2"-2" 0"0" 2"2" 4"4", gmin gmax grid) ///
@@ -146,9 +155,9 @@ legend(order(1 "Indiv." 2 "Fit.") pos(11) col(2) off) name(scatter_cent, replace
 *** histo x
 twoway__histogram_gen diff_cr_ES, percent bin(71) gen(h x, replace)
 twoway ///
-(bar h x if x<-.25, color() barwidth(0.08)) ///
-(bar h x if x>=-.25 & x<=.25, color() barwidth(0.08)) ///
-(bar h x if x>.25, color() barwidth(0.08)) ///
+(bar h x if x<-.5, color() barwidth(0.08)) ///
+(bar h x if x>=-.5 & x<=.5, color() barwidth(0.08)) ///
+(bar h x if x>.5, color() barwidth(0.08)) ///
 , ///
 xtitle("ΔES - Naïve app.") ytitle("Percent") ///
 ylabel(0" 0" 1"1" 2"2" 3"3" 4"4" 5"5", nogrid gmax gmin labsize(small)) xlabel(, grid gmax gmin) ///
@@ -158,9 +167,9 @@ plotregion(margin(none)) legend(order(1 "Stab." 2 "Instab.") pos(6) col(2) off) 
 *** histo y
 twoway__histogram_gen diff_fa_ES, percent bin(70) gen(h x, replace)
 twoway ///
-(bar h x if x<-.25, color() barwidth(0.1) horizontal) ///
-(bar h x if x>=-.25 & x<=.25, color() barwidth(0.1) horizontal) ///
-(bar h x if x>.25, color() barwidth(0.1) horizontal) ///
+(bar h x if x<-.5, color() barwidth(0.1) horizontal) ///
+(bar h x if x>=-.5 & x<=.5, color() barwidth(0.1) horizontal) ///
+(bar h x if x>.5, color() barwidth(0.1) horizontal) ///
 , ///
 xtitle("Percent") ytitle("ΔES - Factor app.") ///
 ylabel(, grid gmax gmin) xlabel(, nogrid gmax gmin) ///
@@ -229,8 +238,8 @@ reg abs_diff_fa_ES diff_ars3 i.sex i.caste ib(1).age_cat ib(0).educode i.village
 ****************************************
 * ECON on abs var
 ****************************************
-use "panel_stab_wide_v5", clear
-keep if age25==1
+use "panel_stab_wide_v6", clear
+*keep if age25==1
 
 recode pathabs_diff_fa_cat5 (1=0) (2=1)
 label define pathabs_diff_fa_cat5 0"Decreasing" 1"Increasing"
@@ -309,7 +318,50 @@ esttab abs_diff using "_reg.csv", ///
 	replace
 
 
-fre female caste educode age_cat moc_indiv marital annualincome_indiv2016_q
+
+
+********** Qreg diff
+sqreg abs_diff_fa_ES female caste_2 caste_3 educode_2 educode_3 educode_4 age_cat_1 age_cat_3 age_cat_4 age_cat_5 moc_indiv_1 moc_indiv_2 moc_indiv_4 moc_indiv_5 moc_indiv_6 moc_indiv_7 moc_indiv_8 marital annualincome_indiv2016_q_2 annualincome_indiv2016_q_3 dummydemonetisation2016 covsellland2020, quantile(.1 .2 .3 .4 .5 .6 .7 .8 .9) reps(100)
+
+preserve
+gen q = _n*10 in 1/9
+
+foreach var of varlist female caste_2 caste_3 educode_2 educode_3 educode_4 age_cat_1 age_cat_3 age_cat_4 age_cat_5 moc_indiv_1 moc_indiv_2 moc_indiv_4 moc_indiv_5 moc_indiv_6 moc_indiv_7 moc_indiv_8 marital annualincome_indiv2016_q_2 annualincome_indiv2016_q_3 dummydemonetisation2016 covsellland2020 {
+    gen _b_`var'  = .
+    gen _lb_`var' = .
+    gen _ub_`var' = .
+
+    local i = 1
+    foreach q of numlist 10(10)90 {
+        replace _b_`var' = _b[q`q':`var'] in `i'
+        replace _lb_`var' = _b[q`q':`var'] - _se[q`q':`var']*invnormal(.95) in `i'
+        replace _ub_`var' = _b[q`q':`var'] + _se[q`q':`var']*invnormal(.95) in `i++'
+    }
+}
+keep q _b_* _lb_* _ub_*
+keep in 1/9
+reshape long _b_ _lb_ _ub_, i(q) j(var) string
+twoway rarea _lb_ _ub_ q, astyle(ci) yline(0) acolor(%90) || ///
+   line _b_ q,                                               ///
+   by(var, yrescale xrescale note("") legend(at(4) pos(0)))  ///
+   legend(order(2 "effect"                                   ///      
+                1 "95% confidence" "interval")               ///
+          cols(1))                                           ///
+   ytitle("")                       ///
+   ylab(,angle(0) format(%7.0gc))                            ///    
+   xlab(10(10)90) xtitle("")
+restore
+
+
+
+
+
+
+
+
+
+
+
 
 ****************************************
 * END
@@ -323,7 +375,7 @@ fre female caste educode age_cat moc_indiv marital annualincome_indiv2016_q
 
 
 
-
+/*
 
 
 ****************************************
