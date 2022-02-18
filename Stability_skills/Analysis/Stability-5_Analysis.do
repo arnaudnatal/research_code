@@ -114,7 +114,6 @@ use "panel_stab_wide_v6", clear
 canon (fa_ES2016) (fa_ES2020), lc(1)
 *0.0307
 
-
 pwcorr fa_ES2016 fa_ES2020
 
 ****************************************
@@ -141,7 +140,7 @@ tab age25
 * 740 individuals on 835
 
 
-
+/*
 *** Scatter
 twoway ///
 (scatter diff_fa_ES diff_cr_ES, xline(-.5 .5) yline(-.5 .5) msymbol() msize(vsmall)) ///
@@ -183,6 +182,16 @@ leg(histo_y) ///
 name(scatter_histo_new, replace) scale(1)
 graph export "histo_abs.pdf", replace
 */
+
+
+
+********** Over items
+foreach x in cr_worryalot {
+set graph off
+twoway (scatter `x'2020 `x'2016) (lfit `x'2020 `x'2016), name(scatter_`x')
+set graph on
+}
+
 
 
 ********** Difference over trajectory
