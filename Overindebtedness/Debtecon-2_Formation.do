@@ -182,6 +182,10 @@ drop jatis caste villagearea
 merge 1:1 HHID_panel year using "C:\Users\Arnaud\Documents\GitHub\RUME-NEEMSIS\_Miscellaneous\Individual_panel\ODRIIS-HH_long", keepusing(jatis caste villagearea)
 keep if _merge==3
 drop _merge
+encode caste, gen(caste_code)
+fre caste_code
+drop caste
+rename caste_code caste
 
 save"panel_v2", replace
 ****************************************
@@ -369,6 +373,8 @@ replace `x'=`x'*(100/158) if year==2016 & `x'!=.
 replace `x'=`x'*(100/184) if year==2020 & `x'!=.
 }
 
+rename loanamount_g_HH loanamount_g
+replace loanamount_g=loanamount_g*(100/158) if year==2016 & loanamount_g!=.
 
 
 ********** Label

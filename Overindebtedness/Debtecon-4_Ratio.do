@@ -93,9 +93,9 @@ global assecalc assets1000 assetsnew1000 assets_noland1000 assetsnew_noland1000
 
 
 **********Debt measure
-tabstat loanamount loanamount_g loanamount_gm, stat(mean sd p50) by(year)
+tabstat loanamount, stat(mean sd p50) by(year)
 forvalues i=1(1)3{
-tabstat loanamount loanamount_g loanamount_gm if caste==`i', stat(mean sd p50) by(year)
+tabstat loanamount if caste==`i', stat(mean sd p50) by(year)
 }
 
 *Continuous
@@ -110,6 +110,8 @@ gen DAR_with=loanamount/assets
 gen DSR=imp1_ds_tot/annualincome
 gen ISR=imp1_is_tot/annualincome
 
+order HHID_panel year imp1_ds_tot annualincome DSR
+sort DSR
 
 *Dummy for overindebtedness
 foreach x in DSR DAR_with DAR_without { //DAR_with_new DAR_without_new {
@@ -130,7 +132,9 @@ foreach x in DIR DAR_with DAR_without DSR ISR {
 clonevar `x'_r=`x'
 }
 
-tabstat DIR DAR_with DAR_without DSR ISR, stat(n mean sd p50 p95 p99 max) by(year)
+tabstat DIR DAR_with DAR_without DSR ISR, stat(n mean sd p50 p95 p99 max) by(year) long
+tabstat DIR DAR_with DAR_without DSR ISR if panel==1, stat(n mean sd p50 p95 p99 max) by(year) long
+
 
 replace DIR_r=9.5 if DIR>=10 & year==2010
 replace DIR_r=25.51 if DIR>=26 & year==2016
@@ -144,52 +148,48 @@ replace DAR_without_r=2 if DAR_without>=2.2 & year==2010
 replace DAR_without_r=10.41 if DAR_without>=11 & year==2016
 replace DAR_without_r=2.32 if DAR_without>=2.5 & year==2020
 
-*replace DAR_with_new_r=2 if DAR_with_new>=2.2 & year==2010
-*replace DAR_with_new_r=10.41 if DAR_with_new>=11 & year==2016
-*replace DAR_with_new_r=2.32 if DAR_with_new>=2.5 & year==2020
+/*
+replace DAR_with_new_r=2 if DAR_with_new>=2.2 & year==2010
+replace DAR_with_new_r=10.41 if DAR_with_new>=11 & year==2016
+replace DAR_with_new_r=2.32 if DAR_with_new>=2.5 & year==2020
 
-*replace DAR_without_new_r=2 if DAR_without_new>=2.2 & year==2010
-*replace DAR_without_new_r=10.41 if DAR_without_new>=11 & year==2016
-*replace DAR_without_new_r=2.32 if DAR_without_new>=2.5 & year==2020
+replace DAR_without_new_r=2 if DAR_without_new>=2.2 & year==2010
+replace DAR_without_new_r=10.41 if DAR_without_new>=11 & year==2016
+replace DAR_without_new_r=2.32 if DAR_without_new>=2.5 & year==2020
+*/
 
-replace DSR_r=2.66 if DSR>=2.7 & year==2010
-replace DSR_r=3.7 if DSR>=3.8 & year==2016
-replace DSR_r=7.22 if DSR>=7.3 & year==2020
+replace DSR_r=6 if DSR>=6 & year==2010
+replace DSR_r=6 if DSR>=6 & year==2016
+replace DSR_r=6 if DSR>=6 & year==2020
+
+replace DSR_r=DSR_r*100
 
 replace ISR_r=0.74 if ISR>=0.75 & year==2010
 replace ISR_r=2.34 if ISR>=2.35 & year==2016
 replace ISR_r=3.11 if ISR>=3.13 & year==2020
 
 
+********** Wealth panel
+xtile assets2010panel_q3=assets if year==2010 & panel==1, n(3)
+xtile assets2010panel_q4=assets if year==2010 & panel==1, n(4)
 
-********** Analysis
-cls
-forvalues i=1(1)3{
-tabstat DAR_with_r DAR_without_r DSR_r if caste==`i', stat(mean sd p50) by(year)
-}
+bysort HHID_panel: egen assetspanel_q3=max(assets2010panel_q3) if panel==1
+bysort HHID_panel: egen assetspanel_q4=max(assets2010panel_q4) if panel==1
+
+ta assetspanel_q3 year
+ta assetspanel_q4 year
 
 
+********** Income panel
+xtile income2010panel_q3=annualincome if year==2010 & panel==1, n(3)
+xtile income2010panel_q4=annualincome if year==2010 & panel==1, n(4)
 
+bysort HHID_panel: egen incomepanel_q3=max(income2010panel_q3) if panel==1
+bysort HHID_panel: egen incomepanel_q4=max(income2010panel_q4) if panel==1
 
+ta incomepanel_q3 year
+ta incomepanel_q4 year
 
-********* Desc
-ta caste year
-cls
-foreach x in DSR30 DSR40 DSR50 DAR_with30 DAR_with40 DAR_with50 DAR_without30 DAR_without40 DAR_without50 {
-ta `x' year if caste==1, col nofreq
-ta `x' year if caste==2, col nofreq
-ta `x' year if caste==3, col nofreq
-}
-
-preserve
-keep if panel==1
-cls
-foreach x in DSR30 DSR40 DSR50 DAR_with30 DAR_with40 DAR_with50 DAR_without30 DAR_without40 DAR_without50 {
-ta `x' year if caste==1, col nofreq
-ta `x' year if caste==2, col nofreq
-ta `x' year if caste==3, col nofreq
-}
-restore
 
 save"panel_v4", replace
 ****************************************
@@ -202,7 +202,6 @@ save"panel_v4", replace
 
 
 
-/*
 
 
 
@@ -211,41 +210,61 @@ save"panel_v4", replace
 ****************************************
 * Evo
 ****************************************
-use"panel_v5", clear
+use"panel_v4", clear
+
+/*
 ********** Initialization
 xtset time panelvar
 
-global var DIR_r DAR_with_r DAR_without_r DSR_r ISR_r loanamount annualincome
+global var DIR_r DAR_with_r DAR_without_r DSR_r DSR ISR_r loanamount annualincome
+sort HHID_panel year
 
 *** Select+reshape
 keep HHID_panel year caste panel $var
-reshape wide $var, i(HHID_panel) j(year)
+reshape wide $var caste, i(HHID_panel) j(year)
+*/
 
 
-********** Graph1
-foreach y in DIR_r DAR_with_r DAR_without_r DSR_r ISR_r loanamount annualincome {
+********** Isabelle book
+tabstat DSR_r if panel==1, stat(n mean sd q) by(year)
+
+tabstat DSR_r if panel==1 & caste==1, stat(n mean sd q) by(year)
+tabstat DSR_r if panel==1 & caste==2, stat(n mean sd q) by(year)
+tabstat DSR_r if panel==1 & caste==3, stat(n mean sd q) by(year)
+
+tabstat DSR_r if panel==1 & assetspanel_q3==1, stat(n mean sd q) by(year)
+tabstat DSR_r if panel==1 & assetspanel_q3==2, stat(n mean sd q) by(year)
+tabstat DSR_r if panel==1 & assetspanel_q3==3, stat(n mean sd q) by(year)
+
 set graph off
-forvalues i=1(1)3 {
-
-foreach j in 10 16 20 {
-qui sum `y'20`j' if caste==`i', det
-local med`j'=round(r(p50),1)
-local n`j'=r(N)
-}
-
-stripplot `y'2010 `y'2016 `y'2020 if caste==`i', over() separate() ///
+*** Over caste
+stripplot DSR_r if panel==1, over(time) separate(caste) ///
 cumul cumprob box centre refline vertical /// 
-xsize(3) xtitle("Caste `i'") xlabel(1"2010" 2"2016-17" 3"2020-21",angle(45))  ///
-ylabel(#10) ymtick(#20) ytitle("`y'") ///
-msymbol(oh) mcolor(ply`i') ///
-note("N--Median" "2010: `n10'--`med10'" "2016: `n16'--`med16'" "2020: `n20'--`med20'", size(small)) ///
-legend(off) ///
-name(`y'`i', replace) 
-}
-graph combine `y'1 `y'2 `y'3, title("`y'") col(3) name(`y'_comb, replace)
-graph export "graph/evo_`y'.pdf", replace
+xsize(3) xlabel(,angle(0))  ///
+ylabel(#10) ymtick(#20) ///
+msymbol(oh + oh) mcolor(gs0 gs6 gs12) ///
+legend(order(4 "Dalits" 5 "Middle castes" 6 "Upper castes") pos(6) col(3)) ///
+xtitle("") ytitle("%") ///
+title("Over time and castes") ///
+note("", size(small)) name(caste, replace)
+
+*** Over wealth
+stripplot DSR_r if panel==1, over(time) separate(assetspanel_q3) ///
+cumul cumprob box centre refline vertical /// 
+xsize(3) xlabel(,angle(0))  ///
+ylabel(#10) ymtick(#20) ///
+msymbol(oh + oh) mcolor(gs0 gs6 gs12) ///
+legend(order(4 "Tercile 1" 5 "Tercile 2" 6 "Tercile 3") pos(6) col(3)) ///
+xtitle("") ytitle("%") ///
+title("Over time and terciles of wealth") ///
+note("", size(small)) name(wealth, replace)
+
 set graph on
-}
+graph combine caste wealth, title("Debt service ratio") 
+graph export "graph/DSR_caste_wealth_BW.pdf", as(pdf)
+graph export "graph/DSR_caste_wealth_BW.svg", as(svg)
+graph save "graph/DSR_caste_wealth_BW.gph"
+
 
 
 ********** Observe strange households

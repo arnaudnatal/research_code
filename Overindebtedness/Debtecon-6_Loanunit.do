@@ -404,6 +404,128 @@ sort HHID_panel year
 
 ta dummyproblemtorepay year
 
+
+********** Panel
+merge m:1 HHID_panel using "C:\Users\Arnaud\Documents\GitHub\RUME-NEEMSIS\_Miscellaneous\Individual_panel\ODRIIS-HH", keepusing(panel3)
+keep if _merge==3
+drop _merge
+
+preserve
+use "panel_v4", clear
+keep if panel==1
+keep if year==2010
+keep HHID_panel caste assetspanel_q3
+save"panel_v4_temp", replace
+restore
+merge m:1 HHID_panel using "panel_v4_temp", keepusing(caste assetspanel_q3)
+drop if _merge==2
+drop _merge
+
 save"panel_loan_v2", replace
+
+erase "panel_v4_temp.dta"
 ****************************************
 * END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* STATS for loans
+****************************************
+cls
+use"panel_loan_v2", clear
+
+keep if panel3==1
+
+********** Recode
+tab loan_database year
+recode loanreasongiven (77=13)
+codebook loanreasongiven
+label define loanreasongiven 13"Other", modify
+
+
+/*
+********** Amount and number
+cls
+foreach x in 2010 2016 2020 {
+tabstat loanamount if year==`x', stat(n mean) by(loanreasongiven)
+foreach i in 1 2 3 {
+tabstat loanamount if year==`x' & caste==`i', stat(n mean) by(loanreasongiven)
+}
+foreach i in 1 2 3 {
+tabstat loanamount if year==`x' & assetspanel_q3==`i', stat(n mean) by(loanreasongiven)
+}
+}
+*/
+
+********** Total clientele using it: reason
+forvalues i=1(1)13{
+gen reason`i'=0
+}
+forvalues i=1(1)13{
+replace reason`i'=1 if loanreasongiven==`i'
+}
+
+keep if caste==1
+
+
+*2010
+cls
+preserve 
+keep if year==2010
+forvalues i=1(1)13{
+bysort HHID_panel: egen reasonHH_`i'=max(reason`i')
+} 
+bysort HHID_panel: gen n=_n
+keep if n==1
+forvalues i=1(1)13{
+tab reasonHH_`i', m
+}
+restore
+
+*2016
+cls
+preserve 
+keep if year==2016
+forvalues i=1(1)13{
+bysort HHID_panel: egen reasonHH_`i'=max(reason`i')
+} 
+bysort HHID_panel: gen n=_n
+keep if n==1
+forvalues i=1(1)13{
+tab reasonHH_`i', m
+}
+restore
+
+*2020
+cls
+preserve 
+keep if year==2020
+forvalues i=1(1)13{
+bysort HHID_panel: egen reasonHH_`i'=max(reason`i')
+} 
+bysort HHID_panel: gen n=_n
+keep if n==1
+forvalues i=1(1)13{
+tab reasonHH_`i', m
+}
+restore
+
+
+
+drop reason1 reason2 reason3 reason4 reason5 reason6 reason7 reason8 reason9 reason10 reason11 reason12 reason13 

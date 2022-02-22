@@ -471,16 +471,18 @@ rename `x'_HH `x'
 global asse amountownland livestockamount_cow livestockamount_goat livestockamount_chicken livestockamount_bullock housevalue goldquantityamount goodtotalamount
 global nature houseroom housetitle housesize goldquantity
 
-
+sum loanamount_g_HH loanamount_gm_HH
 
 *Variables to keep
-global dep imp1_ds_tot_HH imp1_is_tot_HH loanamount_g_HH loans_g_HH
+global dep imp1_ds_tot_HH imp1_is_tot_HH loanamount_gm_HH loans_gm_HH loanamount_g_HH loans_g_HH
 global indep villageid villagearea religion jatis caste assets annualincome_HH nboccupation_HH foodexpenses educationexpenses healthexpenses ceremoniesexpenses deathexpenses HHsize housetype housetitle houseroom nbchildren_HH nontoworkers_HH femtomale_HH head_sex head_maritalstatus head_age head_edulevel head_occupation wifehusb_sex wifehusb_maritalstatus wifehusb_age wifehusb_edulevel wifehusb_occupation sizeownland amountownland ownland goldquantity goldquantityamount dummydemonetisation dummymarriage marriageexpenses_HH mainocc_occupation_HH occinc_HH_agri occinc_HH_agricasual occinc_HH_nonagricasual occinc_HH_nonagriregnonqual occinc_HH_nonagriregqual occinc_HH_selfemp occinc_HH_nrega assets_noland $asse $nature villageareaid
  
 keep HHID_panel year $dep $indep
 
-rename loanamount_g_HH loanamount_HH
-rename loans_g_HH loans_HH
+rename loanamount_gm_HH loanamount_HH
+rename loans_gm_HH loans_HH
+
+sum loanamount_HH
 
 *Occupation
 preserve
