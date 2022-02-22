@@ -414,10 +414,10 @@ preserve
 use "panel_v4", clear
 keep if panel==1
 keep if year==2010
-keep HHID_panel caste assetspanel_q3
+keep HHID_panel caste assetspanel_q3 incomepanel_q3
 save"panel_v4_temp", replace
 restore
-merge m:1 HHID_panel using "panel_v4_temp", keepusing(caste assetspanel_q3)
+merge m:1 HHID_panel using "panel_v4_temp", keepusing(caste assetspanel_q3 incomepanel_q3)
 drop if _merge==2
 drop _merge
 
@@ -481,7 +481,7 @@ forvalues i=1(1)13{
 replace reason`i'=1 if loanreasongiven==`i'
 }
 
-keep if caste==1
+keep if incomepanel_q3==3
 
 
 *2010
