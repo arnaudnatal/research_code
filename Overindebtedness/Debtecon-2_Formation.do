@@ -177,6 +177,11 @@ drop `x'
 drop if year==.
 ta year
 
+********** caste recode
+drop jatis caste villagearea
+merge 1:1 HHID_panel year using "C:\Users\Arnaud\Documents\GitHub\RUME-NEEMSIS\_Miscellaneous\Individual_panel\ODRIIS-HH_long", keepusing(jatis caste villagearea)
+keep if _merge==3
+drop _merge
 
 save"panel_v2", replace
 ****************************************
@@ -380,111 +385,5 @@ sort HHID_panel year
 
 
 save"panel_v3", replace
-****************************************
-* END
-
-
-
-
-
-
-
-
-
-
-
-****************************************
-* Test caste
-****************************************
-use"panel_v3", clear
-
-*** Initialization
-xtset time panelvar
-
-
-*** Select+reshape
-keep HHID_panel year caste jatis
-reshape wide caste jatis, i(HHID_panel) j(year)
-
-fre caste*
-fre jatis*
-
-*** Panel
-forvalues i=1(1)4 {
-gen panel`i'=0
-}
-
-replace panel1=1 if caste2010!=. & caste2016!=. & caste2020!=.
-replace panel2=1 if caste2010!=. & caste2016!=. & panel1==0
-replace panel3=1 if caste2010!=. & caste2020!=. & panel1==0
-replace panel4=1 if caste2016!=. & caste2020!=. & panel1==0
-fre panel*
-egen panel=rowtotal(panel1 panel2 panel3 panel4)
-order panel, before(panel1)
-
-*** Changement
-forvalues i=1(1)4 {
-gen ok`i'=0 if panel`i'==1
-}
-
-replace ok1=1 if caste2010==caste2016 & caste2016==caste2020 & panel1==1
-replace ok2=1 if caste2010==caste2016 & panel2==1
-replace ok3=1 if caste2010==caste2020 & panel3==1
-replace ok4=1 if caste2016==caste2020 & panel4==1
-
-egen pb=rowtotal(ok1 ok2 ok3 ok4)
-recode pb (0=1) (1=0)
-replace pb=0 if panel==0
-ta pb
-sort HHID_panel
-order HHID_panel caste2010 caste2016 caste2020 jatis2020 jatis2016 jatis2020
-list HHID_panel if pb==1, clean noobs
-/*
-GOV10 GOV19 GOV2 GOV47 GOV5 GOV9 KAR48 KUV10 MAN18 MAN22 MANAM18 MANAM28 MANAM40 SEM1 SEM16 SEM26 SEM28 SEM35 SEM40 SEM43
-*/
-ta HHID_panel caste2010 if pb==1
-*MANAM18
-ta caste2016 caste2020 if HHID_panel=="MANAM18"
-****************************************
-* END
-
-
-
-
-
-
-
-****************************************
-* Clean caste
-****************************************
-use"panel_v3", clear
-
-********** Caste
-*** panel complet
-ta caste year, m
-ta caste year if panel==1, m
-
-replace caste=3 if HHID_panel=="GOV10"
-replace caste=3 if HHID_panel=="GOV19"
-replace caste=3 if HHID_panel=="GOV2"
-replace caste=3 if HHID_panel=="GOV47"
-replace caste=3 if HHID_panel=="GOV5"
-replace caste=3 if HHID_panel=="GOV9"
-replace caste=2 if HHID_panel=="KAR48"
-replace caste=3 if HHID_panel=="KUV10"
-replace caste=3 if HHID_panel=="MAN18"
-replace caste=2 if HHID_panel=="MAN22"
-replace caste=2 if HHID_panel=="MANAM18"
-replace caste=2 if HHID_panel=="MANAM28"
-replace caste=3 if HHID_panel=="MANAM40"
-replace caste=3 if HHID_panel=="SEM1"
-replace caste=3 if HHID_panel=="SEM16"
-replace caste=3 if HHID_panel=="SEM26"
-replace caste=3 if HHID_panel=="SEM28"
-replace caste=3 if HHID_panel=="SEM35"
-replace caste=3 if HHID_panel=="SEM40"
-replace caste=3 if HHID_panel=="SEM43"
-
-save"panel_v4", replace
 ****************************************
 * END

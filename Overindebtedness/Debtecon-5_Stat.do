@@ -72,7 +72,7 @@ global loan3 "NEEMSIS2-all_loans"
 ****************************************
 * Evo finance
 ****************************************
-use"panel_v5", clear
+use"panel_v4", clear
 
 ta caste year
 

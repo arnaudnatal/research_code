@@ -71,7 +71,7 @@ global loan3 "NEEMSIS2-all_loans"
 ****************************************
 * How assets evo?
 ****************************************
-use"panel_v4", clear
+use"panel_v3", clear
 
 *** Initialization
 xtset time panelvar
@@ -150,7 +150,7 @@ set graph on
 ****************************************
 * Reshape for strange evolution
 ****************************************
-use"panel_v4", clear
+use"panel_v3", clear
 
 ********** Initialization
 xtset time panelvar

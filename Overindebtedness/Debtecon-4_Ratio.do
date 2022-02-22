@@ -73,7 +73,7 @@ global loan3 "NEEMSIS2-all_loans"
 ****************************************
 * Ratio
 ****************************************
-use"panel_v4", clear
+use"panel_v3", clear
 
 
 
@@ -191,7 +191,7 @@ ta `x' year if caste==3, col nofreq
 }
 restore
 
-save"panel_v5", replace
+save"panel_v4", replace
 ****************************************
 * END
 
