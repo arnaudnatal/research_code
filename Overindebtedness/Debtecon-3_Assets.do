@@ -157,7 +157,7 @@ xtset time panelvar
 
 ta housevalue
 
-global var assets assets_noland livestock housevalue goldquantityamount goodtotalamount amountownland goldquantity
+global var assets assets_noland livestock housevalue goldquantityamount goodtotalamount amountownland goldquantity loanamount loans
 
 
 *** Select+reshape
@@ -197,7 +197,7 @@ set graph on
 ********** Observe strange households
 keep if panel==1
 
-foreach x in housetype2010 houseroom2010 housetitle2010 goldquantity2010 assets2010 assets_noland2010 livestock2010 housevalue2010 goldquantityamount2010 goodtotalamount2010 amountownland2010 housetype2016 houseroom2016 housetitle2016 goldquantity2016 assets2016 assets_noland2016 livestock2016 housevalue2016 goldquantityamount2016 goodtotalamount2016 amountownland2016 housetype2020 houseroom2020 housetitle2020 goldquantity2020 assets2020 assets_noland2020 livestock2020 housevalue2020 goldquantityamount2020 goodtotalamount2020 amountownland2020 {
+foreach x in housetype2010 houseroom2010 housetitle2010 goldquantity2010 assets2010 assets_noland2010 livestock2010 housevalue2010 goldquantityamount2010 goodtotalamount2010 amountownland2010 housetype2016 houseroom2016 housetitle2016 goldquantity2016 assets2016 assets_noland2016 livestock2016 housevalue2016 goldquantityamount2016 goodtotalamount2016 amountownland2016 housetype2020 houseroom2020 housetitle2020 goldquantity2020 assets2020 assets_noland2020 livestock2020 housevalue2020 goldquantityamount2020 goodtotalamount2020 amountownland2020 loanamount2010 loanamount2016 loanamount2020 {
 recode `x' (.=0)
 }
 

@@ -191,8 +191,8 @@ tab nontoworkers_HH
 
 *Sex ratio of HH
 fre sex
-label define sex 1"Male" 2"Female"
-label values sex sex
+*label define sex 1"Male" 2"Female"
+*label values sex sex
 fre sex
 gen dummy_male=0
 gen dummy_female=0
@@ -258,11 +258,8 @@ label values wifehusb_sex sex
 global asse amountownlanddry amountownlandwet livestockamount_goat livestockamount_cow housevalue goldquantityamount goodtotalamount
 global nature houseroom housetitle goldquantity
 
-clonevar loanamount_g_HH=loanamount_HH
-clonevar loanamount_gm_HH=loanamount_HH
-
 *Variables to keep
-global dep loanamount_HH loanamount_g_HH loanamount_gm_HH loans_HH imp1_ds_tot_HH imp1_is_tot_HH loans_HH
+global dep loanamount_HH loans_HH imp1_ds_tot_HH imp1_is_tot_HH loans_HH
 global indep villageid villagearea religion jatis caste assets annualincome_HH nboccupation_HH foodexpenses educationexpenses healthexpenses ceremoniesexpenses deathexpenses HHsize housetype housetitle houseroom nbchildren_HH nontoworkers_HH femtomale_HH head_sex head_maritalstatus head_age head_edulevel head_occupation wifehusb_sex wifehusb_maritalstatus wifehusb_age wifehusb_edulevel wifehusb_occupation sizeownland amountownland ownland goldquantity goldquantityamount effectcrisislostjob mainocc_occupation_HH occinc_HH_agri occinc_HH_agricasual occinc_HH_nonagricasual occinc_HH_nonagriregnonqual occinc_HH_nonagriregqual occinc_HH_selfemp occinc_HH_nrega assets_noland  $asse $nature
 
 keep HHID_panel year $dep $indep
@@ -477,11 +474,13 @@ global nature houseroom housetitle housesize goldquantity
 
 
 *Variables to keep
-global dep imp1_ds_tot_HH imp1_is_tot_HH loans_HH loanamount_g_HH loanamount_gm_HH loanamount_HH loans_HH loans_gm_HH loans_g_HH
+global dep imp1_ds_tot_HH imp1_is_tot_HH loanamount_g_HH loans_g_HH
 global indep villageid villagearea religion jatis caste assets annualincome_HH nboccupation_HH foodexpenses educationexpenses healthexpenses ceremoniesexpenses deathexpenses HHsize housetype housetitle houseroom nbchildren_HH nontoworkers_HH femtomale_HH head_sex head_maritalstatus head_age head_edulevel head_occupation wifehusb_sex wifehusb_maritalstatus wifehusb_age wifehusb_edulevel wifehusb_occupation sizeownland amountownland ownland goldquantity goldquantityamount dummydemonetisation dummymarriage marriageexpenses_HH mainocc_occupation_HH occinc_HH_agri occinc_HH_agricasual occinc_HH_nonagricasual occinc_HH_nonagriregnonqual occinc_HH_nonagriregqual occinc_HH_selfemp occinc_HH_nrega assets_noland $asse $nature villageareaid
  
 keep HHID_panel year $dep $indep
 
+rename loanamount_g_HH loanamount_HH
+rename loans_g_HH loans_HH
 
 *Occupation
 preserve
@@ -792,7 +791,7 @@ global nature houseroom housetitle housesize goldquantity
 
 
 *Variables to keep
-global dep loanamount_g_HH loanamount_gm_HH loanamount_HH loans_HH loans_gm_HH loans_g_HH imp1_ds_tot_HH imp1_is_tot_HH loans_HH
+global dep loanamount_HH loans_HH imp1_ds_tot_HH imp1_is_tot_HH
 global indep villageid villagearea religion jatis caste assets annualincome_HH nboccupation_HH foodexpenses educationexpenses healthexpenses ceremoniesexpenses deathexpenses HHsize housetype housetitle houseroom nbchildren_HH nontoworkers_HH femtomale_HH head_sex head_maritalstatus head_age head_edulevel head_occupation wifehusb_sex wifehusb_maritalstatus wifehusb_age wifehusb_edulevel wifehusb_occupation sizeownland amountownland ownland goldquantity goldquantityamount dummymarriage marriageexpenses_HH assets_noland occinc_HH_agri occinc_HH_agricasual occinc_HH_nonagricasual occinc_HH_nonagriregnonqual occinc_HH_nonagriregqual occinc_HH_selfemp occinc_HH_nrega $asse $nature religion
  
 keep HHID_panel year $dep $indep

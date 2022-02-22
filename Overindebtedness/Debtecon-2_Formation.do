@@ -321,7 +321,7 @@ restore
 
 
 ********** 1000
-foreach x in livestock housevalue goldquantityamount goodtotalamount loanamount_g_HH loanamount_gm_HH foodexpenses educationexpenses healthexpenses ceremoniesexpenses deathexpenses marriageexpenses_HH occinc_HH_agri occinc_HH_agricasual occinc_HH_nonagricasual occinc_HH_nonagriregnonqual occinc_HH_nonagriregqual occinc_HH_selfemp occinc_HH_nrega imp1_ds_tot_HH imp1_is_tot_HH agri_HH nagri_HH{
+foreach x in livestock housevalue goldquantityamount goodtotalamount foodexpenses educationexpenses healthexpenses ceremoniesexpenses deathexpenses marriageexpenses_HH occinc_HH_agri occinc_HH_agricasual occinc_HH_nonagricasual occinc_HH_nonagriregnonqual occinc_HH_nonagriregqual occinc_HH_selfemp occinc_HH_nrega imp1_ds_tot_HH imp1_is_tot_HH agri_HH nagri_HH{
 replace `x'=`x'/1000
 rename `x' `x'1000
 }
@@ -330,14 +330,14 @@ rename `x' `x'1000
 
 ********** Rename for easier reading
 *** drop 1000
-foreach x in foodexpenses1000 healthexpenses1000 ceremoniesexpenses1000 deathexpenses1000 occinc_HH_agri1000 occinc_HH_agricasual1000 occinc_HH_nonagricasual1000 occinc_HH_nonagriregnonqual1000 occinc_HH_nonagriregqual1000 occinc_HH_selfemp1000 occinc_HH_nrega1000 imp1_ds_tot_HH1000 imp1_is_tot_HH1000 marriageexpenses_HH1000 educationexpenses1000 loanamount_gm_HH1000 loanamount_g_HH1000 loanamount_HH1000 annualincome_HH1000 amountownland1000 assets1000 assets_noland1000 livestock1000 housevalue1000 goldquantityamount1000 goodtotalamount1000 agri_HH1000 nagri_HH1000 {
+foreach x in foodexpenses1000 healthexpenses1000 ceremoniesexpenses1000 deathexpenses1000 occinc_HH_agri1000 occinc_HH_agricasual1000 occinc_HH_nonagricasual1000 occinc_HH_nonagriregnonqual1000 occinc_HH_nonagriregqual1000 occinc_HH_selfemp1000 occinc_HH_nrega1000 imp1_ds_tot_HH1000 imp1_is_tot_HH1000 marriageexpenses_HH1000 educationexpenses1000 loanamount_HH1000 annualincome_HH1000 amountownland1000 assets1000 assets_noland1000 livestock1000 housevalue1000 goldquantityamount1000 goodtotalamount1000 agri_HH1000 nagri_HH1000 {
 local x2=substr("`x'",1,strlen("`x'")-4)
 rename `x' `x2'
 }
 
 
 *** drop hh1
-foreach x in nboccupation_HH loans_HH imp1_ds_tot_HH imp1_is_tot_HH nbchildren_HH nontoworkers_HH femtomale_HH marriageexpenses_HH mainocc_occupation_HH loanamount_gm_HH loanamount_g_HH loanamount_HH annualincome_HH agri_HH nagri_HH shareagri_HH sharenagri_HH {
+foreach x in nboccupation_HH loans_HH imp1_ds_tot_HH imp1_is_tot_HH nbchildren_HH nontoworkers_HH femtomale_HH marriageexpenses_HH mainocc_occupation_HH loanamount_HH annualincome_HH agri_HH nagri_HH shareagri_HH sharenagri_HH {
 local x2=substr("`x'",1,strlen("`x'")-3)
 rename `x' `x2'
 }
@@ -352,7 +352,7 @@ rename `x' occinc_`x2'
 
 
 ********** Macro amt
-global amt foodexpenses healthexpenses ceremoniesexpenses deathexpenses occinc_agri occinc_agricasual occinc_nonagricasual occinc_nonagriregnonqual occinc_nonagriregqual occinc_selfemp occinc_nrega imp1_ds_tot imp1_is_tot marriageexpenses educationexpenses loanamount_gm loanamount_g loanamount annualincome amountownland assets assets_noland livestock housevalue goldquantityamount goodtotalamount agri nagri
+global amt foodexpenses healthexpenses ceremoniesexpenses deathexpenses occinc_agri occinc_agricasual occinc_nonagricasual occinc_nonagriregnonqual occinc_nonagriregqual occinc_selfemp occinc_nrega imp1_ds_tot imp1_is_tot marriageexpenses educationexpenses loanamount annualincome amountownland assets assets_noland livestock housevalue goldquantityamount goodtotalamount agri nagri
 
 
 
@@ -403,10 +403,11 @@ xtset time panelvar
 
 
 *** Select+reshape
-keep HHID_panel year caste
-reshape wide caste, i(HHID_panel) j(year)
+keep HHID_panel year caste jatis
+reshape wide caste jatis, i(HHID_panel) j(year)
 
 fre caste*
+fre jatis*
 
 *** Panel
 forvalues i=1(1)4 {
@@ -436,6 +437,7 @@ recode pb (0=1) (1=0)
 replace pb=0 if panel==0
 ta pb
 sort HHID_panel
+order HHID_panel caste2010 caste2016 caste2020 jatis2020 jatis2016 jatis2020
 list HHID_panel if pb==1, clean noobs
 /*
 GOV10 GOV19 GOV2 GOV47 GOV5 GOV9 KAR48 KUV10 MAN18 MAN22 MANAM18 MANAM28 MANAM40 SEM1 SEM16 SEM26 SEM28 SEM35 SEM40 SEM43

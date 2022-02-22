@@ -186,13 +186,20 @@ graph export "histo_abs.pdf", replace
 
 
 ********** Over items
-foreach x in cr_worryalot {
+graph drop _all
+
+foreach x in easilyupset nervous worryalot feeldepressed changemood easilydistracted shywithpeople putoffduties rudetoother repetitivetasks {
+preserve
+replace cr_`x'2016=0 if cr_`x'2016<0 & cr_`x'2016!=.
+replace cr_`x'2020=0 if cr_`x'2020<0 & cr_`x'2020!=.
 set graph off
-twoway (scatter `x'2020 `x'2016) (lfit `x'2020 `x'2016), name(scatter_`x')
-set graph on
+twoway (scatter cr_`x'2020 cr_`x'2016) (function y=x, range(0 6)), xtitle("Score in 2016-17") ytitle("Score in 2020-21") title("`x'") name(s_`x') legend(off)
+restore
 }
-
-
+graph combine s_easilyupset s_nervous s_worryalot s_feeldepressed s_changemood s_easilydistracted s_shywithpeople s_putoffduties s_rudetoother s_repetitivetasks, col(5)
+graph export "sub_ES.pdf", as(pdf) 
+graph export "sub_ES.gph"
+set graph on
 
 ********** Difference over trajectory
 *** Descriptive statistics for factor Big-5
