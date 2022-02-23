@@ -74,6 +74,7 @@ global loan3 "NEEMSIS2-all_loans"
 ********** Cleaning loans before append
 *2010
 use"$loan1", clear
+drop if loansettled==1
 ta dummyproblemtorepay
 rename dummyproblemtorepay problemtorepay
 gen dummyproblemtorepay=.
@@ -116,6 +117,8 @@ rename loaneffectivereason loaneffectivereason2016
 rename guarantorloanrelation guarantorloanrelation2016
 rename lenderrelation lenderrelation2016
 tab loansettled  // 15
+drop if loansettled==1
+drop if loan_database=="MARRIAGE"
 save"$loan2~_2", replace
 
 *2020
@@ -140,14 +143,14 @@ ta loanlender_rec
 drop loanlender
 rename loanlender_rec loanlender
 ta loanlender
+drop if loansettled==1
 save"$loan3~_2", replace
 
-ta caste
 
 ********** Append
-use"$loan3~_2", clear
+use"$loan1~_2", clear
 append using "$loan2~_2"
-append using "$loan1~_2"
+append using "$loan3~_2"
 
 tab HHID_panel, m
 keep if loanamount!=.
@@ -459,27 +462,29 @@ codebook loanreasongiven
 label define loanreasongiven 13"Other", modify
 
 
-/*
+drop if loanreasongiven==.
 ********** Amount and number
 cls
 foreach x in 2010 2016 2020 {
-tabstat loanamount if year==`x', stat(n mean) by(loanreasongiven)
+*tabstat loanamount if year==`x', stat(n mean) by(loanreasongiven) m
+*foreach i in 1 2 3 {
+*tabstat loanamount if year==`x' & caste==`i', stat(n mean) by(loanreasongiven) m
+*}
 foreach i in 1 2 3 {
-tabstat loanamount if year==`x' & caste==`i', stat(n mean) by(loanreasongiven)
-}
-foreach i in 1 2 3 {
-tabstat loanamount if year==`x' & assetspanel_q3==`i', stat(n mean) by(loanreasongiven)
+tabstat loanamount if year==`x' & incomepanel_q3==`i', stat(n mean) by(loanreasongiven) m
 }
 }
-*/
+
 
 ********** Total clientele using it: reason
+/*
 forvalues i=1(1)13{
 gen reason`i'=0
 }
 forvalues i=1(1)13{
 replace reason`i'=1 if loanreasongiven==`i'
 }
+
 
 keep if incomepanel_q3==3
 
@@ -529,3 +534,4 @@ restore
 
 
 drop reason1 reason2 reason3 reason4 reason5 reason6 reason7 reason8 reason9 reason10 reason11 reason12 reason13 
+*/

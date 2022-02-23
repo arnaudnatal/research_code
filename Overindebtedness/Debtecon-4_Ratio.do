@@ -250,21 +250,33 @@ note("", size(small)) name(caste, replace)
 
 *** Over wealth
 stripplot DSR_r if panel==1, over(time) separate(assetspanel_q3) ///
-cumul cumprob box centre refline vertical /// 
+cumul cumprob box centre refline vertical stack /// 
 xsize(3) xlabel(,angle(0))  ///
 ylabel(#10) ymtick(#20) ///
-msymbol(oh + oh) mcolor(gs0 gs6 gs12) ///
+msymbol(oh + oh) mcolor(gs0 gs6 gs12) msize(small small small) ///
 legend(order(4 "Tercile 1" 5 "Tercile 2" 6 "Tercile 3") pos(6) col(3)) ///
 xtitle("") ytitle("%") ///
 title("Over time and terciles of wealth") ///
 note("", size(small)) name(wealth, replace)
 
 set graph on
-graph combine caste wealth, title("Debt service ratio") 
-graph export "graph/DSR_caste_wealth_BW.pdf", as(pdf)
-graph export "graph/DSR_caste_wealth_BW.svg", as(svg)
-graph save "graph/DSR_caste_wealth_BW.gph"
+*graph combine caste wealth, title("Debt service ratio") 
+*graph export "graph/DSR_caste_wealth_BW.pdf", as(pdf) 
+*graph export "graph/DSR_caste_wealth_BW.svg", as(svg)
+*graph save "graph/DSR_caste_wealth_BW.gph"
 
+********** Second test
+egen group=group(caste year)
+egen group2=group(assetspanel_q3 year)
+
+stripplot DSR_r, vertical ms(oh oh oh) mc(gs0 gs5 gs12) msize(tiny tiny tiny) separate(caste) tufte(ms(+) msize(normalsize)) whiskers(lpattern(blank)) over(group) stack width(5) refline(lw(medthick) lpattern(dash)) reflevel(mean) reflinestretch(0.1) xla(1 `""Dalits" "2010" "' 2 `""Dalits" "2016-17" "' 3 `""Dalits" "2020-21" "' 4 `""Middle" "2010" "' 5 `""Middle" "2016-17" "' 6 `""Middle" "2020-21" "' 7 `""Upper" "2010" "' 8 `""Upper" "2016-17" "' 9 `""Upper" "2020-21" "', angle(90)) ytitle("Debt service ratio (%)") legend(order(1 "Mean" 2 "Median") pos(6) col(2)) xtitle("") yla(0(100)600) ymtick(0(50)600) name(caste, replace)
+
+stripplot DSR_r, vertical ms(oh oh oh) mc(gs0 gs5 gs12) msize(tiny tiny tiny) separate(assetspanel_q3) tufte(ms(+) msize(normalsize)) whiskers(lpattern(blank)) over(group2) stack width(5) refline(lw(medthick) lpattern(dash)) reflevel(mean) reflinestretch(0.1) xla(1 `""Tercile 1" "2010" "' 2 `""Tercile 1" "2016-17" "' 3 `""Tercile 1" "2020-21" "' 4 `""Tercile 2" "2010" "' 5 `""Tercile 2" "2016-17" "' 6 `""Tercile 2" "2020-21" "' 7 `""Tercile 3" "2010" "' 8 `""Tercile 3" "2016-17" "' 9 `""Tercile 3" "2020-21" "', angle(90)) ytitle("Debt service ratio (%)") legend(order(1 "Mean" 2 "Median") pos(6) col(2)) xtitle("") yla(0(100)600) ymtick(0(50)600) name(assets, replace)
+
+grc1leg caste assets, col(1)
+graph export "graph/DSR_caste_wealth_BW_v2.pdf", as(pdf) 
+graph export "graph/DSR_caste_wealth_BW_v2.svg", as(svg)
+graph save "graph/DSR_caste_wealth_BW_v2.gph"
 
 
 ********** Observe strange households
