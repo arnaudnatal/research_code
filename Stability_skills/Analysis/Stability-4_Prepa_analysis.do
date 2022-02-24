@@ -173,6 +173,10 @@ egen abs_diff_fa_ES_cat10=cut(abs_diff_fa_ES), at(0,.5,5) icodes
 fre abs_diff_cr_ES_cat5 abs_diff_cr_ES_cat10 abs_diff_fa_ES_cat5 abs_diff_fa_ES_cat10
 
 
+gen abs_diff_fa_ES_cat10_cont=abs(diff_fa_ES)
+replace abs_diff_fa_ES_cat10_cont=. if  abs_diff_fa_ES_cat10==0
+ta abs_diff_fa_ES_cat10_cont
+
 
 
 ********** DELTA
@@ -445,13 +449,11 @@ save "panel_stab_wide_v5", replace
 
 
 
-
-
-
 ****************************************
-* Vérifications
+* ENUMERATORS RESPONDENT
 ****************************************
 use "panel_stab_wide_v5", clear
+
 
 ********** Enumerator / respondent
 ta sex username_neemsis1, col nofreq
@@ -462,81 +464,73 @@ ta moc_indiv username_neemsis1, col nofreq
 ta username_neemsis1 sex
 
 
-
-********** Matrices de transition
-***** AB
-xtile AB2016_q=ars32016, n(5)
-xtile AB2020_q=ars32020, n(5)
-
-ta AB2016_q AB2020_q, row nofreq chi2
-
-
-***** FA
-* Creation
-xtile fa_ES2016_q=fa_ES2016, n(5)
-xtile fa_ES2020_q=fa_ES2020, n(5)
-
-ta fa_ES2016_q fa_ES2020_q, row nofreq chi2
-
-* Graph 1
-*tabplot fa_ES2016_q fa_ES2020_q
-
-
-********** Absolut variation of AB
-corr ars32020 ars32016
-scatter ars32020 ars32016, msymbol(oh) ///
-note("Pearson correlation coefficient: r=-0.0851", pos(7) size(small)) ///
-xtitle("Absolut acquiescence score in 2016-17") ///
-ytitle("Absolut acquiescence score in 2020-21") 
-
-
-
-********** Cross section analysis for AB
-reg ars32016 ib(0).educode, allbase
-reg ars32020 ib(0).educode20, allbase
-
-ta educode, gen(educode_c)
+****************************************
+* END
 
 
 
 
-********** qreg AB 2016
-/*
-sqreg ars32016 educode_c2 educode_c3 educode_c4, quantile(.1 .2 .3 .4 .5 .6 .7 .8 .9) reps(100)
 
+
+
+
+
+
+
+
+
+****************************************
+* Heatmap / transition matrix
+****************************************
+use "panel_stab_wide_v5", clear
+
+*** Heatmap
 preserve
-gen q = _n*10 in 1/9
-
-foreach var of varlist educode_c2 educode_c3 educode_c4 {
-    gen _b_`var'  = .
-    gen _lb_`var' = .
-    gen _ub_`var' = .
-
-    local i = 1
-    foreach q of numlist 10(10)90 {
-        replace _b_`var' = _b[q`q':`var'] in `i'
-        replace _lb_`var' = _b[q`q':`var'] - _se[q`q':`var']*invnormal(.975) in `i'
-        replace _ub_`var' = _b[q`q':`var'] + _se[q`q':`var']*invnormal(.975) in `i++'
-    }
+macro drop _all
+****
+**** Enter Varname
+global varx fa_ES2016
+global vary fa_ES2020
+****
+**** Enter nb of bin
+global nbin 10
+****
+**** Calculations
+xtile x=$varx, n($nbin)
+xtile y=$vary, n($nbin)
+ta x, gen(x_)
+ta y, gen(y_)
+forvalues i=1(1)$nbin {
+bysort x y: egen n_tot`i'=sum(x_`i')
+qui count if n_tot`i'!=0
+gen perc_`i'=n_tot`i'/r(N)
 }
-keep q _b_* _lb_* _ub_*
-keep in 1/9
-reshape long _b_ _lb_ _ub_, i(q) j(var) string
-twoway rarea _lb_ _ub_ q, astyle(ci) yline(0) acolor(%90) || ///
-   line _b_ q,                                               ///
-   by(var, yrescale xrescale note("") legend(at(4) pos(0)))  ///
-   legend(order(2 "effect"                                   ///      
-                1 "95% confidence" "interval")               ///
-          cols(1))                                           ///
-   ytitle("")                       ///
-   ylab(,angle(0) format(%7.0gc))                            ///    
-   xlab(10(10)90) xtitle("")
+gen perc=.
+forvalues i=1(1)$nbin{
+replace perc=perc_`i' if perc_`i'!=0
+}
+grstyle init
+grstyle set plain, nogrid box
+****
+**** Modifications for graph aspect
+heatplot perc x y, ///
+colors(HSV grays, reverse) ///
+statistic(mean) ///
+xbwidth(1) xlab(0(1)$nbin) xtitle("Decile of the emotional stability score in 2016-17") ///
+ybwidth(1) ylab(0(1)$nbin) ytitle("Decile of the emotional stability score in 2020-21") ///
+legend(off) 
+graph save "heatmap_ES.gph", replace
+graph export "heatmap_ES.pdf", as(pdf) replace
+*values(format(%4.2f) color(red)) ///
+drop x y x_* y_* n_tot* perc_* perc
 restore
-*/
+
 
 save "panel_stab_wide_v6", replace
 ****************************************
 * END
+
+
 
 
 

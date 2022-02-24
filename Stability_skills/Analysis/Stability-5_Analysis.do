@@ -88,7 +88,7 @@ est store ars2_1
 reg ars32020 i.sex i.caste ib(1).age_cat ib(0).educode i.villageid2020 ib(4).username_neemsis2, allbase
 est store ars2_2
 
-
+/*
 esttab ars1_1 ars1_2 ars2_1 ars2_2 using "_reg.csv", ///
 	star(* 0.10 ** 0.05 *** 0.01) ///
 	cells("b(fmt(2)) t(fmt(2)par)") /// 
@@ -96,7 +96,8 @@ esttab ars1_1 ars1_2 ars2_1 ars2_2 using "_reg.csv", ///
 	legend label varlabels(_cons constant) ///
 	stats(N r2 F, fmt(0 3 3) labels(`"Observations"' `"\$R^2$"' `"F"')) ///
 	replace
-
+*/
+	
 ****************************************
 * END
 
@@ -204,23 +205,36 @@ graph save "sub_ES.gph", replace
 
 ********** Difference over trajectory
 *** Descriptive statistics for factor Big-5
-ta sex diff_fa_ES_cat5, col nofreq chi2
-ta caste diff_fa_ES_cat5, col nofreq chi2
-ta age_cat diff_fa_ES_cat5, col nofreq chi2
-ta educode diff_fa_ES_cat5, col nofreq chi2
-ta moc_indiv diff_fa_ES_cat5, col nofreq chi2
-ta annualincome_indiv2016_q diff_fa_ES_cat5, col nofreq chi2
-ta dummydemonetisation2016 diff_fa_ES_cat5, col nofreq chi2
-ta covsellland2020 diff_fa_ES_cat5, col nofreq chi2
+cls
+ta diff_fa_ES_cat10
+ta sex diff_fa_ES_cat10, row nofreq chi2
+ta caste diff_fa_ES_cat10, row nofreq chi2
+ta age_cat diff_fa_ES_cat10, row nofreq chi2
+ta educode diff_fa_ES_cat10, row nofreq chi2
+ta moc_indiv diff_fa_ES_cat10, row nofreq chi2
+ta annualincome_indiv2016_q diff_fa_ES_cat10, row nofreq chi2
+ta dummydemonetisation2016 diff_fa_ES_cat10, row nofreq chi2
+ta covsellland2020 diff_fa_ES_cat10, row nofreq chi2
 
-ta villageid2016 diff_fa_ES_cat5, col nofreq chi2
-ta diff_ars3_cat5 diff_fa_ES_cat5, col nofreq chi2
-ta username_neemsis2 diff_fa_ES_cat5, col nofreq chi2
+ta villageid2016 diff_fa_ES_cat10, row nofreq chi2
+ta diff_ars3_cat5 diff_fa_ES_cat10, row nofreq chi2
+ta username_neemsis2 diff_fa_ES_cat10, row nofreq chi2
 
-tabstat age2016 annualincome_indiv2016 assets2016 diff_ars3 ars32016 ars32020, stat(n mean sd p50) by(diff_fa_ES_cat5)
+tabstat age2016 annualincome_indiv2016 assets2016 diff_ars3 ars32016 ars32020, stat(n mean sd p50) by(diff_fa_ES_cat10)
 
+ta caste diff_fa_ES_cat10, cchi2 exp chi2
+ta age_cat diff_fa_ES_cat10, cchi2 exp chi2
+ta educode diff_fa_ES_cat10, cchi2 exp chi2
+ta moc_indiv diff_fa_ES_cat10, cchi2 exp chi2
+ta dummydemonetisation2016 diff_fa_ES_cat10, cchi2 exp chi2
+ta covsellland2020 diff_fa_ES_cat10, cchi2 exp chi2
 
-*** How much the bias explain?
+ta diff_ars3_cat5 diff_fa_ES_cat10, cchi2 exp chi2
+ta diff_ars3_cat5 diff_fa_ES_cat10, nofreq row
+
+ta username_neemsis2 diff_fa_ES_cat10, cchi2 exp
+
+********** How much the bias explain?
 reg abs_diff_fa_ES_cat5 i.sex i.caste ib(1).age_cat ib(0).educode i.villageid2020, allbase
 * R2 --> 3.85
 reg abs_diff_fa_ES_cat5 diff_ars3 i.sex i.caste ib(1).age_cat ib(0).educode i.villageid2020, allbase
@@ -233,6 +247,25 @@ reg abs_diff_fa_ES diff_ars3 i.sex i.caste ib(1).age_cat ib(0).educode i.village
 * R2 --> 13.89
 
 
+
+
+
+
+********** Contribution of enumerator in score of personality traits
+
+***** 2016-17
+reg fa_ES2016 i.female ib(1).caste i.educode i.age_cat ib(2).moc_indiv i.marital ib(2).annualincome_indiv2016_q, allbase
+*R2a=0.0892
+reg fa_ES2016 i.username_neemsis1 i.female ib(1).caste i.educode i.age_cat ib(2).moc_indiv i.marital ib(2).annualincome_indiv2016_q, allbase
+*R2a=0.3036
+dis (30.36-8.92)*100/8.92
+
+***** 2020-21
+reg fa_ES2020 i.female ib(1).caste i.educode i.age_cat ib(2).moc_indiv i.marital ib(2).annualincome_indiv2016_q, allbase
+*R2a=0.0285
+reg fa_ES2020 i.username_neemsis2 i.female ib(1).caste i.educode i.age_cat ib(2).moc_indiv i.marital ib(2).annualincome_indiv2016_q, allbase
+*R2a=0.4093
+dis (40.93-2.85)*100/2.85
 
 
 
@@ -258,14 +291,26 @@ reg abs_diff_fa_ES diff_ars3 i.sex i.caste ib(1).age_cat ib(0).educode i.village
 use "panel_stab_wide_v6", clear
 *keep if age25==1
 
-recode pathabs_diff_fa_cat5 (1=0) (2=1)
-label define pathabs_diff_fa_cat5 0"Decreasing" 1"Increasing"
-label values pathabs_diff_fa_cat5 pathabs_diff_fa_cat5
 
+********** Recode before reg
+recode pathabs_diff_fa_cat10 (1=0) (2=1)
+label define pathabs_diff_fa_cat10 0"Decreasing" 1"Increasing"
+label values pathabs_diff_fa_cat10 pathabs_diff_fa_cat10
 
-*** Naïve taxonomy
-* No interraction
-reg abs_diff_fa_ES ///
+ta pathabs_diff_fa_cat10
+
+gen abs_diff_fa_ES_cat10_cont_dec=abs_diff_fa_ES_cat10_cont if pathabs_diff_fa_cat10==0
+gen abs_diff_fa_ES_cat10_cont_inc=abs_diff_fa_ES_cat10_cont if pathabs_diff_fa_cat10==1
+
+ta abs_diff_fa_ES_cat10_cont_dec
+ta abs_diff_fa_ES_cat10_cont_inc
+
+codebook caste
+label define castecat2 1"Caste: Dalits" 2"Caste: Middle" 3"Caste: Upper", modify
+
+/*
+********** INC + DEC = FULL SAMPLE WITHOUT INT
+reg abs_diff_fa_ES_cat10_cont ///
 i.female ///
 ib(1).caste ///
 i.educode ///
@@ -280,61 +325,95 @@ i.villageid2016 ///
 ib(2).diff_ars3_cat5 ///
 i.username_neemsis2 ///
 , cluster(cluster) allbase
-est store abs_diff
-predict res, res
+est store full
+*/
 
-
-********** Contribution of enumerator in score of personality traits
-
-***** 2016-17
-reg fa_ES2016 i.female ib(1).caste i.educode i.age_cat ib(2).moc_indiv i.marital ib(2).annualincome_indiv2016_q, allbase
-*R2a=0.0892
-reg fa_ES2016 i.username_neemsis1 i.female ib(1).caste i.educode i.age_cat ib(2).moc_indiv i.marital ib(2).annualincome_indiv2016_q, allbase
-*R2a=0.3036
-dis (30.36-8.92)*100/8.92
-
-***** 2020-21
-reg fa_ES2020 i.female ib(1).caste i.educode i.age_cat ib(2).moc_indiv i.marital ib(2).annualincome_indiv2016_q, allbase
-*R2a=0.0285
-reg fa_ES2020 i.username_neemsis2 i.female ib(1).caste i.educode i.age_cat ib(2).moc_indiv i.marital ib(2).annualincome_indiv2016_q, allbase
-*R2a=0.4093
-dis (40.93-2.85)*100/2.85
-
-
-
-
-
-
-* Interaction
-reg abs_diff_fa_ES ///
-i.female##pathabs_diff_fa_cat5 ///
-ib(1).caste##pathabs_diff_fa_cat5 ///
-i.educode##pathabs_diff_fa_cat5 ///
-i.age_cat##pathabs_diff_fa_cat5 ///
-ib(2).moc_indiv##pathabs_diff_fa_cat5 ///
-i.marital##pathabs_diff_fa_cat5 ///
-ib(2).annualincome_indiv2016_q##pathabs_diff_fa_cat5 ///
+********** INC
+reg abs_diff_fa_ES_cat10_cont_inc ///
+i.female ///
+ib(1).caste ///
+i.educode ///
+i.age_cat ///
+ib(2).moc_indiv ///
+i.marital ///
+ib(2).annualincome_indiv2016_q ///
 i.dummydemonetisation2016 ///
 i.covsellland2020 ///
 ib(2).assets2016_q ///
-i.villageid2016 ///
-ib(2).diff_ars3_cat5 ///
+ib(1).diff_ars3_cat5 ///
 i.username_neemsis2 ///
-, cluster(cluster)
-est store abs_diff_int
+i.villageid2016 ///
+, cluster(cluster) allbase
+est store inc
 
-margins, dydx(female caste age_cat educode moc_indiv marital annualincome_indiv2016_q) at(pathabs_diff_fa_cat5=(0 1)) atmeans allbase saving(margin, replace)
 
+********** DEC
+reg abs_diff_fa_ES_cat10_cont_dec ///
+i.female ///
+ib(1).caste ///
+i.educode ///
+i.age_cat ///
+ib(2).moc_indiv ///
+i.marital ///
+ib(2).annualincome_indiv2016_q ///
+i.dummydemonetisation2016 ///
+i.covsellland2020 ///
+ib(2).assets2016_q ///
+ib(1).diff_ars3_cat5 ///
+i.username_neemsis2 ///
+i.villageid2016 ///
+, cluster(cluster) allbase
+est store dec
+return list
+ereturn list
 
-esttab abs_diff using "_reg.csv", ///
+	
+esttab inc dec using "reg.tex", replace f ///
+	label booktabs b(3) p(3) eqlabels(none) alignment(S S) collabels("\multicolumn{1}{c}{$\beta$}" "\multicolumn{1}{c}{Std. Err.}") ///
+	drop(_cons) ///
 	star(* 0.10 ** 0.05 *** 0.01) ///
-	cells("b(fmt(2)star) se(fmt(2)par)") /// 
-	drop() ///	
-	legend label varlabels(_cons constant) ///
-	stats(N r2 F, fmt(0 3 3) labels(`"Observations"' `"\$R^2$"' `"F"')) ///
-	replace
+	cells("b(fmt(2)star) se(fmt(2)par)") ///
+	refcat(, nolabel) ///
+	stats(N r2 r2_a F p, fmt(0 2 2 2) layout("\multicolumn{1}{c}{@}" "\multicolumn{1}{S}{@}" "\multicolumn{1}{S}{@}" "\multicolumn{1}{S}{@}" "\multicolumn{1}{S}{@}") labels(`"Observations"' `"\(R^{2}\)"' `"Adjusted \(R^{2}\)"' `"F-stat"' `"p-value"'))
+
+****************************************
+* END	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+****************************************
+* QUANTILE REG
+****************************************
+use "panel_stab_wide_v6", clear
+*keep if age25==1
 
 
+********** Recode before reg
+recode pathabs_diff_fa_cat10 (1=0) (2=1)
+label define pathabs_diff_fa_cat10 0"Decreasing" 1"Increasing"
+label values pathabs_diff_fa_cat10 pathabs_diff_fa_cat10
+
+ta pathabs_diff_fa_cat10
+
+gen abs_diff_fa_ES_cat10_cont_dec=abs_diff_fa_ES_cat10_cont if pathabs_diff_fa_cat10==0
+gen abs_diff_fa_ES_cat10_cont_inc=abs_diff_fa_ES_cat10_cont if pathabs_diff_fa_cat10==1
+
+ta abs_diff_fa_ES_cat10_cont_dec
+ta abs_diff_fa_ES_cat10_cont_inc
 
 
 ********** Qreg diff
@@ -369,141 +448,5 @@ twoway rarea _lb_ _ub_ q, astyle(ci) yline(0) acolor(%90) || ///
    xlab(10(10)90) xtitle("")
 restore
 
-
-
-
-
-
-
-
-
-
-
-
-****************************************
-* END
-
-
-
-
-
-
-
-
-
-
-/*
-
-
-****************************************
-* Format
-****************************************
-use"margin", clear
-
-label define cat 2"Sex: Female" 4"Caste: Middle" 5"Caste: Upper" 7"Edu: Primary" 8"Edu: High school" 9"Edu: HSC-Diploma or more" 11"Age: [35;45[" 12"Age: [45;55[" 13"Age: [55;+[" 14"Occ: No occupation" 15"Occ: Agriculture" 17"Occ: Coolie" 18"Occ: Regular" 19"Occ: SE" 20"Occ: NREGA" 22"Married: No" 23"Income: T1" 25"Income: T3", replace
-label values _deriv cat
-decode _deriv, gen(deriv)
-tostring _at, gen(at)
-replace at="1" if _at==1
-replace at="2" if _at==2
-keep _deriv at _margin _se _statistic _pvalue _ci_lb _ci_ub
-foreach y in margin se statistic pvalue ci_lb ci_ub {
-gen `y'=_`y'
-}
-keep _deriv margin se pvalue at
-
-gen margin_str=strofreal(margin, "%9.2f")
-gen se_str=strofreal(se, "%9.2f")
-gen pvalue_str=strofreal(pvalue, "%9.2f")
-foreach x in margin se pvalue {
-drop `x'
-rename `x'_str `x'
-}
-
-gen xo="("
-gen xc=")"
-egen se_par=concat(xo se xc)
-drop se xo xc
-rename se_par se
-order se, after(margin)
-reshape wide margin se pvalue, i(_deriv) j(at) string
-decode _deriv, gen(cat)
-drop _deriv
-order cat
-
-gen nstr=""
-order nstr, after(pvalue1)
-
-gen n=_n
-set obs `=_N+1'
-recode n (.=0)
-sort n
-replace cat="Sex: Male (ref.)" if cat==""
-drop n
-
-gen n=_n
-set obs `=_N+1'
-recode n (.=2.5)
-sort n
-replace cat="Caste: Dalit (ref.)" if cat==""
-drop n
-
-gen n=_n
-set obs `=_N+1'
-recode n (.=5.5)
-sort n
-replace cat="Edu: Below primary (ref.)" if cat==""
-drop n
-
-gen n=_n
-set obs `=_N+1'
-recode n (.=9.5)
-sort n
-replace cat="Age: [25;35[ (ref.)" if cat==""
-drop n
-
-gen n=_n
-set obs `=_N+1'
-recode n (.=15.5)
-sort n
-replace cat="Occ: Agri coolie (ref.)" if cat==""
-drop n
-
-gen n=_n
-set obs `=_N+1'
-recode n (.=20.5)
-sort n
-replace cat="Married: Yes (ref.)" if cat==""
-drop n
-
-gen n=_n
-set obs `=_N+1'
-recode n (.=23.5)
-sort n
-replace cat="Income: T2 (ref.)" if cat==""
-drop n
-
-gen n=_n
-set obs `=_N+1'
-recode n (.=0)
-sort n
-forvalues i=1(1)2 {
-replace margin`i'="ME" if margin`i'=="" & n==0
-replace se`i'="Std. Err." if se`i'=="" & n==0
-replace pvalue`i'="p-value" if pvalue`i'=="" & n==0
-}
-drop n
-
-gen n=_n
-set obs `=_N+1'
-recode n (.=0)
-sort n
-replace margin1="Average decreasing indiv." if n==0
-replace margin2="Average increasing indiv." if n==0
-drop n
-replace margin1="." if margin1==""
-replace margin2="." if margin2==""
-
-export excel "margin.xlsx", replace
 ****************************************
 * END
