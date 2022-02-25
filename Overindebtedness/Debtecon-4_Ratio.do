@@ -236,34 +236,46 @@ tabstat DSR_r if panel==1 & assetspanel_q3==1, stat(n mean sd q) by(year)
 tabstat DSR_r if panel==1 & assetspanel_q3==2, stat(n mean sd q) by(year)
 tabstat DSR_r if panel==1 & assetspanel_q3==3, stat(n mean sd q) by(year)
 
-set graph off
+*set graph off
+drop if time==3
+*** Over caste
+egen median = median(DSR_r), by(time)
+replace median=round(median,0.1)
+ta median
+gen x2=.
+gen x3=.
+replace x2=time-0.45
+replace x3=time+0.45
+
 *** Over caste
 stripplot DSR_r if panel==1, over(time) separate(caste) ///
-cumul cumprob box centre refline vertical /// 
+cumul cumprob centre refline vertical /// 
 xsize(3) xlabel(,angle(0))  ///
 ylabel(#10) ymtick(#20) ///
-msymbol(oh + oh) mcolor(gs0 gs6 gs12) ///
-legend(order(4 "Dalits" 5 "Middle castes" 6 "Upper castes") pos(6) col(3)) ///
-xtitle("") ytitle("%") ///
-title("Over time and castes") ///
+msymbol(oh oh oh) msize(medium medium medium) mcolor(plr1%50 ply1%50 plg1%50) ///
+legend(order(2 "Dalits" 3 "Middle castes" 4 "Upper castes" 1 "Mean" 5 "Median") pos(6) col(3)) ///
+xtitle("") ytitle("Debt service ratio (%)") ///
+title("") ///
+addplot(rspike x3 x2 median, mla() msymbol(+) horizontal) ///
 note("", size(small)) name(caste, replace)
 
 *** Over wealth
 stripplot DSR_r if panel==1, over(time) separate(assetspanel_q3) ///
-cumul cumprob box centre refline vertical stack /// 
+cumul cumprob centre refline vertical /// 
 xsize(3) xlabel(,angle(0))  ///
 ylabel(#10) ymtick(#20) ///
-msymbol(oh + oh) mcolor(gs0 gs6 gs12) msize(small small small) ///
-legend(order(4 "Tercile 1" 5 "Tercile 2" 6 "Tercile 3") pos(6) col(3)) ///
-xtitle("") ytitle("%") ///
-title("Over time and terciles of wealth") ///
+msymbol(oh oh oh) msize(medium medium medium) mcolor(plr1%50 ply1%50 plg1%50) ///
+legend(order(2 "Tercile 1" 3 "Tercile 2" 4 "Tercile 3" 1 "Mean" 5 "Median") pos(6) col(3)) ///
+xtitle("") ytitle("Debt service ratio (%)") ///
+title("") ///
+addplot(rspike x3 x2 median, mla() msymbol(+) horizontal) ///
 note("", size(small)) name(wealth, replace)
 
 set graph on
-*graph combine caste wealth, title("Debt service ratio") 
-*graph export "graph/DSR_caste_wealth_BW.pdf", as(pdf) 
-*graph export "graph/DSR_caste_wealth_BW.svg", as(svg)
-*graph save "graph/DSR_caste_wealth_BW.gph"
+graph combine caste wealth
+graph export "graph/DSR_caste_wealth_col.pdf", as(pdf) 
+graph export "graph/DSR_caste_wealth_col.svg", as(svg)
+graph save "graph/DSR_caste_wealth_BW.gph"
 
 ********** Second test
 egen group=group(caste year)
