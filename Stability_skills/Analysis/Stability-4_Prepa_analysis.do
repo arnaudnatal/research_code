@@ -486,8 +486,8 @@ use "panel_stab_wide_v5", clear
 
 
 *** Heatmap
-*preserve
-*macro drop _all
+preserve
+macro drop _all
 ****
 **** Enter Varname
 global varx fa_ES2016
@@ -517,8 +517,8 @@ grstyle set plain, nogrid box
 heatplot perc x y, ///
 colors(HSV grays, reverse) ///
 statistic(mean) ///
-xbwidth(1) xlab(0(1)$nbin) xtitle("Decile of the emotional stability score in 2020-21") ///
-ybwidth(1) ylab(0(1)$nbin) ytitle("Decile of the emotional stability score in 2016-17") ///
+xscale(alt) xbwidth(1) xlab(0(1)$nbin) xtitle("Decile of the emotional stability score in 2020-21") ///
+yscale(reverse) ybwidth(1) ylab(0(1)$nbin) ytitle("Decile of the emotional stability score in 2016-17") ///
 legend(off) title("")
 graph save "heatmap_ES.gph", replace
 graph export "heatmap_ES.pdf", as(pdf) replace
