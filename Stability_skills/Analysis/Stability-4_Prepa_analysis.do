@@ -484,9 +484,10 @@ ta username_neemsis1 sex
 ****************************************
 use "panel_stab_wide_v5", clear
 
+
 *** Heatmap
-preserve
-macro drop _all
+*preserve
+*macro drop _all
 ****
 **** Enter Varname
 global varx fa_ES2016
@@ -516,14 +517,16 @@ grstyle set plain, nogrid box
 heatplot perc x y, ///
 colors(HSV grays, reverse) ///
 statistic(mean) ///
-xbwidth(1) xlab(0(1)$nbin) xtitle("Decile of the emotional stability score in 2016-17") ///
-ybwidth(1) ylab(0(1)$nbin) ytitle("Decile of the emotional stability score in 2020-21") ///
-legend(off) 
+xbwidth(1) xlab(0(1)$nbin) xtitle("Decile of the emotional stability score in 2020-21") ///
+ybwidth(1) ylab(0(1)$nbin) ytitle("Decile of the emotional stability score in 2016-17") ///
+legend(off) title("")
 graph save "heatmap_ES.gph", replace
 graph export "heatmap_ES.pdf", as(pdf) replace
-*values(format(%4.2f) color(red)) ///
-drop x y x_* y_* n_tot* perc_* perc
+ta x y, row nofreq
+drop  x_* y_* n_tot* perc_* perc
 restore
+
+*values(format(%4.2f) color(red)) ///
 
 
 save "panel_stab_wide_v6", replace
