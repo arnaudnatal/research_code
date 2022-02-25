@@ -141,6 +141,24 @@ tab age25
 * 740 individuals on 835
 
 
+
+********** Histo + kdensity
+/*
+twoway__histogram_gen diff_fa_ES, percent bin(70) gen(h x, replace)
+twoway ///
+(bar h x if x<-.5, color() barwidth(0.1)) ///
+(bar h x if x>=-.5 & x<=.5, color() barwidth(0.1)) ///
+(bar h x if x>.5, color() barwidth(0.1)) ///
+(kdensity diff_fa_ES, yaxis(2) lpattern(solid) bwidth(0.2)ytitle("Kernel density", axis(2))) ///
+, ///
+xtitle("Percent") ytitle("ΔES - Factor app.") ///
+ylabel(, grid gmax gmin) xlabel(, nogrid gmax gmin) ///
+plotregion(margin(none)) legend(order(1 "Decreasing" 2 "Stable" 3 "Increasing") pos(6) col(3)) note("Kernel: epanechnikov" "Bandwidth=0.2", size(vsmall))
+graph save "histo_ES.gph", replace
+graph export "histo_ES.pdf", as(pdf) replace
+*/
+
+
 /*
 *** Scatter
 twoway ///
