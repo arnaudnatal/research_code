@@ -236,8 +236,8 @@ tabstat DSR_r if panel==1 & assetspanel_q3==1, stat(n mean sd q) by(year)
 tabstat DSR_r if panel==1 & assetspanel_q3==2, stat(n mean sd q) by(year)
 tabstat DSR_r if panel==1 & assetspanel_q3==3, stat(n mean sd q) by(year)
 
-*set graph off
-drop if time==3
+set graph off
+*drop if time==3
 *** Over caste
 egen median = median(DSR_r), by(time)
 replace median=round(median,0.1)
@@ -273,9 +273,9 @@ note("", size(small)) name(wealth, replace)
 
 set graph on
 graph combine caste wealth
-graph export "graph/DSR_caste_wealth_col.pdf", as(pdf) 
-graph export "graph/DSR_caste_wealth_col.svg", as(svg)
-graph save "graph/DSR_caste_wealth_BW.gph"
+graph export "graph/DSR_caste_wealth_col.pdf", as(pdf) replace
+graph export "graph/DSR_caste_wealth_col.svg", as(svg) replace
+graph save "graph/DSR_caste_wealth_BW.gph", replace
 
 ********** Second test
 egen group=group(caste year)
