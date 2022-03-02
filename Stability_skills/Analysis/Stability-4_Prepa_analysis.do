@@ -499,8 +499,9 @@ global nbin 10
 **** Calculations
 xtile x=$varx, n($nbin)
 xtile y=$vary, n($nbin)
-ta x, gen(x_)
-ta y, gen(y_)
+ta x y, row nofreq
+qui ta x, gen(x_)
+qui ta y, gen(y_)
 forvalues i=1(1)$nbin {
 bysort x y: egen n_tot`i'=sum(x_`i')
 qui count if n_tot`i'!=0
