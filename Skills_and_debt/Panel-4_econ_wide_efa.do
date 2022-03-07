@@ -122,19 +122,11 @@ mdesc $quali $qualiml $quanti
 
 
 
-
-
-
-
-
-
-
-
 ****************************************
 * PROBIT
 ****************************************
 
-********** Reg RECOURSE
+********** Probit RECOURSE
 foreach x in $quali{
 
 qui probit `x' indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits, vce(cluster HHFE)
@@ -178,7 +170,7 @@ restore
 
 
 
-********** Reg NEGOTIATION
+********** Probit NEGOTIATION
 foreach x in $qualinego{
 
 qui probit `x' indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits c.share_nb_samesex c.share_nb_samecaste, vce(cluster HHFE)
@@ -221,7 +213,7 @@ restore
 
 
 
-********** Reg MANAGEMENT
+********** Probit MANAGEMENT
 foreach x in $qualimana{
 
 qui probit `x' indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits c.loanamount_indiv, vce(cluster HHFE)
@@ -322,8 +314,9 @@ qui margins, dydx(base_f1_std base_f2_std base_f3_std base_f5_std base_raven_tt_
 
 
 
+gen byte baseline=1
 
-
+logit borrowerservices_none indebt_indiv_1 $indivcontrol $hhcontrol4 $villagesFE c.base_f1_std##i.dalits c.base_f2_std##i.dalits c.base_f3_std##i.dalits c.base_f5_std##i.dalits c.base_raven_tt_std##i.dalits c.base_num_tt_std##i.dalits c.base_lit_tt_std##i.dalits female c.share_nb_samesex c.share_nb_samecaste baseline, vce(cluster HHFE) nolog nocons or
 
 
 
