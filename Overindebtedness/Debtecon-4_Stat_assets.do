@@ -77,7 +77,7 @@ global loan3 "NEEMSIS2-all_loans"
 ****************************************
 * Assets index
 ****************************************
-use"panel_v3", clear
+use"panel_v4", clear
 
 ta panel
 keep if panel==1
@@ -240,13 +240,52 @@ ta path_assets_noland assets2010_q, nofreq col
 
 
 
+****************************************
+* Evo assets
+****************************************
+use"panel_v4", clear
+
+ta caste year
+
+*** Not balanced
+cls
+ta ownland year if caste==1, col nofreq
+ta ownland year if caste==2, col nofreq
+ta ownland year if caste==3, col nofreq
+
+tabstat sizeownland shareagri annualincome if caste==1, stat(n mean sd p50) by(year) col(var)
+tabstat sizeownland shareagri annualincome if caste==2, stat(n mean sd p50) by(year) col(var)
+tabstat sizeownland shareagri annualincome if caste==3, stat(n mean sd p50) by(year) col(var)
+
+
+*** Strongly balanced
+keep if panel==1
+cls
+ta ownland year if caste==1, col nofreq
+ta ownland year if caste==2, col nofreq
+ta ownland year if caste==3, col nofreq
+
+tabstat sizeownland shareagri annualincome if caste==1, stat(n mean sd p50) by(year) col(var)
+tabstat sizeownland shareagri annualincome if caste==2, stat(n mean sd p50) by(year) col(var)
+tabstat sizeownland shareagri annualincome if caste==3, stat(n mean sd p50) by(year) col(var)
+****************************************
+* END
+
+
+
+
+
+
+
+
+
 
 
 
 ****************************************
 * How assets evo?
 ****************************************
-use"panel_v3", clear
+use"panel_v4", clear
 
 *** Initialization
 xtset time panelvar
@@ -297,7 +336,7 @@ tabstat $assetsanalysis if caste==`i', stat(mean sd p50) by(year)
 ****************************************
 * Reshape for strange evolution
 ****************************************
-use"panel_v3", clear
+use"panel_v4", clear
 
 ********** Initialization
 xtset time panelvar
@@ -420,18 +459,11 @@ sort b2_loanamount
 
 
 
-
-
-
-
-
-
-
 /*
 ****************************************
 * Change
 ****************************************
-use"panel_v3", clear
+use"panel_v4", clear
 
 
 ********** To change
@@ -464,3 +496,41 @@ sort pb2 HHID_panel year
 
 ****************************************
 * END
+*/
+
+
+
+
+
+
+/*
+****************************************
+* Graph
+****************************************
+
+********** Graph line
+global toana assets_noland1000 assetsnew_noland1000 livestock housevalue housevalue_new goldquantityamount goldquantityamount_new goodtotalamount
+
+foreach y in mean median {
+set graph off
+preserve
+collapse (`y') $toana, by(caste year)
+foreach x in $toana {
+twoway ///
+(line `x' year if caste==1) ///
+(line `x' year if caste==2) ///
+(line `x' year if caste==3) ///
+, ///
+ytitle("`x'") xtitle("Year") ///
+xlabel(2010 2016 2020, ang(45)) ///
+legend(order(1 "Dalits" 2 "Middle" 3 "Upper") col(3)) ///
+name(`x', replace)
+}
+grc1leg $toana, name(comb_`y', replace) title("`y'") col(3)
+graph export "graph/line_desc_`y'.pdf", replace
+restore
+set graph on
+}
+****************************************
+* END
+*/

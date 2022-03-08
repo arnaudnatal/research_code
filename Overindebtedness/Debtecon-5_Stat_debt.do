@@ -3,9 +3,9 @@ cls
 -------------------------
 Arnaud Natal
 arnaud.natal@u-bordeaux.fr
-September 30, 2021
+December 07, 2021
 -----
-Panel for indebtedness and over-indebtedness
+Stat for indebtedness and over-indebtedness
 -----
 
 -------------------------
@@ -25,7 +25,6 @@ Panel for indebtedness and over-indebtedness
 clear all
 macro drop _all
 
-
 global user "anatal"
 global folder "Downloads"
 
@@ -33,6 +32,7 @@ global folder "Downloads"
 global directory = "C:\Users\\$user\\$folder\_Thesis\Research-Overindebtedness\Persistence_over"
 cd"$directory"
 global git "C:\Users\\$user\\$folder\GitHub"
+
 
 *Fac
 *cd "C:\Users\anatal\Downloads\_Thesis\Research-Skills_and_debt\Analysis"
@@ -71,149 +71,8 @@ global loan3 "NEEMSIS2-all_loans"
 
 
 
-
-
-
-
 ****************************************
-* Ratio
-****************************************
-use"panel_v3", clear
-
-
-
-********** Replace assets
-/*
-egen assetsnew=rowtotal(amountownland livestock housevalue_new goldquantityamount_new goodtotalamount)
-egen assetsnew_noland=rowtotal(livestock housevalue_new goldquantityamount_new goodtotalamount)
-gen assetsnew1000=assetsnew/1000
-gen assetsnew_noland1000=assetsnew_noland/1000
-drop assetsnew assetsnew_noland
-
-tabstat assets1000 assetsnew1000 assets_noland1000 assetsnew_noland1000, stat(n mean sd p50) by(year)
-
-global assecalc assets1000 assetsnew1000 assets_noland1000 assetsnew_noland1000
-*/
-
-
-
-**********Debt measure
-tabstat loanamount, stat(mean sd p50) by(year)
-forvalues i=1(1)3{
-tabstat loanamount if caste==`i', stat(mean sd p50) by(year)
-}
-
-*Continuous
-gen DIR=loanamount/annualincome
-
-gen DAR_without=loanamount/assets_noland
-gen DAR_with=loanamount/assets
-
-*gen DAR_with_new=loanamount/assetsnew
-*gen DAR_without_new=loanamount/assetsnew_noland
-
-gen DSR=imp1_ds_tot/annualincome
-gen ISR=imp1_is_tot/annualincome
-
-order HHID_panel year imp1_ds_tot annualincome DSR
-sort DSR
-
-*Dummy for overindebtedness
-foreach x in DSR DAR_with DAR_without { //DAR_with_new DAR_without_new {
-forvalues i=30(10)50{
-gen `x'`i'=0
-}
-}
-
-foreach x in DSR DAR_with DAR_without { //DAR_with_new DAR_without_new {
-forvalues i=30(10)50{
-replace `x'`i'=1 if `x'>=.`i' & `x'!=.
-}
-}
-
-
-*** Recode for extreme
-foreach x in DIR DAR_with DAR_without DSR ISR {
-clonevar `x'_r=`x'
-}
-
-tabstat DIR DAR_with DAR_without DSR ISR, stat(n mean sd p50 p95 p99 max) by(year) long
-tabstat DIR DAR_with DAR_without DSR ISR if panel==1, stat(n mean sd p50 p95 p99 max) by(year) long
-
-
-replace DIR_r=9.5 if DIR>=10 & year==2010
-replace DIR_r=25.51 if DIR>=26 & year==2016
-replace DIR_r=50 if DIR>=51 & year==2020
-
-replace DAR_with_r=2 if DAR_with>=2.2 & year==2010
-replace DAR_with_r=10.41 if DAR_with>=11 & year==2016
-replace DAR_with_r=2.32 if DAR_with>=2.5 & year==2020
-
-replace DAR_without_r=2 if DAR_without>=2.2 & year==2010
-replace DAR_without_r=10.41 if DAR_without>=11 & year==2016
-replace DAR_without_r=2.32 if DAR_without>=2.5 & year==2020
-
-/*
-replace DAR_with_new_r=2 if DAR_with_new>=2.2 & year==2010
-replace DAR_with_new_r=10.41 if DAR_with_new>=11 & year==2016
-replace DAR_with_new_r=2.32 if DAR_with_new>=2.5 & year==2020
-
-replace DAR_without_new_r=2 if DAR_without_new>=2.2 & year==2010
-replace DAR_without_new_r=10.41 if DAR_without_new>=11 & year==2016
-replace DAR_without_new_r=2.32 if DAR_without_new>=2.5 & year==2020
-*/
-
-replace DSR_r=6 if DSR>=6 & year==2010
-replace DSR_r=6 if DSR>=6 & year==2016
-replace DSR_r=6 if DSR>=6 & year==2020
-
-replace DSR_r=DSR_r*100
-
-replace ISR_r=0.74 if ISR>=0.75 & year==2010
-replace ISR_r=2.34 if ISR>=2.35 & year==2016
-replace ISR_r=3.11 if ISR>=3.13 & year==2020
-
-
-********** Wealth panel
-xtile assets2010panel_q3=assets if year==2010 & panel==1, n(3)
-xtile assets2010panel_q4=assets if year==2010 & panel==1, n(4)
-
-bysort HHID_panel: egen assetspanel_q3=max(assets2010panel_q3) if panel==1
-bysort HHID_panel: egen assetspanel_q4=max(assets2010panel_q4) if panel==1
-
-ta assetspanel_q3 year
-ta assetspanel_q4 year
-
-
-********** Income panel
-xtile income2010panel_q3=annualincome if year==2010 & panel==1, n(3)
-xtile income2010panel_q4=annualincome if year==2010 & panel==1, n(4)
-
-bysort HHID_panel: egen incomepanel_q3=max(income2010panel_q3) if panel==1
-bysort HHID_panel: egen incomepanel_q4=max(income2010panel_q4) if panel==1
-
-ta incomepanel_q3 year
-ta incomepanel_q4 year
-
-
-save"panel_v4", replace
-****************************************
-* END
-
-
-
-
-
-
-
-
-
-
-
-
-
-****************************************
-* Evo
+* Isabelle new graphes
 ****************************************
 use"panel_v4", clear
 
@@ -230,6 +89,7 @@ reshape wide $var caste, i(HHID_panel) j(year)
 */
 
 
+/*
 ********** Isabelle book
 tabstat DSR_r if panel==1, stat(n mean sd q) by(year)
 
@@ -329,6 +189,60 @@ graph export "graph/comb`cat'_`x'.pdf", replace
 set graph on
 }
 }
+*/
+****************************************
+* END
 
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Stat debt evo
+****************************************
+use"panel_v4", clear
+
+
+********** Initialization
+xtset panelvar time
+
+
+********** Kernel
+foreach y in 2010 2016 2020 {
+foreach x in DIR DAR DSR ISR {
+qui sum `x'_r, det
+local maxv=r(max)
+set graph off
+twoway ///
+(kdensity `x'_r if caste==1 & year==`y', bwidth(.5)) ///
+(kdensity `x'_r if caste==2 & year==`y', bwidth(.5)) ///
+(kdensity `x'_r if caste==3 & year==`y', bwidth(.5)) ///
+, ///
+xlabel(0(1)`maxv') ///
+legend(order(1 "Dalits" 2 "Middle" 3 "Upper") col(3)) ///
+name(`x'_`y', replace)
+set graph on
+}
+}
+
+grc1leg DIR_2010 DIR_2016 DIR_2020 DAR_2010 DAR_2016 DAR_2020 DSR_2010 DSR_2016 DSR_2020 ISR_2010 ISR_2016 ISR_2020, col(3)
+
+********** Boxplot
+stripplot DIR_r, over(time) separate() ///
+cumul cumprob box centre vertical refline /// 
+xsize(5) xtitle("") xlabel(1 "2009-10" 2 "2016-17" 3 "2020-21",angle(0))  ///
+msymbol(oh oh oh oh oh oh oh) mcolor()  ///
+ylabel() ymtick() ytitle("") ///
+legend(order(1 "Mean" 5 "Individual") off) name(box_`x', replace)
+
+*save"panel_v3", replace
 ****************************************
 * END

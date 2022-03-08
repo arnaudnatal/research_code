@@ -25,8 +25,8 @@ Panel for indebtedness and over-indebtedness
 clear all
 macro drop _all
 
-global user "anatal"
-global folder "Downloads"
+global user "Arnaud"
+global folder "Documents"
 
 ********** Path to folder "data" folder.
 global directory = "C:\Users\\$user\\$folder\_Thesis\Research-Overindebtedness\Persistence_over"
@@ -328,10 +328,6 @@ lendername ask only if loanlender<=9
 
 export excel "NEEMSIS2-loans.xlsx", replace firstrow(variables)
 
-
-
-
-
 ****************************************
 * END
 */
@@ -348,6 +344,24 @@ export excel "NEEMSIS2-loans.xlsx", replace firstrow(variables)
 * CLEANING
 ****************************************
 use"panel_loan", clear
+
+********** Replace and drop
+replace loanamount=loanamount3 if year==2020
+
+replace interestpaid=interestpaid3 if year==2020
+
+replace loanbalance=loanbalance3 if year==2020
+
+replace principalpaid=principalpaid4 if year==2020
+
+replace totalrepaid=totalrepaid3 if year==2020
+
+replace loanamount_HH=loanamount_g_HH if year==2016
+
+replace loans_HH=loans_g_HH if year==2016
+
+drop loanamount2 loanamount3 loanamount_gm_indiv loanamount_gm_HH loanamount_indiv loanamount_g_indiv loanamount_g_HH loans_indiv loans_gm_indiv imp1_ds_tot_indiv imp1_is_tot_indiv loans_g_indiv loans_gm_HH interestpaid2 interestpaid3 loanbalance2 loanbalance3 principalpaid2 principalpaid3 principalpaid4 totalrepaid2 totalrepaid3
+
 
 *** Lender & reason
 label define reason 1"Agriculture" 2"Investment" 3"Family" 4"Repay previous loan" 5"Relatives" 6"Health" 7"Education" 8"Ceremonies" 9"Marriage" 10"Death" 11"Housing" 12"No reason" 13"Other"
@@ -418,20 +432,7 @@ merge m:1 HHID_panel using "C:\Users\Arnaud\Documents\GitHub\RUME-NEEMSIS\_Misce
 keep if _merge==3
 drop _merge
 
-preserve
-use "panel_v4", clear
-keep if panel==1
-keep if year==2010
-keep HHID_panel caste assetspanel_q3 incomepanel_q3
-save"panel_v4_temp", replace
-restore
-merge m:1 HHID_panel using "panel_v4_temp", keepusing(caste assetspanel_q3 incomepanel_q3)
-drop if _merge==2
-drop _merge
-
 save"panel_loan_v2", replace
-
-erase "panel_v4_temp.dta"
 ****************************************
 * END
 
@@ -458,7 +459,14 @@ erase "panel_v4_temp.dta"
 cls
 use"panel_loan_v2", clear
 
+drop loanamount_HH
+
 keep if panel3==1
+fre loanreasongiven
+recode loanreasongiven (12=13)
+
+fre reasongiven
+recode reasongiven (12=13)
 
 ********** Recode
 tab loan_database year
@@ -466,77 +474,70 @@ recode loanreasongiven (77=13)
 codebook loanreasongiven
 label define loanreasongiven 13"Other", modify
 
-
-drop if loanreasongiven==.
-********** Amount and number
-cls
-foreach x in 2010 2016 2020 {
-*tabstat loanamount if year==`x', stat(n mean) by(loanreasongiven) m
-*foreach i in 1 2 3 {
-*tabstat loanamount if year==`x' & caste==`i', stat(n mean) by(loanreasongiven) m
-*}
-foreach i in 1 2 3 {
-tabstat loanamount if year==`x' & incomepanel_q3==`i', stat(n mean) by(loanreasongiven) m
-}
-}
+ta reasongiven year, m col nofreq
 
 
-********** Total clientele using it: reason
-/*
-forvalues i=1(1)13{
-gen reason`i'=0
+***** Source
+ta lender
+
+gen formal=0
+gen informal=0
+
+foreach i in 8 11 12 14{
+replace formal=loanamount if loanlender==`i'
 }
-forvalues i=1(1)13{
-replace reason`i'=1 if loanreasongiven==`i'
+
+foreach i in 1 2 3 4 5 6 7 9 10 13 15{
+replace informal=loanamount if loanlender==`i'
 }
 
 
-keep if incomepanel_q3==3
+***** Use
+ta reasongiven
 
+gen eco=0
+gen current=0
+gen humank=0
+gen social=0
+gen home=0
+gen other=0
 
-*2010
-cls
-preserve 
-keep if year==2010
-forvalues i=1(1)13{
-bysort HHID_panel: egen reasonHH_`i'=max(reason`i')
-} 
-bysort HHID_panel: gen n=_n
-keep if n==1
-forvalues i=1(1)13{
-tab reasonHH_`i', m
+replace eco=loanamount if loanreasongiven==1
+replace eco=loanamount if loanreasongiven==6
+replace current=loanamount if loanreasongiven==2
+replace current=loanamount if loanreasongiven==4
+replace current=loanamount if loanreasongiven==10
+replace humank=loanamount if loanreasongiven==3
+replace humank=loanamount if loanreasongiven==9
+replace social=loanamount if loanreasongiven==7
+replace social=loanamount if loanreasongiven==8
+replace social=loanamount if loanreasongiven==11
+replace home=loanamount if loanreasongiven==5
+replace other=loanamount if loanreasongiven==13
+
+***** Abs
+foreach x in formal informal eco current humank social home other {
+bysort HHID_panel year: egen `x'_HH=sum(`x')
 }
-restore
 
-*2016
-cls
-preserve 
-keep if year==2016
-forvalues i=1(1)13{
-bysort HHID_panel: egen reasonHH_`i'=max(reason`i')
-} 
-bysort HHID_panel: gen n=_n
-keep if n==1
-forvalues i=1(1)13{
-tab reasonHH_`i', m
-}
-restore
 
-*2020
-cls
-preserve 
-keep if year==2020
-forvalues i=1(1)13{
-bysort HHID_panel: egen reasonHH_`i'=max(reason`i')
-} 
-bysort HHID_panel: gen n=_n
-keep if n==1
-forvalues i=1(1)13{
-tab reasonHH_`i', m
+***** Relative terms
+bysort HHID_panel year: egen loanamount_HH=sum(loanamount)
+
+foreach x in formal informal eco current humank social home other {
+gen rel_`x'_HH=`x'_HH*100/loanamount_HH
 }
+
+
+
+preserve
+keep HHID_panel year rel_formal_HH rel_informal_HH rel_eco_HH rel_current_HH rel_humank_HH rel_social_HH rel_home_HH rel_other_HH formal_HH informal_HH eco_HH current_HH humank_HH social_HH home_HH other_HH
+duplicates drop
+save "HH_newvar_temp.dta", replace
 restore
 
 
 
-drop reason1 reason2 reason3 reason4 reason5 reason6 reason7 reason8 reason9 reason10 reason11 reason12 reason13 
-*/
+****************************************
+* END
+
