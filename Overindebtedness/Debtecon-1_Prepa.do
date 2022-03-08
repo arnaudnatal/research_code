@@ -135,6 +135,33 @@ drop annualincome_HH
 egen annualincome_HH2=rowtotal(occinc_HH_agri occinc_HH_agricasual occinc_HH_nonagricasual occinc_HH_nonagriregnonqual occinc_HH_nonagriregqual occinc_HH_selfemp occinc_HH_nrega)
 rename annualincome_HH2 annualincome_HH
 
+* AEU
+fre sex
+gen AEU_weight1=.
+replace AEU_weight1=1 if sex==1 & age>=16
+replace AEU_weight1=0.8 if sex==2 & age>=16
+replace AEU_weight1=0.6 if sex==1 & age<16
+replace AEU_weight1=0.6 if sex==2 & age<16
+replace AEU_weight1=0 if livinghome2==0
+
+gen AEU_weight2=.
+replace AEU_weight2=1 if sex==1 & age>=16
+replace AEU_weight2=1 if sex==2 & age>=16
+replace AEU_weight2=0.6 if sex==1 & age<16
+replace AEU_weight2=0.6 if sex==2 & age<16
+replace AEU_weight2=0 if livinghome2==0
+
+gen AEU_weight=.
+replace AEU_weight=1 if sex==1 & age>=16
+replace AEU_weight=1 if sex==2 & age>=16
+replace AEU_weight=1 if sex==1 & age<16
+replace AEU_weight=1 if sex==2 & age<16
+replace AEU_weight=0 if livinghome2==0
+
+foreach x in weight weight1 weight2 {
+bysort HHID_panel: egen AEU_`x'_HH=sum(AEU_`x')
+}
+
 
 *Land property
 tab1 landowndry landownwet
@@ -264,7 +291,7 @@ global expenses livestockspent foodexpenses educationexpenses healthexpenses cer
 global dep loanamount_HH loans_HH imp1_ds_tot_HH imp1_is_tot_HH loans_HH
 global indep villageid villagearea religion jatis caste assets annualincome_HH nboccupation_HH foodexpenses educationexpenses healthexpenses ceremoniesexpenses deathexpenses HHsize housetype housetitle houseroom nbchildren_HH nontoworkers_HH femtomale_HH head_sex head_maritalstatus head_age head_edulevel head_occupation wifehusb_sex wifehusb_maritalstatus wifehusb_age wifehusb_edulevel wifehusb_occupation sizeownland amountownland ownland goldquantity goldquantityamount effectcrisislostjob mainocc_occupation_HH occinc_HH_agri occinc_HH_agricasual occinc_HH_nonagricasual occinc_HH_nonagriregnonqual occinc_HH_nonagriregqual occinc_HH_selfemp occinc_HH_nrega assets_noland  $asse $nature $expenses
 
-keep HHID_panel year $dep $indep
+keep HHID_panel year $dep $indep AEU_weight_HH AEU_weight1_HH AEU_weight2_HH
 
 duplicates drop
 
@@ -305,6 +332,33 @@ use "$wave2", clear
 *Individual who not live in the HH = to drop
 fre livinghome
 drop if livinghome==3 | livinghome==4
+
+
+* AEU
+fre sex
+gen AEU_weight1=.
+replace AEU_weight1=1 if sex==1 & age>=16
+replace AEU_weight1=0.8 if sex==2 & age>=16
+replace AEU_weight1=0.6 if sex==1 & age<16
+replace AEU_weight1=0.6 if sex==2 & age<16
+
+gen AEU_weight2=.
+replace AEU_weight2=1 if sex==1 & age>=16
+replace AEU_weight2=1 if sex==2 & age>=16
+replace AEU_weight2=0.6 if sex==1 & age<16
+replace AEU_weight2=0.6 if sex==2 & age<16
+
+gen AEU_weight=.
+replace AEU_weight=1 if sex==1 & age>=16
+replace AEU_weight=1 if sex==2 & age>=16
+replace AEU_weight=1 if sex==1 & age<16
+replace AEU_weight=1 if sex==2 & age<16
+
+foreach x in weight weight1 weight2 {
+bysort HHID_panel: egen AEU_`x'_HH=sum(AEU_`x')
+}
+
+
 
 
 ********** Test gold
@@ -482,14 +536,14 @@ bysort HHID_panel: egen businessexpenses_HH=sum(businessexpenses)
 global asse amountownland livestockamount_cow livestockamount_goat livestockamount_chicken livestockamount_bullock housevalue goldquantityamount goodtotalamount
 global nature houseroom housetitle housesize goldquantity
 
-global expenses foodexpenses healthexpenses ceremoniesexpenses ceremoniesrelativesexpenses deathexpenses demoexpenses businessexpenses_HH marriageexpenses_HH educationexpenses productexpenses livestockexpenses
+global expenses foodexpenses healthexpenses ceremoniesexpenses ceremoniesrelativesexpenses deathexpenses demoexpenses businessexpenses_HH marriageexpenses_HH educationexpenses productexpenses livestockexpenses demoexpenses democonsoless democonsomore democonsosame democonsopractices democonsoplace
 
 
 *Variables to keep
 global dep imp1_ds_tot_HH imp1_is_tot_HH loanamount_gm_HH loans_gm_HH loanamount_g_HH loans_g_HH
 global indep villageid villagearea religion jatis caste assets annualincome_HH nboccupation_HH foodexpenses educationexpenses healthexpenses ceremoniesexpenses deathexpenses HHsize housetype housetitle houseroom nbchildren_HH nontoworkers_HH femtomale_HH head_sex head_maritalstatus head_age head_edulevel head_occupation wifehusb_sex wifehusb_maritalstatus wifehusb_age wifehusb_edulevel wifehusb_occupation sizeownland amountownland ownland goldquantity goldquantityamount dummydemonetisation dummymarriage marriageexpenses_HH mainocc_occupation_HH occinc_HH_agri occinc_HH_agricasual occinc_HH_nonagricasual occinc_HH_nonagriregnonqual occinc_HH_nonagriregqual occinc_HH_selfemp occinc_HH_nrega assets_noland $asse $nature villageareaid $expenses
  
-keep HHID_panel year $dep $indep
+keep HHID_panel year $dep $indep AEU_weight_HH AEU_weight1_HH AEU_weight2_HH
 
 rename loanamount_gm_HH loanamount_HH
 rename loans_gm_HH loans_HH
@@ -572,6 +626,32 @@ fre livinghome
 drop if livinghome==3 | livinghome==4
 
 drop if HHID_panel==""
+
+
+* AEU
+fre sex
+gen AEU_weight1=.
+replace AEU_weight1=1 if sex==1 & age>=16
+replace AEU_weight1=0.8 if sex==2 & age>=16
+replace AEU_weight1=0.6 if sex==1 & age<16
+replace AEU_weight1=0.6 if sex==2 & age<16
+
+gen AEU_weight2=.
+replace AEU_weight2=1 if sex==1 & age>=16
+replace AEU_weight2=1 if sex==2 & age>=16
+replace AEU_weight2=0.6 if sex==1 & age<16
+replace AEU_weight2=0.6 if sex==2 & age<16
+
+gen AEU_weight=.
+replace AEU_weight=1 if sex==1 & age>=16
+replace AEU_weight=1 if sex==2 & age>=16
+replace AEU_weight=1 if sex==1 & age<16
+replace AEU_weight=1 if sex==2 & age<16
+
+foreach x in weight weight1 weight2 {
+bysort HHID_panel: egen AEU_`x'_HH=sum(AEU_`x')
+}
+
 
 
 *Decision
@@ -812,7 +892,7 @@ global expenses foodexpenses healthexpenses ceremoniesexpenses ceremoniesrelativ
 global dep loanamount_HH loans_HH imp1_ds_tot_HH imp1_is_tot_HH
 global indep villageid villagearea religion jatis caste assets annualincome_HH nboccupation_HH foodexpenses educationexpenses healthexpenses ceremoniesexpenses deathexpenses HHsize housetype housetitle houseroom nbchildren_HH nontoworkers_HH femtomale_HH head_sex head_maritalstatus head_age head_edulevel head_occupation wifehusb_sex wifehusb_maritalstatus wifehusb_age wifehusb_edulevel wifehusb_occupation sizeownland amountownland ownland goldquantity goldquantityamount dummymarriage marriageexpenses_HH assets_noland occinc_HH_agri occinc_HH_agricasual occinc_HH_nonagricasual occinc_HH_nonagriregnonqual occinc_HH_nonagriregqual occinc_HH_selfemp occinc_HH_nrega $asse $nature religion $expenses
  
-keep HHID_panel year $dep $indep
+keep HHID_panel year $dep $indep AEU_weight_HH AEU_weight1_HH AEU_weight2_HH
 
 *Occupation
 preserve

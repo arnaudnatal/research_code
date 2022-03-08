@@ -168,6 +168,24 @@ ta panel2
 ta panel3
 ta panel4
 
+* Expenses per year
+gen food_expHH=foodexpenses*52
+ 
+egen yearly_expenses=rowtotal(food_expHH educationexpenses healthexpenses)
+egen yearly_expenses_bis=rowtotal(food_expHH educationexpenses healthexpenses ceremoniesexpenses deathexpenses)
+
+replace yearly_expenses=yearly_expenses* if year==2016
+replace yearly_expenses=yearly_expenses* if year==2020
+
+replace yearly_expenses_bis=yearly_expenses* if year==2016
+replace yearly_expenses_bis=yearly_expenses* if year==2020
+
+*Tendulkar Expert Group (2009): In 2005, another expert group chaired by Suresh Tendulkar was constituted to review the methodology for poverty estimation.
+* --> food education and health: 2010INR 816 pm pc 
+
+
+
+
 * 1000
 foreach x in loanamount_HH annualincome_HH amountownland assets assets_noland {
 gen `x'1000=`x'/1000
