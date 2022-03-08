@@ -24,10 +24,15 @@ Panel for indebtedness and over-indebtedness
 ****************************************
 clear all
 macro drop _all
+
+
+global user "anatal"
+global folder "Downloads"
+
 ********** Path to folder "data" folder.
-global directory = "C:\Users\Arnaud\Documents\_Thesis\Research-Overindebtedness\Persistence_over"
+global directory = "C:\Users\\$user\\$folder\_Thesis\Research-Overindebtedness\Persistence_over"
 cd"$directory"
-global git "C:\Users\Arnaud\Documents\GitHub"
+global git "C:\Users\\$user\\$folder\GitHub"
 
 *Fac
 *cd "C:\Users\anatal\Downloads\_Thesis\Research-Skills_and_debt\Analysis"
