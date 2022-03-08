@@ -174,17 +174,40 @@ gen food_expHH=foodexpenses*52
 egen yearly_expenses=rowtotal(food_expHH educationexpenses healthexpenses)
 egen yearly_expenses_bis=rowtotal(food_expHH educationexpenses healthexpenses ceremoniesexpenses deathexpenses)
 
-replace yearly_expenses=yearly_expenses* if year==2016
-replace yearly_expenses=yearly_expenses* if year==2020
+replace yearly_expenses=yearly_expenses*(100/158) if year==2016
+replace yearly_expenses=yearly_expenses*(100/184) if year==2020
 
-replace yearly_expenses_bis=yearly_expenses* if year==2016
-replace yearly_expenses_bis=yearly_expenses* if year==2020
+replace yearly_expenses_bis=yearly_expenses*(100/158) if year==2016
+replace yearly_expenses_bis=yearly_expenses*(100/184) if year==2020
 
+
+* Povertyline
 *Tendulkar Expert Group (2009): In 2005, another expert group chaired by Suresh Tendulkar was constituted to review the methodology for poverty estimation.
 * --> food education and health: 2010INR 816 pm pc 
+gen plphhpy=816*AEU_weight_HH*12
+gen plphhpy1=816*AEU_weight1_HH*12
+gen plphhpy2=816*AEU_weight2_HH*12
 
+* ExpPLU
+gen expPLU=yearly_expenses*100/plphhpy
+gen expPLU1=yearly_expenses*100/plphhpy1
+gen expPLU2=yearly_expenses*100/plphhpy2
 
+gen below=.
+gen below1=.
+gen below2=.
 
+replace below=0 if expPLU>=100
+replace below1=0 if expPLU1>=100
+replace below2=0 if expPLU2>=100
+
+replace below=1 if expPLU<100
+replace below1=1 if expPLU1<100
+replace below2=1 if expPLU2<100
+
+ta below caste if year==2010, col nofreq
+ta below caste if year==2016, col nofreq
+ta below caste if year==2020, col nofreq
 
 * 1000
 foreach x in loanamount_HH annualincome_HH amountownland assets assets_noland {
