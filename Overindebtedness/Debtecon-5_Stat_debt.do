@@ -25,8 +25,8 @@ Stat for indebtedness and over-indebtedness
 clear all
 macro drop _all
 
-global user "anatal"
-global folder "Downloads"
+global user "Arnaud"
+global folder "Documents"
 
 ********** Path to folder "data" folder.
 global directory = "C:\Users\\$user\\$folder\_Thesis\Research-Overindebtedness\Persistence_over"
@@ -59,8 +59,6 @@ global loan3 "NEEMSIS2-all_loans"
 *(100/158) if year==2016
 *(100/184) if year==2020
 
-
-
 ****************************************
 * END
 
@@ -71,12 +69,15 @@ global loan3 "NEEMSIS2-all_loans"
 
 
 
+
+
+/*
 ****************************************
 * Isabelle new graphes
 ****************************************
 use"panel_v4", clear
 
-/*
+
 ********** Initialization
 xtset time panelvar
 
@@ -86,10 +87,10 @@ sort HHID_panel year
 *** Select+reshape
 keep HHID_panel year caste panel $var
 reshape wide $var caste, i(HHID_panel) j(year)
-*/
 
 
-/*
+
+
 ********** Isabelle book
 tabstat DSR_r if panel==1, stat(n mean sd q) by(year)
 
@@ -189,9 +190,12 @@ graph export "graph/comb`cat'_`x'.pdf", replace
 set graph on
 }
 }
-*/
+
 ****************************************
 * END
+*/
+
+
 
 
 
@@ -210,9 +214,34 @@ set graph on
 ****************************************
 use"panel_v4", clear
 
-
 ********** Initialization
 xtset panelvar time
+keep if panel==1
+
+
+
+********** 
+global toana formal_HH informal_HH // eco_HH current_HH humank_HH social_HH home_HH other_HH rel_formal_HH rel_informal_HH rel_eco_HH rel_current_HH rel_humank_HH rel_social_HH rel_home_HH rel_other_HH
+
+collapse (mean) formal_HH informal_HH loanamount_HH , by(caste year)
+
+forvalues i=1(1)3 {
+twoway ///
+(line formal_HH year if caste==`i') ///
+(line informal_HH year if caste==`i') ///
+(line loanamount_HH year if caste==`i') ///
+, ///
+ytitle("`x'") xtitle("Year") ///
+ylabel(0(20)200) ///
+xlabel(2010 2016 2020, ang(45)) ///
+legend(order() col(3) pos(6)) ///
+name(caste`i', replace)
+}
+
+
+
+grc1leg dalits middle upper, col(3)
+
 
 
 ********** Kernel
@@ -234,6 +263,9 @@ set graph on
 }
 
 grc1leg DIR_2010 DIR_2016 DIR_2020 DAR_2010 DAR_2016 DAR_2020 DSR_2010 DSR_2016 DSR_2020 ISR_2010 ISR_2016 ISR_2020, col(3)
+
+
+
 
 ********** Boxplot
 stripplot DIR_r, over(time) separate() ///

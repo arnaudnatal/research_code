@@ -531,7 +531,7 @@ gen rel_`x'_HH=`x'_HH*100/loanamount_HH
 
 
 preserve
-keep HHID_panel year rel_formal_HH rel_informal_HH rel_eco_HH rel_current_HH rel_humank_HH rel_social_HH rel_home_HH rel_other_HH formal_HH informal_HH eco_HH current_HH humank_HH social_HH home_HH other_HH
+keep HHID_panel year rel_formal_HH rel_informal_HH rel_eco_HH rel_current_HH rel_humank_HH rel_social_HH rel_home_HH rel_other_HH formal_HH informal_HH eco_HH current_HH humank_HH social_HH home_HH other_HH loanamount_HH
 duplicates drop
 save "HH_newvar_temp.dta", replace
 restore

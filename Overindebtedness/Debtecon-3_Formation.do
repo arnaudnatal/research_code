@@ -25,8 +25,8 @@ Panel for indebtedness and over-indebtedness
 clear all
 macro drop _all
 
-global user "anatal"
-global folder "Downloads"
+global user "Arnaud"
+global folder "Documents"
 
 ********** Path to folder "data" folder.
 global directory = "C:\Users\\$user\\$folder\_Thesis\Research-Overindebtedness\Persistence_over"
