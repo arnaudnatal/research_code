@@ -258,7 +258,7 @@ label values wifehusb_sex sex
 global asse amountownlanddry amountownlandwet livestockamount_goat livestockamount_cow housevalue goldquantityamount goodtotalamount
 global nature houseroom housetitle goldquantity
 
-global expenses livestockspent foodexpenses educationexpenses healthexpenses ceremoniesexpenses deathexpenses
+global expenses livestockspent foodexpenses educationexpenses healthexpenses ceremoniesexpenses deathexpenses cropsexpenses labourcostexpenses
 
 *Variables to keep
 global dep loanamount_HH loans_HH imp1_ds_tot_HH imp1_is_tot_HH loans_HH
@@ -469,11 +469,20 @@ drop `x'
 rename `x'_HH `x'
 }
 
+
+* Product expenses + livestock + business
+egen productexpenses=rowtotal(productexpenses_paddy productexpenses_ragi productexpenses_millets productexpenses_tapioca productexpenses_cotton productexpenses_sugarca productexpenses_savukku productexpenses_guava productexpenses_groundnut)
+
+egen livestockexpenses=rowtotal(livestockspent_cow livestockspent_goat livestockspent_chicken livestockspent_bullock)
+
+bysort HHID_panel: egen businessexpenses_HH=sum(businessexpenses)
+
+
 *Assets
 global asse amountownland livestockamount_cow livestockamount_goat livestockamount_chicken livestockamount_bullock housevalue goldquantityamount goodtotalamount
 global nature houseroom housetitle housesize goldquantity
 
-global expenses foodexpenses healthexpenses ceremoniesexpenses ceremoniesrelativesexpenses deathexpenses demoexpenses businessexpenses marriageexpenses_HH educationexpenses productexpenses_paddy productexpenses_ragi productexpenses_millets productexpenses_tapioca productexpenses_cotton productexpenses_sugarca productexpenses_savukku productexpenses_guava productexpenses_groundnut livestockspent_cow livestockspent_goat livestockspent_chicken livestockspent_bullock
+global expenses foodexpenses healthexpenses ceremoniesexpenses ceremoniesrelativesexpenses deathexpenses demoexpenses businessexpenses_HH marriageexpenses_HH educationexpenses productexpenses livestockexpenses
 
 
 *Variables to keep
@@ -487,14 +496,13 @@ rename loans_gm_HH loans_HH
 
 sum loanamount_HH
 
+
 *Occupation
 preserve
 egen test=rowtotal(occinc_HH_agri occinc_HH_agricasual occinc_HH_nonagricasual occinc_HH_nonagriregnonqual occinc_HH_nonagriregqual occinc_HH_selfemp occinc_HH_nrega)
 gen test2=test-annualincome_HH
 ta test2
 restore
-
-
 
 duplicates drop
 
@@ -769,6 +777,10 @@ ta house
 ta housetype
 destring religion housetype housetitle, replace
 
+*Expenses
+egen productexpenses=rowtotal(productexpenses1 productexpenses2 productexpenses3 productexpenses4 productexpenses5 productexpenses9 productexpenses11 productexpenses12 productexpenses14)
+
+bysort HHID_panel: egen businessexpenses_HH=sum(businessexpenses)
 
 *Assets
 rename livestockamount_bullforploughing livestockamount_bull
@@ -794,10 +806,11 @@ egen assets_noland=rowtotal(livestockamount_cow livestockamount_goat livestockam
 global asse amountownland livestockamount_cow livestockamount_goat livestockamount_chicken livestockamount_bullock livestockamount_bull housevalue goldquantityamount goodtotalamount
 global nature houseroom housetitle housesize goldquantity
 
+global expenses foodexpenses healthexpenses ceremoniesexpenses ceremoniesrelativesexpenses deathexpenses covgenexpenses covexpensesdecrease covexpensesincrease covexpensesstable businessexpenses_HH marriageexpenses_HH educationexpenses productexpenses
 
 *Variables to keep
 global dep loanamount_HH loans_HH imp1_ds_tot_HH imp1_is_tot_HH
-global indep villageid villagearea religion jatis caste assets annualincome_HH nboccupation_HH foodexpenses educationexpenses healthexpenses ceremoniesexpenses deathexpenses HHsize housetype housetitle houseroom nbchildren_HH nontoworkers_HH femtomale_HH head_sex head_maritalstatus head_age head_edulevel head_occupation wifehusb_sex wifehusb_maritalstatus wifehusb_age wifehusb_edulevel wifehusb_occupation sizeownland amountownland ownland goldquantity goldquantityamount dummymarriage marriageexpenses_HH assets_noland occinc_HH_agri occinc_HH_agricasual occinc_HH_nonagricasual occinc_HH_nonagriregnonqual occinc_HH_nonagriregqual occinc_HH_selfemp occinc_HH_nrega $asse $nature religion
+global indep villageid villagearea religion jatis caste assets annualincome_HH nboccupation_HH foodexpenses educationexpenses healthexpenses ceremoniesexpenses deathexpenses HHsize housetype housetitle houseroom nbchildren_HH nontoworkers_HH femtomale_HH head_sex head_maritalstatus head_age head_edulevel head_occupation wifehusb_sex wifehusb_maritalstatus wifehusb_age wifehusb_edulevel wifehusb_occupation sizeownland amountownland ownland goldquantity goldquantityamount dummymarriage marriageexpenses_HH assets_noland occinc_HH_agri occinc_HH_agricasual occinc_HH_nonagricasual occinc_HH_nonagriregnonqual occinc_HH_nonagriregqual occinc_HH_selfemp occinc_HH_nrega $asse $nature religion $expenses
  
 keep HHID_panel year $dep $indep
 
