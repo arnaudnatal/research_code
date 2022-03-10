@@ -218,18 +218,22 @@ use"panel_v4", clear
 xtset panelvar time
 keep if panel==1
 
+tabstat loanamount_HH, stat(n mean sd q) by(year)
+tabstat DIR, stat(n mean sd q) by(year)
+tabstat DSR, stat(n mean sd q) by(year)
+tabstat ISR, stat(n mean sd q) by(year)
+*tabstat DAR_with DAR_with_r DAR_without DAR_without_r, stat(n mean sd q) by(year)
+tabstat formal_HH informal_HH rel_formal_HH rel_informal_HH, stat(n mean sd q) by(year)
 
 
-********** 
-global toana formal_HH informal_HH // eco_HH current_HH humank_HH social_HH home_HH other_HH rel_formal_HH rel_informal_HH rel_eco_HH rel_current_HH rel_humank_HH rel_social_HH rel_home_HH rel_other_HH
-
-collapse (mean) formal_HH informal_HH loanamount_HH , by(caste year)
+********** Line
+preserve
+collapse (mean) rel_formal_HH rel_informal_HH, by(caste year)
 
 forvalues i=1(1)3 {
 twoway ///
-(line formal_HH year if caste==`i') ///
-(line informal_HH year if caste==`i') ///
-(line loanamount_HH year if caste==`i') ///
+(line rel_formal_HH year if caste==`i') ///
+(line rel_informal_HH year if caste==`i') ///
 , ///
 ytitle("`x'") xtitle("Year") ///
 ylabel(0(20)200) ///
@@ -237,16 +241,16 @@ xlabel(2010 2016 2020, ang(45)) ///
 legend(order() col(3) pos(6)) ///
 name(caste`i', replace)
 }
+restore
 
 
-
-grc1leg dalits middle upper, col(3)
 
 
 
 ********** Kernel
+/*
 foreach y in 2010 2016 2020 {
-foreach x in DIR DAR DSR ISR {
+foreach x in DIR DAR_with DSR ISR {
 qui sum `x'_r, det
 local maxv=r(max)
 set graph off
@@ -261,19 +265,18 @@ name(`x'_`y', replace)
 set graph on
 }
 }
-
-grc1leg DIR_2010 DIR_2016 DIR_2020 DAR_2010 DAR_2016 DAR_2020 DSR_2010 DSR_2016 DSR_2020 ISR_2010 ISR_2016 ISR_2020, col(3)
-
-
+*/
 
 
 ********** Boxplot
-stripplot DIR_r, over(time) separate() ///
+foreach x in DSR_r ISR_r {
+stripplot `x', over(time) separate() ///
 cumul cumprob box centre vertical refline /// 
 xsize(5) xtitle("") xlabel(1 "2009-10" 2 "2016-17" 3 "2020-21",angle(0))  ///
 msymbol(oh oh oh oh oh oh oh) mcolor()  ///
-ylabel() ymtick() ytitle("") ///
+ylabel(0(100)600) ymtick(0(50)600) ytitle("`x'") ///
 legend(order(1 "Mean" 5 "Individual") off) name(box_`x', replace)
+}
 
 *save"panel_v3", replace
 ****************************************

@@ -550,6 +550,8 @@ rename loans_gm_HH loans_HH
 
 sum loanamount_HH
 
+drop loanamount_g_HH
+
 
 *Occupation
 preserve
@@ -605,7 +607,6 @@ save"$wave2-_temp", replace
 * PREPA 2020
 ****************************************
 use "$wave3", clear
-
 
 ********** Test gold
 order goldquantity goldquantityamount HHID_panel INDID_panel goldownerid

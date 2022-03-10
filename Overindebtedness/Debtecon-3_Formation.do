@@ -263,6 +263,14 @@ save"panel_v2", replace
 ****************************************
 use"panel_v2", clear
 
+
+********** Replace
+replace annualincome_HH1000=1 if annualincome_HH1000==0
+replace annualincome_HH1000=1 if annualincome_HH1000==.
+
+*sort annualincome
+*br annualincome
+
 ********** Time
 fre year
 gen time=0
@@ -418,8 +426,8 @@ replace `x'=`x'*(100/158) if year==2016 & `x'!=.
 replace `x'=`x'*(100/184) if year==2020 & `x'!=.
 }
 
-rename loanamount_g_HH loanamount_g
-replace loanamount_g=loanamount_g*(100/158) if year==2016 & loanamount_g!=.
+*rename loanamount_g_HH loanamount_g
+*replace loanamount_g=loanamount_g*(100/158) if year==2016 & loanamount_g!=.
 
 
 ********** Label
@@ -440,6 +448,19 @@ sort HHID_panel year
 merge 1:1 HHID_panel year using "HH_newvar_temp.dta"
 drop _merge
 
+label var loanamount_HH "Without marriage in 2016-17"
+*gen ok=1 if loanamount==loanamount_HH
+*replace ok=1 if loanamount_HH==.
+*fre ok
+*sort ok HHID_panel year
+*order HHID_panel year ok loanamount loanamount_HH  formal_HH informal_HH loanamount_raw
+*sort ok year HHID_panel
+*keep if panel==1
+
+recode loanamount_HH (.=0)
+
+rename loanamount loanamount_HH_withmarriagein2016
+rename loanamount_HH loanamount
 
 save"panel_v3", replace
 ****************************************
@@ -494,6 +515,9 @@ tabstat loanamount if caste==`i', stat(mean sd p50) by(year)
 
 *Continuous
 gen DIR=loanamount/annualincome
+
+order HHID_panel year loanamount annualincome DIR
+sort HHID_panel year
 
 gen DAR_without=loanamount/assets_noland
 gen DAR_with=loanamount/assets
@@ -558,10 +582,16 @@ replace DSR_r=6 if DSR>=6 & year==2020
 
 replace DSR_r=DSR_r*100
 
+replace ISR_r=ISR_r*100
+
 replace ISR_r=0.74 if ISR>=0.75 & year==2010
 replace ISR_r=2.34 if ISR>=2.35 & year==2016
 replace ISR_r=3.11 if ISR>=3.13 & year==2020
 
+
+replace DIR_r=DIR_r*100
+replace DAR_with_r=DAR_with_r*100
+replace DAR_without_r=DAR_without_r*100
 
 ********** Wealth panel
 xtile assets2010panel_q3=assets if year==2010 & panel==1, n(3)
