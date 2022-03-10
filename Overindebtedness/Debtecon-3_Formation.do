@@ -35,7 +35,7 @@ global git "C:\Users\\$user\\$folder\GitHub"
 
 *Fac
 *cd "C:\Users\anatal\Downloads\_Thesis\Research-Skills_and_debt\Analysis"
-set scheme plotplain
+*set scheme plotplain
 
 *global git "C:\Users\anatal\Downloads\GitHub"
 *global dropbox "C:\Users\anatal\Downloads\Dropbox"
@@ -462,6 +462,9 @@ recode loanamount_HH (.=0)
 rename loanamount loanamount_HH_withmarriagein2016
 rename loanamount_HH loanamount
 
+*** Recode en %
+
+
 save"panel_v3", replace
 ****************************************
 * END
@@ -592,6 +595,9 @@ replace ISR_r=3.11 if ISR>=3.13 & year==2020
 replace DIR_r=DIR_r*100
 replace DAR_with_r=DAR_with_r*100
 replace DAR_without_r=DAR_without_r*100
+
+replace DSR=DSR*100
+replace ISR=ISR*100
 
 ********** Wealth panel
 xtile assets2010panel_q3=assets if year==2010 & panel==1, n(3)

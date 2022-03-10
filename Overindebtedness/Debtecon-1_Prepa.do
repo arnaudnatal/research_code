@@ -31,7 +31,7 @@ global git "C:\Users\Arnaud\Documents\GitHub"
 
 *Fac
 *cd "C:\Users\anatal\Downloads\_Thesis\Research-Skills_and_debt\Analysis"
-set scheme plotplain
+*set scheme plotplain
 
 *global git "C:\Users\anatal\Downloads\GitHub"
 *global dropbox "C:\Users\anatal\Downloads\Dropbox"

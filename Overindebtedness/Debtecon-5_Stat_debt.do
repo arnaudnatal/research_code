@@ -36,7 +36,14 @@ global git "C:\Users\\$user\\$folder\GitHub"
 
 *Fac
 *cd "C:\Users\anatal\Downloads\_Thesis\Research-Skills_and_debt\Analysis"
-set scheme plotplain
+
+* Scheme
+*net install schemepack, from("https://raw.githubusercontent.com/asjadnaqvi/Stata-schemes/main/schemes/") replace
+*set scheme plotplain
+set scheme white_tableau
+*set scheme black_tableau
+*set scheme swift_red
+
 
 *global git "C:\Users\anatal\Downloads\GitHub"
 *global dropbox "C:\Users\anatal\Downloads\Dropbox"
@@ -222,29 +229,155 @@ tabstat loanamount_HH, stat(n mean sd q) by(year)
 tabstat DIR, stat(n mean sd q) by(year)
 tabstat DSR, stat(n mean sd q) by(year)
 tabstat ISR, stat(n mean sd q) by(year)
-*tabstat DAR_with DAR_with_r DAR_without DAR_without_r, stat(n mean sd q) by(year)
+tabstat DAR_with, stat(n mean sd q) by(year)
+tabstat DAR_without, stat(n mean sd q) by(year)
+
 tabstat formal_HH informal_HH rel_formal_HH rel_informal_HH, stat(n mean sd q) by(year)
 
 
-********** Line
-preserve
-collapse (mean) rel_formal_HH rel_informal_HH, by(caste year)
 
+********** Pctile
+*** loanamount as cat
+forvalues i=1(1)3{
+preserve
+keep if time==`i'
+xtile cat_p=loanamount, n(5)
+
+foreach x in loanamount annualincome assets_noland {
+bysort cat_p: egen mean_`x'=mean(`x')
+bysort cat_p: egen median_`x'=median(`x')
+}
+
+keep cat_p mean_loanamount median_loanamount mean_annualincome median_annualincome mean_assets_noland median_assets_noland
+
+duplicates drop
+
+rename cat_p n
+
+set graph off
+twoway (line mean_loanamount n) (line mean_annualincome n), title("mean") name(mean`i', replace)
+twoway (line median_loanamount n) (line median_annualincome n), title("median") name(median`i', replace)
+
+set graph on
+restore
+}
+
+grc1leg median1 median2 median3, col(3)
+grc1leg mean1 mean2 mean3, col(3)
+
+
+*** income as cat
+forvalues i=1(1)3{
+preserve
+keep if time==`i'
+xtile cat_p=annualincome, n(5)
+
+foreach x in loanamount annualincome assets_noland {
+bysort cat_p: egen mean_`x'=mean(`x')
+bysort cat_p: egen median_`x'=median(`x')
+}
+
+keep cat_p mean_loanamount median_loanamount mean_annualincome median_annualincome mean_assets_noland median_assets_noland
+
+duplicates drop
+
+rename cat_p n
+
+set graph off
+twoway (line mean_loanamount n) (line mean_annualincome n), title("mean") name(mean`i', replace)
+twoway (line median_loanamount n) (line median_annualincome n), title("median") name(median`i', replace)
+
+set graph on
+restore
+}
+
+grc1leg median1 median2 median3, col(3)
+grc1leg mean1 mean2 mean3, col(3)
+
+
+
+*** loanamount as cat with 2010 clas
+xtile cat_p=loanamount if year==2010, n(5)
+bysort HHID_panel: egen max_cat_p=max(cat_p)
+drop cat_p
+rename max_cat_p cat_p
+
+
+forvalues i=1(1)3{
+preserve
+keep if time==`i'
+foreach x in loanamount annualincome assets_noland {
+bysort cat_p: egen mean_`x'=mean(`x')
+bysort cat_p: egen median_`x'=median(`x')
+}
+
+keep cat_p mean_loanamount median_loanamount mean_annualincome median_annualincome mean_assets_noland median_assets_noland
+
+duplicates drop
+
+rename cat_p n
+
+set graph off
+twoway (line mean_loanamount n) (line mean_annualincome n), title("mean") name(mean`i', replace) ylabel(0(50)300) ymtick(0(25)300)
+twoway (line median_loanamount n) (line median_annualincome n), title("median") name(median`i', replace) ylabel(0(50)200) ymtick(0(25)200)
+
+set graph on
+restore
+}
+
+grc1leg mean1 mean2 mean3, col(3)
+grc1leg median1 median2 median3, col(3)
+
+
+********** Line
+/*
+*** Debt, income and assets
+preserve
+set graph off
+collapse (mean) annualincome loanamount assets_noland, by(caste year)
 forvalues i=1(1)3 {
 twoway ///
-(line rel_formal_HH year if caste==`i') ///
-(line rel_informal_HH year if caste==`i') ///
+(line loanamount year if caste==`i') ///
+(line annualincome year if caste==`i') ///
+(line assets_noland year if caste==`i') ///
 , ///
 ytitle("`x'") xtitle("Year") ///
-ylabel(0(20)200) ///
+ylabel(0(100)500) ytick(0(50)500) ///
 xlabel(2010 2016 2020, ang(45)) ///
 legend(order() col(3) pos(6)) ///
 name(caste`i', replace)
 }
+set graph on
 restore
 
+grc1leg caste1 caste2 caste3, col(3)
+*/
 
+*** Income, interest and repayment
+/*
+preserve
+collapse (mean) DSR ISR annualincome rel_formal_HH rel_informal_HH, by(caste year)
 
+forvalues i=1(1)3 {
+set graph off
+twoway ///
+(line annualincome year if caste==`i') ///
+(line DSR year if caste==`i') ///
+(line ISR year if caste==`i') ///
+(line rel_formal_HH year if caste==`i') ///
+(line rel_informal_HH year if caste==`i') ///
+, ///
+ytitle("`x'") xtitle("Year") ///
+ylabel(0(20)160) ytick(0(10)160) ///
+xlabel(2010 2016 2020, ang(45)) ///
+legend(order() col(3) pos(6)) ///
+name(caste`i', replace)
+}
+set graph on
+restore
+
+grc1leg caste1 caste2 caste3, col(3)
+*/
 
 
 ********** Kernel
@@ -269,6 +402,7 @@ set graph on
 
 
 ********** Boxplot
+/*
 foreach x in DSR_r ISR_r {
 stripplot `x', over(time) separate() ///
 cumul cumprob box centre vertical refline /// 
@@ -277,7 +411,14 @@ msymbol(oh oh oh oh oh oh oh) mcolor()  ///
 ylabel(0(100)600) ymtick(0(50)600) ytitle("`x'") ///
 legend(order(1 "Mean" 5 "Individual") off) name(box_`x', replace)
 }
+*/
 
-*save"panel_v3", replace
+
+
+********** Violin plot
+/*
+vioplot annualincome, over(year)
+*/
+
 ****************************************
 * END
