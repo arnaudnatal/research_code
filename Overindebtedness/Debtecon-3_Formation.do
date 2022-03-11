@@ -596,6 +596,9 @@ replace DIR_r=DIR_r*100
 replace DAR_with_r=DAR_with_r*100
 replace DAR_without_r=DAR_without_r*100
 
+replace DAR_with=DAR_with*100
+replace DAR_without=DAR_without*100
+
 replace DSR=DSR*100
 replace ISR=ISR*100
 

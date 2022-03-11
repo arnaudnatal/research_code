@@ -221,7 +221,7 @@ set graph on
 
 
 ****************************************
-* Stat debt evo
+* Stat debt evo with long data
 ****************************************
 use"panel_v4", clear
 
@@ -230,29 +230,17 @@ xtset panelvar time
 keep if panel==1
 
 /*
-tabstat loanamount_HH, stat(n mean sd q) by(year)
-tabstat DIR, stat(n mean sd q) by(year)
-tabstat DSR, stat(n mean sd q) by(year)
-tabstat ISR, stat(n mean sd q) by(year)
-tabstat DAR_with, stat(n mean sd q) by(year)
-tabstat DAR_without, stat(n mean sd q) by(year)
-
-tabstat formal_HH informal_HH rel_formal_HH rel_informal_HH, stat(n mean sd q) by(year)
-*/
-
 
 ********** Pctile
-
-*** loanamount as cat
 forvalues i=1(1)3{
 preserve
 keep if time==`i'
-xtile cat_p=loanamount, n(5)
-foreach x in loanamount annualincome assets_noland {
+xtile cat_p=annualincome, n(5)
+foreach x in loanamount annualincome assets_noland formal_HH informal_HH {
 bysort cat_p: egen mean_`x'=mean(`x')
 bysort cat_p: egen median_`x'=median(`x')
 }
-keep cat_p mean_loanamount median_loanamount mean_annualincome median_annualincome mean_assets_noland median_assets_noland
+keep cat_p mean_loanamount median_loanamount mean_annualincome median_annualincome mean_assets_noland median_assets_noland mean_formal_HH median_formal_HH mean_informal_HH median_informal_HH
 duplicates drop
 rename cat_p n
 set graph off
@@ -277,8 +265,317 @@ grc1leg mean, col(1) name(loan, replace)
 
 
 
-********** Line
+
+********** DSR, ISR
+forvalues i=1(1)3{
+preserve
+keep if time==`i'
+xtile cat_p=annualincome, n(5)
+foreach x in DSR ISR DAR_without {
+bysort cat_p: egen mean_`x'=mean(`x')
+bysort cat_p: egen median_`x'=median(`x')
+}
+keep cat_p mean_DSR median_DSR mean_ISR median_ISR mean_DAR_without median_DAR_without
+duplicates drop
+rename cat_p n
+set graph off
+foreach x in mean median {
+twoway ///
+(connected `x'_DSR n) ///
+(connected `x'_ISR n) ///
+(connected `x'_DAR_without n) ///
+, ///
+title("t=`i'") ///
+ylabel() ymtick() ///
+leg(col(3) pos(6)) ///
+name(`x'`i', replace)
+}
+set graph on
+restore
+}
+grc1leg mean1 mean2 mean3, col(3) name(mean, replace)
+
+grc1leg mean, col(1) name(loan, replace)
+
+
+
+
+
+
+
+********* Using mean according to distribution of debt and income
+forvalues i=1(1)3{
+preserve
+keep if time==`i'
+xtile cat_p=annualincome, n(5)
+
+collapse (mean) rel_eco_HH rel_current_HH rel_humank_HH rel_social_HH rel_home_HH rel_other_HH, by(cat_p)
+
+rename rel_eco_HH sum1
+rename rel_current_HH up2
+rename rel_humank_HH up3
+rename rel_social_HH up4
+rename rel_home_HH up5
+rename rel_other_HH up6
+
+gen sum2=sum1+up2
+gen sum3=sum2+up3
+gen sum4=sum3+up4
+gen sum5=sum4+up5
+gen sum6=sum5+up6
+
+keep cat_p sum*
+
+set graph off
+twoway ///
+area sum1 cat_p || ///
+rarea sum1 sum2 cat_p || ///
+rarea sum2 sum3 cat_p || ///
+rarea sum3 sum4 cat_p || ///
+rarea sum4 sum5 cat_p || ///
+rarea sum5 sum6 cat_p ///
+, ///
+legend(pos(6) col(3) order(1 "Economic purpose" 2 "Current expenses" 3 "Human capital" 4 "Social purpose" 5 "Housing" 6 "Other")) ///
+title("t=`i'") ///
+name(using`i',replace)
+set graph on
+restore
+}
+
+grc1leg using1 using2 using3, col(3)
+
+
+
+
+
+********* Source mean according to distribution of debt and income
+forvalues i=1(1)3{
+preserve
+keep if time==`i'
+xtile cat_p=annualincome, n(5)
+
+collapse (mean) rel_formal_HH rel_informal_HH, by(cat_p)
+
+rename rel_formal_HH sum1
+rename rel_informal_HH up2
+
+gen sum2=sum1+up2
+
+keep cat_p sum*
+
+set graph off
+twoway ///
+area sum1 cat_p || ///
+rarea sum1 sum2 cat_p || ///
+, ///
+legend(pos(6) col(3) order(1 "Formal" 2 "Informal")) ///
+title("t=`i'") ///
+name(source`i',replace)
+set graph on
+restore
+}
+
+grc1leg source1 source2 source3, col(3)
+
+
+*/
+
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Wide data
+****************************************
+use"panel_v4", clear
+
+********** Initialization
+xtset panelvar time
+keep if panel==1
+
+
+global quanti DIR DAR_with DAR_without DSR ISR loanamount annualincome assets_noland assets sizeownland yearly_expenses formal_HH informal_HH rel_formal_HH rel_informal_HH eco_HH current_HH humank_HH social_HH home_HH other_HH rel_eco_HH rel_current_HH rel_humank_HH rel_social_HH rel_home_HH rel_other_HH sum_loans_HH
+
+global quali DSR30 DSR40 DSR50
+
+global var $quanti $quali
+sort HHID_panel year
+
+
+********** Select+reshape
+keep HHID_panel year panel caste $var
+reshape wide $var, i(HHID_panel) j(year)
+
+
+
+********* xtile income assets
+xtile cat_income=annualincome2010, n(3)
+xtile cat_assets=assets_noland2010, n(3)
+
+
+********** Evolution
+foreach x in $quanti {
+gen d1_`x'=`x'2016-`x'2010
+gen d2_`x'=`x'2020-`x'2016
+}
+
+
+********** Categories
+
+label define evo 1"Inc=Inc+Inc" 2"Inc=Inc+Dec" 3"Inc=Dec+Inc" 4"Dec=Inc+Dec" 5"Dec=Dec+Inc" 6"Dec=Dec+Dec", replace
+foreach x in $quanti {
+gen catevo_`x'=.
+
+label values catevo_`x' evo
+
+replace catevo_`x'=1 if d1_`x'>0 & d2_`x'>0
+replace catevo_`x'=2 if d1_`x'>0 & d2_`x'<=0 & abs(d1_`x')>abs(d2_`x')
+replace catevo_`x'=3 if d1_`x'<=0 & d2_`x'>0 & abs(d2_`x')>abs(d1_`x')
+
+replace catevo_`x'=4 if d1_`x'>0 & d2_`x'<=0 & abs(d2_`x')>abs(d1_`x')
+replace catevo_`x'=5 if d1_`x'<=0 & d2_`x'>0 & abs(d1_`x')>abs(d2_`x')
+replace catevo_`x'=6 if d1_`x'<=0 & d2_`x'<=0
+}
+
+
+
+
+********** Caste and tercile
+global classic DIR DAR_without DSR ISR loanamount annualincome assets_noland assets yearly_expenses sum_loans_HH
+
+***** Caste
+cls
+foreach x in $classic {
+ta catevo_`x' caste, col nofreq chi2
+}
+
+***** Tercile income
+cls
+foreach x in $classic {
+ta catevo_`x' cat_income, col nofreq chi2
+}
+
+***** Tercile assets
+cls
+foreach x in $classic {
+ta catevo_`x' cat_assets, col nofreq chi2
+}
+
+
+
+
+
+
+********** Graph rpz
+***** Outliers to drop
+foreach x in $quanti {
+gen todrop_`x'=0
+
+qui sum d1_`x', det
+replace todrop_`x'=1 if d1_`x'<r(p5)
+replace todrop_`x'=1 if d1_`x'>r(p95)
+
+qui sum d2_`x', det
+replace todrop_`x'=1 if d1_`x'<r(p5)
+replace todrop_`x'=1 if d1_`x'>r(p95)
+}
+
+
+
+***** Caste
+foreach x in loanamount {
+preserve
+drop if todrop_`x'==1
+
+twoway ///
+(scatter d2_`x' d1_`x' if caste==1, xline(0) yline(0) msymbol(oh) msize(medsmall)) ///
+(scatter d2_`x' d1_`x' if caste==2, xline(0) yline(0) msymbol(oh) msize(medsmall)) ///
+(scatter d2_`x' d1_`x' if caste==3, xline(0) yline(0) msymbol(oh) msize(medsmall)) ///
+(function y=-x, range(d1_`x')) ///
+, ///
+xtitle("Δ 2010 / 2016-17") ytitle("Δ 2016-17 / 2020-21") ///
+title("`cat' `i'") ///
+legend(pos(6) col(3) order(1 "Dalits" 2 "Middle" 3 "Upper")) name(`x'_`i', replace)
+
+restore
+}
+
+
+***** Tercile
+foreach x in loanamount {
+preserve
+drop if todrop_`x'==1
+
+twoway ///
+(scatter d2_`x' d1_`x' if cat_assets==1, xline(0) yline(0) msymbol(oh) msize(medsmall)) ///
+(scatter d2_`x' d1_`x' if cat_assets==2, xline(0) yline(0) msymbol(oh) msize(medsmall)) ///
+(scatter d2_`x' d1_`x' if cat_assets==3, xline(0) yline(0) msymbol(oh) msize(medsmall)) ///
+(function y=-x, range(d1_`x')) ///
+, ///
+xtitle("Δ 2010 / 2016-17") ytitle("Δ 2016-17 / 2020-21") ///
+title("`cat' `i'") ///
+legend(pos(6) col(3) order(1 "T1 assets" 2 "T2 assets" 3 "T3 assets")) name(`x'_`i', replace)
+
+restore
+}
+
+
+
+
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /*
+
+********** Line
 *** Debt, income and assets
 preserve
 set graph off
@@ -299,10 +596,8 @@ set graph on
 restore
 
 grc1leg caste1 caste2 caste3, col(3)
-*/
 
 *** Income, interest and repayment
-/*
 preserve
 collapse (mean) DSR ISR annualincome rel_formal_HH rel_informal_HH, by(caste year)
 
@@ -325,11 +620,9 @@ set graph on
 restore
 
 grc1leg caste1 caste2 caste3, col(3)
-*/
 
 
 ********** Kernel
-/*
 foreach y in 2010 2016 2020 {
 foreach x in DIR DAR_with DSR ISR {
 qui sum `x'_r, det
@@ -346,11 +639,9 @@ name(`x'_`y', replace)
 set graph on
 }
 }
-*/
 
 
 ********** Boxplot
-/*
 foreach x in DSR_r ISR_r {
 stripplot `x', over(time) separate() ///
 cumul cumprob box centre vertical refline /// 
@@ -359,14 +650,8 @@ msymbol(oh oh oh oh oh oh oh) mcolor()  ///
 ylabel(0(100)600) ymtick(0(50)600) ytitle("`x'") ///
 legend(order(1 "Mean" 5 "Individual") off) name(box_`x', replace)
 }
-*/
 
 
 
 ********** Violin plot
-/*
 vioplot annualincome, over(year)
-*/
-
-****************************************
-* END
