@@ -41,6 +41,10 @@ global git "C:\Users\\$user\\$folder\GitHub"
 *net install schemepack, from("https://raw.githubusercontent.com/asjadnaqvi/Stata-schemes/main/schemes/") replace
 *set scheme plotplain
 set scheme white_tableau
+*set scheme plotplain
+grstyle init
+grstyle set plain, nogrid
+
 *set scheme black_tableau
 *set scheme swift_red
 
@@ -225,6 +229,7 @@ use"panel_v4", clear
 xtset panelvar time
 keep if panel==1
 
+/*
 tabstat loanamount_HH, stat(n mean sd q) by(year)
 tabstat DIR, stat(n mean sd q) by(year)
 tabstat DSR, stat(n mean sd q) by(year)
@@ -233,100 +238,43 @@ tabstat DAR_with, stat(n mean sd q) by(year)
 tabstat DAR_without, stat(n mean sd q) by(year)
 
 tabstat formal_HH informal_HH rel_formal_HH rel_informal_HH, stat(n mean sd q) by(year)
-
+*/
 
 
 ********** Pctile
+
 *** loanamount as cat
 forvalues i=1(1)3{
 preserve
 keep if time==`i'
 xtile cat_p=loanamount, n(5)
-
 foreach x in loanamount annualincome assets_noland {
 bysort cat_p: egen mean_`x'=mean(`x')
 bysort cat_p: egen median_`x'=median(`x')
 }
-
 keep cat_p mean_loanamount median_loanamount mean_annualincome median_annualincome mean_assets_noland median_assets_noland
-
 duplicates drop
-
 rename cat_p n
-
 set graph off
-twoway (line mean_loanamount n) (line mean_annualincome n), title("mean") name(mean`i', replace)
-twoway (line median_loanamount n) (line median_annualincome n), title("median") name(median`i', replace)
-
+foreach x in mean median {
+twoway ///
+(connected `x'_loanamount n) ///
+(connected `x'_annualincome n) ///
+(connected `x'_assets_noland n) ///
+, ///
+title("t=`i'") ///
+ylabel(0(100)600) ymtick(0(50)650) ///
+leg(col(3) pos(6)) ///
+name(`x'`i', replace)
+grc1leg `x'1 `x'2 `x'3, col(3) name(`x', replace)
+}
 set graph on
 restore
 }
-
-grc1leg median1 median2 median3, col(3)
-grc1leg mean1 mean2 mean3, col(3)
-
-
-*** income as cat
-forvalues i=1(1)3{
-preserve
-keep if time==`i'
-xtile cat_p=annualincome, n(5)
-
-foreach x in loanamount annualincome assets_noland {
-bysort cat_p: egen mean_`x'=mean(`x')
-bysort cat_p: egen median_`x'=median(`x')
-}
-
-keep cat_p mean_loanamount median_loanamount mean_annualincome median_annualincome mean_assets_noland median_assets_noland
-
-duplicates drop
-
-rename cat_p n
-
-set graph off
-twoway (line mean_loanamount n) (line mean_annualincome n), title("mean") name(mean`i', replace)
-twoway (line median_loanamount n) (line median_annualincome n), title("median") name(median`i', replace)
-
-set graph on
-restore
-}
-
-grc1leg median1 median2 median3, col(3)
-grc1leg mean1 mean2 mean3, col(3)
+grc1leg mean, col(1) name(loan, replace)
 
 
 
-*** loanamount as cat with 2010 clas
-xtile cat_p=loanamount if year==2010, n(5)
-bysort HHID_panel: egen max_cat_p=max(cat_p)
-drop cat_p
-rename max_cat_p cat_p
-
-
-forvalues i=1(1)3{
-preserve
-keep if time==`i'
-foreach x in loanamount annualincome assets_noland {
-bysort cat_p: egen mean_`x'=mean(`x')
-bysort cat_p: egen median_`x'=median(`x')
-}
-
-keep cat_p mean_loanamount median_loanamount mean_annualincome median_annualincome mean_assets_noland median_assets_noland
-
-duplicates drop
-
-rename cat_p n
-
-set graph off
-twoway (line mean_loanamount n) (line mean_annualincome n), title("mean") name(mean`i', replace) ylabel(0(50)300) ymtick(0(25)300)
-twoway (line median_loanamount n) (line median_annualincome n), title("median") name(median`i', replace) ylabel(0(50)200) ymtick(0(25)200)
-
-set graph on
-restore
-}
-
-grc1leg mean1 mean2 mean3, col(3)
-grc1leg median1 median2 median3, col(3)
 
 
 ********** Line
