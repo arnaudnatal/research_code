@@ -219,7 +219,7 @@ set graph on
 
 
 
-
+/*
 ****************************************
 * Stat debt evo with long data
 ****************************************
@@ -229,7 +229,7 @@ use"panel_v4", clear
 xtset panelvar time
 keep if panel==1
 
-/*
+
 
 ********** Pctile
 forvalues i=1(1)3{
@@ -377,11 +377,9 @@ restore
 
 grc1leg source1 source2 source3, col(3)
 
-
-*/
-
 ****************************************
 * END
+*/
 
 
 
@@ -399,61 +397,83 @@ grc1leg source1 source2 source3, col(3)
 ****************************************
 * Wide data
 ****************************************
-use"panel_v4", clear
+use"panel_v4_wide", clear
 
-********** Initialization
-xtset panelvar time
-keep if panel==1
-
-
-global quanti DIR DAR_with DAR_without DSR ISR loanamount annualincome assets_noland assets sizeownland yearly_expenses formal_HH informal_HH rel_formal_HH rel_informal_HH eco_HH current_HH humank_HH social_HH home_HH other_HH rel_eco_HH rel_current_HH rel_humank_HH rel_social_HH rel_home_HH rel_other_HH sum_loans_HH
-
-global quali DSR30 DSR40 DSR50
-
-global var $quanti $quali
-sort HHID_panel year
-
-
-********** Select+reshape
-keep HHID_panel year panel caste $var
-reshape wide $var, i(HHID_panel) j(year)
-
-
-
-********* xtile income assets
-xtile cat_income=annualincome2010, n(3)
-xtile cat_assets=assets_noland2010, n(3)
-
-
-********** Evolution
-foreach x in $quanti {
-gen d1_`x'=`x'2016-`x'2010
-gen d2_`x'=`x'2020-`x'2016
+********** Panel
+foreach x in caste cat_income cat_assets catevo_annualincome catevo_assets_noland {
+forvalues i=30(10)50 {
+ta path_`i' `x', col nofreq
+}
 }
 
 
-********** Categories
+preserve
+rename caste over
+rename path_30 path
+contract path over
+bysort over (path): replace _freq=sum(_freq)
+bysort over (path): replace _freq=_freq/_freq[_N]*100
+twoway ///
+(bar _freq over if path==8, barw(.5)) ///
+(bar _freq over if path==7, barw(.5)) ///
+(bar _freq over if path==6, barw(.5)) ///
+(bar _freq over if path==5, barw(.5)) ///
+(bar _freq over if path==4, barw(.5)) ///
+(bar _freq over if path==3, barw(.5)) ///
+(bar _freq over if path==2, barw(.5)) ///	   
+(bar _freq over if path==1, barw(.5)) ///
+, ///
+legend(order(1 "Always" 2 "Lasting entrance" 3 "Temporary exit" 4 "New over-indebted" 5 "New not over-indebted" 6 "Temporary entrance" 7 "Lasting exit" 8 "Never")) ///
+ytitle(percent) 
+restore
 
-label define evo 1"Inc=Inc+Inc" 2"Inc=Inc+Dec" 3"Inc=Dec+Inc" 4"Dec=Inc+Dec" 5"Dec=Dec+Inc" 6"Dec=Dec+Dec", replace
-foreach x in $quanti {
-gen catevo_`x'=.
 
-label values catevo_`x' evo
 
-replace catevo_`x'=1 if d1_`x'>0 & d2_`x'>0
-replace catevo_`x'=2 if d1_`x'>0 & d2_`x'<=0 & abs(d1_`x')>abs(d2_`x')
-replace catevo_`x'=3 if d1_`x'<=0 & d2_`x'>0 & abs(d2_`x')>abs(d1_`x')
 
-replace catevo_`x'=4 if d1_`x'>0 & d2_`x'<=0 & abs(d2_`x')>abs(d1_`x')
-replace catevo_`x'=5 if d1_`x'<=0 & d2_`x'>0 & abs(d1_`x')>abs(d2_`x')
-replace catevo_`x'=6 if d1_`x'<=0 & d2_`x'<=0
+
+********** Over path: Among cat, how much % have this debt path?
+foreach x in caste catevo_annualincome cat_income catevo_assets_noland cat_assets {
+preserve 
+rename `x' over
+rename path_30 path
+tabplot path over, percent(over) showval(format(%3.1f)) ///
+xtitle("") ytitle("") ///
+title("") subtitle("") ///
+name(perc_`x', replace)
+restore
 }
 
 
 
 
-********** Caste and tercile
-global classic DIR DAR_without DSR ISR loanamount annualincome assets_noland assets yearly_expenses sum_loans_HH
+
+********** Debt path: 
+global classic annualincome assets_noland yearly_expenses loanamount sum_loans_HH DSR ISR
+
+foreach y in $classic {
+foreach x in caste cat_income cat_assets {
+set graph off
+preserve 
+rename `x' over
+rename catevo_`y' path
+tabplot path over, percent(over) showval(format(%3.1f)) ///
+xtitle("") ytitle("") ///
+xlab(,ang(45)) ///
+title("") subtitle("") ///
+name(`y'_`x', replace)
+restore
+set graph on
+}
+}
+
+foreach y in $classic {
+set graph off
+graph combine `y'_caste `y'_cat_income `y'_cat_assets, col(3) title("`y'") name(comb_`y', replace)
+set graph on
+}
+
+graph display comb_annualincome
+
 
 ***** Caste
 cls
@@ -479,6 +499,7 @@ ta catevo_`x' cat_assets, col nofreq chi2
 
 
 ********** Graph rpz
+/*
 ***** Outliers to drop
 foreach x in $quanti {
 gen todrop_`x'=0
@@ -530,7 +551,7 @@ legend(pos(6) col(3) order(1 "T1 assets" 2 "T2 assets" 3 "T3 assets")) name(`x'_
 
 restore
 }
-
+*/
 
 
 

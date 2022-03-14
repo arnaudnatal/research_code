@@ -627,3 +627,140 @@ ta incomepanel_q4 year
 save"panel_v4", replace
 ****************************************
 * END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Wide data
+****************************************
+use"panel_v4", clear
+
+********** Initialization
+xtset panelvar time
+keep if panel==1
+
+
+global quanti DIR DAR_with DAR_without DSR ISR loanamount annualincome assets_noland assets sizeownland yearly_expenses formal_HH informal_HH rel_formal_HH rel_informal_HH eco_HH current_HH humank_HH social_HH home_HH other_HH rel_eco_HH rel_current_HH rel_humank_HH rel_social_HH rel_home_HH rel_other_HH sum_loans_HH
+
+global quali DSR30 DSR40 DSR50
+
+global var $quanti $quali
+sort HHID_panel year
+
+
+********** Select+reshape
+keep HHID_panel year panel caste $var
+reshape wide $var, i(HHID_panel) j(year)
+
+
+
+********* xtile income assets
+xtile cat_income=annualincome2010, n(3)
+xtile cat_assets=assets_noland2010, n(3)
+
+label define cat_income 1"T1 of income" 2"T2 of income" 3"T3 of income"
+label define cat_assets 1"T1 of assets" 2"T2 of assets" 3"T3 of assets"
+
+label values cat_income cat_income
+label values cat_assets cat_assets
+
+********** Evolution
+foreach x in $quanti {
+gen d1_`x'=`x'2016-`x'2010
+gen d2_`x'=`x'2020-`x'2016
+}
+
+
+********** Categories
+
+label define evo 1"Inc=Inc+Inc" 2"Inc=Inc+Dec" 3"Inc=Dec+Inc" 4"Dec=Inc+Dec" 5"Dec=Dec+Inc" 6"Dec=Dec+Dec", replace
+foreach x in $quanti {
+gen catevo_`x'=.
+
+label values catevo_`x' evo
+
+replace catevo_`x'=1 if d1_`x'>0 & d2_`x'>0
+replace catevo_`x'=2 if d1_`x'>0 & d2_`x'<=0 & abs(d1_`x')>abs(d2_`x')
+replace catevo_`x'=3 if d1_`x'<=0 & d2_`x'>0 & abs(d2_`x')>abs(d1_`x')
+
+replace catevo_`x'=4 if d1_`x'>0 & d2_`x'<=0 & abs(d2_`x')>abs(d1_`x')
+replace catevo_`x'=5 if d1_`x'<=0 & d2_`x'>0 & abs(d1_`x')>abs(d2_`x')
+replace catevo_`x'=6 if d1_`x'<=0 & d2_`x'<=0
+}
+
+
+
+********** Overindebtedness path
+tab1 DSR302010 DSR402010 DSR502010 DSR302016 DSR402016 DSR502016 DSR302020 DSR402020 DSR502020
+
+label define overpath 1"Always" 2"Become" 3"Exit" 4"Never"
+forvalues i=30(10)50{
+gen over`i'path_d1=.
+gen over`i'path_d2=.
+}
+
+forvalues i=30(10)50{
+replace over`i'path_d1=1 if DSR`i'2010==1 & DSR`i'2016==1
+replace over`i'path_d1=2 if DSR`i'2010==0 & DSR`i'2016==1
+replace over`i'path_d1=3 if DSR`i'2010==1 & DSR`i'2016==0
+replace over`i'path_d1=4 if DSR`i'2010==0 & DSR`i'2016==0
+
+label values over`i'path_d1 overpath
+}
+
+forvalues i=30(10)50{
+replace over`i'path_d2=1 if DSR`i'2016==1 & DSR`i'2020==1
+replace over`i'path_d2=2 if DSR`i'2016==0 & DSR`i'2020==1
+replace over`i'path_d2=3 if DSR`i'2016==1 & DSR`i'2020==0
+replace over`i'path_d2=4 if DSR`i'2016==0 & DSR`i'2020==0
+
+label values over`i'path_d2 overpath
+}
+
+
+
+
+********** Panel
+forvalues i=30(10)50{
+gen path_`i'=.
+}
+
+label define completepath 1"Always" 2"Lasting entrance" 3"Temporary exit" 4"New over-indebted" 5"New not over-indebted" 6"Temporary entrance" 7"Lasting exit" 8"Never"
+
+forvalues i=30(10)50{
+replace path_`i'=1 if DSR`i'2010==1 & DSR`i'2016==1 & DSR`i'2020==1
+replace path_`i'=2 if DSR`i'2010==0 & DSR`i'2016==1 & DSR`i'2020==1
+replace path_`i'=3 if DSR`i'2010==1 & DSR`i'2016==0 & DSR`i'2020==1
+replace path_`i'=4 if DSR`i'2010==0 & DSR`i'2016==0 & DSR`i'2020==1
+replace path_`i'=5 if DSR`i'2010==1 & DSR`i'2016==1 & DSR`i'2020==0
+replace path_`i'=6 if DSR`i'2010==0 & DSR`i'2016==1 & DSR`i'2020==0
+replace path_`i'=7 if DSR`i'2010==1 & DSR`i'2016==0 & DSR`i'2020==0
+replace path_`i'=8 if DSR`i'2010==0 & DSR`i'2016==0 & DSR`i'2020==0
+
+label values path_`i' completepath
+}
+
+
+save"panel_v4_wide", replace
+clear all
+****************************************
+* END
+
