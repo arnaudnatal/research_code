@@ -691,7 +691,7 @@ gen d2_`x'=`x'2020-`x'2016
 
 ********** Categories
 
-label define evo 1"Inc=Inc+Inc" 2"Inc=Inc+Dec" 3"Inc=Dec+Inc" 4"Dec=Inc+Dec" 5"Dec=Dec+Inc" 6"Dec=Dec+Dec", replace
+label define evo 1"(Δ+1)&(Δ+2)" 2"(Δ+1)>(Δ-2)" 3"(Δ-1)<(Δ+2)" 4"(Δ+1)<(Δ-2)" 5"(Δ-1)>(Δ+2)" 6"(Δ-1)&(Δ-2)", replace
 foreach x in $quanti {
 gen catevo_`x'=.
 

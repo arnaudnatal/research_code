@@ -122,13 +122,13 @@ title("t=`i'") ///
 ylabel(0(100)600) ymtick(0(50)650) ///
 leg(col(3) pos(6)) ///
 name(`x'`i', replace)
-grc1leg `x'1 `x'2 `x'3, col(3) name(`x', replace)
 }
 set graph on
 restore
 }
-grc1leg mean, col(1) name(loan, replace)
 
+grc1leg mean1 mean2 mean3, col(3) name(mean, replace)
+grc1leg median1 median2 median3, col(3) name(median, replace)
 
 
 
@@ -162,11 +162,6 @@ set graph on
 restore
 }
 grc1leg mean1 mean2 mean3, col(3) name(mean, replace)
-
-grc1leg mean, col(1) name(loan, replace)
-
-
-
 
 
 

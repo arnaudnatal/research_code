@@ -87,8 +87,6 @@ global loan3 "NEEMSIS2-all_loans"
 use"panel_v4_wide", clear
 
 
-
-
 ********** Stacked bar chart of over debt path
 /*
 preserve
@@ -117,6 +115,7 @@ restore
 
 ********** Over path: Among cat, how much % have this debt path?
 foreach x in caste catevo_annualincome cat_income catevo_assets_noland cat_assets {
+set graph off
 preserve 
 rename `x' over
 rename path_30 path
@@ -125,6 +124,7 @@ xtitle("") ytitle("") ///
 title("") subtitle("") ///
 name(perc_`x', replace)
 restore
+set graph on
 }
 
 
@@ -156,13 +156,10 @@ graph combine `y'_caste `y'_cat_income `y'_cat_assets, col(3) title("`y'") name(
 set graph on
 }
 
-graph display comb_assets_noland
-graph display comb_loanamount
-graph display comb_DSR
-graph display comb_ISR
-
-
-
+*graph display comb_assets_noland
+*graph display comb_loanamount
+*graph display comb_DSR
+*graph display comb_ISR
 
 
 
@@ -220,6 +217,16 @@ legend(pos(6) col(3) order(1 "T1 assets" 2 "T2 assets" 3 "T3 assets")) name(`x'_
 restore
 }
 */
+
+
+
+
+
+********** Type of debt over time
+cls
+tab1 catevo_rel_formal_HH catevo_rel_informal_HH catevo_rel_eco_HH catevo_rel_current_HH catevo_rel_humank_HH catevo_rel_social_HH catevo_rel_home_HH catevo_rel_other_HH
+
+
 
 
 
