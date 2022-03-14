@@ -676,8 +676,8 @@ reshape wide $var, i(HHID_panel) j(year)
 xtile cat_income=annualincome2010, n(3)
 xtile cat_assets=assets_noland2010, n(3)
 
-label define cat_income 1"T1 of income" 2"T2 of income" 3"T3 of income"
-label define cat_assets 1"T1 of assets" 2"T2 of assets" 3"T3 of assets"
+label define cat_income 1"T1 in." 2"T2 in." 3"T3 in."
+label define cat_assets 1"T1 as." 2"T2 as." 3"T3 as."
 
 label values cat_income cat_income
 label values cat_assets cat_assets
