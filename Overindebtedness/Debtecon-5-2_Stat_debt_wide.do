@@ -226,8 +226,31 @@ restore
 cls
 tab1 catevo_rel_formal_HH catevo_rel_informal_HH catevo_rel_eco_HH catevo_rel_current_HH catevo_rel_humank_HH catevo_rel_social_HH catevo_rel_home_HH catevo_rel_other_HH
 
+foreach y in formal_HH informal_HH eco_HH current_HH humank_HH social_HH home_HH other_HH {
+foreach x in caste cat_income cat_assets {
+set graph off
+preserve 
+rename `x' over
+rename catevo_rel_`y' path
+tabplot path over, percent(over) showval(format(%3.0f)) frame(100) ///
+xtitle("") ytitle("") ///
+xlab(,ang(0)) ///
+title("") subtitle("") ///
+name(`y'_`x', replace)
+restore
+set graph on
+}
+}
+
+graph display current_HH_caste
 
 
+
+
+********** Spineplot
+spineplot catevo_rel_formal_HH caste, bar1(bcolor(gs14)) bar2(bcolor(gs11)) bar3(bcolor(gs8)) bar4(bcolor(gs5)) bar5(bcolor(gs2))
+
+spineplot catevo_rel_formal_HH caste, bar1(bcolor(gs14)) bar2(bcolor(gs11)) bar3(bcolor(gs8)) bar4(bcolor(gs5)) bar5(bcolor(gs2))
 
 
 ****************************************
