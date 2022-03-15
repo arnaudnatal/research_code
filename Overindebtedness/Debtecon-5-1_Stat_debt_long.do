@@ -89,7 +89,7 @@ global loan3 "NEEMSIS2-all_loans"
 
 
 ****************************************
-* Stat debt evo with long data
+* ABSOLUT EVOLUTION
 ****************************************
 use"panel_v4", clear
 
@@ -99,7 +99,7 @@ keep if panel==1
 
 
 
-********** Pctile
+********** INCOME, WEALTH AND DEBT AMOUNT
 foreach ca in annualincome assets_noland {
 forvalues i=1(1)3{
 preserve
@@ -139,7 +139,7 @@ graph display median_assets_noland
 
 
 
-********** DSR, ISR
+********** INCOME, WEALTH AND DEBT/INTEREST SERVICE
 foreach ca in annualincome assets_noland {
 forvalues i=1(1)3{
 preserve
@@ -177,7 +177,150 @@ graph display median_assets_noland
 
 
 
-********* Using mean according to distribution of debt and income
+
+
+********** INCOME, WEALTH AND USING OF DEBT
+foreach ca in annualincome assets_noland {
+*set trace on
+forvalues i=1(1)3{
+preserve
+keep if time==`i'
+xtile cat_p=`ca', n(5)
+foreach x in annualincome assets_noland eco_HH current_HH humank_HH social_HH home_HH other_HH formal_HH informal_HH {
+bysort cat_p: egen mean_`x'=mean(`x')
+bysort cat_p: egen median_`x'=median(`x')
+}
+keep cat_p mean_annualincome median_annualincome mean_assets_noland median_assets_noland mean_formal_HH median_formal_HH mean_informal_HH median_informal_HH mean_eco_HH median_eco_HH mean_current_HH median_current_HH mean_humank_HH median_humank_HH mean_social_HH median_social_HH mean_home_HH median_home_HH mean_other_HH median_other_HH
+foreach x in mean median {
+label var `x'_annualincome "Income"
+label var `x'_assets_noland "Assets"
+label var `x'_formal_HH "Formal debt"
+label var `x'_informal_HH "Informal debt"
+label var `x'_eco_HH "Economic"
+label var `x'_current_HH "Current exp"
+label var `x'_humank_HH "Human capital"
+label var `x'_social_HH "Social exp"
+label var `x'_home_HH "Housing"
+label var `x'_other_HH "Other exp"
+}
+duplicates drop
+rename cat_p n
+set graph off
+foreach x in mean median {
+twoway ///
+(connected `x'_eco_HH n) ///
+(connected `x'_current_HH n) ///
+(connected `x'_humank_HH n) ///
+(connected `x'_social_HH n) ///
+(connected `x'_home_HH n) ///
+(connected `x'_other_HH n) ///
+, ///
+title("t=`i'") ///
+ylabel(#5) ymtick(#10) ///
+leg(col(3) pos(6)) ///
+name(`x'`i'_`ca', replace)
+}
+restore
+}
+foreach x in mean median {
+grc1leg `x'1_`ca' `x'2_`ca' `x'3_`ca', col(3) title("`x'") name(`x'_`ca', replace)
+}
+set graph on
+}
+
+graph display mean_annualincome
+graph display median_annualincome
+
+graph display mean_assets_noland
+graph display median_assets_noland
+
+
+
+
+
+
+********** INCOME, WEALTH AND SOURCE OF DEBT
+foreach ca in annualincome assets_noland {
+*set trace on
+forvalues i=1(1)3{
+preserve
+keep if time==`i'
+xtile cat_p=`ca', n(5)
+foreach x in annualincome assets_noland eco_HH current_HH humank_HH social_HH home_HH other_HH formal_HH informal_HH {
+bysort cat_p: egen mean_`x'=mean(`x')
+bysort cat_p: egen median_`x'=median(`x')
+}
+keep cat_p mean_annualincome median_annualincome mean_assets_noland median_assets_noland mean_formal_HH median_formal_HH mean_informal_HH median_informal_HH mean_eco_HH median_eco_HH mean_current_HH median_current_HH mean_humank_HH median_humank_HH mean_social_HH median_social_HH mean_home_HH median_home_HH mean_other_HH median_other_HH
+foreach x in mean median {
+label var `x'_annualincome "Income"
+label var `x'_assets_noland "Assets"
+label var `x'_formal_HH "Formal debt"
+label var `x'_informal_HH "Informal debt"
+label var `x'_eco_HH "Economic"
+label var `x'_current_HH "Current exp"
+label var `x'_humank_HH "Human capital"
+label var `x'_social_HH "Social exp"
+label var `x'_home_HH "Housing"
+label var `x'_other_HH "Other exp"
+}
+duplicates drop
+rename cat_p n
+set graph off
+foreach x in mean median {
+twoway ///
+(connected `x'_formal_HH n) ///
+(connected `x'_informal_HH n) ///
+, ///
+title("t=`i'") ///
+ylabel(#5) ymtick(#10) ///
+leg(col(3) pos(6)) ///
+name(`x'`i'_`ca', replace)
+}
+restore
+}
+foreach x in mean median {
+grc1leg `x'1_`ca' `x'2_`ca' `x'3_`ca', col(3) title("`x'") name(`x'_`ca', replace)
+}
+set graph on
+}
+
+
+graph display mean_annualincome
+graph display median_annualincome
+
+graph display mean_assets_noland
+graph display median_assets_noland
+
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* RELATIVE EVOLUTION
+****************************************
+use"panel_v4", clear
+
+********** Initialization
+xtset panelvar time
+keep if panel==1
+
+
+
+********* INCOME, WEALTH AND USING OF DEBT
 foreach ca in annualincome assets_noland {
 forvalues i=1(1)3{
 preserve
@@ -224,7 +367,8 @@ graph display use_assets_noland
 
 
 
-********* Source mean according to distribution of debt and income
+
+********* INCOME, WEALTH AND SOURCE OF DEBT
 foreach ca in annualincome assets_noland {
 forvalues i=1(1)3{
 preserve
@@ -256,6 +400,7 @@ set graph on
 
 grc1leg source_annualincome, col(3)
 grc1leg source_assets_noland, col(3)
+
 
 ****************************************
 * END
