@@ -100,10 +100,11 @@ keep if panel==1
 
 
 ********** Pctile
+foreach ca in annualincome assets_noland {
 forvalues i=1(1)3{
 preserve
 keep if time==`i'
-xtile cat_p=annualincome, n(5)
+xtile cat_p=`ca', n(5)
 foreach x in loanamount annualincome assets_noland formal_HH informal_HH {
 bysort cat_p: egen mean_`x'=mean(`x')
 bysort cat_p: egen median_`x'=median(`x')
@@ -115,30 +116,32 @@ set graph off
 foreach x in mean median {
 twoway ///
 (connected `x'_loanamount n) ///
-(connected `x'_annualincome n) ///
-(connected `x'_assets_noland n) ///
+(connected `x'_`ca' n) ///
 , ///
 title("t=`i'") ///
-ylabel(0(100)600) ymtick(0(50)650) ///
+ylabel(#5) ymtick(#10) ///
 leg(col(3) pos(6)) ///
-name(`x'`i', replace)
+name(`x'`i'_`ca', replace)
 }
-set graph on
 restore
 }
+grc1leg mean1_`ca' mean2_`ca' mean3_`ca', col(3) name(mean_`ca', replace)
+set graph on
+}
 
-grc1leg mean1 mean2 mean3, col(3) name(mean, replace)
-grc1leg median1 median2 median3, col(3) name(median, replace)
+graph display mean_annualincome
+graph display mean_assets_noland
 
 
 
 
 
 ********** DSR, ISR
+foreach ca in annualincome assets_noland {
 forvalues i=1(1)3{
 preserve
 keep if time==`i'
-xtile cat_p=annualincome, n(5)
+xtile cat_p=`ca', n(5)
 foreach x in DSR ISR DAR_without {
 bysort cat_p: egen mean_`x'=mean(`x')
 bysort cat_p: egen median_`x'=median(`x')
@@ -151,26 +154,28 @@ foreach x in mean median {
 twoway ///
 (connected `x'_DSR n) ///
 (connected `x'_ISR n) ///
-(connected `x'_DAR_without n) ///
 , ///
 title("t=`i'") ///
 ylabel() ymtick() ///
 leg(col(3) pos(6)) ///
-name(`x'`i', replace)
+name(`x'`i'_`ca', replace)
 }
-set graph on
 restore
 }
-grc1leg mean1 mean2 mean3, col(3) name(mean, replace)
-
+grc1leg mean1_`ca' mean2_`ca' mean3_`ca', col(3) name(mean_`ca', replace)
+set graph on
+}
+graph display mean_annualincome
+graph display mean_assets_noland
 
 
 
 ********* Using mean according to distribution of debt and income
+foreach ca in annualincome assets_noland {
 forvalues i=1(1)3{
 preserve
 keep if time==`i'
-xtile cat_p=annualincome, n(5)
+xtile cat_p=`ca', n(5)
 
 collapse (mean) rel_eco_HH rel_current_HH rel_humank_HH rel_social_HH rel_home_HH rel_other_HH, by(cat_p)
 
@@ -200,14 +205,15 @@ rarea sum5 sum6 cat_p ///
 , ///
 legend(pos(6) col(3) order(1 "Economic purpose" 2 "Current expenses" 3 "Human capital" 4 "Social purpose" 5 "Housing" 6 "Other")) ///
 title("t=`i'") ///
-name(using`i',replace)
-set graph on
+name(using`i'_`ca',replace)
 restore
 }
+grc1leg using1_`ca' using2_`ca' using3_`ca', col(3) name(use_`ca', replace)
+set graph on
+}
 
-grc1leg using1 using2 using3, col(3)
-
-
+graph display use_annualincome
+graph display use_assets_noland
 
 
 
