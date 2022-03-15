@@ -126,12 +126,15 @@ name(`x'`i'_`ca', replace)
 restore
 }
 grc1leg mean1_`ca' mean2_`ca' mean3_`ca', col(3) name(mean_`ca', replace)
+grc1leg median1_`ca' median2_`ca' median3_`ca', col(3) name(median_`ca', replace)
 set graph on
 }
 
 graph display mean_annualincome
-graph display mean_assets_noland
+graph display median_annualincome
 
+graph display mean_assets_noland
+graph display median_assets_noland
 
 
 
@@ -163,10 +166,14 @@ name(`x'`i'_`ca', replace)
 restore
 }
 grc1leg mean1_`ca' mean2_`ca' mean3_`ca', col(3) name(mean_`ca', replace)
+grc1leg median1_`ca' median2_`ca' median3_`ca', col(3) name(median_`ca', replace)
 set graph on
 }
 graph display mean_annualincome
+graph display median_annualincome
+
 graph display mean_assets_noland
+graph display median_assets_noland
 
 
 
@@ -205,7 +212,7 @@ rarea sum5 sum6 cat_p ///
 , ///
 legend(pos(6) col(3) order(1 "Economic purpose" 2 "Current expenses" 3 "Human capital" 4 "Social purpose" 5 "Housing" 6 "Other")) ///
 title("t=`i'") ///
-name(using`i'_`ca',replace)
+name(`sta'_using`i'_`ca',replace)
 restore
 }
 grc1leg using1_`ca' using2_`ca' using3_`ca', col(3) name(use_`ca', replace)
@@ -218,10 +225,11 @@ graph display use_assets_noland
 
 
 ********* Source mean according to distribution of debt and income
+foreach ca in annualincome assets_noland {
 forvalues i=1(1)3{
 preserve
 keep if time==`i'
-xtile cat_p=annualincome, n(5)
+xtile cat_p=`ca', n(5)
 
 collapse (mean) rel_formal_HH rel_informal_HH, by(cat_p)
 
@@ -239,12 +247,15 @@ rarea sum1 sum2 cat_p || ///
 , ///
 legend(pos(6) col(3) order(1 "Formal" 2 "Informal")) ///
 title("t=`i'") ///
-name(source`i',replace)
-set graph on
+name(source`i'_`ca',replace)
 restore
 }
+grc1leg source1_`ca' source2_`ca' source3_`ca', col(3) name(source_`ca', replace)
+set graph on
+}
 
-grc1leg source1 source2 source3, col(3)
+grc1leg source_annualincome, col(3)
+grc1leg source_assets_noland, col(3)
 
 ****************************************
 * END
