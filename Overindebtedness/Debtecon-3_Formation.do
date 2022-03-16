@@ -759,6 +759,19 @@ label values path_`i' completepath
 }
 
 
+********** Rename catevo en plus court
+foreach x in DIR DAR_with DAR_without DSR ISR loanamount annualincome assets_noland assets sizeownland yearly_expenses formal_HH informal_HH rel_formal_HH rel_informal_HH eco_HH current_HH humank_HH social_HH home_HH other_HH rel_eco_HH rel_current_HH rel_humank_HH rel_social_HH rel_home_HH rel_other_HH sum_loans_HH {
+rename catevo_`x' ce_`x'
+}
+
+rename ce_annualincome ce_income
+rename ce_assets_noland ce_assetsnl
+
+foreach x in ce_formal ce_informal ce_rel_formal ce_rel_informal ce_eco ce_current ce_humank ce_social ce_home ce_other ce_rel_eco ce_rel_current ce_rel_humank ce_rel_social ce_rel_home ce_rel_other ce_sum_loans {
+rename `x'_HH `x'
+}
+
+
 save"panel_v4_wide", replace
 clear all
 ****************************************

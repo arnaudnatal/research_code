@@ -13,12 +13,6 @@ Stat for indebtedness and over-indebtedness
 
 
 
-
-
-
-
-
-
 ****************************************
 * INITIALIZATION
 ****************************************
@@ -144,8 +138,6 @@ restore
 /*
 graph display loanamount_
 */
-
-
 ****************************************
 * END
 
@@ -167,16 +159,15 @@ graph display loanamount_
 ****************************************
 use"panel_v4_wide", clear
 
-
 ********** DEBT, WEALTH, INCOME, EXPENSES PATH over INCOME, WEALTH AND CASTE
-global classic annualincome assets_noland yearly_expenses loanamount sum_loans_HH DSR ISR
-
-foreach y in $classic {
-foreach x in caste cat_income cat_assets {
+global yvar income assetsnl yearly_expenses loanamount sum_loans DSR ISR
+global xvar caste cat_income cat_assets
+foreach y in $yvar {
+foreach x in $xvar {
 set graph off
 preserve 
 rename `x' over
-rename catevo_`y' path
+rename ce_`y' path
 tabplot path over, percent(over) showval(format(%3.0f)) frame(100) ///
 xtitle("") ytitle("") ///
 xlab(,ang(0)) ///
@@ -186,8 +177,7 @@ restore
 set graph on
 }
 }
-
-foreach y in $classic {
+foreach y in $yvar {
 set graph off
 graph combine `y'_caste `y'_cat_income `y'_cat_assets, col(3) title("`y'") name(comb_`y', replace)
 set graph on
@@ -202,35 +192,46 @@ graph display comb_ISR
 
 
 ********** OVERINDEBTEDNESS over INCOME, WEALTH AND CASTE
-foreach x in caste catevo_annualincome cat_income catevo_assets_noland cat_assets caste {
+global yvar path_30 path_40 path_50
+global xvar caste ce_income cat_income ce_assetsnl cat_assets
+foreach y in $yvar {
+foreach x in $xvar {
 set graph off
 preserve 
 rename `x' over
-rename path_30 path
+rename `y' path
 tabplot path over, percent(over) showval(format(%3.0f)) frame(100) ///
 xtitle("") ytitle("") ///
 title("") subtitle("") ///
-name(perc_`x', replace)
+name(`y'_`x', replace)
 restore
 set graph on
 }
+}
+foreach y in $yvar {
+set graph off
+graph combine `y'_caste `y'_cat_income `y'_cat_assets, col(3) title("`y'") name(comb_`y', replace)
+set graph on
+}
 /*
-graph display perc_caste
-graph display perc_catevo_assets_noland
-graph display perc_catevo_annualincome
-graph display perc_cat_income
-graph display perc_cat_assets
+graph display path_30_caste
+graph display path_30_ce_assetsnl
+graph display path_30_ce_income
+graph display path_30_cat_income
+graph display path_30_cat_assets
 */
 
 
 
 ********** SOURCE OF DEBT over INCOME, WEALTH AND CASTE
-foreach y in formal_HH informal_HH {
-foreach x in caste cat_income cat_assets {
+global yvar formal informal
+global xvar caste ce_income cat_income ce_assetsnl cat_assets
+foreach y in $yvar {
+foreach x in $xvar {
 set graph off
 preserve 
 rename `x' over
-rename catevo_rel_`y' path
+rename `y' path
 tabplot path over, percent(over) showval(format(%3.0f)) frame(100) ///
 xtitle("") ytitle("") ///
 xlab(,ang(0)) ///
@@ -326,8 +327,9 @@ gen perc=round(n*100/N,1)
 spineplot path over, ///
 bar1(bcolor($p1)) bar2(bcolor($p2)) bar3(bcolor($p3)) bar4(bcolor($p4)) bar5(bcolor($p5)) bar6(bcolor($p6)) ///
 text(perc) percent ///
-xtitle("") ytitle("") ///
-xlab(,ang(0)) ///
+xtitle("", axis(1)) ///
+xtitle("", axis(2)) ytitle("") ///
+xlab(,ang(0) axis(2)) ///
 title("") subtitle("") ///
 legend(pos(6) col(3)) ///
 name(`y'_`x', replace)
@@ -335,7 +337,6 @@ restore
 set graph on
 }
 }
-
 foreach y in $yvar {
 set graph off
 grc1leg `y'_caste `y'_cat_income `y'_cat_assets, col(3) title("`y'") name(comb_`y', replace)
@@ -352,7 +353,7 @@ graph display comb_ISR
 
 ********** SOURCE OF DEBT over INCOME, WEALTH AND CASTE
 global yvar formal_HH informal_HH rel_formal_HH rel_informal_HH
-global xvar caste cat_income cat_assets
+global xvar caste cat_income cat_assets catevo_annualincome catevo_assets_noland
 foreach y in $yvar {
 foreach x in $xvar {
 set graph off
@@ -365,8 +366,9 @@ gen perc=round(n*100/N,1)
 spineplot path over, ///
 bar1(bcolor($p1)) bar2(bcolor($p2)) bar3(bcolor($p3)) bar4(bcolor($p4)) bar5(bcolor($p5)) bar6(bcolor($p6)) ///
 text(perc) percent ///
-xtitle("") ytitle("") ///
-xlab(,ang(0)) ///
+xtitle("", axis(1)) ///
+xtitle("", axis(2)) ytitle("") ///
+xlab(,ang(0) axis(2)) ///
 title("") subtitle("") ///
 legend(pos(6) col(3)) ///
 name(`y'_`x', replace)
@@ -374,10 +376,9 @@ restore
 set graph on
 }
 }
-
 foreach y in $yvar {
 set graph off
-grc1leg `y'_caste `y'_cat_income `y'_cat_assets, col(3) title("`y'") name(comb_`y', replace)
+grc1leg `y'_caste `y'_cat_income `y'_cat_assets `y'_catevo_annualincome `y'_catevo_assets_noland, col(3) title("`y'") name(comb_`y', replace)
 set graph on
 }
 /*
@@ -392,7 +393,7 @@ graph display comb_rel_informal_HH
 
 ********** USING OF DEBT over INCOME, WEALTH AND CASTE
 global yvar eco_HH current_HH humank_HH social_HH home_HH other_HH rel_eco_HH rel_current_HH rel_humank_HH rel_social_HH rel_home_HH rel_other_HH
-global xvar caste cat_income cat_assets
+global xvar caste cat_income cat_assets catevo_annualincome catevo_assets_noland
 foreach y in $yvar {
 foreach x in $xvar {
 set graph off
@@ -405,8 +406,9 @@ gen perc=round(n*100/N,1)
 spineplot path over, ///
 bar1(bcolor($p1)) bar2(bcolor($p2)) bar3(bcolor($p3)) bar4(bcolor($p4)) bar5(bcolor($p5)) bar6(bcolor($p6)) ///
 text(perc) percent ///
-xtitle("") ytitle("") ///
-xlab(,ang(0)) ///
+xtitle("", axis(1)) ///
+xtitle("", axis(2)) ytitle("") ///
+xlab(,ang(0) axis(2)) ///
 title("") subtitle("") ///
 legend(pos(6) col(3)) ///
 name(`y'_`x', replace)
@@ -414,10 +416,9 @@ restore
 set graph on
 }
 }
-
 foreach y in $yvar {
 set graph off
-grc1leg `y'_caste `y'_cat_income `y'_cat_assets, col(3) title("`y'") name(comb_`y', replace)
+grc1leg `y'_caste `y'_cat_income `y'_cat_assets `y'_catevo_annualincome `y'_catevo_assets_noland, col(3) title("`y'") name(comb_`y', replace)
 set graph on
 }
 /*
@@ -434,6 +435,47 @@ graph display comb_rel_social_HH
 graph display comb_rel_home_HH
 graph display comb_rel_other_HH
 */
+
+
+
+
+********** OVERINDEBTEDNESS over INCOME, WEALTH AND CASTE
+qui colorpalette hue, hue(0 200) chroma(70) luminance(50) n(8) globals
+*colorpalette hue, hue(0 200) chroma(70) luminance(50) n(8)
+global yvar path_30 path_40 path_50
+global xvar caste cat_income cat_assets catevo_annualincome catevo_assets_noland
+foreach y in $yvar {
+foreach x in $xvar {
+set graph off
+preserve 
+rename `x' over
+rename `y' path
+bysort over path: gen n=_N
+bysort over: gen N=_N
+gen perc=round(n*100/N,1)
+spineplot path over, ///
+bar1(bcolor($p1)) bar2(bcolor($p2)) bar3(bcolor($p3)) bar4(bcolor($p4)) bar5(bcolor($p5)) bar6(bcolor($p6)) bar7(bcolor($p7)) bar8(bcolor($p8)) ///
+text(perc) percent ///
+xtitle("", axis(1)) ///
+xtitle("", axis(2)) ytitle("") ///
+xlab(,ang(45) axis(2)) ///
+title("") subtitle("") ///
+legend(pos(6) col(4)) ///
+name(`y'_`x', replace)
+restore
+set graph on
+}
+}
+foreach y in $yvar {
+set graph off
+grc1leg `y'_caste `y'_cat_income `y'_cat_assets `y'_catevo_annualincome `y'_catevo_assets_noland, col(3) title("`y'") name(comb_`y', replace)
+set graph on
+}
+/*
+graph display comb_path_30
+*/
+
+
 
 
 

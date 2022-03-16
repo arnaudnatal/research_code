@@ -129,13 +129,12 @@ grc1leg mean1_`ca' mean2_`ca' mean3_`ca', col(3) name(mean_`ca', replace)
 grc1leg median1_`ca' median2_`ca' median3_`ca', col(3) name(median_`ca', replace)
 set graph on
 }
-
+/*
 graph display mean_annualincome
 graph display median_annualincome
-
 graph display mean_assets_noland
 graph display median_assets_noland
-
+*/
 
 
 
@@ -169,13 +168,12 @@ grc1leg mean1_`ca' mean2_`ca' mean3_`ca', col(3) name(mean_`ca', replace)
 grc1leg median1_`ca' median2_`ca' median3_`ca', col(3) name(median_`ca', replace)
 set graph on
 }
+/*
 graph display mean_annualincome
 graph display median_annualincome
-
 graph display mean_assets_noland
 graph display median_assets_noland
-
-
+*/
 
 
 
@@ -227,15 +225,12 @@ grc1leg `x'1_`ca' `x'2_`ca' `x'3_`ca', col(3) title("`x'") name(`x'_`ca', replac
 }
 set graph on
 }
-
+/*
 graph display mean_annualincome
 graph display median_annualincome
-
 graph display mean_assets_noland
 graph display median_assets_noland
-
-
-
+*/
 
 
 
@@ -283,14 +278,12 @@ grc1leg `x'1_`ca' `x'2_`ca' `x'3_`ca', col(3) title("`x'") name(`x'_`ca', replac
 }
 set graph on
 }
-
-
+/*
 graph display mean_annualincome
 graph display median_annualincome
-
 graph display mean_assets_noland
 graph display median_assets_noland
-
+*/
 ****************************************
 * END
 
@@ -355,16 +348,16 @@ rarea sum5 sum6 cat_p ///
 , ///
 legend(pos(6) col(3) order(1 "Economic purpose" 2 "Current expenses" 3 "Human capital" 4 "Social purpose" 5 "Housing" 6 "Other")) ///
 title("t=`i'") ///
-name(`sta'_using`i'_`ca',replace)
+name(using`i'_`ca',replace)
 restore
 }
 grc1leg using1_`ca' using2_`ca' using3_`ca', col(3) name(use_`ca', replace)
 set graph on
 }
-
+/*
 graph display use_annualincome
 graph display use_assets_noland
-
+*/
 
 
 
@@ -397,11 +390,10 @@ restore
 grc1leg source1_`ca' source2_`ca' source3_`ca', col(3) name(source_`ca', replace)
 set graph on
 }
-
+/*
 grc1leg source_annualincome, col(3)
 grc1leg source_assets_noland, col(3)
-
-
+*/
 ****************************************
 * END
 
@@ -493,8 +485,3 @@ msymbol(oh oh oh oh oh oh oh) mcolor()  ///
 ylabel(0(100)600) ymtick(0(50)600) ytitle("`x'") ///
 legend(order(1 "Mean" 5 "Individual") off) name(box_`x', replace)
 }
-
-
-
-********** Violin plot
-vioplot annualincome, over(year)
