@@ -119,6 +119,7 @@ graph display loanamount_
 */
 
 ********** OVER WEALTH AND INCOME
+graph drop _all
 foreach x in loanamount {
 preserve
 drop if todrop_`x'==1
@@ -135,6 +136,7 @@ legend(pos(6) col(3) order(1 "T1 assets" 2 "T2 assets" 3 "T3 assets")) name(`x'_
 set graph on
 restore
 }
+graph dir
 /*
 graph display loanamount_
 */
@@ -160,6 +162,7 @@ graph display loanamount_
 use"panel_v4_wide", clear
 
 ********** DEBT, WEALTH, INCOME, EXPENSES PATH over INCOME, WEALTH AND CASTE
+graph drop _all
 global yvar income assetsnl yearly_expenses loanamount sum_loans DSR ISR
 global xvar caste cat_income cat_assets
 foreach y in $yvar {
@@ -182,6 +185,7 @@ set graph off
 graph combine `y'_caste `y'_cat_income `y'_cat_assets, col(3) title("`y'") name(comb_`y', replace)
 set graph on
 }
+graph dir
 /*
 graph display comb_assets_noland
 graph display comb_loanamount
@@ -192,6 +196,7 @@ graph display comb_ISR
 
 
 ********** OVERINDEBTEDNESS over INCOME, WEALTH AND CASTE
+graph drop _all
 global yvar path_30 path_40 path_50
 global xvar caste ce_income cat_income ce_assetsnl cat_assets
 foreach y in $yvar {
@@ -213,6 +218,7 @@ set graph off
 graph combine `y'_caste `y'_cat_income `y'_cat_assets, col(3) title("`y'") name(comb_`y', replace)
 set graph on
 }
+graph dir
 /*
 graph display path_30_caste
 graph display path_30_ce_assetsnl
@@ -224,7 +230,8 @@ graph display path_30_cat_assets
 
 
 ********** SOURCE OF DEBT over INCOME, WEALTH AND CASTE
-global yvar formal informal
+graph drop _all
+global yvar ce_formal ce_informal ce_rel_formal ce_rel_informal
 global xvar caste ce_income cat_income ce_assetsnl cat_assets
 foreach y in $yvar {
 foreach x in $xvar {
@@ -241,23 +248,33 @@ restore
 set graph on
 }
 }
+}
+foreach y in $yvar {
+set graph off
+graph combine `y'_caste `y'_cat_income `y'_cat_assets, col(3) title("`y'") name(comb_`y', replace)
+set graph on
+}
+graph dir
 /*
-graph display formal_HH_caste
-graph display formal_HH_cat_income
-graph display formal_HH_cat_assets
-graph display informal_HH_caste
-graph display informal_HH_cat_income
-graph display informal_HH_cat_assets
+graph display ce_formal_caste
+graph display ce_formal_cat_income
+graph display ce_formal_cat_assets
+graph display ce_informal_caste
+graph display ce_informal_cat_income
+graph display ce_informal_cat_assets
 */
 
 
 ********** USING OF DEBT over INCOME, WEALTH AND CASTE
-foreach y in eco_HH current_HH humank_HH social_HH home_HH other_HH {
-foreach x in caste cat_income cat_assets {
+graph drop _all
+global yvar ce_eco ce_current ce_humank ce_social ce_home ce_other  ce_rel_eco ce_rel_current ce_rel_humank ce_rel_social ce_rel_home ce_rel_other
+global xvar caste ce_income cat_income ce_assetsnl cat_assets
+foreach y in $yvar {
+foreach x in $xvar {
 set graph off
 preserve 
 rename `x' over
-rename catevo_rel_`y' path
+rename `y' path
 tabplot path over, percent(over) showval(format(%3.0f)) frame(100) ///
 xtitle("") ytitle("") ///
 xlab(,ang(0)) ///
@@ -267,25 +284,31 @@ restore
 set graph on
 }
 }
+foreach y in $yvar {
+set graph off
+graph combine `y'_caste `y'_cat_income `y'_cat_assets, col(3) title("`y'") name(comb_`y', replace)
+set graph on
+}
+graph dir
 /*
-graph display eco_HH_caste
-graph display eco_HH_cat_income
-graph display eco_HH_cat_assets
-graph display current_HH_caste
-graph display current_HH_cat_income
-graph display current_HH_cat_assets
-graph display humank_HH_caste
-graph display humank_HH_cat_income
-graph display humank_HH_cat_assets
-graph display social_HH_caste
-graph display social_HH_cat_income
-graph display social_HH_cat_assets
-graph display home_HH_caste
-graph display home_HH_cat_income
-graph display home_HH_cat_assets
-graph display other_HH_caste
-graph display other_HH_cat_income
-graph display other_HH_cat_assets
+graph display ce_eco_caste
+graph display ce_eco_cat_income
+graph display ce_eco_cat_assets
+graph display ce_current_caste
+graph display ce_current_cat_income
+graph display ce_current_cat_assets
+graph display ce_humank_caste
+graph display ce_humank_cat_income
+graph display ce_humank_cat_assets
+graph display ce_social_caste
+graph display ce_social_cat_income
+graph display ce_social_cat_assets
+graph display ce_home_caste
+graph display ce_home_cat_income
+graph display ce_home_cat_assets
+graph display ce_other_caste
+graph display ce_other_cat_income
+graph display ce_other_cat_assets
 */
 ****************************************
 * END
@@ -313,14 +336,15 @@ qui colorpalette hue, hue(0 200) chroma(70) luminance(50) n(6) globals
 
 
 ********** DEBT, WEALTH, INCOME, EXPENSES PATH over INCOME, WEALTH AND CASTE
-global yvar annualincome assets_noland yearly_expenses loanamount sum_loans_HH DSR ISR
+graph drop _all
+global yvar ce_income ce_assetsnl ce_yearly_expenses ce_loanamount ce_sum_loans ce_DSR ce_ISR
 global xvar caste cat_income cat_assets
 foreach y in $yvar {
 foreach x in $xvar {
 set graph off
 preserve 
 rename `x' over
-rename catevo_`y' path
+rename `y' path
 bysort over path: gen n=_N
 bysort over: gen N=_N
 gen perc=round(n*100/N,1)
@@ -342,6 +366,7 @@ set graph off
 grc1leg `y'_caste `y'_cat_income `y'_cat_assets, col(3) title("`y'") name(comb_`y', replace)
 set graph on
 }
+graph dir
 /*
 graph display comb_assets_noland
 graph display comb_loanamount
@@ -352,14 +377,15 @@ graph display comb_ISR
 
 
 ********** SOURCE OF DEBT over INCOME, WEALTH AND CASTE
-global yvar formal_HH informal_HH rel_formal_HH rel_informal_HH
-global xvar caste cat_income cat_assets catevo_annualincome catevo_assets_noland
+graph drop _all
+global yvar ce_formal ce_informal ce_rel_formal ce_rel_informal
+global xvar caste cat_income cat_assets ce_income ce_assetsnl
 foreach y in $yvar {
 foreach x in $xvar {
 set graph off
 preserve 
 rename `x' over
-rename catevo_`y' path
+rename `y' path
 bysort over path: gen n=_N
 bysort over: gen N=_N
 gen perc=round(n*100/N,1)
@@ -378,9 +404,10 @@ set graph on
 }
 foreach y in $yvar {
 set graph off
-grc1leg `y'_caste `y'_cat_income `y'_cat_assets `y'_catevo_annualincome `y'_catevo_assets_noland, col(3) title("`y'") name(comb_`y', replace)
+grc1leg `y'_caste `y'_cat_income `y'_cat_assets `y'_ce_income `y'_ce_assetsnl, col(3) title("`y'") name(comb_`y', replace)
 set graph on
 }
+graph dir
 /*
 graph display comb_formal_HH
 graph display comb_informal_HH
@@ -392,14 +419,15 @@ graph display comb_rel_informal_HH
 
 
 ********** USING OF DEBT over INCOME, WEALTH AND CASTE
-global yvar eco_HH current_HH humank_HH social_HH home_HH other_HH rel_eco_HH rel_current_HH rel_humank_HH rel_social_HH rel_home_HH rel_other_HH
-global xvar caste cat_income cat_assets catevo_annualincome catevo_assets_noland
+graph drop _all
+global yvar ce_eco ce_current ce_humank ce_social ce_home ce_other ce_rel_eco ce_rel_current ce_rel_humank ce_rel_social ce_rel_home ce_rel_other
+global xvar caste cat_income cat_assets ce_income ce_assetsnl
 foreach y in $yvar {
 foreach x in $xvar {
 set graph off
 preserve 
 rename `x' over
-rename catevo_`y' path
+rename `y' path
 bysort over path: gen n=_N
 bysort over: gen N=_N
 gen perc=round(n*100/N,1)
@@ -418,9 +446,10 @@ set graph on
 }
 foreach y in $yvar {
 set graph off
-grc1leg `y'_caste `y'_cat_income `y'_cat_assets `y'_catevo_annualincome `y'_catevo_assets_noland, col(3) title("`y'") name(comb_`y', replace)
+grc1leg `y'_caste `y'_cat_income `y'_cat_assets `y'_ce_income `y'_ce_assetsnl, col(3) title("`y'") name(comb_`y', replace)
 set graph on
 }
+graph dir
 /*
 graph display comb_eco_HH
 graph display comb_current_HH
@@ -441,9 +470,10 @@ graph display comb_rel_other_HH
 
 ********** OVERINDEBTEDNESS over INCOME, WEALTH AND CASTE
 qui colorpalette hue, hue(0 200) chroma(70) luminance(50) n(8) globals
-*colorpalette hue, hue(0 200) chroma(70) luminance(50) n(8)
+
+graph drop _all
 global yvar path_30 path_40 path_50
-global xvar caste cat_income cat_assets catevo_annualincome catevo_assets_noland
+global xvar caste cat_income cat_assets ce_income ce_assetsnl
 foreach y in $yvar {
 foreach x in $xvar {
 set graph off
@@ -468,16 +498,13 @@ set graph on
 }
 foreach y in $yvar {
 set graph off
-grc1leg `y'_caste `y'_cat_income `y'_cat_assets `y'_catevo_annualincome `y'_catevo_assets_noland, col(3) title("`y'") name(comb_`y', replace)
+grc1leg `y'_caste `y'_cat_income `y'_cat_assets `y'_ce_income `y'_ce_assetsnl, col(3) title("`y'") name(comb_`y', replace)
 set graph on
 }
+graph dir
 /*
 graph display comb_path_30
 */
-
-
-
-
 
 ****************************************
 * END
@@ -490,6 +517,47 @@ graph display comb_path_30
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Test hierarchical ascending clustering
+****************************************
+use"panel_v4_wide", clear
+
+********** Var transfo
+foreach i in 2010 2016 2020 {
+gen DSR`i'_max=DSR`i'
+gen DAR`i'_max=DAR_without`i'
+
+replace DSR`i'_max=200 if DSR`i'_max>200
+replace DAR`i'_max=200 if DAR`i'_max>200
+
+gen log_income`i'=log(annualincome`i')
+}
+
+********** Test
+graph drop _all
+foreach x in single average complete waverage wards {
+cluster `x'linkage DSR2010_max DAR2010_max log_income2010, name(cl_`x')
+cluster tree, cutnumber(20) showcount name(tree_`x')
+}
+
+cluster wardslinkage DSR2010_max DAR2010_max log_income2010, name(cl_wards)
+cluster tree, cutnumber(20) showcount
+
+
+****************************************
+* END
 
 
 

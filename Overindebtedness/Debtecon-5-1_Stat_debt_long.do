@@ -100,6 +100,7 @@ keep if panel==1
 
 
 ********** INCOME, WEALTH AND DEBT AMOUNT
+graph drop _all
 foreach ca in annualincome assets_noland {
 forvalues i=1(1)3{
 preserve
@@ -129,6 +130,7 @@ grc1leg mean1_`ca' mean2_`ca' mean3_`ca', col(3) name(mean_`ca', replace)
 grc1leg median1_`ca' median2_`ca' median3_`ca', col(3) name(median_`ca', replace)
 set graph on
 }
+graph dir
 /*
 graph display mean_annualincome
 graph display median_annualincome
@@ -139,6 +141,7 @@ graph display median_assets_noland
 
 
 ********** INCOME, WEALTH AND DEBT/INTEREST SERVICE
+graph drop _all
 foreach ca in annualincome assets_noland {
 forvalues i=1(1)3{
 preserve
@@ -168,6 +171,7 @@ grc1leg mean1_`ca' mean2_`ca' mean3_`ca', col(3) name(mean_`ca', replace)
 grc1leg median1_`ca' median2_`ca' median3_`ca', col(3) name(median_`ca', replace)
 set graph on
 }
+graph dir
 /*
 graph display mean_annualincome
 graph display median_annualincome
@@ -178,6 +182,7 @@ graph display median_assets_noland
 
 
 ********** INCOME, WEALTH AND USING OF DEBT
+graph drop _all
 foreach ca in annualincome assets_noland {
 *set trace on
 forvalues i=1(1)3{
@@ -225,6 +230,7 @@ grc1leg `x'1_`ca' `x'2_`ca' `x'3_`ca', col(3) title("`x'") name(`x'_`ca', replac
 }
 set graph on
 }
+graph dir
 /*
 graph display mean_annualincome
 graph display median_annualincome
@@ -235,6 +241,7 @@ graph display median_assets_noland
 
 
 ********** INCOME, WEALTH AND SOURCE OF DEBT
+graph drop _all
 foreach ca in annualincome assets_noland {
 *set trace on
 forvalues i=1(1)3{
@@ -278,6 +285,7 @@ grc1leg `x'1_`ca' `x'2_`ca' `x'3_`ca', col(3) title("`x'") name(`x'_`ca', replac
 }
 set graph on
 }
+graph dir
 /*
 graph display mean_annualincome
 graph display median_annualincome
@@ -314,6 +322,7 @@ keep if panel==1
 
 
 ********* INCOME, WEALTH AND USING OF DEBT
+graph drop _all
 foreach ca in annualincome assets_noland {
 forvalues i=1(1)3{
 preserve
@@ -354,6 +363,7 @@ restore
 grc1leg using1_`ca' using2_`ca' using3_`ca', col(3) name(use_`ca', replace)
 set graph on
 }
+graph dir
 /*
 graph display use_annualincome
 graph display use_assets_noland
@@ -362,6 +372,7 @@ graph display use_assets_noland
 
 
 ********* INCOME, WEALTH AND SOURCE OF DEBT
+graph drop _all
 foreach ca in annualincome assets_noland {
 forvalues i=1(1)3{
 preserve
@@ -390,6 +401,7 @@ restore
 grc1leg source1_`ca' source2_`ca' source3_`ca', col(3) name(source_`ca', replace)
 set graph on
 }
+graph dir
 /*
 grc1leg source_annualincome, col(3)
 grc1leg source_assets_noland, col(3)
