@@ -545,19 +545,128 @@ replace DAR`i'_max=200 if DAR`i'_max>200
 gen log_income`i'=log(annualincome`i')
 }
 
+/*
 ********** Test
 graph drop _all
-foreach x in single average complete waverage wards {
+foreach x in average complete wards {
 cluster `x'linkage DSR2010_max DAR2010_max log_income2010, name(cl_`x')
 cluster tree, cutnumber(20) showcount name(tree_`x')
 }
-
-cluster wardslinkage DSR2010_max DAR2010_max log_income2010, name(cl_wards)
-cluster tree, cutnumber(20) showcount
+*/
 
 
 ****************************************
 * END
+
+
+
+
+
+
+
+
+
+****************************************
+* kmeans
+****************************************
+cls
+use"panel_v4_wide", clear
+
+
+********** Var transfo
+foreach i in 2010 2016 2020 {
+gen DSR`i'_max=DSR`i'
+gen DAR`i'_max=DAR_without`i'
+
+replace DSR`i'_max=200 if DSR`i'_max>200
+replace DAR`i'_max=200 if DAR`i'_max>200
+
+gen log_income`i'=log(annualincome`i')
+}
+
+*** kmeans
+local list2 "DSR2010_max DAR2010_max log_income2010 DSR2016_max DAR2016_max log_income2016 DSR2020_max DAR2020_max log_income2020"
+forvalues k = 1(1)20 {
+cluster kmeans `list2', k(`k') start(random(123)) name(cs`k')
+}
+
+
+
+
+* WSS matrix
+matrix WSS = J(20,5,.)
+matrix colnames WSS = k WSS log(WSS) eta-squared PRE
+* WSS for each clustering
+forvalues k = 1(1)20 {
+scalar ws`k' = 0
+foreach v of varlist `list2' {
+quietly anova `v' cs`k'
+scalar ws`k' = ws`k' + e(rss)
+}
+matrix WSS[`k', 1] = `k'
+matrix WSS[`k', 2] = ws`k'
+matrix WSS[`k', 3] = log(ws`k')
+matrix WSS[`k', 4] = 1 - ws`k'/WSS[1,2]
+matrix WSS[`k', 5] = (WSS[`k'-1,2] - ws`k')/WSS[`k'-1,2]
+}
+
+matrix list WSS
+_matplot WSS, columns(2 1) connect(l) xlabel(#10) name(plot1, replace) nodraw noname
+_matplot WSS, columns(3 1) connect(l) xlabel(#10) name(plot2, replace) nodraw noname
+_matplot WSS, columns(4 1) connect(l) xlabel(#10) name(plot3, replace) nodraw noname ytitle({&eta}`squared')
+_matplot WSS, columns(5 1) connect(l) xlabel(#10) name(plot4, replace) nodraw noname
+
+graph combine plot1 plot2 plot3 plot4, name(plot1to4, replace)
+
+*graph matrix DSR2010_max DAR2010_max log_income2010 DSR2016_max DAR2016_max log_income2016 DSR2020_max DAR2020_max log_income2020, msym(i) mlab(cs4) mlabpos(0) half name(matrixplot, replace)
+
+
+
+
+cluster kmeans DSR2010_max DAR2010_max log_income2010 DSR2016_max DAR2016_max log_income2016 DSR2020_max DAR2020_max log_income2020, k(5) name(cs`k') gen(clust)
+
+cls
+tabstat DSR2010_max DAR2010_max log_income2010 DSR2016_max DAR2016_max log_income2016 DSR2020_max DAR2020_max log_income2020, stat(n mean sd q) by(clust)
+
+
+
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* MCA for debt path
+****************************************
+cls
+use"panel_v4_wide", clear
+
+
+********** Test
+mca ce_DAR_without ce_DSR ce_income, method (indicator) normal(princ)
+mcacontrib
+predict a1 a2
+scatter a2 a1
+mcaplot, overlay legend(off) xline(0) yline(0) scale(.8)
+
+****************************************
+* END
+
+
+
 
 
 
