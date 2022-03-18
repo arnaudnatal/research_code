@@ -618,15 +618,15 @@ _matplot WSS, columns(5 1) connect(l) xlabel(#10) name(plot4, replace) nodraw no
 
 graph combine plot1 plot2 plot3 plot4, name(plot1to4, replace)
 
+
+
 *graph matrix DSR2010_max DAR2010_max log_income2010 DSR2016_max DAR2016_max log_income2016 DSR2020_max DAR2020_max log_income2020, msym(i) mlab(cs4) mlabpos(0) half name(matrixplot, replace)
 
 
+local list2 "DSR2010_max DAR2010_max log_income2010 DSR2016_max DAR2016_max log_income2016 DSR2020_max DAR2020_max log_income2020"
+cluster kmeans `list2', k(5) start(random(123)) gen(clust)
 
-
-cluster kmeans DSR2010_max DAR2010_max log_income2010 DSR2016_max DAR2016_max log_income2016 DSR2020_max DAR2020_max log_income2020, k(5) name(cs`k') gen(clust)
-
-cls
-tabstat DSR2010_max DAR2010_max log_income2010 DSR2016_max DAR2016_max log_income2016 DSR2020_max DAR2020_max log_income2020, stat(n mean sd q) by(clust)
+tabstat DSR2010_max DSR2016_max DSR2020_max DAR2010_max DAR2016_max DAR2020_max log_income2010 log_income2016 log_income2020, stat(n mean sd q) by(clust)
 
 
 
@@ -655,12 +655,48 @@ cls
 use"panel_v4_wide", clear
 
 
+ta ce_DAR_without, gen(ce_DAR_)
+ta ce_DSR, gen(ce_DSR_)
+ta ce_income, gen(ce_income_)
+
 ********** Test
-mca ce_DAR_without ce_DSR ce_income, method (indicator) normal(princ)
-mcacontrib
-predict a1 a2
-scatter a2 a1
-mcaplot, overlay legend(off) xline(0) yline(0) scale(.8)
+local list2 "ce_DAR_1 ce_DAR_2 ce_DAR_3 ce_DAR_4 ce_DAR_5 ce_DAR_6 ce_DSR_1 ce_DSR_2 ce_DSR_3 ce_DSR_4 ce_DSR_5 ce_DSR_6 ce_income_1 ce_income_2 ce_income_3 ce_income_4 ce_income_5 ce_income_6"
+forvalues k = 1(1)20 {
+*cluster kmeans `list2', k(`k') measure(Gower2) name(cs`k')
+cluster kmeans `list2', k(`k') measure(Jaccard) name(cs`k')
+}
+
+
+* WSS matrix
+matrix WSS = J(20,5,.)
+matrix colnames WSS = k WSS log(WSS) eta-squared PRE
+* WSS for each clustering
+forvalues k = 1(1)20 {
+scalar ws`k' = 0
+foreach v of varlist `list2' {
+quietly anova `v' cs`k'
+scalar ws`k' = ws`k' + e(rss)
+}
+matrix WSS[`k', 1] = `k'
+matrix WSS[`k', 2] = ws`k'
+matrix WSS[`k', 3] = log(ws`k')
+matrix WSS[`k', 4] = 1 - ws`k'/WSS[1,2]
+matrix WSS[`k', 5] = (WSS[`k'-1,2] - ws`k')/WSS[`k'-1,2]
+}
+
+matrix list WSS
+_matplot WSS, columns(2 1) connect(l) xlabel(#10) name(plot1, replace) nodraw noname
+_matplot WSS, columns(3 1) connect(l) xlabel(#10) name(plot2, replace) nodraw noname
+_matplot WSS, columns(4 1) connect(l) xlabel(#10) name(plot3, replace) nodraw noname ytitle({&eta}`squared')
+_matplot WSS, columns(5 1) connect(l) xlabel(#10) name(plot4, replace) nodraw noname
+
+graph combine plot1 plot2 plot3 plot4, name(plot1to4, replace)
+
+
+
+
+
+
 
 ****************************************
 * END

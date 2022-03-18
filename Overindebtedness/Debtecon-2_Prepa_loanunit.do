@@ -81,13 +81,12 @@ global loan3 "NEEMSIS2-all_loans"
 use"$loan1", clear
 drop if loansettled==1
 ta dummyproblemtorepay
-rename dummyproblemtorepay problemtorepay
-gen dummyproblemtorepay=.
-replace dummyproblemtorepay=0 if problemtorepay==9
-replace dummyproblemtorepay=1 if problemtorepay!=9 & problemtorepay!=.
-
-ta problemtorepay dummyproblemtorepay, m
-ta lenderrelation lender4
+fre settleloanstrategy
+tostring settleloanstrategy, gen(settleloanstrategy_str)
+drop settleloanstrategy
+rename settleloanstrategy_str settleloanstrategy
+replace settleloanstrategy="" if settleloanstrategy=="."
+ta settleloanstrategy
 
 preserve
 use"$wave1", clear
@@ -154,6 +153,7 @@ save"$loan3~_2", replace
 
 ********** Append
 use"$loan1~_2", clear
+fre settleloanstrategy
 append using "$loan2~_2"
 append using "$loan3~_2"
 
@@ -459,6 +459,8 @@ save"panel_loan_v2", replace
 cls
 use"panel_loan_v2", clear
 
+
+********** Initialization
 drop loanamount_HH
 
 keep if panel3==1
@@ -468,7 +470,6 @@ recode loanreasongiven (12=13)
 fre reasongiven
 recode reasongiven (12=13)
 
-********** Recode
 tab loan_database year
 recode loanreasongiven (77=13)
 codebook loanreasongiven
@@ -476,9 +477,13 @@ label define loanreasongiven 13"Other", modify
 
 ta reasongiven year, m col nofreq
 
+order HHID_panel INDID_panel year loan_database loanamount lender reasongiven dummyinterest yratepaid
+replace loanamount=round(loanamount,0.1)
 
-***** Source
-ta lender
+
+
+********** Lender
+fre lender
 
 gen formal=0
 gen informal=0
@@ -492,8 +497,9 @@ replace informal=loanamount if loanlender==`i'
 }
 
 
-***** Use
-ta reasongiven
+
+********** Reason given
+fre reasongiven
 
 gen eco=0
 gen current=0
@@ -515,30 +521,159 @@ replace social=loanamount if loanreasongiven==11
 replace home=loanamount if loanreasongiven==5
 replace other=loanamount if loanreasongiven==13
 
-***** Abs
-foreach x in formal informal eco current humank social home other {
+global sourcereason informal formal eco current humank social home other
+
+********** Multiple borrowing
+fre lender4
+
+gen loanfromIMF_nb=1 if lender4==8
+gen loanfromIMF_amt=loanamount if lender4==8
+
+gen loanfrombank_nb=1 if lender4==9
+gen loanfrombank_amt=loanamount if lender4==9
+
+gen loanfromML_nb=1 if lender4==6
+gen loanfromML_amt=loanamount if lender4==6
+
+global multiple loanfromIMF_nb loanfromIMF_amt loanfrombank_nb loanfrombank_amt loanfromML_nb loanfromML_amt
+
+
+********** Debt trap
+fre reasongiven
+gen loanforrepayment_nb=1 if reasongiven==4
+gen loanforrepayment_amt=loanamount if reasongiven==4
+
+ta settleloanstrategy year if mainloan==1
+ta plantorepay year if mainloan==1
+
+gen MLborrowstrat_nb=0
+replace MLborrowstrat_nb=1 if strpos(settleloanstrategy,"7") & mainloan==1
+replace MLborrowstrat_nb=1 if strpos(plantorepay,"6") & mainloan==1
+
+gen MLborrowstrat_amt=0
+replace MLborrowstrat_amt=loanamount if MLborrowstrat_nb==1
+
+global debttrap loanforrepayment_nb loanforrepayment_amt MLborrowstrat_nb MLborrowstrat_amt
+
+
+********** Bad debt - only ML sample
+***** Cost
+tabstat yratepaid if dummyinterest==1, stat(n mean q p90 p95 p99 max)
+gen highcostloan=0
+replace highcostloan=1 if yratepaid>50 & dummyinterest==1 & mainloan==1
+
+
+***** Risk assets
+ta plantorepay year if mainloan==1
+ta settleloanstrategy year if mainloan==1
+ta loanproductpledge year if mainloan==1
+gen MLriskloosingassets=0
+replace MLriskloosingassets=1 if strpos(plantorepay,"4") & mainloan==1
+replace MLriskloosingassets=1 if strpos(settleloanstrategy,"4") & mainloan==1
+replace MLriskloosingassets=1 if strpos(settleloanstrategy,"10") & mainloan==1
+*replace MLriskloosingassets=1 if loanproductpledge!="15" | loanproductpledge!="16"
+
+***** Debt bondage
+ta borrowerservices year if mainloan==1
+ta settleloanstrategy year if mainloan==1
+gen MLdebtbondage=0
+replace MLdebtbondage=1 if strpos(borrowerservices,"2") & mainloan==1
+replace MLdebtbondage=1 if strpos(settleloanstrategy,"8") & mainloan==1
+
+***** Shouting
+ta problemdelayrepayment year if mainloan==1
+gen MLshamemoneylender=0
+replace MLshamemoneylender=1 if strpos(problemdelayrepayment,"2") & mainloan==1
+replace MLshamemoneylender=1 if strpos(problemdelayrepayment,"3") & mainloan==1
+replace MLshamemoneylender=1 if strpos(problemdelayrepayment,"5") & mainloan==1
+
+
+***** Bad debt var
+gen MLbaddebt=0
+foreach x in highcostloan MLriskloosingassets MLdebtbondage MLshamemoneylender {
+replace MLbaddebt=1 if `x'==1 & mainloan==1
+}
+ta MLbaddebt year if mainloan==1
+
+
+
+
+********** Good debt - only ML sample
+***** Cost
+gen nocostloan=0
+replace nocostloan=1 if dummyinterest==0 & mainloan==1
+
+
+***** Use
+fre reasongiven
+gen invest=0
+replace invest=1 if reasongiven==7
+replace invest=1 if reasongiven==9
+replace invest=1 if reasongiven==11
+
+
+***** Good debt var
+gen MLgooddebt=0
+foreach x in nocostloan invest {
+replace MLgooddebt=1 if `x'==1 & mainloan==1
+}
+ta MLgooddebt year if mainloan==1
+
+
+********** Amount good/bad debt
+rename MLgooddebt MLgooddebt_nb
+rename MLbaddebt MLbaddebt_nb
+
+gen MLgooddebt_amt=loanamount if MLgooddebt_nb==1
+gen MLbaddebt_amt=loanamount if MLbaddebt_nb==1
+
+global goodbad MLgooddebt_nb MLgooddebt_amt MLbaddebt_nb MLbaddebt_amt
+
+
+********** ML
+gen mainloan_amt=loanamount if mainloan==1
+
+
+********** Household level
+***** Absolut
+global all $sourcereason $multiple $debttrap $goodbad mainloan mainloan_amt
+
+foreach x in $all {
 bysort HHID_panel year: egen `x'_HH=sum(`x')
 }
 
 
-***** Relative terms
+
+
+***** Relative of total loan amount
 bysort HHID_panel year: egen loanamount_HH=sum(loanamount)
 
-foreach x in formal informal eco current humank social home other {
-gen rel_`x'_HH=`x'_HH*100/loanamount_HH
+foreach x in formal_HH informal_HH eco_HH current_HH humank_HH social_HH home_HH other_HH loanfromIMF_amt_HH loanfrombank_amt_HH loanfromML_amt_HH mainloan_amt_HH loanforrepayment_amt_HH MLborrowstrat_amt_HH{
+gen rel_`x'=`x'*100/loanamount_HH
 }
 
 
 
+
+***** Relative of main loan amount
+foreach x in MLbaddebt_amt_HH MLgooddebt_amt_HH {
+gen rel_`x'=`x'*100/mainloan_amt_HH
+}
+
+
+
+
+
+********** New database for merging
 preserve
 bysort HHID_panel year: egen sum_loans_HH=sum(1)
-keep HHID_panel year rel_formal_HH rel_informal_HH rel_eco_HH rel_current_HH rel_humank_HH rel_social_HH rel_home_HH rel_other_HH formal_HH informal_HH eco_HH current_HH humank_HH social_HH home_HH other_HH loanamount_HH sum_loans_HH
+keep HHID_panel year sum_loans_HH informal_HH formal_HH eco_HH current_HH humank_HH social_HH home_HH other_HH loanfromIMF_nb_HH loanfromIMF_amt_HH loanfrombank_nb_HH loanfrombank_amt_HH loanfromML_nb_HH loanfromML_amt_HH loanforrepayment_nb_HH loanforrepayment_amt_HH MLborrowstrat_nb_HH MLborrowstrat_amt_HH MLgooddebt_nb_HH MLgooddebt_amt_HH MLbaddebt_nb_HH MLbaddebt_amt_HH mainloan_HH mainloan_amt_HH loanamount_HH rel_formal_HH rel_informal_HH rel_eco_HH rel_current_HH rel_humank_HH rel_social_HH rel_home_HH rel_other_HH rel_loanfromIMF_amt_HH rel_loanfrombank_amt_HH rel_loanfromML_amt_HH rel_mainloan_amt_HH rel_loanforrepayment_amt_HH rel_MLborrowstrat_amt_HH rel_MLbaddebt_amt_HH rel_MLgooddebt_amt_HH
 duplicates drop
+ta year
 save "HH_newvar_temp.dta", replace
 restore
 
-
-
+clear all
 ****************************************
 * END
 
