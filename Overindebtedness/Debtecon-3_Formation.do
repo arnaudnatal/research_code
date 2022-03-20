@@ -657,18 +657,31 @@ use"panel_v4", clear
 xtset panelvar time
 keep if panel==1
 
+********** Rename for size
+foreach x in IMF_nb_HH IMF_amt_HH bank_nb_HH bank_amt_HH moneylender_nb_HH moneylender_amt_HH {
+rename loanfrom`x' lf_`x'
+}
 
-global quanti DIR DAR_with DAR_without DSR ISR loanamount annualincome assets_noland assets sizeownland yearly_expenses formal_HH informal_HH rel_formal_HH rel_informal_HH eco_HH current_HH humank_HH social_HH home_HH other_HH rel_eco_HH rel_current_HH rel_humank_HH rel_social_HH rel_home_HH rel_other_HH sum_loans_HH
+foreach x in IMF_amt_HH bank_amt_HH moneylender_amt_HH {
+rename rel_loanfrom`x' rel_lf_`x'
+}
 
-global quali DSR30 DSR40 DSR50
+
+
+
+********** Macro
+global quanti DIR DAR_with DAR_without DSR ISR loanamount annualincome assets_noland assets sizeownland yearly_expenses formal_HH informal_HH rel_formal_HH rel_informal_HH eco_HH current_HH humank_HH social_HH home_HH other_HH rel_eco_HH rel_current_HH rel_humank_HH rel_social_HH rel_home_HH rel_other_HH sum_loans_HH lf_IMF_nb_HH lf_IMF_amt_HH lf_bank_nb_HH lf_bank_amt_HH lf_moneylender_nb_HH lf_moneylender_amt_HH loanforrepayment_nb_HH loanforrepayment_amt_HH MLborrowstrat_nb_HH MLborrowstrat_amt_HH MLgooddebt_nb_HH MLgooddebt_amt_HH MLbaddebt_nb_HH MLbaddebt_amt_HH mainloan_HH mainloan_amt_HH rel_lf_IMF_amt_HH rel_lf_bank_amt_HH rel_lf_moneylender_amt_HH rel_mainloan_amt_HH rel_loanforrepayment_amt_HH rel_MLborrowstrat_amt_HH rel_MLbaddebt_amt_HH rel_MLgooddebt_amt_HH 
+
+
+global quali DSR30 DSR40 DSR50 dummyIMF dummybank dummymoneylender dummyrepay
 
 global var $quanti $quali
 sort HHID_panel year
 
 
 ********** Select+reshape
-keep HHID_panel year panel caste $var
-reshape wide $var, i(HHID_panel) j(year)
+keep HHID_panel year panel caste $var dummyIMF dummybank dummymoneylender dummyrepay
+reshape wide $var , i(HHID_panel) j(year)
 
 
 
@@ -692,18 +705,19 @@ gen d2_`x'=`x'2020-`x'2016
 ********** Categories
 
 label define evo 1"(Δ+1)&(Δ+2)" 2"(Δ+1)>(Δ-2)" 3"(Δ-1)<(Δ+2)" 4"(Δ+1)<(Δ-2)" 5"(Δ-1)>(Δ+2)" 6"(Δ-1)&(Δ-2)", replace
+
 foreach x in $quanti {
-gen catevo_`x'=.
+gen ce_`x'=.
 
-label values catevo_`x' evo
+label values ce_`x' evo
 
-replace catevo_`x'=1 if d1_`x'>0 & d2_`x'>0
-replace catevo_`x'=2 if d1_`x'>0 & d2_`x'<=0 & abs(d1_`x')>abs(d2_`x')
-replace catevo_`x'=3 if d1_`x'<=0 & d2_`x'>0 & abs(d2_`x')>abs(d1_`x')
+replace ce_`x'=1 if d1_`x'>0 & d2_`x'>0
+replace ce_`x'=2 if d1_`x'>0 & d2_`x'<=0 & abs(d1_`x')>abs(d2_`x')
+replace ce_`x'=3 if d1_`x'<=0 & d2_`x'>0 & abs(d2_`x')>abs(d1_`x')
 
-replace catevo_`x'=4 if d1_`x'>0 & d2_`x'<=0 & abs(d2_`x')>abs(d1_`x')
-replace catevo_`x'=5 if d1_`x'<=0 & d2_`x'>0 & abs(d1_`x')>abs(d2_`x')
-replace catevo_`x'=6 if d1_`x'<=0 & d2_`x'<=0
+replace ce_`x'=4 if d1_`x'>0 & d2_`x'<=0 & abs(d2_`x')>abs(d1_`x')
+replace ce_`x'=5 if d1_`x'<=0 & d2_`x'>0 & abs(d1_`x')>abs(d2_`x')
+replace ce_`x'=6 if d1_`x'<=0 & d2_`x'<=0
 }
 
 
@@ -760,10 +774,6 @@ label values path_`i' completepath
 
 
 ********** Rename catevo en plus court
-foreach x in DIR DAR_with DAR_without DSR ISR loanamount annualincome assets_noland assets sizeownland yearly_expenses formal_HH informal_HH rel_formal_HH rel_informal_HH eco_HH current_HH humank_HH social_HH home_HH other_HH rel_eco_HH rel_current_HH rel_humank_HH rel_social_HH rel_home_HH rel_other_HH sum_loans_HH {
-rename catevo_`x' ce_`x'
-}
-
 rename ce_annualincome ce_income
 rename ce_assets_noland ce_assetsnl
 

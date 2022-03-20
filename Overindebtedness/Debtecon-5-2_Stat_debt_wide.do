@@ -152,6 +152,47 @@ graph display loanamount_
 
 
 
+****************************************
+* Debt trap
+****************************************
+use"panel_v4_wide", clear
+
+********** Debt for repayment
+***** Nb
+tabstat loanforrepayment_nb_HH2010 loanforrepayment_nb_HH2016 loanforrepayment_nb_HH2020, stat(n mean sd q)
+
+
+***** Amount
+tabstat loanforrepayment_amt_HH2010 loanforrepayment_amt_HH2016 loanforrepayment_amt_HH2020, stat(n mean sd q)
+
+tabstat loanforrepayment_amt_HH2010 if loanforrepayment_amt_HH2010!=0, stat(n mean sd q)
+
+tabstat rel_loanforrepayment_amt_HH2010 rel_loanforrepayment_amt_HH2016 rel_loanforrepayment_amt_HH2020, stat(n mean sd q)
+
+
+
+
+
+
+
+********* Debt that need borrow elsewhere to repay
+tabsta MLborrowstrat_nb_HH2010 MLborrowstrat_amt_HH2010 rel_MLborrowstrat_amt_HH2010 MLborrowstrat_nb_HH2016 MLborrowstrat_amt_HH2016 rel_MLborrowstrat_amt_HH2016 MLborrowstrat_nb_HH2020 MLborrowstrat_amt_HH2020 rel_MLborrowstrat_amt_HH2020, stat(n mean sd q)
+
+
+
+
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -514,49 +555,6 @@ graph display comb_path_30
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-****************************************
-* Test hierarchical ascending clustering
-****************************************
-use"panel_v4_wide", clear
-
-********** Var transfo
-foreach i in 2010 2016 2020 {
-gen DSR`i'_max=DSR`i'
-gen DAR`i'_max=DAR_without`i'
-
-replace DSR`i'_max=200 if DSR`i'_max>200
-replace DAR`i'_max=200 if DAR`i'_max>200
-
-gen log_income`i'=log(annualincome`i')
-}
-
-/*
-********** Test
-graph drop _all
-foreach x in average complete wards {
-cluster `x'linkage DSR2010_max DAR2010_max log_income2010, name(cl_`x')
-cluster tree, cutnumber(20) showcount name(tree_`x')
-}
-*/
-
-
-****************************************
-* END
 
 
 
