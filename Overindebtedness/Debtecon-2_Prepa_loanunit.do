@@ -524,7 +524,7 @@ replace other=loanamount if loanreasongiven==13
 global sourcereason informal formal eco current humank social home other
 
 ********** Multiple borrowing
-fre lender4
+ta lender4 year
 
 gen loanfromIMF_nb=1 if lender4==8
 gen loanfromIMF_amt=loanamount if lender4==8
@@ -664,7 +664,7 @@ gen rel_`x'=`x'*100/mainloan_amt_HH
 
 
 ********** Recode + dummycreation
-foreach x in  loanfromIMF_nb_HH loanfrombank_nb_HH loanfrommoneylender_nb_HH loanforrepayment_nb_HH {
+foreach x in loanfromIMF_nb_HH loanfrombank_nb_HH loanfrommoneylender_nb_HH loanforrepayment_nb_HH MLborrowstrat_nb_HH {
 sum `x'
 sum `x' if `x'!=0 & `x'!=.
 }
@@ -673,28 +673,33 @@ gen dummyIMF=0
 gen dummybank=0
 gen dummymoneylender=0
 gen dummyrepay=0
+gen dummyborrowstrat=0
 
 replace dummyIMF=1 if loanfromIMF_nb_HH!=0
 replace dummybank=1 if loanfrombank_nb_HH!=0
 replace dummymoneylender=1 if loanfrommoneylender_nb_HH!=0
 replace dummyrepay=1 if loanforrepayment_nb_HH!=0
+replace dummyborrowstrat=1 if MLborrowstrat_nb_HH!=0
 
 replace loanfromIMF_nb_HH=. if dummyIMF==0
 replace loanfrombank_nb_HH=. if dummybank==0
 replace loanfrommoneylender_nb_HH=. if dummymoneylender==0
 replace loanforrepayment_nb_HH=. if dummyrepay==0
+replace MLborrowstrat_nb_HH=. if dummyborrowstrat==0
 
 replace loanfromIMF_amt_HH=. if dummyIMF==0
 replace loanfrombank_amt_HH=. if dummybank==0
 replace loanfrommoneylender_amt_HH=. if dummymoneylender==0
 replace loanforrepayment_amt_HH=. if dummyrepay==0
+replace MLborrowstrat_amt_HH=. if dummyborrowstrat==0
 
 replace rel_loanfromIMF_amt_HH=. if dummyIMF==0
 replace rel_loanfrombank_amt_HH=. if dummybank==0
 replace rel_loanfrommoneylender_amt_HH=. if dummymoneylender==0
 replace rel_loanforrepayment_amt_HH=. if dummyrepay==0
+replace rel_MLborrowstrat_amt_HH=. if dummyborrowstrat==0
 
-tab1 dummyIMF dummybank dummymoneylender dummyrepay
+tab1 dummyIMF dummybank dummymoneylender dummyrepay dummyborrowstrat
 
 
 
@@ -704,7 +709,7 @@ tab1 dummyIMF dummybank dummymoneylender dummyrepay
 ********** New database for merging
 preserve
 bysort HHID_panel year: egen sum_loans_HH=sum(1)
-keep HHID_panel year sum_loans_HH informal_HH formal_HH eco_HH current_HH humank_HH social_HH home_HH other_HH loanfromIMF_nb_HH loanfromIMF_amt_HH loanfrombank_nb_HH loanfrombank_amt_HH loanfrommoneylender_nb_HH loanfrommoneylender_amt_HH loanforrepayment_nb_HH loanforrepayment_amt_HH MLborrowstrat_nb_HH MLborrowstrat_amt_HH MLgooddebt_nb_HH MLgooddebt_amt_HH MLbaddebt_nb_HH MLbaddebt_amt_HH mainloan_HH mainloan_amt_HH loanamount_HH rel_formal_HH rel_informal_HH rel_eco_HH rel_current_HH rel_humank_HH rel_social_HH rel_home_HH rel_other_HH rel_loanfromIMF_amt_HH rel_loanfrombank_amt_HH rel_loanfrommoneylender_amt_HH rel_mainloan_amt_HH rel_loanforrepayment_amt_HH rel_MLborrowstrat_amt_HH rel_MLbaddebt_amt_HH rel_MLgooddebt_amt_HH dummyIMF dummybank dummymoneylender dummyrepay
+keep HHID_panel year sum_loans_HH informal_HH formal_HH eco_HH current_HH humank_HH social_HH home_HH other_HH loanfromIMF_nb_HH loanfromIMF_amt_HH loanfrombank_nb_HH loanfrombank_amt_HH loanfrommoneylender_nb_HH loanfrommoneylender_amt_HH loanforrepayment_nb_HH loanforrepayment_amt_HH MLborrowstrat_nb_HH MLborrowstrat_amt_HH MLgooddebt_nb_HH MLgooddebt_amt_HH MLbaddebt_nb_HH MLbaddebt_amt_HH mainloan_HH mainloan_amt_HH loanamount_HH rel_formal_HH rel_informal_HH rel_eco_HH rel_current_HH rel_humank_HH rel_social_HH rel_home_HH rel_other_HH rel_loanfromIMF_amt_HH rel_loanfrombank_amt_HH rel_loanfrommoneylender_amt_HH rel_mainloan_amt_HH rel_loanforrepayment_amt_HH rel_MLborrowstrat_amt_HH rel_MLbaddebt_amt_HH rel_MLgooddebt_amt_HH dummyIMF dummybank dummymoneylender dummyrepay dummyborrowstrat
 duplicates drop
 ta year
 save "HH_newvar_temp.dta", replace

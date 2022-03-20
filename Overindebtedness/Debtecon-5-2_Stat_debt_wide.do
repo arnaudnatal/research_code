@@ -74,6 +74,24 @@ global loan3 "NEEMSIS2-all_loans"
 
 
 
+****************************************
+* How much in debt?
+****************************************
+use"panel_v4_wide", clear
+
+tab1 sum_loans_HH2010 sum_loans_HH2016 sum_loans_HH2020
+
+
+
+****************************************
+* END
+
+
+
+
+
+
+
 
 
 
@@ -158,28 +176,25 @@ graph display loanamount_
 use"panel_v4_wide", clear
 
 ********** Debt for repayment
+tab1 dummyrepay2010 dummyrepay2016 dummyrepay2020
+
 ***** Nb
 tabstat loanforrepayment_nb_HH2010 loanforrepayment_nb_HH2016 loanforrepayment_nb_HH2020, stat(n mean sd q)
-
 
 ***** Amount
 tabstat loanforrepayment_amt_HH2010 loanforrepayment_amt_HH2016 loanforrepayment_amt_HH2020, stat(n mean sd q)
 
-tabstat loanforrepayment_amt_HH2010 if loanforrepayment_amt_HH2010!=0, stat(n mean sd q)
-
 tabstat rel_loanforrepayment_amt_HH2010 rel_loanforrepayment_amt_HH2016 rel_loanforrepayment_amt_HH2020, stat(n mean sd q)
 
 
-
-
-
-
-
 ********* Debt that need borrow elsewhere to repay
-tabsta MLborrowstrat_nb_HH2010 MLborrowstrat_amt_HH2010 rel_MLborrowstrat_amt_HH2010 MLborrowstrat_nb_HH2016 MLborrowstrat_amt_HH2016 rel_MLborrowstrat_amt_HH2016 MLborrowstrat_nb_HH2020 MLborrowstrat_amt_HH2020 rel_MLborrowstrat_amt_HH2020, stat(n mean sd q)
+***** Nb
+tabstat MLborrowstrat_nb_HH2010 MLborrowstrat_nb_HH2016 MLborrowstrat_nb_HH2020, stat(n mean sd q)
 
+***** Amount
+tabstat MLborrowstrat_amt_HH2010 MLborrowstrat_amt_HH2016   MLborrowstrat_amt_HH2020, stat(n mean sd q)
 
-
+tabstat rel_MLborrowstrat_amt_HH2010 rel_MLborrowstrat_amt_HH2016 rel_MLborrowstrat_amt_HH2020, stat(n mean sd q)
 
 ****************************************
 * END
@@ -188,6 +203,80 @@ tabsta MLborrowstrat_nb_HH2010 MLborrowstrat_amt_HH2010 rel_MLborrowstrat_amt_HH
 
 
 
+
+
+****************************************
+* Multiple borrowing
+****************************************
+use"panel_v4_wide", clear
+
+
+********** Microcredit
+***** Nb
+tabstat lf_IMF_nb_HH2010 lf_IMF_nb_HH2016 lf_IMF_nb_HH2020, stat(n mean sd q)
+
+***** Amount
+tabstat lf_IMF_amt_HH2010 lf_IMF_amt_HH2016 lf_IMF_amt_HH2020, stat(n mean sd q)
+
+tabstat rel_lf_IMF_amt_HH2010 rel_lf_IMF_amt_HH2016 rel_lf_IMF_amt_HH2020, stat(n mean sd q)
+
+
+
+********** Bank
+***** Nb
+tabstat lf_bank_nb_HH2010 lf_bank_nb_HH2016 lf_bank_nb_HH2020, stat(n mean sd q)
+
+***** Amount
+tabstat lf_bank_amt_HH2010 lf_bank_amt_HH2016 lf_bank_amt_HH2020, stat(n mean sd q)
+
+tabstat rel_lf_bank_amt_HH2010 rel_lf_bank_amt_HH2016 rel_lf_bank_amt_HH2020, stat(n mean sd q)
+
+
+
+********** Moneylender
+***** Nb
+tabstat lf_moneylender_nb_HH2010 lf_moneylender_nb_HH2016 lf_moneylender_nb_HH2020, stat(n mean sd q)
+
+***** Amount
+tabstat lf_moneylender_amt_HH2010 lf_moneylender_amt_HH2016 lf_moneylender_amt_HH2020, stat(n mean sd q)
+
+tabstat rel_lf_moneylender_amt_HH2010 rel_lf_moneylender_amt_HH2016 rel_lf_moneylender_amt_HH2020, stat(n mean sd q)
+
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+****************************************
+* Good / Bad debt
+****************************************
+use"panel_v4_wide", clear
+
+********** Good
+tabstat MLgooddebt_nb_HH2010 MLgooddebt_nb_HH2016 MLgooddebt_nb_HH2020, stat(n mean sd q)
+
+tabstat MLgooddebt_amt_HH2010 MLgooddebt_amt_HH2016 MLgooddebt_amt_HH2020, stat(n mean sd q)
+
+tabstat rel_MLgooddebt_amt_HH2010 rel_MLgooddebt_amt_HH2016 rel_MLgooddebt_amt_HH2020, stat(n mean sd q)
+
+
+********** Bad
+tabstat MLbaddebt_nb_HH2010 MLbaddebt_nb_HH2016 MLbaddebt_nb_HH2020, stat(n mean sd q)
+
+tabstat MLbaddebt_amt_HH2010 MLbaddebt_amt_HH2016 MLbaddebt_amt_HH2020, stat(n mean sd q)
+
+tabstat rel_MLbaddebt_amt_HH2010 rel_MLbaddebt_amt_HH2016 rel_MLbaddebt_amt_HH2020, stat(n mean sd q)
+
+
+
+****************************************
+* END
 
 
 
@@ -565,66 +654,54 @@ graph display comb_path_30
 
 
 ****************************************
-* kmeans
+* Hierarchical classification ascending with PCA before
 ****************************************
+/*
+One drawback of the HAC is the minimum algorithm complexity in O (N²), N being the number of observations which are too high for computational purposes (Murtagh and Contreras, 2012). Therefore, this is one of the reasons why the K-means algorithm is preferred for the full sample exercise, and HAC is used to determine the number of clusters.
+
+Murtagh, F., and Contreras, P. (2012). “Algorithms for hierarchical clustering: an overview”. Wiley Interdisciplinary Reviews: Data Mining and Knowledge Discovery, 2(1), 86-97.
+*/
+
 cls
 use"panel_v4_wide", clear
 
 
-********** Var transfo
+********** Step1: Std
+foreach x in DSR DAR_without ISR annualincome assets_noland DIR loanamount {
 foreach i in 2010 2016 2020 {
-gen DSR`i'_max=DSR`i'
-gen DAR`i'_max=DAR_without`i'
-
-replace DSR`i'_max=200 if DSR`i'_max>200
-replace DAR`i'_max=200 if DAR`i'_max>200
-
-gen log_income`i'=log(annualincome`i')
+egen `x'`i'_std=std(`x'`i')
 }
-
-*** kmeans
-local list2 "DSR2010_max DAR2010_max log_income2010 DSR2016_max DAR2016_max log_income2016 DSR2020_max DAR2020_max log_income2020"
-forvalues k = 1(1)20 {
-cluster kmeans `list2', k(`k') start(random(123)) name(cs`k')
 }
 
 
+********** Step2: PCA
+pca DSR2010_std DSR2016_std DSR2020_std DAR_without2010_std DAR_without2016_std DAR_without2020_std, vce(normal)
 
+screeplot, ci mean
 
-* WSS matrix
-matrix WSS = J(20,5,.)
-matrix colnames WSS = k WSS log(WSS) eta-squared PRE
-* WSS for each clustering
-forvalues k = 1(1)20 {
-scalar ws`k' = 0
-foreach v of varlist `list2' {
-quietly anova `v' cs`k'
-scalar ws`k' = ws`k' + e(rss)
-}
-matrix WSS[`k', 1] = `k'
-matrix WSS[`k', 2] = ws`k'
-matrix WSS[`k', 3] = log(ws`k')
-matrix WSS[`k', 4] = 1 - ws`k'/WSS[1,2]
-matrix WSS[`k', 5] = (WSS[`k'-1,2] - ws`k')/WSS[`k'-1,2]
-}
+loadingplot , component(3) combined xline(0) yline(0) aspect(1)
 
-matrix list WSS
-_matplot WSS, columns(2 1) connect(l) xlabel(#10) name(plot1, replace) nodraw noname
-_matplot WSS, columns(3 1) connect(l) xlabel(#10) name(plot2, replace) nodraw noname
-_matplot WSS, columns(4 1) connect(l) xlabel(#10) name(plot3, replace) nodraw noname ytitle({&eta}`squared')
-_matplot WSS, columns(5 1) connect(l) xlabel(#10) name(plot4, replace) nodraw noname
+scoreplot, component(3) combined xline(0) yline(0) aspect(1) mlabel()
 
-graph combine plot1 plot2 plot3 plot4, name(plot1to4, replace)
+predict pc1 pc2 pc3
 
 
 
-*graph matrix DSR2010_max DAR2010_max log_income2010 DSR2016_max DAR2016_max log_income2016 DSR2020_max DAR2020_max log_income2020, msym(i) mlab(cs4) mlabpos(0) half name(matrixplot, replace)
 
 
-local list2 "DSR2010_max DAR2010_max log_income2010 DSR2016_max DAR2016_max log_income2016 DSR2020_max DAR2020_max log_income2020"
-cluster kmeans `list2', k(5) start(random(123)) gen(clust)
+********** Step3: HAC
 
-tabstat DSR2010_max DSR2016_max DSR2020_max DAR2010_max DAR2016_max DAR2020_max log_income2010 log_income2016 log_income2020, stat(n mean sd q) by(clust)
+cluster singlelinkage pc1 pc2 pc3, gen(clust)
+*cluster averagelinkage 
+*cluster completelinkage 
+cluster wardslinkage  pc1 pc2 pc3
+cluster tree, cutnumber(20) showcount
+
+
+tabstat 
+
+
+clust_id clust_ord clust_hgt
 
 
 
