@@ -81,8 +81,6 @@ use"panel_v4_wide", clear
 
 tab1 sum_loans_HH2010 sum_loans_HH2016 sum_loans_HH2020
 
-
-
 ****************************************
 * END
 
@@ -177,6 +175,9 @@ use"panel_v4_wide", clear
 
 ********** Debt for repayment
 tab1 dummyrepay2010 dummyrepay2016 dummyrepay2020
+tab dummyrepay2010 dummyrepay2016
+tab dummyrepay2016 dummyrepay2020
+ta dummyrepay2010 dummyrepay2020
 
 ***** Nb
 tabstat loanforrepayment_nb_HH2010 loanforrepayment_nb_HH2016 loanforrepayment_nb_HH2020, stat(n mean sd q)
@@ -187,7 +188,14 @@ tabstat loanforrepayment_amt_HH2010 loanforrepayment_amt_HH2016 loanforrepayment
 tabstat rel_loanforrepayment_amt_HH2010 rel_loanforrepayment_amt_HH2016 rel_loanforrepayment_amt_HH2020, stat(n mean sd q)
 
 
+
+
 ********* Debt that need borrow elsewhere to repay
+tab1 dummyborrowstrat2010 dummyborrowstrat2016 dummyborrowstrat2020
+tab dummyborrowstrat2010 dummyborrowstrat2016
+tab dummyborrowstrat2016 dummyborrowstrat2020
+tab dummyborrowstrat2010 dummyborrowstrat2020
+
 ***** Nb
 tabstat MLborrowstrat_nb_HH2010 MLborrowstrat_nb_HH2016 MLborrowstrat_nb_HH2020, stat(n mean sd q)
 
@@ -667,42 +675,119 @@ use"panel_v4_wide", clear
 
 
 ********** Step1: Std
-foreach x in DSR DAR_without ISR annualincome assets_noland DIR loanamount {
+foreach x in DSR DAR_without annualincome assets_noland yearly_expenses ISR loanamount {
 foreach i in 2010 2016 2020 {
 egen `x'`i'_std=std(`x'`i')
+replace `x'`i'_std=3 if `x'`i'_std>3
+replace `x'`i'_std=-3 if `x'`i'_std<-3
 }
 }
 
-
-********** Step2: PCA
-pca DSR2010_std DSR2016_std DSR2020_std DAR_without2010_std DAR_without2016_std DAR_without2020_std, vce(normal)
-
-screeplot, ci mean
-
-loadingplot , component(3) combined xline(0) yline(0) aspect(1)
-
-scoreplot, component(3) combined xline(0) yline(0) aspect(1) mlabel()
-
-predict pc1 pc2 pc3
-
-
-
-
-
-********** Step3: HAC
-
-cluster singlelinkage pc1 pc2 pc3, gen(clust)
-*cluster averagelinkage 
-*cluster completelinkage 
-cluster wardslinkage  pc1 pc2 pc3
-cluster tree, cutnumber(20) showcount
+rename DSR2010_std dsr1
+rename DSR2016_std dsr2
+rename DSR2020_std dsr3
+rename ISR2010_std isr1
+rename ISR2016_std isr2
+rename ISR2020_std isr3
+rename DAR_without2010_std dar1
+rename DAR_without2016_std dar2
+rename DAR_without2020_std dar3
+rename annualincome2010_std inc1
+rename annualincome2016_std inc2
+rename annualincome2020_std inc3
+rename assets_noland2010_std ass1
+rename assets_noland2016_std ass2
+rename assets_noland2020_std ass3
+rename yearly_expenses2010_std exp1
+rename yearly_expenses2016_std exp2
+rename yearly_expenses2020_std exp3
+rename loanamount2010_std loa1
+rename loanamount2016_std loa2
+rename loanamount2020_std loa3
 
 
-tabstat 
+global test1 dsr1 dsr2 dsr3 dar1 dar2 dar3 isr1 isr2 isr3 loa1 loa2 loa3
+*global test2
+
+global var $test1
 
 
-clust_id clust_ord clust_hgt
+********** Step2: Correlation matrix
+*graph matrix $var, half
 
+
+
+********** Step3: PCA
+pca $var 
+*screeplot, ci mean
+*loadingplot, component(5) combined xline(0) yline(0) aspect(1)
+*scoreplot, component(3) combined xline(0) yline(0) aspect(1) mlabel()
+
+predict pc1 pc2 pc3 pc4
+global component pc1 pc2 pc3 pc4
+
+
+********** Step4: HAC
+***** With component
+cluster averagelinkage $component
+cluster tree, cutnumber(10) showcount
+
+cluster wardslinkage $component
+cluster tree, cutnumber(10) showcount
+
+***** With var
+cluster averagelinkage $var
+cluster tree, cutnumber(10) showcount
+
+cluster wardslinkage $var
+cluster tree, cutnumber(10) showcount
+
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+****************************************
+* HCA then Kmean
+****************************************
+global var2 dsr1 dsr2 dsr3 dar1 dar2 dar3 isr1 isr2 isr3 loa1 loa2 loa3
+
+cluster averagelinkage $var2
+cluster tree, cutnumber(10) showcount
+tabstat $var2, stat(n mean p50) by(clust)
+
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* MCA then HAC
+****************************************
+cls
+use"panel_v4_wide", clear
+
+label define evo 1"I=I+I" 2"I=I+D" 3"I=D+I" 4"D=I+D" 5"D=D+I" 6"D=D+D", replace
+
+tab1 ce_DAR_without ce_DSR ce_income ce_ISR ce_loanamount ce_income ce_assetsnl ce_yearly_expenses ce_rel_formal ce_rel_informal ce_rel_eco ce_rel_current ce_rel_humank ce_rel_social ce_rel_home ce_rel_other
+
+mca ce_DAR_without ce_DSR, method(indicator) normal(principal) comp dim(5)
+mcacontrib
+mcaplot, overlay xline(0) yline(0) scale(.8)
 
 
 ****************************************
@@ -724,57 +809,68 @@ clust_id clust_ord clust_hgt
 
 
 ****************************************
-* MCA for debt path
+* PCA 2010
 ****************************************
 cls
 use"panel_v4_wide", clear
 
 
-ta ce_DAR_without, gen(ce_DAR_)
-ta ce_DSR, gen(ce_DSR_)
-ta ce_income, gen(ce_income_)
-
-********** Test
-local list2 "ce_DAR_1 ce_DAR_2 ce_DAR_3 ce_DAR_4 ce_DAR_5 ce_DAR_6 ce_DSR_1 ce_DSR_2 ce_DSR_3 ce_DSR_4 ce_DSR_5 ce_DSR_6 ce_income_1 ce_income_2 ce_income_3 ce_income_4 ce_income_5 ce_income_6"
-forvalues k = 1(1)20 {
-*cluster kmeans `list2', k(`k') measure(Gower2) name(cs`k')
-cluster kmeans `list2', k(`k') measure(Jaccard) name(cs`k')
+********** Step1: Std
+foreach x in DSR DAR_without annualincome assets_noland yearly_expenses ISR loanamount {
+foreach i in 2010 2016 2020 {
+egen `x'`i'_std=std(`x'`i')
+replace `x'`i'_std=3 if `x'`i'_std>3
+replace `x'`i'_std=-3 if `x'`i'_std<-3
+}
 }
 
-
-* WSS matrix
-matrix WSS = J(20,5,.)
-matrix colnames WSS = k WSS log(WSS) eta-squared PRE
-* WSS for each clustering
-forvalues k = 1(1)20 {
-scalar ws`k' = 0
-foreach v of varlist `list2' {
-quietly anova `v' cs`k'
-scalar ws`k' = ws`k' + e(rss)
-}
-matrix WSS[`k', 1] = `k'
-matrix WSS[`k', 2] = ws`k'
-matrix WSS[`k', 3] = log(ws`k')
-matrix WSS[`k', 4] = 1 - ws`k'/WSS[1,2]
-matrix WSS[`k', 5] = (WSS[`k'-1,2] - ws`k')/WSS[`k'-1,2]
-}
-
-matrix list WSS
-_matplot WSS, columns(2 1) connect(l) xlabel(#10) name(plot1, replace) nodraw noname
-_matplot WSS, columns(3 1) connect(l) xlabel(#10) name(plot2, replace) nodraw noname
-_matplot WSS, columns(4 1) connect(l) xlabel(#10) name(plot3, replace) nodraw noname ytitle({&eta}`squared')
-_matplot WSS, columns(5 1) connect(l) xlabel(#10) name(plot4, replace) nodraw noname
-
-graph combine plot1 plot2 plot3 plot4, name(plot1to4, replace)
+rename DSR2010_std dsr1
+rename DSR2016_std dsr2
+rename DSR2020_std dsr3
+rename ISR2010_std isr1
+rename ISR2016_std isr2
+rename ISR2020_std isr3
+rename DAR_without2010_std dar1
+rename DAR_without2016_std dar2
+rename DAR_without2020_std dar3
+rename annualincome2010_std inc1
+rename annualincome2016_std inc2
+rename annualincome2020_std inc3
+rename assets_noland2010_std ass1
+rename assets_noland2016_std ass2
+rename assets_noland2020_std ass3
+rename yearly_expenses2010_std exp1
+rename yearly_expenses2016_std exp2
+rename yearly_expenses2020_std exp3
+rename loanamount2010_std loa1
+rename loanamount2016_std loa2
+rename loanamount2020_std loa3
 
 
+global test1 dsr1 dar1 inc1 ass1
+*global test2
+
+global var $test1
+
+
+********** Step2: Correlation matrix
+*graph matrix $var, half
+
+
+
+********** Step3: PCA
+pca $var 
+screeplot, ci mean
+loadingplot, component(2) combined xline(0) yline(0) aspect(1)
+scoreplot, component(2) combined xline(0) yline(0) aspect(1) mlabel()
+
+predict pc1 pc2 pc3 pc4
+global component pc1 pc2 pc3 pc4
 
 
 
 
 
-****************************************
-* END
 
 
 
