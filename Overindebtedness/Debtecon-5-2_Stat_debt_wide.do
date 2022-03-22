@@ -670,6 +670,140 @@ graph display comb_path_30
 
 
 
+****************************************
+* Hierarchical classification ascending with PCA before
+****************************************
+/*
+cls
+clear all
+
+***** Var creation
+set obs 6
+gen n=_n
+forvalues i=1(1)4 {
+gen v`i'=.
+}
+replace v1=2
+replace v2=v1-4 if n==1
+replace v2=v1-2 if n==3
+replace v2=v1-2 if n==5
+replace v2=v1+4 if n==2
+replace v2=v1+2 if n==4
+replace v2=v1+2 if n==6
+replace v3=v2+6 if n==1
+replace v3=v2+3 if n==3
+replace v3=v2-2 if n==5
+replace v3=v2+6 if n==2
+replace v3=v2+4 if n==4
+replace v3=v2+3 if n==6
+replace v4=v3-2 if n==1
+replace v4=v3-2 if n==3
+replace v4=v3-2 if n==5
+replace v4=v3+2 if n==2
+replace v4=v3+4 if n==4
+replace v4=v3+3 if n==6
+
+***** Diff gen
+gen d1=v2-v1
+gen d2=v3-v2
+gen d3=v4-v3
+egen d1_std=std(d1)
+egen d2_std=std(d2)
+egen d3_std=std(d3)
+
+***** Trend projection
+reshape long v, i(n) j(t)
+xtset n t
+xtline v, overlay
+/*
+3 groups:
+2.4.6
+1.3
+5
+
+2 groups:
+2.4.6
+1.3.5
+*/
+reshape wide v, i(n) j(t)
+
+***** Test clustering
+cluster averagelinkage d1_std d2_std d3_std, name(average)
+cluster tree, showcount cutnumber(6)
+cluster gen clust=groups(2/3), name(average)
+ta n clust2
+/*
+1.3.5
+2.4.6
+*/
+ta n clust3
+/*
+1.3
+5
+2.4.6
+*/
+*/
+****************************************
+* END
+
+
+
+
+
+****************************************
+* Hierarchical classification ascending with PCA before
+****************************************
+/*
+One drawback of the HAC is the minimum algorithm complexity in O (N²), N being the number of observations which are too high for computational purposes (Murtagh and Contreras, 2012). Therefore, this is one of the reasons why the K-means algorithm is preferred for the full sample exercise, and HAC is used to determine the number of clusters.
+
+Murtagh, F., and Contreras, P. (2012). “Algorithms for hierarchical clustering: an overview”. Wiley Interdisciplinary Reviews: Data Mining and Knowledge Discovery, 2(1), 86-97.
+*/
+
+cls
+use"panel_v4_wide", clear
+
+********** Step1: Std
+forvalues j=1(1)2{
+foreach x in d`j'_DSR d`j'_DAR_without d`j'_annualincome d`j'_assets_noland d`j'_yearly_expenses d`j'_ISR d`j'_loanamount {
+egen `x'_std=std(`x')
+replace `x'_std=3 if `x'_std>3
+replace `x'_std=-3 if `x'_std<-3
+}
+}
+
+
+
+********** Step2: HCA
+cluster averagelinkage d1_annualincome_std d2_annualincome_std d1_assets_noland_std d2_assets_noland_std d1_loanamount_std d2_loanamount_std
+cluster tree, cutnumber(10) showcount
+
+
+cluster wardslinkage d1_annualincome_std d2_annualincome_std d1_assets_noland_std d2_assets_noland_std d1_loanamount_std d2_loanamount_std
+cluster tree, cutnumber(10) showcount
+cluster gen clust=groups(5)
+
+
+***** With var
+tabstat d1_annualincome_std d2_annualincome_std d1_assets_noland_std d2_assets_noland_std d1_loanamount_std d2_loanamount_std, stat(p50) by(clust)
+
+*twoway line 
+keep annualincome* assets_noland* loanamount* clust HHID_panel
+reshape long annualincome assets_noland loanamount, i(HHID_panel) j(year)
+encode HHID_panel, gen(panelvar)
+xtset panelvar year
+ta clust
+xtline annualincome if clust==4, overlay legend(off)
+xtline assets_noland if clust==4, overlay legend(off)
+
+
+
+****************************************
+* END
+
+
+
+
+
 
 
 
@@ -803,7 +937,7 @@ label define evo 1"I=I+I" 2"I=I+D" 3"I=D+I" 4"D=I+D" 5"D=D+I" 6"D=D+D", replace
 
 tab1 ce_DAR_without ce_DSR ce_income ce_ISR ce_loanamount ce_income ce_assetsnl ce_yearly_expenses ce_rel_formal ce_rel_informal ce_rel_eco ce_rel_current ce_rel_humank ce_rel_social ce_rel_home ce_rel_other
 
-mca ce_DAR_without ce_DSR, method(indicator) normal(principal) comp dim(5)
+mca ce_loanamount ce_assetsnl ce_income, method(indicator) normal(principal) comp dim(5)
 mcacontrib
 mcaplot, overlay xline(0) yline(0) scale(.8)
 

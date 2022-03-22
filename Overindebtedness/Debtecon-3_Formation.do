@@ -701,9 +701,12 @@ gen d1_`x'=`x'2016-`x'2010
 gen d2_`x'=`x'2020-`x'2016
 }
 
+ta d1_loanamount
+
+
+
 
 ********** Categories
-
 label define evo 1"(Δ+1)&(Δ+2)" 2"(Δ+1)>(Δ-2)" 3"(Δ-1)<(Δ+2)" 4"(Δ+1)<(Δ-2)" 5"(Δ-1)>(Δ+2)" 6"(Δ-1)&(Δ-2)", replace
 
 foreach x in $quanti {
@@ -719,6 +722,9 @@ replace ce_`x'=4 if d1_`x'>0 & d2_`x'<=0 & abs(d2_`x')>abs(d1_`x')
 replace ce_`x'=5 if d1_`x'<=0 & d2_`x'>0 & abs(d1_`x')>abs(d2_`x')
 replace ce_`x'=6 if d1_`x'<=0 & d2_`x'<=0
 }
+
+
+
 
 
 
