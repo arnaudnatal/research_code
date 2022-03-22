@@ -82,6 +82,137 @@ global loan3 "NEEMSIS2-all_loans"
 
 
 
+****************************************
+* Wealth, income and debt
+****************************************
+*net install panelstat, from("https://github.com/pguimaraes99/panelstat/raw/master/")
+
+cls
+use"panel_v4", clear
+
+keep if panel==1
+
+panelstat panelvar time
+
+panelstat panelvar time, quantr(DSR)
+
+panelstat panelvar time, flows(DSR)
+
+panelstat panelvar time, demoby(DSR)
+
+
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Wealth, income and debt
+****************************************
+cls
+use"panel_v4", clear
+
+keep if panel==1
+
+
+********** Test transformation
+/*
+preserve
+gen DSR100=DSR
+gen DSRn=DSR/100
+
+gen ihs_DSR100=asinh(DSR100)
+gen ihs_DSRn=asinh(DSRn)
+
+tabstat DSR100 DSR_r DSRn ihs_DSR100 ihs_DSRn, stat(mean q) by(year)
+
+tabstat DSR100 if year==2010, stat(p10 q p90) by(caste)
+tabstat DSR100 if year==2016, stat(p10 q p90) by(caste)
+tabstat DSR100 if year==2020, stat(p10 q p90) by(caste)
+
+set graph off
+foreach x in ihs_DSR100 ihs_DSRn {
+stripplot `x', over(caste) by(year, note("") row(1)) vert ///
+stack width(0.05) jitter(0) ///
+box(barw(0.1)) boffset(-0.1) pctile(10) ///
+ms(oh oh oh) msize(small) mc(red%30) ///
+yla(, ang(h)) xla(, noticks) ///
+name(stripplot_`x', replace)
+}
+set graph on
+restore
+*/
+/*
+To compare distribution, ihs transformation is good
+*/
+
+
+********** Continuous var
+***** Inverse Hyperbolic Sine transformation
+foreach x in annualincome assets_noland loanamount DSR DAR_without DIR {
+foreach i in 2010 2016 2020 {
+qui count if `x'==0 & year==`i'
+dis "`x'  `i'   " r(N) "   "  r(N)*100/382
+}
+tabstat `x', stat(min p1 p5 p10)
+gen ihs_`x'=asinh(`x')
+tabstat `x' ihs_`x', stat(n q) by(year)
+}
+
+
+
+***** OVER CASTE
+global var loanamount annualincome assets_noland DAR_without DSR
+foreach x in $var {
+stripplot ihs_`x', over(caste) by(year, note("") row(1)) vert ///
+stack width(0.05) jitter(0) ///
+box(barw(0.1)) boffset(-0.1) pctile(10) ///
+ms(oh oh oh) msize(small) mc(red%30) ///
+yla(, ang(h)) xla(, noticks) ///
+name(stripplot_`x', replace)
+}
+
+
+
+
+********** Quali var
+
+
+
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

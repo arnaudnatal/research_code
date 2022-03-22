@@ -95,6 +95,9 @@ tab1 sum_loans_HH2010 sum_loans_HH2016 sum_loans_HH2020
 
 
 
+
+
+
 ****************************************
 * SCATTER PATH
 ****************************************
@@ -213,6 +216,15 @@ tabstat rel_MLborrowstrat_amt_HH2010 rel_MLborrowstrat_amt_HH2016 rel_MLborrowst
 
 
 
+
+
+
+
+
+
+
+
+
 ****************************************
 * Multiple borrowing
 ****************************************
@@ -285,6 +297,12 @@ tabstat rel_MLbaddebt_amt_HH2010 rel_MLbaddebt_amt_HH2016 rel_MLbaddebt_amt_HH20
 
 ****************************************
 * END
+
+
+
+
+
+
 
 
 
@@ -506,8 +524,8 @@ set graph on
 }
 graph dir
 /*
-graph display comb_assets_noland
-graph display comb_loanamount
+graph display comb_ce_assetsnl
+graph display comb_ce_loanamount
 graph display comb_DSR
 graph display comb_ISR
 */
