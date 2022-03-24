@@ -462,7 +462,25 @@ recode loanamount_HH (.=0)
 rename loanamount loanamount_HH_withmarriagein2016
 rename loanamount_HH loanamount
 
-*** Recode en %
+
+
+********** Label occupations
+fre head_occupation
+fre wifehusb_occupation
+fre mainocc_occupation
+
+codebook mainocc_occupation
+label define occupcode 0"No occupation", modify
+label values head_occupation occupcode
+label values wifehusb_occupation occupcode
+
+fre head_occupation
+fre wifehusb_occupation
+
+
+********** Label time year
+codebook time
+codebook year
 
 
 save"panel_v3", replace
@@ -673,9 +691,9 @@ rename rel_loanfrom`x' rel_lf_`x'
 global quanti DIR DAR_with DAR_without DSR ISR loanamount annualincome assets_noland assets sizeownland yearly_expenses formal_HH informal_HH rel_formal_HH rel_informal_HH eco_HH current_HH humank_HH social_HH home_HH other_HH rel_eco_HH rel_current_HH rel_humank_HH rel_social_HH rel_home_HH rel_other_HH sum_loans_HH lf_IMF_nb_HH lf_IMF_amt_HH lf_bank_nb_HH lf_bank_amt_HH lf_moneylender_nb_HH lf_moneylender_amt_HH loanforrepayment_nb_HH loanforrepayment_amt_HH MLborrowstrat_nb_HH MLborrowstrat_amt_HH MLgooddebt_nb_HH MLgooddebt_amt_HH MLbaddebt_nb_HH MLbaddebt_amt_HH mainloan_HH mainloan_amt_HH rel_lf_IMF_amt_HH rel_lf_bank_amt_HH rel_lf_moneylender_amt_HH rel_mainloan_amt_HH rel_loanforrepayment_amt_HH rel_MLborrowstrat_amt_HH rel_MLbaddebt_amt_HH rel_MLgooddebt_amt_HH 
 
 
-global quali DSR30 DSR40 DSR50 dummyIMF dummybank dummymoneylender dummyrepay dummyborrowstrat
+global quali DSR30 DSR40 DSR50 dummyIMF dummybank dummymoneylender dummyrepay dummyborrowstrat mainocc_occupation head_edulevel wifehusb_edulevel head_occupation wifehusb_occupation
 
-global var $quanti $quali
+global var $quanti $quali 
 sort HHID_panel year
 
 

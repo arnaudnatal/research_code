@@ -162,34 +162,100 @@ To compare distribution, ihs transformation is good
 
 
 ********** Continuous var
+tabstat annualincome assets_noland loanamount DSR DAR_without DIR, stat(n mean sd min max p1 p5 p10 q)
+
+foreach x in annualincome assets_noland loanamount {
+replace `x'=`x'*1000
+}
+
+foreach x in DSR DAR_without {
+replace `x'=`x'*10
+}
+
+foreach x in DIR {
+replace `x'=`x'*1000
+}
+
+tabstat annualincome assets_noland loanamount DSR DAR_without DIR, stat(n mean sd min max p1 p5 p10 q)
+/*
+DSR, DAR and DIR in for 1000
+and income, debt and assets in INR
+*/
+
 ***** Inverse Hyperbolic Sine transformation
 foreach x in annualincome assets_noland loanamount DSR DAR_without DIR {
 foreach i in 2010 2016 2020 {
 qui count if `x'==0 & year==`i'
 dis "`x'  `i'   " r(N) "   "  r(N)*100/382
 }
-tabstat `x', stat(min p1 p5 p10)
+tabstat `x', stat(N min p1 p5 p10 q)
 gen ihs_`x'=asinh(`x')
+gen cro_`x'=`x'^(1/3)
 tabstat `x' ihs_`x', stat(n q) by(year)
 }
 
 
 
 ***** OVER CASTE
-global var loanamount annualincome assets_noland DAR_without DSR
+global var loanamount annualincome assets_noland DAR_without DSR DIR
 foreach x in $var {
+set graph off
 stripplot ihs_`x', over(caste) by(year, note("") row(1)) vert ///
 stack width(0.05) jitter(0) ///
 box(barw(0.1)) boffset(-0.1) pctile(10) ///
 ms(oh oh oh) msize(small) mc(red%30) ///
 yla(, ang(h)) xla(, noticks) ///
-name(stripplot_`x', replace)
+name(stripplot_ihs_`x', replace)
+set graph on
+}
+
+foreach x in $var {
+set graph off
+stripplot cro_`x', over(caste) by(year, note("") row(1)) vert ///
+stack width(0.05) jitter(0) ///
+box(barw(0.1)) boffset(-0.1) pctile(10) ///
+ms(oh oh oh) msize(small) mc(red%30) ///
+yla(, ang(h)) xla(, noticks) ///
+name(stripplot_cro_`x', replace)
+set graph on
 }
 
 
 
 
-********** Quali var
+graph display stripplot_ihs_loanamount
+graph display stripplot_cro_loanamount
+
+
+graph display stripplot_ihs_DIR
+graph display stripplot_cro_DIR
+
+
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Use and sources of debt
+****************************************
+use"panel_v4", clear
+
+********** Initialization
+xtset panelvar time
+keep if panel==1
+
+
+tabstat rel_formal_HH rel_informal_HH rel_eco_HH rel_current_HH rel_humank_HH rel_social_HH rel_home_HH rel_other_HH, stat(n mean sd p50 min max) by(year)
 
 
 
@@ -219,6 +285,11 @@ name(stripplot_`x', replace)
 
 
 
+
+
+
+
+/*
 ****************************************
 * ABSOLUT EVOLUTION
 ****************************************
@@ -425,6 +496,7 @@ graph display median_assets_noland
 */
 ****************************************
 * END
+*/
 
 
 
@@ -439,8 +511,7 @@ graph display median_assets_noland
 
 
 
-
-
+/*
 ****************************************
 * RELATIVE EVOLUTION
 ****************************************
@@ -539,7 +610,7 @@ grc1leg source_assets_noland, col(3)
 */
 ****************************************
 * END
-
+*/
 
 
 

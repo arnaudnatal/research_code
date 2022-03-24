@@ -135,6 +135,15 @@ drop annualincome_HH
 egen annualincome_HH2=rowtotal(occinc_HH_agri occinc_HH_agricasual occinc_HH_nonagricasual occinc_HH_nonagriregnonqual occinc_HH_nonagriregqual occinc_HH_selfemp occinc_HH_nrega)
 rename annualincome_HH2 annualincome_HH
 
+/*
+Pour GOV18, deux head et deux wifes
+Donc recoder le plus vieux en Father
+Et la wife en mother
+*/
+replace relationshiptohead=4 if HHID_panel=="GOV18" & INDID_panel=="Ind_2"
+replace relationshiptohead=3 if HHID_panel=="GOV18" & INDID_panel=="Ind_4"
+
+
 * AEU
 fre sex
 gen AEU_weight1=.
@@ -248,7 +257,12 @@ bysort HHID_panel: egen head_age=sum(_age)
 bysort HHID_panel: egen head_edulevel=sum(_edulevel)
 bysort HHID_panel: egen head_occupation=sum(_occupation)
 
-fre head_sex
+fre mainocc_occupation_indiv
+
+preserve
+keep if relationshiptohead==1
+ta mainocc_occupation_indiv head_occupation, m
+restore
 
 drop _sex _maritalstatus _age _edulevel _occupation
 
@@ -266,6 +280,8 @@ bysort HHID_panel: egen wifehusb_edulevel=sum(_edulevel)
 bysort HHID_panel: egen wifehusb_occupation=sum(_occupation)
 
 drop _sex _maritalstatus _age _edulevel _occupation
+
+fre wifehusb_occupation
 
 
 *Crisis
@@ -332,6 +348,16 @@ use "$wave2", clear
 *Individual who not live in the HH = to drop
 fre livinghome
 drop if livinghome==3 | livinghome==4
+
+
+
+/*
+Pour KUV42, deux head et deux wifes
+Donc recoder le plus vieux en Father
+Et la wife en mother
+*/
+*br INDID_panel dummynewHH name age relationshiptohead mainocc_occupation_indiv if HHID_panel=="KUV42"
+replace relationshiptohead=77 if HHID_panel=="KUV42" & INDID_panel=="Ind_8"
 
 
 * AEU
@@ -509,6 +535,8 @@ label values head_sex sex
 
 label values wifehusb_edulevel edulevel
 label values wifehusb_sex sex
+
+fre wifehusb_occupation
 
 *Crisis
 tab1 dummydemonetisation dummymarriage

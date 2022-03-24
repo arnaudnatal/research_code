@@ -670,10 +670,218 @@ graph display comb_path_30
 
 
 
+
+
+
 ****************************************
-* Hierarchical classification ascending with PCA before
+* Class categ
+****************************************
+cls
+graph drop _all
+use"panel_v4_wide", clear
+
+
+
+********** MCA test
+/*
+fre cat_income cat_assets head_edulevel2010 head_occupation2010 
+
+recode head_edulevel2010 (3=2) (4=2) (5=2)
+recode head_occupation2010 (5=4)
+
+fre cat_income cat_assets head_edulevel2010 head_occupation2010 
+
+mca cat_assets head_edulevel2010 head_occupation2010, method(indicator) normal(principal)
+mcaplot, overlay legend(off) xline(0) yline(0) scale(.8)
+mcacontrib
+*/
+
+
+********** Wealth
+ta cat_assets caste, col row nofreq
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* HCA for time trends
 ****************************************
 /*
+One drawback of the HAC is the minimum algorithm complexity in O (N²), N being the number of observations which are too high for computational purposes (Murtagh and Contreras, 2012). Therefore, this is one of the reasons why the K-means algorithm is preferred for the full sample exercise, and HAC is used to determine the number of clusters.
+
+Murtagh, F., and Contreras, P. (2012). “Algorithms for hierarchical clustering: an overview”. Wiley Interdisciplinary Reviews: Data Mining and Knowledge Discovery, 2(1), 86-97.
+*/
+
+cls
+graph drop _all
+use"panel_v4_wide", clear
+
+********** Step1: Std
+forvalues j=1(1)2{
+foreach x in DSR DAR_without annualincome assets_noland yearly_expenses ISR loanamount {
+egen d`j'_`x'_std=std(d`j'_`x')
+replace d`j'_`x'_std=3 if d`j'_`x'_std>3
+replace d`j'_`x'_std=-3 if d`j'_`x'_std<-3
+}
+}
+
+global var d1_DSR_std d2_DSR_std d1_DAR_without_std d2_DAR_without_std 
+
+
+********** Step2: HCA
+***** Over caste
+forvalues i=1(1)3{
+set graph off
+cluster wardslinkage $var if caste==`i', name(cl_caste`i')
+cluster dendrogram, horizontal cutnumber(15) countinline showcount name(gph_cl_caste`i') 
+*cluster gen clust=groups(4)
+*ta clust
+set graph on
+}
+
+***** Over class
+forvalues i=1(1)3{
+set graph off
+cluster wardslinkage $var if cat_assets==`i', name(cl_class`i')
+cluster tree, horizontal cutnumber(15) countinline showcount name(gph_cl_class`i')
+*cluster gen clust=groups(4)
+*ta clust
+set graph on
+}
+
+set graph off
+graph combine gph_cl_caste1 gph_cl_caste2 gph_cl_caste3, col(3) name(gph_cl_caste)
+graph combine gph_cl_class1 gph_cl_class2 gph_cl_class3, col(3) name(gph_cl_class)
+set graph on
+
+
+ta caste
+ta cat_assets
+*graph display gph_cl_caste
+*graph display gph_cl_class
+
+
+***** To retain
+*** Caste 1
+cluster wardslinkage $var if caste==1
+cluster gen cl_caste1=groups(5)
+*** Caste 2
+cluster wardslinkage $var if caste==2
+cluster gen cl_caste2=groups(4)
+*** Caste 3
+cluster wardslinkage $var if caste==3
+cluster gen cl_caste3=groups(4)
+
+*** Class 1
+cluster wardslinkage $var if cat_assets==1
+cluster gen cl_class1=groups(3)
+*** Class 1
+cluster wardslinkage $var if cat_assets==2
+cluster gen cl_class2=groups(4)
+*** Class 1
+cluster wardslinkage $var if cat_assets==3
+cluster gen cl_class3=groups(3)
+
+
+
+
+********** Step3: Common trends
+***** Stat over caste
+cls
+forvalues i=1(1)3{
+tabstat $var, stat(mean p50) by(cl_caste`i')
+}
+
+***** Stat over class
+cls
+forvalues i=1(1)3{
+tabstat $var, stat(mean p50) by(cl_class`i')
+}
+
+
+********** Recode class cat and caste cat in the same var
+gen cl_class=.
+forvalues i=1(1)3{
+replace cl_class=cl_class`i' if cat_assets==`i'
+}
+
+gen cl_caste=.
+forvalues i=1(1)3{
+replace cl_caste=cl_caste`i' if caste==`i'
+}
+
+
+fre cl_class
+fre cl_caste
+
+
+********** Gen desc trend
+foreach x in $var {
+foreach stat in min max mean {
+bysort cl_class: egen `x'_`stat'=`stat'(`x')
+}
+foreach n in 10 25 50 75 90 {
+bysort cl_class: egen `x'_p`n'=pctile(`x'), p(`n')
+}
+}
+
+preserve
+duplicates drop cl_class, force
+keep cl_class d1_DSR_std_min d1_DSR_std_max d1_DSR_std_mean d1_DSR_std_p10 d1_DSR_std_p25 d1_DSR_std_p50 d1_DSR_std_p75 d1_DSR_std_p90 d2_DSR_std_min d2_DSR_std_max d2_DSR_std_mean d2_DSR_std_p10 d2_DSR_std_p25 d2_DSR_std_p50 d2_DSR_std_p75 d2_DSR_std_p90 d1_DAR_without_std_min d1_DAR_without_std_max d1_DAR_without_std_mean d1_DAR_without_std_p10 d1_DAR_without_std_p25 d1_DAR_without_std_p50 d1_DAR_without_std_p75 d1_DAR_without_std_p90 d2_DAR_without_std_min d2_DAR_without_std_max d2_DAR_without_std_mean d2_DAR_without_std_p10 d2_DAR_without_std_p25 d2_DAR_without_std_p50 d2_DAR_without_std_p75 d2_DAR_without_std_p90
+
+
+********** Step4: Graph trend
+keep HHID_panel caste cat_assets cl_* annualincome* assets_noland* loanamount* DSR2010 DSR2016 DSR2020 DAR_without2010 DAR_without2016 DAR_without2020
+reshape long annualincome assets_noland loanamount DAR_without DSR, i(HHID_panel) j(year)
+encode HHID_panel, gen(panelvar)
+xtset panelvar year
+
+label var year "Year"
+
+linkplot DSR year if caste==1 & cl_caste1==1, link(panelvar) lcolor(red%5) msymbol(p) mcolor(red%5) legend(off) 
+
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+****************************************
+* Trends clustering test
+****************************************
 cls
 clear all
 
@@ -742,206 +950,6 @@ ta n clust3
 5
 2.4.6
 */
-*/
-****************************************
-* END
-
-
-
-
-
-****************************************
-* Hierarchical classification ascending with PCA before
-****************************************
-/*
-One drawback of the HAC is the minimum algorithm complexity in O (N²), N being the number of observations which are too high for computational purposes (Murtagh and Contreras, 2012). Therefore, this is one of the reasons why the K-means algorithm is preferred for the full sample exercise, and HAC is used to determine the number of clusters.
-
-Murtagh, F., and Contreras, P. (2012). “Algorithms for hierarchical clustering: an overview”. Wiley Interdisciplinary Reviews: Data Mining and Knowledge Discovery, 2(1), 86-97.
-*/
-
-cls
-use"panel_v4_wide", clear
-
-********** Step1: Std
-forvalues j=1(1)2{
-foreach x in d`j'_DSR d`j'_DAR_without d`j'_annualincome d`j'_assets_noland d`j'_yearly_expenses d`j'_ISR d`j'_loanamount {
-egen `x'_std=std(`x')
-replace `x'_std=3 if `x'_std>3
-replace `x'_std=-3 if `x'_std<-3
-}
-}
-
-
-
-********** Step2: HCA
-cluster averagelinkage d1_annualincome_std d2_annualincome_std d1_assets_noland_std d2_assets_noland_std d1_loanamount_std d2_loanamount_std
-cluster tree, cutnumber(10) showcount
-
-
-cluster wardslinkage d1_annualincome_std d2_annualincome_std d1_assets_noland_std d2_assets_noland_std d1_loanamount_std d2_loanamount_std
-cluster tree, cutnumber(10) showcount
-cluster gen clust=groups(5)
-
-
-***** With var
-tabstat d1_annualincome_std d2_annualincome_std d1_assets_noland_std d2_assets_noland_std d1_loanamount_std d2_loanamount_std, stat(p50) by(clust)
-
-*twoway line 
-keep annualincome* assets_noland* loanamount* clust HHID_panel
-reshape long annualincome assets_noland loanamount, i(HHID_panel) j(year)
-encode HHID_panel, gen(panelvar)
-xtset panelvar year
-ta clust
-xtline annualincome if clust==4, overlay legend(off)
-xtline assets_noland if clust==4, overlay legend(off)
-
-
-
-****************************************
-* END
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-****************************************
-* Hierarchical classification ascending with PCA before
-****************************************
-/*
-One drawback of the HAC is the minimum algorithm complexity in O (N²), N being the number of observations which are too high for computational purposes (Murtagh and Contreras, 2012). Therefore, this is one of the reasons why the K-means algorithm is preferred for the full sample exercise, and HAC is used to determine the number of clusters.
-
-Murtagh, F., and Contreras, P. (2012). “Algorithms for hierarchical clustering: an overview”. Wiley Interdisciplinary Reviews: Data Mining and Knowledge Discovery, 2(1), 86-97.
-*/
-
-cls
-use"panel_v4_wide", clear
-
-
-********** Step1: Std
-foreach x in DSR DAR_without annualincome assets_noland yearly_expenses ISR loanamount {
-foreach i in 2010 2016 2020 {
-egen `x'`i'_std=std(`x'`i')
-replace `x'`i'_std=3 if `x'`i'_std>3
-replace `x'`i'_std=-3 if `x'`i'_std<-3
-}
-}
-
-rename DSR2010_std dsr1
-rename DSR2016_std dsr2
-rename DSR2020_std dsr3
-rename ISR2010_std isr1
-rename ISR2016_std isr2
-rename ISR2020_std isr3
-rename DAR_without2010_std dar1
-rename DAR_without2016_std dar2
-rename DAR_without2020_std dar3
-rename annualincome2010_std inc1
-rename annualincome2016_std inc2
-rename annualincome2020_std inc3
-rename assets_noland2010_std ass1
-rename assets_noland2016_std ass2
-rename assets_noland2020_std ass3
-rename yearly_expenses2010_std exp1
-rename yearly_expenses2016_std exp2
-rename yearly_expenses2020_std exp3
-rename loanamount2010_std loa1
-rename loanamount2016_std loa2
-rename loanamount2020_std loa3
-
-
-global test1 dsr1 dsr2 dsr3 dar1 dar2 dar3 isr1 isr2 isr3 loa1 loa2 loa3
-*global test2
-
-global var $test1
-
-
-********** Step2: Correlation matrix
-*graph matrix $var, half
-
-
-
-********** Step3: PCA
-pca $var 
-*screeplot, ci mean
-*loadingplot, component(5) combined xline(0) yline(0) aspect(1)
-*scoreplot, component(3) combined xline(0) yline(0) aspect(1) mlabel()
-
-predict pc1 pc2 pc3 pc4
-global component pc1 pc2 pc3 pc4
-
-
-********** Step4: HAC
-***** With component
-cluster averagelinkage $component
-cluster tree, cutnumber(10) showcount
-
-cluster wardslinkage $component
-cluster tree, cutnumber(10) showcount
-
-***** With var
-cluster averagelinkage $var
-cluster tree, cutnumber(10) showcount
-
-cluster wardslinkage $var
-cluster tree, cutnumber(10) showcount
-
-****************************************
-* END
-
-
-
-
-
-
-
-
-
-****************************************
-* HCA then Kmean
-****************************************
-global var2 dsr1 dsr2 dsr3 dar1 dar2 dar3 isr1 isr2 isr3 loa1 loa2 loa3
-
-cluster averagelinkage $var2
-cluster tree, cutnumber(10) showcount
-tabstat $var2, stat(n mean p50) by(clust)
-
-****************************************
-* END
-
-
-
-
-
-
-
-
-
-
-
-****************************************
-* MCA then HAC
-****************************************
-cls
-use"panel_v4_wide", clear
-
-label define evo 1"I=I+I" 2"I=I+D" 3"I=D+I" 4"D=I+D" 5"D=D+I" 6"D=D+D", replace
-
-tab1 ce_DAR_without ce_DSR ce_income ce_ISR ce_loanamount ce_income ce_assetsnl ce_yearly_expenses ce_rel_formal ce_rel_informal ce_rel_eco ce_rel_current ce_rel_humank ce_rel_social ce_rel_home ce_rel_other
-
-mca ce_loanamount ce_assetsnl ce_income, method(indicator) normal(principal) comp dim(5)
-mcacontrib
-mcaplot, overlay xline(0) yline(0) scale(.8)
-
-
 ****************************************
 * END
 
@@ -960,78 +968,12 @@ mcaplot, overlay xline(0) yline(0) scale(.8)
 
 
 
+
+
 ****************************************
-* PCA 2010
+* Stacked bar chart over
 ****************************************
-cls
-use"panel_v4_wide", clear
 
-
-********** Step1: Std
-foreach x in DSR DAR_without annualincome assets_noland yearly_expenses ISR loanamount {
-foreach i in 2010 2016 2020 {
-egen `x'`i'_std=std(`x'`i')
-replace `x'`i'_std=3 if `x'`i'_std>3
-replace `x'`i'_std=-3 if `x'`i'_std<-3
-}
-}
-
-rename DSR2010_std dsr1
-rename DSR2016_std dsr2
-rename DSR2020_std dsr3
-rename ISR2010_std isr1
-rename ISR2016_std isr2
-rename ISR2020_std isr3
-rename DAR_without2010_std dar1
-rename DAR_without2016_std dar2
-rename DAR_without2020_std dar3
-rename annualincome2010_std inc1
-rename annualincome2016_std inc2
-rename annualincome2020_std inc3
-rename assets_noland2010_std ass1
-rename assets_noland2016_std ass2
-rename assets_noland2020_std ass3
-rename yearly_expenses2010_std exp1
-rename yearly_expenses2016_std exp2
-rename yearly_expenses2020_std exp3
-rename loanamount2010_std loa1
-rename loanamount2016_std loa2
-rename loanamount2020_std loa3
-
-
-global test1 dsr1 dar1 inc1 ass1
-*global test2
-
-global var $test1
-
-
-********** Step2: Correlation matrix
-*graph matrix $var, half
-
-
-
-********** Step3: PCA
-pca $var 
-screeplot, ci mean
-loadingplot, component(2) combined xline(0) yline(0) aspect(1)
-scoreplot, component(2) combined xline(0) yline(0) aspect(1) mlabel()
-
-predict pc1 pc2 pc3 pc4
-global component pc1 pc2 pc3 pc4
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*
 ********** Stacked bar chart of over debt path
 preserve
 rename caste over
@@ -1052,3 +994,5 @@ twoway ///
 legend(order(1 "Always" 2 "Lasting entrance" 3 "Temporary exit" 4 "New over-indebted" 5 "New not over-indebted" 6 "Temporary entrance" 7 "Lasting exit" 8 "Never")) ///
 ytitle(percent) 
 restore
+****************************************
+* END
