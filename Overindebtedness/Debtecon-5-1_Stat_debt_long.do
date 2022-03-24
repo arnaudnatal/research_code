@@ -162,18 +162,30 @@ To compare distribution, ihs transformation is good
 
 
 ********** Continuous var
-tabstat annualincome assets_noland loanamount DSR DAR_without DIR, stat(n mean sd min max p1 p5 p10 q)
-
-foreach x in annualincome assets_noland loanamount {
-replace `x'=`x'*1000
+global var annualincome assets_noland loanamount DSR DAR_without DIR 
+tabstat $var, stat(n mean sd min max p1 p5 p10 q)
+foreach x in $var {
+count if `x'==0
 }
 
-foreach x in DSR DAR_without {
-replace `x'=`x'*10
-}
+*foreach x in annualincome assets_noland loanamount {
+*replace `x'=`x'*1000
+*}
+
+*foreach x in DSR DAR_without {
+*replace `x'=`x'*10
+*}
 
 foreach x in DIR {
-replace `x'=`x'*1000
+replace `x'=`x'*100
+}
+
+foreach x in $var {
+gen `x'_new=`x'
+}
+
+foreach x in $var {
+replace `x'_new=`x'+1
 }
 
 tabstat annualincome assets_noland loanamount DSR DAR_without DIR, stat(n mean sd min max p1 p5 p10 q)
@@ -191,12 +203,13 @@ dis "`x'  `i'   " r(N) "   "  r(N)*100/382
 tabstat `x', stat(N min p1 p5 p10 q)
 gen ihs_`x'=asinh(`x')
 gen cro_`x'=`x'^(1/3)
+gen log_`x'=log(`x'_new)
 tabstat `x' ihs_`x', stat(n q) by(year)
 }
 
 
 
-***** OVER CASTE
+***** IHS
 global var loanamount annualincome assets_noland DAR_without DSR DIR
 foreach x in $var {
 set graph off
@@ -209,6 +222,7 @@ name(stripplot_ihs_`x', replace)
 set graph on
 }
 
+***** Cube root
 foreach x in $var {
 set graph off
 stripplot cro_`x', over(caste) by(year, note("") row(1)) vert ///
@@ -221,14 +235,62 @@ set graph on
 }
 
 
+***** Log+c
+foreach x in $var {
+set graph off
+stripplot log_`x', over(caste) by(year, note("") row(1)) vert ///
+stack width(0.05) jitter(0) ///
+box(barw(0.1)) boffset(-0.1) pctile(10) ///
+ms(oh oh oh) msize(small) mc(red%30) ///
+yla(, ang(h)) xla(, noticks) ///
+name(stripplot_log_`x', replace)
+set graph on
+}
+
+***** Normal
+foreach x in $var {
+set graph off
+stripplot `x', over(caste) by(year, note("") row(1)) vert ///
+stack width(0.05) jitter(0) ///
+box(barw(0.1)) boffset(-0.1) pctile(10) ///
+ms(oh oh oh) msize(small) mc(red%30) ///
+yla(, ang(h)) xla(, noticks) ///
+name(stripplot_`x', replace)
+set graph on
+}
 
 
-graph display stripplot_ihs_loanamount
-graph display stripplot_cro_loanamount
 
+graph display stripplot_ihs_DSR
+graph display stripplot_cro_DSR
+graph display stripplot_log_DSR
+graph display stripplot_DSR
 
 graph display stripplot_ihs_DIR
 graph display stripplot_cro_DIR
+
+
+
+tabstat DSR log_DSR ihs_DSR cro_DSR if year==2010 & caste==1, stat(n p50)
+dis (exp(3.139651))-1
+dis exp(3.139651)
+dis exp(3.789047)
+
+
+
+
+
+********** Dalius transfo with quartile
+preserve
+keep if year==2010
+egen rank_DSR=rank(DSR)
+gen N=_N
+gen perc_DSR=rank_DSR/N+1
+
+
+
+
+
 
 
 ****************************************
@@ -511,7 +573,7 @@ graph display median_assets_noland
 
 
 
-/*
+
 ****************************************
 * RELATIVE EVOLUTION
 ****************************************
@@ -525,11 +587,11 @@ keep if panel==1
 
 ********* INCOME, WEALTH AND USING OF DEBT
 graph drop _all
-foreach ca in annualincome assets_noland {
+foreach ca in annualincome assets_noland loanamount {
 forvalues i=1(1)3{
 preserve
 keep if time==`i'
-xtile cat_p=`ca', n(5)
+xtile cat_p=`ca', n(3)
 
 collapse (mean) rel_eco_HH rel_current_HH rel_humank_HH rel_social_HH rel_home_HH rel_other_HH, by(cat_p)
 
@@ -569,17 +631,18 @@ graph dir
 /*
 graph display use_annualincome
 graph display use_assets_noland
+graph display use_loanamount
 */
 
 
 
 ********* INCOME, WEALTH AND SOURCE OF DEBT
 graph drop _all
-foreach ca in annualincome assets_noland {
+foreach ca in annualincome assets_noland loanamount {
 forvalues i=1(1)3{
 preserve
 keep if time==`i'
-xtile cat_p=`ca', n(5)
+xtile cat_p=`ca', n(3)
 
 collapse (mean) rel_formal_HH rel_informal_HH, by(cat_p)
 
@@ -607,6 +670,7 @@ graph dir
 /*
 grc1leg source_annualincome, col(3)
 grc1leg source_assets_noland, col(3)
+grc1leg source_loanamount, col(3)
 */
 ****************************************
 * END
