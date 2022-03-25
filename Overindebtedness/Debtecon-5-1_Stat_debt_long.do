@@ -419,9 +419,9 @@ grc1leg source_loanamount, col(3)
 
 
 
-/*
+
 ****************************************
-* MULTIPLE BORROWING
+* DEBT TRAP
 ****************************************
 use"panel_v4", clear
 
@@ -429,77 +429,30 @@ use"panel_v4", clear
 xtset panelvar time
 keep if panel==1
 
-fsum loanfromIMF_nb_HH loanfromIMF_amt_HH loanfrombank_nb_HH loanfrombank_amt_HH loanfrommoneylender_nb_HH loanfrommoneylender_amt_HH rel_loanfromIMF_amt_HH rel_loanfrombank_amt_HH rel_loanfrommoneylender_amt_HH sum_loans_HH dummyIMF dummybank dummymoneylender
 
-
-********* INCOME, WEALTH AND USING OF DEBT
-graph drop _all
-foreach ca in annualincome assets_noland loanamount {
-forvalues i=1(1)3{
-preserve
-keep if time==`i'
-xtile cat_p=`ca', n(3)
-
-collapse (mean) loanfromIMF_nb_HH loanfrombank_nb_HH loanfrommoneylender_nb_HH sum_loans_HH, by(cat_p)
-
-twoway ///
-(line sum_loans_HH cat_p) /// 
-(line loanfromIMF_nb_HH cat_p) /// 
-(line loanfrombank_nb_HH cat_p) /// 
-(line loanfrommoneylender_nb_HH cat_p) 
-
-}
-
-set graph on
-}
-graph dir
-/*
-graph display use_annualincome
-graph display use_assets_noland
-graph display use_loanamount
-*/
+tabstat dummyborrowstrat MLborrowstrat_nb_HH MLborrowstrat_amt_HH rel_MLborrowstrat_amt_HH loanforrepayment_nb_HH loanforrepayment_amt_HH rel_loanforrepayment_amt_HH, stat(n mean sd q) by(year)
 
 
 
-********* INCOME, WEALTH AND SOURCE OF DEBT
-graph drop _all
-foreach ca in annualincome assets_noland loanamount {
-forvalues i=1(1)3{
-preserve
-keep if time==`i'
-xtile cat_p=`ca', n(3)
+********** Borrow elsewhere as strategy
+***** Nb of HH concern
+graph bar dummyborrowstrat, over(caste) by(year, col(3) note(""))
 
-collapse (mean) rel_formal_HH rel_informal_HH, by(cat_p)
 
-rename rel_formal_HH sum1
-rename rel_informal_HH up2
 
-gen sum2=sum1+up2
+********** Debt to repay
+***** Nb of HH concern
+graph bar dummyrepay, over(caste) by(year,col(3)note(""))
 
-keep cat_p sum*
 
-set graph off
-twoway ///
-area sum1 cat_p || ///
-rarea sum1 sum2 cat_p || ///
-, ///
-legend(pos(6) col(3) order(1 "Formal" 2 "Informal")) ///
-title("t=`i'") ///
-name(source`i'_`ca',replace)
-restore
-}
-grc1leg source1_`ca' source2_`ca' source3_`ca', col(3) name(source_`ca', replace)
-set graph on
-}
-graph dir
-/*
-grc1leg source_annualincome, col(3)
-grc1leg source_assets_noland, col(3)
-grc1leg source_loanamount, col(3)
-*/
+***** Stat
+tabstat rel_loanforrepayment_amt_HH if year==2010, stat(n mean sd q) by(caste)
+tabstat rel_loanforrepayment_amt_HH if year==2016, stat(n mean sd q) by(caste)
+tabstat rel_loanforrepayment_amt_HH if year==2020, stat(n mean sd q) by(caste)
+
+
 ****************************************
 * END
-*/
 
 
 
@@ -510,6 +463,41 @@ grc1leg source_loanamount, col(3)
 
 
 
+****************************************
+* OVERINDEBTEDNESS
+****************************************
+use"panel_v4", clear
+
+********** Initialization
+xtset panelvar time
+keep if panel==1
+
+ta DSR30 caste if year==2010, col nofreq
+ta DSR30 caste if year==2016, col nofreq
+ta DSR30 caste if year==2020, col nofreq
+
+
+********** Borrow elsewhere as strategy
+***** Nb of HH concern
+graph bar DSR30, over(caste) by(year, col(3) note(""))
+graph bar DSR40, over(caste) by(year, col(3) note(""))
+graph bar DSR50, over(caste) by(year, col(3) note(""))
+
+
+
+********** Debt to repay
+***** Nb of HH concern
+graph bar dummyrepay, over(caste) by(year,col(3)note(""))
+
+
+***** Stat
+tabstat rel_loanforrepayment_amt_HH if year==2010, stat(n mean sd q) by(caste)
+tabstat rel_loanforrepayment_amt_HH if year==2016, stat(n mean sd q) by(caste)
+tabstat rel_loanforrepayment_amt_HH if year==2020, stat(n mean sd q) by(caste)
+
+
+****************************************
+* END
 
 
 
