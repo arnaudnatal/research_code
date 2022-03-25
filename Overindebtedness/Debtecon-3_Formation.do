@@ -619,6 +619,7 @@ replace DAR_without=DAR_without*100
 
 replace DSR=DSR*100
 replace ISR=ISR*100
+replace DIR=DIR*100
 
 ********** Wealth panel
 xtile assets2010panel_q3=assets if year==2010 & panel==1, n(3)
