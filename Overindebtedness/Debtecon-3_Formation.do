@@ -642,10 +642,141 @@ bysort HHID_panel: egen incomepanel_q4=max(income2010panel_q4) if panel==1
 ta incomepanel_q3 year
 ta incomepanel_q4 year
 
-
 save"panel_v4", replace
 ****************************************
 * END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Var creation for log, cro, etc.
+****************************************
+use"panel_v4", clear
+
+
+********** Rename
+rename assetspanel_q3 assetsq
+rename incomepanel_q3 incomeq
+
+
+
+********** Continuous var
+global var annualincome assets_noland loanamount DSR ISR DAR_without DIR sum_loans_HH 
+tabstat $var, stat(n mean sd min max p1 p5 p10 q)
+foreach x in $var {
+count if `x'==0
+}
+
+
+
+********** Var transformation for log
+***** Continuous in level and not in for 1k
+foreach x in annualincome assets_noland loanamount {
+replace `x'=`x'*1000
+}
+
+***** New ratio in permile and not percent
+foreach x in DSR DAR_without DIR ISR {
+gen `x'_1000=`x'
+}
+foreach x in DSR DAR_without ISR {
+replace `x'_1000=`x'*10
+}
+foreach x in DIR {
+replace `x'_1000=`x'*1000
+}
+
+***** All var +1 to drop 0
+foreach x in annualincome assets_noland loanamount DSR ISR DAR_without DIR {
+gen `x'_new=`x'
+}
+
+foreach x in annualincome assets_noland loanamount DSR ISR DAR_without DIR {
+replace `x'_new=`x'+1
+}
+
+
+
+********** Creation as IHS, CRO and LOG
+***** IHS
+foreach x in annualincome assets_noland loanamount DSR_1000 DIR_1000 DAR_without_1000 ISR_1000 {
+gen ihs_`x'=asinh(`x')
+}
+
+***** CRO
+foreach x in annualincome assets_noland loanamount DSR DAR_without DIR ISR{
+gen cro_`x'=`x'^(1/3)
+}
+
+***** Log
+foreach x in annualincome assets_noland loanamount DSR DAR_without DIR ISR {
+gen log_`x'=log(`x'_new)
+}
+
+
+
+
+********* Label
+
+label var caste "Caste"
+label var assetsq "Tercile of assets in 2010"
+label var incomeq "Tercile of income in 2010"
+
+label define tercile 1"Tercile 1" 2"Tercile 2" 3"Tercile 3"
+label values assetsq tercile
+label values incomeq tercile
+
+label var ihs_annualincome "IHST of income"
+label var ihs_assets_noland "IHST of assets"
+label var ihs_loanamount "IHST of loan amount"
+label var ihs_DSR_1000 "IHST of DSR"
+label var ihs_ISR_1000 "IHST of ISR"
+label var ihs_DIR_1000 "IHST of DIR"
+label var ihs_DAR_without_1000 "IHST of DAR"
+
+label var cro_annualincome "CRT of income"
+label var cro_assets_noland "CRT of assets"
+label var cro_loanamount "CRT of loan amount"
+label var cro_DSR "CRT of DSR"
+label var cro_DAR_without "CRT of DAR"
+label var cro_DIR "CRT of DIR"
+label var cro_ISR "CRT of ISR"
+
+label var log_annualincome "Log+1 of income"
+label var log_assets_noland "Log+1 of assets"
+label var log_loanamount "Log+1 of loan amount"
+label var log_DSR "Log+1 of DSR"
+label var log_DAR_without "Log+1 of DAR"
+label var log_DIR "Log+1 of DIR" 
+label var log_ISR "Log+1 of ISR"
+
+label var annualincome "Income (INR)"
+label var assets_noland "Assets (INR)"
+label var loanamount "Loan amount (INR)"
+label var DSR "DSR (%)"
+label var DAR_without "DAR (%)"
+label var DIR "DIR (%)"
+label var ISR "ISR (%)"
+label var sum_loans_HH "No. of loans"
+
+
+save"panel_v5", replace
+****************************************
+* END
+
+
+
 
 
 
@@ -670,7 +801,7 @@ save"panel_v4", replace
 ****************************************
 * Wide data
 ****************************************
-use"panel_v4", clear
+use"panel_v5", clear
 
 ********** Initialization
 xtset panelvar time
@@ -807,7 +938,7 @@ rename `x'_HH `x'
 }
 
 
-save"panel_v4_wide", replace
+save"panel_v5_wide", replace
 clear all
 ****************************************
 * END

@@ -77,7 +77,7 @@ global loan3 "NEEMSIS2-all_loans"
 ****************************************
 * How much in debt?
 ****************************************
-use"panel_v4_wide", clear
+use"panel_v5_wide", clear
 
 tab1 sum_loans_HH2010 sum_loans_HH2016 sum_loans_HH2020
 
@@ -101,7 +101,7 @@ tab1 sum_loans_HH2010 sum_loans_HH2016 sum_loans_HH2020
 ****************************************
 * SCATTER PATH
 ****************************************
-use"panel_v4_wide", clear
+use"panel_v5_wide", clear
 
 ********** OUTLIERS
 foreach x in loanamount {
@@ -174,7 +174,7 @@ graph display loanamount_
 ****************************************
 * Debt trap
 ****************************************
-use"panel_v4_wide", clear
+use"panel_v5_wide", clear
 
 ********** Debt for repayment
 tab1 dummyrepay2010 dummyrepay2016 dummyrepay2020
@@ -228,7 +228,7 @@ tabstat rel_MLborrowstrat_amt_HH2010 rel_MLborrowstrat_amt_HH2016 rel_MLborrowst
 ****************************************
 * Multiple borrowing
 ****************************************
-use"panel_v4_wide", clear
+use"panel_v5_wide", clear
 
 
 ********** Microcredit
@@ -276,7 +276,7 @@ tabstat rel_lf_moneylender_amt_HH2010 rel_lf_moneylender_amt_HH2016 rel_lf_money
 ****************************************
 * Good / Bad debt
 ****************************************
-use"panel_v4_wide", clear
+use"panel_v5_wide", clear
 
 ********** Good
 tabstat MLgooddebt_nb_HH2010 MLgooddebt_nb_HH2016 MLgooddebt_nb_HH2020, stat(n mean sd q)
@@ -315,7 +315,7 @@ tabstat rel_MLbaddebt_amt_HH2010 rel_MLbaddebt_amt_HH2016 rel_MLbaddebt_amt_HH20
 ****************************************
 * TABPLOT PATH
 ****************************************
-use"panel_v4_wide", clear
+use"panel_v5_wide", clear
 
 ********** DEBT, WEALTH, INCOME, EXPENSES PATH over INCOME, WEALTH AND CASTE
 graph drop _all
@@ -485,7 +485,7 @@ graph display ce_other_cat_assets
 ****************************************
 * SPINEPLOT PATH
 ****************************************
-use"panel_v4_wide", clear
+use"panel_v5_wide", clear
 
 ********** COLOR
 qui colorpalette hue, hue(0 200) chroma(70) luminance(50) n(6) globals
@@ -678,7 +678,7 @@ graph display comb_path_30
 ****************************************
 cls
 graph drop _all
-use"panel_v4_wide", clear
+use"panel_v5_wide", clear
 
 
 
@@ -729,7 +729,7 @@ Murtagh, F., and Contreras, P. (2012). “Algorithms for hierarchical clustering
 
 cls
 graph drop _all
-use"panel_v4_wide", clear
+use"panel_v5_wide", clear
 
 ********** Step1: Std
 forvalues j=1(1)2{

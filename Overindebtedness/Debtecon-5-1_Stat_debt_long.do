@@ -88,7 +88,7 @@ global loan3 "NEEMSIS2-all_loans"
 *net install panelstat, from("https://github.com/pguimaraes99/panelstat/raw/master/")
 
 cls
-use"panel_v4", clear
+use"panel_v5", clear
 
 keep if panel==1
 
@@ -121,165 +121,79 @@ panelstat panelvar time, demoby(DSR)
 
 
 ****************************************
-* Wealth, income and debt
+* Cross section evidence
 ****************************************
 cls
-use"panel_v4", clear
+use"panel_v5", clear
 
 keep if panel==1
 
 
-********** Continuous var
-global var annualincome assets_noland loanamount DSR ISR DAR_without DIR sum_loans_HH 
-tabstat $var, stat(n mean sd min max p1 p5 p10 q)
-foreach x in $var {
-count if `x'==0
+********** Graphs
+foreach y in caste assetsq {
+foreach x in ihs_annualincome ihs_assets_noland ihs_loanamount ihs_DSR_1000 ihs_DIR_1000 ihs_DAR_without_1000 ihs_ISR_1000 cro_annualincome cro_assets_noland cro_loanamount cro_DSR cro_DAR_without cro_DIR cro_ISR log_annualincome log_assets_noland log_loanamount log_DSR log_DAR_without log_DIR log_ISR annualincome assets_noland loanamount DSR DAR_without DIR ISR sum_loans_HH {
+set graph off
+stripplot `x', over(`y') by(year, note("") row(1)) vert ///
+stack width(0.05) jitter(0) ///
+box(barw(0.1)) boffset(-0.1) pctile(10) ///
+ms(oh oh oh) msize(small) mc(red%30) ///
+yla(, ang(h)) xla(, noticks) ///
+name(`x'_`y', replace)
+set graph on
+}
 }
 
 
 
-********** Var transformation for log
-***** Continuous in level and not in for 1k
+********** Combine
 foreach x in annualincome assets_noland loanamount {
-replace `x'=`x'*1000
-}
-
-***** New ratio in permile and not percent
-foreach x in DSR DAR_without DIR ISR {
-gen `x'_1000=`x'
-}
-foreach x in DSR DAR_without ISR {
-replace `x'_1000=`x'*10
-}
-foreach x in DIR {
-replace `x'_1000=`x'*1000
-}
-
-***** All var +1 to drop 0
-foreach x in annualincome assets_noland loanamount DSR ISR DAR_without DIR {
-gen `x'_new=`x'
-}
-
-foreach x in annualincome assets_noland loanamount DSR ISR DAR_without DIR {
-replace `x'_new=`x'+1
-}
-
-
-
-********** Creation as IHS, CRO and LOG
-***** IHS
-foreach x in annualincome assets_noland loanamount DSR_1000 DIR_1000 DAR_without_1000 {
-gen ihs_`x'=asinh(`x')
-}
-
-***** CRO
-foreach x in annualincome assets_noland loanamount DSR DAR_without DIR ISR{
-gen cro_`x'=`x'^(1/3)
-}
-
-***** Log
-foreach x in annualincome assets_noland loanamount DSR DAR_without DIR ISR {
-gen log_`x'=log(`x'_new)
-}
-
-
-
-********** IHS graph
-foreach x in ihs_annualincome ihs_assets_noland ihs_loanamount ihs_DSR_1000 ihs_DIR_1000 ihs_DAR_without_1000 {
+foreach y in ihs cro log {
 set graph off
-stripplot `x', over(caste) by(year, note("") row(1)) vert ///
-stack width(0.05) jitter(0) ///
-box(barw(0.1)) boffset(-0.1) pctile(10) ///
-ms(oh oh oh) msize(small) mc(red%30) ///
-yla(, ang(h)) xla(, noticks) ///
-name(stripplot_`x', replace)
+graph combine `y'_`x'_caste `y'_`x'_assetsq, ///
+graphregion(margin(zero)) plotregion(margin(zero)) ///
+col(1) name(`y'_`x', replace)
+set graph on
+}
+}
+
+
+foreach x in DSR ISR DAR_without DIR{
+set graph off
+graph combine ihs_`x'_1000_caste ihs_`x'_1000_assetsq, ///
+graphregion(margin(zero)) plotregion(margin(zero)) ///
+col(1) name(ihs_`x', replace)
+graph combine cro_`x'_caste cro_`x'_assetsq, ///
+graphregion(margin(zero)) plotregion(margin(zero)) ///
+col(1) name(cro_`x', replace)
+graph combine ihs_`x'_1000_caste ihs_`x'_1000_assetsq, ///
+graphregion(margin(zero)) plotregion(margin(zero)) ///
+col(1) name(ihs_`x', replace)
 set graph on
 }
 
 
-********** Cube root graph
-foreach x in cro_annualincome cro_assets_noland cro_loanamount cro_DSR cro_DAR_without cro_DIR cro_ISR {
-set graph off
-stripplot `x', over(caste) by(year, note("") row(1)) vert ///
-stack width(0.05) jitter(0) ///
-box(barw(0.1)) boffset(-0.1) pctile(10) ///
-ms(oh oh oh) msize(small) mc(red%30) ///
-yla(, ang(h)) xla(, noticks) ///
-name(stripplot_`x', replace)
-set graph on
-}
 
 
-********** Log+1 graph
-foreach x in log_annualincome log_assets_noland log_loanamount log_DSR log_DAR_without log_DIR log_ISR {
-set graph off
-stripplot `x', over(caste) by(year, note("") row(1)) vert ///
-stack width(0.05) jitter(0) ///
-box(barw(0.1)) boffset(-0.1) pctile(10) ///
-ms(oh oh oh) msize(small) mc(red%30) ///
-yla(, ang(h)) xla(, noticks) ///
-name(stripplot_`x', replace)
-set graph on
-}
 
 
-***** Normal
-foreach x in annualincome assets_noland loanamount DSR DAR_without DIR ISR sum_loans_HH {
-set graph off
-stripplot `x', over(caste) by(year, note("") row(1)) vert ///
-stack width(0.05) jitter(0) ///
-box(barw(0.1)) boffset(-0.1) pctile(10) ///
-ms(oh oh oh) msize(small) mc(red%30) ///
-yla(, ang(h)) xla(, noticks) ///
-name(stripplot_`x', replace)
-set graph on
-}
+********** Wealth, income and debt
 
-graph display stripplot_ihs_DSR_1000
-graph display stripplot_cro_DSR
-graph display stripplot_log_DSR
-graph display stripplot_DSR
-
-graph display stripplot_ihs_DIR_1000
-graph display stripplot_cro_DIR
-graph display stripplot_log_DIR
-graph display stripplot_DIR
-
-graph display stripplot_ihs_DAR_without_1000
-graph display stripplot_cro_DAR_without
-graph display stripplot_log_DAR_without
-graph display stripplot_DAR_without
-
-graph display stripplot_sum_loans_HH
-
-
-********** Stat for conversion
-tabstat DSR log_DSR ihs_DSR_1000 cro_DSR, stat(p50)
-/*
-Real value: 
-25.19225%
-
-Log+1: 
-dis exp(3.265463)-1
-
-CRO:
-dis 2.931493^3
-
-IHS:
-dis exp(6.222272)
-
-*/
+graph display ihs_annualincome
+graph display ihs_assets_noland
+graph display ihs_loanamount
 
 
 
 
 
-********** Dalius transfo with quartile
-preserve
-keep if year==2010
-egen rank_DSR=rank(DSR)
-gen N=_N
-gen perc_DSR=rank_DSR/N+1
+********** Burden of debt
+
+graph display ihs_DSR
+graph display ihs_DAR_without
+
+graph display ihs_ISR
+graph display ihs_DIR
+
 
 ****************************************
 * END
@@ -302,7 +216,7 @@ gen perc_DSR=rank_DSR/N+1
 ****************************************
 * RELATIVE EVOLUTION OF USE AND SOURCE OF DEBT
 ****************************************
-use"panel_v4", clear
+use"panel_v5", clear
 
 ********** Initialization
 xtset panelvar time
@@ -423,7 +337,7 @@ grc1leg source_loanamount, col(3)
 ****************************************
 * DEBT TRAP
 ****************************************
-use"panel_v4", clear
+use"panel_v5", clear
 
 ********** Initialization
 xtset panelvar time
@@ -466,7 +380,7 @@ tabstat rel_loanforrepayment_amt_HH if year==2020, stat(n mean sd q) by(caste)
 ****************************************
 * OVERINDEBTEDNESS
 ****************************************
-use"panel_v4", clear
+use"panel_v5", clear
 
 ********** Initialization
 xtset panelvar time
@@ -514,7 +428,7 @@ tabstat rel_loanforrepayment_amt_HH if year==2020, stat(n mean sd q) by(caste)
 ****************************************
 * ABSOLUT EVOLUTION
 ****************************************
-use"panel_v4", clear
+use"panel_v5", clear
 
 ********** Initialization
 xtset panelvar time
