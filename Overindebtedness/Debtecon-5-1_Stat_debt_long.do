@@ -146,6 +146,7 @@ set graph on
 
 
 ********** Combine
+***** Wealth
 foreach x in annualincome assets_noland loanamount {
 foreach y in ihs cro log {
 set graph off
@@ -157,6 +158,7 @@ set graph on
 }
 
 
+***** Burden
 foreach x in DSR ISR DAR_without DIR{
 set graph off
 graph combine ihs_`x'_1000_caste ihs_`x'_1000_assetsq, ///
@@ -171,29 +173,36 @@ col(1) name(ihs_`x', replace)
 set graph on
 }
 
+***** Multiple
+set graph off
+graph combine sum_loans_HH_caste sum_loans_HH_assetsq, ///
+graphregion(margin(zero)) plotregion(margin(zero)) ///
+col(1) name(sums, replace)
+set graph on
 
 
 
 
-
-********** Wealth, income and debt
-
+********** Display
+***** Wealth
 graph display ihs_annualincome
 graph display ihs_assets_noland
 graph display ihs_loanamount
 
+graph display cro_annualincome
+graph display cro_assets_noland
+graph display cro_loanamount
 
 
-
-
-********** Burden of debt
-
+***** Burden
 graph display ihs_DSR
 graph display ihs_DAR_without
 
 graph display ihs_ISR
 graph display ihs_DIR
 
+***** Multiple borrowing
+graph display sums
 
 ****************************************
 * END
@@ -226,11 +235,11 @@ keep if panel==1
 
 ********* INCOME, WEALTH AND USING OF DEBT
 graph drop _all
-foreach ca in annualincome assets_noland loanamount {
+foreach ca in assetsq caste {
 forvalues i=1(1)3{
 preserve
 keep if time==`i'
-xtile cat_p=`ca', n(3)
+rename `ca' cat_p
 
 collapse (mean) rel_eco_HH rel_current_HH rel_humank_HH rel_social_HH rel_home_HH rel_other_HH, by(cat_p)
 
@@ -260,6 +269,7 @@ rarea sum5 sum6 cat_p ///
 , ///
 legend(pos(6) col(3) order(1 "Economic purpose" 2 "Current expenses" 3 "Human capital" 4 "Social purpose" 5 "Housing" 6 "Other")) ///
 title("t=`i'") ///
+xlabel(1(1)3) xmtick() ///
 name(using`i'_`ca',replace)
 restore
 }
@@ -267,22 +277,14 @@ grc1leg using1_`ca' using2_`ca' using3_`ca', col(3) name(use_`ca', replace)
 set graph on
 }
 graph dir
-/*
-graph display use_annualincome
-graph display use_assets_noland
-graph display use_loanamount
-*/
-
 
 
 ********* INCOME, WEALTH AND SOURCE OF DEBT
-graph drop _all
-foreach ca in annualincome assets_noland loanamount {
+foreach ca in assetsq caste {
 forvalues i=1(1)3{
 preserve
 keep if time==`i'
-xtile cat_p=`ca', n(3)
-
+rename `ca' cat_p
 collapse (mean) rel_formal_HH rel_informal_HH, by(cat_p)
 
 rename rel_formal_HH sum1
@@ -306,11 +308,21 @@ grc1leg source1_`ca' source2_`ca' source3_`ca', col(3) name(source_`ca', replace
 set graph on
 }
 graph dir
-/*
-grc1leg source_annualincome, col(3)
-grc1leg source_assets_noland, col(3)
-grc1leg source_loanamount, col(3)
-*/
+
+
+
+
+********** Combine
+grc1leg use_caste use_assetsq, col(1) name(use, replace)
+grc1leg source_caste source_assetsq, col(1) name(source, replace)
+
+
+
+********** Display
+graph display use
+graph display source
+
+
 ****************************************
 * END
 
@@ -346,23 +358,27 @@ keep if panel==1
 
 tabstat dummyborrowstrat MLborrowstrat_nb_HH MLborrowstrat_amt_HH rel_MLborrowstrat_amt_HH loanforrepayment_nb_HH loanforrepayment_amt_HH rel_loanforrepayment_amt_HH, stat(n mean sd q) by(year)
 
-
-
 ********** Borrow elsewhere as strategy
-***** Nb of HH concern
-graph bar dummyborrowstrat, over(caste) by(year, col(3) note(""))
+set graph off
+graph bar dummyborrowstrat, over(caste) by(year, col(3) note("")) name(borrow_caste, replace)
+graph bar dummyborrowstrat, over(assetsq) by(year, col(3) note("")) name(borrow_assets, replace)
 
+graph combine borrow_caste borrow_assets, name(borrow, replace) col(1)
+set graph on
 
 
 ********** Debt to repay
-***** Nb of HH concern
-graph bar dummyrepay, over(caste) by(year,col(3)note(""))
+set graph off
+graph bar dummyrepay, over(caste) by(year, col(3) note("")) name(repay_caste, replace)
+graph bar dummyrepay, over(assetsq) by(year, col(3) note("")) name(repay_assets, replace)
+
+graph combine repay_caste repay_assets, name(repay, replace) col(1)
+set graph on
 
 
-***** Stat
-tabstat rel_loanforrepayment_amt_HH if year==2010, stat(n mean sd q) by(caste)
-tabstat rel_loanforrepayment_amt_HH if year==2016, stat(n mean sd q) by(caste)
-tabstat rel_loanforrepayment_amt_HH if year==2020, stat(n mean sd q) by(caste)
+********** Display graph
+graph display borrow
+graph display repay
 
 
 ****************************************
@@ -386,28 +402,38 @@ use"panel_v5", clear
 xtset panelvar time
 keep if panel==1
 
-ta DSR30 caste if year==2010, col nofreq
-ta DSR30 caste if year==2016, col nofreq
-ta DSR30 caste if year==2020, col nofreq
+********** DSR at 30%
+set graph off
+graph bar DSR30, over(caste) by(year, col(3) note("")) name(D30_caste, replace)
+graph bar DSR30, over(assetsq) by(year, col(3) note("")) name(D30_assets, replace)
+
+graph combine D30_caste D30_assets, name(D30, replace) col(1)
+set graph on
 
 
-********** Borrow elsewhere as strategy
-***** Nb of HH concern
-graph bar DSR30, over(caste) by(year, col(3) note(""))
-graph bar DSR40, over(caste) by(year, col(3) note(""))
-graph bar DSR50, over(caste) by(year, col(3) note(""))
+********** DSR at 40%
+set graph off
+graph bar DSR40, over(caste) by(year, col(3) note("")) name(D40_caste, replace)
+graph bar DSR40, over(assetsq) by(year, col(3) note("")) name(D40_assets, replace)
+
+graph combine D40_caste D40_assets, name(D40, replace) col(1)
+set graph on
+
+
+********** DSR at 50%
+set graph off
+graph bar DSR50, over(caste) by(year, col(3) note("")) name(D50_caste, replace)
+graph bar DSR50, over(assetsq) by(year, col(3) note("")) name(D50_assets, replace)
+
+graph combine D50_caste D50_assets, name(D50, replace) col(1)
+set graph on
 
 
 
-********** Debt to repay
-***** Nb of HH concern
-graph bar dummyrepay, over(caste) by(year,col(3)note(""))
-
-
-***** Stat
-tabstat rel_loanforrepayment_amt_HH if year==2010, stat(n mean sd q) by(caste)
-tabstat rel_loanforrepayment_amt_HH if year==2016, stat(n mean sd q) by(caste)
-tabstat rel_loanforrepayment_amt_HH if year==2020, stat(n mean sd q) by(caste)
+********** Display graph
+graph display D30
+graph display D40
+graph display D50
 
 
 ****************************************

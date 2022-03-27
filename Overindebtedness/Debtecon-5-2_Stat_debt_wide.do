@@ -91,13 +91,6 @@ tab1 sum_loans_HH2010 sum_loans_HH2016 sum_loans_HH2020
 
 
 
-
-
-
-
-
-
-
 ****************************************
 * SCATTER PATH
 ****************************************
@@ -171,136 +164,23 @@ graph display loanamount_
 
 
 
+
+
+
 ****************************************
 * Debt trap
 ****************************************
 use"panel_v5_wide", clear
 
-********** Debt for repayment
-tab1 dummyrepay2010 dummyrepay2016 dummyrepay2020
-tab dummyrepay2010 dummyrepay2016
-tab dummyrepay2016 dummyrepay2020
-ta dummyrepay2010 dummyrepay2020
 
-***** Nb
-tabstat loanforrepayment_nb_HH2010 loanforrepayment_nb_HH2016 loanforrepayment_nb_HH2020, stat(n mean sd q)
-
-***** Amount
-tabstat loanforrepayment_amt_HH2010 loanforrepayment_amt_HH2016 loanforrepayment_amt_HH2020, stat(n mean sd q)
-
-tabstat rel_loanforrepayment_amt_HH2010 rel_loanforrepayment_amt_HH2016 rel_loanforrepayment_amt_HH2020, stat(n mean sd q)
-
-
-
-
-********* Debt that need borrow elsewhere to repay
-tab1 dummyborrowstrat2010 dummyborrowstrat2016 dummyborrowstrat2020
-tab dummyborrowstrat2010 dummyborrowstrat2016
-tab dummyborrowstrat2016 dummyborrowstrat2020
-tab dummyborrowstrat2010 dummyborrowstrat2020
-
-***** Nb
-tabstat MLborrowstrat_nb_HH2010 MLborrowstrat_nb_HH2016 MLborrowstrat_nb_HH2020, stat(n mean sd q)
-
-***** Amount
-tabstat MLborrowstrat_amt_HH2010 MLborrowstrat_amt_HH2016   MLborrowstrat_amt_HH2020, stat(n mean sd q)
-
-tabstat rel_MLborrowstrat_amt_HH2010 rel_MLborrowstrat_amt_HH2016 rel_MLborrowstrat_amt_HH2020, stat(n mean sd q)
-
-****************************************
-* END
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-****************************************
-* Multiple borrowing
-****************************************
-use"panel_v5_wide", clear
-
-
-********** Microcredit
-***** Nb
-tabstat lf_IMF_nb_HH2010 lf_IMF_nb_HH2016 lf_IMF_nb_HH2020, stat(n mean sd q)
-
-***** Amount
-tabstat lf_IMF_amt_HH2010 lf_IMF_amt_HH2016 lf_IMF_amt_HH2020, stat(n mean sd q)
-
-tabstat rel_lf_IMF_amt_HH2010 rel_lf_IMF_amt_HH2016 rel_lf_IMF_amt_HH2020, stat(n mean sd q)
-
-
-
-********** Bank
-***** Nb
-tabstat lf_bank_nb_HH2010 lf_bank_nb_HH2016 lf_bank_nb_HH2020, stat(n mean sd q)
-
-***** Amount
-tabstat lf_bank_amt_HH2010 lf_bank_amt_HH2016 lf_bank_amt_HH2020, stat(n mean sd q)
-
-tabstat rel_lf_bank_amt_HH2010 rel_lf_bank_amt_HH2016 rel_lf_bank_amt_HH2020, stat(n mean sd q)
-
-
-
-********** Moneylender
-***** Nb
-tabstat lf_moneylender_nb_HH2010 lf_moneylender_nb_HH2016 lf_moneylender_nb_HH2020, stat(n mean sd q)
-
-***** Amount
-tabstat lf_moneylender_amt_HH2010 lf_moneylender_amt_HH2016 lf_moneylender_amt_HH2020, stat(n mean sd q)
-
-tabstat rel_lf_moneylender_amt_HH2010 rel_lf_moneylender_amt_HH2016 rel_lf_moneylender_amt_HH2020, stat(n mean sd q)
-
-****************************************
-* END
-
-
-
-
-
-
-
-
-
-****************************************
-* Good / Bad debt
-****************************************
-use"panel_v5_wide", clear
-
-********** Good
-tabstat MLgooddebt_nb_HH2010 MLgooddebt_nb_HH2016 MLgooddebt_nb_HH2020, stat(n mean sd q)
-
-tabstat MLgooddebt_amt_HH2010 MLgooddebt_amt_HH2016 MLgooddebt_amt_HH2020, stat(n mean sd q)
-
-tabstat rel_MLgooddebt_amt_HH2010 rel_MLgooddebt_amt_HH2016 rel_MLgooddebt_amt_HH2020, stat(n mean sd q)
-
-
-********** Bad
-tabstat MLbaddebt_nb_HH2010 MLbaddebt_nb_HH2016 MLbaddebt_nb_HH2020, stat(n mean sd q)
-
-tabstat MLbaddebt_amt_HH2010 MLbaddebt_amt_HH2016 MLbaddebt_amt_HH2020, stat(n mean sd q)
-
-tabstat rel_MLbaddebt_amt_HH2010 rel_MLbaddebt_amt_HH2016 rel_MLbaddebt_amt_HH2020, stat(n mean sd q)
-
+tabplot path_repay caste, percent(caste) showval(format(%3.0f)) frame(100) ///
+xtitle("") ytitle("") ///
+xlab(,ang(0)) ///
+title("") subtitle("")
 
 
 ****************************************
 * END
-
-
-
-
 
 
 
@@ -319,7 +199,7 @@ use"panel_v5_wide", clear
 
 ********** DEBT, WEALTH, INCOME, EXPENSES PATH over INCOME, WEALTH AND CASTE
 graph drop _all
-global yvar income assetsnl yearly_expenses loanamount sum_loans DSR ISR
+global yvar income assetsnl loanamount sum_loans DSR ISR
 global xvar caste cat_income cat_assets
 foreach y in $yvar {
 foreach x in $xvar {
@@ -672,48 +552,11 @@ graph display comb_path_30
 
 
 
+cluster wardslinkage ih1_annualincome ih1_assets_noland ih1_loanamount ih2_annualincome ih2_assets_noland ih2_loanamount
+cluster dendrogram, horizontal cutnumber(15) countinline showcount 
+cluster gen clust=groups(8)
 
-****************************************
-* Class categ
-****************************************
-cls
-graph drop _all
-use"panel_v5_wide", clear
-
-
-
-********** MCA test
-/*
-fre cat_income cat_assets head_edulevel2010 head_occupation2010 
-
-recode head_edulevel2010 (3=2) (4=2) (5=2)
-recode head_occupation2010 (5=4)
-
-fre cat_income cat_assets head_edulevel2010 head_occupation2010 
-
-mca cat_assets head_edulevel2010 head_occupation2010, method(indicator) normal(principal)
-mcaplot, overlay legend(off) xline(0) yline(0) scale(.8)
-mcacontrib
-*/
-
-
-********** Wealth
-ta cat_assets caste, col row nofreq
-****************************************
-* END
-
-
-
-
-
-
-
-
-
-
-
-
-
+tabstat d1_loanamount d1_assets_noland d1_annualincome d2_loanamount d2_assets_noland d2_annualincome, stat(n mean sd p50) by(clust)
 
 
 

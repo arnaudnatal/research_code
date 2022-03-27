@@ -339,6 +339,14 @@ ta amountownland year
 tab1 amountownland livestock housevalue goldquantityamount goodtotalamount
 
 
+replace assets1000=1 if assets1000==0
+replace assets_noland1000=1 if assets_noland1000==0
+
+
+*sort assets1000
+*br HHID_panel amountownland livestock housevalue goldquantityamount goodtotalamount assets1000 assets_noland1000 if year==2016 & caste==2
+*KOR22
+
 ********** Nature assets
 ta housetitle
 ta houseroom
@@ -622,8 +630,8 @@ replace ISR=ISR*100
 replace DIR=DIR*100
 
 ********** Wealth panel
-xtile assets2010panel_q3=assets if year==2010 & panel==1, n(3)
-xtile assets2010panel_q4=assets if year==2010 & panel==1, n(4)
+xtile assets2010panel_q3=assets_noland if year==2010 & panel==1, n(3)
+xtile assets2010panel_q4=assets_noland if year==2010 & panel==1, n(4)
 
 bysort HHID_panel: egen assetspanel_q3=max(assets2010panel_q3) if panel==1
 bysort HHID_panel: egen assetspanel_q4=max(assets2010panel_q4) if panel==1
@@ -770,6 +778,13 @@ label var DIR "DIR (%)"
 label var ISR "ISR (%)"
 label var sum_loans_HH "No. of loans"
 
+label var dummyborrowstrat "Borrowing elsewhere (%)"
+label var dummyrepay "Debt for repayment (%)"
+
+label var DSR30 "Overindebted at 30% of DSR"
+label var DSR40 "Overindebted at 40% of DSR"
+label var DSR50 "Overindebted at 50% of DSR"
+
 
 save"panel_v5", replace
 ****************************************
@@ -851,10 +866,18 @@ gen d1_`x'=`x'2016-`x'2010
 gen d2_`x'=`x'2020-`x'2016
 }
 
-ta d1_loanamount
 
 
 
+********** Evo as ihs,cro,log
+foreach x in $quanti {
+gen ih1_`x'=asinh(d1_`x')
+gen ih2_`x'=asinh(d2_`x')
+}
+
+tabstat d1_loanamount ih1_loanamount d2_loanamount ih2_loanamount,stat(n mean sd p50)
+
+order loanamount2010 loanamount2016 loanamount2020 d1_loanamount d2_loanamount ih1_loanamount ih2_loanamount
 
 ********** Categories
 label define evo 1"(Δ+1)&(Δ+2)" 2"(Δ+1)>(Δ-2)" 3"(Δ-1)<(Δ+2)" 4"(Δ+1)<(Δ-2)" 5"(Δ-1)>(Δ+2)" 6"(Δ-1)&(Δ-2)", replace
@@ -906,9 +929,7 @@ label values over`i'path_d2 overpath
 }
 
 
-
-
-********** Panel
+***** Panel
 forvalues i=30(10)50{
 gen path_`i'=.
 }
@@ -927,6 +948,58 @@ replace path_`i'=8 if DSR`i'2010==0 & DSR`i'2016==0 & DSR`i'2020==0
 
 label values path_`i' completepath
 }
+
+
+********** Debt trap
+tab1 dummyrepay2010 dummyrepay2016 dummyrepay2020 dummyborrowstrat2010 dummyborrowstrat2020
+foreach x in repay borrowstrat{
+gen path_`x'_d1=.
+gen path_`x'_d2=.
+}
+
+foreach x in repay borrowstrat{
+replace path_`x'_d1=1 if dummy`x'2010==1 & dummy`x'2016==1
+replace path_`x'_d1=2 if dummy`x'2010==0 & dummy`x'2016==1
+replace path_`x'_d1=3 if dummy`x'2010==1 & dummy`x'2016==0
+replace path_`x'_d1=4 if dummy`x'2010==0 & dummy`x'2016==0
+
+label values path_`x'_d1 overpath
+}
+
+foreach x in repay borrowstrat{
+replace path_`x'_d2=1 if dummy`x'2016==1 & dummy`x'2020==1
+replace path_`x'_d2=2 if dummy`x'2016==0 & dummy`x'2020==1
+replace path_`x'_d2=3 if dummy`x'2016==1 & dummy`x'2020==0
+replace path_`x'_d2=4 if dummy`x'2016==0 & dummy`x'2020==0
+
+label values path_`x'_d2 overpath
+}
+
+
+***** Panel
+label define pathtrap 1"Always in trap" 2"Lasting entrance" 3"Temporary exit" 4"New trapped" 5"New not trapped" 6"Temporary entrance" 7"Lasting exit" 8"Never"
+
+foreach x in repay borrowstrat{
+gen path_`x'=.
+}
+
+foreach x in repay borrowstrat{
+replace path_`x'=1 if dummy`x'2010==1 & dummy`x'2016==1 & dummy`x'2020==1
+replace path_`x'=2 if dummy`x'2010==0 & dummy`x'2016==1 & dummy`x'2020==1
+replace path_`x'=3 if dummy`x'2010==1 & dummy`x'2016==0 & dummy`x'2020==1
+replace path_`x'=4 if dummy`x'2010==0 & dummy`x'2016==0 & dummy`x'2020==1
+replace path_`x'=5 if dummy`x'2010==1 & dummy`x'2016==1 & dummy`x'2020==0
+replace path_`x'=6 if dummy`x'2010==0 & dummy`x'2016==1 & dummy`x'2020==0
+replace path_`x'=7 if dummy`x'2010==1 & dummy`x'2016==0 & dummy`x'2020==0
+replace path_`x'=8 if dummy`x'2010==0 & dummy`x'2016==0 & dummy`x'2020==0
+
+label values path_`x' pathtrap
+}
+
+
+ta path_borrowstrat caste, col nofreq
+
+
 
 
 ********** Rename catevo en plus court
