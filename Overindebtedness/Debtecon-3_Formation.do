@@ -716,7 +716,7 @@ replace `x'_new=`x'+1
 
 
 
-********** Creation as IHS, CRO and LOG
+********** Creation as IHS, CRO and LOG and N
 ***** IHS
 foreach x in annualincome assets_noland loanamount DSR_1000 DIR_1000 DAR_without_1000 ISR_1000 {
 gen ihs_`x'=asinh(`x')
@@ -732,6 +732,30 @@ foreach x in annualincome assets_noland loanamount DSR DAR_without DIR ISR {
 gen log_`x'=log(`x'_new)
 }
 
+***** N
+foreach x in annualincome assets_noland loanamount DSR DAR_without DIR ISR {
+foreach year in 2010 2016 2020 {
+gen `x'_`year'=`x' if year==`year' & panel==1
+}
+}
+
+foreach x in annualincome assets_noland loanamount DSR DAR_without DIR ISR {
+foreach year in 2010 2016 2020 {
+egen `x'_`year'_std=std(`x'_`year')
+}
+}
+
+foreach x in annualincome assets_noland loanamount DSR DAR_without DIR ISR {
+gen `x'_std=.
+}
+
+foreach x in annualincome assets_noland loanamount DSR DAR_without DIR ISR {
+replace `x'_std=`x'_2010_std if year==2010
+replace `x'_std=`x'_2016_std if year==2016
+replace `x'_std=`x'_2020_std if year==2020
+
+drop `x'_2010 `x'_2016 `x'_2020 `x'_2010_std `x'_2016_std `x'_2020_std
+}
 
 
 
@@ -768,6 +792,14 @@ label var log_DSR "Log+1 of DSR"
 label var log_DAR_without "Log+1 of DAR"
 label var log_DIR "Log+1 of DIR" 
 label var log_ISR "Log+1 of ISR"
+
+label var annualincome_std "Income (std)"
+label var assets_noland_std "Assets (std)"
+label var loanamount_std "Loan amount (std)"
+label var DSR_std "DSR (std)"
+label var DAR_without_std "DAR (std)"
+label var DIR_std "DIR (std)" 
+label var ISR_std "ISR (std)"
 
 label var annualincome "Income (INR)"
 label var assets_noland "Assets (INR)"
@@ -840,7 +872,7 @@ global quanti DIR DAR_with DAR_without DSR ISR loanamount annualincome assets_no
 
 global quali DSR30 DSR40 DSR50 dummyIMF dummybank dummymoneylender dummyrepay dummyborrowstrat mainocc_occupation head_edulevel wifehusb_edulevel head_occupation wifehusb_occupation
 
-global var $quanti $quali 
+global var $quanti $quali cro_annualincome cro_assets_noland cro_loanamount cro_DSR cro_DAR_without cro_DIR cro_ISR ihs_annualincome ihs_assets_noland ihs_loanamount ihs_DSR_1000 ihs_DIR_1000 ihs_DAR_without_1000 ihs_ISR_1000 log_annualincome log_assets_noland log_loanamount log_DSR log_DAR_without log_DIR log_ISR
 sort HHID_panel year
 
 

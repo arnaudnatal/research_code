@@ -131,7 +131,7 @@ keep if panel==1
 
 ********** Graphs
 foreach y in caste assetsq {
-foreach x in ihs_annualincome ihs_assets_noland ihs_loanamount ihs_DSR_1000 ihs_DIR_1000 ihs_DAR_without_1000 ihs_ISR_1000 cro_annualincome cro_assets_noland cro_loanamount cro_DSR cro_DAR_without cro_DIR cro_ISR log_annualincome log_assets_noland log_loanamount log_DSR log_DAR_without log_DIR log_ISR annualincome assets_noland loanamount DSR DAR_without DIR ISR sum_loans_HH {
+foreach x in ihs_annualincome ihs_assets_noland ihs_loanamount ihs_DSR_1000 ihs_DIR_1000 ihs_DAR_without_1000 ihs_ISR_1000 cro_annualincome cro_assets_noland cro_loanamount cro_DSR cro_DAR_without cro_DIR cro_ISR log_annualincome log_assets_noland log_loanamount log_DSR log_DAR_without log_DIR log_ISR annualincome assets_noland loanamount DSR DAR_without DIR ISR sum_loans_HH annualincome_std assets_noland_std loanamount_std DSR_std DAR_without_std DIR_std ISR_std {
 set graph off
 stripplot `x', over(`y') by(year, note("") row(1)) vert ///
 stack width(0.05) jitter(0) ///
@@ -148,13 +148,16 @@ set graph on
 ********** Combine
 ***** Wealth
 foreach x in annualincome assets_noland loanamount {
-foreach y in ihs cro log {
 set graph off
+foreach y in ihs cro log {
 graph combine `y'_`x'_caste `y'_`x'_assetsq, ///
 graphregion(margin(zero)) plotregion(margin(zero)) ///
 col(1) name(`y'_`x', replace)
-set graph on
 }
+graph combine `x'_std_caste `x'_std_assetsq, ///
+graphregion(margin(zero)) plotregion(margin(zero)) ///
+col(1) name(std_`x', replace)
+set graph on
 }
 
 
@@ -170,6 +173,9 @@ col(1) name(cro_`x', replace)
 graph combine ihs_`x'_1000_caste ihs_`x'_1000_assetsq, ///
 graphregion(margin(zero)) plotregion(margin(zero)) ///
 col(1) name(ihs_`x', replace)
+graph combine `x'_std_caste `x'_std_assetsq, ///
+graphregion(margin(zero)) plotregion(margin(zero)) ///
+col(1) name(std_`x', replace)
 set graph on
 }
 
@@ -192,6 +198,16 @@ graph display ihs_loanamount
 graph display cro_annualincome
 graph display cro_assets_noland
 graph display cro_loanamount
+
+graph display std_annualincome
+graph display std_assets_noland
+graph display std_loanamount
+
+preserve 
+keep if year==2010
+order HHID_panel assets_noland ihs_assets_noland cro_assets_noland log_assets_noland assets_noland_std
+sort assets_noland
+restore
 
 
 ***** Burden

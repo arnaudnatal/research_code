@@ -13,6 +13,8 @@ Stat for indebtedness and over-indebtedness
 
 
 
+
+
 ****************************************
 * INITIALIZATION
 ****************************************
@@ -56,7 +58,6 @@ global wave3 "NEEMSIS2-HH"
 global loan1 "RUME-all_loans"
 global loan2 "NEEMSIS1-all_loans"
 global loan3 "NEEMSIS2-all_loans"
-
 
 
 ********** Deflate
@@ -597,8 +598,7 @@ set graph on
 set graph off
 graph combine gph_cl_caste1 gph_cl_caste2 gph_cl_caste3 gph_cl_all, col(2) name(gph_cl_caste)
 set graph on
-graph display gph_cl_caste
-
+*graph display gph_cl_caste
 
 ***** To retain
 *** Caste 1
@@ -623,12 +623,149 @@ tabstat $var, stat(n mean p50) by(cl_caste`i')
 tabstat $var, stat(n mean p50) by(cl_all)
 
 
+set graph off
+foreach x in $var {
+stripplot `x', over(cl_all) vert ///
+stack width(0.05) jitter(0) ///
+box(barw(0.1)) boffset(-0.1) pctile(10) ///
+ms(oh oh oh) msize(small) mc(red%30) ///
+yla(, ang(h)) xla(, noticks) ///
+yline(0) ///
+name(st_`x', replace)
+}
+
+foreach x in d1_annualincome d2_annualincome d1_assets_noland d2_assets_noland d1_loanamount d2_loanamount {
+stripplot `x', over(cl_all) vert ///
+stack width(0.05) jitter(0) ///
+box(barw(0.1)) boffset(-0.1) pctile(10) ///
+ms(oh oh oh) msize(small) mc(red%30) ///
+yla(, ang(h)) xla(, noticks) ///
+yline(0) ///
+name(st_`x', replace)
+}
+set graph on
+
+graph combine st_d1_annualincome_std st_d2_annualincome_std st_d1_assets_noland_std st_d2_assets_noland_std st_d1_loanamount_std st_d2_loanamount_std, col(2)
+
+graph combine st_d1_annualincome st_d2_annualincome st_d1_assets_noland st_d2_assets_noland st_d1_loanamount st_d2_loanamount, col(2)
+
+
+***** Recode
+gen cl_caste=.
+forvalues i=1(1)3{
+replace cl_caste=cl_caste`i' if caste==`i'
+}
+
+
+***** Gen desc trend
+foreach x in $var {
+foreach stat in min max mean {
+bysort cl_caste: egen `x'_`stat'=`stat'(`x')
+}
+foreach n in 10 25 50 75 90 {
+bysort cl_caste: egen `x'_p`n'=pctile(`x'), p(`n')
+}
+}
+
+
+
+
+preserve
+********** Graph
+keep HHID_panel caste cat_assets cl_* annualincome* assets_noland* loanamount* DSR2010 DSR2016 DSR2020 DAR_without2010 DAR_without2016 DAR_without2020 cro_* ihs_* log_*
+reshape long annualincome assets_noland loanamount cro_annualincome cro_assets_noland cro_loanamount ihs_annualincome ihs_assets_noland ihs_loanamount log_annualincome log_assets_noland log_loanamount, i(HHID_panel) j(year)
+encode HHID_panel, gen(panelvar)
+xtset panelvar year
+
+label var year "Year"
+
+***** All
+foreach x in annualincome assets_noland loanamount {
+set graph off
+forvalues i=1(1)3{
+foreach y in ihs cro {
+linkplot `y'_`x' year if cl_all==`i', link(panelvar) lcolor(red%10) msymbol(p) mcolor(red%5) legend(off) name(g`y'_`x'_`i', replace)
+}
+linkplot `x' year if cl_all==`i', link(panelvar) lcolor(red%10) msymbol(p) mcolor(red%5) legend(off) name(g_`x'_`i', replace)
+}
+set graph on
+}
+
+***** Dalits + Upper
+foreach cas in 1 3 {
+set graph off
+foreach x in annualincome assets_noland loanamount {
+forvalues i=1(1)3{
+foreach y in ihs cro {
+linkplot `y'_`x' year if cl_caste`cas'==`i', link(panelvar) lcolor(red%10) msymbol(p) mcolor(red%5) legend(off) name(g`y'_`x'_`cas'`i', replace)
+}
+linkplot `x' year if cl_caste`cas'==`i', link(panelvar) lcolor(red%10) msymbol(p) mcolor(red%5) legend(off) name(g_`x'_`cas'`i', replace)
+}
+}
+set graph on
+}
+
+***** Middle
+foreach x in annualincome assets_noland loanamount {
+set graph off
+forvalues i=1(1)2{
+foreach y in ihs cro {
+linkplot `y'_`x' year if cl_caste2==`i', link(panelvar) lcolor(red%10) msymbol(p) mcolor(red%5) legend(off) name(g`y'_`x'_2`i', replace)
+}
+linkplot `x' year if cl_caste2==`i', link(panelvar) lcolor(red%10) msymbol(p) mcolor(red%5) legend(off) name(g_`x'_2`i', replace)
+}
+set graph on
+}
+
+***** Combine
+foreach x in g gihs gcro {
+set graph off
+forvalues i=1(1)3{
+graph combine `x'_annualincome_`i' `x'_assets_noland_`i' `x'_loanamount_`i', name(comb_`x'_`i', replace) col(3)
+}
+foreach j in 1 3 {
+forvalues i=1(1)3{
+graph combine `x'_annualincome_`j'`i' `x'_assets_noland_`j'`i' `x'_loanamount_`j'`i', name(comb_`x'_`j'`i', replace) col(3)
+}
+}
+forvalues i=1(1)2{
+graph combine `x'_annualincome_2`i' `x'_assets_noland_2`i' `x'_loanamount_2`i', name(comb_`x'_2`i', replace) col(3)
+}
+set graph on
+}
+
+
+***** Combine 2
+foreach x in g gihs gcro {
+set graph off
+graph combine comb_`x'_1 comb_`x'_2 comb_`x'_3, name(comb_`x', replace) col(1)
+graph combine comb_`x'_11 comb_`x'_12 comb_`x'_13, name(comb1_`x', replace) col(1)
+graph combine comb_`x'_21 comb_`x'_22, name(comb2_`x', replace) col(1)
+graph combine comb_`x'_31 comb_`x'_32 comb_`x'_33, name(comb3_`x', replace) col(1)
+
+set graph on
+}
+restore
+
+
+
+********** Display
+
+graph display comb_g
+graph display comb_gcro
+graph display comb_gihs
+
+
+graph display comb1_g
+graph display comb2_g
+graph display comb3_g
 
 
 
 
 
 ********** HCA over class
+/*
 forvalues i=1(1)3{
 set graph off
 cluster wardslinkage $var if cat_assets==`i', name(cl_class`i')
@@ -662,35 +799,13 @@ forvalues i=1(1)3{
 tabstat $var, stat(mean p50) by(cl_class`i')
 }
 
-
-
-
-
-
-
-
-********** Recode in the same var for graph representation
+***** Recode
 gen cl_class=.
 forvalues i=1(1)3{
 replace cl_class=cl_class`i' if cat_assets==`i'
 }
 
-gen cl_caste=.
-forvalues i=1(1)3{
-replace cl_caste=cl_caste`i' if caste==`i'
-}
-
-
-fre cl_class
-fre cl_caste
-
-
-
-
-
-
-
-********** Gen desc trend
+***** Gen desc trend
 foreach x in $var {
 foreach stat in min max mean {
 bysort cl_class: egen `x'_`stat'=`stat'(`x')
@@ -699,21 +814,13 @@ foreach n in 10 25 50 75 90 {
 bysort cl_class: egen `x'_p`n'=pctile(`x'), p(`n')
 }
 }
+*/
+
+
 
 preserve
 duplicates drop cl_class, force
 keep cl_class d1_DSR_std_min d1_DSR_std_max d1_DSR_std_mean d1_DSR_std_p10 d1_DSR_std_p25 d1_DSR_std_p50 d1_DSR_std_p75 d1_DSR_std_p90 d2_DSR_std_min d2_DSR_std_max d2_DSR_std_mean d2_DSR_std_p10 d2_DSR_std_p25 d2_DSR_std_p50 d2_DSR_std_p75 d2_DSR_std_p90 d1_DAR_without_std_min d1_DAR_without_std_max d1_DAR_without_std_mean d1_DAR_without_std_p10 d1_DAR_without_std_p25 d1_DAR_without_std_p50 d1_DAR_without_std_p75 d1_DAR_without_std_p90 d2_DAR_without_std_min d2_DAR_without_std_max d2_DAR_without_std_mean d2_DAR_without_std_p10 d2_DAR_without_std_p25 d2_DAR_without_std_p50 d2_DAR_without_std_p75 d2_DAR_without_std_p90
-
-
-********** Graph 
-keep HHID_panel caste cat_assets cl_* annualincome* assets_noland* loanamount* DSR2010 DSR2016 DSR2020 DAR_without2010 DAR_without2016 DAR_without2020
-reshape long annualincome assets_noland loanamount DAR_without DSR, i(HHID_panel) j(year)
-encode HHID_panel, gen(panelvar)
-xtset panelvar year
-
-label var year "Year"
-
-linkplot DSR year if caste==1 & cl_caste1==1, link(panelvar) lcolor(red%5) msymbol(p) mcolor(red%5) legend(off) 
 
 
 
