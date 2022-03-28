@@ -552,29 +552,18 @@ graph display comb_path_30
 
 
 
-cluster wardslinkage ih1_annualincome ih1_assets_noland ih1_loanamount ih2_annualincome ih2_assets_noland ih2_loanamount
-cluster dendrogram, horizontal cutnumber(15) countinline showcount 
-cluster gen clust=groups(8)
-
-tabstat d1_loanamount d1_assets_noland d1_annualincome d2_loanamount d2_assets_noland d2_annualincome, stat(n mean sd p50) by(clust)
-
-
 
 
 ****************************************
 * HCA for time trends
 ****************************************
-/*
-One drawback of the HAC is the minimum algorithm complexity in O (N²), N being the number of observations which are too high for computational purposes (Murtagh and Contreras, 2012). Therefore, this is one of the reasons why the K-means algorithm is preferred for the full sample exercise, and HAC is used to determine the number of clusters.
-
-Murtagh, F., and Contreras, P. (2012). “Algorithms for hierarchical clustering: an overview”. Wiley Interdisciplinary Reviews: Data Mining and Knowledge Discovery, 2(1), 86-97.
-*/
-
 cls
 graph drop _all
 use"panel_v5_wide", clear
 
-********** Step1: Std
+
+
+********** Std
 forvalues j=1(1)2{
 foreach x in DSR DAR_without annualincome assets_noland yearly_expenses ISR loanamount {
 egen d`j'_`x'_std=std(d`j'_`x')
@@ -583,11 +572,14 @@ replace d`j'_`x'_std=-3 if d`j'_`x'_std<-3
 }
 }
 
-global var d1_DSR_std d2_DSR_std d1_DAR_without_std d2_DAR_without_std 
 
 
-********** Step2: HCA
-***** Over caste
+********** Macro
+global var d1_annualincome_std d2_annualincome_std d1_assets_noland_std d2_assets_noland_std d1_loanamount_std d2_loanamount_std 
+
+
+
+********** HCA over caste
 forvalues i=1(1)3{
 set graph off
 cluster wardslinkage $var if caste==`i', name(cl_caste`i')
@@ -597,7 +589,46 @@ cluster dendrogram, horizontal cutnumber(15) countinline showcount name(gph_cl_c
 set graph on
 }
 
-***** Over class
+cluster wardslinkage $var, name(cl_caste)
+set graph off
+cluster dendrogram, horizontal cutnumber(15) countinline showcount name(gph_cl_all) 
+set graph on
+
+set graph off
+graph combine gph_cl_caste1 gph_cl_caste2 gph_cl_caste3 gph_cl_all, col(2) name(gph_cl_caste)
+set graph on
+graph display gph_cl_caste
+
+
+***** To retain
+*** Caste 1
+cluster wardslinkage $var if caste==1
+cluster gen cl_caste1=groups(3)
+*** Caste 2
+cluster wardslinkage $var if caste==2
+cluster gen cl_caste2=groups(2)
+*** Caste 3
+cluster wardslinkage $var if caste==3
+cluster gen cl_caste3=groups(3)
+*** All caste
+cluster wardslinkage $var
+cluster gen cl_all=groups(3)
+
+
+***** Stat
+cls
+forvalues i=1(1)3{
+tabstat $var, stat(n mean p50) by(cl_caste`i')
+}
+tabstat $var, stat(n mean p50) by(cl_all)
+
+
+
+
+
+
+
+********** HCA over class
 forvalues i=1(1)3{
 set graph off
 cluster wardslinkage $var if cat_assets==`i', name(cl_class`i')
@@ -607,57 +638,38 @@ cluster tree, horizontal cutnumber(15) countinline showcount name(gph_cl_class`i
 set graph on
 }
 
+
 set graph off
-graph combine gph_cl_caste1 gph_cl_caste2 gph_cl_caste3, col(3) name(gph_cl_caste)
 graph combine gph_cl_class1 gph_cl_class2 gph_cl_class3, col(3) name(gph_cl_class)
 set graph on
 
 
-ta caste
-ta cat_assets
-*graph display gph_cl_caste
-*graph display gph_cl_class
-
-
 ***** To retain
-*** Caste 1
-cluster wardslinkage $var if caste==1
-cluster gen cl_caste1=groups(5)
-*** Caste 2
-cluster wardslinkage $var if caste==2
-cluster gen cl_caste2=groups(4)
-*** Caste 3
-cluster wardslinkage $var if caste==3
-cluster gen cl_caste3=groups(4)
-
 *** Class 1
 cluster wardslinkage $var if cat_assets==1
 cluster gen cl_class1=groups(3)
-*** Class 1
+*** Class 2
 cluster wardslinkage $var if cat_assets==2
 cluster gen cl_class2=groups(4)
-*** Class 1
+*** Class 3
 cluster wardslinkage $var if cat_assets==3
 cluster gen cl_class3=groups(3)
 
 
-
-
-********** Step3: Common trends
-***** Stat over caste
-cls
-forvalues i=1(1)3{
-tabstat $var, stat(mean p50) by(cl_caste`i')
-}
-
-***** Stat over class
+***** Stat
 cls
 forvalues i=1(1)3{
 tabstat $var, stat(mean p50) by(cl_class`i')
 }
 
 
-********** Recode class cat and caste cat in the same var
+
+
+
+
+
+
+********** Recode in the same var for graph representation
 gen cl_class=.
 forvalues i=1(1)3{
 replace cl_class=cl_class`i' if cat_assets==`i'
@@ -671,6 +683,11 @@ replace cl_caste=cl_caste`i' if caste==`i'
 
 fre cl_class
 fre cl_caste
+
+
+
+
+
 
 
 ********** Gen desc trend
@@ -688,7 +705,7 @@ duplicates drop cl_class, force
 keep cl_class d1_DSR_std_min d1_DSR_std_max d1_DSR_std_mean d1_DSR_std_p10 d1_DSR_std_p25 d1_DSR_std_p50 d1_DSR_std_p75 d1_DSR_std_p90 d2_DSR_std_min d2_DSR_std_max d2_DSR_std_mean d2_DSR_std_p10 d2_DSR_std_p25 d2_DSR_std_p50 d2_DSR_std_p75 d2_DSR_std_p90 d1_DAR_without_std_min d1_DAR_without_std_max d1_DAR_without_std_mean d1_DAR_without_std_p10 d1_DAR_without_std_p25 d1_DAR_without_std_p50 d1_DAR_without_std_p75 d1_DAR_without_std_p90 d2_DAR_without_std_min d2_DAR_without_std_max d2_DAR_without_std_mean d2_DAR_without_std_p10 d2_DAR_without_std_p25 d2_DAR_without_std_p50 d2_DAR_without_std_p75 d2_DAR_without_std_p90
 
 
-********** Step4: Graph trend
+********** Graph 
 keep HHID_panel caste cat_assets cl_* annualincome* assets_noland* loanamount* DSR2010 DSR2016 DSR2020 DAR_without2010 DAR_without2016 DAR_without2020
 reshape long annualincome assets_noland loanamount DAR_without DSR, i(HHID_panel) j(year)
 encode HHID_panel, gen(panelvar)
@@ -697,6 +714,9 @@ xtset panelvar year
 label var year "Year"
 
 linkplot DSR year if caste==1 & cl_caste1==1, link(panelvar) lcolor(red%5) msymbol(p) mcolor(red%5) legend(off) 
+
+
+
 
 ****************************************
 * END
