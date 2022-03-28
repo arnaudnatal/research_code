@@ -285,7 +285,7 @@ restore
 set graph on
 }
 }
-}
+
 foreach y in $yvar {
 set graph off
 graph combine `y'_caste `y'_cat_income `y'_cat_assets, col(3) title("`y'") name(comb_`y', replace)
@@ -553,16 +553,89 @@ graph display comb_path_30
 
 
 
+****************************************
+* Time trends analysis
+****************************************
+cls
+graph drop _all
+use"panel_v5_wide", clear
+
+********** Std
+forvalues j=1(1)2{
+foreach x in DSR DAR_without annualincome assets_noland yearly_expenses ISR loanamount DIR {
+egen d`j'_`x'_std=std(d`j'_`x')
+replace d`j'_`x'_std=3 if d`j'_`x'_std>3
+replace d`j'_`x'_std=-3 if d`j'_`x'_std<-3
+}
+}
 
 
+********** HCA
+local i=0
+foreach x in annualincome assets_noland loanamount DSR DAR_without ISR DIR {
+local i=`i'+1
+cluster wardslinkage d1_`x'_std d2_`x'_std if caste==1, measure(Euclidean)
+set graph off
+cluster dendrogram, horizontal cutnumber(15) countinline showcount name(gph_cl_x`i', replace) title("Dendrogram of `x'")
+set graph on
+}
+
+
+********** Group creation
+forvalues i=1(1)7 {
+graph display gph_cl_x`i'
+}
+
+
+********** Group creation
+forvalues i=1(1)3{
+cluster wardslinkage $var
+cluster gen cl_all=groups(2)
+}
+
+
+
+********** Representation
+foreach x in d1_assets_noland d2_assets_noland d1_loanamount d2_loanamount d1_annualincome d2_annualincome  {
+set graph off
+stripplot `x', over(cl_all) vert ///
+stack width(0.05) jitter(0) ///
+box(barw(0.1)) boffset(-0.1) pctile(10) ///
+ms(oh oh oh) msize(small) mc(red%30) ///
+yla(, ang(h)) xla(, noticks) ///
+yline(0) ///
+name(st_`x', replace)
+set graph on
+}
+
+***** Combine
+foreach x in annualincome assets_noland loanamount {
+set graph off
+graph combine st_d1_`x' st_d2_`x', col(2) name(comb_`x', replace)
+set graph on
+}
+
+graph combine st_d1_annualincome st_d2_annualincome, col(2)
+graph combine st_d1_annualincome st_d2_annualincome, col(2)
+
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+/*
 ****************************************
 * HCA for time trends
 ****************************************
 cls
 graph drop _all
 use"panel_v5_wide", clear
-
-
 
 ********** Std
 forvalues j=1(1)2{
@@ -573,12 +646,8 @@ replace d`j'_`x'_std=-3 if d`j'_`x'_std<-3
 }
 }
 
-
-
 ********** Macro
 global var d1_annualincome_std d2_annualincome_std d1_assets_noland_std d2_assets_noland_std d1_loanamount_std d2_loanamount_std 
-
-
 
 ********** HCA over caste
 forvalues i=1(1)3{
@@ -598,7 +667,7 @@ set graph on
 set graph off
 graph combine gph_cl_caste1 gph_cl_caste2 gph_cl_caste3 gph_cl_all, col(2) name(gph_cl_caste)
 set graph on
-*graph display gph_cl_caste
+graph display gph_cl_caste
 
 ***** To retain
 *** Caste 1
@@ -615,13 +684,12 @@ cluster wardslinkage $var
 cluster gen cl_all=groups(3)
 
 
-***** Stat
+***** Stat for STD
 cls
 forvalues i=1(1)3{
 tabstat $var, stat(n mean p50) by(cl_caste`i')
 }
 tabstat $var, stat(n mean p50) by(cl_all)
-
 
 set graph off
 foreach x in $var {
@@ -634,20 +702,29 @@ yline(0) ///
 name(st_`x', replace)
 }
 
-foreach x in d1_annualincome d2_annualincome d1_assets_noland d2_assets_noland d1_loanamount d2_loanamount {
-stripplot `x', over(cl_all) vert ///
+graph combine st_d1_annualincome_std st_d2_annualincome_std st_d1_assets_noland_std st_d2_assets_noland_std st_d1_loanamount_std st_d2_loanamount_std, col(2)
+
+
+
+***** Interpretation with normal values
+global varn d1_annualincome d2_annualincome d1_assets_noland d2_assets_noland d1_loanamount d2_loanamount
+
+foreach x in $varn {
+set graph off
+qui sum `x', det
+stripplot `x' if `x'<r(p99) & `x'>r(p1), over(cl_all) vert ///
 stack width(0.05) jitter(0) ///
 box(barw(0.1)) boffset(-0.1) pctile(10) ///
 ms(oh oh oh) msize(small) mc(red%30) ///
 yla(, ang(h)) xla(, noticks) ///
 yline(0) ///
 name(st_`x', replace)
-}
 set graph on
-
-graph combine st_d1_annualincome_std st_d2_annualincome_std st_d1_assets_noland_std st_d2_assets_noland_std st_d1_loanamount_std st_d2_loanamount_std, col(2)
+}
 
 graph combine st_d1_annualincome st_d2_annualincome st_d1_assets_noland st_d2_assets_noland st_d1_loanamount st_d2_loanamount, col(2)
+
+
 
 
 ***** Recode
@@ -666,8 +743,6 @@ foreach n in 10 25 50 75 90 {
 bysort cl_caste: egen `x'_p`n'=pctile(`x'), p(`n')
 }
 }
-
-
 
 
 preserve
@@ -760,10 +835,6 @@ graph display comb1_g
 graph display comb2_g
 graph display comb3_g
 
-
-
-
-
 ********** HCA over class
 /*
 forvalues i=1(1)3{
@@ -817,17 +888,13 @@ bysort cl_class: egen `x'_p`n'=pctile(`x'), p(`n')
 */
 
 
-
 preserve
 duplicates drop cl_class, force
 keep cl_class d1_DSR_std_min d1_DSR_std_max d1_DSR_std_mean d1_DSR_std_p10 d1_DSR_std_p25 d1_DSR_std_p50 d1_DSR_std_p75 d1_DSR_std_p90 d2_DSR_std_min d2_DSR_std_max d2_DSR_std_mean d2_DSR_std_p10 d2_DSR_std_p25 d2_DSR_std_p50 d2_DSR_std_p75 d2_DSR_std_p90 d1_DAR_without_std_min d1_DAR_without_std_max d1_DAR_without_std_mean d1_DAR_without_std_p10 d1_DAR_without_std_p25 d1_DAR_without_std_p50 d1_DAR_without_std_p75 d1_DAR_without_std_p90 d2_DAR_without_std_min d2_DAR_without_std_max d2_DAR_without_std_mean d2_DAR_without_std_p10 d2_DAR_without_std_p25 d2_DAR_without_std_p50 d2_DAR_without_std_p75 d2_DAR_without_std_p90
 
-
-
-
 ****************************************
 * END
-
+*/
 
 
 
