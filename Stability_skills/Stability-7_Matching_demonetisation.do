@@ -68,6 +68,21 @@ global var age caste_1 caste_2 caste_3 sex_1 sex_2 mainocc_occupation_indiv_1 ma
 global treat dummydemonetisation
 
 
+
+********** Mean + quantile test
+cls
+foreach y in $var {
+foreach x in $treat {
+qui reg `y' `x'
+local t=_b[`x']/_se[`x']
+local p=2*ttail(e(df_r),abs(`t'))
+dis "`y' -->" `p'
+}
+}
+
+
+
+
 ********** CBPS
 psweight cbps $treat $var
 rename _treated treat_cbps
@@ -94,24 +109,132 @@ rename _treated treat_psm
 
 
 
-
-
 ********** Cross
 ta $treat treat_cbps, m
 ta $treat treat_caliper, m
 ta $treat treat_psm, m
 
 
-********** Mean + quantile test
+/*
+Matching ou pas, ca ne change rien car ils sont quasi identiques en moyenne
+*/
+
+save"$wave2~matching_v2.dta", replace
+clear all
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Personality traits construction
+****************************************
 cls
-foreach y in $var {
-foreach x in $treat treat_cbps {
-qui reg `y' `x'
-local t=_b[`x']/_se[`x']
-local p=2*ttail(e(df_r),abs(`t'))
-dis "`y' -->" `p'
+use "$wave2~matching_v2.dta", clear
+
+********** Imputation for non corrected one
+global big5cr cr_curious cr_interestedbyart cr_repetitivetasks cr_inventive cr_liketothink cr_newideas cr_activeimagination cr_organized cr_makeplans cr_workhard cr_appointmentontime cr_putoffduties cr_easilydistracted cr_completeduties cr_enjoypeople cr_sharefeelings cr_shywithpeople cr_enthusiastic cr_talktomanypeople cr_talkative cr_expressingthoughts cr_workwithother cr_understandotherfeeling cr_trustingofother cr_rudetoother cr_toleratefaults cr_forgiveother cr_helpfulwithothers cr_managestress cr_nervous cr_changemood cr_feeldepressed cr_easilyupset cr_worryalot cr_staycalm cr_tryhard cr_stickwithgoals cr_goaftergoal cr_finishwhatbegin cr_finishtasks cr_keepworking
+
+foreach x in $big5cr{
+gen im`x'=`x'
+}
+
+forvalues j=1(1)3{
+forvalues i=1(1)2{
+foreach x in $big5cr{
+qui sum im`x' if sex==`i' & caste==`j' & egoid!=0 & egoid!=.
+replace im`x'=r(mean) if im`x'==. & sex==`i' & caste==`j' & egoid!=0 & egoid!=.
+}
 }
 }
 
+
+********** Macro
+global imcor imcr_curious imcr_interestedbyart imcr_repetitivetasks imcr_inventive imcr_liketothink imcr_newideas imcr_activeimagination imcr_organized imcr_makeplans imcr_workhard imcr_appointmentontime imcr_putoffduties imcr_easilydistracted imcr_completeduties imcr_enjoypeople imcr_sharefeelings imcr_shywithpeople imcr_enthusiastic imcr_talktomanypeople imcr_talkative imcr_expressingthoughts imcr_workwithother imcr_understandotherfeeling imcr_trustingofother imcr_rudetoother imcr_toleratefaults imcr_forgiveother imcr_helpfulwithothers imcr_managestress imcr_nervous imcr_changemood imcr_feeldepressed imcr_easilyupset imcr_worryalot imcr_staycalm
+
+
+********** Factor analyses: without grit
+minap $imcor
+qui factor $imcor, pcf fa(5) // 5
+rotate, quartimin
+*putexcel set "EFA_2016.xlsx", modify sheet(without)
+*putexcel (E2)=matrix(e(r_L))
+
+
+********** omegacoef with Laajaj approach for factor analysis and Cobb Clark
+** F1
+global f1 imcr_easilyupset imcr_nervous imcr_feeldepressed imcr_worryalot imcr_changemood imcr_easilydistracted imcr_shywithpeople imcr_putoffduties imcr_rudetoother imcr_repetitivetasks
+
+** F2
+global f2 imcr_makeplans imcr_appointmentontime imcr_completeduties imcr_enthusiastic imcr_organized imcr_workhard imcr_workwithother
+
+** F3
+global f3 imcr_liketothink imcr_expressingthoughts imcr_activeimagination imcr_sharefeelings imcr_newideas imcr_inventive imcr_curious imcr_talktomanypeople imcr_talkative imcr_understandotherfeeling imcr_interestedbyart
+
+** F4
+global f4 imcr_staycalm imcr_managestress
+** F5
+global f5 imcr_forgiveother imcr_toleratefaults imcr_trustingofother imcr_enjoypeople imcr_helpfulwithothers
+
+*** omegacoef
+omegacoef $f1
+omegacoef $f2
+omegacoef $f3
+alpha $f4
+omegacoef $f5
+
+*** Score
+egen f1_2016=rowmean($f1)
+egen f2_2016=rowmean($f2)
+egen f3_2016=rowmean($f3)
+egen f4_2016=rowmean($f4)
+egen f5_2016=rowmean($f5)
+
+
+save"$wave2~matching_v3.dta", replace
+clear all
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Test
+****************************************
+cls
+use "$wave2~matching_v3.dta", clear
+
+
+
+clear all
 ****************************************
 * END
