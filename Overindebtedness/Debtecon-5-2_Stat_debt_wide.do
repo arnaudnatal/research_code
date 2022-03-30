@@ -553,8 +553,13 @@ graph display comb_path_30
 
 
 
+
+
+
+
+
 ****************************************
-* Time trends analysis
+* Time trends analysis with continuous 
 ****************************************
 cls
 graph drop _all
@@ -574,49 +579,67 @@ replace d`j'_`x'_std=-3 if d`j'_`x'_std<-3
 local i=0
 foreach x in annualincome assets_noland loanamount DSR DAR_without ISR DIR {
 local i=`i'+1
-cluster wardslinkage d1_`x'_std d2_`x'_std if caste==1, measure(Euclidean)
+cluster wardslinkage d1_`x'_std d2_`x'_std, measure(Euclidean)
 set graph off
 cluster dendrogram, horizontal cutnumber(15) countinline showcount name(gph_cl_x`i', replace) title("Dendrogram of `x'")
 set graph on
 }
 
-
-********** Group creation
-forvalues i=1(1)7 {
+/*
+forvalues i=1(1)7{
 graph display gph_cl_x`i'
 }
+*/
 
-
-********** Group creation
-forvalues i=1(1)3{
-cluster wardslinkage $var
-cluster gen cl_all=groups(2)
+********** kmeans
+foreach x in annualincome assets_noland {
+cluster kmeans d1_`x'_std d2_`x'_std, k(3) start(everyk) name(cl_`x')
 }
 
+foreach x in DSR loanamount DAR_without {
+cluster kmeans d1_`x'_std d2_`x'_std, k(2) start(everyk) name(cl_`x')
+}
 
 
 ********** Representation
-foreach x in d1_assets_noland d2_assets_noland d1_loanamount d2_loanamount d1_annualincome d2_annualincome  {
+foreach x in assets_noland loanamount annualincome DSR  {
+forvalues i=1(1)2 {
 set graph off
-stripplot `x', over(cl_all) vert ///
+stripplot d`i'_`x', over(cl_`x') vert ///
 stack width(0.05) jitter(0) ///
 box(barw(0.1)) boffset(-0.1) pctile(10) ///
 ms(oh oh oh) msize(small) mc(red%30) ///
 yla(, ang(h)) xla(, noticks) ///
 yline(0) ///
-name(st_`x', replace)
+name(std`i'_`x', replace)
 set graph on
+}
 }
 
 ***** Combine
-foreach x in annualincome assets_noland loanamount {
+foreach x in assets_noland loanamount annualincome DSR {
 set graph off
-graph combine st_d1_`x' st_d2_`x', col(2) name(comb_`x', replace)
+graph combine std1_`x' std2_`x', col(2) name(comb_`x', replace)
 set graph on
 }
 
-graph combine st_d1_annualincome st_d2_annualincome, col(2)
-graph combine st_d1_annualincome st_d2_annualincome, col(2)
+
+
+
+********** MCA for group
+global var cl_loanamount cl_DSR cl_DAR_without
+fre $var
+mca $var, method (indicator) normal(princ)
+mcacontrib
+mcaplot, overlay legend(off) xline(0) yline(0) scale(.8)
+
+mat mcamat=e(cGS)
+mat colnames mcamat = mass qual inert co1 rel1 abs1 co2 rel2 abs2
+svmat2 mcamat, rname(varname) name(col)
+
+tabstat mass rel1 abs1 rel2 abs2, stat(mean sum)
+
+twoway (scatter co2 co1 [aweight=mass], xline(0) yline(0)  mlabsize(vsmall) msymbol(oh) msize(small) legend(off)) (scatter co2 co1, mlabsize(vsmall) msymbol(i) mlabel(varname) legend(off))
 
 ****************************************
 * END
@@ -629,286 +652,79 @@ graph combine st_d1_annualincome st_d2_annualincome, col(2)
 
 
 
-/*
+
+
+
 ****************************************
-* HCA for time trends
+* Time trends analysis with qualitative 
 ****************************************
 cls
 graph drop _all
 use"panel_v5_wide", clear
 
-********** Std
-forvalues j=1(1)2{
-foreach x in DSR DAR_without annualincome assets_noland yearly_expenses ISR loanamount {
-egen d`j'_`x'_std=std(d`j'_`x')
-replace d`j'_`x'_std=3 if d`j'_`x'_std>3
-replace d`j'_`x'_std=-3 if d`j'_`x'_std<-3
-}
+********** Var to use
+global varcat ce_DSR ce_DAR_without
+foreach x in $varcat {
+tab `x', gen(`x'_)
 }
 
-********** Macro
-global var d1_annualincome_std d2_annualincome_std d1_assets_noland_std d2_assets_noland_std d1_loanamount_std d2_loanamount_std 
+global var ce_DSR_1 ce_DSR_2 ce_DSR_3 ce_DSR_4 ce_DSR_5 ce_DSR_6 ce_DAR_without_1 ce_DAR_without_2 ce_DAR_without_3 ce_DAR_without_4 ce_DAR_without_5 ce_DAR_without_6
 
-********** HCA over caste
-forvalues i=1(1)3{
+********** HCA
+cluster wardslinkage $var, measure(Jaccard)
+cluster dendrogram, horizontal cutnumber(20) countinline showcount title("Dendrogram")
+
+********** kmeans
+cluster kmeans $var, k(3) measure(Jaccard) start(everyk) name(cl_)
+
+
+********** Representation
+qui colorpalette hue, hue(0 200) chroma(70) luminance(50) n(6) globals
+foreach x in $varcat {
 set graph off
-cluster wardslinkage $var if caste==`i', name(cl_caste`i')
-cluster dendrogram, horizontal cutnumber(15) countinline showcount name(gph_cl_caste`i') 
-*cluster gen clust=groups(4)
-*ta clust
+preserve 
+bysort `x' cl_: gen n=_N
+bysort cl_: gen N=_N
+gen perc=round(n*100/N,1)
+
+spineplot `x' cl_, ///
+bar1(bcolor($p1)) bar2(bcolor($p2)) bar3(bcolor($p3)) bar4(bcolor($p4)) bar5(bcolor($p5)) bar6(bcolor($p6)) ///
+text(perc) percent ///
+xtitle("", axis(1)) ///
+xtitle("", axis(2)) ytitle("") ///
+xlab(,ang(0) axis(2)) ///
+title("") subtitle("") ///
+legend(pos(6) col(3)) ///
+name(sp_`x', replace)
+restore
 set graph on
 }
 
-cluster wardslinkage $var, name(cl_caste)
-set graph off
-cluster dendrogram, horizontal cutnumber(15) countinline showcount name(gph_cl_all) 
-set graph on
-
-set graph off
-graph combine gph_cl_caste1 gph_cl_caste2 gph_cl_caste3 gph_cl_all, col(2) name(gph_cl_caste)
-set graph on
-graph display gph_cl_caste
-
-***** To retain
-*** Caste 1
-cluster wardslinkage $var if caste==1
-cluster gen cl_caste1=groups(3)
-*** Caste 2
-cluster wardslinkage $var if caste==2
-cluster gen cl_caste2=groups(2)
-*** Caste 3
-cluster wardslinkage $var if caste==3
-cluster gen cl_caste3=groups(3)
-*** All caste
-cluster wardslinkage $var
-cluster gen cl_all=groups(3)
-
-
-***** Stat for STD
-cls
-forvalues i=1(1)3{
-tabstat $var, stat(n mean p50) by(cl_caste`i')
-}
-tabstat $var, stat(n mean p50) by(cl_all)
-
-set graph off
-foreach x in $var {
-stripplot `x', over(cl_all) vert ///
-stack width(0.05) jitter(0) ///
-box(barw(0.1)) boffset(-0.1) pctile(10) ///
-ms(oh oh oh) msize(small) mc(red%30) ///
-yla(, ang(h)) xla(, noticks) ///
-yline(0) ///
-name(st_`x', replace)
-}
-
-graph combine st_d1_annualincome_std st_d2_annualincome_std st_d1_assets_noland_std st_d2_assets_noland_std st_d1_loanamount_std st_d2_loanamount_std, col(2)
-
-
-
-***** Interpretation with normal values
-global varn d1_annualincome d2_annualincome d1_assets_noland d2_assets_noland d1_loanamount d2_loanamount
-
-foreach x in $varn {
-set graph off
-qui sum `x', det
-stripplot `x' if `x'<r(p99) & `x'>r(p1), over(cl_all) vert ///
-stack width(0.05) jitter(0) ///
-box(barw(0.1)) boffset(-0.1) pctile(10) ///
-ms(oh oh oh) msize(small) mc(red%30) ///
-yla(, ang(h)) xla(, noticks) ///
-yline(0) ///
-name(st_`x', replace)
-set graph on
-}
-
-graph combine st_d1_annualincome st_d2_annualincome st_d1_assets_noland st_d2_assets_noland st_d1_loanamount st_d2_loanamount, col(2)
-
-
-
-
-***** Recode
-gen cl_caste=.
-forvalues i=1(1)3{
-replace cl_caste=cl_caste`i' if caste==`i'
-}
-
-
-***** Gen desc trend
-foreach x in $var {
-foreach stat in min max mean {
-bysort cl_caste: egen `x'_`stat'=`stat'(`x')
-}
-foreach n in 10 25 50 75 90 {
-bysort cl_caste: egen `x'_p`n'=pctile(`x'), p(`n')
-}
-}
-
-
-preserve
-********** Graph
-keep HHID_panel caste cat_assets cl_* annualincome* assets_noland* loanamount* DSR2010 DSR2016 DSR2020 DAR_without2010 DAR_without2016 DAR_without2020 cro_* ihs_* log_*
-reshape long annualincome assets_noland loanamount cro_annualincome cro_assets_noland cro_loanamount ihs_annualincome ihs_assets_noland ihs_loanamount log_annualincome log_assets_noland log_loanamount, i(HHID_panel) j(year)
-encode HHID_panel, gen(panelvar)
-xtset panelvar year
-
-label var year "Year"
-
-***** All
-foreach x in annualincome assets_noland loanamount {
-set graph off
-forvalues i=1(1)3{
-foreach y in ihs cro {
-linkplot `y'_`x' year if cl_all==`i', link(panelvar) lcolor(red%10) msymbol(p) mcolor(red%5) legend(off) name(g`y'_`x'_`i', replace)
-}
-linkplot `x' year if cl_all==`i', link(panelvar) lcolor(red%10) msymbol(p) mcolor(red%5) legend(off) name(g_`x'_`i', replace)
-}
-set graph on
-}
-
-***** Dalits + Upper
-foreach cas in 1 3 {
-set graph off
-foreach x in annualincome assets_noland loanamount {
-forvalues i=1(1)3{
-foreach y in ihs cro {
-linkplot `y'_`x' year if cl_caste`cas'==`i', link(panelvar) lcolor(red%10) msymbol(p) mcolor(red%5) legend(off) name(g`y'_`x'_`cas'`i', replace)
-}
-linkplot `x' year if cl_caste`cas'==`i', link(panelvar) lcolor(red%10) msymbol(p) mcolor(red%5) legend(off) name(g_`x'_`cas'`i', replace)
-}
-}
-set graph on
-}
-
-***** Middle
-foreach x in annualincome assets_noland loanamount {
-set graph off
-forvalues i=1(1)2{
-foreach y in ihs cro {
-linkplot `y'_`x' year if cl_caste2==`i', link(panelvar) lcolor(red%10) msymbol(p) mcolor(red%5) legend(off) name(g`y'_`x'_2`i', replace)
-}
-linkplot `x' year if cl_caste2==`i', link(panelvar) lcolor(red%10) msymbol(p) mcolor(red%5) legend(off) name(g_`x'_2`i', replace)
-}
-set graph on
-}
 
 ***** Combine
-foreach x in g gihs gcro {
-set graph off
-forvalues i=1(1)3{
-graph combine `x'_annualincome_`i' `x'_assets_noland_`i' `x'_loanamount_`i', name(comb_`x'_`i', replace) col(3)
-}
-foreach j in 1 3 {
-forvalues i=1(1)3{
-graph combine `x'_annualincome_`j'`i' `x'_assets_noland_`j'`i' `x'_loanamount_`j'`i', name(comb_`x'_`j'`i', replace) col(3)
-}
-}
-forvalues i=1(1)2{
-graph combine `x'_annualincome_2`i' `x'_assets_noland_2`i' `x'_loanamount_2`i', name(comb_`x'_2`i', replace) col(3)
-}
-set graph on
-}
-
-
-***** Combine 2
-foreach x in g gihs gcro {
-set graph off
-graph combine comb_`x'_1 comb_`x'_2 comb_`x'_3, name(comb_`x', replace) col(1)
-graph combine comb_`x'_11 comb_`x'_12 comb_`x'_13, name(comb1_`x', replace) col(1)
-graph combine comb_`x'_21 comb_`x'_22, name(comb2_`x', replace) col(1)
-graph combine comb_`x'_31 comb_`x'_32 comb_`x'_33, name(comb3_`x', replace) col(1)
-
-set graph on
-}
-restore
+graph combine sp_ce_DSR sp_ce_DAR_without, col(2)
 
 
 
-********** Display
-
-graph display comb_g
-graph display comb_gcro
-graph display comb_gihs
 
 
-graph display comb1_g
-graph display comb2_g
-graph display comb3_g
+********** MCA for group
+global var cl_loanamount cl_DSR cl_DAR_without
+fre $var
+mca $var, method (indicator) normal(princ)
+mcacontrib
+mcaplot, overlay legend(off) xline(0) yline(0) scale(.8)
 
-********** HCA over class
-/*
-forvalues i=1(1)3{
-set graph off
-cluster wardslinkage $var if cat_assets==`i', name(cl_class`i')
-cluster tree, horizontal cutnumber(15) countinline showcount name(gph_cl_class`i')
-*cluster gen clust=groups(4)
-*ta clust
-set graph on
-}
+mat mcamat=e(cGS)
+mat colnames mcamat = mass qual inert co1 rel1 abs1 co2 rel2 abs2
+svmat2 mcamat, rname(varname) name(col)
 
+tabstat mass rel1 abs1 rel2 abs2, stat(mean sum)
 
-set graph off
-graph combine gph_cl_class1 gph_cl_class2 gph_cl_class3, col(3) name(gph_cl_class)
-set graph on
-
-
-***** To retain
-*** Class 1
-cluster wardslinkage $var if cat_assets==1
-cluster gen cl_class1=groups(3)
-*** Class 2
-cluster wardslinkage $var if cat_assets==2
-cluster gen cl_class2=groups(4)
-*** Class 3
-cluster wardslinkage $var if cat_assets==3
-cluster gen cl_class3=groups(3)
-
-
-***** Stat
-cls
-forvalues i=1(1)3{
-tabstat $var, stat(mean p50) by(cl_class`i')
-}
-
-***** Recode
-gen cl_class=.
-forvalues i=1(1)3{
-replace cl_class=cl_class`i' if cat_assets==`i'
-}
-
-***** Gen desc trend
-foreach x in $var {
-foreach stat in min max mean {
-bysort cl_class: egen `x'_`stat'=`stat'(`x')
-}
-foreach n in 10 25 50 75 90 {
-bysort cl_class: egen `x'_p`n'=pctile(`x'), p(`n')
-}
-}
-*/
-
-
-preserve
-duplicates drop cl_class, force
-keep cl_class d1_DSR_std_min d1_DSR_std_max d1_DSR_std_mean d1_DSR_std_p10 d1_DSR_std_p25 d1_DSR_std_p50 d1_DSR_std_p75 d1_DSR_std_p90 d2_DSR_std_min d2_DSR_std_max d2_DSR_std_mean d2_DSR_std_p10 d2_DSR_std_p25 d2_DSR_std_p50 d2_DSR_std_p75 d2_DSR_std_p90 d1_DAR_without_std_min d1_DAR_without_std_max d1_DAR_without_std_mean d1_DAR_without_std_p10 d1_DAR_without_std_p25 d1_DAR_without_std_p50 d1_DAR_without_std_p75 d1_DAR_without_std_p90 d2_DAR_without_std_min d2_DAR_without_std_max d2_DAR_without_std_mean d2_DAR_without_std_p10 d2_DAR_without_std_p25 d2_DAR_without_std_p50 d2_DAR_without_std_p75 d2_DAR_without_std_p90
+twoway (scatter co2 co1 [aweight=mass], xline(0) yline(0)  mlabsize(vsmall) msymbol(oh) msize(small) legend(off)) (scatter co2 co1, mlabsize(vsmall) msymbol(i) mlabel(varname) legend(off))
 
 ****************************************
 * END
-*/
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -916,97 +732,6 @@ keep cl_class d1_DSR_std_min d1_DSR_std_max d1_DSR_std_mean d1_DSR_std_p10 d1_DS
 
 
 /*
-****************************************
-* Trends clustering test
-****************************************
-cls
-clear all
-
-***** Var creation
-set obs 6
-gen n=_n
-forvalues i=1(1)4 {
-gen v`i'=.
-}
-replace v1=2
-replace v2=v1-4 if n==1
-replace v2=v1-2 if n==3
-replace v2=v1-2 if n==5
-replace v2=v1+4 if n==2
-replace v2=v1+2 if n==4
-replace v2=v1+2 if n==6
-replace v3=v2+6 if n==1
-replace v3=v2+3 if n==3
-replace v3=v2-2 if n==5
-replace v3=v2+6 if n==2
-replace v3=v2+4 if n==4
-replace v3=v2+3 if n==6
-replace v4=v3-2 if n==1
-replace v4=v3-2 if n==3
-replace v4=v3-2 if n==5
-replace v4=v3+2 if n==2
-replace v4=v3+4 if n==4
-replace v4=v3+3 if n==6
-
-***** Diff gen
-gen d1=v2-v1
-gen d2=v3-v2
-gen d3=v4-v3
-egen d1_std=std(d1)
-egen d2_std=std(d2)
-egen d3_std=std(d3)
-
-***** Trend projection
-reshape long v, i(n) j(t)
-xtset n t
-xtline v, overlay
-/*
-3 groups:
-2.4.6
-1.3
-5
-
-2 groups:
-2.4.6
-1.3.5
-*/
-reshape wide v, i(n) j(t)
-
-***** Test clustering
-cluster averagelinkage d1_std d2_std d3_std, name(average)
-cluster tree, showcount cutnumber(6)
-cluster gen clust=groups(2/3), name(average)
-ta n clust2
-/*
-1.3.5
-2.4.6
-*/
-ta n clust3
-/*
-1.3
-5
-2.4.6
-*/
-****************************************
-* END
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ****************************************
 * Stacked bar chart over
 ****************************************
