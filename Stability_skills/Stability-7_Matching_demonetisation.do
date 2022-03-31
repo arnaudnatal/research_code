@@ -94,9 +94,10 @@ dis "`y' -->" `p'
 
 
 ********** CBPS
-psweight cbps $treat $var
+/*
+psweight cbps $treat $var, ntable
 fre _weight _weight_mtch _pscore _treated
-
+*/
 
 
 ********** Caliper
@@ -139,8 +140,8 @@ ta treat_cal $treat, m
 
 ********** Mean + quantile test
 cls
-foreach x in $treat treat_psm treat_cal {
 foreach y in $var {
+foreach x in $treat treat_psm treat_cal {
 reg `y' `x'
 }
 }
