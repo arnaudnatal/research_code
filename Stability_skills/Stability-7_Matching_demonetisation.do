@@ -217,16 +217,6 @@ clear all
 
 
 
-
-
-
-
-
-
-
-
-
-
 ****************************************
 * Test
 ****************************************
@@ -234,6 +224,12 @@ cls
 use "$wave2~matching_v3.dta", clear
 
 
+global var age caste_1 caste_2 caste_3 sex_1 sex_2 mainocc_occupation_indiv_1 mainocc_occupation_indiv_2 mainocc_occupation_indiv_3 mainocc_occupation_indiv_4 mainocc_occupation_indiv_5 mainocc_occupation_indiv_6 mainocc_occupation_indiv_7 mainocc_occupation_indiv_8 edulevel_1 edulevel_2 edulevel_3 edulevel_4 edulevel_5 edulevel_6
+
+
+forvalues i=1(1)5{
+reg f`i'_2016 dummydemonetisation $var
+}
 
 clear all
 ****************************************
