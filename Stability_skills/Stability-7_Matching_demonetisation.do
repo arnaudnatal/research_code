@@ -16,9 +16,16 @@ Stability over time of personality traits
 ****************************************
 * INITIALIZATION
 ****************************************
-clear all
+*clear all
 macro drop _all
-set scheme plotplain
+
+* Scheme
+*net install schemepack, from("https://raw.githubusercontent.com/asjadnaqvi/Stata-schemes/main/schemes/") replace
+*set scheme plotplain
+set scheme white_tableau
+*set scheme plotplain
+grstyle init
+grstyle set plain, nogrid
 
 ********** Path to folder "data" folder.
 *** PC
@@ -57,12 +64,15 @@ use "$wave2", clear
 ********** Initialization
 drop if egoid==0
 
+fre mainocc_occupation_indiv
+recode mainocc_occupation_indiv (.=0)
+
 global quali caste sex mainocc_occupation_indiv edulevel
 foreach x in $quali {
 ta `x', gen(`x'_)
 }
 
-global var age caste_1 caste_2 caste_3 sex_1 sex_2 mainocc_occupation_indiv_1 mainocc_occupation_indiv_2 mainocc_occupation_indiv_3 mainocc_occupation_indiv_4 mainocc_occupation_indiv_5 mainocc_occupation_indiv_6 mainocc_occupation_indiv_7 mainocc_occupation_indiv_8 edulevel_1 edulevel_2 edulevel_3 edulevel_4 edulevel_5 edulevel_6
+global var age caste_2 caste_3 sex_2 mainocc_occupation_indiv_1 mainocc_occupation_indiv_2 mainocc_occupation_indiv_4 mainocc_occupation_indiv_5 mainocc_occupation_indiv_6 mainocc_occupation_indiv_7 mainocc_occupation_indiv_8 edulevel_2 edulevel_3 edulevel_4 edulevel_5 edulevel_6
 
 ***** yvar
 global treat dummydemonetisation
@@ -85,7 +95,7 @@ dis "`y' -->" `p'
 
 ********** CBPS
 psweight cbps $treat $var
-rename _treated treat_cbps
+fre _weight _weight_mtch _pscore _treated
 
 
 
@@ -96,31 +106,49 @@ qui sum t_pred
 local cal=r(sd)*0.2
 
 psmatch2 $treat $var, common caliper(`cal') noreplacement
-rename _treated treat_caliper
+fre _treated _support _nn
+gen treat_cal=.
+replace treat_cal=0 if _treated==0 & _support==1
+replace treat_cal=1 if _treated==1 & _support==1
+ta $treat treat_cal, m
+
+*** Quality of matching
+pstest $var caste_1, treated(treat_cal) both graph label
+psgraph
+drop t_pred _pscore _treated _support _weight _id _n1 _nn _pdif
+
 
 
 ********** k neighbor
 psmatch2 $treat $var, common n(2)
-rename _treated treat_psm
+fre _treated _support _nn
+gen treat_psm=.
+replace treat_psm=0 if _treated==0 & _support==1
+replace treat_psm=1 if _treated==1 & _support==1
 
-*pstest $var, treated(treat_psm) both
-*pstest $var, treated(treat_psm) both graph label
-*pstest $var, treated(treat_psm) both scatter
-
+*** Quality of matching
+pstest $var caste_1, treated(treat_psm) both graph label
+psgraph
+drop _pscore _treated _support _weight _id _n1 _n2 _nn _pdif
 
 
 ********** Cross
-ta $treat treat_cbps, m
-ta $treat treat_caliper, m
-ta $treat treat_psm, m
+ta treat_psm $treat, m
+ta treat_cal $treat, m
 
 
-/*
-Matching ou pas, ca ne change rien car ils sont quasi identiques en moyenne
-*/
+********** Mean + quantile test
+cls
+foreach x in $treat treat_psm treat_cal {
+foreach y in $var {
+reg `y' `x'
+}
+}
+
+
 
 save"$wave2~matching_v2.dta", replace
-clear all
+*clear all
 ****************************************
 * END
 
@@ -202,7 +230,7 @@ egen f5_2016=rowmean($f5)
 
 
 save"$wave2~matching_v3.dta", replace
-clear all
+*clear all
 ****************************************
 * END
 
@@ -231,6 +259,6 @@ forvalues i=1(1)5{
 reg f`i'_2016 dummydemonetisation $var
 }
 
-clear all
+*clear all
 ****************************************
 * END
