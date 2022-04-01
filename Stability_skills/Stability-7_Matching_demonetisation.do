@@ -51,125 +51,11 @@ global wave3 "NEEMSIS2-HH"
 
 
 
-
-
-
-
-****************************************
-* Matching for demonetisation
-****************************************
-cls
-use "$wave2", clear
-
-********** Initialization
-drop if egoid==0
-
-fre mainocc_occupation_indiv
-recode mainocc_occupation_indiv (.=0)
-
-global quali caste sex mainocc_occupation_indiv edulevel
-foreach x in $quali {
-ta `x', gen(`x'_)
-}
-
-global var age caste_2 caste_3 sex_2 mainocc_occupation_indiv_1 mainocc_occupation_indiv_2 mainocc_occupation_indiv_4 mainocc_occupation_indiv_5 mainocc_occupation_indiv_6 mainocc_occupation_indiv_7 mainocc_occupation_indiv_8 edulevel_2 edulevel_3 edulevel_4 edulevel_5 edulevel_6
-
-***** yvar
-global treat dummydemonetisation
-
-
-
-********** Mean + quantile test
-cls
-foreach y in $var {
-foreach x in $treat {
-qui reg `y' `x'
-local t=_b[`x']/_se[`x']
-local p=2*ttail(e(df_r),abs(`t'))
-dis "`y' -->" `p'
-}
-}
-
-
-
-
-********** CBPS
-/*
-psweight cbps $treat $var, ntable
-fre _weight _weight_mtch _pscore _treated
-*/
-
-
-********** Caliper
-qui logit $treat $var
-qui predict t_pred, pr
-qui sum t_pred
-local cal=r(sd)*0.2
-
-psmatch2 $treat $var, common caliper(`cal') noreplacement
-fre _treated _support _nn
-gen treat_cal=.
-replace treat_cal=0 if _treated==0 & _support==1
-replace treat_cal=1 if _treated==1 & _support==1
-ta $treat treat_cal, m
-
-*** Quality of matching
-pstest $var caste_1, treated(treat_cal) both graph label
-psgraph
-drop t_pred _pscore _treated _support _weight _id _n1 _nn _pdif
-
-
-
-********** k neighbor
-psmatch2 $treat $var, common n(2)
-fre _treated _support _nn
-gen treat_psm=.
-replace treat_psm=0 if _treated==0 & _support==1
-replace treat_psm=1 if _treated==1 & _support==1
-
-*** Quality of matching
-pstest $var caste_1, treated(treat_psm) both graph label
-psgraph
-drop _pscore _treated _support _weight _id _n1 _n2 _nn _pdif
-
-
-********** Cross
-ta treat_psm $treat, m
-ta treat_cal $treat, m
-
-
-********** Mean + quantile test
-cls
-foreach y in $var {
-foreach x in $treat treat_psm treat_cal {
-reg `y' `x'
-}
-}
-
-
-
-save"$wave2~matching_v2.dta", replace
-*clear all
-****************************************
-* END
-
-
-
-
-
-
-
-
-
-
-
-
-
 ****************************************
 * Personality traits construction
 ****************************************
 cls
-use "$wave2~matching_v2.dta", clear
+use "$wave2", clear
 
 ********** Imputation for non corrected one
 global big5cr cr_curious cr_interestedbyart cr_repetitivetasks cr_inventive cr_liketothink cr_newideas cr_activeimagination cr_organized cr_makeplans cr_workhard cr_appointmentontime cr_putoffduties cr_easilydistracted cr_completeduties cr_enjoypeople cr_sharefeelings cr_shywithpeople cr_enthusiastic cr_talktomanypeople cr_talkative cr_expressingthoughts cr_workwithother cr_understandotherfeeling cr_trustingofother cr_rudetoother cr_toleratefaults cr_forgiveother cr_helpfulwithothers cr_managestress cr_nervous cr_changemood cr_feeldepressed cr_easilyupset cr_worryalot cr_staycalm cr_tryhard cr_stickwithgoals cr_goaftergoal cr_finishwhatbegin cr_finishtasks cr_keepworking
@@ -229,11 +115,107 @@ egen f3_2016=rowmean($f3)
 egen f4_2016=rowmean($f4)
 egen f5_2016=rowmean($f5)
 
+save"$wave2~matching_v2.dta", replace
+*clear all
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Matching for demonetisation
+****************************************
+cls
+use "$wave2~matching_v2.dta", clear
+
+********** Initialization
+drop if egoid==0
+
+fre mainocc_occupation_indiv
+recode mainocc_occupation_indiv (.=0)
+
+global quali caste sex mainocc_occupation_indiv edulevel villageid
+foreach x in $quali {
+ta `x', gen(`x'_)
+}
+
+global var age caste_2 caste_3 sex_2 mainocc_occupation_indiv_1 mainocc_occupation_indiv_2 mainocc_occupation_indiv_4 mainocc_occupation_indiv_5 mainocc_occupation_indiv_6 mainocc_occupation_indiv_7 mainocc_occupation_indiv_8 edulevel_2 edulevel_3 edulevel_4 edulevel_5 edulevel_6
+
+***** yvar
+global treat dummydemonetisation
+
+
+preserve
+keep f1_2016 f2_2016 f3_2016 f4_2016 f5_2016 $var $treat villageid_1 villageid_2 villageid_3 villageid_4 villageid_5 villageid_6 villageid_7 villageid_8 villageid_9 villageid_10 HHID_panel INDID_panel egoid
+rename dummydemonetisation treat
+saveold "N1_CBPS.dta", version(12) replace
+restore
+
+
+
+
+********** CBPS
+psweight cbpsoid $treat $var, ate
+/*
+foreach x in $var {
+qui mean `x' [pweight=_pscore], over($treat) coeflegend
+test _b[`x':0]=_b[`x':1]
+qui mean `x', over($treat) coeflegend
+test _b[`x':0]=_b[`x':1]
+}
+*/
+
+tebalance, sum
+
+
+
+reg f1_2016 $treat $var [pweight=_pscore]
+
+
+
+
+
+/*
+********** Caliper
+qui logit $treat $var
+qui predict t_pred, pr
+qui sum t_pred
+local cal=r(sd)*0.2
+psmatch2 $treat $var, common caliper(`cal') noreplacement logit
+rename _pscore pscore_caliper
+*/
+
+
+/*
+********** k neighbor
+psmatch2 $treat $var, common n(2) logit
+rename _pscore pscore_knear
+*/
+
+
+/*
+********* logit
+logit $treat $var
+predict pscore_logit
+*/
+
+
+
+
 
 save"$wave2~matching_v3.dta", replace
 *clear all
 ****************************************
 * END
+
 
 
 
