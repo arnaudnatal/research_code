@@ -49,114 +49,10 @@ global wave3 "NEEMSIS2-HH"
 
 
 ****************************************
-* Matching for lockdown
-****************************************
-cls
-use "$wave3", clear
-
-********** Initialization
-drop if egoid==0
-
-global quali caste sex mainocc_occupation_indiv edulevel
-foreach x in $quali {
-ta `x', gen(`x'_)
-}
-
-global var age caste_1 caste_2 caste_3 sex_1 sex_2 mainocc_occupation_indiv_1 mainocc_occupation_indiv_2 mainocc_occupation_indiv_3 mainocc_occupation_indiv_4 mainocc_occupation_indiv_5 mainocc_occupation_indiv_6 mainocc_occupation_indiv_7 mainocc_occupation_indiv_8 edulevel_1 edulevel_2 edulevel_3 edulevel_4 edulevel_5 edulevel_6
-
-***** y var
-fre start_HH_quest
-gen tos=dofc(start_HH_quest)
-format tos %td
-ta tos
-
-ta tos if tos<d(01jan2021)
-ta tos if tos>d(01jun2021)
-
-gen treattos_6=.
-replace treattos_6=0 if tos<d(05apr2021)
-replace treattos_6=1 if tos>d(15jun2021)
-ta treattos_6
-/*
-At 6 month diff
-*/
-
-global treat treattos_6
-
-
-********** Mean + quantile test
-cls
-tabstat $var ,stat(n mean sd) by($treat)
-foreach y in $var {
-foreach x in $treat {
-qui reg `y' `x'
-local t=_b[`x']/_se[`x']
-local p=2*ttail(e(df_r),abs(`t'))
-dis "`y' -->" `p'
-}
-}
-
-
-
-********** CBPS
-psweight cbps $treat $var
-rename _treated treat_cbps
-
-
-
-********** Caliper
-qui logit $treat $var
-qui predict t_pred, pr
-qui sum t_pred
-local cal=r(sd)*0.2
-
-psmatch2 $treat $var, common caliper(`cal') noreplacement
-rename _treated treat_caliper
-*pstest $var, treated(treat_caliper) both graph label
-
-
-********** k neighbor
-psmatch2 $treat $var, n(5)
-rename _treated treat_psm
-
-
-
-********** Cross
-ta $treat treat_psm, m
-ta $treat treat_cbps, m
-ta $treat treat_caliper, m
-
-
-
-********** Mean + quantile test
-cls
-foreach y in $var {
-foreach x in $treat treat_psm {
-qui reg `y' `x'
-local t=_b[`x']/_se[`x']
-local p=2*ttail(e(df_r),abs(`t'))
-dis "`y' -->" `p'
-}
-}
-
-save "$wave3~matching_v2.dta", replace
-
-****************************************
-* END
-
-
-
-
-
-
-
-
-
-****************************************
 * Personality traits construction
 ****************************************
 cls
-use "$wave3~matching_v2.dta", clear
+use "$wave3", clear
 
 ********** Imputation for non corrected one
 global big5cr cr_curious cr_interestedbyart cr_repetitivetasks cr_inventive cr_liketothink cr_newideas cr_activeimagination cr_organized cr_makeplans cr_workhard cr_appointmentontime cr_putoffduties cr_easilydistracted cr_completeduties cr_enjoypeople cr_sharefeelings cr_shywithpeople cr_enthusiastic cr_talktomanypeople cr_talkative cr_expressingthoughts cr_workwithother cr_understandotherfeeling cr_trustingofother cr_rudetoother cr_toleratefaults cr_forgiveother cr_helpfulwithothers cr_managestress cr_nervous cr_changemood cr_feeldepressed cr_easilyupset cr_worryalot cr_staycalm cr_tryhard cr_stickwithgoals cr_goaftergoal cr_finishwhatbegin cr_finishtasks cr_keepworking
@@ -204,20 +100,20 @@ global f5 imcr_forgiveother imcr_toleratefaults imcr_trustingofother imcr_enjoyp
 
 *** omegacoef
 omegacoef $f1
-*omegacoef $f2
-*omegacoef $f3
-*alpha $f4
-*omegacoef $f5
+omegacoef $f2
+omegacoef $f3
+alpha $f4
+omegacoef $f5
 
 *** Score
 egen f1_2020=rowmean($f1)
-*egen f2_2020=rowmean($f2)
-*egen f3_2020=rowmean($f3)
-*egen f4_2020=rowmean($f4)
-*egen f5_2020=rowmean($f5)
+egen f2_2020=rowmean($f2)
+egen f3_2020=rowmean($f3)
+egen f4_2020=rowmean($f4)
+egen f5_2020=rowmean($f5)
 
-
-save"$wave3~matching_v3.dta", replace
+save"$wave3~matching_v2.dta", replace
+*clear all
 ****************************************
 * END
 
@@ -231,21 +127,115 @@ save"$wave3~matching_v3.dta", replace
 
 
 
-
 ****************************************
-* Test
+* Matching for lockdown
 ****************************************
 cls
-use "$wave3~matching_v3.dta", clear
+use "$wave3~matching_v2.dta", clear
 
+********** Initialization
+drop if egoid==0
 
-global var age caste_1 caste_2 caste_3 sex_1 sex_2 mainocc_occupation_indiv_1 mainocc_occupation_indiv_2 mainocc_occupation_indiv_3 mainocc_occupation_indiv_4 mainocc_occupation_indiv_5 mainocc_occupation_indiv_6 mainocc_occupation_indiv_7 mainocc_occupation_indiv_8 edulevel_1 edulevel_2 edulevel_3 edulevel_4 edulevel_5 edulevel_6
+fre mainocc_occupation_indiv
+recode mainocc_occupation_indiv (.=0)
 
-
-*forvalues i=1(1)5{
-forvalues i=1(1)1{
-reg f`i'_2020 treattos_6 $var
+global quali caste sex mainocc_occupation_indiv edulevel villageid
+foreach x in $quali {
+ta `x', gen(`x'_)
 }
+
+global var age caste_2 caste_3 sex_2 mainocc_occupation_indiv_1 mainocc_occupation_indiv_2 mainocc_occupation_indiv_4 mainocc_occupation_indiv_5 mainocc_occupation_indiv_6 mainocc_occupation_indiv_7 mainocc_occupation_indiv_8 edulevel_2 edulevel_3 edulevel_4 edulevel_5 edulevel_6
+
+
+
+***** y var
+fre start_HH_quest
+gen tos=dofc(start_HH_quest)
+format tos %td
+ta tos
+
+ta tos if tos<d(01jan2021)
+ta tos if tos>d(01jun2021)
+
+gen treattos_6=.
+replace treattos_6=0 if tos<d(05apr2021)
+replace treattos_6=1 if tos>d(15jun2021)
+ta treattos_6
+/*
+At 6 month diff
+*/
+
+rename treattos_6 treat
+
+
+
+
+
+********** Prepare to R
+preserve
+keep f1_2020 f2_2020 f3_2020 f4_2020 f5_2020 $var treat villageid_1 villageid_2 villageid_3 villageid_4 villageid_5 villageid_6 villageid_7 villageid_8 villageid_9 villageid_10 HHID_panel INDID_panel egoid
+saveold "N2_CBPS.dta", version(12) replace
+restore
+
+
+********** Open weights of CBPS
+cls
+use "neemsis2_r.dta", clear
+
+forvalues i=1(1)5 {
+reg f`i'_2016 treat $var [pw=weights]
+}
+
+
+
+
+********** ADSM
+
+cls
+use "adsm_n2_r.dta", clear
+
+replace balanced=balanced*100
+replace original=original*100
+
+gen la=""
+replace la="Age" if covariate=="age"
+replace la="Middle" if covariate=="caste_2"
+replace la="Upper" if covariate=="caste_3"
+replace la="Female" if covariate=="sex_2"
+replace la="No occup" if covariate=="mainocc_occupation_indiv_1"
+replace la="Agri SE" if covariate=="mainocc_occupation_indiv_2"
+replace la="Non-agri casual" if covariate=="mainocc_occupation_indiv_4"
+replace la="Non-agri reg non-qualified" if covariate=="mainocc_occupation_indiv_5"
+replace la="Non-agri reg qualified" if covariate=="mainocc_occupation_indiv_6"
+replace la="Non-agri SE" if covariate=="mainocc_occupation_indiv_7"
+replace la="NREGA" if covariate=="mainocc_occupation_indiv_8"
+replace la="Primary comp" if covariate=="edulevel_2"
+replace la="High school" if covariate=="edulevel_3"
+replace la="HSC/Diploma" if covariate=="edulevel_4"
+replace la="Bachelors" if covariate=="edulevel_5"
+replace la="Post graduate" if covariate=="edulevel_6"
+
+
+egen labpos=mlabvpos(balanced original)
+replace labpos=12 if covariate=="mainocc_occupation_indiv_1"
+replace labpos=12 if covariate=="mainocc_occupation_indiv_2"
+replace labpos=8 if covariate=="mainocc_occupation_indiv_5"
+replace labpos=12 if covariate=="mainocc_occupation_indiv_4"
+replace labpos=12 if covariate=="mainocc_occupation_indiv_7"
+replace labpos=12 if covariate=="caste_2"
+replace labpos=12 if covariate=="caste_3"
+
+replace labpos=6 if covariate=="edulevel_2"
+replace labpos=12 if covariate=="edulevel_3"
+replace labpos=6 if covariate=="edulevel_5"
+replace labpos=12 if covariate=="edulevel_6"
+
+twoway scatter balanced original, mlabel(la) mlabvpos(labpos) ///
+xlabel(0(10)60) xmtick(0(5)65) xtitle("ADSM before weighting (%)") ///
+ylabel(0(1)8) ymtick(0(.5)8) ytitle("ADSM after weighting (%)") ///
+name(adsm, replace)
+graph save "adsm_n2.gph", replace
+*/
 
 ****************************************
 * END

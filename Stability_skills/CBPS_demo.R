@@ -25,7 +25,7 @@ write.dta(neemsis1, "neemsis1_r.dta")
 
 # Store ADSM
 adsm<-plot(fit, covars=NULL, silent=FALSE, boxplot=TRUE)
-write.dta(adsm, "adsm_r.dta")
+write.dta(adsm, "adsm_n1_r.dta")
 
 detach(neemsis1)
 attach(adsm)
@@ -36,6 +36,6 @@ scatterplot(original, balanced,            # Data
             smooth = FALSE,  # Remove smooth estimate
             regLine = FALSE) # Remove linear estimate
 
-
+detach(adsm)
 
 

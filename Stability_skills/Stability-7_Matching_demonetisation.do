@@ -173,7 +173,7 @@ reg f`i'_2016 treat $var [pw=weights]
 ********** ADSM
 /*
 cls
-use "adsm_r.dta", clear
+use "adsm_n1_r.dta", clear
 
 replace balanced=balanced*100
 replace original=original*100
