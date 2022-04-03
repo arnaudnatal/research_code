@@ -149,10 +149,9 @@ ta `x', gen(`x'_)
 
 global var age caste_2 caste_3 sex_2 mainocc_occupation_indiv_1 mainocc_occupation_indiv_2 mainocc_occupation_indiv_4 mainocc_occupation_indiv_5 mainocc_occupation_indiv_6 mainocc_occupation_indiv_7 mainocc_occupation_indiv_8 edulevel_2 edulevel_3 edulevel_4 edulevel_5 edulevel_6
 
-***** yvar
 global treat dummydemonetisation
 
-
+********** Prepare to R
 preserve
 keep f1_2016 f2_2016 f3_2016 f4_2016 f5_2016 $var $treat villageid_1 villageid_2 villageid_3 villageid_4 villageid_5 villageid_6 villageid_7 villageid_8 villageid_9 villageid_10 HHID_panel INDID_panel egoid
 rename dummydemonetisation treat
@@ -160,88 +159,64 @@ saveold "N1_CBPS.dta", version(12) replace
 restore
 
 
-
-
-********** CBPS
-psweight cbpsoid $treat $var, ate
-/*
-foreach x in $var {
-qui mean `x' [pweight=_pscore], over($treat) coeflegend
-test _b[`x':0]=_b[`x':1]
-qui mean `x', over($treat) coeflegend
-test _b[`x':0]=_b[`x':1]
-}
-*/
-
-tebalance, sum
-
-
-
-reg f1_2016 $treat $var [pweight=_pscore]
-
-
-
-
-
-/*
-********** Caliper
-qui logit $treat $var
-qui predict t_pred, pr
-qui sum t_pred
-local cal=r(sd)*0.2
-psmatch2 $treat $var, common caliper(`cal') noreplacement logit
-rename _pscore pscore_caliper
-*/
-
-
-/*
-********** k neighbor
-psmatch2 $treat $var, common n(2) logit
-rename _pscore pscore_knear
-*/
-
-
-/*
-********* logit
-logit $treat $var
-predict pscore_logit
-*/
-
-
-
-
-
-save"$wave2~matching_v3.dta", replace
-*clear all
-****************************************
-* END
-
-
-
-
-
-
-
-
-
-
-
-
-
-****************************************
-* Test
-****************************************
+********** Open weights of CBPS
 cls
-use "$wave2~matching_v3.dta", clear
+use "neemsis1_r.dta", clear
 
-
-global var age caste_1 caste_2 caste_3 sex_1 sex_2 mainocc_occupation_indiv_1 mainocc_occupation_indiv_2 mainocc_occupation_indiv_3 mainocc_occupation_indiv_4 mainocc_occupation_indiv_5 mainocc_occupation_indiv_6 mainocc_occupation_indiv_7 mainocc_occupation_indiv_8 edulevel_1 edulevel_2 edulevel_3 edulevel_4 edulevel_5 edulevel_6
-
-
-forvalues i=1(1)5{
-reg f`i'_2016 dummydemonetisation $var
+forvalues i=1(1)5 {
+reg f`i'_2016 treat $var [pw=weights]
 }
 
-*clear all
+
+
+
+********** ADSM
+/*
+cls
+use "adsm_r.dta", clear
+
+replace balanced=balanced*100
+replace original=original*100
+
+gen la=""
+replace la="Age" if covariate=="age"
+replace la="Middle" if covariate=="caste_2"
+replace la="Upper" if covariate=="caste_3"
+replace la="Female" if covariate=="sex_2"
+replace la="No occup" if covariate=="mainocc_occupation_indiv_1"
+replace la="Agri SE" if covariate=="mainocc_occupation_indiv_2"
+replace la="Non-agri casual" if covariate=="mainocc_occupation_indiv_4"
+replace la="Non-agri reg non-qualified" if covariate=="mainocc_occupation_indiv_5"
+replace la="Non-agri reg qualified" if covariate=="mainocc_occupation_indiv_6"
+replace la="Non-agri SE" if covariate=="mainocc_occupation_indiv_7"
+replace la="NREGA" if covariate=="mainocc_occupation_indiv_8"
+replace la="Primary comp" if covariate=="edulevel_2"
+replace la="High school" if covariate=="edulevel_3"
+replace la="HSC/Diploma" if covariate=="edulevel_4"
+replace la="Bachelors" if covariate=="edulevel_5"
+replace la="Post graduate" if covariate=="edulevel_6"
+
+
+egen labpos=mlabvpos(balanced original)
+replace labpos=12 if covariate=="mainocc_occupation_indiv_1"
+replace labpos=12 if covariate=="mainocc_occupation_indiv_2"
+replace labpos=8 if covariate=="mainocc_occupation_indiv_5"
+replace labpos=12 if covariate=="mainocc_occupation_indiv_4"
+replace labpos=12 if covariate=="mainocc_occupation_indiv_7"
+replace labpos=12 if covariate=="caste_2"
+replace labpos=12 if covariate=="caste_3"
+
+replace labpos=6 if covariate=="edulevel_2"
+replace labpos=12 if covariate=="edulevel_3"
+replace labpos=6 if covariate=="edulevel_5"
+replace labpos=12 if covariate=="edulevel_6"
+
+twoway scatter balanced original, mlabel(la) mlabvpos(labpos) ///
+xlabel(0(10)60) xmtick(0(5)65) xtitle("ADSM before weighting (%)") ///
+ylabel(0(1)8) ymtick(0(.5)8) ytitle("ADSM after weighting (%)") ///
+name(adsm, replace)
+graph save "adsm.gph", replace
+*/
+
 ****************************************
 * END
