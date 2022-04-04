@@ -37,5 +37,3 @@ scatterplot(original, balanced,            # Data
             regLine = FALSE) # Remove linear estimate
 
 detach(adsm)
-
-

@@ -85,25 +85,26 @@ rotate, quartimin
 
 ********** omegacoef with Laajaj approach for factor analysis and Cobb Clark
 ** F1
-global f1 imcr_easilyupset imcr_nervous imcr_feeldepressed imcr_worryalot imcr_changemood imcr_easilydistracted imcr_shywithpeople imcr_putoffduties imcr_rudetoother imcr_repetitivetasks
+global f1 imcr_worryalot imcr_easilydistracted imcr_feeldepressed imcr_easilyupset imcr_changemood imcr_nervous imcr_repetitivetasks imcr_putoffduties imcr_shywithpeople imcr_rudetoother
 
 ** F2
-global f2 imcr_makeplans imcr_appointmentontime imcr_completeduties imcr_enthusiastic imcr_organized imcr_workhard imcr_workwithother
+global f2 imcr_enthusiastic imcr_expressingthoughts imcr_forgiveother imcr_organized imcr_talktomanypeople imcr_completeduties imcr_workhard imcr_activeimagination imcr_appointmentontime imcr_workwithother imcr_newideas imcr_enjoypeople imcr_makeplans imcr_understandotherfeeling
 
 ** F3
-global f3 imcr_liketothink imcr_expressingthoughts imcr_activeimagination imcr_sharefeelings imcr_newideas imcr_inventive imcr_curious imcr_talktomanypeople imcr_talkative imcr_understandotherfeeling imcr_interestedbyart
+global f3 imcr_staycalm imcr_talkative imcr_helpfulwithothers imcr_inventive imcr_trustingofother imcr_liketothink imcr_sharefeelings
 
 ** F4
-global f4 imcr_staycalm imcr_managestress
+global f4 imcr_curious imcr_toleratefaults
+
 ** F5
-global f5 imcr_forgiveother imcr_toleratefaults imcr_trustingofother imcr_enjoypeople imcr_helpfulwithothers
+global f5 imcr_managestress imcr_interestedbyart
 
 *** omegacoef
-omegacoef $f1
-omegacoef $f2
-omegacoef $f3
-alpha $f4
-omegacoef $f5
+omegacoef $f1  // .91
+omegacoef $f2  // .56
+omegacoef $f3  // .46
+alpha $f4  // .07
+alpha $f5  // .03
 
 *** Score
 egen f1_2020=rowmean($f1)
@@ -168,12 +169,10 @@ At 6 month diff
 rename treattos_6 treat
 
 
-
-
-
 ********** Prepare to R
 preserve
 keep f1_2020 f2_2020 f3_2020 f4_2020 f5_2020 $var treat villageid_1 villageid_2 villageid_3 villageid_4 villageid_5 villageid_6 villageid_7 villageid_8 villageid_9 villageid_10 HHID_panel INDID_panel egoid
+keep if treat!=.
 saveold "N2_CBPS.dta", version(12) replace
 restore
 
