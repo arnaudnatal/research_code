@@ -164,8 +164,8 @@ global treat dummydemonetisation
 
 ********** Prepare to R
 preserve
-keep f1_2016 f2_2016 f3_2016 f4_2016 f5_2016 $var $treat villageid_1 villageid_2 villageid_3 villageid_4 villageid_5 villageid_6 villageid_7 villageid_8 villageid_9 villageid_10 HHID_panel INDID_panel egoid
-rename dummydemonetisation treat
+keep f1_2016 f2_2016 f3_2016 f4_2016 f5_2016 $var $treat villageid_1 villageid_2 villageid_3 villageid_4 villageid_5 villageid_6 villageid_7 villageid_8 villageid_9 villageid_10 HHID_panel INDID_panel egoid cr_OP cr_CO cr_EX cr_AG cr_ES cr_Grit lit_tt num_tt raven_tt
+rename dummydemonetisation treat 
 saveold "N1_CBPS.dta", version(12) replace
 restore
 ****************************************

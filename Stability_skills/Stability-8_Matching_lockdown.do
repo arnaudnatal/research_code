@@ -184,9 +184,39 @@ At 6 month diff
 rename treattos_6 treat
 
 
+********** Locus of control
+fre locuscontrol1 locuscontrol2 locuscontrol3 locuscontrol4 locuscontrol5 locuscontrol6
+
+/*
+1. I like taking responsibility.
+2. I find it best to make decisions by myself rather than to rely on fate.
+3. When I encounter problems or opposition, I usually find ways and means to overcome them.
+4. Success often depends more on luck than on effort.
+5. I often have the feeling that I have little influence over what happens to me.
+6. When I make important decisions, I often look at what others have done.
+
+
+1 	Applies to me with a very large extent
+2 	Applies to me in a great extent
+3 	Applies to me in some extent
+4 	Hardly applies to me at all
+5 	Does not apply to me at all
+
+1 -> 5 =ext
+2 -> 5 =ext
+3 -> 5 =ext
+4 -> 1 =ext
+5 -> 1 =ext
+6 -> 1 =ext
+
+Recode 1 2 3 ou 4 5 6 pour max
+
+*/
+
 ********** Prepare to R
 preserve
-keep f1_2020 f2_2020 f3_2020 f4_2020 f5_2020 $var treat villageid_1 villageid_2 villageid_3 villageid_4 villageid_5 villageid_6 villageid_7 villageid_8 villageid_9 villageid_10 HHID_panel INDID_panel egoid
+keep f1_2020 f2_2020 f3_2020 f4_2020 f5_2020 $var treat villageid_1 villageid_2 villageid_3 villageid_4 villageid_5 villageid_6 villageid_7 villageid_8 villageid_9 villageid_10 HHID_panel INDID_panel egoid cr_OP cr_CO cr_EX cr_AG cr_ES cr_Grit lit_tt num_tt raven_tt
+rename dummydemonetisation treat 
 keep if treat!=.
 saveold "N2_CBPS.dta", version(12) replace
 restore
