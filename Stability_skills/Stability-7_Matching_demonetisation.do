@@ -13,6 +13,9 @@ Stability over time of personality traits
 */
 
 
+
+
+
 ****************************************
 * INITIALIZATION
 ****************************************
@@ -26,6 +29,7 @@ set scheme white_tableau
 *set scheme plotplain
 grstyle init
 grstyle set plain, nogrid
+
 
 ********** Path to folder "data" folder.
 *** PC
@@ -43,6 +47,11 @@ global wave2 "NEEMSIS1-HH"
 global wave3 "NEEMSIS2-HH"
 ****************************************
 * END
+
+
+
+
+
 
 
 
@@ -130,8 +139,10 @@ save"$wave2~matching_v2.dta", replace
 
 
 
+
+
 ****************************************
-* Matching for demonetisation
+* Demonetisation database preparation
 ****************************************
 cls
 use "$wave2~matching_v2.dta", clear
@@ -157,21 +168,56 @@ keep f1_2016 f2_2016 f3_2016 f4_2016 f5_2016 $var $treat villageid_1 villageid_2
 rename dummydemonetisation treat
 saveold "N1_CBPS.dta", version(12) replace
 restore
+****************************************
+* END
 
 
-********** Open weights of CBPS
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Reg weight
+****************************************
 cls
 use "neemsis1_r.dta", clear
+
+global var age caste_2 caste_3 sex_2 mainocc_occupation_indiv_1 mainocc_occupation_indiv_2 mainocc_occupation_indiv_4 mainocc_occupation_indiv_5 mainocc_occupation_indiv_6 mainocc_occupation_indiv_7 mainocc_occupation_indiv_8 edulevel_2 edulevel_3 edulevel_4 edulevel_5 edulevel_6
+
 
 forvalues i=1(1)5 {
 reg f`i'_2016 treat $var [pw=weights]
 }
+****************************************
+* END
 
 
 
 
-********** ADSM
-/*
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* ADMS graph
+****************************************
 cls
 use "adsm_n1_r.dta", clear
 
@@ -196,7 +242,6 @@ replace la="HSC/Diploma" if covariate=="edulevel_4"
 replace la="Bachelors" if covariate=="edulevel_5"
 replace la="Post graduate" if covariate=="edulevel_6"
 
-
 egen labpos=mlabvpos(balanced original)
 replace labpos=12 if covariate=="mainocc_occupation_indiv_1"
 replace labpos=12 if covariate=="mainocc_occupation_indiv_2"
@@ -216,7 +261,5 @@ xlabel(0(10)60) xmtick(0(5)65) xtitle("ADSM before weighting (%)") ///
 ylabel(0(1)8) ymtick(0(.5)8) ytitle("ADSM after weighting (%)") ///
 name(adsm, replace)
 graph save "adsm.gph", replace
-*/
-
 ****************************************
 * END

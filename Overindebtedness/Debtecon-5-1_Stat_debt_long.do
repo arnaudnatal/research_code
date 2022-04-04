@@ -33,7 +33,6 @@ global directory = "C:\Users\\$user\\$folder\_Thesis\Research-Overindebtedness\P
 cd"$directory"
 global git "C:\Users\\$user\\$folder\GitHub"
 
-
 *Fac
 *cd "C:\Users\anatal\Downloads\_Thesis\Research-Skills_and_debt\Analysis"
 

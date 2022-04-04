@@ -13,12 +13,27 @@ Stability over time of personality traits
 */
 
 
+
+
+
+
 ****************************************
 * INITIALIZATION
 ****************************************
 *clear all
 macro drop _all
-set scheme plotplain
+
+
+* Scheme
+*net install schemepack, from("https://raw.githubusercontent.com/asjadnaqvi/Stata-schemes/main/schemes/") replace
+*set scheme plotplain
+set scheme white_tableau
+*set scheme plotplain
+grstyle init
+grstyle set plain, nogrid
+
+*set scheme black_tableau
+*set scheme swift_red
 
 ********** Path to folder "data" folder.
 *** PC
@@ -129,7 +144,7 @@ save"$wave3~matching_v2.dta", replace
 
 
 ****************************************
-* Matching for lockdown
+* Lockdown database preparation
 ****************************************
 cls
 use "$wave3~matching_v2.dta", clear
@@ -175,21 +190,58 @@ keep f1_2020 f2_2020 f3_2020 f4_2020 f5_2020 $var treat villageid_1 villageid_2 
 keep if treat!=.
 saveold "N2_CBPS.dta", version(12) replace
 restore
+****************************************
+* END
 
 
-********** Open weights of CBPS
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Reg weight
+****************************************
 cls
 use "neemsis2_r.dta", clear
 
+global var age caste_2 caste_3 sex_2 mainocc_occupation_indiv_1 mainocc_occupation_indiv_2 mainocc_occupation_indiv_4 mainocc_occupation_indiv_5 mainocc_occupation_indiv_6 mainocc_occupation_indiv_7 mainocc_occupation_indiv_8 edulevel_2 edulevel_3 edulevel_4 edulevel_5 edulevel_6
+
+
 forvalues i=1(1)5 {
-reg f`i'_2016 treat $var [pw=weights]
+reg f`i'_2020 treat $var [pw=weights]
 }
 
+****************************************
+* END
 
 
 
-********** ADSM
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* ADSM
+****************************************
 cls
 use "adsm_n2_r.dta", clear
 
@@ -214,27 +266,24 @@ replace la="HSC/Diploma" if covariate=="edulevel_4"
 replace la="Bachelors" if covariate=="edulevel_5"
 replace la="Post graduate" if covariate=="edulevel_6"
 
-
 egen labpos=mlabvpos(balanced original)
-replace labpos=12 if covariate=="mainocc_occupation_indiv_1"
-replace labpos=12 if covariate=="mainocc_occupation_indiv_2"
-replace labpos=8 if covariate=="mainocc_occupation_indiv_5"
+replace labpos=11 if covariate=="mainocc_occupation_indiv_2"
 replace labpos=12 if covariate=="mainocc_occupation_indiv_4"
+replace labpos=6 if covariate=="mainocc_occupation_indiv_6"
 replace labpos=12 if covariate=="mainocc_occupation_indiv_7"
-replace labpos=12 if covariate=="caste_2"
-replace labpos=12 if covariate=="caste_3"
-
-replace labpos=6 if covariate=="edulevel_2"
-replace labpos=12 if covariate=="edulevel_3"
+replace labpos=7 if covariate=="mainocc_occupation_indiv_8"
+replace labpos=12 if covariate=="sex_2"
+replace labpos=1 if covariate=="caste_2"
+replace labpos=6 if covariate=="edulevel_3"
 replace labpos=6 if covariate=="edulevel_5"
-replace labpos=12 if covariate=="edulevel_6"
+replace labpos=6 if covariate=="age"
 
 twoway scatter balanced original, mlabel(la) mlabvpos(labpos) ///
-xlabel(0(10)60) xmtick(0(5)65) xtitle("ADSM before weighting (%)") ///
-ylabel(0(1)8) ymtick(0(.5)8) ytitle("ADSM after weighting (%)") ///
+xlabel(0(10)40) xmtick(0(5)40) xtitle("ADSM before weighting (%)") ///
+ylabel(0(1)7) ymtick(0(.5)7.5) ytitle("ADSM after weighting (%)") ///
 name(adsm, replace)
+
 graph save "adsm_n2.gph", replace
-*/
 
 ****************************************
 * END
