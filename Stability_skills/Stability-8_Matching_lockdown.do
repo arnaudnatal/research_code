@@ -246,47 +246,7 @@ saveold "N2_CBPS.dta", version(12) replace
 
 
 
-
-
-
-
-
-
-
-
-
-****************************************
-* Reg weight
-****************************************
-cls
-use "neemsis2_r.dta", clear
-
-global var age caste_2 caste_3 sex_2 mainocc_occupation_indiv_1 mainocc_occupation_indiv_2 mainocc_occupation_indiv_4 mainocc_occupation_indiv_5 mainocc_occupation_indiv_6 mainocc_occupation_indiv_7 mainocc_occupation_indiv_8 edulevel_2 edulevel_3 edulevel_4 edulevel_5 edulevel_6
-
-
-forvalues i=1(1)5 {
-reg f`i'_2020 treat $var [pw=weights]
-}
-
-****************************************
-* END
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+/*
 ****************************************
 * ADSM
 ****************************************
@@ -332,6 +292,75 @@ ylabel(0(1)7) ymtick(0(.5)7.5) ytitle("ADSM after weighting (%)") ///
 name(adsm, replace)
 
 graph save "adsm_n2.gph", replace
+
+****************************************
+* END
+*/
+
+
+
+
+
+
+
+
+****************************************
+* Reg weight
+****************************************
+cls
+use "neemsis2_r.dta", clear
+
+global var age caste_2 caste_3 sex_2 mainocc_occupation_indiv_1 mainocc_occupation_indiv_2 mainocc_occupation_indiv_4 mainocc_occupation_indiv_5 mainocc_occupation_indiv_6 mainocc_occupation_indiv_7 mainocc_occupation_indiv_8 edulevel_2 edulevel_3 edulevel_4 edulevel_5 edulevel_6 maritalstatus_2 maritalstatus_3 maritalstatus_4 annualincome_indiv HHsize villageid_2 villageid_3 villageid_4 villageid_5 villageid_6 villageid_7 villageid_8 villageid_9 villageid_10
+
+***** Label
+label var treat "Lockdown (T=1)"
+label var age "Age"
+label var caste_2 "Caste: Middle"
+label var caste_3 "Caste: Upper"
+label var sex_2 "Sex: Female"
+label var mainocc_occupation_indiv_1 "Occ: No occupation"
+label var mainocc_occupation_indiv_2 "Occ: Agri SE"
+label var mainocc_occupation_indiv_4 "Occ: Non-agri casual"
+label var mainocc_occupation_indiv_5 "Occ: Non-agri regular non-qualified"
+label var mainocc_occupation_indiv_6 "Occ: Non-agri regular qualified"
+label var mainocc_occupation_indiv_7 "Occ: Non-agri SE"
+label var mainocc_occupation_indiv_8 "Occ: NREGA"
+label var edulevel_2 "Edu: Primary completed"
+label var edulevel_3 "Edu: High-School"
+label var edulevel_4 "Edu: HSC/Diploma"
+label var edulevel_5 "Edu: Bachelors"
+label var edulevel_6 "Edu: Post graduate"
+label var maritalstatus_2 "MS: Unmarried"
+label var maritalstatus_3 "MS: Widowed"
+label var maritalstatus_4 "MS: Divorce/separated"
+label var annualincome_indiv "Income"
+label var HHsize "HH size"
+
+foreach x in f1_2020 f2_2020 f3_2020 f4_2020 f5_2020 raven_tt num_tt lit_tt cr_OP cr_CO cr_EX cr_AG cr_ES cr_Grit locus {
+qui reg `x' treat $var [pw=weights]
+est store regpw_`x'
+qui reg `x' treat $var
+est store reg_`x'
+}
+
+
+***** Before weighting
+esttab reg_f1_2020 reg_f2_2020 reg_f3_2020 reg_f4_2020 reg_f5_2020 reg_raven_tt reg_num_tt reg_lit_tt reg_cr_OP reg_cr_CO reg_cr_EX reg_cr_AG reg_cr_ES reg_cr_Grit reg_locus using "reg_lock_nopw.tex", replace f ///
+	label booktabs b(3) p(3) eqlabels(none) alignment(S) collabels("\multicolumn{1}{c}{$\beta$ / Std. Err.}") ///
+	drop(_cons $var) ///
+	star(* 0.10 ** 0.05 *** 0.01) ///
+	cells("b(fmt(2)star)" "se(fmt(2)par)") ///
+	refcat(, nolabel) ///
+	stats(N r2 r2_a F p, fmt(0 2 2 2) layout("\multicolumn{1}{c}{@}" "\multicolumn{1}{S}{@}" "\multicolumn{1}{S}{@}" "\multicolumn{1}{S}{@}" "\multicolumn{1}{S}{@}") labels(`"Observations"' `"\(R^{2}\)"' `"Adjusted \(R^{2}\)"' `"F-stat"' `"p-value"'))
+
+***** After weighting
+esttab regpw_f1_2020 regpw_f2_2020 regpw_f3_2020 regpw_f4_2020 regpw_f5_2020 regpw_raven_tt regpw_num_tt regpw_lit_tt regpw_cr_OP regpw_cr_CO regpw_cr_EX regpw_cr_AG regpw_cr_ES regpw_cr_Grit regpw_locus using "reg_lock_pw.tex", replace f ///
+	label booktabs b(3) p(3) eqlabels(none) alignment(S) collabels("\multicolumn{1}{c}{$\beta$ / Std. Err.}") ///
+	drop(_cons $var) ///
+	star(* 0.10 ** 0.05 *** 0.01) ///
+	cells("b(fmt(2)star)" "se(fmt(2)par)") ///
+	refcat(, nolabel) ///
+	stats(N r2 r2_a F p, fmt(0 2 2 2) layout("\multicolumn{1}{c}{@}" "\multicolumn{1}{S}{@}" "\multicolumn{1}{S}{@}" "\multicolumn{1}{S}{@}" "\multicolumn{1}{S}{@}") labels(`"Observations"' `"\(R^{2}\)"' `"Adjusted \(R^{2}\)"' `"F-stat"' `"p-value"'))
 
 ****************************************
 * END

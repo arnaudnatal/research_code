@@ -57,7 +57,8 @@ drop _merge
 
 
 ********** 2016
-drop canreadcard1a2016 canreadcard1b2016 canreadcard1c2016 canreadcard22016 numeracy12016 numeracy22016 numeracy32016 numeracy42016 a12016 a22016 a32016 a42016 a52016 a62016 a72016 a82016 a92016 a102016 a112016 a122016 ab12016 ab22016 ab32016 ab42016 ab52016 ab62016 ab72016 ab82016 ab92016 ab102016 ab112016 ab122016 b12016 b22016 b32016 b42016 b52016 b62016 b72016 b82016 b92016 b102016 b112016 b122016
+*canreadcard1a2016 canreadcard1b2016 canreadcard1c2016 canreadcard22016 numeracy12016 numeracy22016 numeracy32016 numeracy42016 
+drop a12016 a22016 a32016 a42016 a52016 a62016 a72016 a82016 a92016 a102016 a112016 a122016 ab12016 ab22016 ab32016 ab42016 ab52016 ab62016 ab72016 ab82016 ab92016 ab102016 ab112016 ab122016 b12016 b22016 b32016 b42016 b52016 b62016 b72016 b82016 b92016 b102016 b112016 b122016
 
 drop curious2016 interestedbyart2016 inventive2016 liketothink2016 newideas2016 activeimagination2016 organized2016 makeplans2016 workhard2016 appointmentontime2016 completeduties2016 enjoypeople2016 sharefeelings2016 enthusiastic2016 talktomanypeople2016 talkative2016 expressingthoughts2016 workwithother2016 understandotherfeeling2016 trustingofother2016 toleratefaults2016 forgiveother2016 helpfulwithothers2016 managestress2016 staycalm2016 tryhard2016 stickwithgoals2016 goaftergoal2016 finishwhatbegin2016 finishtasks2016 keepworking2016
 
@@ -75,8 +76,8 @@ drop curious2020 interestedbyart2020 inventive2020 liketothink2020 newideas2020 
 
 drop cr_curious2020 cr_interestedbyart2020 cr_inventive2020 cr_liketothink2020 cr_newideas2020 cr_activeimagination2020 cr_organized2020 cr_makeplans2020 cr_workhard2020 cr_appointmentontime2020 cr_completeduties2020 cr_enjoypeople2020 cr_sharefeelings2020 cr_enthusiastic2020 cr_talktomanypeople2020 cr_talkative2020 cr_expressingthoughts2020 cr_workwithother2020 cr_understandotherfeeling2020 cr_trustingofother2020 cr_toleratefaults2020 cr_forgiveother2020 cr_helpfulwithothers2020 cr_managestress2020 cr_staycalm2020 cr_tryhard2020 cr_stickwithgoals2020 cr_goaftergoal2020 cr_finishwhatbegin2020 cr_finishtasks2020 cr_keepworking2020
 
-
-drop canreadcard1a2020 canreadcard1b2020 canreadcard1c2020 canreadcard22020 numeracy12020 numeracy22020 numeracy32020 numeracy42020 a12020 a22020 a32020 a42020 a52020 a62020 a72020 a82020 a92020 a102020 a112020 a122020 ab12020 ab22020 ab32020 ab42020 ab52020 ab62020 ab72020 ab82020 ab92020 ab102020 ab112020 ab122020 b12020 b22020 b32020 b42020 b52020 b62020 b72020 b82020 b92020 b102020 b112020 b122020
+*canreadcard1a2020 canreadcard1b2020 canreadcard1c2020 canreadcard22020 numeracy12020 numeracy22020 numeracy32020 numeracy42020 numeracy52020 numeracy62020
+drop a12020 a22020 a32020 a42020 a52020 a62020 a72020 a82020 a92020 a102020 a112020 a122020 ab12020 ab22020 ab32020 ab42020 ab52020 ab62020 ab72020 ab82020 ab92020 ab102020 ab112020 ab122020 b12020 b22020 b32020 b42020 b52020 b62020 b72020 b82020 b92020 b102020 b112020 b122020
 
 
 drop ra12020 rab12020 rb12020 ra22020 rab22020 rb22020 ra32020 rab32020 rb32020 ra42020 rab42020 rb42020 ra52020 rab52020 rb52020 ra62020 rab62020 rb62020 ra72020 rab72020 rb72020 ra82020 rab82020 rb82020 ra92020 rab92020 rb92020 ra102020 rab102020 rb102020 ra112020 rab112020 rb112020 ra122020 rab122020 rb122020 set_a2020 set_ab2020 set_b2020
@@ -119,6 +120,32 @@ save "panel_stab_wide_v3", replace
 
 
 
+****************************************
+* Cognitive
+****************************************
+use "panel_stab_wide_v3", clear
+
+foreach x in numeracy12016 numeracy22016 numeracy32016 numeracy42016 numeracy12020 numeracy22020 numeracy32020 numeracy42020 {
+recode `x' (2=0)
+}
+
+egen num2_tt2016=rowtotal(numeracy12016 numeracy22016 numeracy32016 numeracy42016)
+egen num2_tt2020=rowtotal(numeracy12020 numeracy22020 numeracy32020 numeracy42020)
+
+***** Diff
+sum num2_tt2016 num2_tt2020
+sum lit_tt2016 lit_tt2020
+sum raven_tt2016 raven_tt2020
+
+gen diff_num=num2_tt2020-num2_tt2016
+gen diff_lit=lit_tt2020-lit_tt2016
+gen diff_raven=raven_tt2020-raven_tt2016
+
+save "panel_stab_wide_v31", replace
+****************************************
+* END
+
+
 
 
 
@@ -130,7 +157,7 @@ save "panel_stab_wide_v3", replace
 ****************************************
 * Stability of ES
 ****************************************
-use "panel_stab_wide_v3", clear
+use "panel_stab_wide_v31", clear
 
 
 rename f1_2016 fa_ES2016

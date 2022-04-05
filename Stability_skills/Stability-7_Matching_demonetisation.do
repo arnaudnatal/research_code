@@ -324,7 +324,5 @@ esttab regpw_f1_2016 regpw_f2_2016 regpw_f3_2016 regpw_f4_2016 regpw_f5_2016 reg
 	refcat(, nolabel) ///
 	stats(N r2 r2_a F p, fmt(0 2 2 2) layout("\multicolumn{1}{c}{@}" "\multicolumn{1}{S}{@}" "\multicolumn{1}{S}{@}" "\multicolumn{1}{S}{@}" "\multicolumn{1}{S}{@}") labels(`"Observations"' `"\(R^{2}\)"' `"Adjusted \(R^{2}\)"' `"F-stat"' `"p-value"'))
 
-
-	
 ****************************************
 * END
