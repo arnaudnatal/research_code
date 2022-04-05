@@ -336,8 +336,9 @@ label var maritalstatus_4 "MS: Divorce/separated"
 label var annualincome_indiv "Income"
 label var HHsize "HH size"
 
+cls
 foreach x in f1_2020 f2_2020 f3_2020 f4_2020 f5_2020 raven_tt num_tt lit_tt cr_OP cr_CO cr_EX cr_AG cr_ES cr_Grit locus {
-qui reg `x' treat $var [pw=weights]
+reg `x' treat $var [pw=weights]
 est store regpw_`x'
 qui reg `x' treat $var
 est store reg_`x'

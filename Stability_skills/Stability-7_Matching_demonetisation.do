@@ -298,8 +298,9 @@ label var maritalstatus_4 "MS: Divorce/separated"
 label var annualincome_indiv "Income"
 label var HHsize "HH size"
 
+cls
 foreach x in f1_2016 f2_2016 f3_2016 f4_2016 f5_2016 raven_tt num_tt lit_tt cr_OP cr_CO cr_EX cr_AG cr_ES cr_Grit {
-qui reg `x' treat $var [pw=weights]
+reg `x' treat $var [pw=weights]
 est store regpw_`x'
 qui reg `x' treat $var
 est store reg_`x'
