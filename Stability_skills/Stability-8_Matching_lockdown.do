@@ -149,18 +149,25 @@ save"$wave3~matching_v2.dta", replace
 cls
 use "$wave3~matching_v2.dta", clear
 
+********** HHsize
+drop if livinghome==3
+drop if livinghome==4
+drop if INDID_left!=.
+bys HHID_panel: egen HHsize=sum(1)
+
+
 ********** Initialization
 drop if egoid==0
 
 fre mainocc_occupation_indiv
 recode mainocc_occupation_indiv (.=0)
 
-global quali caste sex mainocc_occupation_indiv edulevel villageid
+global quali caste sex mainocc_occupation_indiv edulevel villageid maritalstatus
 foreach x in $quali {
 ta `x', gen(`x'_)
 }
 
-global var age caste_2 caste_3 sex_2 mainocc_occupation_indiv_1 mainocc_occupation_indiv_2 mainocc_occupation_indiv_4 mainocc_occupation_indiv_5 mainocc_occupation_indiv_6 mainocc_occupation_indiv_7 mainocc_occupation_indiv_8 edulevel_2 edulevel_3 edulevel_4 edulevel_5 edulevel_6
+global var age caste_2 caste_3 sex_2 mainocc_occupation_indiv_1 mainocc_occupation_indiv_2 mainocc_occupation_indiv_4 mainocc_occupation_indiv_5 mainocc_occupation_indiv_6 mainocc_occupation_indiv_7 mainocc_occupation_indiv_8 edulevel_2 edulevel_3 edulevel_4 edulevel_5 edulevel_6 maritalstatus_2 maritalstatus_3 maritalstatus_4
 
 
 
@@ -185,8 +192,6 @@ rename treattos_6 treat
 
 
 ********** Locus of control
-fre locuscontrol1 locuscontrol2 locuscontrol3 locuscontrol4 locuscontrol5 locuscontrol6
-
 /*
 1. I like taking responsibility.
 2. I find it best to make decisions by myself rather than to rely on fate.
@@ -194,32 +199,45 @@ fre locuscontrol1 locuscontrol2 locuscontrol3 locuscontrol4 locuscontrol5 locusc
 4. Success often depends more on luck than on effort.
 5. I often have the feeling that I have little influence over what happens to me.
 6. When I make important decisions, I often look at what others have done.
-
-
-1 	Applies to me with a very large extent
-2 	Applies to me in a great extent
-3 	Applies to me in some extent
-4 	Hardly applies to me at all
-5 	Does not apply to me at all
-
-1 -> 5 =ext
-2 -> 5 =ext
-3 -> 5 =ext
-4 -> 1 =ext
-5 -> 1 =ext
-6 -> 1 =ext
-
-Recode 1 2 3 ou 4 5 6 pour max
-
 */
 
+global locus locuscontrol1 locuscontrol2 locuscontrol3 locuscontrol4 locuscontrol5 locuscontrol6
+fre $locus
+
+/*
+label define locusscale2 1"VL extent" 2"Great extent" 3"Some extent" 4"Hardly applies" 5"Not at all", replace
+forvalues i=1(1)6{
+label values locuscontrol`i' locusscale2
+}
+heatplot locuscontrol1 locuscontrol2, colors(HSV grays, reverse) statistic(count) discrete
+*/
+
+omegacoef $locus  // .80
+
+* Reverse locuscontrol4 5 6 for min=intern and max=extern as locuscontrol1 2 3
+forvalues i=4(1)6 {
+vreverse locuscontrol`i', gen(locuscontrol`i'_rv)
+}
+
+* Verification
+global locus2 locuscontrol1 locuscontrol2 locuscontrol3 locuscontrol4_rv locuscontrol5_rv locuscontrol6_rv
+fre $locus2
+
+omegacoef $locus2
+
+* Score
+egen locus=rowmean($locus2)
+replace locus=round(locus, .01)
+label var locus "intern -3-> extern  "
+
+tabstat locus, stat(n mean sd p50) by(sex)
+
+
 ********** Prepare to R
-preserve
-keep f1_2020 f2_2020 f3_2020 f4_2020 f5_2020 $var treat villageid_1 villageid_2 villageid_3 villageid_4 villageid_5 villageid_6 villageid_7 villageid_8 villageid_9 villageid_10 HHID_panel INDID_panel egoid cr_OP cr_CO cr_EX cr_AG cr_ES cr_Grit lit_tt num_tt raven_tt
-rename dummydemonetisation treat 
+keep f1_2020 f2_2020 f3_2020 f4_2020 f5_2020 $var treat villageid_2 villageid_3 villageid_4 villageid_5 villageid_6 villageid_7 villageid_8 villageid_9 villageid_10 HHID_panel INDID_panel egoid cr_OP cr_CO cr_EX cr_AG cr_ES cr_Grit lit_tt num_tt raven_tt annualincome_indiv assets_noland HHsize locus
+
 keep if treat!=.
 saveold "N2_CBPS.dta", version(12) replace
-restore
 ****************************************
 * END
 
