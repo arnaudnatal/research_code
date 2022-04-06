@@ -308,7 +308,7 @@ est store reg_`x'
 
 
 ***** Before weighting
-esttab reg_f1_2016 reg_f2_2016 reg_f3_2016 reg_f4_2016 reg_f5_2016 reg_raven_tt reg_num_tt reg_lit_tt reg_cr_OP reg_cr_CO reg_cr_EX reg_cr_AG reg_cr_ES reg_cr_Grit using "reg_demo_nopw.tex", replace f ///
+esttab reg_f1_2016 reg_f2_2016 reg_f3_2016 reg_f5_2016 reg_raven_tt reg_num_tt reg_lit_tt using "reg_demo_nopw.tex", replace f ///
 	label booktabs b(3) p(3) eqlabels(none) alignment(S) collabels("\multicolumn{1}{c}{$\beta$ / Std. Err.}") ///
 	drop(_cons $var) ///
 	star(* 0.10 ** 0.05 *** 0.01) ///
@@ -316,8 +316,9 @@ esttab reg_f1_2016 reg_f2_2016 reg_f3_2016 reg_f4_2016 reg_f5_2016 reg_raven_tt 
 	refcat(, nolabel) ///
 	stats(N r2 r2_a F p, fmt(0 2 2 2) layout("\multicolumn{1}{c}{@}" "\multicolumn{1}{S}{@}" "\multicolumn{1}{S}{@}" "\multicolumn{1}{S}{@}" "\multicolumn{1}{S}{@}") labels(`"Observations"' `"\(R^{2}\)"' `"Adjusted \(R^{2}\)"' `"F-stat"' `"p-value"'))
 
+
 ***** After weighting
-esttab regpw_f1_2016 regpw_f2_2016 regpw_f3_2016 regpw_f4_2016 regpw_f5_2016 regpw_raven_tt regpw_num_tt regpw_lit_tt regpw_cr_OP regpw_cr_CO regpw_cr_EX regpw_cr_AG regpw_cr_ES regpw_cr_Grit using "reg_demo_pw.tex", replace f ///
+esttab regpw_f1_2016 regpw_f2_2016 regpw_f3_2016 regpw_f5_2016 regpw_raven_tt regpw_num_tt regpw_lit_tt using "reg_demo_pw.tex", replace f ///
 	label booktabs b(3) p(3) eqlabels(none) alignment(S) collabels("\multicolumn{1}{c}{$\beta$ / Std. Err.}") ///
 	drop(_cons $var) ///
 	star(* 0.10 ** 0.05 *** 0.01) ///
