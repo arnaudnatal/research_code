@@ -145,39 +145,40 @@ ta diff_num
 ta diff_lit
 ta diff_raven
 
+
 ********** Graph
-histogram diff_num, percent dis ///
-xtitle("Numeracy Score Difference (=NS2020-NS2016)") ytitle("%") ///
+set graph off
+
+histogram diff_num, percent dis xline(0) ///
+xtitle("Numeracy Score Difference" "=2020-2016") ytitle("%") ///
 xlabel(-4(1)4) ylabel(0(5)30) ///
 name(num, replace)
-graph save "diff_num.gph", replace
-graph export "diff_num.pdf", replace
+*graph save "diff_num.gph", replace
+*graph export "diff_num.pdf", replace
 
-histogram diff_lit, percent ///
-xtitle("Literacy Score Difference (=LS2020-LS2016)") ytitle("%") ///
+histogram diff_lit, percent xline(0) ///
+xtitle("Literacy Score Difference" "=2020-2016") ytitle("%") ///
 xlabel(-4(1)4) ylabel(0(10)50) ///
 xmtick(-4(.5)4) ymtick(0(5)50) ///
 name(lit, replace)
-graph save "diff_lit.gph", replace
-graph export "diff_lit.pdf", replace
+*graph save "diff_lit.gph", replace
+*graph export "diff_lit.pdf", replace
 
-histogram diff_raven, percent dis ///
-xtitle("Raven Score Difference (=RS2020-RS2016)") ytitle("%") ///
+histogram diff_raven, percent dis xline(0) ///
+xtitle("Raven Score Difference" "=2020-2016") ytitle("%") ///
 xlabel(-40(10)30) ylabel(0(1)7) ///
 xmtick(-40(5)30) ymtick() ///
 name(raven, replace)
-graph save "diff_rav.gph", replace
-graph export "diff_rav.pdf", replace
+*graph save "diff_rav.gph", replace
+*graph export "diff_rav.pdf", replace
 
+***** Combine
+graph combine num lit raven, col(3) name(cog_com, replace)
 
-/*
-stripplot diff_lit, vert ///
-stack width(.05) jitter(2) ///
-box(barw(0.1)) boffset(-0.1) pctile(10) ///
-ms(oh oh oh) msize(small) mc(red%30) ///
-yla(, ang(h)) xla(, noticks) ///
-name(`x'_`y', replace)
-*/
+graph save "diff_cog.gph", replace
+graph export "diff_cog.pdf", replace
+
+set graph on
 
 save "panel_stab_wide_v31", replace
 ****************************************
