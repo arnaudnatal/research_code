@@ -26,9 +26,8 @@ macro drop _all
 
 * Scheme
 *net install schemepack, from("https://raw.githubusercontent.com/asjadnaqvi/Stata-schemes/main/schemes/") replace
-*set scheme plotplain
-set scheme white_tableau
-*set scheme plotplain
+*set scheme white_tableau
+set scheme plotplain
 grstyle init
 grstyle set plain, nogrid
 
@@ -257,41 +256,26 @@ replace balanced=balanced*100
 replace original=original*100
 
 gen la=""
-replace la="Age" if covariate=="age"
-replace la="Middle" if covariate=="caste_2"
-replace la="Upper" if covariate=="caste_3"
 replace la="Female" if covariate=="sex_2"
-replace la="No occup" if covariate=="mainocc_occupation_indiv_1"
-replace la="Agri SE" if covariate=="mainocc_occupation_indiv_2"
-replace la="Non-agri casual" if covariate=="mainocc_occupation_indiv_4"
-replace la="Non-agri reg non-qualified" if covariate=="mainocc_occupation_indiv_5"
-replace la="Non-agri reg qualified" if covariate=="mainocc_occupation_indiv_6"
-replace la="Non-agri SE" if covariate=="mainocc_occupation_indiv_7"
-replace la="NREGA" if covariate=="mainocc_occupation_indiv_8"
-replace la="Primary comp" if covariate=="edulevel_2"
-replace la="High school" if covariate=="edulevel_3"
-replace la="HSC/Diploma" if covariate=="edulevel_4"
-replace la="Bachelors" if covariate=="edulevel_5"
-replace la="Post graduate" if covariate=="edulevel_6"
+replace la="MANAM" if covariate=="villageid_7"
+replace la="SEM" if covariate=="villageid_10"
+
 
 egen labpos=mlabvpos(balanced original)
-replace labpos=11 if covariate=="mainocc_occupation_indiv_2"
-replace labpos=12 if covariate=="mainocc_occupation_indiv_4"
-replace labpos=6 if covariate=="mainocc_occupation_indiv_6"
-replace labpos=12 if covariate=="mainocc_occupation_indiv_7"
-replace labpos=7 if covariate=="mainocc_occupation_indiv_8"
-replace labpos=12 if covariate=="sex_2"
-replace labpos=1 if covariate=="caste_2"
-replace labpos=6 if covariate=="edulevel_3"
-replace labpos=6 if covariate=="edulevel_5"
-replace labpos=6 if covariate=="age"
+replace labpos=12 if la=="Female"
+replace labpos=12 if la=="KOR"
+replace labpos=12 if la=="SEM"
 
-twoway scatter balanced original, mlabel(la) mlabvpos(labpos) ///
-xlabel(0(10)40) xmtick(0(5)40) xtitle("ADSM before weighting (%)") ///
-ylabel(0(1)7) ymtick(0(.5)7.5) ytitle("ADSM after weighting (%)") ///
-name(adsm, replace)
 
-graph save "adsm_n2.gph", replace
+twoway ///
+(scatter balanced original, mlab(la) mlabvpos(labpos) xline(20)) ///
+(function y=x, range(0 13) lpattern(shortdash) lcolor(gs8)), ///
+xlabel(0(5)40) xmtick(0(2.5)40) xtitle("ADSM before weighting (%)") ///
+ylabel(0(3)12) ymtick(0(1)13) ytitle("ADSM after weighting (%)") ///
+legend(off) name(adsm, replace)
+
+graph export "ADSM_lock.pdf", as(pdf) replace
+graph save "ADSM_lock.gph", replace
 
 ****************************************
 * END

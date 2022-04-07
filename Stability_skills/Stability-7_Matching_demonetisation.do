@@ -24,9 +24,8 @@ macro drop _all
 
 * Scheme
 *net install schemepack, from("https://raw.githubusercontent.com/asjadnaqvi/Stata-schemes/main/schemes/") replace
-*set scheme plotplain
-set scheme white_tableau
-*set scheme plotplain
+*set scheme white_tableau
+set scheme plotplain
 grstyle init
 grstyle set plain, nogrid
 
@@ -200,57 +199,23 @@ replace balanced=balanced*100
 replace original=original*100
 
 gen la=""
-replace la="Age" if covariate=="age"
-replace la="Middle" if covariate=="caste_2"
-replace la="Upper" if covariate=="caste_3"
-replace la="Female" if covariate=="sex_2"
-replace la="No occup" if covariate=="mainocc_occupation_indiv_1"
-replace la="Agri SE" if covariate=="mainocc_occupation_indiv_2"
-replace la="Non-agri casual" if covariate=="mainocc_occupation_indiv_4"
-replace la="Non-agri reg non-qualified" if covariate=="mainocc_occupation_indiv_5"
-replace la="Non-agri reg qualified" if covariate=="mainocc_occupation_indiv_6"
-replace la="Non-agri SE" if covariate=="mainocc_occupation_indiv_7"
-replace la="NREGA" if covariate=="mainocc_occupation_indiv_8"
-replace la="Primary comp" if covariate=="edulevel_2"
-replace la="High school" if covariate=="edulevel_3"
-replace la="HSC/Diploma" if covariate=="edulevel_4"
-replace la="Bachelors" if covariate=="edulevel_5"
-replace la="Post graduate" if covariate=="edulevel_6"
-replace la="HH size" if covariate=="HHsize"
-replace la="GOV" if covariate=="villageid_2"
-replace la="KAR" if covariate=="villageid_3"
-replace la="KOR" if covariate=="villageid_4"
-replace la="KUV" if covariate=="villageid_5"
-replace la="MAN" if covariate=="villageid_6"
-replace la="MANAM" if covariate=="villageid_7"
-replace la="NAT" if covariate=="villageid_8"
 replace la="ORA" if covariate=="villageid_9"
 replace la="SEM" if covariate=="villageid_10"
-replace la="Unmarried" if covariate=="maritalstatus_2"
-replace la="Widowed" if covariate=="maritalstatus_3"
-replace la="Separate/divorced" if covariate=="maritalstatus_4"
-replace la="Income" if covariate=="annualincome_indiv"
-
 
 egen labpos=mlabvpos(balanced original)
-replace labpos=12 if covariate=="mainocc_occupation_indiv_1"
-replace labpos=12 if covariate=="mainocc_occupation_indiv_2"
-replace labpos=8 if covariate=="mainocc_occupation_indiv_5"
-replace labpos=12 if covariate=="mainocc_occupation_indiv_4"
-replace labpos=12 if covariate=="mainocc_occupation_indiv_7"
-replace labpos=12 if covariate=="caste_2"
-replace labpos=12 if covariate=="caste_3"
+replace labpos=11 if la=="ORA"
+replace labpos=12 if la=="SEM"
 
-replace labpos=6 if covariate=="edulevel_2"
-replace labpos=12 if covariate=="edulevel_3"
-replace labpos=6 if covariate=="edulevel_5"
-replace labpos=12 if covariate=="edulevel_6"
-
-twoway scatter balanced original, mlabel(la) mlabvpos(labpos) ///
+twoway ///
+(scatter balanced original, mlab(la) mlabvpos(labpos) yline(20) xline(20)) ///
+(function y=x, range(0 20) lpattern(shortdash) lcolor(gs8)), ///
 xlabel(0(10)60) xmtick(0(5)65) xtitle("ADSM before weighting (%)") ///
-ylabel(0(1)8) ymtick(0(.5)8) ytitle("ADSM after weighting (%)") ///
-name(adsm, replace)
-graph save "adsm.gph", replace
+ylabel(0(5)35) ymtick(0(2.5)35) ytitle("ADSM after weighting (%)") ///
+legend(off) name(adsm, replace)
+
+graph export "ADSM_demo.pdf", as(pdf) replace
+graph save "ADSM_demo.gph", replace
+
 ****************************************
 * END
 */
