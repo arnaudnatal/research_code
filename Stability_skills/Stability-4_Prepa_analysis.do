@@ -560,7 +560,7 @@ global varx fa_ES2016
 global vary fa_ES2020
 ****
 **** Enter nb of bin
-global nbin 10
+global nbin 5
 ****
 **** Calculations
 xtile x=$varx, n($nbin)
