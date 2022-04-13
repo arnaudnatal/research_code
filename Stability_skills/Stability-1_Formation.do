@@ -120,6 +120,7 @@ keep HHINDID villageareaid villageid_new HHID_panel INDID_panel panel egoid year
 *** Username
 replace username="Antoni" if username=="1"
 replace username="Antoni - Vivek Radja" if username=="1 2"
+replace username="Antoni - Raja Annamalai" if username=="1 6"
 replace username="Vivek Radja" if username=="2"
 replace username="Vivek Radja - Mayan" if username=="2 5"
 replace username="Vivek Radja - Raja Annamalai" if username=="2 6"

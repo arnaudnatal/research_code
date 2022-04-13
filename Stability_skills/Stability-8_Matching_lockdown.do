@@ -68,6 +68,27 @@ global wave3 "NEEMSIS2-HH"
 cls
 use "$wave3", clear
 
+
+********** How much HH regarding date of survey?
+gen tos=dofc(start_HH_quest)
+format tos %td
+ta tos
+
+ta tos if tos<d(01jan2021)
+ta tos if tos>d(01jun2021)
+
+gen swt=.
+replace swt=1 if tos<d(05apr2021)
+replace swt=2 if tos>=d(05apr2021) & tos<=d(15jun2021)
+replace swt=3 if tos>d(15jun2021)
+
+preserve
+duplicates drop HHID_panel, force
+ta swt
+restore
+
+
+
 ********** Imputation for non corrected one
 global big5cr cr_curious cr_interestedbyart cr_repetitivetasks cr_inventive cr_liketothink cr_newideas cr_activeimagination cr_organized cr_makeplans cr_workhard cr_appointmentontime cr_putoffduties cr_easilydistracted cr_completeduties cr_enjoypeople cr_sharefeelings cr_shywithpeople cr_enthusiastic cr_talktomanypeople cr_talkative cr_expressingthoughts cr_workwithother cr_understandotherfeeling cr_trustingofother cr_rudetoother cr_toleratefaults cr_forgiveother cr_helpfulwithothers cr_managestress cr_nervous cr_changemood cr_feeldepressed cr_easilyupset cr_worryalot cr_staycalm cr_tryhard cr_stickwithgoals cr_goaftergoal cr_finishwhatbegin cr_finishtasks cr_keepworking
 
@@ -148,6 +169,13 @@ save"$wave3~matching_v2.dta", replace
 cls
 use "$wave3~matching_v2.dta", clear
 
+********** Enumerator
+fre username_str
+encode username_str, gen(username_code)
+fre username_code
+
+
+
 ********** HHsize
 drop if livinghome==3
 drop if livinghome==4
@@ -161,19 +189,16 @@ drop if egoid==0
 fre mainocc_occupation_indiv
 recode mainocc_occupation_indiv (.=0)
 
-global quali caste sex mainocc_occupation_indiv edulevel villageid maritalstatus
+global quali caste sex mainocc_occupation_indiv edulevel villageid maritalstatus username_code
 foreach x in $quali {
 ta `x', gen(`x'_)
 }
 
-global var age caste_2 caste_3 sex_2 mainocc_occupation_indiv_1 mainocc_occupation_indiv_2 mainocc_occupation_indiv_4 mainocc_occupation_indiv_5 mainocc_occupation_indiv_6 mainocc_occupation_indiv_7 mainocc_occupation_indiv_8 edulevel_2 edulevel_3 edulevel_4 edulevel_5 edulevel_6 maritalstatus_2 maritalstatus_3 maritalstatus_4
+global var age caste_2 caste_3 sex_2 mainocc_occupation_indiv_1 mainocc_occupation_indiv_2 mainocc_occupation_indiv_4 mainocc_occupation_indiv_5 mainocc_occupation_indiv_6 mainocc_occupation_indiv_7 mainocc_occupation_indiv_8 edulevel_2 edulevel_3 edulevel_4 edulevel_5 edulevel_6 maritalstatus_2 maritalstatus_3 maritalstatus_4 username_code_1 username_code_3 username_code_4 username_code_5 username_code_6 username_code_7 username_code_8
 
 
 
 ***** y var
-fre start_HH_quest
-gen tos=dofc(start_HH_quest)
-format tos %td
 ta tos
 
 ta tos if tos<d(01jan2021)
@@ -189,6 +214,7 @@ At 6 month diff
 
 rename treattos_6 treat
 
+ta treat, m
 
 ********** Locus of control
 /*
@@ -267,8 +293,15 @@ replace labpos=12 if la=="KOR"
 replace labpos=12 if la=="SEM"
 
 
+*twoway ///
+*(scatter balanced original, mlab(la) mlabvpos(labpos) xline(20)) ///
+*(function y=x, range(0 13) lpattern(shortdash) lcolor(gs8)), ///
+*xlabel(0(5)40) xmtick(0(2.5)40) xtitle("ADSM before weighting (%)") ///
+*ylabel(0(3)12) ymtick(0(1)13) ytitle("ADSM after weighting (%)") ///
+*legend(off) name(adsm, replace)
+
 twoway ///
-(scatter balanced original, mlab(la) mlabvpos(labpos) xline(20)) ///
+(scatter balanced original, xline(20)) ///
 (function y=x, range(0 13) lpattern(shortdash) lcolor(gs8)), ///
 xlabel(0(5)40) xmtick(0(2.5)40) xtitle("ADSM before weighting (%)") ///
 ylabel(0(3)12) ymtick(0(1)13) ytitle("ADSM after weighting (%)") ///
@@ -294,7 +327,7 @@ graph save "ADSM_lock.gph", replace
 cls
 use "neemsis2_r.dta", clear
 
-global var age caste_2 caste_3 sex_2 mainocc_occupation_indiv_1 mainocc_occupation_indiv_2 mainocc_occupation_indiv_4 mainocc_occupation_indiv_5 mainocc_occupation_indiv_6 mainocc_occupation_indiv_7 mainocc_occupation_indiv_8 edulevel_2 edulevel_3 edulevel_4 edulevel_5 edulevel_6 maritalstatus_2 maritalstatus_3 maritalstatus_4 annualincome_indiv HHsize villageid_2 villageid_3 villageid_4 villageid_5 villageid_6 villageid_7 villageid_8 villageid_9 villageid_10
+global var age caste_2 caste_3 sex_2 mainocc_occupation_indiv_1 mainocc_occupation_indiv_2 mainocc_occupation_indiv_4 mainocc_occupation_indiv_5 mainocc_occupation_indiv_6 mainocc_occupation_indiv_7 mainocc_occupation_indiv_8 edulevel_2 edulevel_3 edulevel_4 edulevel_5 edulevel_6 maritalstatus_2 maritalstatus_3 maritalstatus_4 annualincome_indiv HHsize villageid_2 villageid_3 villageid_4 villageid_5 villageid_6 villageid_7 villageid_8 villageid_9 villageid_10 username_code_1 username_code_3 username_code_4 username_code_5 username_code_6 username_code_7 username_code_8
 
 ***** Label
 label var treat "Lockdown (T=1)"

@@ -146,6 +146,38 @@ save"$wave2~matching_v2.dta", replace
 cls
 use "$wave2~matching_v2.dta", clear
 
+********** username
+replace username="Antoni" if username=="1"
+replace username="Antoni - Vivek Radja" if username=="1 2"
+replace username="Antoni - Raja Annamalai" if username=="1 6"
+replace username="Vivek Radja" if username=="2"
+replace username="Vivek Radja - Mayan" if username=="2 5"
+replace username="Vivek Radja - Raja Annamalai" if username=="2 6"
+replace username="Kumaresh" if username=="3"
+replace username="Kumaresh - Sithanantham" if username=="3 4"
+replace username="Kumaresh - Raja Annamalai" if username=="3 6"
+replace username="Sithanantham" if username=="4"
+replace username="Sithanantham - Raja Annamalai" if username=="4 6"
+replace username="Mayan" if username=="5"
+replace username="Mayan - Raja Annamalai" if username=="5 6"
+replace username="Raja Annamalai" if username=="6"
+replace username="Raja Annamalai - Pazhani" if username=="6 7"
+replace username="Pazhani" if username=="7"
+
+replace username="Antoni" if username=="Antoni - Vivek Radja"
+replace username="Kumaresh" if username=="Kumaresh - Raja Annamalai"
+replace username="Kumaresh" if username=="Kumaresh - Sithanantham"
+replace username="Raja Annamalai" if username=="Antoni - Raja Annamalai"
+replace username="Raja Annamalai" if username=="Mayan - Raja Annamalai"
+replace username="Raja Annamalai" if username=="Raja Annamalai - Pazhani"
+replace username="Raja Annamalai" if username=="Sithanantham - Raja Annamalai"
+replace username="Raja Annamalai" if username=="Vivek Radja - Raja Annamalai"
+replace username="Mayan" if username=="Vivek Radja - Mayan"
+
+encode username, gen(username_code)
+
+ta username_code
+
 
 ********** HHsize
 drop if livinghome==3
@@ -159,12 +191,12 @@ drop if egoid==0
 fre mainocc_occupation_indiv
 recode mainocc_occupation_indiv (.=0)
 
-global quali caste sex mainocc_occupation_indiv edulevel villageid maritalstatus
+global quali caste sex mainocc_occupation_indiv edulevel villageid maritalstatus username_code
 foreach x in $quali {
 ta `x', gen(`x'_)
 }
 
-global var age caste_2 caste_3 sex_2 mainocc_occupation_indiv_1 mainocc_occupation_indiv_2 mainocc_occupation_indiv_4 mainocc_occupation_indiv_5 mainocc_occupation_indiv_6 mainocc_occupation_indiv_7 mainocc_occupation_indiv_8 edulevel_2 edulevel_3 edulevel_4 edulevel_5 edulevel_6 maritalstatus_2 maritalstatus_3 maritalstatus_4
+global var age caste_2 caste_3 sex_2 mainocc_occupation_indiv_1 mainocc_occupation_indiv_2 mainocc_occupation_indiv_4 mainocc_occupation_indiv_5 mainocc_occupation_indiv_6 mainocc_occupation_indiv_7 mainocc_occupation_indiv_8 edulevel_2 edulevel_3 edulevel_4 edulevel_5 edulevel_6 maritalstatus_2 maritalstatus_3 maritalstatus_4 username_code_1 username_code_2 username_code_3 username_code_4 username_code_5 username_code_7
 
 global treat dummydemonetisation
 
@@ -206,11 +238,19 @@ egen labpos=mlabvpos(balanced original)
 replace labpos=11 if la=="ORA"
 replace labpos=12 if la=="SEM"
 
+*twoway ///
+*(scatter balanced original, mlab(la) mlabvpos(labpos) yline(20) xline(20)) ///
+*(function y=x, range(0 20) lpattern(shortdash) lcolor(gs8)), ///
+*xlabel(0(10)60) xmtick(0(5)65) xtitle("ADSM before weighting (%)") ///
+*ylabel(0(5)35) ymtick(0(2.5)35) ytitle("ADSM after weighting (%)") ///
+*legend(off) name(adsm, replace)
+
+
 twoway ///
-(scatter balanced original, mlab(la) mlabvpos(labpos) yline(20) xline(20)) ///
-(function y=x, range(0 20) lpattern(shortdash) lcolor(gs8)), ///
+(scatter balanced original, xline(20)) ///
+(function y=x, range(0 10) lpattern(shortdash) lcolor(gs8)), ///
 xlabel(0(10)60) xmtick(0(5)65) xtitle("ADSM before weighting (%)") ///
-ylabel(0(5)35) ymtick(0(2.5)35) ytitle("ADSM after weighting (%)") ///
+ylabel(0(5)10) ymtick(0(2.5)10) ytitle("ADSM after weighting (%)") ///
 legend(off) name(adsm, replace)
 
 graph export "ADSM_demo.pdf", as(pdf) replace
@@ -237,7 +277,7 @@ graph save "ADSM_demo.gph", replace
 cls
 use "neemsis1_r.dta", clear
 
-global var age caste_2 caste_3 sex_2 mainocc_occupation_indiv_1 mainocc_occupation_indiv_2 mainocc_occupation_indiv_4 mainocc_occupation_indiv_5 mainocc_occupation_indiv_6 mainocc_occupation_indiv_7 mainocc_occupation_indiv_8 edulevel_2 edulevel_3 edulevel_4 edulevel_5 edulevel_6 maritalstatus_2 maritalstatus_3 maritalstatus_4 annualincome_indiv HHsize villageid_2 villageid_3 villageid_4 villageid_5 villageid_6 villageid_7 villageid_8 villageid_9 villageid_10
+global var age caste_2 caste_3 sex_2 mainocc_occupation_indiv_1 mainocc_occupation_indiv_2 mainocc_occupation_indiv_4 mainocc_occupation_indiv_5 mainocc_occupation_indiv_6 mainocc_occupation_indiv_7 mainocc_occupation_indiv_8 edulevel_2 edulevel_3 edulevel_4 edulevel_5 edulevel_6 maritalstatus_2 maritalstatus_3 maritalstatus_4 annualincome_indiv HHsize villageid_2 villageid_3 villageid_4 villageid_5 villageid_6 villageid_7 villageid_8 villageid_9 villageid_10 username_code_1 username_code_2 username_code_3 username_code_4 username_code_5 username_code_7
 
 ***** Label
 label var treat "Demonetisation (T=1)"
