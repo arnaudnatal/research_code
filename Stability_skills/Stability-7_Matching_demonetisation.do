@@ -303,6 +303,55 @@ label var maritalstatus_4 "MS: Divorce/separated"
 label var annualincome_indiv "Income"
 label var HHsize "HH size"
 
+***** Mean diff before and after weighting
+* Before
+local i=0
+foreach x in $var {
+local i=`i'+1
+qui reg `x' treat
+est store reg_`i'
+}
+
+*** Keep cons
+esttab reg_1 reg_2, replace ///
+	label b(3) p(3) eqlabels(none) ///
+	drop(treat) ///
+	cells("b(fmt(2))") ///
+	refcat(, nolabel)
+	
+mat list r(coefs) 
+mat rename r(coefs) tsp, replace
+mat list tsp
+
+esttab matrix(tsp, transpose), replace	///
+	label b(3) p(3) eqlabels(none) 
+	
+
+*** Keep diff
+esttab reg_1 reg_2, replace ///
+	label b(3) p(3) eqlabels(none) ///
+	drop(_cons) ///
+	cells("b(fmt(2)) t(fmt(2))") ///
+	refcat(, nolabel)
+
+mat list r(coefs) 
+mat rename r(coefs) tsp, replace
+mat list tsp
+	
+esttab matrix(tsp, transpose), replace	///
+	label b(3) p(3) eqlabels(none)
+	
+
+* After
+cls
+foreach x in $var {
+reg `x' treat [pw=weights]
+}
+
+
+
+
+***** Reg
 cls
 foreach x in f1_2016 f2_2016 f3_2016 f4_2016 f5_2016 raven_tt num_tt lit_tt cr_OP cr_CO cr_EX cr_AG cr_ES cr_Grit {
 reg `x' treat $var [pw=weights]
