@@ -322,6 +322,157 @@ graph save "ADSM_lock.gph", replace
 
 
 ****************************************
+* Mean test
+****************************************
+cls
+use "neemsis2_r.dta", clear
+
+global var age caste_2 caste_3 sex_2 mainocc_occupation_indiv_1 mainocc_occupation_indiv_2 mainocc_occupation_indiv_4 mainocc_occupation_indiv_5 mainocc_occupation_indiv_6 mainocc_occupation_indiv_7 mainocc_occupation_indiv_8 edulevel_2 edulevel_3 edulevel_4 edulevel_5 edulevel_6 maritalstatus_2 maritalstatus_3 maritalstatus_4 annualincome_indiv HHsize villageid_2 villageid_3 villageid_4 villageid_5 villageid_6 villageid_7 villageid_8 villageid_9 villageid_10 username_code_1 username_code_3 username_code_4 username_code_5 username_code_6 username_code_7 username_code_8
+
+
+********** Mean diff before weighting
+local i=0
+foreach x in $var {
+local i=`i'+1
+qui reg `x' treat
+est store reg_`i'
+}
+
+***** Only constant
+qui esttab reg_1 reg_2 reg_3 reg_4 reg_5 reg_6 reg_7 reg_8 reg_9 reg_10 reg_11 reg_12 reg_13 reg_14 reg_15 reg_16 reg_17 reg_18 reg_19 reg_20 reg_21, replace ///
+	label b(3) p(3) eqlabels(none) ///
+	drop(treat) ///
+	cells("b(fmt(2))") ///
+	refcat(, nolabel)
+mat list r(coefs) 
+mat rename r(coefs) tsp, replace
+mat list tsp
+qui esttab matrix(tsp, transpose), replace	///
+	label b(3) p(3) eqlabels(none) 
+mat list r(coefs)
+mat rename r(coefs) cons, replace
+
+***** Only treatment
+qui esttab reg_1 reg_2 reg_3 reg_4 reg_5 reg_6 reg_7 reg_8 reg_9 reg_10 reg_11 reg_12 reg_13 reg_14 reg_15 reg_16 reg_17 reg_18 reg_19 reg_20 reg_21, replace ///
+	label b(3) p(3) eqlabels(none) ///
+	drop(_cons) ///
+	cells("b(fmt(2))") ///
+	refcat(, nolabel)
+mat list r(coefs) 
+mat rename r(coefs) tsp, replace
+mat list tsp
+qui esttab matrix(tsp, transpose), replace	///
+	label b(3) p(3) eqlabels(none)
+mat list r(coefs)
+mat rename r(coefs) diff, replace
+
+***** Only t-stat
+qui esttab reg_1 reg_2 reg_3 reg_4 reg_5 reg_6 reg_7 reg_8 reg_9 reg_10 reg_11 reg_12 reg_13 reg_14 reg_15 reg_16 reg_17 reg_18 reg_19 reg_20 reg_21, replace ///
+	label b(3) p(3) eqlabels(none) ///
+	drop(_cons) ///
+	cells("t(fmt(2))") ///
+	refcat(, nolabel)
+mat list r(coefs) 
+mat rename r(coefs) tsp, replace
+mat list tsp
+qui esttab matrix(tsp, transpose), replace	///
+	label b(3) p(3) eqlabels(none)
+mat list r(coefs)
+mat rename r(coefs) tstat, replace
+
+***** Combine
+matrix before=cons,diff,tstat
+
+
+
+
+
+
+********** Mean diff after weighting
+local i=0
+foreach x in $var {
+local i=`i'+1
+qui reg `x' treat [pw=weight]
+est store reg_`i'
+}
+
+***** Only constant
+qui esttab reg_1 reg_2 reg_3 reg_4 reg_5 reg_6 reg_7 reg_8 reg_9 reg_10 reg_11 reg_12 reg_13 reg_14 reg_15 reg_16 reg_17 reg_18 reg_19 reg_20 reg_21, replace ///
+	label b(3) p(3) eqlabels(none) ///
+	drop(treat) ///
+	cells("b(fmt(2))") ///
+	refcat(, nolabel)
+mat list r(coefs) 
+mat rename r(coefs) tsp, replace
+mat list tsp
+qui esttab matrix(tsp, transpose), replace	///
+	label b(3) p(3) eqlabels(none) 
+mat list r(coefs)
+mat rename r(coefs) cons, replace
+
+***** Only treatment
+qui esttab reg_1 reg_2 reg_3 reg_4 reg_5 reg_6 reg_7 reg_8 reg_9 reg_10 reg_11 reg_12 reg_13 reg_14 reg_15 reg_16 reg_17 reg_18 reg_19 reg_20 reg_21, replace ///
+	label b(3) p(3) eqlabels(none) ///
+	drop(_cons) ///
+	cells("b(fmt(2))") ///
+	refcat(, nolabel)
+mat list r(coefs) 
+mat rename r(coefs) tsp, replace
+mat list tsp
+qui esttab matrix(tsp, transpose), replace	///
+	label b(3) p(3) eqlabels(none)
+mat list r(coefs)
+mat rename r(coefs) diff, replace
+
+***** Only t-stat
+qui esttab reg_1 reg_2 reg_3 reg_4 reg_5 reg_6 reg_7 reg_8 reg_9 reg_10 reg_11 reg_12 reg_13 reg_14 reg_15 reg_16 reg_17 reg_18 reg_19 reg_20 reg_21, replace ///
+	label b(3) p(3) eqlabels(none) ///
+	drop(_cons) ///
+	cells("t(fmt(2))") ///
+	refcat(, nolabel)
+mat list r(coefs) 
+mat rename r(coefs) tsp, replace
+mat list tsp
+qui esttab matrix(tsp, transpose), replace	///
+	label b(3) p(3) eqlabels(none)
+mat list r(coefs)
+mat rename r(coefs) tstat, replace
+
+***** Combine
+matrix after=cons,diff,tstat
+
+
+
+
+
+********** Before and after
+matrix tot=before,after
+matrix list tot
+
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
 * Reg weight
 ****************************************
 cls
