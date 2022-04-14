@@ -271,7 +271,7 @@ saveold "N2_CBPS.dta", version(12) replace
 
 
 
-/*
+
 ****************************************
 * ADSM
 ****************************************
@@ -301,14 +301,53 @@ replace labpos=12 if la=="SEM"
 *legend(off) name(adsm, replace)
 
 twoway ///
-(scatter balanced original, xline(20)) ///
+(scatter balanced original, xline(20) aspectratio(0.8)) ///
 (function y=x, range(0 13) lpattern(shortdash) lcolor(gs8)), ///
 xlabel(0(5)40) xmtick(0(2.5)40) xtitle("ADSM before weighting (%)") ///
 ylabel(0(3)12) ymtick(0(1)13) ytitle("ADSM after weighting (%)") ///
-legend(off) name(adsm, replace)
+title("Lockdown") ///
+legend(off) name(adsm2, replace)
 
-graph export "ADSM_lock.pdf", as(pdf) replace
-graph save "ADSM_lock.gph", replace
+
+********** Demo
+preserve
+cls
+use "adsm_n1_r.dta", clear
+
+replace balanced=balanced*100
+replace original=original*100
+
+gen la=""
+replace la="ORA" if covariate=="villageid_9"
+replace la="SEM" if covariate=="villageid_10"
+
+egen labpos=mlabvpos(balanced original)
+replace labpos=11 if la=="ORA"
+replace labpos=12 if la=="SEM"
+
+*twoway ///
+*(scatter balanced original, mlab(la) mlabvpos(labpos) yline(20) xline(20)) ///
+*(function y=x, range(0 20) lpattern(shortdash) lcolor(gs8)), ///
+*xlabel(0(10)60) xmtick(0(5)65) xtitle("ADSM before weighting (%)") ///
+*ylabel(0(5)35) ymtick(0(2.5)35) ytitle("ADSM after weighting (%)") ///
+*legend(off) name(adsm, replace)
+
+
+twoway ///
+(scatter balanced original, xline(20) aspectratio(0.8)) ///
+(function y=x, range(0 10) lpattern(shortdash) lcolor(gs8)), ///
+xlabel(0(10)60) xmtick(0(5)65) xtitle("ADSM before weighting (%)") ///
+ylabel(0(5)10) ymtick(0(2.5)10) ytitle("ADSM after weighting (%)") ///
+title("Demonetisation") ///
+legend(off) name(adsm1, replace)
+restore
+
+
+********* Combine
+graph combine adsm1 adsm2, graphregion(margin(zero)) plotregion(margin(zero)) name(comb_ADSM, replace)
+
+graph export "ADSM.pdf", as(pdf) replace
+graph save "ADSM.gph", replace
 
 ****************************************
 * END

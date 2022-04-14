@@ -251,7 +251,8 @@ twoway ///
 (function y=x, range(0 10) lpattern(shortdash) lcolor(gs8)), ///
 xlabel(0(10)60) xmtick(0(5)65) xtitle("ADSM before weighting (%)") ///
 ylabel(0(5)10) ymtick(0(2.5)10) ytitle("ADSM after weighting (%)") ///
-legend(off) name(adsm, replace)
+title("Demonetisation") ///
+legend(off) name(adsm1, replace)
 
 graph export "ADSM_demo.pdf", as(pdf) replace
 graph save "ADSM_demo.gph", replace
