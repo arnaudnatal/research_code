@@ -75,8 +75,22 @@ xsize(5) xtitle("") xlabel(,angle(0))  ///
 msymbol(+ + +) mcolor(black black black)  ///
 ylabel(0(.2)1.6) ymtick(0(.1)1.7) ytitle("") ///
 note("2016: n=835" "2020: n=835", size(vsmall)) ///
-legend(order(1 "Mean" 5 "Individual"))
+legend(order(1 "Mean" 5 "Individual")) ///
+name(biaspanel, replace)
+graph export bias_panel_old.pdf, replace
+
+
+stripplot ars3 if panel==1, over(time) vert ///
+stack width(0.000005) jitter(0) ///
+box(barw(0.05)) boffset(-0.1) pctile(25) ///
+ms(oh) msize(small) mc(black%30) ///
+ylabel(0(.2)1.6) ymtick(0(.1)1.7) ytitle("") ///
+xmtick(0.9(0)2.5) xtitle("") ///
+note("2016: n=835" "2020: n=835", size(vsmall)) ///
+name(biaspanel2, replace)
 graph export bias_panel.pdf, replace
+
+
 
 *** By sex
 stripplot ars3 if year==2020 & panel==1, over(sex) separate() ///
