@@ -877,8 +877,8 @@ sort HHID_panel year
 
 
 ********** Select+reshape
-keep HHID_panel year panel caste $var dummyIMF dummybank dummymoneylender dummyrepay
-reshape wide $var , i(HHID_panel) j(year)
+keep HHID_panel year panel caste $var dummyIMF dummybank dummymoneylender dummyrepay villageid villagearea jatis
+reshape wide $var villageid villagearea , i(HHID_panel) j(year)
 
 
 

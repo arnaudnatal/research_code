@@ -112,13 +112,6 @@ panelstat panelvar time, demoby(DSR)
 
 
 
-
-
-
-
-
-
-
 ****************************************
 * Cross section evidence
 ****************************************

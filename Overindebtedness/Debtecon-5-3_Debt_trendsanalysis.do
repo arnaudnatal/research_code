@@ -74,49 +74,280 @@ global loan3 "NEEMSIS2-all_loans"
 
 
 
+
+/*
 ****************************************
-* Time trends analysis with continuous 
+* Generic test
 ****************************************
 cls
 graph drop _all
 use"panel_v5_wide", clear
 
-********** Std
-forvalues j=1(1)2{
-foreach x in DSR DAR_without annualincome assets_noland yearly_expenses ISR loanamount DIR {
-egen d`j'_`x'_std=std(d`j'_`x')
-replace d`j'_`x'_std=3 if d`j'_`x'_std>3
-replace d`j'_`x'_std=-3 if d`j'_`x'_std<-3
+foreach x in loanamount {
+foreach t in 2010 2016 2020 {
+egen `x'std`t'=std(`x'`t')
 }
 }
 
-
-********** HCA
-local i=0
-foreach x in annualincome assets_noland loanamount DSR DAR_without ISR DIR {
-local i=`i'+1
-cluster wardslinkage d1_`x'_std d2_`x'_std, measure(Euclidean)
-set graph off
-cluster dendrogram, horizontal cutnumber(15) countinline showcount name(gph_cl_x`i', replace) title("Dendrogram of `x'")
-set graph on
+global test loanamountstd2010 loanamountstd2016 loanamountstd2020
+*** HCA
+cluster wardslinkage $test, measure(Euclidean)
+*** Dendrogram
+*cluster dendrogram, horizontal cutnumber(15) countinline showcount name(, replace)
+*** Kmeans
+cluster kmeans $test, k(3) start(everyk) name(cl)
+*** Check
+tabstat $test, stat(n mean sd p50) by(cl)
+***
+foreach t in 2010 2016 2020 {
+bysort cl: egen loanamountstdmean`t'=mean(loanamountstd`t')
 }
+*** 
+encode HHID_panel, gen(panelvar)
+keep panelvar cl loanamountstd*
+reshape long loanamountstd loanamountstdmean, i(panelvar) j(year)
+xtset panelvar year
 
-/*
-forvalues i=1(1)7{
-graph display gph_cl_x`i'
-}
+sort cl panelvar year
+twoway (line loanamountstd year if cl==1, c(L) lcolor(red%10)) (line loanamountstdmean year if cl==1, c(L) lcolor(blue) lwidth(medium))
+****************************************
+* END
 */
 
-********** kmeans
-foreach x in annualincome assets_noland {
-cluster kmeans d1_`x'_std d2_`x'_std, k(3) start(everyk) name(cl_`x')
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Standardisation
+****************************************
+cls
+graph drop _all
+use"panel_v5_wide", clear
+
+encode HHID_panel, gen(panelvar)
+
+drop DSR302010 DSR402010 DSR502010 DSR302016 DSR402016 DSR502016 DSR302020 DSR402020 DSR502020
+
+keep panelvar caste jatis villagearea* villageid* loanamount* DSR* DAR_without* annualincome* assets_noland* yearly_expenses* ISR* DIR*
+
+reshape long villagearea villageid DSR DAR_without annualincome assets_noland yearly_expenses ISR loanamount DIR, i(panelvar) j(year)
+
+
+* By year
+foreach x in DSR DAR_without annualincome assets_noland yearly_expenses ISR loanamount DIR {
+sum `x'
+gen `x'std=.
+replace `x'std=(`x'-r(mean))/r(sd)
 }
 
-foreach x in DSR loanamount DAR_without {
-cluster kmeans d1_`x'_std d2_`x'_std, k(2) start(everyk) name(cl_`x')
+*Reshape
+reshape wide DSR* DAR_without* annualincome* assets_noland* yearly_expenses* ISR* loanamount* DIR*, i(panelvar) j(year)
+
+* Order and sort
+order panelvar villageid villagearea caste jatis
+sort panelvar
+
+save"panel_v5_wide_cluster", replace
+****************************************
+* END
+
+
+
+
+
+
+
+****************************************
+* Choose algorithm
+****************************************
+cls
+graph drop _all
+use"panel_v5_wide_cluster", clear
+
+
+keep panelvar loanamount2010 loanamountstd2010 loanamount2016 loanamountstd2016 loanamount2020 loanamountstd2020
+
+keep loanamountstd2010 loanamountstd2016 loanamountstd2020
+rename loanamountstd2010 loan1
+rename loanamountstd2016 loan2
+rename loanamountstd2020 loan3
+
+rename loanamount2010 loan2010
+rename loanamount2016 loan2016
+rename loanamount2020 loan2020
+
+
+
+global var loanstd2010 loanstd2016 loanstd2020
+
+***** HCA for nb of clust
+cluster wardslinkage $var, measure(Euclidean)
+
+
+***** Dendrogram
+*cluster dendrogram, horizontal cutnumber(15) countinline showcount name(dendro_loan, replace)
+cluster gen cl_loan_hca=groups(4)
+
+
+***** Kmeans
+cluster kmeans $var, k(4) start(everyk) name(cl_loan_k)
+ta cl_loan_k cl_loan_hca
+
+
+***** Center of cluster
+foreach t in 2010 2016 2020 {
+bysort cl_loan_k: egen loanstdmean_k_`t'=mean(loanstd`t')
+bysort cl_loan_hca: egen loanstdmean_hca_`t'=mean(loanstd`t')
 }
 
 
+
+***** Reshape + panel
+keep panelvar loan* cl_loan_*
+reshape long loan loanstd loanstd_hca_mean loanstd_k_mean, i(panelvar) j(year)
+xtset panelvar year
+
+
+
+***** Line graph
+*** hca
+set graph off
+foreach g in 1 2 3 4 {
+sort cl_loan_hca panelvar year
+twoway (line loanstd year if cl_loan_hca==`g', c(L) lcolor(red%10)) (line loanstd_hca_mean year if cl_loan_hca==`g', c(L) lcolor(blue) lwidth(medium)), name(line_loan`g', replace)
+}
+grc1leg line_loan1 line_loan2 line_loan3 line_loan4, name(line_loan_hca, replace)
+set graph on
+
+
+*** k
+set graph off
+foreach g in 1 2 3 4 {
+sort cl_loan_k panelvar year
+twoway (line loanstd year if cl_loan_k==`g', c(L) lcolor(red%10)) (line loanstd_k_mean year if cl_loan_k==`g', c(L) lcolor(blue) lwidth(medium)), name(line_loan`g', replace)
+}
+grc1leg line_loan1 line_loan2 line_loan3 line_loan4, name(line_loan_k, replace)
+set graph on
+
+
+***** Display
+graph display line_loan_hca
+graph display line_loan_k
+
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Time trends analysis with continuous 
+****************************************
+*** Guerin et al 2015: income, assets and loanamount
+*** Fareed et al 2019: DSR, DAR and income
+
+cls
+graph drop _all
+use"panel_v5_wide_cluster", clear
+
+
+***** HCA for nb of clust
+foreach x in loanamount DSR ISR assets_noland annualincome DAR_without {
+global var `x'std2010 `x'std2016 `x'std2020
+*** HCA
+cluster wardslinkage $var, measure(Euclidean)
+*** Dendrogram
+cluster dendrogram, horizontal cutnumber(15) countinline showcount name(dendro_`x', replace)
+}
+
+
+***** Kmeans: k=4
+foreach x in loanamount ISR assets_noland annualincome {
+global var `x'std2010 `x'std2016 `x'std2020
+cluster kmeans $var, k(4) start(everyk) name(cl_`x')
+}
+
+
+***** Kmeans: k=3
+foreach x in DSR DAR_without {
+global var `x'std2010 `x'std2016 `x'std2020
+cluster kmeans $var, k(3) start(everyk) name(cl_`x')
+}
+
+
+***** Center of cluster
+foreach x in loanamount DSR ISR assets_noland annualincome DAR_without {
+foreach t in 2010 2016 2020 {
+bysort cl_`x': egen `x'stdmean`t'=mean(`x'std`t')
+}
+}
+
+
+***** Reshape + panel
+keep panelvar caste jatis villagearea villageid cl_* loanamount* DSR* ISR* assets_noland* annualincome* DAR_without*
+
+reshape long loanamount annualincome DSR assets_noland DAR_without ISR DSRstd DAR_withoutstd annualincomestd assets_nolandstd ISRstd loanamountstd loanamountstdmean DSRstdmean ISRstdmean assets_nolandstdmean annualincomestdmean DAR_withoutstdmean, i(panelvar) j(year)
+
+xtset panelvar year
+
+
+set graph off
+***** Line graph --> k=3
+foreach x in DSR DAR_without{
+foreach g in 1 2 3 {
+sort cl_`x' panelvar year
+twoway (line `x'std year if cl_`x'==`g', c(L) lcolor(red%10)) (line `x'stdmean year if cl_`x'==`g', c(L) lcolor(blue) lwidth(medium)), name(line_`x'_k`g', replace)
+}
+grc1leg line_`x'_k1 line_`x'_k2 line_`x'_k3, name(line_`x', replace)
+}
+
+
+
+***** Line graph --> k=4
+foreach x in loanamount ISR assets_noland annualincome{
+foreach g in 1 2 3 4 {
+sort cl_`x' panelvar year
+twoway (line `x'std year if cl_`x'==`g', c(L) lcolor(red%10)) (line `x'stdmean year if cl_`x'==`g', c(L) lcolor(blue) lwidth(medium)), name(line_`x'_k`g', replace)
+}
+grc1leg line_`x'_k1 line_`x'_k2 line_`x'_k3 line_`x'_k4, name(line_`x', replace)
+}
+
+set graph on
+
+
+***** Display
+graph display line_loanamount
+graph display line_DSR
+graph display line_ISR
+graph display line_DAR_without
+graph display line_assets_noland
+graph display line_annualincome
+
+
+
+/*
 ********** Representation
 foreach x in assets_noland loanamount annualincome DSR  {
 forvalues i=1(1)2 {
@@ -138,25 +369,7 @@ set graph off
 graph combine std1_`x' std2_`x', col(2) name(comb_`x', replace)
 set graph on
 }
-
-
-
-
-********** MCA for group
-global var cl_loanamount cl_DSR cl_DAR_without
-fre $var
-mca $var, method (indicator) normal(princ)
-mcacontrib
-mcaplot, overlay legend(off) xline(0) yline(0) scale(.8)
-
-mat mcamat=e(cGS)
-mat colnames mcamat = mass qual inert co1 rel1 abs1 co2 rel2 abs2
-svmat2 mcamat, rname(varname) name(col)
-
-tabstat mass rel1 abs1 rel2 abs2, stat(mean sum)
-
-twoway (scatter co2 co1 [aweight=mass], xline(0) yline(0)  mlabsize(vsmall) msymbol(oh) msize(small) legend(off)) (scatter co2 co1, mlabsize(vsmall) msymbol(i) mlabel(varname) legend(off))
-
+*/
 ****************************************
 * END
 

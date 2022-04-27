@@ -174,11 +174,11 @@ bysort HHID_panel: egen AEU_`x'_HH=sum(AEU_`x')
 
 *Land property
 tab1 landowndry landownwet
-gen sizeownland=landowndry+landownwet
-replace sizeownland=. if sizeownland==0
+*gen sizeownland=landowndry+landownwet
+*replace sizeownland=. if sizeownland==0
 
-gen ownland=0
-replace ownland=1 if sizeownland>0 & sizeownland!=.
+*gen ownland=0
+*replace ownland=1 if sizeownland>0 & sizeownland!=.
 
 tab ownland
 tab sizeownland
@@ -569,7 +569,7 @@ global expenses foodexpenses healthexpenses ceremoniesexpenses ceremoniesrelativ
 
 *Variables to keep
 global dep imp1_ds_tot_HH imp1_is_tot_HH loanamount_gm_HH loans_gm_HH loanamount_g_HH loans_g_HH
-global indep villageid villagearea religion jatis caste assets annualincome_HH nboccupation_HH foodexpenses educationexpenses healthexpenses ceremoniesexpenses deathexpenses HHsize housetype housetitle houseroom nbchildren_HH nontoworkers_HH femtomale_HH head_sex head_maritalstatus head_age head_edulevel head_occupation wifehusb_sex wifehusb_maritalstatus wifehusb_age wifehusb_edulevel wifehusb_occupation sizeownland amountownland ownland goldquantity goldquantityamount dummydemonetisation dummymarriage marriageexpenses_HH mainocc_occupation_HH occinc_HH_agri occinc_HH_agricasual occinc_HH_nonagricasual occinc_HH_nonagriregnonqual occinc_HH_nonagriregqual occinc_HH_selfemp occinc_HH_nrega assets_noland $asse $nature villageareaid $expenses
+global indep villageid villagearea religion jatis caste assets annualincome_HH nboccupation_HH foodexpenses educationexpenses healthexpenses ceremoniesexpenses deathexpenses HHsize housetype housetitle houseroom nbchildren_HH nontoworkers_HH femtomale_HH head_sex head_maritalstatus head_age head_edulevel head_occupation wifehusb_sex wifehusb_maritalstatus wifehusb_age wifehusb_edulevel wifehusb_occupation sizeownland amountownland ownland goldquantity goldquantityamount dummydemonetisation dummymarriage marriageexpenses_HH mainocc_occupation_HH occinc_HH_agri occinc_HH_agricasual occinc_HH_nonagricasual occinc_HH_nonagriregnonqual occinc_HH_nonagriregqual occinc_HH_selfemp occinc_HH_nrega assets_noland $asse $nature $expenses
  
 keep HHID_panel year $dep $indep AEU_weight_HH AEU_weight1_HH AEU_weight2_HH
 
@@ -608,8 +608,6 @@ rename `x' `x'_2016
 }
 
 *
-rename villageareaid villagearea
-
 rename amountownland_2016 amountownland
 
 save"$wave2-_temp", replace
