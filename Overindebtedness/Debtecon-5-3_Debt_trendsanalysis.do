@@ -75,53 +75,6 @@ global loan3 "NEEMSIS2-all_loans"
 
 
 
-/*
-****************************************
-* Generic test
-****************************************
-cls
-graph drop _all
-use"panel_v5_wide", clear
-
-foreach x in loanamount {
-foreach t in 2010 2016 2020 {
-egen `x'std`t'=std(`x'`t')
-}
-}
-
-global test loanamountstd2010 loanamountstd2016 loanamountstd2020
-*** HCA
-cluster wardslinkage $test, measure(Euclidean)
-*** Dendrogram
-*cluster dendrogram, horizontal cutnumber(15) countinline showcount name(, replace)
-*** Kmeans
-cluster kmeans $test, k(3) start(everyk) name(cl)
-*** Check
-tabstat $test, stat(n mean sd p50) by(cl)
-***
-foreach t in 2010 2016 2020 {
-bysort cl: egen loanamountstdmean`t'=mean(loanamountstd`t')
-}
-*** 
-encode HHID_panel, gen(panelvar)
-keep panelvar cl loanamountstd*
-reshape long loanamountstd loanamountstdmean, i(panelvar) j(year)
-xtset panelvar year
-
-sort cl panelvar year
-twoway (line loanamountstd year if cl==1, c(L) lcolor(red%10)) (line loanamountstdmean year if cl==1, c(L) lcolor(blue) lwidth(medium))
-****************************************
-* END
-*/
-
-
-
-
-
-
-
-
-
 
 
 ****************************************
@@ -133,9 +86,58 @@ use"panel_v5_wide", clear
 
 encode HHID_panel, gen(panelvar)
 
+********** Var to use
+global varcat ce_DSR ce_DAR_without ce_loanamount ce_income ce_assetsnl
+foreach x in $varcat {
+tab `x', gen(`x'_)
+}
+
+global var ce_DSR_1 ce_DSR_2 ce_DSR_3 ce_DSR_4 ce_DSR_5 ce_DSR_6 ce_DAR_without_1 ce_DAR_without_2 ce_DAR_without_3 ce_DAR_without_4 ce_DAR_without_5 ce_DAR_without_6 ce_loanamount_1 ce_loanamount_2 ce_loanamount_3 ce_loanamount_4 ce_loanamount_5 ce_loanamount_6 ce_assetsnl_1 ce_assetsnl_2 ce_assetsnl_3 ce_assetsnl_4 ce_assetsnl_5 ce_assetsnl_6 ce_income_1 ce_income_2 ce_income_3 ce_income_4 ce_income_5 ce_income_6 ce_DSR ce_DAR_without ce_loanamount ce_assetsnl ce_income
+
+global var2 d1_loanamount d1_DIR d1_DAR_without d1_DSR d1_ISR d1_annualincome d1_assets_noland d1_yearly_expenses d2_loanamount d2_DIR d2_DAR_without d2_DSR d2_ISR d2_annualincome d2_assets_noland d2_yearly_expenses
+
+tabstat $var2, stat(min p1 p5 p10 q p90 p95 p99 max cv)
+
+*** Drop
 drop DSR302010 DSR402010 DSR502010 DSR302016 DSR402016 DSR502016 DSR302020 DSR402020 DSR502020
 
-keep panelvar caste jatis villagearea* villageid* loanamount* DSR* DAR_without* annualincome* assets_noland* yearly_expenses* ISR* DIR*
+*** To keep
+keep panelvar caste jatis villagearea* villageid* loanamount* DSR* DAR_without* annualincome* assets_noland* yearly_expenses* ISR* DIR* $var $var2
+
+
+***** STD ABS SIGN + STD
+*** STD ABS SIGN
+foreach x in loanamount DIR DAR_without DSR ISR annualincome assets_noland yearly_expenses {
+gen d1_sign_`x'=""
+replace d1_sign_`x'="POS" if d1_`x'>=0
+replace d1_sign_`x'="NEG" if d1_`x'<0
+
+gen d2_sign_`x'=""
+replace d2_sign_`x'="POS" if d2_`x'>=0
+replace d2_sign_`x'="NEG" if d2_`x'<0
+
+egen std_abs_d1_`x'=std(abs(d1_`x'))
+egen std_abs_d2_`x'=std(abs(d2_`x'))
+}
+
+*** STD
+foreach x in loanamount DIR DAR_without DSR ISR annualincome assets_noland yearly_expenses {
+sum d1_`x'
+gen temp_d1_`x'=d1_`x'+abs(r(min))
+sum d2_`x'
+gen temp_d2_`x'=d2_`x'+abs(r(min))
+}
+foreach x in loanamount DIR DAR_without DSR ISR annualincome assets_noland yearly_expenses {
+egen abs_d1_`x'=std(temp_d1_`x')
+egen abs_d2_`x'=std(temp_d2_`x')
+}
+
+
+
+
+save"panel_v6_wide_cluster", replace
+
+
 
 reshape long villagearea villageid DSR DAR_without annualincome assets_noland yearly_expenses ISR loanamount DIR, i(panelvar) j(year)
 
@@ -206,6 +208,8 @@ export delimited using "C:\Users\Arnaud\Documents\GitHub\Analysis\Overindebtedne
 
 
 
+
+/*
 ****************************************
 * Time trends analysis with continuous 
 ****************************************
@@ -289,34 +293,9 @@ graph display line_DAR_without
 graph display line_assets_noland
 graph display line_annualincome
 
-
-
-/*
-********** Representation
-foreach x in assets_noland loanamount annualincome DSR  {
-forvalues i=1(1)2 {
-set graph off
-stripplot d`i'_`x', over(cl_`x') vert ///
-stack width(0.05) jitter(0) ///
-box(barw(0.1)) boffset(-0.1) pctile(10) ///
-ms(oh oh oh) msize(small) mc(red%30) ///
-yla(, ang(h)) xla(, noticks) ///
-yline(0) ///
-name(std`i'_`x', replace)
-set graph on
-}
-}
-
-***** Combine
-foreach x in assets_noland loanamount annualincome DSR {
-set graph off
-graph combine std1_`x' std2_`x', col(2) name(comb_`x', replace)
-set graph on
-}
-*/
 ****************************************
 * END
-
+*/
 
 
 
@@ -333,54 +312,31 @@ set graph on
 ****************************************
 cls
 graph drop _all
-use"panel_v5_wide", clear
-
-********** Var to use
-global varcat ce_DSR ce_DAR_without
-foreach x in $varcat {
-tab `x', gen(`x'_)
-}
-
-global var ce_DSR_1 ce_DSR_2 ce_DSR_3 ce_DSR_4 ce_DSR_5 ce_DSR_6 ce_DAR_without_1 ce_DAR_without_2 ce_DAR_without_3 ce_DAR_without_4 ce_DAR_without_5 ce_DAR_without_6
-
-********** HCA
-cluster wardslinkage $var, measure(Jaccard)
-cluster dendrogram, horizontal cutnumber(20) countinline showcount title("Dendrogram")
-
-********** kmeans
-cluster kmeans $var, k(3) measure(Jaccard) start(everyk) name(cl_)
+use"panel_v5_wide_cluster", clear
 
 
-********** Representation
-qui colorpalette hue, hue(0 200) chroma(70) luminance(50) n(6) globals
-foreach x in $varcat {
-set graph off
-preserve 
-bysort `x' cl_: gen n=_N
-bysort cl_: gen N=_N
-gen perc=round(n*100/N,1)
-
-spineplot `x' cl_, ///
-bar1(bcolor($p1)) bar2(bcolor($p2)) bar3(bcolor($p3)) bar4(bcolor($p4)) bar5(bcolor($p5)) bar6(bcolor($p6)) ///
-text(perc) percent ///
-xtitle("", axis(1)) ///
-xtitle("", axis(2)) ytitle("") ///
-xlab(,ang(0) axis(2)) ///
-title("") subtitle("") ///
-legend(pos(6) col(3)) ///
-name(sp_`x', replace)
-restore
-set graph on
-}
+***** Keep + Reshape + panel
+keep panelvar caste jatis villagearea* villageid* loanamount* DSR* ISR* assets_noland* annualincome* DAR_without* ce_*
+reshape long loanamount annualincome DSR assets_noland DAR_without ISR DSRstd DAR_withoutstd annualincomestd assets_nolandstd ISRstd loanamountstd loanamountstdmean DSRstdmean ISRstdmean assets_nolandstdmean annualincomestdmean DAR_withoutstdmean, i(panelvar) j(year)
+xtset panelvar year
 
 
-***** Combine
-graph combine sp_ce_DSR sp_ce_DAR_without, col(2)
+***** Line graph
+fre ce_loanamount
+sort ce_loanamount panelvar year
+twoway (line loanamountstd year if ce_loanamount==1, c(L) lcolor(red%10)) 
+twoway (line loanamountstd year if ce_loanamount==2, c(L) lcolor(red%10)) 
+twoway (line loanamountstd year if ce_loanamount==3, c(L) lcolor(red%10)) 
+twoway (line loanamountstd year if ce_loanamount==4, c(L) lcolor(red%10)) 
+twoway (line loanamountstd year if ce_loanamount==5, c(L) lcolor(red%10)) 
+twoway (line loanamountstd year if ce_loanamount==6, c(L) lcolor(red%10)) 
 
 
 
 
 
+
+/*
 ********** MCA for group
 global var cl_loanamount cl_DSR cl_DAR_without
 fre $var
