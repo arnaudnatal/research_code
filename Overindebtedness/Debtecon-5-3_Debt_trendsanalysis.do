@@ -165,91 +165,35 @@ save"panel_v5_wide_cluster", replace
 
 
 ****************************************
-* Choose algorithm
+* R prepa
 ****************************************
 cls
 graph drop _all
 use"panel_v5_wide_cluster", clear
 
-
-keep panelvar loanamount2010 loanamountstd2010 loanamount2016 loanamountstd2016 loanamount2020 loanamountstd2020
-
-keep loanamountstd2010 loanamountstd2016 loanamountstd2020
-rename loanamountstd2010 loan1
-rename loanamountstd2016 loan2
-rename loanamountstd2020 loan3
-
-rename loanamount2010 loan2010
-rename loanamount2016 loan2016
-rename loanamount2020 loan2020
-
-
-
-global var loanstd2010 loanstd2016 loanstd2020
-
-***** HCA for nb of clust
-cluster wardslinkage $var, measure(Euclidean)
-
-
-***** Dendrogram
-*cluster dendrogram, horizontal cutnumber(15) countinline showcount name(dendro_loan, replace)
-cluster gen cl_loan_hca=groups(4)
-
-
-***** Kmeans
-cluster kmeans $var, k(4) start(everyk) name(cl_loan_k)
-ta cl_loan_k cl_loan_hca
-
-
-***** Center of cluster
-foreach t in 2010 2016 2020 {
-bysort cl_loan_k: egen loanstdmean_k_`t'=mean(loanstd`t')
-bysort cl_loan_hca: egen loanstdmean_hca_`t'=mean(loanstd`t')
+foreach x in loanamount annualincome DSR DIR yearly_expenses assets_noland DAR_without ISR DSRstd DAR_withoutstd annualincomestd assets_nolandstd yearly_expensesstd ISRstd loanamountstd DIRstd {
+rename `x'2010 `x'1
+rename `x'2016 `x'2
+rename `x'2020 `x'3
 }
 
-
-
-***** Reshape + panel
-keep panelvar loan* cl_loan_*
-reshape long loan loanstd loanstd_hca_mean loanstd_k_mean, i(panelvar) j(year)
-xtset panelvar year
-
-
-
-***** Line graph
-*** hca
-set graph off
-foreach g in 1 2 3 4 {
-sort cl_loan_hca panelvar year
-twoway (line loanstd year if cl_loan_hca==`g', c(L) lcolor(red%10)) (line loanstd_hca_mean year if cl_loan_hca==`g', c(L) lcolor(blue) lwidth(medium)), name(line_loan`g', replace)
+foreach t in 1 2 3 {
+rename loanamount`t' loan`t'
+rename annualincome`t' income`t'
+rename yearly_expenses`t' expenses`t'
+rename assets_noland`t' assets`t'
+rename DAR_without`t' DAR`t'
+rename DAR_withoutstd`t' DARstd`t'
+rename annualincomestd`t' incomestd`t'
+rename assets_nolandstd`t' assetsstd`t'
+rename yearly_expensesstd`t' expensesstd`t'
+rename loanamountstd`t' loanstd`t'
 }
-grc1leg line_loan1 line_loan2 line_loan3 line_loan4, name(line_loan_hca, replace)
-set graph on
 
-
-*** k
-set graph off
-foreach g in 1 2 3 4 {
-sort cl_loan_k panelvar year
-twoway (line loanstd year if cl_loan_k==`g', c(L) lcolor(red%10)) (line loanstd_k_mean year if cl_loan_k==`g', c(L) lcolor(blue) lwidth(medium)), name(line_loan`g', replace)
-}
-grc1leg line_loan1 line_loan2 line_loan3 line_loan4, name(line_loan_k, replace)
-set graph on
-
-
-***** Display
-graph display line_loan_hca
-graph display line_loan_k
+export delimited using "C:\Users\Arnaud\Documents\GitHub\Analysis\Overindebtedness\debttrend.csv", replace
 
 ****************************************
 * END
-
-
-
-
-
-
-
 
 
 
