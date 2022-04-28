@@ -929,6 +929,22 @@ replace ce_`x'=6 if d1_`x'<=0 & d2_`x'<=0
 }
 
 
+********** Categories
+label define evo 1"Stable" 2"Inc" 3"Dec" 4"U" 5"N" 6"(Δ-1)&(Δ-2)", replace
+
+foreach x in $quanti {
+gen ce_`x'=.
+
+label values ce_`x' evo
+
+replace ce_`x'=1 if d1_`x'>0 & d2_`x'>0
+replace ce_`x'=2 if d1_`x'>0 & d2_`x'<=0 & abs(d1_`x')>abs(d2_`x')
+replace ce_`x'=3 if d1_`x'<=0 & d2_`x'>0 & abs(d2_`x')>abs(d1_`x')
+
+replace ce_`x'=4 if d1_`x'>0 & d2_`x'<=0 & abs(d2_`x')>abs(d1_`x')
+replace ce_`x'=5 if d1_`x'<=0 & d2_`x'>0 & abs(d1_`x')>abs(d2_`x')
+replace ce_`x'=6 if d1_`x'<=0 & d2_`x'<=0
+}
 
 
 

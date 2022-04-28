@@ -78,7 +78,7 @@ global loan3 "NEEMSIS2-all_loans"
 
 
 ****************************************
-* Standardisation
+* Datasets preparation
 ****************************************
 cls
 graph drop _all
@@ -105,8 +105,7 @@ drop DSR302010 DSR402010 DSR502010 DSR302016 DSR402016 DSR502016 DSR302020 DSR40
 keep panelvar caste jatis villagearea* villageid* loanamount* DSR* DAR_without* annualincome* assets_noland* yearly_expenses* ISR* DIR* $var $var2
 
 
-***** STD ABS SIGN + STD
-*** STD ABS SIGN
+***** STD ABS SIGN
 foreach x in loanamount DIR DAR_without DSR ISR annualincome assets_noland yearly_expenses {
 gen d1_sign_`x'=""
 replace d1_sign_`x'="POS" if d1_`x'>=0
@@ -120,23 +119,9 @@ egen std_abs_d1_`x'=std(abs(d1_`x'))
 egen std_abs_d2_`x'=std(abs(d2_`x'))
 }
 
-*** STD
-foreach x in loanamount DIR DAR_without DSR ISR annualincome assets_noland yearly_expenses {
-sum d1_`x'
-gen temp_d1_`x'=d1_`x'+abs(r(min))
-sum d2_`x'
-gen temp_d2_`x'=d2_`x'+abs(r(min))
-}
-foreach x in loanamount DIR DAR_without DSR ISR annualincome assets_noland yearly_expenses {
-egen abs_d1_`x'=std(temp_d1_`x')
-egen abs_d2_`x'=std(temp_d2_`x')
-}
 
-
-
-
-save"panel_v6_wide_cluster", replace
-
+save"panel_v6_wide", replace
+export delimited "$git/Analysis/Overindebtedness/debttrend2.csv", replace
 
 
 reshape long villagearea villageid DSR DAR_without annualincome assets_noland yearly_expenses ISR loanamount DIR, i(panelvar) j(year)
@@ -157,8 +142,10 @@ order panelvar villageid villagearea caste jatis
 sort panelvar
 
 save"panel_v5_wide_cluster", replace
+
 ****************************************
 * END
+
 
 
 
@@ -173,6 +160,7 @@ cls
 graph drop _all
 use"panel_v5_wide_cluster", clear
 
+********** R preparation data
 foreach x in loanamount annualincome DSR DIR yearly_expenses assets_noland DAR_without ISR DSRstd DAR_withoutstd annualincomestd assets_nolandstd yearly_expensesstd ISRstd loanamountstd DIRstd {
 rename `x'2010 `x'1
 rename `x'2016 `x'2
@@ -192,7 +180,29 @@ rename yearly_expensesstd`t' expensesstd`t'
 rename loanamountstd`t' loanstd`t'
 }
 
-export delimited using "C:\Users\Arnaud\Documents\GitHub\Analysis\Overindebtedness\debttrend.csv", replace
+export delimited using "$git\Analysis\Overindebtedness\debttrend.csv", replace
+
+********* R analysis
+
+********** Graph cluster
+import delimited using "$git\Analysis\Overindebtedness\debttrendRreturn.csv", clear
+
+keep v1 cluster loan1 loan2 loan3
+
+reshape long loan, i(v1) j(time)
+
+xtset v1 time
+
+
+***** Line graph
+sort cluster v1 time
+twoway (line loan time if cluster==1, c(L) lcolor(red%10)) 
+twoway (line loan time if cluster==2, c(L) lcolor(red%10)) 
+twoway (line loan time if cluster==3, c(L) lcolor(red%10)) 
+twoway (line loan time if cluster==4, c(L) lcolor(red%10)) 
+twoway (line loan time if cluster==5, c(L) lcolor(red%10)) 
+twoway (line loan time if cluster==6, c(L) lcolor(red%10)) 
+
 
 ****************************************
 * END
@@ -202,6 +212,33 @@ export delimited using "C:\Users\Arnaud\Documents\GitHub\Analysis\Overindebtedne
 
 
 
+
+
+
+
+
+
+****************************************
+* MCA test
+****************************************
+cls
+graph drop _all
+use"panel_v6_wide", clear
+
+global var ce_assetsnl ce_loanamount ce_DSR
+
+mca $var, method (indicator) normal(princ) dim(6)
+mcacontrib
+mcaplot, overlay xline(0) yline(0) scale(.8) dim(2 1)
+mcaplot, overlay xline(0) yline(0) scale(.8) dim(3 4)
+mcaplot, overlay xline(0) yline(0) scale(.8) dim(6 5)
+
+mat mcamat=e(cGS)
+mat colnames mcamat = mass qual inert co1 rel1 abs1 co2 rel2 abs2
+svmat2 mcamat, rname(varname) name(col)
+
+****************************************
+* END
 
 
 
@@ -308,7 +345,7 @@ graph display line_annualincome
 
 
 ****************************************
-* Time trends analysis with qualitative 
+* Lines
 ****************************************
 cls
 graph drop _all
@@ -318,6 +355,11 @@ use"panel_v5_wide_cluster", clear
 ***** Keep + Reshape + panel
 keep panelvar caste jatis villagearea* villageid* loanamount* DSR* ISR* assets_noland* annualincome* DAR_without* ce_*
 reshape long loanamount annualincome DSR assets_noland DAR_without ISR DSRstd DAR_withoutstd annualincomestd assets_nolandstd ISRstd loanamountstd loanamountstdmean DSRstdmean ISRstdmean assets_nolandstdmean annualincomestdmean DAR_withoutstdmean, i(panelvar) j(year)
+
+replace year=1 if year==2010
+replace year=2 if year==2016
+replace year=3 if year==2020
+
 xtset panelvar year
 
 
@@ -330,27 +372,5 @@ twoway (line loanamountstd year if ce_loanamount==3, c(L) lcolor(red%10))
 twoway (line loanamountstd year if ce_loanamount==4, c(L) lcolor(red%10)) 
 twoway (line loanamountstd year if ce_loanamount==5, c(L) lcolor(red%10)) 
 twoway (line loanamountstd year if ce_loanamount==6, c(L) lcolor(red%10)) 
-
-
-
-
-
-
-/*
-********** MCA for group
-global var cl_loanamount cl_DSR cl_DAR_without
-fre $var
-mca $var, method (indicator) normal(princ)
-mcacontrib
-mcaplot, overlay legend(off) xline(0) yline(0) scale(.8)
-
-mat mcamat=e(cGS)
-mat colnames mcamat = mass qual inert co1 rel1 abs1 co2 rel2 abs2
-svmat2 mcamat, rname(varname) name(col)
-
-tabstat mass rel1 abs1 rel2 abs2, stat(mean sum)
-
-twoway (scatter co2 co1 [aweight=mass], xline(0) yline(0)  mlabsize(vsmall) msymbol(oh) msize(small) legend(off)) (scatter co2 co1, mlabsize(vsmall) msymbol(i) mlabel(varname) legend(off))
-
 ****************************************
 * END
