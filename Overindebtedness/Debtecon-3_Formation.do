@@ -58,10 +58,10 @@ global loan3 "NEEMSIS2-all_loans"
 *(100/158) if year==2016
 *(100/184) if year==2020
 
-
-
 ****************************************
 * END
+
+
 
 
 
@@ -235,16 +235,6 @@ rename caste_code caste
 save"panel_v2", replace
 ****************************************
 * END
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -502,18 +492,6 @@ save"panel_v3", replace
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
 ****************************************
 * Ratio
 ****************************************
@@ -595,16 +573,6 @@ replace DAR_without_r=2 if DAR_without>=2.2 & year==2010
 replace DAR_without_r=10.41 if DAR_without>=11 & year==2016
 replace DAR_without_r=2.32 if DAR_without>=2.5 & year==2020
 
-/*
-replace DAR_with_new_r=2 if DAR_with_new>=2.2 & year==2010
-replace DAR_with_new_r=10.41 if DAR_with_new>=11 & year==2016
-replace DAR_with_new_r=2.32 if DAR_with_new>=2.5 & year==2020
-
-replace DAR_without_new_r=2 if DAR_without_new>=2.2 & year==2010
-replace DAR_without_new_r=10.41 if DAR_without_new>=11 & year==2016
-replace DAR_without_new_r=2.32 if DAR_without_new>=2.5 & year==2020
-*/
-
 replace DSR_r=6 if DSR>=6 & year==2010
 replace DSR_r=6 if DSR>=6 & year==2016
 replace DSR_r=6 if DSR>=6 & year==2020
@@ -617,7 +585,6 @@ replace ISR_r=0.74 if ISR>=0.75 & year==2010
 replace ISR_r=2.34 if ISR>=2.35 & year==2016
 replace ISR_r=3.11 if ISR>=3.13 & year==2020
 
-
 replace DIR_r=DIR_r*100
 replace DAR_with_r=DAR_with_r*100
 replace DAR_without_r=DAR_without_r*100
@@ -628,6 +595,8 @@ replace DAR_without=DAR_without*100
 replace DSR=DSR*100
 replace ISR=ISR*100
 replace DIR=DIR*100
+
+
 
 ********** Wealth panel
 xtile assets2010panel_q3=assets_noland if year==2010 & panel==1, n(3)
@@ -672,95 +641,49 @@ save"panel_v4", replace
 ****************************************
 use"panel_v4", clear
 
+********** Panel
+keep if panel==1
+
+
+********** Nb of missings for transformation
+foreach x in assets_noland annualincome loanamount DSR DAR_without DAR_with yearly_expenses {
+ta year if `x'==0
+}
+
 
 ********** Rename
 rename assetspanel_q3 assetsq
 rename incomepanel_q3 incomeq
 
 
-
-********** Continuous var
-global var annualincome assets_noland loanamount DSR ISR DAR_without DIR sum_loans_HH 
-tabstat $var, stat(n mean sd min max p1 p5 p10 q)
-foreach x in $var {
-count if `x'==0
-}
-
-
-
-********** Var transformation for log
-***** Continuous in level and not in for 1k
+********** Back to N values
 foreach x in annualincome assets_noland loanamount {
 replace `x'=`x'*1000
 }
-
-***** New ratio in permile and not percent
-foreach x in DSR DAR_without DIR ISR {
-gen `x'_1000=`x'
-}
-foreach x in DSR DAR_without ISR {
-replace `x'_1000=`x'*10
-}
-foreach x in DIR {
-replace `x'_1000=`x'*1000
-}
-
-***** All var +1 to drop 0
-foreach x in annualincome assets_noland loanamount DSR ISR DAR_without DIR {
-gen `x'_new=`x'
-}
-
-foreach x in annualincome assets_noland loanamount DSR ISR DAR_without DIR {
-replace `x'_new=`x'+1
+foreach x in DSR DAR_without DAR_with DIR ISR {
+replace `x'=`x'/100
 }
 
 
+***** New ratio scales
+foreach x in DSR DAR_without DAR_with DIR ISR {
+gen `x'_1000=`x'*1000
+gen `x'_100=`x'*100
+}
 
-********** Creation as IHS, CRO and LOG and N
+
 ***** IHS
-foreach x in annualincome assets_noland loanamount DSR_1000 DIR_1000 DAR_without_1000 ISR_1000 {
+foreach x in annualincome assets_noland loanamount DSR_1000 DIR_1000 DAR_without_1000 ISR_1000 DSR_100 DIR_100 DAR_without_100 ISR_100 {
 gen ihs_`x'=asinh(`x')
 }
 
 ***** CRO
-foreach x in annualincome assets_noland loanamount DSR DAR_without DIR ISR{
+foreach x in annualincome assets_noland loanamount DSR DAR_without DIR ISR DAR_with {
 gen cro_`x'=`x'^(1/3)
 }
 
-***** Log
-foreach x in annualincome assets_noland loanamount DSR DAR_without DIR ISR {
-gen log_`x'=log(`x'_new)
-}
-
-***** N
-foreach x in annualincome assets_noland loanamount DSR DAR_without DIR ISR {
-foreach year in 2010 2016 2020 {
-gen `x'_`year'=`x' if year==`year' & panel==1
-}
-}
-
-foreach x in annualincome assets_noland loanamount DSR DAR_without DIR ISR {
-foreach year in 2010 2016 2020 {
-egen `x'_`year'_std=std(`x'_`year')
-}
-}
-
-foreach x in annualincome assets_noland loanamount DSR DAR_without DIR ISR {
-gen `x'_std=.
-}
-
-foreach x in annualincome assets_noland loanamount DSR DAR_without DIR ISR {
-replace `x'_std=`x'_2010_std if year==2010
-replace `x'_std=`x'_2016_std if year==2016
-replace `x'_std=`x'_2020_std if year==2020
-
-drop `x'_2010 `x'_2016 `x'_2020 `x'_2010_std `x'_2016_std `x'_2020_std
-}
-
-
 
 ********* Label
-
 label var caste "Caste"
 label var assetsq "Tercile of assets in 2010"
 label var incomeq "Tercile of income in 2010"
@@ -769,6 +692,7 @@ label define tercile 1"Tercile 1" 2"Tercile 2" 3"Tercile 3"
 label values assetsq tercile
 label values incomeq tercile
 
+/*
 label var ihs_annualincome "IHST of income"
 label var ihs_assets_noland "IHST of assets"
 label var ihs_loanamount "IHST of loan amount"
@@ -816,22 +740,11 @@ label var dummyrepay "Debt for repayment (%)"
 label var DSR30 "Overindebted at 30% of DSR"
 label var DSR40 "Overindebted at 40% of DSR"
 label var DSR50 "Overindebted at 50% of DSR"
-
+*/
 
 save"panel_v5", replace
 ****************************************
 * END
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -863,23 +776,19 @@ foreach x in IMF_amt_HH bank_amt_HH moneylender_amt_HH {
 rename rel_loanfrom`x' rel_lf_`x'
 }
 
-
-
-
 ********** Macro
 global quanti DIR DAR_with DAR_without DSR ISR loanamount annualincome assets_noland assets sizeownland yearly_expenses formal_HH informal_HH rel_formal_HH rel_informal_HH eco_HH current_HH humank_HH social_HH home_HH other_HH rel_eco_HH rel_current_HH rel_humank_HH rel_social_HH rel_home_HH rel_other_HH sum_loans_HH lf_IMF_nb_HH lf_IMF_amt_HH lf_bank_nb_HH lf_bank_amt_HH lf_moneylender_nb_HH lf_moneylender_amt_HH loanforrepayment_nb_HH loanforrepayment_amt_HH MLborrowstrat_nb_HH MLborrowstrat_amt_HH MLgooddebt_nb_HH MLgooddebt_amt_HH MLbaddebt_nb_HH MLbaddebt_amt_HH mainloan_HH mainloan_amt_HH rel_lf_IMF_amt_HH rel_lf_bank_amt_HH rel_lf_moneylender_amt_HH rel_mainloan_amt_HH rel_loanforrepayment_amt_HH rel_MLborrowstrat_amt_HH rel_MLbaddebt_amt_HH rel_MLgooddebt_amt_HH 
 
-
 global quali DSR30 DSR40 DSR50 dummyIMF dummybank dummymoneylender dummyrepay dummyborrowstrat mainocc_occupation head_edulevel wifehusb_edulevel head_occupation wifehusb_occupation
 
-global var $quanti $quali cro_annualincome cro_assets_noland cro_loanamount cro_DSR cro_DAR_without cro_DIR cro_ISR ihs_annualincome ihs_assets_noland ihs_loanamount ihs_DSR_1000 ihs_DIR_1000 ihs_DAR_without_1000 ihs_ISR_1000 log_annualincome log_assets_noland log_loanamount log_DSR log_DAR_without log_DIR log_ISR
+global var $quanti $quali cro_annualincome cro_assets_noland cro_loanamount cro_DSR cro_DAR_without cro_DIR cro_ISR cro_DAR_with ihs_annualincome ihs_assets_noland ihs_loanamount ihs_DSR_1000 ihs_DIR_1000 ihs_DAR_without_1000 ihs_ISR_1000 ihs_DSR_100 ihs_DIR_100 ihs_DAR_without_100 ihs_ISR_100
+
 sort HHID_panel year
 
 
 ********** Select+reshape
 keep HHID_panel year panel caste $var dummyIMF dummybank dummymoneylender dummyrepay villageid villagearea jatis
 reshape wide $var villageid villagearea , i(HHID_panel) j(year)
-
 
 
 ********* xtile income assets
@@ -892,6 +801,8 @@ label define cat_assets 1"T1 as." 2"T2 as." 3"T3 as."
 label values cat_income cat_income
 label values cat_assets cat_assets
 
+
+
 ********** Evolution
 foreach x in $quanti {
 gen d1_`x'=`x'2016-`x'2010
@@ -899,17 +810,6 @@ gen d2_`x'=`x'2020-`x'2016
 }
 
 
-
-
-********** Evo as ihs,cro,log
-foreach x in $quanti {
-gen ih1_`x'=asinh(d1_`x')
-gen ih2_`x'=asinh(d2_`x')
-}
-
-tabstat d1_loanamount ih1_loanamount d2_loanamount ih2_loanamount,stat(n mean sd p50)
-
-order loanamount2010 loanamount2016 loanamount2020 d1_loanamount d2_loanamount ih1_loanamount ih2_loanamount
 
 ********** Categories
 label define evo 1"(Δ+1)&(Δ+2)" 2"(Δ+1)>(Δ-2)" 3"(Δ-1)<(Δ+2)" 4"(Δ+1)<(Δ-2)" 5"(Δ-1)>(Δ+2)" 6"(Δ-1)&(Δ-2)", replace
@@ -927,25 +827,6 @@ replace ce_`x'=4 if d1_`x'>0 & d2_`x'<=0 & abs(d2_`x')>abs(d1_`x')
 replace ce_`x'=5 if d1_`x'<=0 & d2_`x'>0 & abs(d1_`x')>abs(d2_`x')
 replace ce_`x'=6 if d1_`x'<=0 & d2_`x'<=0
 }
-
-
-********** Categories
-label define evo 1"Stable" 2"Inc" 3"Dec" 4"U" 5"N" 6"(Δ-1)&(Δ-2)", replace
-
-foreach x in $quanti {
-gen ce_`x'=.
-
-label values ce_`x' evo
-
-replace ce_`x'=1 if d1_`x'>0 & d2_`x'>0
-replace ce_`x'=2 if d1_`x'>0 & d2_`x'<=0 & abs(d1_`x')>abs(d2_`x')
-replace ce_`x'=3 if d1_`x'<=0 & d2_`x'>0 & abs(d2_`x')>abs(d1_`x')
-
-replace ce_`x'=4 if d1_`x'>0 & d2_`x'<=0 & abs(d2_`x')>abs(d1_`x')
-replace ce_`x'=5 if d1_`x'<=0 & d2_`x'>0 & abs(d1_`x')>abs(d2_`x')
-replace ce_`x'=6 if d1_`x'<=0 & d2_`x'<=0
-}
-
 
 
 
