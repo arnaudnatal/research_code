@@ -682,6 +682,22 @@ foreach x in annualincome assets_noland loanamount DSR DAR_without DIR ISR DAR_w
 gen cro_`x'=`x'^(1/3)
 }
 
+***** Log
+foreach x in yearly_expenses annualincome assets_noland assets loanamount informal_HH formal_HH eco_HH current_HH humank_HH social_HH home_HH other_HH {
+ta year if `x'==0 | `x'==.
+}
+
+* Replace . or 0 with 1
+foreach x in loanamount {
+replace `x'=1 if `x'==0
+replace `x'=1 if `x'==.
+}
+
+* 
+foreach x in yearly_expenses annualincome assets_noland assets loanamount {
+gen log_`x'=log(`x')
+}
+
 
 ********* Label
 label var caste "Caste"
@@ -781,7 +797,7 @@ global quanti DIR DAR_with DAR_without DSR ISR loanamount annualincome assets_no
 
 global quali DSR30 DSR40 DSR50 dummyIMF dummybank dummymoneylender dummyrepay dummyborrowstrat mainocc_occupation head_edulevel wifehusb_edulevel head_occupation wifehusb_occupation
 
-global var $quanti $quali cro_annualincome cro_assets_noland cro_loanamount cro_DSR cro_DAR_without cro_DIR cro_ISR cro_DAR_with ihs_annualincome ihs_assets_noland ihs_loanamount ihs_DSR_1000 ihs_DIR_1000 ihs_DAR_without_1000 ihs_ISR_1000 ihs_DSR_100 ihs_DIR_100 ihs_DAR_without_100 ihs_ISR_100
+global var $quanti $quali cro_annualincome cro_assets_noland cro_loanamount cro_DSR cro_DAR_without cro_DIR cro_ISR cro_DAR_with ihs_annualincome ihs_assets_noland ihs_loanamount ihs_DSR_1000 ihs_DIR_1000 ihs_DAR_without_1000 ihs_ISR_1000 ihs_DSR_100 ihs_DIR_100 ihs_DAR_without_100 ihs_ISR_100 log_yearly_expenses log_annualincome log_assets_noland log_assets log_loanamount
 
 sort HHID_panel year
 
