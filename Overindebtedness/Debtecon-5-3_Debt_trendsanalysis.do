@@ -180,29 +180,123 @@ rename yearly_expensesstd`t' expensesstd`t'
 rename loanamountstd`t' loanstd`t'
 }
 
+*preserve
+fre ce_loanamount
+drop if ce_loanamount==1
+drop if ce_loanamount==6
+
+
+tabstat d1_loanamount d2_loanamount,stat(min p1 p5 p10 q p90 p95 p99 max)
+drop if d1_loanamount<-140500
+drop if d1_loanamount>362600
+
+drop if d2_loanamount<-275000
+drop if d2_loanamount>228500
+
+drop if d1_loanamount>-10000 & d1_loanamount<10000
+drop if d2_loanamount>-10000 & d2_loanamount<10000
+
+tabstat loan1 loan2 loan3,stat(min p1 p5 p10 q p90 p95 p99 max)
+drop if loan1<16000
+drop if loan1>1620000
+drop if loan2<15000
+drop if loan2>316300
+drop if loan3<13500
+drop if loan3>271500
+
+keep panelvar loan1 loan2 loan3
+
+preserve
+reshape long loan, i(panelvar) j(time)
+
+sort panelvar time
+twoway (line loan time, c(L) lcolor(red%10))
+restore
+
 export delimited using "$git\Analysis\Overindebtedness\debttrend.csv", replace
 
 ********* R analysis
 
+
 ********** Graph cluster
 import delimited using "$git\Analysis\Overindebtedness\debttrendRreturn.csv", clear
 
-keep v1 cluster loan1 loan2 loan3
+tab1 cl_*
 
-reshape long loan, i(v1) j(time)
+
+keep v1 cl_* loan1 loan2 loan3 income1 income2 income3 assets1 assets2 assets3 dsr1 dsr2 dsr3 dar1 dar2 dar3 expenses1 expenses2 expenses3
+
+reshape long loan income assets dsr dar expenses, i(v1) j(time)
 
 xtset v1 time
 
 
 ***** Line graph
-sort cluster v1 time
-twoway (line loan time if cluster==1, c(L) lcolor(red%10)) 
-twoway (line loan time if cluster==2, c(L) lcolor(red%10)) 
-twoway (line loan time if cluster==3, c(L) lcolor(red%10)) 
-twoway (line loan time if cluster==4, c(L) lcolor(red%10)) 
-twoway (line loan time if cluster==5, c(L) lcolor(red%10)) 
-twoway (line loan time if cluster==6, c(L) lcolor(red%10)) 
+set graph off
+foreach x in loan income assets dsr dar expenses {
+foreach stat in sbd dtw {
+ta cl_`x'_`stat', gen(cl_`x'_`stat'_)
+forvalues i=1(1)8 {
+capture confirm v cl_`x'_`stat'_`i'
+if _rc==0 {
+sort cl_`x'_`stat' v1 time
+twoway (line `x' time if cl_`x'_`stat'==`i', c(L) lcolor(red%10)), name(`x'_`stat'_cl`i', replace)
+}
+}
+}
+}
 
+***** Loan
+graph combine loan_sbd_cl1 loan_sbd_cl2 loan_sbd_cl3 loan_sbd_cl4 loan_sbd_cl5 loan_sbd_cl6, name(comb_sbd_loan, replace)
+
+graph combine loan_dtw_cl1 loan_dtw_cl2 loan_dtw_cl3 loan_dtw_cl4, name(comb_dtw_loan, replace)
+
+***** Income
+graph combine income_sbd_cl1 income_sbd_cl2 income_sbd_cl3 income_sbd_cl4 income_sbd_cl5 income_sbd_cl6 income_sbd_cl7, name(comb_sbd_income, replace)
+
+graph combine income_dtw_cl1 income_dtw_cl2 income_dtw_cl3 income_dtw_cl4 income_dtw_cl5, name(comb_dtw_income, replace)
+
+***** Assets
+graph combine assets_sbd_cl1 assets_sbd_cl2 assets_sbd_cl3 assets_sbd_cl4 assets_sbd_cl5 assets_sbd_cl6, name(comb_sbd_assets, replace)
+
+graph combine assets_dtw_cl1 assets_dtw_cl2 assets_dtw_cl3 assets_dtw_cl4 assets_dtw_cl5, name(comb_dtw_assets, replace)
+
+***** DSR
+graph combine dsr_sbd_cl1 dsr_sbd_cl2 dsr_sbd_cl3 dsr_sbd_cl4, name(comb_sbd_dsr, replace)
+
+graph combine dsr_dtw_cl1 dsr_dtw_cl2 dsr_dtw_cl3 dsr_dtw_cl4 dsr_dtw_cl5 dsr_dtw_cl6 dsr_dtw_cl7, name(comb_dtw_dsr, replace)
+
+***** DAR
+graph combine dar_sbd_cl1 dar_sbd_cl2 dar_sbd_cl3 dar_sbd_cl4 dar_sbd_cl5 dar_sbd_cl6 dar_sbd_cl7, name(comb_sbd_dar, replace)
+
+graph combine dar_dtw_cl1 dar_dtw_cl2 dar_dtw_cl3 dar_dtw_cl4 dar_dtw_cl5, name(comb_dtw_dar, replace)
+
+***** Expenses
+graph combine expenses_sbd_cl1 expenses_sbd_cl2 expenses_sbd_cl3 expenses_sbd_cl4, name(comb_sbd_expenses, replace)
+
+graph combine expenses_dtw_cl1 expenses_dtw_cl2 expenses_dtw_cl3 expenses_dtw_cl4 expenses_dtw_cl5, name(comb_dtw_expenses, replace)
+
+
+
+********** Display
+set graph off
+graph display comb_sbd_loan
+graph display comb_dtw_loan
+
+graph display comb_sbd_income
+graph display comb_dtw_income
+
+graph display comb_sbd_assets
+graph display comb_dtw_assets
+
+graph display comb_sbd_dsr
+graph display comb_dtw_dsr
+
+graph display comb_sbd_dar
+graph display comb_dtw_dar
+
+graph display comb_sbd_expenses
+graph display comb_dtw_expenses
 
 ****************************************
 * END

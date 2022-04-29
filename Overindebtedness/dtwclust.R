@@ -27,14 +27,12 @@ library(RStata)
 
 #--- Open datasets
 data<-read.csv("debttrend.csv")
-df.labels<-data$panelvar
-data$panelvar<-NULL
 attach(data)
 
 #--- Matrices creation
 X_loan<-as.matrix(cbind(loan1,loan2,loan3))
 X_income<-as.matrix(cbind(income1,income2,income3))
-X_assets<-as.matrix(cbind(assets1,assetd2,assets3))
+X_assets<-as.matrix(cbind(assets1,assets2,assets3))
 X_DSR<-as.matrix(cbind(DSR1,DSR2,DSR3))
 X_expenses<-as.matrix(cbind(expenses1,expenses2,expenses3))
 X_DIR<-as.matrix(cbind(DIR1,DIR2,DIR3))
@@ -45,11 +43,14 @@ X_ISR<-as.matrix(cbind(ISR1,ISR2,ISR3))
 #--- Trends analysis clustering
 #interactive_clustering(X_loan)
 #interactive_clustering(X_income)
-interactive_clustering(X_DSR)
+#interactive_clustering(X_assets)
+#interactive_clustering(X_DSR)
+#interactive_clustering(X_DAR)
+#interactive_clustering(X_expenses)
 
 
-#--- Manually trends analysis clustering 1
-clsbd<-tsclust(
+#--- Manually trends analysis: loan
+loan_sbd<-tsclust(
   series=X_loan,
   type="partitional",
   k=6,
@@ -60,10 +61,10 @@ clsbd<-tsclust(
   error.check=TRUE
   )
 
-cldtw<-tsclust(
+loan_dtw<-tsclust(
   series=X_loan,
   type="partitional",
-  k=6,
+  k=4,
   distance="dtw",
   centroid="dba",
   seed=1,
@@ -72,19 +73,146 @@ cldtw<-tsclust(
 )
 
 
+#--- Manually trends analysis: income
+income_sbd<-tsclust(
+  series=X_income,
+  type="partitional",
+  k=7,
+  distance="sbd",
+  centroid="shape",
+  seed=1,
+  trace=TRUE,
+  error.check=TRUE
+)
+
+income_dtw<-tsclust(
+  series=X_income,
+  type="partitional",
+  k=5,
+  distance="dtw",
+  centroid="dba",
+  seed=1,
+  trace=TRUE,
+  error.check=TRUE
+)
+
+
+#--- Manually trends analysis: assets
+assets_sbd<-tsclust(
+  series=X_assets,
+  type="partitional",
+  k=6,
+  distance="sbd",
+  centroid="shape",
+  seed=1,
+  trace=TRUE,
+  error.check=TRUE
+)
+
+assets_dtw<-tsclust(
+  series=X_assets,
+  type="partitional",
+  k=5,
+  distance="dtw",
+  centroid="dba",
+  seed=1,
+  trace=TRUE,
+  error.check=TRUE
+)
+
+
+#--- Manually trends analysis: DSR
+DSR_sbd<-tsclust(
+  series=X_DSR,
+  type="partitional",
+  k=4,
+  distance="sbd",
+  centroid="shape",
+  seed=1,
+  trace=TRUE,
+  error.check=TRUE
+)
+
+DSR_dtw<-tsclust(
+  series=X_DSR,
+  type="partitional",
+  k=7,
+  distance="dtw",
+  centroid="dba",
+  seed=1,
+  trace=TRUE,
+  error.check=TRUE
+)
+
+
+#--- Manually trends analysis: DAR
+DAR_sbd<-tsclust(
+  series=X_DAR,
+  type="partitional",
+  k=7,
+  distance="sbd",
+  centroid="shape",
+  seed=1,
+  trace=TRUE,
+  error.check=TRUE
+)
+
+DAR_dtw<-tsclust(
+  series=X_DAR,
+  type="partitional",
+  k=5,
+  distance="dtw",
+  centroid="dba",
+  seed=1,
+  trace=TRUE,
+  error.check=TRUE
+)
+
+
+#--- Manually trends analysis: expenses
+expenses_sbd<-tsclust(
+  series=X_expenses,
+  type="partitional",
+  k=4,
+  distance="sbd",
+  centroid="shape",
+  seed=1,
+  trace=TRUE,
+  error.check=TRUE
+)
+
+expenses_dtw<-tsclust(
+  series=X_expenses,
+  type="partitional",
+  k=5,
+  distance="dtw",
+  centroid="dba",
+  seed=1,
+  trace=TRUE,
+  error.check=TRUE
+)
+
 
 #--- Datasets extraction
-clustersbd<-clsbd@cluster
-data<-cbind(data,clustersbd)
+cl_loan_sbd<-loan_sbd@cluster
+cl_loan_dtw<-loan_dtw@cluster
+cl_income_sbd<-income_sbd@cluster
+cl_income_dtw<-income_dtw@cluster
+cl_assets_sbd<-assets_sbd@cluster
+cl_assets_dtw<-assets_dtw@cluster
+cl_DSR_sbd<-DSR_sbd@cluster
+cl_DSR_dtw<-DSR_dtw@cluster
+cl_DAR_sbd<-DAR_sbd@cluster
+cl_DAR_dtw<-DAR_dtw@cluster
+cl_expenses_sbd<-expenses_sbd@cluster
+cl_expenses_dtw<-expenses_dtw@cluster
 
-clusterdtw<-cldtw@cluster
-data<-cbind(data,clusterdtw)
+data<-cbind(data,cl_loan_sbd,cl_loan_dtw,cl_income_sbd,cl_income_dtw,cl_assets_sbd,cl_assets_dtw,cl_DSR_sbd,cl_DSR_dtw,cl_DAR_sbd,cl_DAR_dtw,cl_expenses_sbd,cl_expenses_dtw)
 
 write.csv(data,"debttrendRreturn.csv")
 
 
 #--- Stata graph
-options("RStata.StataPath" = "C:/Users/Arnaud/Documents/Software/Stata15/StataMP-64")
-options("RStata.StataVersion" = 15.1)
-
-stata("linegraph.do")
+#options("RStata.StataPath" = "C:/Users/Arnaud/Documents/Software/Stata15/StataMP-64")
+#options("RStata.StataVersion" = 15.1)
+#stata("linegraph.do")
