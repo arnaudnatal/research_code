@@ -153,30 +153,21 @@ save"panel_v5_wide_cluster", replace
 cls
 graph drop _all
 use"panel_v5_wide_cluster", clear
+drop panelvar
+order HHID_panel
 
 ********** R preparation data
-foreach x in annualincome DSR loanamount DIR villageid yearly_expenses assets_noland villagearea DAR_without ISR ihs_annualincome ihs_assets_noland ihs_loanamount ihs_DSR_1000 ihs_DSR_100 cro_annualincome cro_assets_noland cro_loanamount cro_DSR log_yearly_expenses log_annualincome log_assets_noland log_assets log_loanamount {
+foreach x in annualincome DSR loanamount DIR villageid yearly_expenses assets_noland villagearea DAR_without ISR log_yearly_expenses log_annualincome log_assets_noland log_assets log_loanamount {
 rename `x'2010 `x'1
 rename `x'2016 `x'2
 rename `x'2020 `x'3
 }
 
-/*
-foreach t in 1 2 3 {
-rename loanamount`t' loan`t'
-rename annualincome`t' income`t'
-rename yearly_expenses`t' expenses`t'
-rename assets_noland`t' assets`t'
-rename DAR_without`t' DAR`t'
-rename DAR_withoutstd`t' DARstd`t'
-rename annualincomestd`t' incomestd`t'
-rename assets_nolandstd`t' assetsstd`t'
-rename yearly_expensesstd`t' expensesstd`t'
-rename loanamountstd`t' loanstd`t'
+foreach x in annualincome loanamount yearly_expenses assets_noland {
+replace `x'1=`x'1/1000
+replace `x'2=`x'2/1000
+replace `x'3=`x'3/1000
 }
-*/
-
-
 
 export delimited using "$git\Analysis\Overindebtedness\debttrend.csv", replace
 
@@ -186,81 +177,49 @@ export delimited using "$git\Analysis\Overindebtedness\debttrend.csv", replace
 ********** Graph cluster
 import delimited using "$git\Analysis\Overindebtedness\debttrendRreturn.csv", clear
 
+rename hhid_panel HHID_panel
+
 tab1 cl_*
 
-keep v1 cl_* loan1 loan2 loan3 income1 income2 income3 assets1 assets2 assets3 dsr1 dsr2 dsr3 dar1 dar2 dar3 expenses1 expenses2 expenses3
+keep HHID_panel cl_* loanamount1 loanamount2 loanamount3 annualincome1 annualincome2 annualincome3 assets_noland1 assets_noland2 assets_noland3 yearly_expenses1 yearly_expenses2 yearly_expenses3 log_*
 
-reshape long loan income assets dsr dar expenses, i(v1) j(time)
+reshape long loanamount annualincome assets_noland yearly_expenses log_loanamount log_annualincome log_assets_noland log_yearly_expenses, i(HHID_panel) j(time)
 
-xtset v1 time
+
+encode HHID_panel, gen(panelvar)
+xtset panelvar time
+
 
 ***** Line graph
 set graph off
-foreach x in loan income assets dsr dar expenses {
-foreach stat in sbd {
-ta cl_`x'_`stat', gen(cl_`x'_`stat'_)
-forvalues i=1(1)8 {
-capture confirm v cl_`x'_`stat'_`i'
+foreach x in loanamount annualincome assets_noland yearly_expenses {
+ta cl_`x', gen(cl_`x'_)
+forvalues i=1(1)4 {
+capture confirm v cl_`x'_`i'
 if _rc==0 {
-sort cl_`x'_`stat' v1 time
-twoway (line `x' time if cl_`x'_`stat'==`i', c(L) lcolor(red%10)), name(`x'_`stat'_cl`i', replace)
+sort cl_`x' panelvar time
+twoway (line `x' time if cl_`x'==`i', c(L) lcolor(red%10)), name(`x'_cl`i', replace)
+twoway (line log_`x' time if cl_`x'==`i', c(L) lcolor(red%10)), name(log_`x'_cl`i', replace)
 }
 }
 }
-}
-
-***** Loan
-graph combine loan_sbd_cl1 loan_sbd_cl2 loan_sbd_cl3 loan_sbd_cl4 loan_sbd_cl5 loan_sbd_cl6, name(comb_sbd_loan, replace)
-
-*graph combine loan_dtw_cl1 loan_dtw_cl2 loan_dtw_cl3 loan_dtw_cl4, name(comb_dtw_loan, replace)
-
-***** Income
-graph combine income_sbd_cl1 income_sbd_cl2 income_sbd_cl3 income_sbd_cl4 income_sbd_cl5 income_sbd_cl6 income_sbd_cl7, name(comb_sbd_income, replace)
-
-*graph combine income_dtw_cl1 income_dtw_cl2 income_dtw_cl3 income_dtw_cl4 income_dtw_cl5, name(comb_dtw_income, replace)
-
-***** Assets
-graph combine assets_sbd_cl1 assets_sbd_cl2 assets_sbd_cl3 assets_sbd_cl4 assets_sbd_cl5 assets_sbd_cl6, name(comb_sbd_assets, replace)
-
-*graph combine assets_dtw_cl1 assets_dtw_cl2 assets_dtw_cl3 assets_dtw_cl4 assets_dtw_cl5, name(comb_dtw_assets, replace)
-
-***** DSR
-graph combine dsr_sbd_cl1 dsr_sbd_cl2 dsr_sbd_cl3 dsr_sbd_cl4, name(comb_sbd_dsr, replace)
-
-*graph combine dsr_dtw_cl1 dsr_dtw_cl2 dsr_dtw_cl3 dsr_dtw_cl4 dsr_dtw_cl5 dsr_dtw_cl6 dsr_dtw_cl7, name(comb_dtw_dsr, replace)
-
-***** DAR
-graph combine dar_sbd_cl1 dar_sbd_cl2 dar_sbd_cl3 dar_sbd_cl4 dar_sbd_cl5 dar_sbd_cl6 dar_sbd_cl7, name(comb_sbd_dar, replace)
-
-*graph combine dar_dtw_cl1 dar_dtw_cl2 dar_dtw_cl3 dar_dtw_cl4 dar_dtw_cl5, name(comb_dtw_dar, replace)
-
-***** Expenses
-graph combine expenses_sbd_cl1 expenses_sbd_cl2 expenses_sbd_cl3 expenses_sbd_cl4, name(comb_sbd_expenses, replace)
-
-*graph combine expenses_dtw_cl1 expenses_dtw_cl2 expenses_dtw_cl3 expenses_dtw_cl4 expenses_dtw_cl5, name(comb_dtw_expenses, replace)
 
 
 
-********** Display
+***** Combine
+graph dir
+graph combine annualincome_cl1 annualincome_cl2 annualincome_cl3 annualincome_cl4, name(comb_annualincome, replace)
+
+graph combine log_annualincome_cl1 log_annualincome_cl2 log_annualincome_cl3 log_annualincome_cl4, name(comb_log_annualincome, replace)
+
+
+
+
+
+***** Display
 set graph on
+graph display comb_annualincome
 
-graph display comb_sbd_loan
-*graph display comb_dtw_loan
-
-graph display comb_sbd_income
-*graph display comb_dtw_income
-
-graph display comb_sbd_assets
-*graph display comb_dtw_assets
-
-graph display comb_sbd_dsr
-*graph display comb_dtw_dsr
-
-graph display comb_sbd_dar
-*graph display comb_dtw_dar
-
-graph display comb_sbd_expenses
-*graph display comb_dtw_expenses
 
 ****************************************
 * END
