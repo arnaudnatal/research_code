@@ -55,16 +55,31 @@ X_expenses_log<-as.matrix(cbind(log_yearly_expenses1,log_yearly_expenses2,log_ye
 # interactive_clustering(X_assets_log)
 # interactive_clustering(X_expenses_log)
 
+#--- What to keep?
+# log loan      -> k=3 with sbd and median. Random seed=1
+# log loan      -> k=4 with sbd and median. Random seed=8
+# log loan      -> k=4 with sbd and median. Random seed=9 OK
+
+# log assets    -> k=4 with sbd and median. Random seed=5
+# log assets    -> k=5 with sbd and median. Random seed=6
+# log assets    -> k=4 with sbd and median. Random seed=7 OK
+
+# log income    -> k=4 with sbd and median. Random seed=1
+# log income    -> k=3 with sbd and median. Random seed=1 OK
+
+# log expenses  -> k=3 with sbd and median. Random seed=1
+# log expenses  -> k=4 with sbd and median. Random seed=3
+# log expenses  -> k=4 with sbd and median. Random seed=19 OK
 
 
 #--- Manually trends analysis
 loan<-tsclust(
   series=X_loan_log,
   type="partitional",
-  k=3,
+  k=4,
   distance="sbd",
   centroid="median",
-  seed=1,
+  seed=9,
   trace=TRUE,
   error.check=TRUE
   )
@@ -75,7 +90,7 @@ assets<-tsclust(
   k=4,
   distance="sbd",
   centroid="median",
-  seed=5,
+  seed=7,
   trace=TRUE,
   error.check=TRUE
 )
@@ -83,7 +98,7 @@ assets<-tsclust(
 income<-tsclust(
   series=X_income_log,
   type="partitional",
-  k=4,
+  k=3,
   distance="sbd",
   centroid="median",
   seed=1,
@@ -94,10 +109,10 @@ income<-tsclust(
 expenses<-tsclust(
   series=X_expenses_log,
   type="partitional",
-  k=3,
+  k=4,
   distance="sbd",
   centroid="median",
-  seed=1,
+  seed=19,
   trace=TRUE,
   error.check=TRUE
 )

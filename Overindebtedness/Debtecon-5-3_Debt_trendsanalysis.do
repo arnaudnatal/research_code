@@ -169,6 +169,25 @@ replace `x'2=`x'2/1000
 replace `x'3=`x'3/1000
 }
 
+/*
+order HHID_panel loanamount1 log_loanamount1 loanamount2 log_loanamount2 loanamount3 log_loanamount3
+sort loanamount1
+sort loanamount2
+sort loanamount3
+*/
+
+/*
+replace log_loanamount1=4.6051702 if log_loanamount1==0
+replace log_loanamount2=4.6051702 if log_loanamount2==0
+replace log_loanamount3=4.6051702 if log_loanamount3==0
+*/
+
+/*
+drop if log_loanamount1==0
+drop if log_loanamount2==0
+drop if log_loanamount3==0
+*/
+
 export delimited using "$git\Analysis\Overindebtedness\debttrend.csv", replace
 
 ********* R analysis
@@ -221,7 +240,7 @@ tabstat log_loanamount log_annualincome log_assets_noland log_yearly_expenses, s
 set graph off
 foreach x in loanamount annualincome assets_noland yearly_expenses {
 ta cl_`x', gen(cl_`x'_)
-forvalues i=1(1)4 {
+forvalues i=1(1)5 {
 capture confirm v cl_`x'_`i'
 if _rc==0 {
 sort cl_`x' panelvar time
@@ -236,13 +255,13 @@ twoway (line log_`x' time if cl_`x'==`i', c(L) lcolor(red%10)), ylabel(`min'(1)`
 
 
 ***** Combine
-foreach x in annualincome assets_noland {
-*graph combine `x'_cl1 `x'_cl2 `x'_cl3 `x'_cl4, col(4) name(comb_`x', replace)
+graph dir
+foreach x in assets_noland loanamount yearly_expenses  assets_noland {
 graph combine log_`x'_cl1 log_`x'_cl2 log_`x'_cl3 log_`x'_cl4, col(2) name(comb_log_`x', replace)
 }
-foreach x in loanamount yearly_expenses {
-*graph combine `x'_cl1 `x'_cl2 `x'_cl3, col(3) name(comb_`x', replace)
-graph combine log_`x'_cl1 log_`x'_cl2 log_`x'_cl3, col(3) name(comb_log_`x', replace)
+
+foreach x in  annualincome {
+graph combine log_`x'_cl1 log_`x'_cl2 log_`x'_cl3, col(2) name(comb_log_`x', replace)
 }
 
 
