@@ -182,7 +182,7 @@ replace log_loanamount2=4.6051702 if log_loanamount2==0
 replace log_loanamount3=4.6051702 if log_loanamount3==0
 */
 
-/*
+
 drop if log_loanamount1==0
 drop if log_loanamount2==0
 drop if log_loanamount3==0
@@ -271,6 +271,8 @@ foreach x in loanamount annualincome assets_noland yearly_expenses {
 *graph display comb_`x'
 graph display comb_log_`x'
 }
+
+graph display comb_log_loanamount
 
 
 ***** Label of categories

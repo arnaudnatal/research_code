@@ -50,7 +50,7 @@ X_expenses_log<-as.matrix(cbind(log_yearly_expenses1,log_yearly_expenses2,log_ye
 # interactive_clustering(X_assets)
 # interactive_clustering(X_expenses)
 
-# interactive_clustering(X_loan_log)
+interactive_clustering(X_loan_log)
 # interactive_clustering(X_income_log)
 # interactive_clustering(X_assets_log)
 # interactive_clustering(X_expenses_log)
@@ -59,6 +59,9 @@ X_expenses_log<-as.matrix(cbind(log_yearly_expenses1,log_yearly_expenses2,log_ye
 # log loan      -> k=3 with sbd and median. Random seed=1
 # log loan      -> k=4 with sbd and median. Random seed=8
 # log loan      -> k=4 with sbd and median. Random seed=9 OK
+# By dropping 0:
+# log loan      -> k=3 with sbd and median. Random seed=3 OK -> best
+
 
 # log assets    -> k=4 with sbd and median. Random seed=5
 # log assets    -> k=5 with sbd and median. Random seed=6
