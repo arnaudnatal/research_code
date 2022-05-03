@@ -182,11 +182,14 @@ replace log_loanamount2=4.6051702 if log_loanamount2==0
 replace log_loanamount3=4.6051702 if log_loanamount3==0
 */
 
-
+*** For debt
+preserve
 drop if log_loanamount1==0
 drop if log_loanamount2==0
 drop if log_loanamount3==0
-*/
+
+export delimited using "$git\Analysis\Overindebtedness\debttrend_v2.csv", replace
+restore
 
 export delimited using "$git\Analysis\Overindebtedness\debttrend.csv", replace
 
@@ -199,6 +202,21 @@ import delimited using "$git\Analysis\Overindebtedness\debttrendRreturn.csv", cl
 rename hhid_panel HHID_panel
 encode HHID_panel, gen(panelvar)
 drop v1
+
+preserve
+import delimited using "$git\Analysis\Overindebtedness\debttrendRreturn_v2.csv", clear
+rename hhid_panel HHID_panel
+keep HHID_panel cl_loan
+save"$git\Analysis\Overindebtedness\debttrendRreturn_v2.dta", replace
+restore
+
+merge 1:1 HHID_panel using "$git\Analysis\Overindebtedness\debttrendRreturn_v2.dta"
+drop _merge
+
+erase "$git\Analysis\Overindebtedness\debttrendRreturn_v2.dta"
+
+order HHID_panel panelvar
+sort HHID_panel
 
 save"panel_v6_wide_cluster", replace
 ****************************************
@@ -231,12 +249,22 @@ reshape long loanamount annualincome assets_noland yearly_expenses log_loanamoun
 xtset panelvar time
 
 
+/*
 ***** Desc
 tabstat log_loanamount log_annualincome log_assets_noland log_yearly_expenses, stat(n mean sd min max)
 
 
 
 ***** Line graph
+foreach x in loanamount annualincome assets_noland yearly_expenses {
+forvalues i=1(1)5 {
+capture confirm v cl_`x'_`i'
+if _rc==0 {
+drop cl_`x'_`i'
+}
+}
+}
+
 set graph off
 foreach x in loanamount annualincome assets_noland yearly_expenses {
 ta cl_`x', gen(cl_`x'_)
@@ -256,28 +284,74 @@ twoway (line log_`x' time if cl_`x'==`i', c(L) lcolor(red%10)), ylabel(`min'(1)`
 
 ***** Combine
 graph dir
-foreach x in assets_noland loanamount yearly_expenses  assets_noland {
+foreach x in assets_noland yearly_expenses  assets_noland {
 graph combine log_`x'_cl1 log_`x'_cl2 log_`x'_cl3 log_`x'_cl4, col(2) name(comb_log_`x', replace)
 }
 
-foreach x in  annualincome {
+foreach x in  annualincome loanamount {
 graph combine log_`x'_cl1 log_`x'_cl2 log_`x'_cl3, col(2) name(comb_log_`x', replace)
 }
 
 
 ***** Display
+/*
 set graph on
 foreach x in loanamount annualincome assets_noland yearly_expenses {
-*graph display comb_`x'
 graph display comb_log_`x'
 }
+*/
+*/
 
-graph display comb_log_loanamount
+
+***** Add 6 missings in loanamount
+order HHID_panel time cl_loanamount log_loanamount
+sort cl_loanamount HHID_panel time
+replace cl_loanamount=2 if HHID_panel=="GOV29"
+replace cl_loanamount=2 if HHID_panel=="KAR29"
+replace cl_loanamount=2 if HHID_panel=="KAR3"
+replace cl_loanamount=2 if HHID_panel=="ORA52"
+
+replace cl_loanamount=3 if HHID_panel=="GOV22"
+replace cl_loanamount=3 if HHID_panel=="GOV4"
 
 
 ***** Label of categories
+label define cl_annualincome 1"/¯" 2"¯\" 3"\/"
+label define cl_loanamount 1"/¯" 2"\/" 3"/\"
+label define cl_assets_noland 1"_/" 2"\/" 3"\" 4"/¯"
+label define cl_yearly_expenses 1"/¯" 2"\/" 3"\" 4"/\"
+
+label values cl_annualincome cl_annualincome
+label values cl_loanamount cl_loanamount
+label values cl_assets_noland cl_assets_noland
+label values cl_yearly_expenses cl_yearly_expenses
 
 
+***** Reshape for merging
+keep HHID_panel cl_*
+duplicates drop
+
+rename cl_loanamount cl_loanamount_clean
+rename cl_annualincome cl_annualincome_clean
+rename cl_assets_noland cl_assets_noland_clean
+rename cl_yearly_expenses cl_yearly_expenses_clean
+
+merge 1:1 HHID_panel using "panel_v5_wide_cluster"
+drop _merge
+
+drop ce_DSR_1 ce_DSR_2 ce_DSR_3 ce_DSR_4 ce_DSR_5 ce_DSR_6 ce_DAR_without_1 ce_DAR_without_2 ce_DAR_without_3 ce_DAR_without_4 ce_DAR_without_5 ce_DAR_without_6 ce_loanamount_1 ce_loanamount_2 ce_loanamount_3 ce_loanamount_4 ce_loanamount_5 ce_loanamount_6 ce_income_1 ce_income_2 ce_income_3 ce_income_4 ce_income_5 ce_income_6 ce_assetsnl_1 ce_assetsnl_2 ce_assetsnl_3 ce_assetsnl_4 ce_assetsnl_5 ce_assetsnl_6
+
+order cl_*, last
+
+rename cl_loanamount_clean cl_loanamount
+rename cl_annualincome_clean cl_annualincome
+rename cl_assets_noland_clean cl_assets_noland
+rename cl_yearly_expenses_clean cl_yearly_expenses
+
+fre cl_*
+
+
+save"panel_v7_wide_cluster", replace
 ****************************************
 * END
 
@@ -288,15 +362,27 @@ graph display comb_log_loanamount
 
 
 
+
+
 ****************************************
-* MCA following classification
+* Statistics following classification
 ****************************************
 cls
 graph drop _all
-use"panel_v6_wide_cluster", clear
+use"panel_v7_wide_cluster", clear
+
+
+***** Cross tabulation
+ta cl_loanamount caste, col nofreq
+ta cl_assets_noland caste, col nofreq
+ta cl_annualincome caste, col nofreq
+ta cl_yearly_expenses caste, col nofreq
+
+
+
 
 ***** MCA
-mca cl_loanamount cl_annualincome cl_assets_noland, meth(ind) normal(princ) dim(4) comp
+mca cl_loanamount cl_annualincome cl_assets_noland, meth(ind) normal(princ) dim(4) comp sup(caste)
 mcacontrib
 *matrix list e(A)
 *matrix coord=e(A)
@@ -306,9 +392,6 @@ mcacontrib
 ***** Plot
 mcaplot, overlay xline(0) yline(0) dim(2 1) 
 mcaplot, overlay xline(0) yline(0) dim(3 1)
-mcaplot, overlay xline(0) yline(0) dim(4 1)
-
-
 
 
 ****************************************

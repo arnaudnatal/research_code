@@ -5,9 +5,11 @@
 # April 28, 2022
 
 
+
 #--- Introduction
 rm(list = ls())
 setwd("C:/Users/Arnaud/Documents/GitHub/Analysis/Overindebtedness")
+
 
 
 #--- Install packages
@@ -15,6 +17,7 @@ setwd("C:/Users/Arnaud/Documents/GitHub/Analysis/Overindebtedness")
 # install.packages("dtwclust", dependencies = TRUE)
 # install.packages("dplyr", dependencies = TRUE)
 # install.packages('RStata')
+
 
 
 #--- Open packages
@@ -25,17 +28,14 @@ library(ggplot2)
 library(RStata)
 
 
+
 #--- Open datasets
 data<-read.csv("debttrend.csv")
 attach(data)
 
 
-#--- Matrices creation
-# X_loan<-as.matrix(cbind(loanamount1,loanamount2,loanamount3))
-# X_income<-as.matrix(cbind(annualincome1,annualincome2,annualincome3))
-# X_assets<-as.matrix(cbind(assets_noland1,assets_noland2,assets_noland3))
-# X_expenses<-as.matrix(cbind(yearly_expenses1,yearly_expenses2,yearly_expenses3))
 
+#--- Matrices creation
 X_loan_log<-as.matrix(cbind(log_loanamount1,log_loanamount2,log_loanamount3))
 X_income_log<-as.matrix(cbind(log_annualincome1,log_annualincome2,log_annualincome3))
 X_assets_log<-as.matrix(cbind(log_assets_noland1,log_assets_noland2,log_assets_noland3))
@@ -43,17 +43,13 @@ X_expenses_log<-as.matrix(cbind(log_yearly_expenses1,log_yearly_expenses2,log_ye
 
 
 
-
 #--- Trends analysis clustering
-# interactive_clustering(X_loan)
-# interactive_clustering(X_income)
-# interactive_clustering(X_assets)
-# interactive_clustering(X_expenses)
-
-interactive_clustering(X_loan_log)
+# interactive_clustering(X_loan_log)
 # interactive_clustering(X_income_log)
 # interactive_clustering(X_assets_log)
 # interactive_clustering(X_expenses_log)
+
+
 
 #--- What to keep?
 # log loan      -> k=3 with sbd and median. Random seed=1
@@ -61,7 +57,6 @@ interactive_clustering(X_loan_log)
 # log loan      -> k=4 with sbd and median. Random seed=9 OK
 # By dropping 0:
 # log loan      -> k=3 with sbd and median. Random seed=3 OK -> best
-
 
 # log assets    -> k=4 with sbd and median. Random seed=5
 # log assets    -> k=5 with sbd and median. Random seed=6
@@ -75,18 +70,8 @@ interactive_clustering(X_loan_log)
 # log expenses  -> k=4 with sbd and median. Random seed=19 OK
 
 
-#--- Manually trends analysis
-loan<-tsclust(
-  series=X_loan_log,
-  type="partitional",
-  k=4,
-  distance="sbd",
-  centroid="median",
-  seed=9,
-  trace=TRUE,
-  error.check=TRUE
-  )
 
+#--- Manually trends analysis
 assets<-tsclust(
   series=X_assets_log,
   type="partitional",
@@ -122,18 +107,42 @@ expenses<-tsclust(
 
 
 
-
 #--- Datasets extraction
-cl_loanamount<-loan@cluster
 cl_annualincome<-income@cluster
 cl_assets_noland<-assets@cluster
 cl_yearly_expenses<-expenses@cluster
 
-data<-cbind(data,cl_loanamount,cl_annualincome,cl_assets_noland,cl_yearly_expenses)
+data<-cbind(data,cl_annualincome,cl_assets_noland,cl_yearly_expenses)
 
 write.csv(data,"debttrendRreturn.csv")
 
 
+
+#--- For loan
+detach(data)
+rm(list = ls())
+data<-read.csv("debttrend_v2.csv")
+attach(data)
+X_loan_log<-as.matrix(cbind(log_loanamount1,log_loanamount2,log_loanamount3))
+
+# interactive_clustering(X_loan_log)
+
+loan<-tsclust(
+  series=X_loan_log,
+  type="partitional",
+  k=3,
+  distance="sbd",
+  centroid="median",
+  seed=3,
+  trace=TRUE,
+  error.check=TRUE
+)
+
+cl_loanamount<-loan@cluster
+
+data<-cbind(data,cl_loanamount)
+
+write.csv(data,"debttrendRreturn_v2.csv")
 
 
 #--- Stata graph
