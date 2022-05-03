@@ -316,10 +316,10 @@ replace cl_loanamount=3 if HHID_panel=="GOV4"
 
 
 ***** Label of categories
-label define cl_annualincome 1"/¯" 2"¯\" 3"\/"
-label define cl_loanamount 1"/¯" 2"\/" 3"/\"
-label define cl_assets_noland 1"_/" 2"\/" 3"\" 4"/¯"
-label define cl_yearly_expenses 1"/¯" 2"\/" 3"\" 4"/\"
+label define cl_annualincome 1"IS" 2"SD" 3"V"
+label define cl_loanamount 1"IS" 2"V" 3"B"
+label define cl_assets_noland 1"SI" 2"V" 3"D" 4"IS"
+label define cl_yearly_expenses 1"IS" 2"V" 3"D" 4"B"
 
 label values cl_annualincome cl_annualincome
 label values cl_loanamount cl_loanamount
@@ -350,8 +350,9 @@ rename cl_yearly_expenses_clean cl_yearly_expenses
 
 fre cl_*
 
-
 save"panel_v7_wide_cluster", replace
+
+export delimited using "$git\Analysis\Overindebtedness\debttrend_v3.csv", replace
 ****************************************
 * END
 
