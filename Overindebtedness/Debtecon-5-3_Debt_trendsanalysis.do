@@ -395,6 +395,13 @@ mcaplot, overlay xline(0) yline(0) dim(2 1)
 mcaplot, overlay xline(0) yline(0) dim(3 1)
 
 
+***** Plot individual
+predict d1 d2
+scatter d1 d2
+
+order d1 d2 cl_loanamount cl_annualincome cl_assets_noland
+sort d1
+
 ****************************************
 * END
 

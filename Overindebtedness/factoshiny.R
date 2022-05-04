@@ -19,7 +19,7 @@ setwd("C:/Users/Arnaud/Documents/GitHub/Analysis/Overindebtedness")
 
 #--- Open packages
 library(Factoshiny)
-
+library(tidyverse)
 
 
 #--- Open datasets
@@ -28,8 +28,13 @@ data<-read.csv("debttrend_v3.csv")
 
 
 #--- Matrices creation
-X<-as.matrix(cbind(cl_loanamount,cl_annualincome,cl_assets_noland))
+X<-as.matrix(cbind(data$cl_loanamount,data$cl_annualincome,data$cl_assets_noland))
 trend<-as.data.frame(X)
+trend<-rename(trend, loan=V1)
+trend<-rename(trend, income=V2)
+trend<-rename(trend, assets=V3)
+
+
 
 #--- Factoshiny
 MCAshiny(trend)
