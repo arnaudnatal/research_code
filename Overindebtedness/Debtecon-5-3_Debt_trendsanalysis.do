@@ -378,43 +378,63 @@ graph drop _all
 use"panel_v7_wide_cluster", clear
 
 
-***** Cross tabulation
+********** Cross tabulation
 ta cl_loanamount caste, col nofreq
 ta cl_assets_noland caste, col nofreq
 ta cl_annualincome caste, col nofreq
 ta cl_yearly_expenses caste, col nofreq
 
 
-***** MCA
+
+
+********** MCA full
 mca cl_loanamount cl_annualincome cl_assets_noland cl_yearly_expenses, meth(ind) normal(princ) dim(4) comp
 mcacontrib
-*matrix list e(A)
+matrix list e(A)
+matrix list NewContrib
 *matrix coord=e(A)
 *svmat coord, names(varcoord)
-mat mcamat=e(cGS)
-mat colnames mcamat = mass qual inert co1 rel1 abs1 co2 rel2 abs2 co3 rel3 abs3 co4 rel4 abs4 
-svmat2 mcamat, rname(varname) name(col)
-predict d1 d2 d3 d4
+*mat mcamat=e(cGS)
+*mat colnames mcamat = mass qual inert co1 rel1 abs1 co2 rel2 abs2 co3 rel3 abs3 co4 rel4 abs4 
+*svmat2 mcamat, rname(varname) name(col)
+predict d1_f d2_f d3_f d4_f
+
+*** Statistics
+*tabstat mass rel1 abs1 rel2 abs2 rel3 abs3 rel4 abs4, stat(mean sum)
+
+*** Plot var
+mcaplot, overlay xline(0) yline(0) dim(2 1) legend(pos(6) col(2) order(1 "Debt" 2 "Income" 3 "Assets" 4 "Expenses")) note("") name(mca_var_4, replace)
+
+*** Plot individual
+scatter d2_f d1_f,  xline(0) yline(0) name(indiv, replace)
 
 
-***** Statistics
-tabstat mass rel1 abs1 rel2 abs2 rel3 abs3 rel4 abs4, stat(mean sum)
+
+********** MCA without expenses
+mca cl_loanamount cl_annualincome cl_assets_noland, meth(ind) normal(princ) dim(4) comp
+mcacontrib
+matrix list e(A)
+matrix list NewContrib
+*matrix coord=e(A)
+*svmat coord, names(varcoord)
+*mat mcamat=e(cGS)
+*mat colnames mcamat = mass qual inert co1 rel1 abs1 co2 rel2 abs2 co3 rel3 abs3 co4 rel4 abs4 
+*svmat2 mcamat, rname(varname) name(col)
+predict d1_nf d2_nf d3_nf d4_nf
+
+*** Statistics
+*tabstat mass rel1 abs1 rel2 abs2 rel3 abs3 rel4 abs4, stat(mean sum)
+
+*** Plot var
+mcaplot, overlay xline(0) yline(0) dim(2 1) legend(pos(6) col(2) order(1 "Debt" 2 "Income" 3 "Assets" 4 "Expenses")) note("") name(mca_var_4, replace)
+
+*** Plot individual
+scatter d2_nf d1_nf,  xline(0) yline(0) name(indiv, replace)
 
 
-***** Plot var
-mcaplot, overlay xline(0) yline(0) dim(2 1) legend(pos(6) col(2) order(1 "Debt" 2 "Income" 3 "Assets" 4 "Expenses")) note("")
-mcaplot, overlay xline(0) yline(0) dim(4 3) legend(pos(6) col(2) order(1 "Debt" 2 "Income" 3 "Assets" 4 "Expenses")) note("")
-
-/*
-twoway ///
-(scatter co2 co1 [aweight=mass], xline(0) yline(0)  mlabsize(small) msymbol(oh) msize(medium) legend(off)) ///
-(scatter co2 co1, mlabsize(vsmall) msymbol(i) mlabel(varname) legend(off)) ///
-, name(secondv, replace)
-*/
 
 
-***** Plot individual
-scatter d2 d1,  xline(0) yline(0) name(indiv, replace)
+
 
 
 
@@ -452,41 +472,78 @@ xtset panelvar year
 tabstat log_loanamount log_annualincome log_assets_noland log_yearly_expenses, stat(n mean sd p50 min max)
 fre cl_*
 
-*** Loanamount
+set graph off
+
+*** Loan amount
 sort cl_loanamount panelvar year
 forvalues i=1(1)3{
 twoway (line log_loanamount year if cl_loanamount==`i', c(L) lcolor(black%10)) ///
 , xlabel(2010 2016 2020) xmtick(2010(1)2020) xtitle("Year") ///
-ylabel(0(3)15) ymtick(0(1)15) ytitle("Debt amount (log)") ///
+ylabel(0(3)15) ymtick(0(1)15) ytitle("log(Loan amount)") ///
 title("Cluster `i'") ///
-aspectratio(1) graphregion(margin(zero)) plotregion(margin(zero)) ///
+aspectratio(1) ///
 name(gph_loanamount_`i', replace)
 }
 graph combine gph_loanamount_1 gph_loanamount_2 gph_loanamount_3, col(3) name(gph_loanamount, replace)
 
 
-
-
-
-
-*aspectratio(1) 
-
-***** Combine
-graph dir
-foreach x in assets_noland yearly_expenses {
-graph combine log_`x'_cl1 log_`x'_cl2 log_`x'_cl3 log_`x'_cl4, col(2) name(comb_log_`x', replace)
+*** Annual income
+sort cl_annualincome panelvar year
+forvalues i=1(1)3{
+twoway (line log_annualincome year if cl_annualincome==`i', c(L) lcolor(black%10)) ///
+, xlabel(2010 2016 2020) xmtick(2010(1)2020) xtitle("Year") ///
+ylabel(6(2)14) ymtick(6(1)14) ytitle("log(Income)") ///
+title("Cluster `i'") ///
+aspectratio(1) ///
+name(gph_annualincome_`i', replace)
 }
+graph combine gph_annualincome_1 gph_annualincome_2 gph_annualincome_3, col(3) name(gph_annualincome, replace)
 
-foreach x in annualincome loanamount {
-graph combine log_`x'_cl1 log_`x'_cl2 log_`x'_cl3, col(2) name(comb_log_`x', replace)
+
+
+*** Assets
+sort cl_assets_noland panelvar year
+forvalues i=1(1)4{
+twoway (line log_assets_noland year if cl_assets_noland==`i', c(L) lcolor(black%10)) ///
+, xlabel(2010 2016 2020) xmtick(2010(1)2020) xtitle("Year") ///
+ylabel(6(2)16) ymtick(6(1)16) ytitle("log(Assets)") ///
+title("Cluster `i'") ///
+aspectratio(1) ///
+name(gph_assets_noland_`i', replace)
 }
+graph combine gph_assets_noland_1 gph_assets_noland_2 gph_assets_noland_3 gph_assets_noland_4, col(4) name(gph_assets_noland, replace)
 
 
+
+*** Expenses
+sort cl_yearly_expenses panelvar year
+forvalues i=1(1)4{
+twoway (line log_yearly_expenses year if cl_yearly_expenses==`i', c(L) lcolor(black%10)) ///
+, xlabel(2010 2016 2020) xmtick(2010(1)2020) xtitle("Year") ///
+ylabel(8(2)14) ymtick(8(1)14) ytitle("log(Expenses)") ///
+title("Cluster `i'") ///
+aspectratio(1) ///
+name(gph_yearly_expenses_`i', replace)
+}
+graph combine gph_yearly_expenses_1 gph_yearly_expenses_2 gph_yearly_expenses_3 gph_yearly_expenses_4, col(4) name(gph_yearly_expenses, replace)
 
 set graph on
 
-graph display comb_log_annualincome
 
+***** Display
+/*
+graph display gph_loanamount
+graph export "graph/gph_loanamount.pdf", as(pdf) replace
+
+graph display gph_assets_noland
+graph export "graph/gph_assets_noland.pdf", as(pdf) replace
+
+graph display gph_annualincome
+graph export "graph/gph_annualincome.pdf", as(pdf) replace
+
+graph display gph_yearly_expenses
+graph export "graph/gph_yearly_expenses.pdf", as(pdf) replace
+*/
 
 ****************************************
 * END
