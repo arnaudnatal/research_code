@@ -106,13 +106,15 @@ global var4 ihs_DSR_10002010 ihs_DSR_10002016 ihs_DSR_10002020 ihs_annualincome2
 
 global var5 log_yearly_expenses2010 log_annualincome2010 log_assets_noland2010 log_assets2010 log_loanamount2010 log_yearly_expenses2016 log_annualincome2016 log_assets_noland2016 log_assets2016 log_loanamount2016 log_yearly_expenses2020 log_annualincome2020 log_assets_noland2020 log_assets2020 log_loanamount2020
 
+global var6 head_edulevel2010 head_occupation2010 wifehusb_edulevel2010 wifehusb_occupation2010 mainocc_occupation2010 cat_income cat_assets sizeownland2010 DSR302010 DSR402010 DSR502010 path_30 path_40 path_50
+
 
 ***** Clean
-drop DSR302010 DSR402010 DSR502010 DSR302016 DSR402016 DSR502016 DSR302020 DSR402020 DSR502020
+drop DSR302016 DSR402016 DSR502016 DSR302020 DSR402020 DSR502020
 
 
 ***** Keep
-keep HHID_panel panelvar caste jatis villagearea* villageid* loanamount* DSR* DAR_without* annualincome* assets_noland* yearly_expenses* ISR* DIR* $var $var2 $var3 $var4 $var5
+keep HHID_panel panelvar caste jatis villagearea* villageid* loanamount* DSR* DAR_without* annualincome* assets_noland* yearly_expenses* ISR* DIR* $var $var2 $var3 $var4 $var5 $var6
 
 /*
 reshape long villagearea villageid DSR DAR_without annualincome assets_noland yearly_expenses ISR loanamount DIR cro_DSR cro_annualincome cro_loanamount cro_assets_noland ihs_DSR_1000 ihs_DSR_100 ihs_annualincome ihs_loanamount ihs_assets_noland, i(panelvar) j(year)
@@ -355,6 +357,20 @@ label var cl_yearly_expenses "Expenses"
 
 fre cl_*
 
+
+*** Check supplementary variables
+rename villageid2016 villageid
+drop villageid2010 villageid2020
+
+ta villagearea2010 villagearea2016
+ta villagearea2016 villagearea2020
+gen villagearea=villagearea2016
+drop villagearea2010 villagearea2016 villagearea2020
+
+ta caste
+ta jatis
+
+
 save"panel_v7_wide_cluster", replace
 
 export delimited using "$git\Analysis\Overindebtedness\debttrend_v3.csv", replace
@@ -379,10 +395,25 @@ use"panel_v7_wide_cluster", clear
 
 
 ********** Cross tabulation
-ta cl_loanamount caste, col nofreq
-ta cl_assets_noland caste, col nofreq
-ta cl_annualincome caste, col nofreq
-ta cl_yearly_expenses caste, col nofreq
+ta cl_loanamount cl_assets_noland, exp cchi2
+ta cl_loanamount cl_annualincome, exp cchi2
+ta cl_loanamount cl_yearly_expenses, exp cchi2
+ta cl_assets_noland cl_annualincome, exp cchi2
+ta cl_assets_noland cl_yearly_expenses, exp cchi2
+ta cl_annualincome cl_yearly_expenses, exp cchi2
+
+
+
+********** Association
+ta cl_loanamount cl_assets_noland, V chi2 nofreq
+ta cl_loanamount cl_annualincome, V chi2 nofreq
+ta cl_loanamount cl_yearly_expenses, V chi2 nofreq
+ta cl_assets_noland cl_annualincome, V chi2 nofreq
+ta cl_assets_noland cl_yearly_expenses, V chi2 nofreq
+ta cl_annualincome cl_yearly_expenses, V chi2 nofreq
+
+
+
 
 
 
