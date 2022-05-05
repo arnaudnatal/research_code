@@ -39,10 +39,12 @@ attach(data)
 X_loan_log<-as.matrix(cbind(log_loanamount1,log_loanamount2,log_loanamount3))
 X_income_log<-as.matrix(cbind(log_annualincome1,log_annualincome2,log_annualincome3))
 X_assets_log<-as.matrix(cbind(log_assets_noland1,log_assets_noland2,log_assets_noland3))
+X_assets2_log<-as.matrix(cbind(log_assets1,log_assets2,log_assets3))
 X_expenses_log<-as.matrix(cbind(log_yearly_expenses1,log_yearly_expenses2,log_yearly_expenses3))
 
-X_loan<-as.matrix(cbind(loanamount1,loanamount2,loanamount3))
-X_DSR<-as.matrix(cbind(DSR1,DSR2,DSR3))
+# X_loan<-as.matrix(cbind(loanamount1,loanamount2,loanamount3))
+# X_DSR<-as.matrix(cbind(DSR1,DSR2,DSR3))
+# X_DAR<-as.matrix(cbind(DAR_without1,DAR_without2,DAR_without3))
 
 
 #--- Trends analysis clustering
@@ -51,8 +53,7 @@ X_DSR<-as.matrix(cbind(DSR1,DSR2,DSR3))
 # interactive_clustering(X_assets_log)
 # interactive_clustering(X_expenses_log)
 
-interactive_clustering(X_loan)
-interactive_clustering(X_DSR)
+interactive_clustering(X_assets2_log)
 
 
 #--- What to keep?

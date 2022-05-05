@@ -108,13 +108,17 @@ global var5 log_yearly_expenses2010 log_annualincome2010 log_assets_noland2010 l
 
 global var6 head_edulevel2010 head_occupation2010 wifehusb_edulevel2010 wifehusb_occupation2010 mainocc_occupation2010 cat_income cat_assets sizeownland2010 DSR302010 DSR402010 DSR502010 path_30 path_40 path_50
 
+ta sizeownland2010
+gen dummyownland2010=1
+replace dummyownland2010=0 if sizeownland2010==.
+ta dummyownland2010
 
 ***** Clean
 drop DSR302016 DSR402016 DSR502016 DSR302020 DSR402020 DSR502020
 
 
 ***** Keep
-keep HHID_panel panelvar caste jatis villagearea* villageid* loanamount* DSR* DAR_without* annualincome* assets_noland* yearly_expenses* ISR* DIR* $var $var2 $var3 $var4 $var5 $var6
+keep HHID_panel panelvar caste jatis villagearea* villageid* loanamount* DSR* DAR_without* DAR_with* annualincome* assets_noland* yearly_expenses* ISR* DIR* $var $var2 $var3 $var4 $var5 $var6 dummyownland2010
 
 /*
 reshape long villagearea villageid DSR DAR_without annualincome assets_noland yearly_expenses ISR loanamount DIR cro_DSR cro_annualincome cro_loanamount cro_assets_noland ihs_DSR_1000 ihs_DSR_100 ihs_annualincome ihs_loanamount ihs_assets_noland, i(panelvar) j(year)
@@ -159,7 +163,7 @@ drop panelvar
 order HHID_panel
 
 ********** R preparation data
-foreach x in annualincome DSR loanamount DIR villageid yearly_expenses assets_noland villagearea DAR_without ISR log_yearly_expenses log_annualincome log_assets_noland log_assets log_loanamount {
+foreach x in annualincome DSR loanamount DIR villageid yearly_expenses assets_noland villagearea DAR_without DAR_with ISR log_yearly_expenses log_annualincome log_assets_noland log_assets log_loanamount {
 rename `x'2010 `x'1
 rename `x'2016 `x'2
 rename `x'2020 `x'3
@@ -193,7 +197,20 @@ drop if log_loanamount3==0
 export delimited using "$git\Analysis\Overindebtedness\debttrend_v2.csv", replace
 restore
 
+tabstat DAR_without1 DAR_without2 DAR_without3,stat(min p1 p5 p10 q p90 p95 p99 max)
+
+tabstat DAR_with1 DAR_with2 DAR_with3,stat(min p1 p5 p10 q p90 p95 p99 max)
+
 export delimited using "$git\Analysis\Overindebtedness\debttrend.csv", replace
+
+tabstat DAR_without1 DAR_without2 DAR_without3 DAR_with1 DAR_with2 DAR_with3, stat(n mean sd p50 min max)
+
+foreach x in DAR_without1 DAR_without2 DAR_without3 DAR_with1 DAR_with2 DAR_with3 {
+count if `x'==0
+}
+
+tabstat assets_noland1 assets_noland2 assets_noland3, stat(n mean sd p50 min max)
+
 
 ********* R analysis
 
@@ -316,11 +333,14 @@ replace cl_loanamount=2 if HHID_panel=="ORA52"
 replace cl_loanamount=3 if HHID_panel=="GOV22"
 replace cl_loanamount=3 if HHID_panel=="GOV4"
 
+ta cl_assets_noland time
+recode cl_assets_noland (2=1) (3=2) (4=3)
+
 
 ***** Label of categories
-label define cl_annualincome 1"Inc-Sta" 2"Sta-Dec" 3"Dec-Inc"
-label define cl_loanamount 1"Inc-Sta" 2"Dec-Inc" 3"Inc-Dec"
-label define cl_assets_noland 1"Sta-Inc" 2"Dec-Inc" 3"Dec-Dec" 4"Inc-Sta"
+label define cl_annualincome 1"Inc-Sta" 2"Inc-Dec" 3"Dec-Inc"
+label define cl_loanamount 1"Inc-Inc" 2"Dec-Inc" 3"Inc-Dec"
+label define cl_assets_noland 1"Dec-Inc" 2"Dec-Dec" 3"Inc-Dec"
 label define cl_yearly_expenses 1"Inc-Sta" 2"Dec-Inc" 3"Dec-Dec" 4"Inc-Dec"
 
 label values cl_annualincome cl_annualincome
@@ -395,50 +415,28 @@ use"panel_v7_wide_cluster", clear
 
 
 ********** Cross tabulation
-ta cl_loanamount cl_assets_noland, exp cchi2
-ta cl_loanamount cl_annualincome, exp cchi2
-ta cl_loanamount cl_yearly_expenses, exp cchi2
-ta cl_assets_noland cl_annualincome, exp cchi2
-ta cl_assets_noland cl_yearly_expenses, exp cchi2
-ta cl_annualincome cl_yearly_expenses, exp cchi2
-
+foreach x in cl_annualincome cl_assets_noland {
+ta `x' cl_loanamount, row nofreq
+}
 
 
 ********** Association
 ta cl_loanamount cl_assets_noland, V chi2 nofreq
 ta cl_loanamount cl_annualincome, V chi2 nofreq
-ta cl_loanamount cl_yearly_expenses, V chi2 nofreq
 ta cl_assets_noland cl_annualincome, V chi2 nofreq
-ta cl_assets_noland cl_yearly_expenses, V chi2 nofreq
-ta cl_annualincome cl_yearly_expenses, V chi2 nofreq
 
 
 
+********** Association 2
+fre cl_loanamount cl_assets_noland cl_annualincome
 
+egen asso=group(cl_loanamount cl_annualincome cl_assets_noland)
 
+ta asso cl_loanamount
+ta asso cl_annualincome
+ta asso cl_assets_noland
 
-
-********** MCA full
-mca cl_loanamount cl_annualincome cl_assets_noland cl_yearly_expenses, meth(ind) normal(princ) dim(4) comp
-mcacontrib
-matrix list e(A)
-matrix list NewContrib
-*matrix coord=e(A)
-*svmat coord, names(varcoord)
-*mat mcamat=e(cGS)
-*mat colnames mcamat = mass qual inert co1 rel1 abs1 co2 rel2 abs2 co3 rel3 abs3 co4 rel4 abs4 
-*svmat2 mcamat, rname(varname) name(col)
-predict d1_f d2_f d3_f d4_f
-
-*** Statistics
-*tabstat mass rel1 abs1 rel2 abs2 rel3 abs3 rel4 abs4, stat(mean sum)
-
-*** Plot var
-mcaplot, overlay xline(0) yline(0) dim(2 1) legend(pos(6) col(2) order(1 "Debt" 2 "Income" 3 "Assets" 4 "Expenses")) note("") name(mca_var_4, replace)
-
-*** Plot individual
-scatter d2_f d1_f,  xline(0) yline(0) name(indiv, replace)
-
+ta asso
 
 
 ********** MCA without expenses
@@ -457,17 +455,13 @@ predict d1_nf d2_nf d3_nf d4_nf
 *tabstat mass rel1 abs1 rel2 abs2 rel3 abs3 rel4 abs4, stat(mean sum)
 
 *** Plot var
-mcaplot, overlay xline(0) yline(0) dim(2 1) legend(pos(6) col(2) order(1 "Debt" 2 "Income" 3 "Assets" 4 "Expenses")) note("") name(mca_var_4, replace)
+mcaplot, overlay xline(0) yline(0) dim(2 1) legend(pos(6) col(3) order(1 "Debt" 2 "Income" 3 "Assets")) note("") name(mca_var_4, replace)
+mcaplot, overlay xline(0) yline(0) dim(3 2) legend(pos(6) col(3) order(1 "Debt" 2 "Income" 3 "Assets")) note("") name(mca_var_4, replace)
+
 
 *** Plot individual
 scatter d2_nf d1_nf,  xline(0) yline(0) name(indiv, replace)
-
-
-
-
-
-
-
+scatter d3_nf d2_nf,  xline(0) yline(0) name(indiv, replace)
 
 
 ****************************************
@@ -480,6 +474,10 @@ scatter d2_nf d1_nf,  xline(0) yline(0) name(indiv, replace)
 
 
 
+
+
+
+/*
 ****************************************
 * Clean line trends
 ****************************************
@@ -512,10 +510,11 @@ twoway (line log_loanamount year if cl_loanamount==`i', c(L) lcolor(black%10)) /
 , xlabel(2010 2016 2020) xmtick(2010(1)2020) xtitle("Year") ///
 ylabel(0(3)15) ymtick(0(1)15) ytitle("log(Loan amount)") ///
 title("Cluster `i'") ///
-aspectratio(1) ///
+aspectratio(0.5) graphregion(margin(zero)) plotregion(margin(zero))  ///
 name(gph_loanamount_`i', replace)
 }
 graph combine gph_loanamount_1 gph_loanamount_2 gph_loanamount_3, col(3) name(gph_loanamount, replace)
+
 
 
 *** Annual income
@@ -525,24 +524,24 @@ twoway (line log_annualincome year if cl_annualincome==`i', c(L) lcolor(black%10
 , xlabel(2010 2016 2020) xmtick(2010(1)2020) xtitle("Year") ///
 ylabel(6(2)14) ymtick(6(1)14) ytitle("log(Income)") ///
 title("Cluster `i'") ///
-aspectratio(1) ///
+aspectratio(0.5) graphregion(margin(zero)) plotregion(margin(zero))  ///
 name(gph_annualincome_`i', replace)
 }
-graph combine gph_annualincome_1 gph_annualincome_2 gph_annualincome_3, col(3) name(gph_annualincome, replace)
+graph combine gph_annualincome_1 gph_annualincome_2 gph_annualincome_3, col(3) name(gph_annualincome, replace) 
 
 
 
 *** Assets
 sort cl_assets_noland panelvar year
-forvalues i=1(1)4{
+forvalues i=1(1)3{
 twoway (line log_assets_noland year if cl_assets_noland==`i', c(L) lcolor(black%10)) ///
 , xlabel(2010 2016 2020) xmtick(2010(1)2020) xtitle("Year") ///
 ylabel(6(2)16) ymtick(6(1)16) ytitle("log(Assets)") ///
 title("Cluster `i'") ///
-aspectratio(1) ///
+aspectratio(0.5) graphregion(margin(zero)) plotregion(margin(zero))  ///
 name(gph_assets_noland_`i', replace)
 }
-graph combine gph_assets_noland_1 gph_assets_noland_2 gph_assets_noland_3 gph_assets_noland_4, col(4) name(gph_assets_noland, replace)
+graph combine gph_assets_noland_1 gph_assets_noland_2 gph_assets_noland_3, col(4) name(gph_assets_noland, replace)
 
 
 
@@ -553,12 +552,18 @@ twoway (line log_yearly_expenses year if cl_yearly_expenses==`i', c(L) lcolor(bl
 , xlabel(2010 2016 2020) xmtick(2010(1)2020) xtitle("Year") ///
 ylabel(8(2)14) ymtick(8(1)14) ytitle("log(Expenses)") ///
 title("Cluster `i'") ///
-aspectratio(1) ///
+aspectratio(0.5) graphregion(margin(zero)) plotregion(margin(zero))  ///
 name(gph_yearly_expenses_`i', replace)
 }
 graph combine gph_yearly_expenses_1 gph_yearly_expenses_2 gph_yearly_expenses_3 gph_yearly_expenses_4, col(4) name(gph_yearly_expenses, replace)
 
 set graph on
+
+
+
+*** Combine all in the same
+graph combine gph_assets_noland gph_annualincome gph_loanamount, col(1) name(comb_gph, replace)
+graph export "graph/comb_gph.pdf", as(pdf) replace
 
 
 ***** Display
@@ -575,99 +580,37 @@ graph export "graph/gph_annualincome.pdf", as(pdf) replace
 graph display gph_yearly_expenses
 graph export "graph/gph_yearly_expenses.pdf", as(pdf) replace
 */
-
 ****************************************
 * END
+*/
 
 
 
 
 
 
-
-/*
 ****************************************
-* Time trends analysis with continuous 
+* Vulnerable groups
 ****************************************
-*** Guerin et al 2015: income, assets and loanamount
-*** Fareed et al 2019: DSR, DAR and income
-
 cls
 graph drop _all
-use"panel_v5_wide_cluster", clear
+use"panel_v7_wide_cluster", clear
 
-
-***** HCA for nb of clust
-foreach x in loanamount DSR ISR assets_noland annualincome DAR_without {
-global var `x'std2010 `x'std2016 `x'std2020
-*** HCA
-cluster wardslinkage $var, measure(Euclidean)
-*** Dendrogram
-cluster dendrogram, horizontal cutnumber(15) countinline showcount name(dendro_`x', replace)
-}
-
-
-***** Kmeans: k=4
-foreach x in loanamount ISR assets_noland annualincome {
-global var `x'std2010 `x'std2016 `x'std2020
-cluster kmeans $var, k(4) start(everyk) name(cl_`x')
-}
-
-
-***** Kmeans: k=3
-foreach x in DSR DAR_without {
-global var `x'std2010 `x'std2016 `x'std2020
-cluster kmeans $var, k(3) start(everyk) name(cl_`x')
-}
-
-
-***** Center of cluster
-foreach x in loanamount DSR ISR assets_noland annualincome DAR_without {
-foreach t in 2010 2016 2020 {
-bysort cl_`x': egen `x'stdmean`t'=mean(`x'std`t')
+foreach x in loanamount assets_noland yearly_expenses annualincome {
+foreach i in 2010 2016 2020 {
+replace `x'`i'=`x'`i'/1000
 }
 }
 
 
-***** Reshape + panel
-keep panelvar caste jatis villagearea villageid cl_* loanamount* DSR* ISR* assets_noland* annualincome* DAR_without*
-
-reshape long loanamount annualincome DSR assets_noland DAR_without ISR DSRstd DAR_withoutstd annualincomestd assets_nolandstd ISRstd loanamountstd loanamountstdmean DSRstdmean ISRstdmean assets_nolandstdmean annualincomestdmean DAR_withoutstdmean, i(panelvar) j(year)
-
-xtset panelvar year
-
-
-set graph off
-***** Line graph --> k=3
-foreach x in DSR DAR_without{
-foreach g in 1 2 3 {
-sort cl_`x' panelvar year
-twoway (line `x'std year if cl_`x'==`g', c(L) lcolor(red%10)) (line `x'stdmean year if cl_`x'==`g', c(L) lcolor(blue) lwidth(medium)), name(line_`x'_k`g', replace)
-}
-grc1leg line_`x'_k1 line_`x'_k2 line_`x'_k3, name(line_`x', replace)
+***** Values
+foreach x in loanamount annualincome assets_noland yearly_expenses {
+tabstat `x'2010 `x'2016 `x'2020, stat(n mean q) by(cl_`x')
 }
 
+ta cl_loanamount cl_assets_noland, cell nofreq
 
 
-***** Line graph --> k=4
-foreach x in loanamount ISR assets_noland annualincome{
-foreach g in 1 2 3 4 {
-sort cl_`x' panelvar year
-twoway (line `x'std year if cl_`x'==`g', c(L) lcolor(red%10)) (line `x'stdmean year if cl_`x'==`g', c(L) lcolor(blue) lwidth(medium)), name(line_`x'_k`g', replace)
-}
-grc1leg line_`x'_k1 line_`x'_k2 line_`x'_k3 line_`x'_k4, name(line_`x', replace)
-}
-
-set graph on
-
-
-***** Display
-graph display line_loanamount
-graph display line_DSR
-graph display line_ISR
-graph display line_DAR_without
-graph display line_assets_noland
-graph display line_annualincome
 
 ****************************************
 * END
