@@ -414,31 +414,6 @@ graph drop _all
 use"panel_v7_wide_cluster", clear
 
 
-********** Cross tabulation
-foreach x in cl_annualincome cl_assets_noland {
-ta `x' cl_loanamount, row nofreq
-}
-
-
-********** Association
-ta cl_loanamount cl_assets_noland, V chi2 nofreq
-ta cl_loanamount cl_annualincome, V chi2 nofreq
-ta cl_assets_noland cl_annualincome, V chi2 nofreq
-
-
-
-********** Association 2
-fre cl_loanamount cl_assets_noland cl_annualincome
-
-egen asso=group(cl_loanamount cl_annualincome cl_assets_noland)
-
-ta asso cl_loanamount
-ta asso cl_annualincome
-ta asso cl_assets_noland
-
-ta asso
-
-
 ********** MCA without expenses
 mca cl_loanamount cl_annualincome cl_assets_noland, meth(ind) normal(princ) dim(4) comp
 mcacontrib
@@ -449,19 +424,34 @@ matrix list NewContrib
 *mat mcamat=e(cGS)
 *mat colnames mcamat = mass qual inert co1 rel1 abs1 co2 rel2 abs2 co3 rel3 abs3 co4 rel4 abs4 
 *svmat2 mcamat, rname(varname) name(col)
-predict d1_nf d2_nf d3_nf d4_nf
+predict d1_nf d2_nf
 
 *** Statistics
 *tabstat mass rel1 abs1 rel2 abs2 rel3 abs3 rel4 abs4, stat(mean sum)
 
 *** Plot var
 mcaplot, overlay xline(0) yline(0) dim(2 1) legend(pos(6) col(3) order(1 "Debt" 2 "Income" 3 "Assets")) note("") name(mca_var_4, replace)
-mcaplot, overlay xline(0) yline(0) dim(3 2) legend(pos(6) col(3) order(1 "Debt" 2 "Income" 3 "Assets")) note("") name(mca_var_4, replace)
-
 
 *** Plot individual
 scatter d2_nf d1_nf,  xline(0) yline(0) name(indiv, replace)
-scatter d3_nf d2_nf,  xline(0) yline(0) name(indiv, replace)
+
+
+********** Classification
+cluster wardslinkage d1_nf d2_nf
+cluster dendrogram, cutnumber(20)
+cluster gen cl_new=groups(3)
+fre cl_new
+
+
+********** Graph rpz
+twoway ///
+(scatter d2_nf d1_nf if cl_new==1, xline(0) yline(0)) ///
+(scatter d2_nf d1_nf if cl_new==2, msymbol(+)) ///
+(scatter d2_nf d1_nf if cl_new==3, msymbol(oh))
+
+ta cl_new cl_assets_noland, row nofreq
+ta cl_new cl_annualincome, row nofreq
+ta cl_new cl_loanamount, row nofreq
 
 
 ****************************************
@@ -601,6 +591,9 @@ foreach i in 2010 2016 2020 {
 replace `x'`i'=`x'`i'/1000
 }
 }
+
+***** Path verif
+fre cl_loanamount cl_assets_noland cl_annualincome
 
 
 ***** Values
