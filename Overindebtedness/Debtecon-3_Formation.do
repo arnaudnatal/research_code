@@ -761,6 +761,102 @@ label var DSR40 "Overindebted at 40% of DSR"
 label var DSR50 "Overindebted at 50% of DSR"
 */
 
+
+
+***** Check IHS consistency
+ta ISR
+drop ihs_ISR_1000 ihs_ISR_100
+
+g ISR10=ISR*10
+g ISR100=ISR*100
+g ISR1000=ISR*1000
+g ISR10000=ISR*10000
+
+ta ISR
+ta ISR100
+ta ISR1000
+ta ISR10000
+
+foreach x in ISR ISR100 ISR1000 ISR10000 {
+gen log_`x'=log(`x')
+}
+
+
+********** Benchmark
+/*
+foreach x in ISR ISR100 ISR1000 ISR10000 {
+stripplot log_`x', over() separate() vert ///
+stack width(0.05) jitter(0) ///
+box(barw(0.1)) boffset(-0.1) pctile(10) ///
+ms(oh oh oh) msize(small) mc(black%30) ///
+yla(, ang(h)) xla(, noticks) ///
+name(`x', replace)
+}
+*/
+
+reg log_ISR log_annualincome
+reg log_ISR100 log_annualincome
+reg log_ISR1000 log_annualincome
+reg log_ISR10000 log_annualincome
+
+
+********** IHS creation
+foreach x in ISR ISR100 ISR1000 ISR10000 {
+gen ihs_`x'=asinh(`x')
+}
+
+
+********** Which sample choose?
+count if ISR==0 & year==2010
+count if ISR==0 & year==2016
+count if ISR==0 & year==2020
+dis 23*100/382
+dis 75*100/382
+dis 68*100/382
+
+keep if year==2010
+dis 382*0.01
+dis 382*0.05
+dis 382*0.1
+dis 382*0.2
+
+sort ISR
+
+gen n1=_n if ISR==0
+replace n1=. if n1>4
+replace n1=1 if n1!=.
+
+gen n2=_n if ISR==0
+replace n2=. if n2>20
+replace n2=1 if n2!=.
+
+gen n3=_n if ISR==0
+replace n3=. if n3>39
+replace n3=1 if n3!=.
+
+gen n4=_n
+replace n4=1 if n4!=.
+
+recode n1 n2 n3 n4 (.=0)
+recode n1 n2 n3 n4 (0=1) (1=0)
+
+ta n1
+ta n2
+ta n3
+ta n4
+
+
+
+
+
+
+********** Check
+reg ihs_ISR log_annualincome
+reg ihs_ISR100 log_annualincome
+reg ihs_ISR1000 log_annualincome
+reg ihs_ISR10000 log_annualincome
+
+
 save"panel_v5", replace
 ****************************************
 * END
