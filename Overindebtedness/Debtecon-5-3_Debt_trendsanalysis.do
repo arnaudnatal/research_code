@@ -528,8 +528,11 @@ grc1leg htree clus, leg(clus) name(hac_comb, replace)
 
 
 
-********** Rename
+********** Rename and label
 rename cl_new vuln_cl
+
+label define vuln_cl 1"Less-vulnerable" 2"Vulnerable" 3"Ex-vulnerable"
+label values vuln_cl vuln_cl
 
 set graph on
 
@@ -566,7 +569,7 @@ save"panel_v8_wide_cluster", replace
 
 
 ****************************************
-* Exploratory analysis
+* Exploratory analysis according to caste and cluster
 ****************************************
 cls
 graph drop _all
@@ -578,13 +581,28 @@ replace `x'`i'=`x'`i'/1000
 }
 }
 
-***
-ta vuln_cl caste
+********** Check classification
+ta vuln_cl caste, nofreq row chi2
+/*
+No evident correlation = good for further sub analysis
+*/
 
-
-*****
 tabstat assets_noland2010 assets_noland2016 assets_noland2020, stat(n mean sd p50) by(caste)
 tabstat assets_noland2010 assets_noland2016 assets_noland2020, stat(n mean sd p50) by(vuln_cl)
+
+
+
+********** Type and use of debt
+
+
+********** Burden of debt
+tabstat DSR2010 DSR2016 DSR2020, stat(n mean sd q min max) by(vuln_cl)
+
+
+********** Debt trap
+
+
+********** Overindebtedness
 
 
 
