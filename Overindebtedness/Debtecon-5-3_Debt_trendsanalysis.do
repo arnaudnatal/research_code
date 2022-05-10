@@ -34,16 +34,9 @@ global git "C:\Users\\$user\\$folder\GitHub"
 *cd "C:\Users\anatal\Downloads\_Thesis\Research-Skills_and_debt\Analysis"
 
 * Scheme
-*net install schemepack, from("https://raw.githubusercontent.com/asjadnaqvi/Stata-schemes/main/schemes/") replace
-*set scheme plotplain
-set scheme white_tableau
-*set scheme plotplain
+set scheme plotplain_v2
 grstyle init
-grstyle set plain, nogrid
-
-*set scheme black_tableau
-*set scheme swift_red
-
+grstyle set plain, box nogrid compact
 
 *global git "C:\Users\anatal\Downloads\GitHub"
 *global dropbox "C:\Users\anatal\Downloads\Dropbox"
@@ -175,18 +168,6 @@ replace `x'2=`x'2/1000
 replace `x'3=`x'3/1000
 }
 
-/*
-order HHID_panel loanamount1 log_loanamount1 loanamount2 log_loanamount2 loanamount3 log_loanamount3
-sort loanamount1
-sort loanamount2
-sort loanamount3
-*/
-
-/*
-replace log_loanamount1=4.6051702 if log_loanamount1==0
-replace log_loanamount2=4.6051702 if log_loanamount2==0
-replace log_loanamount3=4.6051702 if log_loanamount3==0
-*/
 
 *** For debt
 preserve
@@ -268,60 +249,6 @@ reshape long loanamount annualincome assets_noland yearly_expenses log_loanamoun
 xtset panelvar time
 
 
-/*
-***** Desc
-tabstat log_loanamount log_annualincome log_assets_noland log_yearly_expenses, stat(n mean sd min max)
-
-
-
-***** Line graph
-foreach x in loanamount annualincome assets_noland yearly_expenses {
-forvalues i=1(1)5 {
-capture confirm v cl_`x'_`i'
-if _rc==0 {
-drop cl_`x'_`i'
-}
-}
-}
-
-set graph off
-foreach x in loanamount annualincome assets_noland yearly_expenses {
-ta cl_`x', gen(cl_`x'_)
-forvalues i=1(1)5 {
-capture confirm v cl_`x'_`i'
-if _rc==0 {
-sort cl_`x' panelvar time
-*twoway (line `x' time if cl_`x'==`i', c(L) lcolor(red%10)), name(`x'_cl`i', replace)
-sum log_`x'
-local min=r(min)
-local max=r(max)
-twoway (line log_`x' time if cl_`x'==`i', c(L) lcolor(red%10)), ylabel(`min'(1)`max') aspectratio(1) name(log_`x'_cl`i', replace)
-}
-}
-}
-
-
-***** Combine
-graph dir
-foreach x in assets_noland yearly_expenses {
-graph combine log_`x'_cl1 log_`x'_cl2 log_`x'_cl3 log_`x'_cl4, col(2) name(comb_log_`x', replace)
-}
-
-foreach x in  annualincome loanamount {
-graph combine log_`x'_cl1 log_`x'_cl2 log_`x'_cl3, col(2) name(comb_log_`x', replace)
-}
-
-
-***** Display
-/*
-set graph on
-foreach x in loanamount annualincome assets_noland yearly_expenses {
-graph display comb_log_`x'
-}
-*/
-*/
-
-
 ***** Add 6 missings in loanamount
 order HHID_panel time cl_loanamount log_loanamount
 sort cl_loanamount HHID_panel time
@@ -396,69 +323,6 @@ save"panel_v7_wide_cluster", replace
 export delimited using "$git\Analysis\Overindebtedness\debttrend_v3.csv", replace
 ****************************************
 * END
-
-
-
-
-
-
-
-
-
-
-****************************************
-* Statistics following classification
-****************************************
-cls
-graph drop _all
-use"panel_v7_wide_cluster", clear
-
-
-********** MCA without expenses
-mca cl_loanamount cl_annualincome cl_assets_noland, meth(ind) normal(princ) dim(4) comp
-mcacontrib
-matrix list e(A)
-matrix list NewContrib
-*matrix coord=e(A)
-*svmat coord, names(varcoord)
-*mat mcamat=e(cGS)
-*mat colnames mcamat = mass qual inert co1 rel1 abs1 co2 rel2 abs2 co3 rel3 abs3 co4 rel4 abs4 
-*svmat2 mcamat, rname(varname) name(col)
-predict d1_nf d2_nf
-
-*** Statistics
-*tabstat mass rel1 abs1 rel2 abs2 rel3 abs3 rel4 abs4, stat(mean sum)
-
-*** Plot var
-mcaplot, overlay xline(0) yline(0) dim(2 1) legend(pos(6) col(3) order(1 "Debt" 2 "Income" 3 "Assets")) note("") name(mca_var_4, replace)
-
-*** Plot individual
-scatter d2_nf d1_nf,  xline(0) yline(0) name(indiv, replace)
-
-
-********** Classification
-cluster wardslinkage d1_nf d2_nf
-cluster dendrogram, cutnumber(20)
-cluster gen cl_new=groups(3)
-fre cl_new
-
-
-********** Graph rpz
-twoway ///
-(scatter d2_nf d1_nf if cl_new==1, xline(0) yline(0)) ///
-(scatter d2_nf d1_nf if cl_new==2, msymbol(+)) ///
-(scatter d2_nf d1_nf if cl_new==3, msymbol(oh))
-
-ta cl_new cl_assets_noland, row nofreq
-ta cl_new cl_annualincome, row nofreq
-ta cl_new cl_loanamount, row nofreq
-
-
-****************************************
-* END
-
-
-
 
 
 
@@ -555,21 +419,6 @@ set graph on
 graph combine gph_assets_noland gph_annualincome gph_loanamount, col(1) name(comb_gph, replace)
 graph export "graph/comb_gph.pdf", as(pdf) replace
 
-
-***** Display
-/*
-graph display gph_loanamount
-graph export "graph/gph_loanamount.pdf", as(pdf) replace
-
-graph display gph_assets_noland
-graph export "graph/gph_assets_noland.pdf", as(pdf) replace
-
-graph display gph_annualincome
-graph export "graph/gph_annualincome.pdf", as(pdf) replace
-
-graph display gph_yearly_expenses
-graph export "graph/gph_yearly_expenses.pdf", as(pdf) replace
-*/
 ****************************************
 * END
 */
@@ -579,12 +428,149 @@ graph export "graph/gph_yearly_expenses.pdf", as(pdf) replace
 
 
 
+
+
+
+
 ****************************************
-* Vulnerable groups
+* Statistics following classification
 ****************************************
 cls
 graph drop _all
 use"panel_v7_wide_cluster", clear
+
+
+set graph off
+
+********** MCA without expenses
+mca cl_loanamount cl_annualincome cl_assets_noland, meth(ind) normal(princ) dim(4) comp
+mcacontrib
+matrix list e(F)
+matrix list NewContrib
+matrix coord=e(F)
+svmat coord, names(varcoord)
+mat mcamat=e(cGS)
+mat colnames mcamat = mass qual inert co1 rel1 abs1 co2 rel2 abs2 co3 rel3 abs3 co4 rel4 abs4 
+svmat2 mcamat, rname(varname) name(col)
+gen varname2=""
+gen n=_n
+replace varname2="Debt" if n==1 | n==2 | n==3
+replace varname2="Income" if n==4 | n==5 | n==6
+replace varname2="Assets" if n==7 | n==8 | n==9
+drop n
+predict d1_nf d2_nf
+
+*** Inertia
+input dim inertia perc totperc
+1 0.43 	21.75 	21.75
+2 0.40 	19.98 	41.72
+3 0.36 	18.02 	59.74
+4 0.29 	14.66 	74.40
+5 0.27 	13.39 	87.79
+6 0.24 	12.21 	100.00 
+end
+
+graph bar perc, over(dim) b1title("Dimension") ytitle("% of variance") note("Decomposition of the total inertia.", size(tiny)) name(inertia, replace)
+
+
+*** Plot var
+egen labpos=mlabvpos(varcoord2 varcoord1)
+replace labpos=3 if varname=="Inc-Inc" & varname2=="Debt"
+replace labpos=3 if varname=="Inc-Sta" & varname2=="Income"
+replace labpos=3 if varname=="Inc-Dec" & varname2=="Debt"
+replace labpos=3 if varname=="Inc-Dec" & varname2=="Income"
+replace labpos=1 if varname=="Dec-Dec" & varname2=="Assets"
+replace labpos=9 if varname=="Dec-Inc" & varname2=="Assets"
+replace labpos=9 if varname=="Dec-Inc" & varname2=="Debt"
+replace labpos=3 if varname=="Dec-Inc" & varname2=="Income"
+
+twoway ///
+(scatter varcoord2 varcoord1 if varname2=="Assets", xline(0) yline(0) mlab(varname) mlabvpos(labpos)) ///
+(scatter varcoord2 varcoord1 if varname2=="Debt", xline(0) yline(0) mlab(varname) mlabvpos(labpos)) ///
+(scatter varcoord2 varcoord1 if varname2=="Income", xline(0) yline(0) mlab(varname) mlabvpos(labpos)) ///
+, xtitle("Dimension 1 (21.7%)") ytitle("Dimension 2 (20.0%)") ///
+legend(pos(7) col(3) order(1 "Assets" 2 "Debt" 3 "Income")) aspectratio(1) ///
+name(var, replace)
+
+*** Plot individual
+scatter d2_nf d1_nf,  xline(0) yline(0) xtitle("Dimension 1 (21.7%)") ytitle("Dimension 2 (20.0%)") msym(o) aspectratio(1) name(indiv, replace)
+
+*** Combine
+grc1leg var indiv, name(mca_comb, replace) col(2)
+
+
+
+********** Classification
+cluster wardslinkage d1_nf d2_nf, measure(L2squared)
+
+
+*** Plot branch
+cluster dendrogram, cutnumber(20) xtitle("Group") ytitle("Squared euclidean dissimilarity measure") title("") xlabel(1(1)20, ang(0)) yline(150) name(htree, replace) aspectratio(1)
+cluster gen cl_new=groups(3)
+fre cl_new
+
+
+*** Plot indiv
+twoway ///
+(scatter d2_nf d1_nf if cl_new==1, xline(0) yline(0) msym(o)) ///
+(scatter d2_nf d1_nf if cl_new==2, msym(s)) ///
+(scatter d2_nf d1_nf if cl_new==3, msym(d)) ///
+, xtitle("Dimension 1 (21.7%)") ytitle("Dimension 2 (20.0%)") ///
+legend(pos(6) col(3) order(1 "Cluster 1" 2 "Cluster 2" 3 "Cluster 3")) ///
+name(clus, replace) aspectratio(1)
+
+*** Combine
+grc1leg htree clus, leg(clus) name(hac_comb, replace)
+
+
+*** Characterise cluster
+*Excel file directly
+
+
+
+********** Rename
+rename cl_new vuln_cl
+
+set graph on
+
+
+********** Graph export
+/*
+graph display inertia
+graph export "graph/inertia.pdf", as(pdf)
+
+graph display mca_comb
+graph export "graph/mca_comb.pdf", as(pdf)
+
+graph display hac_comb
+graph export "graph/hac_comb.pdf", as(pdf)
+*/
+
+
+save"panel_v8_wide_cluster", replace
+
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Exploratory analysis
+****************************************
+cls
+graph drop _all
+use"panel_v8_wide_cluster", clear
 
 foreach x in loanamount assets_noland yearly_expenses annualincome {
 foreach i in 2010 2016 2020 {
@@ -592,16 +578,13 @@ replace `x'`i'=`x'`i'/1000
 }
 }
 
-***** Path verif
-fre cl_loanamount cl_assets_noland cl_annualincome
+***
+ta vuln_cl caste
 
 
-***** Values
-foreach x in loanamount annualincome assets_noland yearly_expenses {
-tabstat `x'2010 `x'2016 `x'2020, stat(n mean q) by(cl_`x')
-}
-
-ta cl_loanamount cl_assets_noland, cell nofreq
+*****
+tabstat assets_noland2010 assets_noland2016 assets_noland2020, stat(n mean sd p50) by(caste)
+tabstat assets_noland2010 assets_noland2016 assets_noland2020, stat(n mean sd p50) by(vuln_cl)
 
 
 

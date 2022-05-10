@@ -7,6 +7,7 @@
 
 
 #--- Introduction
+#.rs.restartR()
 rm(list = ls())
 setwd("C:/Users/Arnaud/Documents/GitHub/Analysis/Overindebtedness")
 
@@ -20,6 +21,8 @@ setwd("C:/Users/Arnaud/Documents/GitHub/Analysis/Overindebtedness")
 #--- Open packages
 library(Factoshiny)
 library(tidyverse)
+
+
 
 
 #--- Open datasets

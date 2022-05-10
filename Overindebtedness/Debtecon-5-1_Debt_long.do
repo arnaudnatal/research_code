@@ -37,16 +37,9 @@ global git "C:\Users\\$user\\$folder\GitHub"
 *cd "C:\Users\anatal\Downloads\_Thesis\Research-Skills_and_debt\Analysis"
 
 * Scheme
-*net install schemepack, from("https://raw.githubusercontent.com/asjadnaqvi/Stata-schemes/main/schemes/") replace
-*set scheme plotplain
-set scheme white_tableau
-*set scheme plotplain
+set scheme plotplain_v2
 grstyle init
-grstyle set plain, nogrid
-
-*set scheme black_tableau
-*set scheme swift_red
-
+grstyle set plain, box nogrid
 
 *global git "C:\Users\anatal\Downloads\GitHub"
 *global dropbox "C:\Users\anatal\Downloads\Dropbox"

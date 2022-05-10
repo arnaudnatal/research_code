@@ -12,13 +12,6 @@ Panel for indebtedness and over-indebtedness
 */
 
 
-
-
-
-
-
-
-
 ****************************************
 * INITIALIZATION
 ****************************************
@@ -52,7 +45,10 @@ global loan1 "RUME-all_loans"
 global loan2 "NEEMSIS1-all_loans"
 global loan3 "NEEMSIS2-all_loans"
 
-
+* Scheme
+set scheme plotplain_v2
+grstyle init
+grstyle set plain, box nogrid
 
 ********** Deflate
 *https://data.worldbank.org/indicator/FP.CPI.TOTL?locations=IN
