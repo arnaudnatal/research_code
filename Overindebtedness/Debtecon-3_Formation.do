@@ -668,200 +668,150 @@ replace `x'=`x'/100
 }
 
 
-***** New ratio scales
-foreach x in DSR DAR_without DAR_with DIR ISR {
-gen `x'_1000=`x'*1000
-gen `x'_100=`x'*100
-}
-
-
-***** IHS
-foreach x in annualincome assets_noland loanamount DSR_1000 DIR_1000 DAR_without_1000 ISR_1000 DSR_100 DIR_100 DAR_without_100 ISR_100 {
-gen ihs_`x'=asinh(`x')
-}
 
 ***** CRO
 foreach x in annualincome assets_noland loanamount DSR DAR_without DIR ISR DAR_with {
 gen cro_`x'=`x'^(1/3)
 }
 
-***** Log
-foreach x in yearly_expenses annualincome assets_noland assets loanamount informal_HH formal_HH eco_HH current_HH humank_HH social_HH home_HH other_HH {
-ta year if `x'==0 | `x'==.
-}
 
+***** Log
 * Replace . or 0 with 1
 foreach x in loanamount {
 replace `x'=1 if `x'==0
 replace `x'=1 if `x'==.
 }
 
-* 
 foreach x in yearly_expenses annualincome assets_noland assets loanamount {
 gen log_`x'=log(`x')
 }
 
 
-********* Label
-label var caste "Caste"
-label var assetsq "Tercile of assets in 2010"
-label var incomeq "Tercile of income in 2010"
-
-label define tercile 1"Tercile 1" 2"Tercile 2" 3"Tercile 3"
-label values assetsq tercile
-label values incomeq tercile
-
-/*
-label var ihs_annualincome "IHST of income"
-label var ihs_assets_noland "IHST of assets"
-label var ihs_loanamount "IHST of loan amount"
-label var ihs_DSR_1000 "IHST of DSR"
-label var ihs_ISR_1000 "IHST of ISR"
-label var ihs_DIR_1000 "IHST of DIR"
-label var ihs_DAR_without_1000 "IHST of DAR"
-
-label var cro_annualincome "CRT of income"
-label var cro_assets_noland "CRT of assets"
-label var cro_loanamount "CRT of loan amount"
-label var cro_DSR "CRT of DSR"
-label var cro_DAR_without "CRT of DAR"
-label var cro_DIR "CRT of DIR"
-label var cro_ISR "CRT of ISR"
-
-label var log_annualincome "Log+1 of income"
-label var log_assets_noland "Log+1 of assets"
-label var log_loanamount "Log+1 of loan amount"
-label var log_DSR "Log+1 of DSR"
-label var log_DAR_without "Log+1 of DAR"
-label var log_DIR "Log+1 of DIR" 
-label var log_ISR "Log+1 of ISR"
-
-label var annualincome_std "Income (std)"
-label var assets_noland_std "Assets (std)"
-label var loanamount_std "Loan amount (std)"
-label var DSR_std "DSR (std)"
-label var DAR_without_std "DAR (std)"
-label var DIR_std "DIR (std)" 
-label var ISR_std "ISR (std)"
-
-label var annualincome "Income (INR)"
-label var assets_noland "Assets (INR)"
-label var loanamount "Loan amount (INR)"
-label var DSR "DSR (%)"
-label var DAR_without "DAR (%)"
-label var DIR "DIR (%)"
-label var ISR "ISR (%)"
-label var sum_loans_HH "No. of loans"
-
-label var dummyborrowstrat "Borrowing elsewhere (%)"
-label var dummyrepay "Debt for repayment (%)"
-
-label var DSR30 "Overindebted at 30% of DSR"
-label var DSR40 "Overindebted at 40% of DSR"
-label var DSR50 "Overindebted at 50% of DSR"
-*/
-
+rename DAR_without DAR
 
 
 ***** Check IHS consistency
-ta ISR
-drop ihs_ISR_1000 ihs_ISR_100
+foreach x in ISR DAR DSR {
+g `x'10=`x'*10
+g `x'100=`x'*100
+g `x'1000=`x'*1000
+g `x'10000=`x'*10000
 
-g ISR10=ISR*10
-g ISR100=ISR*100
-g ISR1000=ISR*1000
-g ISR10000=ISR*10000
-
-ta ISR
-ta ISR100
-ta ISR1000
-ta ISR10000
-
-foreach x in ISR ISR100 ISR1000 ISR10000 {
-gen log_`x'=log(`x')
+foreach m in 10 100 1000 10000 {
+g log_`x'`m'=log(`x'`m')
+}
+g log_`x'=log(`x')
 }
 
 
 ********** Benchmark
-/*
-foreach x in ISR ISR100 ISR1000 ISR10000 {
-stripplot log_`x', over() separate() vert ///
-stack width(0.05) jitter(0) ///
-box(barw(0.1)) boffset(-0.1) pctile(10) ///
-ms(oh oh oh) msize(small) mc(black%30) ///
-yla(, ang(h)) xla(, noticks) ///
-name(`x', replace)
+cls
+foreach x in ISR DAR DSR {
+reg log_`x' log_assets_noland
+reg log_`x'10 log_assets_noland
+reg log_`x'100 log_assets_noland
+reg log_`x'1000 log_assets_noland
+reg log_`x'10000 log_assets_noland
 }
-*/
-
-reg log_ISR log_annualincome
-reg log_ISR100 log_annualincome
-reg log_ISR1000 log_annualincome
-reg log_ISR10000 log_annualincome
-
-/*
-When annual income increase by 10%, the ISR decrease by 89%.
-*/
 
 
 ********** IHS creation
-foreach x in ISR ISR100 ISR1000 ISR10000 {
+foreach x in ISR DAR DSR {
 gen ihs_`x'=asinh(`x')
+foreach m in 10 100 1000 10000 {
+gen ihs_`x'`m'=asinh(`x'`m')
+}
 }
 
 
 ********** Which sample choose?
-count if ISR==0 & year==2010
-count if ISR==0 & year==2016
-count if ISR==0 & year==2020
-dis 23*100/382
-dis 75*100/382
-dis 68*100/382
+/*
+foreach x in ISR DAR DSR {
+count if `x'==0 & year==2010
+count if `x'==0 & year==2016
+count if `x'==0 & year==2020
+}
 
-keep if year==2016
-count if ISR==0
+keep if year==2016  // year with more 0
 
-dis 382*0.01
-dis 382*0.05
-dis 382*0.1
-dis 382*0.2
+dis 0.01*382
+dis 0.05*382
+dis 0.1*382
 
-sort ISR
-gen n=_n
+
+foreach x in ISR DAR DSR {
+sort `x' HHID_panel
+gen n_`x'=_n
 
 * No 0
-gen ISR_0=ISR if ISR!=0
+gen `x'_0=`x' if `x'!=0
 
 * 1% of 0
-gen ISR_1=ISR if ISR!=0
-replace ISR_1=0 if n<=4
+gen `x'_1=`x' if `x'!=0
+replace `x'_1=0 if n_`x'<=4
+replace `x'_1=`x' if `x'!=0
 
 * 5% of 0
-gen ISR_2=ISR if ISR!=0
-replace ISR_2=0 if n<=20
+gen `x'_2=`x' if `x'!=0
+replace `x'_2=0 if n_`x'<=20
+replace `x'_2=`x' if `x'!=0
 
 * 10% of 0
-gen ISR_3=ISR if ISR!=0
-replace ISR_3=0 if n<=39
+gen `x'_3=ISR if `x'!=0
+replace `x'_3=0 if n_`x'<=39
+replace `x'_3=`x' if `x'!=0
 
 * All 0
-gen ISR_4=ISR
+gen `x'_4=`x'
+}
 
-*** Check 0
-count if ISR_0==0
-count if ISR_1==0
-count if ISR_2==0
-count if ISR_3==0
-count if ISR_4==0
-drop n
+*** Check
+preserve
+order n_ISR ISR ISR_0 ISR_1 ISR_2 ISR_3 ISR_4 n_DAR DAR DAR_0 DAR_1 DAR_2 DAR_3 DAR_4 n_DSR DSR DSR_0 DSR_1 DSR_2 DSR_3 DSR_4
+
+sort n_ISR
+sort n_DAR
+sort n_DSR
+restore
+
+drop DAR_2 DAR_3 DAR_4 DSR_4
+
+*** Recode
+foreach x in ISR_0 ISR_1 ISR_2 ISR_3 ISR_4 DAR_0 DAR_1 DSR_0 DSR_1 DSR_2 DSR_3 {
+replace `x'=1 if `x'!=. 
+recode `x' (.=0)
+ta `x'
+}
+
+
+*** Check below 10
+foreach x in ISR DAR DSR {
+count if `x'<10 & `x'!=0
+count if `x'10<10 & `x'10!=0
+count if `x'100<10 & `x'100!=0
+count if `x'1000<10 & `x'1000!=0
+count if `x'10000<10 & `x'10000!=0
+}
 
 
 ********** Check
-reg ihs_ISR log_annualincome
-reg ihs_ISR100 log_annualincome
-reg ihs_ISR1000 log_annualincome
-reg ihs_ISR10000 log_annualincome
+cls
+foreach x in ISR DAR DSR {
+reg log_`x' log_assets_noland
+forvalues i=0(1)4 {
+capture confirm v `x'_`i'
+if _rc==0 {
+reg ihs_`x' log_assets_noland if `x'_`i'==1
+reg ihs_`x'10 log_assets_noland if `x'_`i'==1
+reg ihs_`x'100 log_assets_noland if `x'_`i'==1
+reg ihs_`x'1000 log_assets_noland if `x'_`i'==1
+reg ihs_`x'10000 log_assets_noland if `x'_`i'==1
+}
+}
+}
+*/
 
+rename DAR DAR_without
 
 save"panel_v5", replace
 ****************************************
@@ -902,7 +852,7 @@ global quanti DIR DAR_with DAR_without DSR ISR loanamount annualincome assets_no
 
 global quali DSR30 DSR40 DSR50 dummyIMF dummybank dummymoneylender dummyrepay dummyborrowstrat mainocc_occupation head_edulevel wifehusb_edulevel head_occupation wifehusb_occupation
 
-global var $quanti $quali cro_annualincome cro_assets_noland cro_loanamount cro_DSR cro_DAR_without cro_DIR cro_ISR cro_DAR_with ihs_annualincome ihs_assets_noland ihs_loanamount ihs_DSR_1000 ihs_DIR_1000 ihs_DAR_without_1000 ihs_ISR_1000 ihs_DSR_100 ihs_DIR_100 ihs_DAR_without_100 ihs_ISR_100 log_yearly_expenses log_annualincome log_assets_noland log_assets log_loanamount
+global var $quanti $quali ihs_ISR ihs_ISR10 ihs_ISR100 ihs_ISR1000 ihs_ISR10000 ihs_DAR ihs_DAR10 ihs_DAR100 ihs_DAR1000 ihs_DAR10000 ihs_DSR ihs_DSR10 ihs_DSR100 ihs_DSR1000 ihs_DSR10000 log_yearly_expenses log_annualincome log_assets_noland log_assets log_loanamount log_ISR10 log_ISR100 log_ISR1000 log_ISR10000 log_ISR log_DAR10 log_DAR100 log_DAR1000 log_DAR10000 log_DAR log_DSR10 log_DSR100 log_DSR1000 log_DSR10000 log_DSR cro_annualincome cro_assets_noland cro_loanamount cro_DSR cro_DAR_without cro_DIR cro_ISR cro_DAR_with
 
 sort HHID_panel year
 
@@ -923,7 +873,7 @@ label values cat_income cat_income
 label values cat_assets cat_assets
 
 
-
+/*
 ********** Evolution
 foreach x in $quanti {
 gen d1_`x'=`x'2016-`x'2010
@@ -948,7 +898,7 @@ replace ce_`x'=4 if d1_`x'>0 & d2_`x'<=0 & abs(d2_`x')>abs(d1_`x')
 replace ce_`x'=5 if d1_`x'<=0 & d2_`x'>0 & abs(d1_`x')>abs(d2_`x')
 replace ce_`x'=6 if d1_`x'<=0 & d2_`x'<=0
 }
-
+*/
 
 
 ********** Overindebtedness path
@@ -1053,13 +1003,14 @@ ta path_borrowstrat caste, col nofreq
 
 
 ********** Rename catevo en plus court
-rename ce_annualincome ce_income
+
+/*rename ce_annualincome ce_income
 rename ce_assets_noland ce_assetsnl
 
 foreach x in ce_formal ce_informal ce_rel_formal ce_rel_informal ce_eco ce_current ce_humank ce_social ce_home ce_other ce_rel_eco ce_rel_current ce_rel_humank ce_rel_social ce_rel_home ce_rel_other ce_sum_loans {
 rename `x'_HH `x'
 }
-
+*/
 
 save"panel_v5_wide", replace
 clear all

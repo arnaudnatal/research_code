@@ -119,13 +119,19 @@ No evident correlation = good for further sub analysis
 
 
 ********** Burden of debt
-stripplot DSR, over(time) separate() by(vuln_cl, note("") row(1)) vert ///
+stripplot ihs_DSR_1000, over(time) separate() by(vuln_cl, note("") row(1)) vert ///
 stack width(0.05) jitter(0) ///
 box(barw(0.1)) boffset(-0.1) pctile(10) ///
 ms(oh oh oh) msize(small) mc(red%30) ///
 yla(, ang(h)) xla(, noticks) ///
 name(`x'_`y', replace)
 
+stripplot ihs_DAR_1000, over(time) separate() by(vuln_cl, note("") row(1)) vert ///
+stack width(0.05) jitter(0) ///
+box(barw(0.1)) boffset(-0.1) pctile(10) ///
+ms(oh oh oh) msize(small) mc(red%30) ///
+yla(, ang(h)) xla(, noticks) ///
+name(`x'_`y', replace)
 
 
 

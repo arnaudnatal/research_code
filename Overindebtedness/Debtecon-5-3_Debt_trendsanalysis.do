@@ -84,20 +84,11 @@ tabstat loanamount2010 loanamount2016 loanamount2020, stat(n mean sd q)
 tabstat DSR2010 DSR2016 DSR2020, stat(n mean sd q)
 
 ********** Var to use
-global varcat ce_DSR ce_DAR_without ce_loanamount ce_income ce_assetsnl
-foreach x in $varcat {
-tab `x', gen(`x'_)
-}
+global var3 cro_annualincome2010 cro_assets_noland2010 cro_loanamount2010 cro_DSR2010 cro_DAR_without2010 cro_DIR2010 cro_ISR2010 cro_DAR_with2010 cro_annualincome2016 cro_assets_noland2016 cro_loanamount2016 cro_DSR2016 cro_DAR_without2016 cro_DIR2016 cro_ISR2016 cro_DAR_with2016 cro_annualincome2020 cro_assets_noland2020 cro_loanamount2020 cro_DSR2020 cro_DAR_without2020 cro_DIR2020 cro_ISR2020 cro_DAR_with2020
 
-global var ce_DSR_1 ce_DSR_2 ce_DSR_3 ce_DSR_4 ce_DSR_5 ce_DSR_6 ce_DAR_without_1 ce_DAR_without_2 ce_DAR_without_3 ce_DAR_without_4 ce_DAR_without_5 ce_DAR_without_6 ce_loanamount_1 ce_loanamount_2 ce_loanamount_3 ce_loanamount_4 ce_loanamount_5 ce_loanamount_6 ce_assetsnl_1 ce_assetsnl_2 ce_assetsnl_3 ce_assetsnl_4 ce_assetsnl_5 ce_assetsnl_6 ce_income_1 ce_income_2 ce_income_3 ce_income_4 ce_income_5 ce_income_6 ce_DSR ce_DAR_without ce_loanamount ce_assetsnl ce_income
+global var4 ihs_ISR2010 ihs_ISR102010 ihs_ISR1002010 ihs_ISR10002010 ihs_ISR100002010 ihs_DAR2010 ihs_DAR102010 ihs_DAR1002010 ihs_DAR10002010 ihs_DAR100002010 ihs_DSR2010 ihs_DSR102010 ihs_DSR1002010 ihs_DSR10002010 ihs_DSR100002010 ihs_ISR2016 ihs_ISR102016 ihs_ISR1002016 ihs_ISR10002016 ihs_ISR100002016 ihs_DAR2016 ihs_DAR102016 ihs_DAR1002016 ihs_DAR10002016 ihs_DAR100002016 ihs_DSR2016 ihs_DSR102016 ihs_DSR1002016 ihs_DSR10002016 ihs_DSR100002016 ihs_ISR2020 ihs_ISR102020 ihs_ISR1002020 ihs_ISR10002020 ihs_ISR100002020 ihs_DAR2020 ihs_DAR102020 ihs_DAR1002020 ihs_DAR10002020 ihs_DAR100002020 ihs_DSR2020 ihs_DSR102020 ihs_DSR1002020 ihs_DSR10002020 ihs_DSR100002020
 
-global var2 d1_loanamount d1_DIR d1_DAR_without d1_DSR d1_ISR d1_annualincome d1_assets_noland d1_yearly_expenses d2_loanamount d2_DIR d2_DAR_without d2_DSR d2_ISR d2_annualincome d2_assets_noland d2_yearly_expenses
-
-global var3 cro_DSR2010 cro_DSR2016 cro_DSR2020 cro_annualincome2010 cro_annualincome2016 cro_annualincome2020 cro_loanamount2010 cro_loanamount2016 cro_loanamount2020 cro_assets_noland2010 cro_assets_noland2016 cro_assets_noland2020 cro_annualincome2010 cro_annualincome2016 cro_annualincome2020
-
-global var4 ihs_DSR_10002010 ihs_DSR_10002016 ihs_DSR_10002020 ihs_annualincome2010 ihs_annualincome2016 ihs_annualincome2020 ihs_loanamount2010 ihs_loanamount2016 ihs_loanamount2020 ihs_assets_noland2010 ihs_assets_noland2016 ihs_assets_noland2020 ihs_annualincome2010 ihs_annualincome2016 ihs_annualincome2020 ihs_DSR_1002010 ihs_DSR_1002016 ihs_DSR_1002020
-
-global var5 log_yearly_expenses2010 log_annualincome2010 log_assets_noland2010 log_assets2010 log_loanamount2010 log_yearly_expenses2016 log_annualincome2016 log_assets_noland2016 log_assets2016 log_loanamount2016 log_yearly_expenses2020 log_annualincome2020 log_assets_noland2020 log_assets2020 log_loanamount2020
+global var5 log_yearly_expenses2010 log_annualincome2010 log_assets_noland2010 log_assets2010 log_loanamount2010 log_ISR102010 log_ISR1002010 log_ISR10002010 log_ISR100002010 log_ISR2010 log_DAR102010 log_DAR1002010 log_DAR10002010 log_DAR100002010 log_DAR2010 log_DSR102010 log_DSR1002010 log_DSR10002010 log_DSR100002010 log_DSR2010 log_yearly_expenses2016 log_annualincome2016 log_assets_noland2016 log_assets2016 log_loanamount2016 log_ISR102016 log_ISR1002016 log_ISR10002016 log_ISR100002016 log_ISR2016 log_DAR102016 log_DAR1002016 log_DAR10002016 log_DAR100002016 log_DAR2016 log_DSR102016 log_DSR1002016 log_DSR10002016 log_DSR100002016 log_DSR2016 log_yearly_expenses2020 log_annualincome2020 log_assets_noland2020 log_assets2020 log_loanamount2020 log_ISR102020 log_ISR1002020 log_ISR10002020 log_ISR100002020 log_ISR2020 log_DAR102020 log_DAR1002020 log_DAR10002020 log_DAR100002020 log_DAR2020 log_DSR102020 log_DSR1002020 log_DSR10002020 log_DSR100002020 log_DSR2020
 
 global var6 head_edulevel2010 head_occupation2010 wifehusb_edulevel2010 wifehusb_occupation2010 mainocc_occupation2010 cat_income cat_assets sizeownland2010 DSR302010 DSR402010 DSR502010 path_30 path_40 path_50
 
@@ -111,7 +102,7 @@ drop DSR302016 DSR402016 DSR502016 DSR302020 DSR402020 DSR502020
 
 
 ***** Keep
-keep HHID_panel panelvar caste jatis villagearea* villageid* loanamount* DSR* DAR_without* DAR_with* annualincome* assets_noland* yearly_expenses* ISR* DIR* $var $var2 $var3 $var4 $var5 $var6 dummyownland2010
+keep HHID_panel panelvar caste jatis villagearea* villageid* loanamount* DSR* DAR_without* DAR_with* annualincome* assets_noland* yearly_expenses* ISR* DIR* $var2 $var3 $var4 $var5 $var6 dummyownland2010
 
 /*
 reshape long villagearea villageid DSR DAR_without annualincome assets_noland yearly_expenses ISR loanamount DIR cro_DSR cro_annualincome cro_loanamount cro_assets_noland ihs_DSR_1000 ihs_DSR_100 ihs_annualincome ihs_loanamount ihs_assets_noland, i(panelvar) j(year)
@@ -288,7 +279,7 @@ rename cl_yearly_expenses cl_yearly_expenses_clean
 merge 1:1 HHID_panel using "panel_v5_wide_cluster"
 drop _merge
 
-drop ce_DSR_1 ce_DSR_2 ce_DSR_3 ce_DSR_4 ce_DSR_5 ce_DSR_6 ce_DAR_without_1 ce_DAR_without_2 ce_DAR_without_3 ce_DAR_without_4 ce_DAR_without_5 ce_DAR_without_6 ce_loanamount_1 ce_loanamount_2 ce_loanamount_3 ce_loanamount_4 ce_loanamount_5 ce_loanamount_6 ce_income_1 ce_income_2 ce_income_3 ce_income_4 ce_income_5 ce_income_6 ce_assetsnl_1 ce_assetsnl_2 ce_assetsnl_3 ce_assetsnl_4 ce_assetsnl_5 ce_assetsnl_6
+*drop ce_DSR_1 ce_DSR_2 ce_DSR_3 ce_DSR_4 ce_DSR_5 ce_DSR_6 ce_DAR_without_1 ce_DAR_without_2 ce_DAR_without_3 ce_DAR_without_4 ce_DAR_without_5 ce_DAR_without_6 ce_loanamount_1 ce_loanamount_2 ce_loanamount_3 ce_loanamount_4 ce_loanamount_5 ce_loanamount_6 ce_income_1 ce_income_2 ce_income_3 ce_income_4 ce_income_5 ce_income_6 ce_assetsnl_1 ce_assetsnl_2 ce_assetsnl_3 ce_assetsnl_4 ce_assetsnl_5 ce_assetsnl_6
 
 order cl_*, last
 
