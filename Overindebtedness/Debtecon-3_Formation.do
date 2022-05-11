@@ -799,6 +799,10 @@ reg log_ISR100 log_annualincome
 reg log_ISR1000 log_annualincome
 reg log_ISR10000 log_annualincome
 
+/*
+When annual income increase by 10%, the ISR decrease by 89%.
+*/
+
 
 ********** IHS creation
 foreach x in ISR ISR100 ISR1000 ISR10000 {
@@ -814,40 +818,42 @@ dis 23*100/382
 dis 75*100/382
 dis 68*100/382
 
-keep if year==2010
+keep if year==2016
+count if ISR==0
+
 dis 382*0.01
 dis 382*0.05
 dis 382*0.1
 dis 382*0.2
 
 sort ISR
+gen n=_n
 
-gen n1=_n if ISR==0
-replace n1=. if n1>4
-replace n1=1 if n1!=.
+* No 0
+gen ISR_0=ISR if ISR!=0
 
-gen n2=_n if ISR==0
-replace n2=. if n2>20
-replace n2=1 if n2!=.
+* 1% of 0
+gen ISR_1=ISR if ISR!=0
+replace ISR_1=0 if n<=4
 
-gen n3=_n if ISR==0
-replace n3=. if n3>39
-replace n3=1 if n3!=.
+* 5% of 0
+gen ISR_2=ISR if ISR!=0
+replace ISR_2=0 if n<=20
 
-gen n4=_n
-replace n4=1 if n4!=.
+* 10% of 0
+gen ISR_3=ISR if ISR!=0
+replace ISR_3=0 if n<=39
 
-recode n1 n2 n3 n4 (.=0)
-recode n1 n2 n3 n4 (0=1) (1=0)
+* All 0
+gen ISR_4=ISR
 
-ta n1
-ta n2
-ta n3
-ta n4
-
-
-
-
+*** Check 0
+count if ISR_0==0
+count if ISR_1==0
+count if ISR_2==0
+count if ISR_3==0
+count if ISR_4==0
+drop n
 
 
 ********** Check
