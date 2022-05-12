@@ -120,9 +120,7 @@ No evident correlation = good for further sub analysis
 
 
 ********** Burden of debt
-
-
-foreach x in loanamount ISR DSR DAR annualincome assets_noland {
+foreach x in loanamount ISR DSR DAR_without annualincome assets_noland {
 qui sum `x', d
 local per99=r(p99)
 local max=round(`per99',1)
@@ -133,6 +131,26 @@ ms(oh oh oh) msize(small) mc(red%30) ///
 yla(, ang(h)) xla(, noticks) ///
 name(`x', replace)
 }
+
+
+
+********** Trends burden of debt
+xtset panelvar year
+
+***** DSR
+sort vuln_cl panelvar year
+sum DSR, d
+drop if DSR>5
+forvalues i=1(1)3{
+twoway (line DSR year if vuln_cl==`i', c(L) lcolor(black%10)) ///
+, xlabel(2010 2016 2020) xmtick(2010(1)2020) xtitle("Year") ///
+ylabel() ymtick() ytitle("") ///
+title("Cluster `i'") ///
+aspectratio(0.5) graphregion(margin(zero)) plotregion(margin(zero))  ///
+name(gph_loanamount_`i', replace)
+}
+
+graph combine gph_loanamount_1 gph_loanamount_2 gph_loanamount_3, col(3) name(gph_loanamount, replace)
 
 
 

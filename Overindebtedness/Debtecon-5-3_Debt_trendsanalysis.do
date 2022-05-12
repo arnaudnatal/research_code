@@ -88,7 +88,7 @@ global var3 cro_annualincome2010 cro_assets_noland2010 cro_loanamount2010 cro_DS
 
 global var4 ihs_ISR2010 ihs_ISR102010 ihs_ISR1002010 ihs_ISR10002010 ihs_ISR100002010 ihs_DAR2010 ihs_DAR102010 ihs_DAR1002010 ihs_DAR10002010 ihs_DAR100002010 ihs_DSR2010 ihs_DSR102010 ihs_DSR1002010 ihs_DSR10002010 ihs_DSR100002010 ihs_ISR2016 ihs_ISR102016 ihs_ISR1002016 ihs_ISR10002016 ihs_ISR100002016 ihs_DAR2016 ihs_DAR102016 ihs_DAR1002016 ihs_DAR10002016 ihs_DAR100002016 ihs_DSR2016 ihs_DSR102016 ihs_DSR1002016 ihs_DSR10002016 ihs_DSR100002016 ihs_ISR2020 ihs_ISR102020 ihs_ISR1002020 ihs_ISR10002020 ihs_ISR100002020 ihs_DAR2020 ihs_DAR102020 ihs_DAR1002020 ihs_DAR10002020 ihs_DAR100002020 ihs_DSR2020 ihs_DSR102020 ihs_DSR1002020 ihs_DSR10002020 ihs_DSR100002020
 
-global var5 log_yearly_expenses2010 log_annualincome2010 log_assets_noland2010 log_assets2010 log_loanamount2010 log_ISR102010 log_ISR1002010 log_ISR10002010 log_ISR100002010 log_ISR2010 log_DAR102010 log_DAR1002010 log_DAR10002010 log_DAR100002010 log_DAR2010 log_DSR102010 log_DSR1002010 log_DSR10002010 log_DSR100002010 log_DSR2010 log_yearly_expenses2016 log_annualincome2016 log_assets_noland2016 log_assets2016 log_loanamount2016 log_ISR102016 log_ISR1002016 log_ISR10002016 log_ISR100002016 log_ISR2016 log_DAR102016 log_DAR1002016 log_DAR10002016 log_DAR100002016 log_DAR2016 log_DSR102016 log_DSR1002016 log_DSR10002016 log_DSR100002016 log_DSR2016 log_yearly_expenses2020 log_annualincome2020 log_assets_noland2020 log_assets2020 log_loanamount2020 log_ISR102020 log_ISR1002020 log_ISR10002020 log_ISR100002020 log_ISR2020 log_DAR102020 log_DAR1002020 log_DAR10002020 log_DAR100002020 log_DAR2020 log_DSR102020 log_DSR1002020 log_DSR10002020 log_DSR100002020 log_DSR2020
+global var5 log_yearly_expenses2010 log_annualincome2010 log_assets_noland2010 log_assets2010 log_loanamount2010 log_ISR102010 log_ISR1002010 log_ISR10002010 log_ISR100002010 log_ISR2010 log_DAR102010 log_DAR1002010 log_DAR10002010 log_DAR100002010 log_DAR2010 log_DSR102010 log_DSR1002010 log_DSR10002010 log_DSR100002010 log_DSR2010 log_yearly_expenses2016 log_annualincome2016 log_assets_noland2016 log_assets2016 log_loanamount2016 log_ISR102016 log_ISR1002016 log_ISR10002016 log_ISR100002016 log_ISR2016 log_DAR102016 log_DAR1002016 log_DAR10002016 log_DAR100002016 log_DAR2016 log_DSR102016 log_DSR1002016 log_DSR10002016 log_DSR100002016 log_DSR2016 log_yearly_expenses2020 log_annualincome2020 log_assets_noland2020 log_assets2020 log_loanamount2020 log_ISR102020 log_ISR1002020 log_ISR10002020 log_ISR100002020 log_ISR2020 log_DAR102020 log_DAR1002020 log_DAR10002020 log_DAR100002020 log_DAR2020 log_DSR102020 log_DSR1002020 log_DSR10002020 log_DSR100002020 log_DSR2020 ihs_annualincome2010 ihs_annualincome2016 ihs_annualincome2020 ihs_loanamount2010 ihs_loanamount2016 ihs_loanamount2020 ihs_assets_noland2010 ihs_assets_noland2016 ihs_assets_noland2020
 
 global var6 head_edulevel2010 head_occupation2010 wifehusb_edulevel2010 wifehusb_occupation2010 mainocc_occupation2010 cat_income cat_assets sizeownland2010 DSR302010 DSR402010 DSR502010 path_30 path_40 path_50
 
@@ -147,7 +147,7 @@ drop panelvar
 order HHID_panel
 
 ********** R preparation data
-foreach x in annualincome DSR loanamount DIR villageid yearly_expenses assets_noland villagearea DAR_without DAR_with ISR log_yearly_expenses log_annualincome log_assets_noland log_assets log_loanamount {
+foreach x in annualincome DSR loanamount DIR villageid yearly_expenses assets_noland villagearea DAR_without DAR_with ISR log_yearly_expenses log_annualincome log_assets_noland log_assets log_loanamount cro_annualincome cro_assets_noland cro_DSR cro_ISR cro_DAR_without ihs_DSR1000 ihs_DAR1000 ihs_ISR1000 ihs_annualincome ihs_assets_noland ihs_loanamount {
 rename `x'2010 `x'1
 rename `x'2016 `x'2
 rename `x'2020 `x'3
@@ -165,26 +165,36 @@ preserve
 drop if log_loanamount1==0
 drop if log_loanamount2==0
 drop if log_loanamount3==0
-
 export delimited using "$git\Analysis\Overindebtedness\debttrend_v2.csv", replace
 restore
 
-tabstat DAR_without1 DAR_without2 DAR_without3,stat(min p1 p5 p10 q p90 p95 p99 max)
 
-tabstat DAR_with1 DAR_with2 DAR_with3,stat(min p1 p5 p10 q p90 p95 p99 max)
+*** Clean 100 10 10 000, etc.
+drop log_ISR100002010 log_DAR100002010 log_DSR100002010 ihs_ISR100002010 ihs_DAR100002010 ihs_DSR100002010 log_ISR100002016 log_DAR100002016 log_DSR100002016 ihs_ISR100002016 ihs_DAR100002016 ihs_DSR100002016 log_ISR100002020 log_DAR100002020 log_DSR100002020 ihs_ISR100002020 ihs_DAR100002020 ihs_DSR100002020
+drop log_ISR1002010 log_DAR1002010 log_DSR1002010 ihs_ISR1002010 ihs_DAR1002010 ihs_DSR1002010 log_ISR1002016 log_DAR1002016 log_DSR1002016 ihs_ISR1002016 ihs_DAR1002016 ihs_DSR1002016 log_ISR1002020 log_DAR1002020 log_DSR1002020 ihs_ISR1002020 ihs_DAR1002020 ihs_DSR1002020
+drop log_ISR102010 log_DAR102010 log_DSR102010 ihs_ISR102010 ihs_DAR102010 ihs_DSR102010 log_ISR102016 log_DAR102016 log_DSR102016 ihs_ISR102016 ihs_DAR102016 ihs_DSR102016 log_ISR102020 log_DAR102020 log_DSR102020 ihs_ISR102020 ihs_DAR102020 ihs_DSR102020
+drop log_ISR10002010 log_DAR10002010 log_DSR10002010 log_ISR10002016 log_DAR10002016 log_DSR10002016 log_ISR10002020 log_DAR10002020 log_DSR10002020
+drop ihs_DAR2010 ihs_DAR2016 ihs_DAR2020 ihs_DSR2010 ihs_DSR2016 ihs_DSR2020 ihs_ISR2010 ihs_ISR2016 ihs_ISR2020
+drop cro_DAR_with2010 cro_DAR_with2016 cro_DAR_with2020
+
+forvalues i=1(1)3 {
+rename cro_DAR_without`i' cro_DAR`i'
+}
+
+foreach x in ISR DSR DAR {
+rename ihs_`x'10001 ihs_`x'1
+rename ihs_`x'10002 ihs_`x'2
+rename ihs_`x'10003 ihs_`x'3
+}
 
 export delimited using "$git\Analysis\Overindebtedness\debttrend.csv", replace
 
-tabstat DAR_without1 DAR_without2 DAR_without3 DAR_with1 DAR_with2 DAR_with3, stat(n mean sd p50 min max)
 
-foreach x in DAR_without1 DAR_without2 DAR_without3 DAR_with1 DAR_with2 DAR_with3 {
-count if `x'==0
-}
-
-tabstat assets_noland1 assets_noland2 assets_noland3, stat(n mean sd p50 min max)
-
-
+*****
+*****
 ********* R analysis
+*****
+*****
 
 
 ********** Graph cluster
@@ -322,7 +332,7 @@ export delimited using "$git\Analysis\Overindebtedness\debttrend_v3.csv", replac
 
 
 
-/*
+
 ****************************************
 * Clean line trends
 ****************************************
@@ -331,11 +341,11 @@ graph drop _all
 use"panel_v7_wide_cluster", clear
 
 ***** Var to keep
-keep HHID_panel panelvar cl_* loanamount2010 loanamount2016 loanamount2020 annualincome2010 annualincome2016 annualincome2020 assets_noland2010 assets_noland2016 assets_noland2020 yearly_expenses2010 yearly_expenses2016 yearly_expenses2020 log_*
+keep HHID_panel panelvar cl_* loanamount2010 loanamount2016 loanamount2020 annualincome2010 annualincome2016 annualincome2020 assets_noland2010 assets_noland2016 assets_noland2020 yearly_expenses2010 yearly_expenses2016 yearly_expenses2020 log_* DSR2010 DSR2016 DSR2020 ISR2010 ISR2016 ISR2020 DAR_without2010 DAR_without2016 DAR_without2020
 
 
 ***** Reshape
-reshape long loanamount annualincome assets_noland yearly_expenses log_loanamount log_annualincome log_assets_noland log_yearly_expenses, i(HHID_panel) j(year)
+reshape long loanamount annualincome assets_noland yearly_expenses log_loanamount log_annualincome log_assets_noland log_yearly_expenses ISR DSR DAR_without, i(HHID_panel) j(year)
 
 
 ***** Panel declaration

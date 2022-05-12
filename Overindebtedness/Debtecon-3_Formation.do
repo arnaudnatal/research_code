@@ -722,6 +722,9 @@ foreach m in 10 100 1000 10000 {
 gen ihs_`x'`m'=asinh(`x'`m')
 }
 }
+foreach x in loanamount annualincome assets_noland {
+gen ihs_`x'=asinh(`x')
+}
 
 
 ********** Which sample choose?
@@ -852,7 +855,7 @@ global quanti DIR DAR_with DAR_without DSR ISR loanamount annualincome assets_no
 
 global quali DSR30 DSR40 DSR50 dummyIMF dummybank dummymoneylender dummyrepay dummyborrowstrat mainocc_occupation head_edulevel wifehusb_edulevel head_occupation wifehusb_occupation
 
-global var $quanti $quali ihs_ISR ihs_ISR10 ihs_ISR100 ihs_ISR1000 ihs_ISR10000 ihs_DAR ihs_DAR10 ihs_DAR100 ihs_DAR1000 ihs_DAR10000 ihs_DSR ihs_DSR10 ihs_DSR100 ihs_DSR1000 ihs_DSR10000 log_yearly_expenses log_annualincome log_assets_noland log_assets log_loanamount log_ISR10 log_ISR100 log_ISR1000 log_ISR10000 log_ISR log_DAR10 log_DAR100 log_DAR1000 log_DAR10000 log_DAR log_DSR10 log_DSR100 log_DSR1000 log_DSR10000 log_DSR cro_annualincome cro_assets_noland cro_loanamount cro_DSR cro_DAR_without cro_DIR cro_ISR cro_DAR_with
+global var $quanti $quali ihs_ISR ihs_ISR10 ihs_ISR100 ihs_ISR1000 ihs_ISR10000 ihs_DAR ihs_DAR10 ihs_DAR100 ihs_DAR1000 ihs_DAR10000 ihs_DSR ihs_DSR10 ihs_DSR100 ihs_DSR1000 ihs_DSR10000 log_yearly_expenses log_annualincome log_assets_noland log_assets log_loanamount log_ISR10 log_ISR100 log_ISR1000 log_ISR10000 log_ISR log_DAR10 log_DAR100 log_DAR1000 log_DAR10000 log_DAR log_DSR10 log_DSR100 log_DSR1000 log_DSR10000 log_DSR cro_annualincome cro_assets_noland cro_loanamount cro_DSR cro_DAR_without cro_DIR cro_ISR cro_DAR_with ihs_annualincome ihs_assets_noland ihs_loanamount
 
 sort HHID_panel year
 
