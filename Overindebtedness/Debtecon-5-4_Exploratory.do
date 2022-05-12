@@ -80,13 +80,14 @@ ta DSR2010
 ta DSR2016
 ta DSR2020
 
+/*
 replace DSR2010=DSR2010*100
 replace DSR2016=DSR2016*100
 replace DSR2020=DSR2020*100
-
 ta DSR2010
 ta DSR2016
 ta DSR2020
+
 
 foreach x in loanamount assets_noland yearly_expenses annualincome {
 foreach i in 2010 2016 2020 {
@@ -98,7 +99,7 @@ foreach x in DSR2010 DSR2016 DSR2020 ISR2010 ISR2016 ISR2020 {
 qui count if `x'==0
 dis r(N)*100/382
 }
-
+*/
 
 
 ********** Reshape
@@ -119,23 +120,20 @@ No evident correlation = good for further sub analysis
 
 
 ********** Burden of debt
-stripplot ihs_DSR_1000, over(time) separate() by(vuln_cl, note("") row(1)) vert ///
+
+
+foreach x in loanamount ISR DSR DAR annualincome assets_noland {
+qui sum `x', d
+local per99=r(p99)
+local max=round(`per99',1)
+stripplot `x' if `x'<`max', over(time) separate() by(vuln_cl, note("") row(1)) vert ///
 stack width(0.05) jitter(0) ///
 box(barw(0.1)) boffset(-0.1) pctile(10) ///
 ms(oh oh oh) msize(small) mc(red%30) ///
 yla(, ang(h)) xla(, noticks) ///
-name(`x'_`y', replace)
+name(`x', replace)
+}
 
-stripplot ihs_DAR_1000, over(time) separate() by(vuln_cl, note("") row(1)) vert ///
-stack width(0.05) jitter(0) ///
-box(barw(0.1)) boffset(-0.1) pctile(10) ///
-ms(oh oh oh) msize(small) mc(red%30) ///
-yla(, ang(h)) xla(, noticks) ///
-name(`x'_`y', replace)
-
-
-
-tabstat DSR2010 DSR2016 DSR2020, stat(n mean sd q min max) by(vuln_cl)
 
 
 ********** Debt trap
