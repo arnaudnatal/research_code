@@ -142,7 +142,6 @@ drop panelvar
 order HHID_panel
 
 ********** R preparation data
-
 ***** Rename
 foreach y in 2010 2016 2020 {
 rename cro_DAR_without`y' cro_DAR`y'
@@ -155,26 +154,34 @@ rename ihs_`x'10002016 ihs_`x'2016
 rename ihs_`x'10002020 ihs_`x'2020
 }
 
-
 ***** Macro
 global var1 annualincome log_annualincome ihs_annualincome cro_annualincome assets_noland log_assets_noland ihs_assets_noland cro_assets_noland yearly_expenses log_yearly_expenses ihs_yearly_expenses cro_yearly_expenses
 
-global var2 
+global var2 DAR cro_DAR ihs_DAR DSR cro_DSR ihs_DSR ISR cro_ISR ihs_ISR  loanamount cro_loanamount ihs_loanamount
 
+global var3 shareagri sharenagri
+
+global var4 rel_eco_HH rel_current_HH rel_humank_HH rel_social_HH rel_home_HH rel_loanforrepayment_amt_HH eco_HH current_HH humank_HH social_HH home_HH loanforrepayment_amt_HH
+
+global var5 rel_formal_HH rel_informal_HH formal_HH informal_HH
+
+global var6 villageid villagearea
 
 ***** Date format
-foreach x in annualincome DSR loanamount DIR villageid yearly_expenses assets_noland villagearea DAR_without DAR_with ISR log_yearly_expenses log_annualincome log_assets_noland log_assets log_loanamount cro_annualincome cro_assets_noland cro_DSR cro_ISR cro_DAR_without ihs_DSR1000 ihs_DAR1000 ihs_ISR1000 ihs_annualincome ihs_assets_noland ihs_loanamount shareagri sharenagri {
+foreach x in $var1 $var2 $var3 $var4 $var5 {
 rename `x'2010 `x'1
 rename `x'2016 `x'2
 rename `x'2020 `x'3
 }
 
+***** 1K INR for amount
 foreach x in annualincome loanamount yearly_expenses assets_noland {
 replace `x'1=`x'1/1000
 replace `x'2=`x'2/1000
 replace `x'3=`x'3/1000
 }
 
+/*
 *** For debt
 preserve
 drop if log_loanamount1==0
