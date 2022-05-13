@@ -61,6 +61,9 @@ X_DSR<-as.matrix(cbind(DSR1,DSR2,DSR3))
 X_DAR<-as.matrix(cbind(DAR_without1,DAR_without2,DAR_without3))
 X_ISR<-as.matrix(cbind(ISR1,ISR2,ISR3))
 
+X_agri<-as.matrix(cbind(shareagri1,shareagri2,shareagri3))
+X_nagri<-as.matrix(cbind(sharenagri1,sharenagri2,sharenagri3))
+
 
 #--- Trends analysis clustering
 # interactive_clustering(X_loan_log)
@@ -79,6 +82,9 @@ interactive_clustering(X_DAR_ihs)
 interactive_clustering(X_DSR_cro)
 interactive_clustering(X_ISR_cro)
 interactive_clustering(X_DAR_cro)
+
+interactive_clustering(X_agri)
+interactive_clustering(X_nagri)
 
 
 #--- What to keep?

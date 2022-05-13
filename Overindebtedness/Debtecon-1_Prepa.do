@@ -47,6 +47,10 @@ global loan1 "RUME-all_loans"
 global loan2 "NEEMSIS1-all_loans"
 global loan3 "NEEMSIS2-all_loans"
 
+global occ1 "RUME-occupations"
+global occ2 "NEEMSIS1-occupation_allwide"
+global occ3 "NEEMSIS2-occupations_allwide"
+
 * Scheme
 set scheme plotplain_v2
 grstyle init
@@ -146,7 +150,6 @@ Et la wife en mother
 */
 replace relationshiptohead=4 if HHID_panel=="GOV18" & INDID_panel=="Ind_2"
 replace relationshiptohead=3 if HHID_panel=="GOV18" & INDID_panel=="Ind_4"
-
 
 * AEU
 fre sex
@@ -314,6 +317,8 @@ global indep villageid villagearea religion jatis caste assets annualincome_HH n
 keep HHID_panel year $dep $indep AEU_weight_HH AEU_weight1_HH AEU_weight2_HH
 
 duplicates drop
+
+
 
 merge 1:1 HHID_panel using "panel"
 *drop _merge
@@ -593,6 +598,7 @@ ta test2
 restore
 
 duplicates drop
+
 
 merge 1:1 HHID_panel using "panel"
 *drop _merge

@@ -79,54 +79,49 @@ use"panel_v5_wide", clear
 
 encode HHID_panel, gen(panelvar)
 
-********** Cross section verification of DSR/loanamount
-tabstat loanamount2010 loanamount2016 loanamount2020, stat(n mean sd q)
-tabstat DSR2010 DSR2016 DSR2020, stat(n mean sd q)
 
-********** Var to use
-global var3 cro_annualincome2010 cro_assets_noland2010 cro_loanamount2010 cro_DSR2010 cro_DAR_without2010 cro_DIR2010 cro_ISR2010 cro_DAR_with2010 cro_annualincome2016 cro_assets_noland2016 cro_loanamount2016 cro_DSR2016 cro_DAR_without2016 cro_DIR2016 cro_ISR2016 cro_DAR_with2016 cro_annualincome2020 cro_assets_noland2020 cro_loanamount2020 cro_DSR2020 cro_DAR_without2020 cro_DIR2020 cro_ISR2020 cro_DAR_with2020
-
-global var4 ihs_ISR2010 ihs_ISR102010 ihs_ISR1002010 ihs_ISR10002010 ihs_ISR100002010 ihs_DAR2010 ihs_DAR102010 ihs_DAR1002010 ihs_DAR10002010 ihs_DAR100002010 ihs_DSR2010 ihs_DSR102010 ihs_DSR1002010 ihs_DSR10002010 ihs_DSR100002010 ihs_ISR2016 ihs_ISR102016 ihs_ISR1002016 ihs_ISR10002016 ihs_ISR100002016 ihs_DAR2016 ihs_DAR102016 ihs_DAR1002016 ihs_DAR10002016 ihs_DAR100002016 ihs_DSR2016 ihs_DSR102016 ihs_DSR1002016 ihs_DSR10002016 ihs_DSR100002016 ihs_ISR2020 ihs_ISR102020 ihs_ISR1002020 ihs_ISR10002020 ihs_ISR100002020 ihs_DAR2020 ihs_DAR102020 ihs_DAR1002020 ihs_DAR10002020 ihs_DAR100002020 ihs_DSR2020 ihs_DSR102020 ihs_DSR1002020 ihs_DSR10002020 ihs_DSR100002020
-
-global var5 log_yearly_expenses2010 log_annualincome2010 log_assets_noland2010 log_assets2010 log_loanamount2010 log_ISR102010 log_ISR1002010 log_ISR10002010 log_ISR100002010 log_ISR2010 log_DAR102010 log_DAR1002010 log_DAR10002010 log_DAR100002010 log_DAR2010 log_DSR102010 log_DSR1002010 log_DSR10002010 log_DSR100002010 log_DSR2010 log_yearly_expenses2016 log_annualincome2016 log_assets_noland2016 log_assets2016 log_loanamount2016 log_ISR102016 log_ISR1002016 log_ISR10002016 log_ISR100002016 log_ISR2016 log_DAR102016 log_DAR1002016 log_DAR10002016 log_DAR100002016 log_DAR2016 log_DSR102016 log_DSR1002016 log_DSR10002016 log_DSR100002016 log_DSR2016 log_yearly_expenses2020 log_annualincome2020 log_assets_noland2020 log_assets2020 log_loanamount2020 log_ISR102020 log_ISR1002020 log_ISR10002020 log_ISR100002020 log_ISR2020 log_DAR102020 log_DAR1002020 log_DAR10002020 log_DAR100002020 log_DAR2020 log_DSR102020 log_DSR1002020 log_DSR10002020 log_DSR100002020 log_DSR2020 ihs_annualincome2010 ihs_annualincome2016 ihs_annualincome2020 ihs_loanamount2010 ihs_loanamount2016 ihs_loanamount2020 ihs_assets_noland2010 ihs_assets_noland2016 ihs_assets_noland2020
-
-global var6 head_edulevel2010 head_occupation2010 wifehusb_edulevel2010 wifehusb_occupation2010 mainocc_occupation2010 cat_income cat_assets sizeownland2010 DSR302010 DSR402010 DSR502010 path_30 path_40 path_50
-
-ta sizeownland2010
-gen dummyownland2010=1
-replace dummyownland2010=0 if sizeownland2010==.
-ta dummyownland2010
-
-***** Clean
-drop DSR302016 DSR402016 DSR502016 DSR302020 DSR402020 DSR502020
-
-
-***** Keep
-keep HHID_panel panelvar caste jatis villagearea* villageid* loanamount* DSR* DAR_without* DAR_with* annualincome* assets_noland* yearly_expenses* ISR* DIR* $var2 $var3 $var4 $var5 $var6 dummyownland2010
-
-/*
-reshape long villagearea villageid DSR DAR_without annualincome assets_noland yearly_expenses ISR loanamount DIR cro_DSR cro_annualincome cro_loanamount cro_assets_noland ihs_DSR_1000 ihs_DSR_100 ihs_annualincome ihs_loanamount ihs_assets_noland, i(panelvar) j(year)
-
-
-
-* By year
-foreach x in DSR DAR_without annualincome assets_noland yearly_expenses ISR loanamount DIR {
-sum `x'
-gen `x'std=.
-replace `x'std=(`x'-r(mean))/r(sd)
+********** Dummyownland
+foreach y in 2010 2016 2020 {
+gen dummyownland`y'=1
+replace dummyownland`y'=0 if sizeownland`y'==.
 }
 
 
-*Reshape
-reshape wide DSR* DAR_without* annualincome* assets_noland* yearly_expenses* ISR* loanamount* DIR*, i(panelvar) j(year)
-*/
+********** Rename DSR30 40 50 as over
+foreach y in 2010 2016 2020 {
+rename DSR30`y' over30`y'
+rename DSR40`y' over40`y'
+rename DSR50`y' over50`y'
+}
+
+********** Var to use
+global var1 cro_annualincome2010 cro_assets_noland2010 cro_loanamount2010 cro_DSR2010 cro_DAR_without2010 cro_DIR2010 cro_ISR2010 cro_annualincome2016 cro_assets_noland2016 cro_loanamount2016 cro_DSR2016 cro_DAR_without2016 cro_DIR2016 cro_ISR2016 cro_annualincome2020 cro_assets_noland2020 cro_loanamount2020 cro_DSR2020 cro_DAR_without2020 cro_DIR2020 cro_ISR2020 cro_yearly_expenses2010 cro_yearly_expenses2016 cro_yearly_expenses2020
+
+global var2 ihs_ISR10002010 ihs_DAR10002010 ihs_DSR10002010 ihs_ISR10002016 ihs_DAR10002016 ihs_DSR10002016  ihs_ISR10002020    ihs_DAR10002020 ihs_DSR10002020
+
+global var3 log_yearly_expenses2010 log_annualincome2010 log_assets_noland2010 log_assets2010 log_loanamount2010 log_yearly_expenses2016 log_annualincome2016 log_assets_noland2016 log_assets2016 log_loanamount2016 log_yearly_expenses2020 log_annualincome2020 log_assets_noland2020 log_assets2020 log_loanamount2020
+
+global var4 ihs_annualincome2010 ihs_annualincome2016 ihs_annualincome2020 ihs_loanamount2010 ihs_loanamount2016 ihs_loanamount2020 ihs_assets_noland2010 ihs_assets_noland2016 ihs_assets_noland2020 ihs_yearly_expenses2010 ihs_yearly_expenses2016 ihs_yearly_expenses2020
+
+global var5 head_edulevel2010 head_occupation2010 wifehusb_edulevel2010 wifehusb_occupation2010 mainocc_occupation2010 head_edulevel2016 head_occupation2016 wifehusb_edulevel2016 wifehusb_occupation2016 mainocc_occupation2016 head_edulevel2020 head_occupation2020 wifehusb_edulevel2020 wifehusb_occupation2020 mainocc_occupation2020 cat_income cat_assets sizeownland2010 sizeownland2016 sizeownland2020 over302010 over402010 over502010 over302016 over402016 over502016 over302020 over402020 over502020 dummyownland2010 dummyownland2016 dummyownland2020
+
+global var6 agri2010 nagri2010 shareagri2010 sharenagri2010 agri2016 nagri2016 shareagri2016 sharenagri2016 agri2020 nagri2020 shareagri2020 sharenagri2020 
+
+global var7 rel_formal_HH2010 rel_informal_HH2010 rel_eco_HH2010 rel_current_HH2010 rel_humank_HH2010 rel_social_HH2010 rel_home_HH2010 rel_other_HH2010 rel_loanforrepayment_amt_HH2010 informal_HH2010 formal_HH2010 eco_HH2010 current_HH2010 humank_HH2010 social_HH2010 home_HH2010 other_HH2010 loanforrepayment_amt_HH2010 rel_formal_HH2016 rel_informal_HH2016 rel_eco_HH2016 rel_current_HH2016 rel_humank_HH2016 rel_social_HH2016 rel_home_HH2016 rel_other_HH2016 rel_loanforrepayment_amt_HH2016 informal_HH2016 formal_HH2016 eco_HH2016 current_HH2016 humank_HH2016 social_HH2016 home_HH2016 other_HH2016 loanforrepayment_amt_HH2016 rel_formal_HH2020 rel_informal_HH2020 rel_eco_HH2020 rel_current_HH2020 rel_humank_HH2020 rel_social_HH2020 rel_home_HH2020 rel_other_HH2020 rel_loanforrepayment_amt_HH2020 informal_HH2020 formal_HH2020 eco_HH2020 current_HH2020 humank_HH2020 social_HH2020 home_HH2020 other_HH2020 loanforrepayment_amt_HH2020
+
+
+***** Keep
+keep HHID_panel panelvar caste jatis villagearea* villageid* loanamount* DSR* DAR_without* DAR_with* annualincome* assets_noland* yearly_expenses* ISR* DIR* $var1 $var2 $var3 $var4 $var5 $var6 $var7
+
+
+* Oups
+drop DAR_with2010 DAR_with2016 DAR_with2020
 
 * Order and sort
 order panelvar caste jatis
 sort panelvar
 
 save"panel_v5_wide_cluster", replace
-
 ****************************************
 * END
 
@@ -147,7 +142,28 @@ drop panelvar
 order HHID_panel
 
 ********** R preparation data
-foreach x in annualincome DSR loanamount DIR villageid yearly_expenses assets_noland villagearea DAR_without DAR_with ISR log_yearly_expenses log_annualincome log_assets_noland log_assets log_loanamount cro_annualincome cro_assets_noland cro_DSR cro_ISR cro_DAR_without ihs_DSR1000 ihs_DAR1000 ihs_ISR1000 ihs_annualincome ihs_assets_noland ihs_loanamount {
+
+***** Rename
+foreach y in 2010 2016 2020 {
+rename cro_DAR_without`y' cro_DAR`y'
+rename DAR_without`y' DAR`y'
+}
+
+foreach x in ISR DSR DAR {
+rename ihs_`x'10002010 ihs_`x'2010
+rename ihs_`x'10002016 ihs_`x'2016
+rename ihs_`x'10002020 ihs_`x'2020
+}
+
+
+***** Macro
+global var1 annualincome log_annualincome ihs_annualincome cro_annualincome assets_noland log_assets_noland ihs_assets_noland cro_assets_noland yearly_expenses log_yearly_expenses ihs_yearly_expenses cro_yearly_expenses
+
+global var2 
+
+
+***** Date format
+foreach x in annualincome DSR loanamount DIR villageid yearly_expenses assets_noland villagearea DAR_without DAR_with ISR log_yearly_expenses log_annualincome log_assets_noland log_assets log_loanamount cro_annualincome cro_assets_noland cro_DSR cro_ISR cro_DAR_without ihs_DSR1000 ihs_DAR1000 ihs_ISR1000 ihs_annualincome ihs_assets_noland ihs_loanamount shareagri sharenagri {
 rename `x'2010 `x'1
 rename `x'2016 `x'2
 rename `x'2020 `x'3
@@ -159,7 +175,6 @@ replace `x'2=`x'2/1000
 replace `x'3=`x'3/1000
 }
 
-
 *** For debt
 preserve
 drop if log_loanamount1==0
@@ -168,24 +183,6 @@ drop if log_loanamount3==0
 export delimited using "$git\Analysis\Overindebtedness\debttrend_v2.csv", replace
 restore
 
-
-*** Clean 100 10 10 000, etc.
-drop log_ISR100002010 log_DAR100002010 log_DSR100002010 ihs_ISR100002010 ihs_DAR100002010 ihs_DSR100002010 log_ISR100002016 log_DAR100002016 log_DSR100002016 ihs_ISR100002016 ihs_DAR100002016 ihs_DSR100002016 log_ISR100002020 log_DAR100002020 log_DSR100002020 ihs_ISR100002020 ihs_DAR100002020 ihs_DSR100002020
-drop log_ISR1002010 log_DAR1002010 log_DSR1002010 ihs_ISR1002010 ihs_DAR1002010 ihs_DSR1002010 log_ISR1002016 log_DAR1002016 log_DSR1002016 ihs_ISR1002016 ihs_DAR1002016 ihs_DSR1002016 log_ISR1002020 log_DAR1002020 log_DSR1002020 ihs_ISR1002020 ihs_DAR1002020 ihs_DSR1002020
-drop log_ISR102010 log_DAR102010 log_DSR102010 ihs_ISR102010 ihs_DAR102010 ihs_DSR102010 log_ISR102016 log_DAR102016 log_DSR102016 ihs_ISR102016 ihs_DAR102016 ihs_DSR102016 log_ISR102020 log_DAR102020 log_DSR102020 ihs_ISR102020 ihs_DAR102020 ihs_DSR102020
-drop log_ISR10002010 log_DAR10002010 log_DSR10002010 log_ISR10002016 log_DAR10002016 log_DSR10002016 log_ISR10002020 log_DAR10002020 log_DSR10002020
-drop ihs_DAR2010 ihs_DAR2016 ihs_DAR2020 ihs_DSR2010 ihs_DSR2016 ihs_DSR2020 ihs_ISR2010 ihs_ISR2016 ihs_ISR2020
-drop cro_DAR_with2010 cro_DAR_with2016 cro_DAR_with2020
-
-forvalues i=1(1)3 {
-rename cro_DAR_without`i' cro_DAR`i'
-}
-
-foreach x in ISR DSR DAR {
-rename ihs_`x'10001 ihs_`x'1
-rename ihs_`x'10002 ihs_`x'2
-rename ihs_`x'10003 ihs_`x'3
-}
 
 export delimited using "$git\Analysis\Overindebtedness\debttrend.csv", replace
 

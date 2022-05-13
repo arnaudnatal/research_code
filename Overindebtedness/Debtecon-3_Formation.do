@@ -382,7 +382,6 @@ restore
 
 
 
-
 ********** 1000
 foreach x in livestock housevalue goldquantityamount goodtotalamount foodexpenses educationexpenses healthexpenses ceremoniesexpenses deathexpenses marriageexpenses_HH occinc_HH_agri occinc_HH_agricasual occinc_HH_nonagricasual occinc_HH_nonagriregnonqual occinc_HH_nonagriregqual occinc_HH_selfemp occinc_HH_nrega imp1_ds_tot_HH imp1_is_tot_HH agri_HH nagri_HH{
 replace `x'=`x'/1000
@@ -670,7 +669,7 @@ replace `x'=`x'/100
 
 
 ***** CRO
-foreach x in annualincome assets_noland loanamount DSR DAR_without DIR ISR DAR_with {
+foreach x in annualincome assets_noland loanamount DSR DAR_without DIR ISR DAR_with yearly_expenses {
 gen cro_`x'=`x'^(1/3)
 }
 
@@ -722,7 +721,7 @@ foreach m in 10 100 1000 10000 {
 gen ihs_`x'`m'=asinh(`x'`m')
 }
 }
-foreach x in loanamount annualincome assets_noland {
+foreach x in loanamount annualincome assets_noland yearly_expenses {
 gen ihs_`x'=asinh(`x')
 }
 
@@ -855,7 +854,7 @@ global quanti DIR DAR_with DAR_without DSR ISR loanamount annualincome assets_no
 
 global quali DSR30 DSR40 DSR50 dummyIMF dummybank dummymoneylender dummyrepay dummyborrowstrat mainocc_occupation head_edulevel wifehusb_edulevel head_occupation wifehusb_occupation
 
-global var $quanti $quali ihs_ISR ihs_ISR10 ihs_ISR100 ihs_ISR1000 ihs_ISR10000 ihs_DAR ihs_DAR10 ihs_DAR100 ihs_DAR1000 ihs_DAR10000 ihs_DSR ihs_DSR10 ihs_DSR100 ihs_DSR1000 ihs_DSR10000 log_yearly_expenses log_annualincome log_assets_noland log_assets log_loanamount log_ISR10 log_ISR100 log_ISR1000 log_ISR10000 log_ISR log_DAR10 log_DAR100 log_DAR1000 log_DAR10000 log_DAR log_DSR10 log_DSR100 log_DSR1000 log_DSR10000 log_DSR cro_annualincome cro_assets_noland cro_loanamount cro_DSR cro_DAR_without cro_DIR cro_ISR cro_DAR_with ihs_annualincome ihs_assets_noland ihs_loanamount
+global var $quanti $quali ihs_ISR ihs_ISR10 ihs_ISR100 ihs_ISR1000 ihs_ISR10000 ihs_DAR ihs_DAR10 ihs_DAR100 ihs_DAR1000 ihs_DAR10000 ihs_DSR ihs_DSR10 ihs_DSR100 ihs_DSR1000 ihs_DSR10000 log_yearly_expenses log_annualincome log_assets_noland log_assets log_loanamount log_ISR10 log_ISR100 log_ISR1000 log_ISR10000 log_ISR log_DAR10 log_DAR100 log_DAR1000 log_DAR10000 log_DAR log_DSR10 log_DSR100 log_DSR1000 log_DSR10000 log_DSR cro_annualincome cro_assets_noland cro_loanamount cro_DSR cro_DAR_without cro_DIR cro_ISR cro_DAR_with ihs_annualincome ihs_assets_noland ihs_loanamount shareagri sharenagri nagri agri ihs_yearly_expenses cro_yearly_expenses
 
 sort HHID_panel year
 

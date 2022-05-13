@@ -57,7 +57,6 @@ global loan2 "NEEMSIS1-all_loans"
 global loan3 "NEEMSIS2-all_loans"
 
 
-
 ********** Deflate
 *https://data.worldbank.org/indicator/FP.CPI.TOTL?locations=IN
 *(100/158) if year==2016
