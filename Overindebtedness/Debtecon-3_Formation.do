@@ -154,7 +154,6 @@ erase "$directory\_temp$wave3.dta"
 ****************************************
 use"$wave3-_temp", clear
 
-
 *Append
 append using "$wave2-_temp"
 append using "$wave1-_temp"
@@ -500,6 +499,11 @@ save"panel_v3", replace
 use"panel_v3", clear
 
 
+********** Loan for repayment
+rename loanforrepayment_nb_HH repay_nb_HH
+rename loanforrepayment_amt_HH repay_amt_HH
+rename rel_loanforrepayment_amt_HH rel_repay_amt_HH
+
 
 ********** Replace assets
 /*
@@ -703,17 +707,6 @@ g log_`x'=log(`x')
 }
 
 
-********** Benchmark
-cls
-foreach x in ISR DAR DSR {
-reg log_`x' log_assets_noland
-reg log_`x'10 log_assets_noland
-reg log_`x'100 log_assets_noland
-reg log_`x'1000 log_assets_noland
-reg log_`x'10000 log_assets_noland
-}
-
-
 ********** IHS creation
 foreach x in ISR DAR DSR {
 gen ihs_`x'=asinh(`x')
@@ -726,100 +719,21 @@ foreach x in loanamount annualincome assets_noland yearly_expenses  {
 gen ihs_`x'=asinh(`x')
 }
 
-foreach x in informal_HH formal_HH eco_HH current_HH humank_HH social_HH home_HH loanforrepayment_amt_HH {
+
+foreach x in informal_HH formal_HH eco_HH current_HH humank_HH social_HH home_HH repay_amt_HH {
 replace `x'=`x'*1000
 gen ihs_`x'=asinh(`x')
-}
-
-tabstat informal_HH formal_HH eco_HH current_HH humank_HH social_HH home_HH loanforrepayment_amt_HH, stat(n mean min p1 p5 p10 p25) by(year)
-
-
-********** Which sample choose?
-/*
-foreach x in ISR DAR DSR {
-count if `x'==0 & year==2010
-count if `x'==0 & year==2016
-count if `x'==0 & year==2020
-}
-
-keep if year==2016  // year with more 0
-
-dis 0.01*382
-dis 0.05*382
-dis 0.1*382
-
-
-foreach x in ISR DAR DSR {
-sort `x' HHID_panel
-gen n_`x'=_n
-
-* No 0
-gen `x'_0=`x' if `x'!=0
-
-* 1% of 0
-gen `x'_1=`x' if `x'!=0
-replace `x'_1=0 if n_`x'<=4
-replace `x'_1=`x' if `x'!=0
-
-* 5% of 0
-gen `x'_2=`x' if `x'!=0
-replace `x'_2=0 if n_`x'<=20
-replace `x'_2=`x' if `x'!=0
-
-* 10% of 0
-gen `x'_3=ISR if `x'!=0
-replace `x'_3=0 if n_`x'<=39
-replace `x'_3=`x' if `x'!=0
-
-* All 0
-gen `x'_4=`x'
-}
-
-*** Check
-preserve
-order n_ISR ISR ISR_0 ISR_1 ISR_2 ISR_3 ISR_4 n_DAR DAR DAR_0 DAR_1 DAR_2 DAR_3 DAR_4 n_DSR DSR DSR_0 DSR_1 DSR_2 DSR_3 DSR_4
-
-sort n_ISR
-sort n_DAR
-sort n_DSR
-restore
-
-drop DAR_2 DAR_3 DAR_4 DSR_4
-
-*** Recode
-foreach x in ISR_0 ISR_1 ISR_2 ISR_3 ISR_4 DAR_0 DAR_1 DSR_0 DSR_1 DSR_2 DSR_3 {
-replace `x'=1 if `x'!=. 
-recode `x' (.=0)
-ta `x'
+gen rel_`x'_10=rel_`x'*10
+gen ihs_rel_`x'=asinh(rel_`x'_10)
+drop rel_`x'_10
 }
 
 
-*** Check below 10
-foreach x in ISR DAR DSR {
-count if `x'<10 & `x'!=0
-count if `x'10<10 & `x'10!=0
-count if `x'100<10 & `x'100!=0
-count if `x'1000<10 & `x'1000!=0
-count if `x'10000<10 & `x'10000!=0
+foreach x in informal_HH formal_HH eco_HH current_HH humank_HH social_HH home_HH repay_amt_HH {
+count if `x'<=1 & `x'!=0
+count if rel_`x'<=1 & rel_`x'!=0
 }
 
-
-********** Check
-cls
-foreach x in ISR DAR DSR {
-reg log_`x' log_assets_noland
-forvalues i=0(1)4 {
-capture confirm v `x'_`i'
-if _rc==0 {
-reg ihs_`x' log_assets_noland if `x'_`i'==1
-reg ihs_`x'10 log_assets_noland if `x'_`i'==1
-reg ihs_`x'100 log_assets_noland if `x'_`i'==1
-reg ihs_`x'1000 log_assets_noland if `x'_`i'==1
-reg ihs_`x'10000 log_assets_noland if `x'_`i'==1
-}
-}
-}
-*/
 
 rename DAR DAR_without
 
@@ -858,7 +772,7 @@ rename rel_loanfrom`x' rel_lf_`x'
 }
 
 ********** Macro
-global quanti DIR DAR_with DAR_without DSR ISR loanamount annualincome assets_noland assets sizeownland yearly_expenses formal_HH informal_HH rel_formal_HH rel_informal_HH eco_HH current_HH humank_HH social_HH home_HH other_HH rel_eco_HH rel_current_HH rel_humank_HH rel_social_HH rel_home_HH rel_other_HH sum_loans_HH lf_IMF_nb_HH lf_IMF_amt_HH lf_bank_nb_HH lf_bank_amt_HH lf_moneylender_nb_HH lf_moneylender_amt_HH loanforrepayment_nb_HH loanforrepayment_amt_HH MLborrowstrat_nb_HH MLborrowstrat_amt_HH MLgooddebt_nb_HH MLgooddebt_amt_HH MLbaddebt_nb_HH MLbaddebt_amt_HH mainloan_HH mainloan_amt_HH rel_lf_IMF_amt_HH rel_lf_bank_amt_HH rel_lf_moneylender_amt_HH rel_mainloan_amt_HH rel_loanforrepayment_amt_HH rel_MLborrowstrat_amt_HH rel_MLbaddebt_amt_HH rel_MLgooddebt_amt_HH ihs_informal_HH ihs_formal_HH ihs_eco_HH ihs_current_HH ihs_humank_HH ihs_social_HH ihs_home_HH ihs_loanforrepayment_amt_HH
+global quanti DIR DAR_with DAR_without DSR ISR loanamount annualincome assets_noland assets sizeownland yearly_expenses formal_HH informal_HH rel_formal_HH rel_informal_HH eco_HH current_HH humank_HH social_HH home_HH other_HH rel_eco_HH rel_current_HH rel_humank_HH rel_social_HH rel_home_HH rel_other_HH sum_loans_HH lf_IMF_nb_HH lf_IMF_amt_HH lf_bank_nb_HH lf_bank_amt_HH lf_moneylender_nb_HH lf_moneylender_amt_HH repay_nb_HH repay_amt_HH MLborrowstrat_nb_HH MLborrowstrat_amt_HH MLgooddebt_nb_HH MLgooddebt_amt_HH MLbaddebt_nb_HH MLbaddebt_amt_HH mainloan_HH mainloan_amt_HH rel_lf_IMF_amt_HH rel_lf_bank_amt_HH rel_lf_moneylender_amt_HH rel_mainloan_amt_HH rel_repay_amt_HH rel_MLborrowstrat_amt_HH rel_MLbaddebt_amt_HH rel_MLgooddebt_amt_HH ihs_informal_HH ihs_formal_HH ihs_eco_HH ihs_current_HH ihs_humank_HH ihs_social_HH ihs_home_HH ihs_repay_amt_HH ihs_rel_informal_HH ihs_rel_formal_HH ihs_rel_eco_HH ihs_rel_current_HH ihs_rel_humank_HH ihs_rel_social_HH ihs_rel_home_HH ihs_rel_repay_amt_HH
 
 global quali DSR30 DSR40 DSR50 dummyIMF dummybank dummymoneylender dummyrepay dummyborrowstrat mainocc_occupation head_edulevel wifehusb_edulevel head_occupation wifehusb_occupation
 
@@ -1009,18 +923,6 @@ label values path_`x' pathtrap
 
 ta path_borrowstrat caste, col nofreq
 
-
-
-
-********** Rename catevo en plus court
-
-/*rename ce_annualincome ce_income
-rename ce_assets_noland ce_assetsnl
-
-foreach x in ce_formal ce_informal ce_rel_formal ce_rel_informal ce_eco ce_current ce_humank ce_social ce_home ce_other ce_rel_eco ce_rel_current ce_rel_humank ce_rel_social ce_rel_home ce_rel_other ce_sum_loans {
-rename `x'_HH `x'
-}
-*/
 
 save"panel_v5_wide", replace
 clear all

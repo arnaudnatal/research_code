@@ -645,6 +645,9 @@ foreach x in $all {
 bysort HHID_panel year: egen `x'_HH=sum(`x')
 }
 
+foreach x in loanforrepayment_nb loanforrepayment_amt loanforrepayment_nb_HH loanforrepayment_amt_HH {
+replace `x'=0 if `x'==.
+}
 
 
 
@@ -702,10 +705,6 @@ replace rel_loanfrommoneylender_amt_HH=. if dummymoneylender==0
 replace rel_loanforrepayment_amt_HH=. if dummyrepay==0
 replace rel_MLborrowstrat_amt_HH=. if dummyborrowstrat==0
 
-tab1 dummyIMF dummybank dummymoneylender dummyrepay dummyborrowstrat
-
-
-
 
 
 
@@ -714,6 +713,11 @@ preserve
 bysort HHID_panel year: egen sum_loans_HH=sum(1)
 keep HHID_panel year sum_loans_HH informal_HH formal_HH eco_HH current_HH humank_HH social_HH home_HH other_HH loanfromIMF_nb_HH loanfromIMF_amt_HH loanfrombank_nb_HH loanfrombank_amt_HH loanfrommoneylender_nb_HH loanfrommoneylender_amt_HH loanforrepayment_nb_HH loanforrepayment_amt_HH MLborrowstrat_nb_HH MLborrowstrat_amt_HH MLgooddebt_nb_HH MLgooddebt_amt_HH MLbaddebt_nb_HH MLbaddebt_amt_HH mainloan_HH mainloan_amt_HH loanamount_HH rel_formal_HH rel_informal_HH rel_eco_HH rel_current_HH rel_humank_HH rel_social_HH rel_home_HH rel_other_HH rel_loanfromIMF_amt_HH rel_loanfrombank_amt_HH rel_loanfrommoneylender_amt_HH rel_mainloan_amt_HH rel_loanforrepayment_amt_HH rel_MLborrowstrat_amt_HH rel_MLbaddebt_amt_HH rel_MLgooddebt_amt_HH dummyIMF dummybank dummymoneylender dummyrepay dummyborrowstrat
 duplicates drop
+
+foreach x in loanforrepayment_nb_HH loanforrepayment_amt_HH rel_loanforrepayment_amt_HH {
+replace `x'=0 if `x'==.
+}
+
 ta year
 save "HH_newvar_temp.dta", replace
 restore

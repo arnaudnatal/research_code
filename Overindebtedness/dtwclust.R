@@ -57,7 +57,7 @@ X_curr_ihs<-as.matrix(cbind(ihs_current1, ihs_current2, ihs_current3))
 X_huma_ihs<-as.matrix(cbind(ihs_humank1, ihs_humank2, ihs_humank3))
 X_soci_ihs<-as.matrix(cbind(ihs_social1, ihs_social2, ihs_social3))
 X_home_ihs<-as.matrix(cbind(ihs_home1, ihs_home2, ihs_home3))
-X_repa_ihs<-as.matrix(cbind(ihs_loanforrepayment1, ihs_loanforrepayment2, ihs_loanforrepayment3))
+X_repa_ihs<-as.matrix(cbind(ihs_repay1, ihs_repay2, ihs_repay3))
 
 
 X_info_rel<-as.matrix(cbind(rel_informal1, rel_informal2, rel_informal3))
@@ -67,8 +67,7 @@ X_curr_rel<-as.matrix(cbind(rel_current1, rel_current2, rel_current3))
 X_huma_rel<-as.matrix(cbind(rel_humank1, rel_humank2, rel_humank3))
 X_soci_rel<-as.matrix(cbind(rel_social1, rel_social2, rel_social3))
 X_home_rel<-as.matrix(cbind(rel_home1, rel_home2, rel_home3))
-X_repa_rel<-as.matrix(cbind(rel_loanforrepayment1, rel_loanforrepayment2, rel_loanforrepayment3))
-
+X_repa_rel<-as.matrix(cbind(rel_repay1, rel_repay2, rel_repay3))
 
 
 
@@ -82,17 +81,21 @@ interactive_clustering(X_DSR_ihs)
 interactive_clustering(X_ISR_ihs)
 interactive_clustering(X_DAR_ihs)
 
-interactive_clustering(X_agri)
-interactive_clustering(X_nagri)
-
 interactive_clustering(X_info_rel)
 interactive_clustering(X_form_rel)
+interactive_clustering(X_info_ihs)
+interactive_clustering(X_form_ihs)
+
 interactive_clustering(X_econ_rel)
 interactive_clustering(X_curr_rel)
 interactive_clustering(X_huma_rel)
 interactive_clustering(X_soci_rel)
 interactive_clustering(X_home_rel)
+
 interactive_clustering(X_repa_rel)
+
+interactive_clustering(X_agri)
+interactive_clustering(X_nagri)
 
 
 #--- What to keep?
