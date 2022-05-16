@@ -107,7 +107,7 @@ global var5 head_edulevel2010 head_occupation2010 wifehusb_edulevel2010 wifehusb
 
 global var6 agri2010 nagri2010 shareagri2010 sharenagri2010 agri2016 nagri2016 shareagri2016 sharenagri2016 agri2020 nagri2020 shareagri2020 sharenagri2020 
 
-global var7 rel_formal_HH2010 rel_informal_HH2010 rel_eco_HH2010 rel_current_HH2010 rel_humank_HH2010 rel_social_HH2010 rel_home_HH2010 rel_other_HH2010 rel_loanforrepayment_amt_HH2010 informal_HH2010 formal_HH2010 eco_HH2010 current_HH2010 humank_HH2010 social_HH2010 home_HH2010 other_HH2010 loanforrepayment_amt_HH2010 rel_formal_HH2016 rel_informal_HH2016 rel_eco_HH2016 rel_current_HH2016 rel_humank_HH2016 rel_social_HH2016 rel_home_HH2016 rel_other_HH2016 rel_loanforrepayment_amt_HH2016 informal_HH2016 formal_HH2016 eco_HH2016 current_HH2016 humank_HH2016 social_HH2016 home_HH2016 other_HH2016 loanforrepayment_amt_HH2016 rel_formal_HH2020 rel_informal_HH2020 rel_eco_HH2020 rel_current_HH2020 rel_humank_HH2020 rel_social_HH2020 rel_home_HH2020 rel_other_HH2020 rel_loanforrepayment_amt_HH2020 informal_HH2020 formal_HH2020 eco_HH2020 current_HH2020 humank_HH2020 social_HH2020 home_HH2020 other_HH2020 loanforrepayment_amt_HH2020
+global var7 rel_formal_HH2010 rel_informal_HH2010 rel_eco_HH2010 rel_current_HH2010 rel_humank_HH2010 rel_social_HH2010 rel_home_HH2010 rel_other_HH2010 rel_loanforrepayment_amt_HH2010 informal_HH2010 formal_HH2010 eco_HH2010 current_HH2010 humank_HH2010 social_HH2010 home_HH2010 other_HH2010 loanforrepayment_amt_HH2010 rel_formal_HH2016 rel_informal_HH2016 rel_eco_HH2016 rel_current_HH2016 rel_humank_HH2016 rel_social_HH2016 rel_home_HH2016 rel_other_HH2016 rel_loanforrepayment_amt_HH2016 informal_HH2016 formal_HH2016 eco_HH2016 current_HH2016 humank_HH2016 social_HH2016 home_HH2016 other_HH2016 loanforrepayment_amt_HH2016 rel_formal_HH2020 rel_informal_HH2020 rel_eco_HH2020 rel_current_HH2020 rel_humank_HH2020 rel_social_HH2020 rel_home_HH2020 rel_other_HH2020 rel_loanforrepayment_amt_HH2020 informal_HH2020 formal_HH2020 eco_HH2020 current_HH2020 humank_HH2020 social_HH2020 home_HH2020 other_HH2020 loanforrepayment_amt_HH2020 ihs_informal_HH2010 ihs_formal_HH2010 ihs_eco_HH2010 ihs_current_HH2010 ihs_humank_HH2010 ihs_social_HH2010 ihs_home_HH2010 ihs_loanforrepayment_amt_HH2010 ihs_informal_HH2016 ihs_formal_HH2016 ihs_eco_HH2016 ihs_current_HH2016 ihs_humank_HH2016 ihs_social_HH2016 ihs_home_HH2016 ihs_loanforrepayment_amt_HH2016 ihs_informal_HH2020 ihs_formal_HH2020 ihs_eco_HH2020 ihs_current_HH2020 ihs_humank_HH2020 ihs_social_HH2020 ihs_home_HH2020 ihs_loanforrepayment_amt_HH2020
 
 
 ***** Keep
@@ -154,6 +154,7 @@ rename ihs_`x'10002016 ihs_`x'2016
 rename ihs_`x'10002020 ihs_`x'2020
 }
 
+
 ***** Macro
 global var1 annualincome log_annualincome ihs_annualincome cro_annualincome assets_noland log_assets_noland ihs_assets_noland cro_assets_noland yearly_expenses log_yearly_expenses ihs_yearly_expenses cro_yearly_expenses
 
@@ -161,7 +162,7 @@ global var2 DAR cro_DAR ihs_DAR DSR cro_DSR ihs_DSR ISR cro_ISR ihs_ISR  loanamo
 
 global var3 shareagri sharenagri
 
-global var4 rel_eco_HH rel_current_HH rel_humank_HH rel_social_HH rel_home_HH rel_loanforrepayment_amt_HH eco_HH current_HH humank_HH social_HH home_HH loanforrepayment_amt_HH
+global var4 rel_eco_HH rel_current_HH rel_humank_HH rel_social_HH rel_home_HH rel_loanforrepayment_amt_HH eco_HH current_HH humank_HH social_HH home_HH loanforrepayment_amt_HH ihs_informal_HH ihs_formal_HH ihs_eco_HH ihs_current_HH ihs_humank_HH ihs_social_HH ihs_home_HH ihs_loanforrepayment_amt_HH
 
 global var5 rel_formal_HH rel_informal_HH formal_HH informal_HH
 
@@ -181,15 +182,35 @@ replace `x'2=`x'2/1000
 replace `x'3=`x'3/1000
 }
 
-/*
-*** For debt
-preserve
-drop if log_loanamount1==0
-drop if log_loanamount2==0
-drop if log_loanamount3==0
-export delimited using "$git\Analysis\Overindebtedness\debttrend_v2.csv", replace
-restore
+***** HH and amt rename
+foreach x in informal formal eco current humank social home loanforrepayment_amt {
+rename `x'_HH1 `x'1
+rename `x'_HH2 `x'2
+rename `x'_HH3 `x'3
 
+rename rel_`x'_HH1 rel_`x'1
+rename rel_`x'_HH2 rel_`x'2
+rename rel_`x'_HH3 rel_`x'3
+
+rename ihs_`x'_HH1 ihs_`x'1
+rename ihs_`x'_HH2 ihs_`x'2
+rename ihs_`x'_HH3 ihs_`x'3
+}
+
+foreach x in loanforrepayment {
+rename `x'_amt1 `x'1
+rename rel_`x'_amt1 rel_`x'1
+rename `x'_amt2 `x'2
+rename rel_`x'_amt2 rel_`x'2
+rename `x'_amt3 `x'3
+rename rel_`x'_amt3 rel_`x'3
+}
+
+
+***** N/A
+foreach x in ihs_ISR1 ihs_DAR1 ihs_DSR1 ihs_loanamount1 ihs_annualincome1 ihs_assets_noland1 ihs_yearly_expenses1 ihs_informal1 ihs_formal1 ihs_eco1 ihs_current1 ihs_humank1 ihs_social1 ihs_home1 ihs_loanforrepayment_amt1 ihs_ISR2 ihs_DAR2 ihs_DSR2 ihs_loanamount2 ihs_annualincome2 ihs_assets_noland2 ihs_yearly_expenses2 ihs_informal2 ihs_formal2 ihs_eco2 ihs_current2 ihs_humank2 ihs_social2 ihs_home2 ihs_loanforrepayment_amt2 ihs_ISR3 ihs_DAR3 ihs_DSR3 ihs_loanamount3 ihs_annualincome3 ihs_assets_noland3 ihs_yearly_expenses3 ihs_informal3 ihs_formal3 ihs_eco3 ihs_current3 ihs_humank3 ihs_social3 ihs_home3 ihs_loanforrepayment_amt3 rel_formal1 rel_informal1 rel_eco1 rel_current1 rel_humank1 rel_social1 rel_home1 rel_other_HH2010 rel_loanforrepayment1 rel_formal2 rel_informal2 rel_eco2 rel_current2 rel_humank2 rel_social2 rel_home2 rel_other_HH2016 rel_loanforrepayment2 rel_formal3 rel_informal3 rel_eco3 rel_current3 rel_humank3 rel_social3 rel_home3 rel_other_HH2020 rel_loanforrepayment3 {
+replace `x'=0 if `x'==.
+}
 
 export delimited using "$git\Analysis\Overindebtedness\debttrend.csv", replace
 
@@ -199,6 +220,9 @@ export delimited using "$git\Analysis\Overindebtedness\debttrend.csv", replace
 ********* R analysis
 *****
 *****
+
+
+
 
 
 ********** Graph cluster

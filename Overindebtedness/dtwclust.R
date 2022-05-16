@@ -36,41 +36,44 @@ attach(data)
 
 
 #--- Matrices creation
-X_loan_log<-as.matrix(cbind(log_loanamount1,log_loanamount2,log_loanamount3))
-X_income_log<-as.matrix(cbind(log_annualincome1,log_annualincome2,log_annualincome3))
-X_assets_log<-as.matrix(cbind(log_assets_noland1,log_assets_noland2,log_assets_noland3))
 
-X_loan_cro<-as.matrix(cbind(cro_loanamount1,cro_loanamount2,cro_loanamount3))
-X_income_cro<-as.matrix(cbind(cro_annualincome1,cro_annualincome2,cro_annualincome3))
-X_assets_cro<-as.matrix(cbind(cro_assets_noland1,cro_assets_noland2,cro_assets_noland3))
+# Add expenses
 
 X_loan_ihs<-as.matrix(cbind(ihs_loanamount1,ihs_loanamount2,ihs_loanamount3))
 X_income_ihs<-as.matrix(cbind(ihs_annualincome1,ihs_annualincome2,ihs_annualincome3))
 X_assets_ihs<-as.matrix(cbind(ihs_assets_noland1,ihs_assets_noland2,ihs_assets_noland3))
-
+X_expenses_ihs<-as.matrix(cbind(ihs_yearly_expenses1, ihs_yearly_expenses2, ihs_yearly_expenses3))
 X_DSR_ihs<-as.matrix(cbind(ihs_DSR1,ihs_DSR2,ihs_DSR3))
-X_DSR_cro<-as.matrix(cbind(cro_DSR1,cro_DSR2,cro_DSR3))
-
 X_DAR_ihs<-as.matrix(cbind(ihs_DAR1,ihs_DAR2,ihs_DAR3))
-X_DAR_cro<-as.matrix(cbind(cro_DAR1,cro_DAR2,cro_DAR3))
-
 X_ISR_ihs<-as.matrix(cbind(ihs_ISR1,ihs_ISR2,ihs_ISR3))
-X_ISR_cro<-as.matrix(cbind(cro_ISR1,cro_ISR2,cro_ISR3))
-
-X_DSR<-as.matrix(cbind(DSR1,DSR2,DSR3))
-X_DAR<-as.matrix(cbind(DAR_without1,DAR_without2,DAR_without3))
-X_ISR<-as.matrix(cbind(ISR1,ISR2,ISR3))
 
 X_agri<-as.matrix(cbind(shareagri1,shareagri2,shareagri3))
 X_nagri<-as.matrix(cbind(sharenagri1,sharenagri2,sharenagri3))
 
+X_info_ihs<-as.matrix(cbind(ihs_informal1, ihs_informal2, ihs_informal3))
+X_form_ihs<-as.matrix(cbind(ihs_formal1, ihs_formal2, ihs_formal3))
+X_econ_ihs<-as.matrix(cbind(ihs_eco1, ihs_eco2, ihs_eco3))
+X_curr_ihs<-as.matrix(cbind(ihs_current1, ihs_current2, ihs_current3))
+X_huma_ihs<-as.matrix(cbind(ihs_humank1, ihs_humank2, ihs_humank3))
+X_soci_ihs<-as.matrix(cbind(ihs_social1, ihs_social2, ihs_social3))
+X_home_ihs<-as.matrix(cbind(ihs_home1, ihs_home2, ihs_home3))
+X_repa_ihs<-as.matrix(cbind(ihs_loanforrepayment1, ihs_loanforrepayment2, ihs_loanforrepayment3))
+
+
+X_info_rel<-as.matrix(cbind(rel_informal1, rel_informal2, rel_informal3))
+X_form_rel<-as.matrix(cbind(rel_formal1, rel_formal2, rel_formal3))
+X_econ_rel<-as.matrix(cbind(rel_eco1, rel_eco2, rel_eco3))
+X_curr_rel<-as.matrix(cbind(rel_current1, rel_current2, rel_current3))
+X_huma_rel<-as.matrix(cbind(rel_humank1, rel_humank2, rel_humank3))
+X_soci_rel<-as.matrix(cbind(rel_social1, rel_social2, rel_social3))
+X_home_rel<-as.matrix(cbind(rel_home1, rel_home2, rel_home3))
+X_repa_rel<-as.matrix(cbind(rel_loanforrepayment1, rel_loanforrepayment2, rel_loanforrepayment3))
+
+
+
+
 
 #--- Trends analysis clustering
-# interactive_clustering(X_loan_log)
-# interactive_clustering(X_income_log)
-# interactive_clustering(X_assets_log)
-# interactive_clustering(X_expenses_log)
-
 interactive_clustering(X_income_ihs)
 interactive_clustering(X_assets_ihs)
 interactive_clustering(X_loan_ihs)
@@ -79,31 +82,20 @@ interactive_clustering(X_DSR_ihs)
 interactive_clustering(X_ISR_ihs)
 interactive_clustering(X_DAR_ihs)
 
-interactive_clustering(X_DSR_cro)
-interactive_clustering(X_ISR_cro)
-interactive_clustering(X_DAR_cro)
-
 interactive_clustering(X_agri)
 interactive_clustering(X_nagri)
 
+interactive_clustering(X_info_rel)
+interactive_clustering(X_form_rel)
+interactive_clustering(X_econ_rel)
+interactive_clustering(X_curr_rel)
+interactive_clustering(X_huma_rel)
+interactive_clustering(X_soci_rel)
+interactive_clustering(X_home_rel)
+interactive_clustering(X_repa_rel)
+
 
 #--- What to keep?
-# log loan      -> k=4 with sbd and median. Random seed=9 OK
-# log loan      -> k=3 with sbd and median. Random seed=3 OK -> drop 0 before
-# ihs loan      -> k=3 with sbd and median. Random seed=1 OK
-
-# log assets    -> k=4 with sbd and median. Random seed=7 OK
-# ihs assets    -> k=4 with sbd and median. Random seed=7 OK
-
-# log income    -> k=3 with sbd and median. Random seed=1 OK
-# ihs income    -> k=3 with sbd and median. Random seed=1 OK
-
-# ihs DSR       -> k=3 with sbd and median. Random seed=9 OK
-
-# ihs ISR       -> k=4 with sbd and median. Random seed=5 OK
-
-# ihs DAR       -> k=3 with sbd and median. Random seed=2 OK
-
 
 
 
