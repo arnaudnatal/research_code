@@ -161,7 +161,6 @@ save"panel_v5_wide_cluster", replace
 cls
 graph drop _all
 use"panel_v5_wide_cluster", clear
-drop panelvar
 order HHID_panel
 
 ********** R preparation data
@@ -263,6 +262,27 @@ rename rel_`x'3 rel_var3
 export delimited using "$git\Analysis\Overindebtedness\dt_`x'.csv", replace
 restore
 }
+
+foreach var in annualincome {
+cluster wardslinkage ihs_`var'1 ihs_`var'2 ihs_`var'3, measure(Euclidean)
+cluster dendrogram, cutnumber(100)
+cluster gen cl_`var'=groups(2)
+reshape long ihs_`var', i(panelvar) j(time)
+
+sort cl_`var' panelvar time
+forvalues i=1(1)2{
+twoway (line ihs_`var' time if cl_`var'==`i', c(L) lcolor(black%10)) ///
+, xtitle("Time") ///
+ylabel() ymtick() ytitle("`var'") ///
+title("Cluster `i'") ///
+aspectratio(0.5) graphregion(margin(zero)) plotregion(margin(zero))  ///
+name(gph_`var'_`i', replace)
+}
+graph combine gph_`var'_1 gph_`var'_2, col(4) name(gph_`var', replace)
+
+
+}
+
 
 
 *****
