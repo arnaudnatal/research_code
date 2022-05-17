@@ -248,6 +248,7 @@ replace `x'=0 if `x'==.
 
 
 ********** Files
+/*
 foreach x in formal informal eco current humank social home repay {
 ***** Data
 preserve
@@ -262,15 +263,55 @@ rename rel_`x'3 rel_var3
 export delimited using "$git\Analysis\Overindebtedness\dt_`x'.csv", replace
 restore
 }
+*/
 
-foreach var in annualincome {
+
+********* R analysis
+
+********* Hierarchical
+***** IHS
+foreach var in annualincome assets_noland loanamount DSR ISR DAR {
 cluster wardslinkage ihs_`var'1 ihs_`var'2 ihs_`var'3, measure(Euclidean)
-cluster dendrogram, cutnumber(100)
-cluster gen cl_`var'=groups(2)
-reshape long ihs_`var', i(panelvar) j(time)
+cluster dendrogram, cutnumber(100) title("`var'") name(`var'_tree, replace)
+}
 
+***** Relative
+foreach var in formal eco current humank social home repay {
+cluster wardslinkage rel_`var'1 rel_`var'2 rel_`var'3, measure(Euclidean)
+cluster dendrogram, cutnumber(100) title("`var'") name(`var'_tree, replace)
+}
+
+
+********** Partitional
+***** IHS
+*** k=3
+foreach var in annualincome assets_noland loanamount ISR {
+cluster kmeans ihs_`var'1 ihs_`var'2 ihs_`var'3, k(3) measure(Euclidean) start(everyk) name(cl_`var')
+}
+*** k=4
+foreach var in DSR DAR {
+cluster kmeans ihs_`var'1 ihs_`var'2 ihs_`var'3, k(4) measure(Euclidean) start(everyk) name(cl_`var')
+}
+
+***** Rel
+*** k=3
+foreach var in formal eco humank social home {
+cluster kmeans rel_`var'1 rel_`var'2 rel_`var'3, k(3) measure(Euclidean) start(everyk) name(cl_`var')
+}
+
+*** k=4
+foreach var in current repay {
+cluster kmeans rel_`var'1 rel_`var'2 rel_`var'3, k(4) measure(Euclidean) start(everyk) name(cl_`var')
+}
+
+
+********** Reshape
+*** k=3
+reshape long ihs_annualincome ihs_assets_noland ihs_loanamount ihs_DSR ihs_ISR ihs_DAR rel_formal rel_eco rel_current rel_humank rel_social rel_home rel_repay, i(panelvar) j(time)
+
+foreach var in annualincome assets_noland loanamount ISR formal eco humank social home {
 sort cl_`var' panelvar time
-forvalues i=1(1)2{
+forvalues i=1(1)3{
 twoway (line ihs_`var' time if cl_`var'==`i', c(L) lcolor(black%10)) ///
 , xtitle("Time") ///
 ylabel() ymtick() ytitle("`var'") ///
@@ -278,18 +319,25 @@ title("Cluster `i'") ///
 aspectratio(0.5) graphregion(margin(zero)) plotregion(margin(zero))  ///
 name(gph_`var'_`i', replace)
 }
-graph combine gph_`var'_1 gph_`var'_2, col(4) name(gph_`var', replace)
+}
 
-
+*** k=4
+foreach var in DSR DAR current repay {
+sort cl_`var' panelvar time
+forvalues i=1(1)4{
+twoway (line ihs_`var' time if cl_`var'==`i', c(L) lcolor(black%10)) ///
+, xtitle("Time") ///
+ylabel() ymtick() ytitle("`var'") ///
+title("Cluster `i'") ///
+aspectratio(0.5) graphregion(margin(zero)) plotregion(margin(zero))  ///
+name(gph_`var'_`i', replace)
+}
 }
 
 
 
-*****
-*****
-********* R analysis
-*****
-*****
+
+
 
 
 
