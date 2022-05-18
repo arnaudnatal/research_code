@@ -250,35 +250,15 @@ tabstat rel_repay1 rel_repay2 rel_repay3, stat(n mean sd p50)
 
 export delimited using "$git\Analysis\Overindebtedness\debttrend.csv", replace
 
-
-********** Files
-/*
-foreach x in formal informal eco current humank social home repay {
-***** Data
-preserve
-keep HHID_panel rel_`x'1 rel_`x'2 rel_`x'3
-drop if rel_`x'1==0 & rel_`x'2==0 & rel_`x'3==0
-drop if rel_`x'1==100 & rel_`x'2==100 & rel_`x'3==100
-
-rename rel_`x'1 rel_var1
-rename rel_`x'2 rel_var2
-rename rel_`x'3 rel_var3
-
-export delimited using "$git\Analysis\Overindebtedness\dt_`x'.csv", replace
-restore
-}
-*/
-
-
 ********* R analysis
 
 ********* Hierarchical
-***** IHS
+/*
 foreach var in annualincome assets_noland loanamount DSR ISR DAR {
 cluster wardslinkage ihs_`var'1 ihs_`var'2 ihs_`var'3, measure(Euclidean)
 cluster dendrogram, cutnumber(100) title("`var'") name(`var'_tree, replace)
 }
-
+*/
 
 
 ********** Graph cluster
@@ -287,21 +267,16 @@ import delimited using "$git\Analysis\Overindebtedness\debttrendRreturn.csv", cl
 rename hhid_panel HHID_panel
 encode HHID_panel, gen(panelvar)
 drop v1
-
-preserve
-import delimited using "$git\Analysis\Overindebtedness\debttrendRreturn_v2.csv", clear
-rename hhid_panel HHID_panel
-keep HHID_panel cl_loan
-save"$git\Analysis\Overindebtedness\debttrendRreturn_v2.dta", replace
-restore
-
-merge 1:1 HHID_panel using "$git\Analysis\Overindebtedness\debttrendRreturn_v2.dta"
-drop _merge
-
-erase "$git\Analysis\Overindebtedness\debttrendRreturn_v2.dta"
-
 order HHID_panel panelvar
 sort HHID_panel
+
+
+
+******* Assign 7 to another category
+ta sbd_dsr
+replace sbd_dsr=4 if sbd_dsr==5 & ihs_dsr2==0
+replace sbd_dsr=1 if sbd_dsr==5 & ihs_dsr1==0 & ihs_dsr3!=0
+
 
 save"panel_v6_wide_cluster", replace
 ****************************************
@@ -323,85 +298,16 @@ use"panel_v6_wide_cluster", clear
 
 
 ***** Var to keep
-keep HHID_panel panelvar cl_* loanamount1 loanamount2 loanamount3 annualincome1 annualincome2 annualincome3 assets_noland1 assets_noland2 assets_noland3 yearly_expenses1 yearly_expenses2 yearly_expenses3 log_*
+keep HHID_panel panelvar euc_* sbd_* loanamount1 loanamount2 loanamount3 annualincome1 annualincome2 annualincome3 assets_noland1 assets_noland2 assets_noland3 dsr1 ihs_dsr1 dsr2 ihs_dsr2 dsr3 ihs_dsr3 isr1 ihs_isr1 isr2 ihs_isr2 isr3 ihs_isr3 dar1 ihs_dar1 dar2 ihs_dar2 dar3 ihs_dar3 ihs_annualincome* ihs_assets_noland* ihs_loanamount*
+
 
 
 ***** Reshape
-reshape long loanamount annualincome assets_noland yearly_expenses log_loanamount log_annualincome log_assets_noland log_yearly_expenses, i(HHID_panel) j(time)
+reshape long annualincome dsr loanamount assets_noland dar isr ihs_isr ihs_dar ihs_dsr ihs_loanamount ihs_annualincome ihs_assets_noland, i(HHID_panel) j(time)
 
 
 ***** Panel declaration
 xtset panelvar time
-
-
-***** Add 6 missings in loanamount
-order HHID_panel time cl_loanamount log_loanamount
-sort cl_loanamount HHID_panel time
-replace cl_loanamount=2 if HHID_panel=="GOV29"
-replace cl_loanamount=2 if HHID_panel=="KAR29"
-replace cl_loanamount=2 if HHID_panel=="KAR3"
-replace cl_loanamount=2 if HHID_panel=="ORA52"
-
-replace cl_loanamount=3 if HHID_panel=="GOV22"
-replace cl_loanamount=3 if HHID_panel=="GOV4"
-
-ta cl_assets_noland time
-recode cl_assets_noland (2=1) (3=2) (4=3)
-
-
-***** Label of categories
-label define cl_annualincome 1"Inc-Sta" 2"Inc-Dec" 3"Dec-Inc"
-label define cl_loanamount 1"Inc-Inc" 2"Dec-Inc" 3"Inc-Dec"
-label define cl_assets_noland 1"Dec-Inc" 2"Dec-Dec" 3"Inc-Dec"
-label define cl_yearly_expenses 1"Inc-Sta" 2"Dec-Inc" 3"Dec-Dec" 4"Inc-Dec"
-
-label values cl_annualincome cl_annualincome
-label values cl_loanamount cl_loanamount
-label values cl_assets_noland cl_assets_noland
-label values cl_yearly_expenses cl_yearly_expenses
-
-
-***** Reshape for merging
-keep HHID_panel cl_*
-duplicates drop
-
-rename cl_loanamount cl_loanamount_clean
-rename cl_annualincome cl_annualincome_clean
-rename cl_assets_noland cl_assets_noland_clean
-rename cl_yearly_expenses cl_yearly_expenses_clean
-
-merge 1:1 HHID_panel using "panel_v5_wide_cluster"
-drop _merge
-
-*drop ce_DSR_1 ce_DSR_2 ce_DSR_3 ce_DSR_4 ce_DSR_5 ce_DSR_6 ce_DAR_without_1 ce_DAR_without_2 ce_DAR_without_3 ce_DAR_without_4 ce_DAR_without_5 ce_DAR_without_6 ce_loanamount_1 ce_loanamount_2 ce_loanamount_3 ce_loanamount_4 ce_loanamount_5 ce_loanamount_6 ce_income_1 ce_income_2 ce_income_3 ce_income_4 ce_income_5 ce_income_6 ce_assetsnl_1 ce_assetsnl_2 ce_assetsnl_3 ce_assetsnl_4 ce_assetsnl_5 ce_assetsnl_6
-
-order cl_*, last
-
-rename cl_loanamount_clean cl_loanamount
-rename cl_annualincome_clean cl_annualincome
-rename cl_assets_noland_clean cl_assets_noland
-rename cl_yearly_expenses_clean cl_yearly_expenses
-
-label var cl_loanamount "Debt"
-label var cl_annualincome "Income"
-label var cl_assets_noland "Assets"
-label var cl_yearly_expenses "Expenses"
-
-fre cl_*
-
-
-*** Check supplementary variables
-rename villageid2016 villageid
-drop villageid2010 villageid2020
-
-ta villagearea2010 villagearea2016
-ta villagearea2016 villagearea2020
-gen villagearea=villagearea2016
-drop villagearea2010 villagearea2016 villagearea2020
-
-ta caste
-ta jatis
-
 
 save"panel_v7_wide_cluster", replace
 
@@ -424,89 +330,84 @@ cls
 graph drop _all
 use"panel_v7_wide_cluster", clear
 
-***** Var to keep
-keep HHID_panel panelvar cl_* loanamount2010 loanamount2016 loanamount2020 annualincome2010 annualincome2016 annualincome2020 assets_noland2010 assets_noland2016 assets_noland2020 yearly_expenses2010 yearly_expenses2016 yearly_expenses2020 log_* DSR2010 DSR2016 DSR2020 ISR2010 ISR2016 ISR2020 DAR_without2010 DAR_without2016 DAR_without2020
 
-
-***** Reshape
-reshape long loanamount annualincome assets_noland yearly_expenses log_loanamount log_annualincome log_assets_noland log_yearly_expenses ISR DSR DAR_without, i(HHID_panel) j(year)
-
+gen year=2010 if time==1
+replace year=2016 if time==2
+replace year=2020 if time==3
 
 ***** Panel declaration
 xtset panelvar year
 
+fre euc_*
+fre sbd_*
 
 ***** Line graph
-tabstat log_loanamount log_annualincome log_assets_noland log_yearly_expenses, stat(n mean sd p50 min max)
-fre cl_*
-
 set graph off
 
-*** Loan amount
-sort cl_loanamount panelvar year
-forvalues i=1(1)3{
-twoway (line log_loanamount year if cl_loanamount==`i', c(L) lcolor(black%10)) ///
+*** Income
+
+
+foreach var in annualincome assets_noland loanamount dsr isr dar {
+foreach type in euc sbd {
+
+qui ta `type'_`var', gen(`type'_`var'_)
+sort `type'_`var' panelvar year
+
+qui sum ihs_`var'
+local min=r(min)
+local max=r(max)
+
+forvalues i=1(1)6{
+
+capture confirm v `type'_`var'_`i'
+if _rc==0 {
+
+twoway (line ihs_`var' year if `type'_`var'==`i', c(L) lcolor(black%10)) ///
 , xlabel(2010 2016 2020) xmtick(2010(1)2020) xtitle("Year") ///
-ylabel(0(3)15) ymtick(0(1)15) ytitle("log(Loan amount)") ///
+ylabel(`min'(1)`max') ymtick() ytitle("`var' with `type'") ///
 title("Cluster `i'") ///
 aspectratio(0.5) graphregion(margin(zero)) plotregion(margin(zero))  ///
-name(gph_loanamount_`i', replace)
+name(gph_`type'_`var'_`i', replace)
+
+drop `type'_`var'_`i'
 }
-graph combine gph_loanamount_1 gph_loanamount_2 gph_loanamount_3, col(3) name(gph_loanamount, replace)
-
-
-
-*** Annual income
-sort cl_annualincome panelvar year
-forvalues i=1(1)3{
-twoway (line log_annualincome year if cl_annualincome==`i', c(L) lcolor(black%10)) ///
-, xlabel(2010 2016 2020) xmtick(2010(1)2020) xtitle("Year") ///
-ylabel(6(2)14) ymtick(6(1)14) ytitle("log(Income)") ///
-title("Cluster `i'") ///
-aspectratio(0.5) graphregion(margin(zero)) plotregion(margin(zero))  ///
-name(gph_annualincome_`i', replace)
 }
-graph combine gph_annualincome_1 gph_annualincome_2 gph_annualincome_3, col(3) name(gph_annualincome, replace) 
-
-
-
-*** Assets
-sort cl_assets_noland panelvar year
-forvalues i=1(1)3{
-twoway (line log_assets_noland year if cl_assets_noland==`i', c(L) lcolor(black%10)) ///
-, xlabel(2010 2016 2020) xmtick(2010(1)2020) xtitle("Year") ///
-ylabel(6(2)16) ymtick(6(1)16) ytitle("log(Assets)") ///
-title("Cluster `i'") ///
-aspectratio(0.5) graphregion(margin(zero)) plotregion(margin(zero))  ///
-name(gph_assets_noland_`i', replace)
 }
-graph combine gph_assets_noland_1 gph_assets_noland_2 gph_assets_noland_3, col(4) name(gph_assets_noland, replace)
-
-
-
-*** Expenses
-sort cl_yearly_expenses panelvar year
-forvalues i=1(1)4{
-twoway (line log_yearly_expenses year if cl_yearly_expenses==`i', c(L) lcolor(black%10)) ///
-, xlabel(2010 2016 2020) xmtick(2010(1)2020) xtitle("Year") ///
-ylabel(8(2)14) ymtick(8(1)14) ytitle("log(Expenses)") ///
-title("Cluster `i'") ///
-aspectratio(0.5) graphregion(margin(zero)) plotregion(margin(zero))  ///
-name(gph_yearly_expenses_`i', replace)
 }
-graph combine gph_yearly_expenses_1 gph_yearly_expenses_2 gph_yearly_expenses_3 gph_yearly_expenses_4, col(4) name(gph_yearly_expenses, replace)
 
+
+graph dir
+
+*** if 3 graph
+foreach x in euc_isr sbd_loanamount {
+graph combine gph_`x'_1 gph_`x'_2 gph_`x'_3, col(3) name(gph_`x', replace)
+}
+
+*** if 4 graph
+foreach x in euc_annualincome euc_assets_noland euc_dar euc_loanamount sbd_annualincome sbd_assets_noland sbd_dar {
+graph combine gph_`x'_1 gph_`x'_2 gph_`x'_3 gph_`x'_4, col(2) name(gph_`x', replace)
+}
+
+*** if 5 graph
+foreach x in euc_dsr sbd_dsr sbd_isr {
+graph combine gph_`x'_1 gph_`x'_2 gph_`x'_3 gph_`x'_4 gph_`x'_5, col(2) name(gph_`x', replace)
+}
+
+
+***** Display
 set graph on
+*annualincome assets_noland loanamount dsr isr dar
+foreach var in dsr {
+foreach type in sbd {
+graph display gph_`type'_`var'
+}
+}
 
 
-
-*** Combine all in the same
-graph combine gph_assets_noland gph_annualincome gph_loanamount, col(1) name(comb_gph, replace)
-graph export "graph/comb_gph.pdf", as(pdf) replace
+tabstat dsr isr dar, stat(mean p50) by(year)
 
 ****************************************
 * END
-*/
 
 
 
