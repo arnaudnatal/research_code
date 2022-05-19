@@ -438,7 +438,7 @@ use"panel_v7_wide_cluster", clear
 set graph off
 
 ********** MCA without expenses
-mca cl_loanamount cl_annualincome cl_assets_noland, meth(ind) normal(princ) dim(4) comp
+mca sbd_annualincome sbd_assets_noland sbd_loanamount sbd_dsr sbd_dar, meth(ind) normal(princ) dim(8) comp
 mcacontrib
 matrix list e(F)
 matrix list NewContrib
