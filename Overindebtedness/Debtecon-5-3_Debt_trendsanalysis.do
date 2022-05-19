@@ -440,6 +440,8 @@ set graph off
 ********** MCA without expenses
 mca sbd_annualincome sbd_assets_noland sbd_loanamount sbd_dsr sbd_dar, meth(ind) normal(princ) dim(8) comp
 mcacontrib
+set graph on
+mcaplot, overlay
 matrix list e(F)
 matrix list NewContrib
 matrix coord=e(F)
