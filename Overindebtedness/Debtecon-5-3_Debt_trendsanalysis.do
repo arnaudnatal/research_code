@@ -272,11 +272,20 @@ sort HHID_panel
 
 
 
-******* Assign 7 to another category
+******* Assign 2+5 to another category -->DSR
 ta sbd_dsr
 replace sbd_dsr=4 if sbd_dsr==5 & ihs_dsr2==0
 replace sbd_dsr=1 if sbd_dsr==5 & ihs_dsr1==0 & ihs_dsr3!=0
 
+dis 7*100/382
+
+
+******* Assign 16+15+6 to another category -->DSR
+ta sbd_isr
+replace sbd_isr=1 if sbd_isr==5 & ihs_isr2==0
+replace sbd_isr=4 if sbd_isr==5 & ihs_isr1==0 & ihs_isr3!=0
+replace sbd_isr=4 if sbd_isr==5 & ihs_isr3>5
+dis 37*100/382
 
 save"panel_v6_wide_cluster", replace
 ****************************************
@@ -397,7 +406,7 @@ graph combine gph_`x'_1 gph_`x'_2 gph_`x'_3 gph_`x'_4 gph_`x'_5, col(2) name(gph
 ***** Display
 set graph on
 *annualincome assets_noland loanamount dsr isr dar
-foreach var in dsr {
+foreach var in isr {
 foreach type in sbd {
 graph display gph_`type'_`var'
 }

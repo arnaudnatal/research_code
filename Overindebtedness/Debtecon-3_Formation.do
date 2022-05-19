@@ -379,6 +379,18 @@ ta test
 restore
 
 
+cls
+tabstat shareagri_HH, stat(n mean sd p50) by(year)
+tabstat shareagri_HH if caste==1, stat(n mean sd p50) by(year)
+tabstat shareagri_HH if caste==2, stat(n mean sd p50) by(year)
+tabstat shareagri_HH if caste==3, stat(n mean sd p50) by(year)
+
+cls
+tabstat sharenagri_HH, stat(n mean sd p50) by(year)
+tabstat sharenagri_HH if caste==1, stat(n mean sd p50) by(year)
+tabstat sharenagri_HH if caste==2, stat(n mean sd p50) by(year)
+tabstat sharenagri_HH if caste==3, stat(n mean sd p50) by(year)
+
 
 
 ********** 1000
