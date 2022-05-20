@@ -70,6 +70,144 @@ global loan3 "NEEMSIS2-all_loans"
 
 
 ****************************************
+* Statistics following classification
+****************************************
+cls
+graph drop _all
+use"panel_v8_wide_cluster", clear
+
+
+set graph on
+
+********** MCA without expenses
+mca sbd_assets_noland sbd_dsr sbd_dar, meth(ind) normal(princ) dim(8) comp
+/*
+mcacontrib
+matrix list e(F)
+matrix list NewContrib
+matrix coord=e(F)
+svmat coord, names(varcoord)
+mat mcamat=e(cGS)
+mat colnames mcamat = mass qual inert co1 rel1 abs1 co2 rel2 abs2 co3 rel3 abs3 co4 rel4 abs4 
+svmat2 mcamat, rname(varname) name(col)
+gen varname2=""
+gen n=_n
+replace varname2="Debt" if n==1 | n==2 | n==3
+replace varname2="Income" if n==4 | n==5 | n==6
+replace varname2="Assets" if n==7 | n==8 | n==9
+drop n
+*/
+predict d1_nf d2_nf
+
+mcaplot, overlay xline(0) yline(0)
+scatter d2_nf d1_nf, xline(0) yline(0) name(ind,replace)
+
+
+/*
+*** Inertia
+input dim inertia perc totperc
+1 0.43 	21.75 	21.75
+2 0.40 	19.98 	41.72
+3 0.36 	18.02 	59.74
+4 0.29 	14.66 	74.40
+5 0.27 	13.39 	87.79
+6 0.24 	12.21 	100.00 
+end
+graph bar perc, over(dim) b1title("Dimension") ytitle("% of variance") note("Decomposition of the total inertia.", size(tiny)) name(inertia, replace)
+*/
+
+
+*** Plot var
+egen labpos=mlabvpos(varcoord2 varcoord1)
+replace labpos=3 if varname=="Inc-Inc" & varname2=="Debt"
+replace labpos=3 if varname=="Inc-Sta" & varname2=="Income"
+replace labpos=3 if varname=="Inc-Dec" & varname2=="Debt"
+replace labpos=3 if varname=="Inc-Dec" & varname2=="Income"
+replace labpos=1 if varname=="Dec-Dec" & varname2=="Assets"
+replace labpos=9 if varname=="Dec-Inc" & varname2=="Assets"
+replace labpos=9 if varname=="Dec-Inc" & varname2=="Debt"
+replace labpos=3 if varname=="Dec-Inc" & varname2=="Income"
+
+twoway ///
+(scatter varcoord2 varcoord1 if varname2=="Assets", xline(0) yline(0) mlab(varname) mlabvpos(labpos)) ///
+(scatter varcoord2 varcoord1 if varname2=="Debt", xline(0) yline(0) mlab(varname) mlabvpos(labpos)) ///
+(scatter varcoord2 varcoord1 if varname2=="Income", xline(0) yline(0) mlab(varname) mlabvpos(labpos)) ///
+, xtitle("Dimension 1 (21.7%)") ytitle("Dimension 2 (20.0%)") ///
+legend(pos(7) col(3) order(1 "Assets" 2 "Debt" 3 "Income")) aspectratio(1) ///
+name(var, replace)
+
+*** Plot individual
+scatter d2_nf d1_nf,  xline(0) yline(0) xtitle("Dimension 1 (21.7%)") ytitle("Dimension 2 (20.0%)") msym(o) aspectratio(1) name(indiv, replace)
+
+*** Combine
+grc1leg var indiv, name(mca_comb, replace) col(2)
+
+
+
+********** Classification
+cluster wardslinkage d1_nf d2_nf, measure(L2squared)
+
+
+*** Plot branch
+cluster dendrogram, cutnumber(20) xtitle("Group") ytitle("Squared euclidean dissimilarity measure") title("") xlabel(1(1)20, ang(0)) yline(150) name(htree, replace) aspectratio(1)
+cluster gen cl_new=groups(3)
+fre cl_new
+
+
+*** Plot indiv
+twoway ///
+(scatter d2_nf d1_nf if cl_new==1, xline(0) yline(0) msym(o)) ///
+(scatter d2_nf d1_nf if cl_new==2, msym(s)) ///
+(scatter d2_nf d1_nf if cl_new==3, msym(d)) ///
+, xtitle("Dimension 1 (21.7%)") ytitle("Dimension 2 (20.0%)") ///
+legend(pos(6) col(3) order(1 "Cluster 1" 2 "Cluster 2" 3 "Cluster 3")) ///
+name(clus, replace) aspectratio(1)
+
+*** Combine
+grc1leg htree clus, leg(clus) name(hac_comb, replace)
+
+
+*** Characterise cluster
+*Excel file directly
+
+
+
+********** Rename and label
+rename cl_new vuln_cl
+
+label define vuln_cl 1"Less-vulnerable" 2"Vulnerable" 3"Ex-vulnerable"
+label values vuln_cl vuln_cl
+
+set graph on
+
+
+********** Graph export
+/*
+graph display inertia
+graph export "graph/inertia.pdf", as(pdf)
+
+graph display mca_comb
+graph export "graph/mca_comb.pdf", as(pdf)
+
+graph display hac_comb
+graph export "graph/hac_comb.pdf", as(pdf)
+*/
+
+
+save"panel_v8_wide_cluster", replace
+
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+****************************************
 * Exploratory analysis according to caste and cluster
 ****************************************
 cls
