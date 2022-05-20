@@ -307,13 +307,15 @@ use"panel_v6_wide_cluster", clear
 
 
 ***** Var to keep
-keep HHID_panel panelvar euc_* sbd_* loanamount1 loanamount2 loanamount3 annualincome1 annualincome2 annualincome3 assets_noland1 assets_noland2 assets_noland3 dsr1 ihs_dsr1 dsr2 ihs_dsr2 dsr3 ihs_dsr3 isr1 ihs_isr1 isr2 ihs_isr2 isr3 ihs_isr3 dar1 ihs_dar1 dar2 ihs_dar2 dar3 ihs_dar3 ihs_annualincome* ihs_assets_noland* ihs_loanamount*
 
+global suppvar cat_income cat_assets caste jatis villageid1 villagearea1 villageid2 villagearea2 villageid3 villagearea3
 
+keep HHID_panel panelvar $suppvar euc_* sbd_* loanamount1 loanamount2 loanamount3 annualincome1 annualincome2 annualincome3 assets_noland1 assets_noland2 assets_noland3 dsr1 ihs_dsr1 dsr2 ihs_dsr2 dsr3 ihs_dsr3 isr1 ihs_isr1 isr2 ihs_isr2 isr3 ihs_isr3 dar1 ihs_dar1 dar2 ihs_dar2 dar3 ihs_dar3 ihs_annualincome* ihs_assets_noland* ihs_loanamount*
 
 ***** Reshape
-reshape long annualincome dsr loanamount assets_noland dar isr ihs_isr ihs_dar ihs_dsr ihs_loanamount ihs_annualincome ihs_assets_noland, i(HHID_panel) j(time)
+reshape long villageid villagearea annualincome dsr loanamount assets_noland dar isr ihs_isr ihs_dar ihs_dsr ihs_loanamount ihs_annualincome ihs_assets_noland, i(HHID_panel) j(time)
 
+order HHID_panel panelvar time caste jatis cat_income cat_assets villageid villagearea
 
 ***** Panel declaration
 xtset panelvar time
@@ -342,6 +344,7 @@ gen year=2010 if time==1
 replace year=2016 if time==2
 replace year=2020 if time==3
 
+/*
 ***** Panel declaration
 xtset panelvar year
 
@@ -402,7 +405,6 @@ graph combine gph_`x'_1 gph_`x'_2 gph_`x'_3 gph_`x'_4 gph_`x'_5, col(2) name(gph
 
 
 ***** Display
-/*
 set graph on
 *annualincome assets_noland loanamount dsr isr dar
 foreach var in annualincome assets_noland loanamount dsr dar {
@@ -426,6 +428,9 @@ label values sbd_dsr sbd_dsr
 label values sbd_assets_noland sbd_assets_noland
 label values sbd_loanamount sbd_loanamount
 
+preserve
+keep HHID_panel sbd_annualincome sbd_assets_noland sbd_loanamount sbd_dsr sbd_dar cat_income cat_assets jatis caste villageid villagearea
+duplicates drop
 export delimited using "$git\Analysis\Overindebtedness\debttrend_v3.csv", replace
 
 
