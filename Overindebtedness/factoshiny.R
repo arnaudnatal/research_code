@@ -5,12 +5,10 @@
 # May 3, 2022
 
 
-
 #--- Introduction
 # .rs.restartR()
 rm(list = ls())
 setwd("C:/Users/Arnaud/Documents/GitHub/Analysis/Overindebtedness")
-
 
 
 #--- Install packages
@@ -71,4 +69,4 @@ vulnerable<-res.HCPC$data.clust
 
 data<-cbind(data,vulnerable)
 
-write.csv(data,"debttrendRreturn.csv")
+write.csv(data,"debttrend_v4.csv")
