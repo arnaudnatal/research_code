@@ -76,8 +76,6 @@ cls
 graph drop _all
 use"panel_v8_wide_cluster", clear
 
-keep HHID_panel caste jatis cat_income cat_assets villageid villagearea sbd_*
-
 duplicates drop
 
 set graph on
@@ -128,7 +126,7 @@ twoway ///
 , ///
 xlabel(1(1)12) xtitle("Dimension") ///
 ylabel(0(10)100) ytitle("Cumul % of variance") ///
-legend(off) name(inertia, replace) 
+legend(off) name(inertiamca, replace) 
 restore
 
 
@@ -324,7 +322,7 @@ restore
 
 
 ***** Main graph
-foreach x in inertia mca_comb hac_comb clus_t char_comb {
+foreach x in inertiamca mca_comb hac_comb clus_t char_comb {
 graph display `x'
 graph export "graph/`x'.pdf", as(pdf) replace
 }
