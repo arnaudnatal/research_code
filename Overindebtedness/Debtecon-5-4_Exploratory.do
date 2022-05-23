@@ -76,15 +76,20 @@ cls
 graph drop _all
 use"panel_v8_wide_cluster", clear
 
+keep HHID_panel panelvar caste jatis cat_income cat_assets villageid villagearea sbd_*
+
+duplicates drop
 
 set graph on
 
+global var sbd_assets_noland sbd_dsr sbd_dar sbd_loanamount
+fre $var
+
 ********** MCA without expenses
-mca sbd_assets_noland sbd_dsr sbd_dar, meth(ind) normal(princ) dim(8) comp
-/*
-mcacontrib
+mca $var, meth(ind) normal(princ) dim(4) comp
+*mcacontrib
 matrix list e(F)
-matrix list NewContrib
+*matrix list NewContrib
 matrix coord=e(F)
 svmat coord, names(varcoord)
 mat mcamat=e(cGS)
@@ -92,83 +97,215 @@ mat colnames mcamat = mass qual inert co1 rel1 abs1 co2 rel2 abs2 co3 rel3 abs3 
 svmat2 mcamat, rname(varname) name(col)
 gen varname2=""
 gen n=_n
-replace varname2="Debt" if n==1 | n==2 | n==3
-replace varname2="Income" if n==4 | n==5 | n==6
-replace varname2="Assets" if n==7 | n==8 | n==9
+replace varname2="Assets"	if n==1 	| n==2 	| n==3 	| n==4
+replace varname2="DSR"		if n==5 	| n==6 	| n==7 	| n==8 	| n==9
+replace varname2="DAR" 		if n==10 	| n==11 | n==12	| n==13
+replace varname2="Debt"		if n==14	| n==15	| n==16 
 drop n
-*/
-predict d1_nf d2_nf
-
-mcaplot, overlay xline(0) yline(0)
-scatter d2_nf d1_nf, xline(0) yline(0) name(ind,replace)
+predict d1 d2 d3 d4
 
 
-/*
 *** Inertia
+preserve
+clear all
 input dim inertia perc totperc
-1 0.43 	21.75 	21.75
-2 0.40 	19.98 	41.72
-3 0.36 	18.02 	59.74
-4 0.29 	14.66 	74.40
-5 0.27 	13.39 	87.79
-6 0.24 	12.21 	100.00 
+1	.4896937	16.32	16.32
+2	.4322295	14.41	30.73
+3	.3306488	11.02	41.75
+4	.3076704	10.26	52.01
+5	.2615378	8.72	60.73
+6	.244503	8.15	68.88
+7	.211925	7.06	75.94
+8	.2080429	6.93	82.88
+9	.1743264	5.81	88.69
+10	.1645337	5.48	94.17
+11	.103332	3.44	97.61
+12	.071557	2.39	100.00
 end
-graph bar perc, over(dim) b1title("Dimension") ytitle("% of variance") note("Decomposition of the total inertia.", size(tiny)) name(inertia, replace)
-*/
+
+twoway ///
+(bar totperc dim, barw(0.6) color(gs7)) ///
+, ///
+xlabel(1(1)12) xtitle("Dimension") ///
+ylabel(0(10)100) ytitle("Cumul % of variance") ///
+legend(off) name(inertia, replace) 
+restore
 
 
+
+***** Dimension 1 and 2
 *** Plot var
 egen labpos=mlabvpos(varcoord2 varcoord1)
-replace labpos=3 if varname=="Inc-Inc" & varname2=="Debt"
-replace labpos=3 if varname=="Inc-Sta" & varname2=="Income"
-replace labpos=3 if varname=="Inc-Dec" & varname2=="Debt"
-replace labpos=3 if varname=="Inc-Dec" & varname2=="Income"
-replace labpos=1 if varname=="Dec-Dec" & varname2=="Assets"
-replace labpos=9 if varname=="Dec-Inc" & varname2=="Assets"
-replace labpos=9 if varname=="Dec-Inc" & varname2=="Debt"
-replace labpos=3 if varname=="Dec-Inc" & varname2=="Income"
+replace labpos=5	if varname=="DEC-INC" & varname2=="Assets"
+replace labpos=11	if varname=="Dec-Inc" & varname2=="Assets"
+replace labpos=3	if varname=="Inc-Inc" & varname2=="Assets"
+replace labpos=9	if varname=="Dec-Dec" & varname2=="Assets"
+replace labpos=12	if varname=="Sta-Dec" & varname2=="DSR"
+replace labpos=6	if varname=="Dec-Dec" & varname2=="DSR"
+replace labpos=3	if varname=="INC-INC" & varname2=="DSR"
+replace labpos=12	if varname=="Dec-Inc" & varname2=="DSR"
+replace labpos=7 	if varname=="Dec-Inc" & varname2=="DAR"
+replace labpos=5	if varname=="Inc-Dec" & varname2=="DAR"
+replace labpos=7	if varname=="Dec-Dec" & varname2=="DAR"
+replace labpos=11	if varname=="Inc-Inc" & varname2=="DAR"
+replace labpos=12 	if varname=="Dec-Inc" & varname2=="Debt"
+replace labpos=12	if varname=="Inc-Dec" & varname2=="Debt"
 
 twoway ///
 (scatter varcoord2 varcoord1 if varname2=="Assets", xline(0) yline(0) mlab(varname) mlabvpos(labpos)) ///
+(scatter varcoord2 varcoord1 if varname2=="DSR", xline(0) yline(0) mlab(varname) mlabvpos(labpos)) ///
+(scatter varcoord2 varcoord1 if varname2=="DAR", xline(0) yline(0) mlab(varname) mlabvpos(labpos)) ///
 (scatter varcoord2 varcoord1 if varname2=="Debt", xline(0) yline(0) mlab(varname) mlabvpos(labpos)) ///
-(scatter varcoord2 varcoord1 if varname2=="Income", xline(0) yline(0) mlab(varname) mlabvpos(labpos)) ///
-, xtitle("Dimension 1 (21.7%)") ytitle("Dimension 2 (20.0%)") ///
-legend(pos(7) col(3) order(1 "Assets" 2 "Debt" 3 "Income")) aspectratio(1) ///
-name(var, replace)
+, xtitle("Dimension 1 (16.3%)") ytitle("Dimension 2 (14.4%)") ///
+legend(pos(6) col(4) order(1 "Assets" 2 "DSR" 3 "DAR" 4 "Debt")) aspectratio(1) ///
+title("Projection of variables") name(vard1, replace)
 
 *** Plot individual
-scatter d2_nf d1_nf,  xline(0) yline(0) xtitle("Dimension 1 (21.7%)") ytitle("Dimension 2 (20.0%)") msym(o) aspectratio(1) name(indiv, replace)
+scatter d2 d1,  xline(0) yline(0) xtitle("Dimension 1 (16.3%)") ytitle("Dimension 2 (14.4%)") msym(+) aspectratio(1) title("Projection of individuals") name(indivd1, replace)
 
 *** Combine
-grc1leg var indiv, name(mca_comb, replace) col(2)
+grc1leg vard1 indivd1, name(mca_combd12, replace) col(2)
+
+
+
+
+
+***** Dimension 3 and 4
+*** Plot var
+egen labpos2=mlabvpos(varcoord4 varcoord3)
+replace labpos2=12	if varname=="DEC-INC" & varname2=="Assets"
+replace labpos2=6	if varname=="Dec-Inc" & varname2=="Assets"
+replace labpos2=12	if varname=="Inc-Inc" & varname2=="Assets"
+replace labpos2=3	if varname=="Dec-Dec" & varname2=="Assets"
+replace labpos2=3	if varname=="Sta-Dec" & varname2=="DSR"
+replace labpos2=8	if varname=="Dec-Dec" & varname2=="DSR"
+replace labpos2=9	if varname=="INC-INC" & varname2=="DSR"
+replace labpos2=12	if varname=="Dec-Inc" & varname2=="DSR"
+replace labpos2=1 	if varname=="Dec-Inc" & varname2=="DAR"
+replace labpos2=5	if varname=="Inc-Dec" & varname2=="DAR"
+replace labpos2=5	if varname=="Dec-Dec" & varname2=="DAR"
+replace labpos2=1	if varname=="Inc-Inc" & varname2=="DAR"
+replace labpos2=6 	if varname=="Dec-Inc" & varname2=="Debt"
+replace labpos2=12	if varname=="Inc-Dec" & varname2=="Debt"
+replace labpos2=5	if varname=="Inc-Inc" & varname2=="Debt"
+
+twoway ///
+(scatter varcoord4 varcoord3 if varname2=="Assets", xline(0) yline(0) mlab(varname) mlabvpos(labpos2)) ///
+(scatter varcoord4 varcoord3 if varname2=="DSR", xline(0) yline(0) mlab(varname) mlabvpos(labpos2)) ///
+(scatter varcoord4 varcoord3 if varname2=="DAR", xline(0) yline(0) mlab(varname) mlabvpos(labpos2)) ///
+(scatter varcoord4 varcoord3 if varname2=="Debt", xline(0) yline(0) mlab(varname) mlabvpos(labpos2)) ///
+, xtitle("Dimension 3 (11.0%)") ytitle("Dimension 4 (10.3%)") ///
+legend(pos(6) col(4) order(1 "Assets" 2 "DSR" 3 "DAR" 4 "Debt")) aspectratio(1) ///
+title("Projection of variables") name(vard3, replace)
+
+*** Plot individual
+scatter d4 d3,  xline(0) yline(0) xtitle("Dimension 3 (11.0%)") ytitle("Dimension 4 (10.3%)") msym(+) aspectratio(1) title("Projection of individuals") name(indivd3, replace)
+
+*** Combine
+grc1leg vard3 indivd3, name(mca_combd34, replace) col(2)
+
+
+
+
+***** Combine all
+grc1leg mca_combd12 mca_combd34, name(mca_comb, replace) col(1)
 
 
 
 ********** Classification
-cluster wardslinkage d1_nf d2_nf, measure(L2squared)
+cluster wardslinkage d1 d2 d3 d4, measure(L2squared)
 
 
 *** Plot branch
-cluster dendrogram, cutnumber(20) xtitle("Group") ytitle("Squared euclidean dissimilarity measure") title("") xlabel(1(1)20, ang(0)) yline(150) name(htree, replace) aspectratio(1)
-cluster gen cl_new=groups(3)
+cluster dendrogram, cutnumber(50) xtitle("Group") ytitle("Squared euclidean dissimilarity measure") title("") xlabel(, labsize(tiny) ang(45)) yline(200) name(htree, replace) aspectratio(1)
+cluster gen cl_new=groups(4)
 fre cl_new
+
+
+*** Inertia gain
+preserve
+import delimited using "$git\Analysis\Overindebtedness\inertia.csv", clear
+drop if v1>15
+twoway ///
+(bar inert v1 if v1<=3, barw(0.6) color(gs1)) ///
+(bar inert v1 if v1>3, barw(0.6) color(gs9)) ///
+, ///
+xlabel(1(1)15) xtitle("Class reduction") ///
+yla() ytitle("Inertia gain") aspectratio(1) ///
+name(inertia, replace) legend(off) 
+restore
+
+*** Combine
+graph combine htree inertia, name(hac_comb, replace)
+
 
 
 *** Plot indiv
 twoway ///
-(scatter d2_nf d1_nf if cl_new==1, xline(0) yline(0) msym(o)) ///
-(scatter d2_nf d1_nf if cl_new==2, msym(s)) ///
-(scatter d2_nf d1_nf if cl_new==3, msym(d)) ///
-, xtitle("Dimension 1 (21.7%)") ytitle("Dimension 2 (20.0%)") ///
-legend(pos(6) col(3) order(1 "Cluster 1" 2 "Cluster 2" 3 "Cluster 3")) ///
+(scatter d2 d1 if cl_new==1, xline(0) yline(0) msym(+)) ///
+(scatter d2 d1 if cl_new==2, msym(oh) mcolor(gs0)) ///
+(scatter d2 d1 if cl_new==3, msym(dh)) ///
+(scatter d2 d1 if cl_new==4, msym(sh) mcolor(gs5)) ///
+, xtitle("Dimension 1 (16.3%)") ytitle("Dimension 2 (14.4%)") ///
+legend(pos(6) col(2) order(1 "Cluster 1" 2 "Cluster 2" 3 "Cluster 3" 4 "Cluster 4")) ///
 name(clus, replace) aspectratio(1)
 
-*** Combine
-grc1leg htree clus, leg(clus) name(hac_comb, replace)
+twoway ///
+(scatter d4 d3 if cl_new==1, xline(0) yline(0) msym(+)) ///
+(scatter d4 d3 if cl_new==2, msym(oh) mcolor(gs0)) ///
+(scatter d4 d3 if cl_new==3, msym(dh)) ///
+(scatter d4 d3 if cl_new==4, msym(sh) mcolor(gs5)) ///
+, xtitle("Dimension 3 (11.0%)") ytitle("Dimension 4 (10.3%)") ///
+legend(pos(6) col(2) order(1 "Cluster 1" 2 "Cluster 2" 3 "Cluster 3" 4 "Cluster 4")) ///
+name(clus, replace) aspectratio(1)
 
 
 *** Characterise cluster
-*Excel file directly
+preserve
+import delimited using "$git\Analysis\Overindebtedness\HCPCshiny.csv", clear
+split v1, p("=")
+drop v1
+split v11, p("_")
+drop v11 v111 v113
+split v12, p("_")
+drop v12 v121 v122
+replace v123=v124 if v112=="assets"
+drop v124
+rename v112 varname
+rename v123 mod
+replace varname="Assets" if varname=="assets"
+replace varname="DAR" if varname=="dar"
+replace varname="DSR" if varname=="dsr"
+replace varname="Debt" if varname=="loanamount"
+order varname mod
+
+egen max=rowmax(cluster1-cluster4)
+
+forvalues i=1(1)4 {
+gen cl`i'=max if cluster`i'==max
+}
+
+egen varmod=concat(varname mod), p(" ")
+
+forvalues i=1(1)4{
+gsort -cluster`i'
+gen n=_n
+labmask n, values(varmod)
+twoway ///
+(function y=0, range(0 16)) ///
+(bar cluster`i' n if cluster`i'>=3, barw(0.6) color(gs1)) ///
+(bar cluster`i' n if cluster`i'<3 & cluster`i'>-3, barw(0.6) color(gs9)) ///
+(bar cluster`i' n if cluster`i'<=-3, barw(0.6) color(gs1)) ///
+, ///
+xlabel(1(1)16, valuelabel ang(90) labsize()) xtitle("") ///
+yla() ytitle("v-test") ///
+title("Cluster `i'") name(char_cl`i', replace) legend(order(2 "p-value<=0.01" 3 "p-value>0.01") pos(6) col(2)) ///
+aspectratio(0.5) graphregion(margin(zero))
+drop n
+}
+
+grc1leg char_cl1 char_cl2 char_cl3 char_cl4, col(2) leg(char_cl1) name(char_comb, replace)
+restore
 
 
 

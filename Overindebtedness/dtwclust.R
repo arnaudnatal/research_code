@@ -65,12 +65,12 @@ X_ISR_ihs<-as.matrix(cbind(ihs_ISR1,ihs_ISR2,ihs_ISR3))
 
 
 #--- Trends analysis clustering
-interactive_clustering(X_income_ihs)
-interactive_clustering(X_assets_ihs)
-interactive_clustering(X_loan_ihs)
-interactive_clustering(X_DSR_ihs)
-interactive_clustering(X_ISR_ihs)
-interactive_clustering(X_DAR_ihs)
+# interactive_clustering(X_income_ihs)
+# interactive_clustering(X_assets_ihs)
+# interactive_clustering(X_loan_ihs)
+# interactive_clustering(X_DSR_ihs)
+# interactive_clustering(X_ISR_ihs)
+# interactive_clustering(X_DAR_ihs)
 
 
 #--- Manually trends analysis
@@ -250,4 +250,4 @@ sbd_DAR<-DAR_sbd@cluster
 
 data<-cbind(data, euc_annualincome, sbd_annualincome, euc_assets_noland, sbd_assets_noland, euc_loanamount, sbd_loanamount, euc_DSR, sbd_DSR, euc_ISR, sbd_ISR, euc_DAR, sbd_DAR)
 
-write.csv(data,"debttrendRreturn.csv")
+write.csv(data,"debttrend_v2.csv")

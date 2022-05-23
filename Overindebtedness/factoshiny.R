@@ -36,7 +36,7 @@ attach(trend)
 
 
 #--- Factoshiny
-# MCAshiny(trend)
+MCAshiny(trend)
 
 
 #--- MCA
@@ -52,21 +52,25 @@ summary(res.MCA)
 
 
 #--- HCPC
-res.HCPC<-HCPC(res.MCA,nb.clust=3,consol=FALSE,graph=FALSE)
+res.HCPC<-HCPC(res.MCA,nb.clust=4,consol=FALSE,graph=FALSE)
 
 plot.HCPC(res.HCPC,choice='tree',title='Hierarchical tree')
 summary(res.HCPC)
 
+inert<-res.HCPC[["call"]][["t"]][["inert.gain"]]
+inert
+
 plot.HCPC(res.HCPC,choice='map',draw.tree=FALSE,title='Factor map')
-plot.HCPC(res.HCPC,choice='3D.map',ind.names=FALSE,centers.plot=FALSE,angle=60,title='Hierarchical tree on the factor map')
+#plot.HCPC(res.HCPC,choice='3D.map',ind.names=FALSE,centers.plot=FALSE,angle=60,title='Hierarchical tree on the factor map')
 
 plot.HCPC(res.HCPC,choice='map',draw.tree=FALSE,title='Factor map',axes=c(3,4))
-plot.HCPC(res.HCPC,choice='3D.map',ind.names=FALSE,centers.plot=FALSE,angle=60,title='Hierarchical tree on the factor map',axes=c(3,4))
+#plot.HCPC(res.HCPC,choice='3D.map',ind.names=FALSE,centers.plot=FALSE,angle=60,title='Hierarchical tree on the factor map',axes=c(3,4))
 
 
 #--- Datasets extraction
 vulnerable<-res.HCPC$data.clust
-
 data<-cbind(data,vulnerable)
+inertia<-cbind(inert)
 
 write.csv(data,"debttrend_v4.csv")
+write.csv(inertia,"inertia.csv")

@@ -262,14 +262,13 @@ cluster dendrogram, cutnumber(100) title("`var'") name(`var'_tree, replace)
 
 
 ********** Graph cluster
-import delimited using "$git\Analysis\Overindebtedness\debttrendRreturn.csv", clear
-
+import delimited using "$git\Analysis\Overindebtedness\debttrend_v2.csv", clear
+drop panelvar
 rename hhid_panel HHID_panel
 encode HHID_panel, gen(panelvar)
 drop v1
 order HHID_panel panelvar
 sort HHID_panel
-
 
 
 ******* Assign 2+5 to another category -->DSR
@@ -344,19 +343,133 @@ gen year=2010 if time==1
 replace year=2016 if time==2
 replace year=2020 if time==3
 
-/*
+
 ***** Panel declaration
 xtset panelvar year
 
-fre euc_*
-fre sbd_*
-
 ***** Line graph
 set graph off
+*** Assets
+tabstat ihs_assets, stat(n mean p50 min max)
+fre sbd_assets
+forvalues i=1(1)4{
+local d1="Dec-Dec"
+local d2="Inc-Inc"
+local d3="Dec-Inc"
+local d4="DEC-INC"
+local j="`d`i''"
+twoway (line ihs_assets year if sbd_assets==`i', c(L) lcolor(black%10)) ///
+, xlabel(2010 2016 2020) xmtick(2010(1)2020) xtitle("Year") ///
+ylabel(7(2)17) ymtick() ytitle("Assets (ihs)") ///
+title("Cluster `i': `j'") ///
+aspectratio(0.5) ///
+name(gph_assets_`i', replace)
+}
 
-*** Income
+
+*** DSR
+tabstat ihs_dsr, stat(n mean p50 min max)
+fre sbd_dsr
+forvalues i=1(1)5{
+local d1="INC-INC"
+local d2="Inc-Inc"
+local d3="Dec-Dec"
+local d4="Dec-Inc"
+local d5="Sta-Dec"
+local j="`d`i''"
+twoway (line ihs_dsr year if sbd_dsr==`i', c(L) lcolor(black%10)) ///
+, xlabel(2010 2016 2020) xmtick(2010(1)2020) xtitle("Year") ///
+ylabel(0(2)12) ymtick() ytitle("DSR (ihs)") ///
+title("Cluster `i': `j'") ///
+aspectratio(0.5) ///
+name(gph_DSR_`i', replace)
+}
 
 
+*** DAR
+tabstat ihs_dar, stat(n mean p50 min max)
+fre sbd_dar
+forvalues i=1(1)4{
+local d1="Inc-Dec"
+local d2="Inc-Inc"
+local d3="Dec-Dec"
+local d4="Dec-Inc"
+local j="`d`i''"
+twoway (line ihs_dar year if sbd_dar==`i', c(L) lcolor(black%10)) ///
+, xlabel(2010 2016 2020) xmtick(2010(1)2020) xtitle("Year") ///
+ylabel(0(2)12) ymtick() ytitle("DAR (ihs)") ///
+title("Cluster `i': `j'") ///
+aspectratio(0.5) ///
+name(gph_DAR_`i', replace)
+}
+
+
+*** Debt
+tabstat ihs_loanamount, stat(n mean p50 min max)
+fre sbd_loanamount
+forvalues i=1(1)3{
+local d1="Inc-Dec"
+local d2="Inc-Inc"
+local d3="Dec-Inc"
+local j="`d`i''"
+twoway (line ihs_loanamount year if sbd_loanamount==`i', c(L) lcolor(black%10)) ///
+, xlabel(2010 2016 2020) xmtick(2010(1)2020) xtitle("Year") ///
+ylabel(0(2)16) ymtick() ytitle("Loan amount (ihs)") ///
+title("Cluster `i': `j'") ///
+aspectratio(0.5) ///
+name(gph_loanamount_`i', replace)
+}
+
+
+***** Combine
+set graph on
+graph combine gph_assets_1 gph_assets_2 gph_assets_3 gph_assets_4, col(2) name(gph_assets, replace)
+graph combine gph_DAR_1 gph_DAR_2 gph_DAR_3 gph_DAR_4, col(2) name(gph_DAR, replace)
+graph combine gph_DSR_1 gph_DSR_2 gph_DSR_3 gph_DSR_4 gph_DSR_5, col(3) name(gph_DSR, replace)
+graph combine gph_loanamount_1 gph_loanamount_2 gph_loanamount_3, col(2) name(gph_loanamount, replace)
+
+***** Display
+set graph on
+foreach var in assets loanamount DAR DSR {
+graph display gph_`var'
+graph export "graph/trend_`var'.pdf", as(pdf)
+}
+
+
+********** Name
+label define sbd_annualincome 	1"Dec-Inc" 2"Inc-Dec" 3"Sta-Dec" 4"Dec-Sta"
+label define sbd_dar 			1"Inc-Dec" 2"Inc-Inc" 3"Dec-Dec" 4"Dec-Inc"
+label define sbd_dsr 			1"INC-INC" 2"Inc-Inc" 3"Dec-Dec" 4"Dec-Inc" 5"Sta-Dec"
+label define sbd_assets_noland 	1"Dec-Dec" 2"Inc-Inc" 3"Dec-Inc" 4"DEC-INC"
+label define sbd_loanamount 	1"Inc-Dec" 2"Inc-Inc" 3"Dec-Inc"
+
+label values sbd_annualincome sbd_annualincome
+label values sbd_dar sbd_dar
+label values sbd_dsr sbd_dsr
+label values sbd_assets_noland sbd_assets_noland
+label values sbd_loanamount sbd_loanamount
+
+preserve
+keep HHID_panel sbd_annualincome sbd_assets_noland sbd_loanamount sbd_dsr sbd_dar cat_income cat_assets jatis caste villageid villagearea
+duplicates drop
+export delimited using "$git\Analysis\Overindebtedness\debttrend_v3.csv", replace
+
+
+save"panel_v8_wide_cluster", replace
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+/*
+set graph off
 foreach var in annualincome assets_noland loanamount dsr isr dar {
 foreach type in euc sbd {
 
@@ -385,9 +498,6 @@ drop `type'_`var'_`i'
 }
 }
 
-
-graph dir
-
 *** if 3 graph
 foreach x in euc_isr sbd_loanamount {
 graph combine gph_`x'_1 gph_`x'_2 gph_`x'_3, col(3) name(gph_`x', replace)
@@ -402,38 +512,4 @@ graph combine gph_`x'_1 gph_`x'_2 gph_`x'_3 gph_`x'_4, col(2) name(gph_`x', repl
 foreach x in euc_dsr sbd_dsr sbd_isr {
 graph combine gph_`x'_1 gph_`x'_2 gph_`x'_3 gph_`x'_4 gph_`x'_5, col(2) name(gph_`x', replace)
 }
-
-
-***** Display
-set graph on
-*annualincome assets_noland loanamount dsr isr dar
-foreach var in annualincome assets_noland loanamount dsr dar {
-foreach type in sbd {
-graph display gph_`type'_`var'
-}
-}
 */
-
-
-********** Name
-label define sbd_annualincome 	1"Dec-Inc" 2"Inc-Dec" 3"Sta-Dec" 4"Dec-Sta"
-label define sbd_dar 			1"Inc-Dec" 2"Inc-Inc" 3"Dec-Dec" 4"Dec-Inc"
-label define sbd_dsr 			1"INC-INC" 2"Inc-Inc" 3"Dec-Dec" 4"Dec-Inc" 5"Sta-Dec"
-label define sbd_assets_noland 	1"Dec-Dec" 2"Inc-Inc" 3"Dec-Inc" 4"DEC-INC"
-label define sbd_loanamount 	1"Inc-Dec" 2"Inc-Inc" 3"Dec-Inc"
-
-label values sbd_annualincome sbd_annualincome
-label values sbd_dar sbd_dar
-label values sbd_dsr sbd_dsr
-label values sbd_assets_noland sbd_assets_noland
-label values sbd_loanamount sbd_loanamount
-
-preserve
-keep HHID_panel sbd_annualincome sbd_assets_noland sbd_loanamount sbd_dsr sbd_dar cat_income cat_assets jatis caste villageid villagearea
-duplicates drop
-export delimited using "$git\Analysis\Overindebtedness\debttrend_v3.csv", replace
-
-
-save"panel_v8_wide_cluster", replace
-****************************************
-* END
