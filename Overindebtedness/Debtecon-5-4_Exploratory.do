@@ -76,7 +76,7 @@ cls
 graph drop _all
 use"panel_v8_wide_cluster", clear
 
-keep HHID_panel panelvar caste jatis cat_income cat_assets villageid villagearea sbd_*
+keep HHID_panel caste jatis cat_income cat_assets villageid villagearea sbd_*
 
 duplicates drop
 
@@ -157,17 +157,14 @@ twoway ///
 (scatter varcoord2 varcoord1 if varname2=="DAR", xline(0) yline(0) mlab(varname) mlabvpos(labpos)) ///
 (scatter varcoord2 varcoord1 if varname2=="Debt", xline(0) yline(0) mlab(varname) mlabvpos(labpos)) ///
 , xtitle("Dimension 1 (16.3%)") ytitle("Dimension 2 (14.4%)") ///
-legend(pos(6) col(4) order(1 "Assets" 2 "DSR" 3 "DAR" 4 "Debt")) aspectratio(1) ///
+legend(pos(6) col(4) order(1 "Assets" 2 "DSR" 3 "DAR" 4 "Debt")) aspectratio(0.5) ///
 title("Projection of variables") name(vard1, replace)
 
 *** Plot individual
-scatter d2 d1,  xline(0) yline(0) xtitle("Dimension 1 (16.3%)") ytitle("Dimension 2 (14.4%)") msym(+) aspectratio(1) title("Projection of individuals") name(indivd1, replace)
+scatter d2 d1,  xline(0) yline(0) xtitle("Dimension 1 (16.3%)") ytitle("Dimension 2 (14.4%)") msym(+) aspectratio(0.5) title("Projection of individuals") name(indivd1, replace)
 
 *** Combine
 grc1leg vard1 indivd1, name(mca_combd12, replace) col(2)
-
-
-
 
 
 ***** Dimension 3 and 4
@@ -195,11 +192,11 @@ twoway ///
 (scatter varcoord4 varcoord3 if varname2=="DAR", xline(0) yline(0) mlab(varname) mlabvpos(labpos2)) ///
 (scatter varcoord4 varcoord3 if varname2=="Debt", xline(0) yline(0) mlab(varname) mlabvpos(labpos2)) ///
 , xtitle("Dimension 3 (11.0%)") ytitle("Dimension 4 (10.3%)") ///
-legend(pos(6) col(4) order(1 "Assets" 2 "DSR" 3 "DAR" 4 "Debt")) aspectratio(1) ///
+legend(pos(6) col(4) order(1 "Assets" 2 "DSR" 3 "DAR" 4 "Debt")) aspectratio(0.5) ///
 title("Projection of variables") name(vard3, replace)
 
 *** Plot individual
-scatter d4 d3,  xline(0) yline(0) xtitle("Dimension 3 (11.0%)") ytitle("Dimension 4 (10.3%)") msym(+) aspectratio(1) title("Projection of individuals") name(indivd3, replace)
+scatter d4 d3,  xline(0) yline(0) xtitle("Dimension 3 (11.0%)") ytitle("Dimension 4 (10.3%)") msym(+) aspectratio(0.5) title("Projection of individuals") name(indivd3, replace)
 
 *** Combine
 grc1leg vard3 indivd3, name(mca_combd34, replace) col(2)
@@ -217,9 +214,9 @@ cluster wardslinkage d1 d2 d3 d4, measure(L2squared)
 
 
 *** Plot branch
-cluster dendrogram, cutnumber(50) xtitle("Group") ytitle("Squared euclidean dissimilarity measure") title("") xlabel(, labsize(tiny) ang(45)) yline(200) name(htree, replace) aspectratio(1)
-cluster gen cl_new=groups(4)
-fre cl_new
+cluster dendrogram, cutnumber(50) xtitle("Group") ytitle("Squared euclidean dissimilarity measure") title("") xlabel(, labsize(tiny) ang(45)) yline(140) name(htree, replace) aspectratio(1)
+cluster gen cl_vuln_raw=groups(4)
+fre cl_vuln_raw
 
 
 *** Inertia gain
@@ -242,27 +239,40 @@ graph combine htree inertia, name(hac_comb, replace)
 
 *** Plot indiv
 twoway ///
-(scatter d2 d1 if cl_new==1, xline(0) yline(0) msym(+)) ///
-(scatter d2 d1 if cl_new==2, msym(oh) mcolor(gs0)) ///
-(scatter d2 d1 if cl_new==3, msym(dh)) ///
-(scatter d2 d1 if cl_new==4, msym(sh) mcolor(gs5)) ///
+(scatter d2 d1 if cl_vuln_raw==1, xline(0) yline(0) msym(+)) ///
+(scatter d2 d1 if cl_vuln_raw==2, msym(o) mcolor(gs0)) ///
+(scatter d2 d1 if cl_vuln_raw==3, msym(d)) ///
+(scatter d2 d1 if cl_vuln_raw==4, msym(s) mcolor(gs5)) ///
 , xtitle("Dimension 1 (16.3%)") ytitle("Dimension 2 (14.4%)") ///
 legend(pos(6) col(2) order(1 "Cluster 1" 2 "Cluster 2" 3 "Cluster 3" 4 "Cluster 4")) ///
-name(clus, replace) aspectratio(1)
+name(clusd12, replace) aspectratio(1)
 
 twoway ///
-(scatter d4 d3 if cl_new==1, xline(0) yline(0) msym(+)) ///
-(scatter d4 d3 if cl_new==2, msym(oh) mcolor(gs0)) ///
-(scatter d4 d3 if cl_new==3, msym(dh)) ///
-(scatter d4 d3 if cl_new==4, msym(sh) mcolor(gs5)) ///
+(scatter d4 d3 if cl_vuln_raw==1, xline(0) yline(0) msym(+)) ///
+(scatter d4 d3 if cl_vuln_raw==2, msym(o) mcolor(gs0)) ///
+(scatter d4 d3 if cl_vuln_raw==3, msym(d)) ///
+(scatter d4 d3 if cl_vuln_raw==4, msym(s) mcolor(gs5)) ///
 , xtitle("Dimension 3 (11.0%)") ytitle("Dimension 4 (10.3%)") ///
 legend(pos(6) col(2) order(1 "Cluster 1" 2 "Cluster 2" 3 "Cluster 3" 4 "Cluster 4")) ///
-name(clus, replace) aspectratio(1)
+name(clusd34, replace) aspectratio(1)
+
+*** Combine
+grc1leg clusd12 clusd34, name(clus_t, replace)
+
 
 
 *** Characterise cluster
 preserve
 import delimited using "$git\Analysis\Overindebtedness\HCPCshiny.csv", clear
+rename cluster1 A
+rename cluster2 B
+rename cluster3 C
+rename cluster4 D
+rename A cluster2
+rename B cluster4
+rename C cluster1
+rename D cluster3
+order cluster1 cluster2 cluster3 cluster4
 split v1, p("=")
 drop v1
 split v11, p("_")
@@ -288,18 +298,22 @@ gen cl`i'=max if cluster`i'==max
 egen varmod=concat(varname mod), p(" ")
 
 forvalues i=1(1)4{
+local d1="Non-vulnerable"
+local d2="Highly vulnerable"
+local d3="Ex-vulnerable"
+local d4="Vulnerable"
+local j="`d`i''"
 gsort -cluster`i'
 gen n=_n
 labmask n, values(varmod)
 twoway ///
-(function y=0, range(0 16)) ///
-(bar cluster`i' n if cluster`i'>=3, barw(0.6) color(gs1)) ///
+(bar cluster`i' n if cluster`i'>=3, yline(0) barw(0.6) color(gs1)) ///
 (bar cluster`i' n if cluster`i'<3 & cluster`i'>-3, barw(0.6) color(gs9)) ///
 (bar cluster`i' n if cluster`i'<=-3, barw(0.6) color(gs1)) ///
 , ///
-xlabel(1(1)16, valuelabel ang(90) labsize()) xtitle("") ///
+xlabel(1(1)16, valuelabel ang(90) labsize(small)) xtitle("") ///
 yla() ytitle("v-test") ///
-title("Cluster `i'") name(char_cl`i', replace) legend(order(2 "p-value<=0.01" 3 "p-value>0.01") pos(6) col(2)) ///
+title("Cluster `i': `j'") name(char_cl`i', replace) legend(order(1 "p-value<=0.01" 2 "p-value>0.01") pos(6) col(2)) ///
 aspectratio(0.5) graphregion(margin(zero))
 drop n
 }
@@ -309,30 +323,24 @@ restore
 
 
 
+***** Main graph
+foreach x in inertia mca_comb hac_comb clus_t char_comb {
+graph display `x'
+graph export "graph/`x'.pdf", as(pdf) replace
+}
+
+
 ********** Rename and label
-rename cl_new vuln_cl
+rename cl_vuln_raw cl_vuln
+label define cl_vuln 1"Non-vulnerable" 2"Highly vulnerable" 3"Ex-vulnerable" 4"Vulnerable", replace
+label values cl_vuln cl_vuln
+fre cl_vuln
 
-label define vuln_cl 1"Less-vulnerable" 2"Vulnerable" 3"Ex-vulnerable"
-label values vuln_cl vuln_cl
-
-set graph on
-
-
-********** Graph export
-/*
-graph display inertia
-graph export "graph/inertia.pdf", as(pdf)
-
-graph display mca_comb
-graph export "graph/mca_comb.pdf", as(pdf)
-
-graph display hac_comb
-graph export "graph/hac_comb.pdf", as(pdf)
-*/
-
+fre cl_vuln
+recode cl_vuln (1=1) (2=4) (3=2) (4=3)
+label define cl_vuln 1"Non-vulnerable" 2"Ex-vulnerable" 3"Vulnerable" 4"Highly vulnerable", modify
 
 save"panel_v8_wide_cluster", replace
-
 ****************************************
 * END
 
@@ -345,96 +353,30 @@ save"panel_v8_wide_cluster", replace
 
 
 ****************************************
-* Exploratory analysis according to caste and cluster
+* Old var + descriptive var
 ****************************************
 cls
 graph drop _all
-use"panel_v8_wide_cluster", clear
-
-ta DSR2010
-ta DSR2016
-ta DSR2020
-
-/*
-replace DSR2010=DSR2010*100
-replace DSR2016=DSR2016*100
-replace DSR2020=DSR2020*100
-ta DSR2010
-ta DSR2016
-ta DSR2020
+use"panel_v5_wide", clear
 
 
-foreach x in loanamount assets_noland yearly_expenses annualincome {
-foreach i in 2010 2016 2020 {
-replace `x'`i'=`x'`i'/1000
-}
-}
+********** Merge
+merge 1:1 HHID_panel using "panel_v8_wide_cluster", keepusing(sbd_annualincome sbd_assets_noland sbd_loanamount sbd_dsr sbd_dar cl_vuln) 
 
-foreach x in DSR2010 DSR2016 DSR2020 ISR2010 ISR2016 ISR2020 {
-qui count if `x'==0
-dis r(N)*100/382
-}
-*/
+drop _merge
+
+save "panel_v6_wide", replace
 
 
-********** Reshape
-reshape long annualincome DSR loanamount DIR sizeownland head_edulevel head_occupation wifehusb_edulevel wifehusb_occupation mainocc_occupation yearly_expenses assets_noland DAR_without DAR_with ISR DSR30 DSR40 DSR50 ihs_annualincome ihs_assets_noland ihs_loanamount ihs_DSR_1000 ihs_DSR_100 cro_annualincome cro_assets_noland cro_loanamount cro_DSR log_yearly_expenses log_annualincome log_assets_noland log_assets log_loanamount dummyownland, j(year) i(panelvar)
+********** Desc
+ta caste cl_vuln, row nofreq
+ta cat_assets cl_vuln, row nofreq
+ta cat_income cl_vuln, row nofreq
 
-gen time=.
-replace time=1 if year==2010
-replace time=2 if year==2016
-replace time=3 if year==2020
-
-********** Check classification
-ta vuln_cl caste if year==2010, nofreq row chi2
-/*
-No evident correlation = good for further sub analysis
-*/
-
-********** Type and use of debt
-
-
-********** Burden of debt
-foreach x in loanamount ISR DSR DAR_without annualincome assets_noland {
-qui sum `x', d
-local per99=r(p99)
-local max=round(`per99',1)
-stripplot `x' if `x'<`max', over(time) separate() by(vuln_cl, note("") row(1)) vert ///
-stack width(0.05) jitter(0) ///
-box(barw(0.1)) boffset(-0.1) pctile(10) ///
-ms(oh oh oh) msize(small) mc(red%30) ///
-yla(, ang(h)) xla(, noticks) ///
-name(`x', replace)
-}
-
-
-
-********** Trends burden of debt
-xtset panelvar year
-
-***** DSR
-sort vuln_cl panelvar year
-sum DSR, d
-drop if DSR>5
-forvalues i=1(1)3{
-twoway (line DSR year if vuln_cl==`i', c(L) lcolor(black%10)) ///
-, xlabel(2010 2016 2020) xmtick(2010(1)2020) xtitle("Year") ///
-ylabel() ymtick() ytitle("") ///
-title("Cluster `i'") ///
-aspectratio(0.5) graphregion(margin(zero)) plotregion(margin(zero))  ///
-name(gph_loanamount_`i', replace)
-}
-
-graph combine gph_loanamount_1 gph_loanamount_2 gph_loanamount_3, col(3) name(gph_loanamount, replace)
-
-
-
-********** Debt trap
-
-
-********** Overindebtedness
-
-
+ta sbd_assets cl_vuln, row nofreq
+ta sbd_dar cl_vuln, row nofreq
+ta sbd_dsr cl_vuln, row nofreq
+ta sbd_loanamount cl_vuln, row nofreq
 
 ****************************************
 * END

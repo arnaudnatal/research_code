@@ -432,7 +432,7 @@ graph combine gph_loanamount_1 gph_loanamount_2 gph_loanamount_3, col(2) name(gp
 set graph on
 foreach var in assets loanamount DAR DSR {
 graph display gph_`var'
-graph export "graph/trend_`var'.pdf", as(pdf)
+graph export "graph/trend_`var'.pdf", as(pdf) replace
 }
 
 
