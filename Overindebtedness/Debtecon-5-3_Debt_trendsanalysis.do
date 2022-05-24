@@ -422,7 +422,6 @@ name(gph_loanamount_`i', replace)
 
 
 ***** Combine
-set graph on
 graph combine gph_assets_1 gph_assets_2 gph_assets_3 gph_assets_4, col(2) name(gph_assets, replace)
 graph combine gph_DAR_1 gph_DAR_2 gph_DAR_3 gph_DAR_4, col(2) name(gph_DAR, replace)
 graph combine gph_DSR_1 gph_DSR_2 gph_DSR_3 gph_DSR_4 gph_DSR_5, col(3) name(gph_DSR, replace)
