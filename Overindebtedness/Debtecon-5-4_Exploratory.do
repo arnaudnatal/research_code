@@ -78,7 +78,7 @@ use"panel_v8_wide_cluster", clear
 
 duplicates drop
 
-set graph on
+set graph off
 
 global var sbd_assets_noland sbd_dsr sbd_dar sbd_annualincome
 fre $var
@@ -240,9 +240,10 @@ graph combine htree inertia, name(hac_comb, replace)
 *** Import results
 preserve
 import delimited using "$git\Analysis\Overindebtedness\debttrend_v4.csv", clear
+ta clust
 keep hhid_panel clust
 rename hhid_panel HHID_panel
-save "_temp_HCPC_conso.dta"
+save "_temp_HCPC_conso.dta", replace
 restore
 merge 1:1 HHID_panel using "_temp_HCPC_conso.dta"
 drop _merge
@@ -300,8 +301,8 @@ gen cl`i'=max if cluster`i'==max
 egen varmod=concat(varname mod), p(" ")
 
 forvalues i=1(1)4{
-local d1="Sustainable"
-local d2="Non-vulnerable"
+local d1="Unstable debt"
+local d2="Sustainable debt"
 local d3="Vulnerable"
 local d4="Highly vulnerable"
 local j="`d`i''"
@@ -324,41 +325,69 @@ grc1leg char_cl1 char_cl2 char_cl3 char_cl4, col(2) leg(char_cl1) name(char_comb
 restore
 
 
-
-***** Main graph
 /*
-foreach x in inertiamca mca_comb hac_comb clus_t char_comb {
+***** Main graph
+*foreach x in inertiamca mca_comb hac_comb clus_t char_comb {
+foreach x in inertiamca mca_combd12 hac_comb clusd12 char_comb {
 graph display `x'
 graph export "graph/`x'.pdf", as(pdf) replace
 }
 */
 
-graph dis clusd12
+
 
 ********** Rename and label
 rename cl_vuln_raw cl_vuln
-label define cl_vuln 1"Sustainable" 2"Non-vulnerable" 3"Vulnerable" 4"Highly vulnerable", replace
+label define cl_vuln 1"Unstable debt" 2"Sustainable debt" 3"Vulnerable" 4"Highly vulnerable", replace
 label values cl_vuln cl_vuln
 fre cl_vuln
 /*
 -------------------------------------------------------------------------
                             |      Freq.    Percent      Valid       Cum.
 ----------------------------+--------------------------------------------
-Valid   1 Sustainable       |         74      19.37      19.37      19.37
-        2 Non-vulnerable    |        156      40.84      40.84      60.21
+Valid   1 Unstable debt     |         74      19.37      19.37      19.37
+        2 Sustainable debt  |        156      40.84      40.84      60.21
         3 Vulnerable        |         65      17.02      17.02      77.23
         4 Highly vulnerable |         87      22.77      22.77     100.00
         Total               |        382     100.00     100.00           
 -------------------------------------------------------------------------
 */
-ta caste cl_vuln, col nofreq
-ta caste cl_vuln, row nofreq
 
+
+********** Dummy for sustainable of financial situation
+gen dummyvuln=.
+replace dummyvuln=0 if cl_vuln==1
+replace dummyvuln=0 if cl_vuln==2
+replace dummyvuln=1 if cl_vuln==3
+replace dummyvuln=1 if cl_vuln==4
+
+gen dummysust=.
+replace dummysust=1 if cl_vuln==2
+replace dummysust=0 if cl_vuln==1
+replace dummysust=0 if cl_vuln==3
+replace dummysust=0 if cl_vuln==4
+
+
+label define yesno 0"No" 1"Yes"
+label values dummyvuln yesno
+label values dummysust yesno
+
+
+********** Simple cat
+clonevar cl_vuln2=cl_vuln
 fre cl_vuln
-recode cl_vuln (1=1) (2=4) (3=2) (4=3)
-label define cl_vuln 1"Non-vulnerable" 2"Ex-vulnerable" 3"Vulnerable" 4"Highly vulnerable", modify
+recode cl_vuln2 (4=3)
+fre cl_vuln2
 
-save"panel_v8_wide_cluster", replace
+
+*********** Int
+foreach x in cl_vuln cl_vuln2 dummyvuln dummysust {
+egen casteX`x'=group(caste `x'), label
+}
+
+fre casteXcl_vuln
+
+save"panel_v9_wide_cluster", replace
 ****************************************
 * END
 
@@ -379,22 +408,45 @@ use"panel_v5_wide", clear
 
 
 ********** Merge
-merge 1:1 HHID_panel using "panel_v8_wide_cluster", keepusing(sbd_annualincome sbd_assets_noland sbd_loanamount sbd_dsr sbd_dar cl_vuln) 
+merge 1:1 HHID_panel using "panel_v9_wide_cluster", keepusing(sbd_annualincome sbd_assets_noland sbd_loanamount sbd_dsr sbd_dar cl_vuln dummyvuln dummysust) 
 
 drop _merge
 
-save "panel_v6_wide", replace
+save "panel_v10_wide", replace
 
 
-********** Desc
-ta caste cl_vuln, row nofreq
-ta cat_assets cl_vuln, row nofreq
-ta cat_income cl_vuln, row nofreq
+cls
+********** Desc comp
+ta caste			cl_vuln, row nofreq
+ta cat_assets		cl_vuln, row nofreq
+ta cat_income		cl_vuln, row nofreq
 
-ta sbd_assets cl_vuln, row nofreq
-ta sbd_dar cl_vuln, row nofreq
-ta sbd_dsr cl_vuln, row nofreq
-ta sbd_loanamount cl_vuln, row nofreq
+ta caste			cl_vuln, exp cchi2 chi2
+ta cat_assets		cl_vuln, exp cchi2 chi2
+ta cat_income		cl_vuln, exp cchi2 chi2
+
+ta sbd_assets		cl_vuln, row nofreq
+ta sbd_dar			cl_vuln, row nofreq
+ta sbd_dsr			cl_vuln, row nofreq
+ta sbd_loanamount	cl_vuln, row nofreq
+
+ta sbd_assets		cl_vuln, exp cchi2 chi2
+ta sbd_dar			cl_vuln, exp cchi2 chi2
+ta sbd_dsr			cl_vuln, exp cchi2 chi2
+ta sbd_loanamount	cl_vuln, exp cchi2 chi2
+
+
+********** Desc dummy
+ta caste			dummyvuln, row nofreq
+ta cat_assets		dummyvuln, row nofreq
+ta cat_income		dummyvuln, row nofreq
+
+ta sbd_assets		dummyvuln, row nofreq
+ta sbd_dar			dummyvuln, row nofreq
+ta sbd_dsr			dummyvuln, row nofreq
+ta sbd_loanamount	dummyvuln, row nofreq
+
+ta caste cl_vuln
 
 ****************************************
 * END
