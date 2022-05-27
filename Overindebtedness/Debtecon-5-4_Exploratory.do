@@ -412,41 +412,20 @@ merge 1:1 HHID_panel using "panel_v9_wide_cluster", keepusing(sbd_annualincome s
 
 drop _merge
 
+
+
+********** CLean
+drop log_ISR102010 log_DAR102010 log_DSR102010 ihs_ISR102010 ihs_DAR102010 ihs_DSR102010 log_ISR102016 log_DAR102016 log_DSR102016 ihs_ISR102016 ihs_DAR102016 ihs_DSR102016 log_ISR102020 log_DAR102020 log_DSR102020 ihs_ISR102020 ihs_DAR102020 ihs_DSR102020 log_ISR1002010 log_DAR1002010 log_DSR1002010 ihs_ISR1002010 ihs_DAR1002010 ihs_DSR1002010 log_ISR1002016 log_DAR1002016 log_DSR1002016 ihs_ISR1002016 ihs_DAR1002016 ihs_DSR1002016 log_ISR1002020 log_DAR1002020 log_DSR1002020 ihs_ISR1002020 ihs_DAR1002020 ihs_DSR1002020 log_ISR100002010 log_DAR100002010 log_DSR100002010 ihs_ISR100002010 ihs_DAR100002010 ihs_DSR100002010 log_ISR100002016 log_DAR100002016 log_DSR100002016 ihs_ISR100002016 ihs_DAR100002016 ihs_DSR100002016 log_ISR100002020 log_DAR100002020 log_DSR100002020 ihs_ISR100002020 ihs_DAR100002020 ihs_DSR100002020 log_ISR2010 log_DAR10002010 log_DAR2010 log_DSR10002010 log_DSR2010 log_yearly_expenses2016 log_annualincome2016 log_assets_noland2016 log_assets2016 log_loanamount2016 log_ISR10002016 log_ISR2016 log_DAR10002016 log_DAR2016 log_DSR10002016 log_DSR2016 log_yearly_expenses2020 log_annualincome2020 log_assets_noland2020 log_assets2020 log_loanamount2020 log_ISR10002020 log_ISR2020 log_DAR10002020 log_DAR2020 log_DSR10002020 log_DSR2020 ihs_DAR2010 ihs_DAR2016 ihs_DAR2020 ihs_DSR2010 ihs_DSR2016 ihs_DSR2020 ihs_ISR2010 ihs_ISR2016 ihs_ISR2020 cro_annualincome2010 cro_assets_noland2010 cro_loanamount2010 cro_DSR2010 cro_DAR_without2010 cro_DIR2010 cro_ISR2010 cro_DAR_with2010 cro_yearly_expenses2010 cro_annualincome2016 cro_assets_noland2016 cro_loanamount2016 cro_DSR2016 cro_DAR_without2016 cro_DIR2016 cro_ISR2016 cro_DAR_with2016 cro_yearly_expenses2016 cro_annualincome2020 cro_assets_noland2020 cro_loanamount2020 cro_DSR2020 cro_DAR_without2020 cro_DIR2020 cro_ISR2020 cro_DAR_with2020 cro_yearly_expenses2020 log_yearly_expenses2010 log_annualincome2010 log_assets_noland2010 log_assets2010 log_loanamount2010 log_ISR10002010
+
+foreach x in ISR DSR DAR {
+rename ihs_`x'10002010 ihs_`x'2010
+rename ihs_`x'10002016 ihs_`x'2016
+rename ihs_`x'10002020 ihs_`x'2020
+}
+
+***panelvar
+encode HHID_panel, gen(panelvar)
+
 save "panel_v10_wide", replace
-
-
-cls
-********** Desc comp
-ta caste			cl_vuln, row nofreq
-ta cat_assets		cl_vuln, row nofreq
-ta cat_income		cl_vuln, row nofreq
-
-ta caste			cl_vuln, exp cchi2 chi2
-ta cat_assets		cl_vuln, exp cchi2 chi2
-ta cat_income		cl_vuln, exp cchi2 chi2
-
-ta sbd_assets		cl_vuln, row nofreq
-ta sbd_dar			cl_vuln, row nofreq
-ta sbd_dsr			cl_vuln, row nofreq
-ta sbd_loanamount	cl_vuln, row nofreq
-
-ta sbd_assets		cl_vuln, exp cchi2 chi2
-ta sbd_dar			cl_vuln, exp cchi2 chi2
-ta sbd_dsr			cl_vuln, exp cchi2 chi2
-ta sbd_loanamount	cl_vuln, exp cchi2 chi2
-
-
-********** Desc dummy
-ta caste			dummyvuln, row nofreq
-ta cat_assets		dummyvuln, row nofreq
-ta cat_income		dummyvuln, row nofreq
-
-ta sbd_assets		dummyvuln, row nofreq
-ta sbd_dar			dummyvuln, row nofreq
-ta sbd_dsr			dummyvuln, row nofreq
-ta sbd_loanamount	dummyvuln, row nofreq
-
-ta caste cl_vuln
-
 ****************************************
 * END
