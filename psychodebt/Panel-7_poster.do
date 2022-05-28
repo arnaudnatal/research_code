@@ -110,22 +110,22 @@ replace n=n+1 if grp==2
 replace n=n+2 if grp==3
 replace n=n+3 if grp==4
 
+*(function y=14,range(-3 0) recast(area) fc(red%20) lc(red%1) base(0)  hor) ///
+*(function y=14,range(0 3) recast(area) fc(green%20) lc(green%1) base(0) hor) ///
+
 twoway ///
-(function y=14,range(-3 0) recast(area) fc(red%20) lc(red%1) base(0)  hor) ///
-(function y=14,range(0 3) recast(area) fc(green%20) lc(green%1) base(0) hor) ///
 (function y=0, lstyle(solid) range(0 14) xline(4 8 11)) ///
 (dropline waypond n if signi==1, lw(thick) color(gs0) ms(o)) ///
 (dropline waypond n if signi==5, lw(medthick) color(gs0) ms(o)) ///
 (dropline waypond n if signi==10, lw(medium) color(gs0) ms(o)) ///
 (scatter waypond n, mlabel(ptcs) ms(p) mlabvpos(labpos) mcolor(gs0)) ///
 , ///
-title("Negotiation of debt") ///
-xlabel(2 "Non-dalit male" 6 "Non-dalit female" 9.5 "Dalit male" 12.5 "Dalit female") ylabel(-1.5 "Liability" 1.5 "Assets", ang(90)) ///
+xlabel(2 "Non-dalit male" 6 "Non-dalit female" 9.5 "Dalit male" 12.5 "Dalit female", nolabe) ylabel(-1.5 "Liability" 1.5 "Assets", ang(90) nolab) ///
 yscale(lstyle(none)) xscale(lstyle(none)) ///
-legend(off) plotregion(margin(zero)) 
+legend(off)  graphregion(fcolor(182 220 176))
 restore
 
-
+plotregion(margin(zero))
 
 ********** Graph: Mana
 preserve
