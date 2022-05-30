@@ -29,10 +29,9 @@ grstyle set plain, box nogrid compact
 ********** Path to folder "data" folder.
 global directory = "C:\Users\Arnaud\Documents\_Thesis\Research-Skills_and_debt\Analysis"
 global git "C:\Users\Arnaud\Documents\GitHub"
-global dropbox "C:\Users\Arnaud\Documents\Dropbox\Arnaud\Thesis_Debt_skills\INPUT"
+global dropbox "C:\Users\Arnaud\Documents\Dropbox\Arnaud\Thesis_Debt_skills\Poster"
 
 ***
-set scheme plotplain
 cd"$directory"
 
 
@@ -63,7 +62,7 @@ graph7 mpg weight, twoway oneway box xla yla
 ****************************************
 * Res
 ****************************************
-import excel "C:\Users\Arnaud\Documents\Dropbox\Arnaud\Thesis_Debt_skills\Poster\res.xlsx", firstrow clear
+import excel "$dropbox\res.xlsx", firstrow clear
 
 ********** Label
 label define caste 0"Non-dalits" 1"Dalits"
@@ -104,54 +103,69 @@ keep if aspect=="nego"
 
 sum waypond
 
+drop if signi==10
+
 sort grp ptcs
 gen n=_n
 replace n=n+1 if grp==2
-replace n=n+2 if grp==3
-replace n=n+3 if grp==4
+replace n=n+2 if grp==4
 
-*(function y=14,range(-3 0) recast(area) fc(red%20) lc(red%1) base(0)  hor) ///
-*(function y=14,range(0 3) recast(area) fc(green%20) lc(green%1) base(0) hor) ///
+replace waypond=-2.7 if n==7
+replace labpos=3 if n==3
+replace labpos=3 if n==7
 
 twoway ///
-(function y=0, lstyle(solid) range(0 14) xline(4 8 11)) ///
-(dropline waypond n if signi==1, lw(thick) color(gs0) ms(o)) ///
-(dropline waypond n if signi==5, lw(medthick) color(gs0) ms(o)) ///
-(dropline waypond n if signi==10, lw(medium) color(gs0) ms(o)) ///
-(scatter waypond n, mlabel(ptcs) ms(p) mlabvpos(labpos) mcolor(gs0)) ///
+(function y=0, lstyle(solid) range(0 8) xline(2 5)) ///
+(dropline waypond n if way==-1, lw(thick) color(red) ms(o) mlabel(ptcs) mlabvpos(labpos)) ///
+(dropline waypond n if way==1, lw(thick) color(green) ms(o) mlabel(ptcs) mlabvpos(labpos)) ///
 , ///
-xlabel(2 "Non-dalit male" 6 "Non-dalit female" 9.5 "Dalit male" 12.5 "Dalit female", nolabe) ylabel(-1.5 "Liability" 1.5 "Assets", ang(90) nolab) ///
+xlabel(1 `""Non-dalits" "male""' 3.5 `""Non-dalits" "female""' 6.5 `""Dalits" "female""') ylabel(1 "Asset" -1.5 "Liability", ang(90)) ///
 yscale(lstyle(none)) xscale(lstyle(none)) ///
-legend(off)  graphregion(fcolor(182 220 176))
+legend(off)  graphregion(fcolor(255 255 255)) ///
+aspectratio(0.5) ///
+title("(b) Negotiation") name(nego, replace)
+*scale(2)
+*graph export "$dropbox\nego.eps", as(eps) replace
 restore
 
-plotregion(margin(zero))
 
 ********** Graph: Mana
 preserve
 keep if aspect=="mana"
+
 sum waypond
+
+drop if signi==10
+
 sort grp ptcs
 gen n=_n
 replace n=n+1 if grp==2
 replace n=n+2 if grp==3
 replace n=n+3 if grp==4
 
+replace labpos=3 if n==4
+replace labpos=9 if n==5
+
 twoway ///
-(function y=20,range(-3 0) recast(area) fc(red%20) lc(red%1) base(0)  hor) ///
-(function y=20,range(0 3) recast(area) fc(green%20) lc(green%1) base(0) hor) ///
-(function y=0, range(0 20)) ///
-(dropline waypond n, xline(5 12 15) ms(o)) ///
-(scatter waypond n, mlabel(ptcs) ms(p) mlabvpos(labpos)) ///
+(function y=0, lstyle(solid) range(0 12) xline(3 7 10)) ///
+(dropline waypond n if way==-1, lw(thick) color(red) ms(o) mlabel(ptcs) mlabvpos(labpos)) ///
+(dropline waypond n if way==1, lw(thick) color(green) ms(o) mlabel(ptcs) mlabvpos(labpos)) ///
 , ///
-title("Management of debt") ///
-xlabel(2.5 "Non-dalit male" 8.5 "Non-dalit female" 13.5 "Dalit male" 17.5 "Dalit female") ylabel(-1.5 "Liability" 1.5 "Assets", ang(90)) ///
+xlabel(1.5 `""Non-dalits" "male""' 5 `""Non-dalits" "female""' 8.5 `""Dalits" "male""' 11 `""Dalits" "female""') ylabel(1 "Asset" -1.5 "Liability", ang(90)) ///
 yscale(lstyle(none)) xscale(lstyle(none)) ///
-legend(off) plotregion(margin(zero)) graphregion(fcolor(164 204 76))
+legend(off)  graphregion(fcolor(255 255 255)) ///
+aspectratio(0.5) ///
+title("(c) Management") name(mana, replace)
+*scale(2)
+*graph export "$dropbox\mana.eps", as(eps) replace
 restore
 
-*164 204 76
-*ivory 255 250 240
+
+
+********** Combine
+graph combine nego mana, scale(1.2)
+graph export "$dropbox\comb.eps", as(eps) replace
+
 
 ****************************************
 * END
