@@ -119,7 +119,7 @@ twoway ///
 (dropline waypond n if way==-1, lw(thick) color(red) ms(o) mlabel(ptcs) mlabvpos(labpos)) ///
 (dropline waypond n if way==1, lw(thick) color(green) ms(o) mlabel(ptcs) mlabvpos(labpos)) ///
 , ///
-xlabel(1 `""Non-dalits" "male""' 3.5 `""Non-dalits" "female""' 6.5 `""Dalits" "female""') ylabel(1 "Asset" -1.5 "Liability", ang(90)) ///
+xlabel(1 `""Non-dalits" "male""' 3.5 `""Non-dalits" "female""' 6.5 `""Dalits" "female""') ylabel(1 "Advantage" -1.5 "Disadvantage", ang(90)) ///
 yscale(lstyle(none)) xscale(lstyle(none)) ///
 legend(off)  graphregion(fcolor(255 255 255)) ///
 aspectratio(0.5) ///
@@ -151,7 +151,7 @@ twoway ///
 (dropline waypond n if way==-1, lw(thick) color(red) ms(o) mlabel(ptcs) mlabvpos(labpos)) ///
 (dropline waypond n if way==1, lw(thick) color(green) ms(o) mlabel(ptcs) mlabvpos(labpos)) ///
 , ///
-xlabel(1.5 `""Non-dalits" "male""' 5 `""Non-dalits" "female""' 8.5 `""Dalits" "male""' 11 `""Dalits" "female""') ylabel(1 "Asset" -1.5 "Liability", ang(90)) ///
+xlabel(1.5 `""Non-dalits" "male""' 5 `""Non-dalits" "female""' 8.5 `""Dalits" "male""' 11 `""Dalits" "female""') ylabel(1 "Advantage" -0.95 "Disadvantage", ang(90)) ///
 yscale(lstyle(none)) xscale(lstyle(none)) ///
 legend(off)  graphregion(fcolor(255 255 255)) ///
 aspectratio(0.5) ///
@@ -161,12 +161,8 @@ title("(c) Management") name(mana, replace)
 restore
 
 
-
 ********** Combine
 graph combine nego mana, scale(1.2)
 graph export "$dropbox\comb.eps", as(eps) replace
-
-
 ****************************************
 * END
-

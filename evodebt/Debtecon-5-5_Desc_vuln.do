@@ -78,6 +78,12 @@ global loan3 "NEEMSIS2-all_loans"
 cls
 use "panel_v10_wide", clear
 
+preserve
+keep HHID_panel sbd_annualincome sbd_assets_noland sbd_dsr sbd_dar cl_vuln dummyvuln dummysust
+duplicates drop
+save"trends", replace
+restore
+
 ********** Desc comp
 ta caste			cl_vuln, row nofreq
 ta cat_assets		cl_vuln, row nofreq

@@ -226,7 +226,7 @@ ta year
 
 ********** caste recode
 drop jatis caste villagearea
-merge 1:1 HHID_panel year using "C:\Users\Arnaud\Documents\GitHub\RUME-NEEMSIS\_Miscellaneous\Individual_panel\ODRIIS-HH_long", keepusing(jatis caste villagearea)
+merge 1:1 HHID_panel year using "C:\Users\Arnaud\Documents\GitHub\odriis\_Miscellaneous\Individual_panel\ODRIIS-HH_long", keepusing(jatis caste villagearea)
 keep if _merge==3
 drop _merge
 encode caste, gen(caste_code)

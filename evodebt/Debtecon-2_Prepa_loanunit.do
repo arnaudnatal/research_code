@@ -431,7 +431,7 @@ ta dummyproblemtorepay year
 
 
 ********** Panel
-merge m:1 HHID_panel using "C:\Users\Arnaud\Documents\GitHub\RUME-NEEMSIS\_Miscellaneous\Individual_panel\ODRIIS-HH", keepusing(panel3)
+merge m:1 HHID_panel using "C:\Users\Arnaud\Documents\GitHub\odriis\_Miscellaneous\Individual_panel\ODRIIS-HH", keepusing(panel3)
 keep if _merge==3
 drop _merge
 
@@ -466,7 +466,7 @@ use"panel_loan_v2", clear
 ********** Initialization
 drop loanamount_HH
 
-keep if panel3==1
+*keep if panel3==1
 fre loanreasongiven
 recode loanreasongiven (12=13)
 
@@ -543,6 +543,8 @@ global multiple loanfromIMF_nb loanfromIMF_amt loanfrombank_nb loanfrombank_amt 
 
 ********** Debt trap
 fre reasongiven
+ta reasongiven year, col nofreq
+tabstat loanamount if reasongiven==4 & panel==1, stat(n mean sd p50) by(year)
 gen loanforrepayment_nb=1 if reasongiven==4
 gen loanforrepayment_amt=loanamount if reasongiven==4
 
@@ -659,6 +661,12 @@ gen rel_`x'=`x'*100/loanamount_HH
 }
 
 
+
+*** Relative of current
+gen rel_curr_repay_amt_HH=rel_loanforrepayment_amt_HH*100/rel_current_HH
+
+order HHID_panel year loanamount reasongiven mainloan loanamount_HH loanforrepayment_amt loanforrepayment_amt_HH rel_loanforrepayment_amt_HH rel_curr_repay_amt_HH rel_formal_HH rel_informal_HH rel_eco_HH rel_current_HH rel_humank_HH rel_social_HH rel_home_HH rel_other_HH
+sort HHID_panel year loanamount
 
 
 ***** Relative of main loan amount

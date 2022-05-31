@@ -8,7 +8,7 @@
 #--- Introduction
 # .rs.restartR()
 rm(list = ls())
-setwd("C:/Users/Arnaud/Documents/GitHub/Analysis/Overindebtedness")
+setwd("C:/Users/Arnaud/Documents/GitHub/research_code/evodebt")
 
 
 #--- Install packages
@@ -36,7 +36,7 @@ attach(trend)
 
 
 #--- Factoshiny
-#MCAshiny(trend)
+# MCAshiny(trend)
 
 
 
