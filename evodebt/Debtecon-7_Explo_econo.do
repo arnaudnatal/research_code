@@ -77,14 +77,65 @@ global loan3 "NEEMSIS2-all_loans"
 ****************************************
 use"panel_v4", clear
 
-********** Var to keep + merging
-keep HHID_panel year annualincome DSR panel villageid caste religion ownland loans HHsize femtomale head_sex head_maritalstatus head_age head_edulevel head_occupation wifehusb_sex wifehusb_maritalstatus wifehusb_age wifehusb_edulevel wifehusb_occupation assets_noland DAR_without DAR_with time ISR repay_nb_HH repay_amt_HH rel_repay_amt_HH dummyrepay MLborrowstrat_nb_HH MLborrowstrat_amt_HH rel_MLborrowstrat_amt_HH dummyborrowstrat
+drop DIR_r DAR_with_r DAR_without_r DSR_r ISR_r foodexpenses_raw healthexpenses_raw ceremoniesexpenses_raw deathexpenses_raw occinc_agri_raw occinc_agricasual_raw occinc_nonagricasual_raw occinc_nonagriregnonqual_raw occinc_nonagriregqual_raw occinc_selfemp_raw occinc_nrega_raw imp1_ds_tot_raw imp1_is_tot_raw marriageexpenses_raw educationexpenses_raw loanamount_raw annualincome_raw amountownland_raw assets_raw assets_noland_raw livestock_raw housevalue_raw goldquantityamount_raw goodtotalamount_raw agri_raw nagri_raw
+
+********** Var to keep
+*keep HHID_panel year annualincome DSR panel villageid caste religion ownland loans HHsize femtomale head_sex head_maritalstatus head_age head_edulevel head_occupation wifehusb_sex wifehusb_maritalstatus wifehusb_age wifehusb_edulevel wifehusb_occupation assets_noland DAR_without DAR_with time ISR repay_nb_HH repay_amt_HH rel_repay_amt_HH dummyrepay MLborrowstrat_nb_HH MLborrowstrat_amt_HH rel_MLborrowstrat_amt_HH dummyborrowstrat yearly_expenses yearly_expenses_bis
 
 ta panel year
 
+
+********** Merge trends
 merge m:1 HHID_panel using "trends"
 drop _merge
 ta panel
+
+
+
+********** Merge trap
+preserve
+keep if panel==1
+recode dummyrepay (.=0)
+ta dummyrepay year, col nofreq
+keep HHID_panel year dummyrepay
+reshape wide dummyrepay, i(HHID_panel) j(year)
+
+egen debttrap=group(dummyrepay2010 dummyrepay2016 dummyrepay2020), lab
+fre debttrap
+
+gen debttrap2=.
+replace debttrap2=0 if debttrap==1
+replace debttrap2=1 if debttrap==2
+replace debttrap2=1 if debttrap==3
+replace debttrap2=1 if debttrap==5
+replace debttrap2=2 if debttrap==4
+replace debttrap2=2 if debttrap==6
+replace debttrap2=2 if debttrap==7
+replace debttrap2=3 if debttrap==8
+
+label define debttrap2 0"Zero" 1"One" 2"Two" 3"Three"
+label values debttrap2 debttrap2
+
+ta debttrap
+keep HHID_panel debttrap debttrap2
+save "debtrap_temp.dta", replace
+restore
+
+merge m:1 HHID_panel using "debtrap_temp"
+erase "debtrap_temp.dta"
+drop _merge
+ta panel
+
+
+********** Expenses to income ratio test
+ta yearly_expenses
+ta annualincome
+replace yearly_expenses=yearly_expenses/1000
+replace yearly_expenses_bis=yearly_expenses_bis/1000
+gen EIR=yearly_expenses/annualincome
+gen EIR_bis=yearly_expenses_bis/annualincome
+
+tabstat EIR EIR_bis, stat(n mean sd q) by(year)
 
 
 ********** Reshape
@@ -96,10 +147,28 @@ ta time2020
 */
 
 
-********** Debt trap test
-preserve
-keep if panel==1
+*
+save"panel_v10", replace
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+****************************************
+* ANALYSIS
+****************************************
+use"panel_v10", clear
+
+recode dummyrepay (.=0)
 ta dummyrepay year, col nofreq
+
+preserve
 keep if dummyrepay==1
 ta year
 tabstat rel_repay_amt_HH, stat(n mean sd q) by(year)
@@ -111,9 +180,30 @@ tabstat rel_repay_amt_HH if year==2020, stat(n mean sd q) by(cl_vuln)
 tabstat rel_repay_amt_HH if year==2010, stat(n mean sd q) by(caste)
 tabstat rel_repay_amt_HH if year==2016, stat(n mean sd q) by(caste)
 tabstat rel_repay_amt_HH if year==2020, stat(n mean sd q) by(caste)
-
-
 restore
+
+ta debttrap caste if year==2010, col nofreq
+ta debttrap2 caste if year==2010, col nofreq
+
+
+cls
+tabstat informal_HH rel_informal_HH if year==2010, stat(mean q) by(dummyrepay)
+tabstat informal_HH rel_informal_HH if year==2016, stat(mean q) by(dummyrepay)
+tabstat informal_HH rel_informal_HH if year==2020, stat(mean q) by(dummyrepay)
+
+
+cls
+probit dummyrepay rel_informal_HH loanamount i.caste##i.cl_vuln if year==2010
+probit dummyrepay rel_informal_HH loanamount i.caste##i.cl_vuln if year==2016
+probit dummyrepay rel_informal_HH loanamount i.caste##i.cl_vuln if year==2020
+
+
+xtset panelvar year
+xtprobit dummyrepay rel_informal_HH loanamount
+
+
+ta dummyrepay dummydemonetisation if year==2016, col nofreq
+ta dummyrepay dummydemonetisation if year==2016, row nofreq
 
 ****************************************
 * END
@@ -130,8 +220,11 @@ restore
 
 
 
-
 /*
+****************************************
+* SHOCK AND DEBT
+****************************************
+
 ********** Keep 2016-17
 preserve 
 use "NEEMSIS1-HH.dta", clear
@@ -185,3 +278,5 @@ ta cl_vuln treat
 
 tabstat DSR ISR DAR_without DAR_with, stat(n mean sd p50) by(treat)
 restore
+****************************************
+* END
