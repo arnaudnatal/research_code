@@ -66,12 +66,6 @@ global loan3 "NEEMSIS2-all_loans"
 
 
 
-
-
-
-
-
-
 ****************************************
 * MERGE
 ****************************************
@@ -204,6 +198,20 @@ xtprobit dummyrepay rel_informal_HH loanamount
 
 ta dummyrepay dummydemonetisation if year==2016, col nofreq
 ta dummyrepay dummydemonetisation if year==2016, row nofreq
+
+
+
+********** Strat
+ta dummymigrstrat year
+ta dummyassestrat year
+
+
+********** Over
+cls
+ta DSR30 caste if year==2010, col nofreq
+ta DSR30 caste if year==2016, col nofreq
+ta DSR30 caste if year==2020, col nofreq
+
 
 ****************************************
 * END

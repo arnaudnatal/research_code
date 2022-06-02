@@ -462,9 +462,23 @@ save"panel_loan_v2", replace
 cls
 use"panel_loan_v2", clear
 
+********** Desc
+ta reason_cat lender_cat if year==2010, col nofreq
+ta reason_cat lender_cat if year==2016, col nofreq
+ta reason_cat lender_cat if year==2020, col nofreq
+
+ta reason_cat lender_cat if year==2010, row nofreq
+ta reason_cat lender_cat if year==2016, row nofreq
+ta reason_cat lender_cat if year==2020, row nofreq
+
+ta reasongiven lender_cat
+ta reasongiven lender4
+
+
 
 ********** Initialization
 drop loanamount_HH
+
 
 *keep if panel3==1
 fre loanreasongiven
@@ -561,6 +575,26 @@ replace MLborrowstrat_amt=loanamount if MLborrowstrat_nb==1
 global debttrap loanforrepayment_nb loanforrepayment_amt MLborrowstrat_nb MLborrowstrat_amt
 
 
+********** Migration + Assets threaten
+fre plantorepay
+
+gen MLstrat_migr_nb=0
+replace MLstrat_migr_nb=1 if strpos(plantorepay,"3") & mainloan==1
+gen MLstrat_migr_amt=0
+replace MLstrat_migr_amt=loanamount if MLstrat_migr_nb==1
+
+gen MLstrat_asse_nb=0
+replace MLstrat_asse_nb=1 if strpos(plantorepay,"4") & mainloan==1
+gen MLstrat_asse_amt=0
+replace MLstrat_asse_amt=loanamount if MLstrat_asse_nb==1
+
+
+global strat MLstrat_asse_nb MLstrat_asse_amt MLstrat_migr_nb MLstrat_migr_amt
+
+
+
+
+
 ********** Bad debt - only ML sample
 ***** Cost
 tabstat yratepaid if dummyinterest==1, stat(n mean q p90 p95 p99 max)
@@ -641,13 +675,13 @@ gen mainloan_amt=loanamount if mainloan==1
 
 ********** Household level
 ***** Absolut
-global all $sourcereason $multiple $debttrap $goodbad mainloan mainloan_amt
+global all $sourcereason $multiple $debttrap $goodbad $strat mainloan mainloan_amt
 
 foreach x in $all {
 bysort HHID_panel year: egen `x'_HH=sum(`x')
 }
 
-foreach x in loanforrepayment_nb loanforrepayment_amt loanforrepayment_nb_HH loanforrepayment_amt_HH {
+foreach x in loanforrepayment_nb loanforrepayment_amt loanforrepayment_nb_HH loanforrepayment_amt_HH MLstrat_asse_nb MLstrat_asse_amt MLstrat_migr_nb MLstrat_migr_amt MLborrowstrat_nb MLborrowstrat_amt {
 replace `x'=0 if `x'==.
 }
 
@@ -670,7 +704,7 @@ sort HHID_panel year loanamount
 
 
 ***** Relative of main loan amount
-foreach x in MLbaddebt_amt_HH MLgooddebt_amt_HH {
+foreach x in MLbaddebt_amt_HH MLgooddebt_amt_HH MLstrat_asse_amt_HH MLstrat_migr_amt_HH {
 gen rel_`x'=`x'*100/mainloan_amt_HH
 }
 
@@ -678,7 +712,7 @@ gen rel_`x'=`x'*100/mainloan_amt_HH
 
 
 ********** Recode + dummycreation
-foreach x in loanfromIMF_nb_HH loanfrombank_nb_HH loanfrommoneylender_nb_HH loanforrepayment_nb_HH MLborrowstrat_nb_HH {
+foreach x in loanfromIMF_nb_HH loanfrombank_nb_HH loanfrommoneylender_nb_HH loanforrepayment_nb_HH MLborrowstrat_nb_HH MLstrat_asse_nb MLstrat_migr_nb {
 sum `x'
 sum `x' if `x'!=0 & `x'!=.
 }
@@ -688,12 +722,16 @@ gen dummybank=0
 gen dummymoneylender=0
 gen dummyrepay=0
 gen dummyborrowstrat=0
+gen dummymigrstrat=0
+gen dummyassestrat=0
 
 replace dummyIMF=1 if loanfromIMF_nb_HH!=0
 replace dummybank=1 if loanfrombank_nb_HH!=0
 replace dummymoneylender=1 if loanfrommoneylender_nb_HH!=0
 replace dummyrepay=1 if loanforrepayment_nb_HH!=0
 replace dummyborrowstrat=1 if MLborrowstrat_nb_HH!=0
+replace dummyassestrat=1 if MLstrat_asse_nb_HH!=0
+replace dummyassestrat=1 if MLstrat_asse_nb_HH!=0
 
 replace loanfromIMF_nb_HH=. if dummyIMF==0
 replace loanfrombank_nb_HH=. if dummybank==0
@@ -717,9 +755,9 @@ replace rel_MLborrowstrat_amt_HH=. if dummyborrowstrat==0
 
 
 ********** New database for merging
-preserve
+*preserve
 bysort HHID_panel year: egen sum_loans_HH=sum(1)
-keep HHID_panel year sum_loans_HH informal_HH formal_HH eco_HH current_HH humank_HH social_HH home_HH other_HH loanfromIMF_nb_HH loanfromIMF_amt_HH loanfrombank_nb_HH loanfrombank_amt_HH loanfrommoneylender_nb_HH loanfrommoneylender_amt_HH loanforrepayment_nb_HH loanforrepayment_amt_HH MLborrowstrat_nb_HH MLborrowstrat_amt_HH MLgooddebt_nb_HH MLgooddebt_amt_HH MLbaddebt_nb_HH MLbaddebt_amt_HH mainloan_HH mainloan_amt_HH loanamount_HH rel_formal_HH rel_informal_HH rel_eco_HH rel_current_HH rel_humank_HH rel_social_HH rel_home_HH rel_other_HH rel_loanfromIMF_amt_HH rel_loanfrombank_amt_HH rel_loanfrommoneylender_amt_HH rel_mainloan_amt_HH rel_loanforrepayment_amt_HH rel_MLborrowstrat_amt_HH rel_MLbaddebt_amt_HH rel_MLgooddebt_amt_HH dummyIMF dummybank dummymoneylender dummyrepay dummyborrowstrat
+keep HHID_panel year sum_loans_HH informal_HH formal_HH eco_HH current_HH humank_HH social_HH home_HH other_HH loanfromIMF_nb_HH loanfromIMF_amt_HH loanfrombank_nb_HH loanfrombank_amt_HH loanfrommoneylender_nb_HH loanfrommoneylender_amt_HH loanforrepayment_nb_HH loanforrepayment_amt_HH MLborrowstrat_nb_HH MLborrowstrat_amt_HH MLgooddebt_nb_HH MLgooddebt_amt_HH MLbaddebt_nb_HH MLbaddebt_amt_HH mainloan_HH mainloan_amt_HH loanamount_HH rel_formal_HH rel_informal_HH rel_eco_HH rel_current_HH rel_humank_HH rel_social_HH rel_home_HH rel_other_HH rel_loanfromIMF_amt_HH rel_loanfrombank_amt_HH rel_loanfrommoneylender_amt_HH rel_mainloan_amt_HH rel_loanforrepayment_amt_HH rel_MLborrowstrat_amt_HH rel_MLbaddebt_amt_HH rel_MLgooddebt_amt_HH dummyIMF dummybank dummymoneylender dummyrepay dummyborrowstrat dummymigrstrat dummyassestrat MLborrowstrat_nb_HH MLborrowstrat_amt_HH MLstrat_asse_nb_HH MLstrat_asse_amt_HH MLstrat_migr_nb_HH MLstrat_migr_amt_HH rel_MLstrat_asse_amt_HH rel_MLstrat_migr_amt_HH
 duplicates drop
 
 foreach x in loanforrepayment_nb_HH loanforrepayment_amt_HH rel_loanforrepayment_amt_HH {
@@ -728,7 +766,7 @@ replace `x'=0 if `x'==.
 
 ta year
 save "HH_newvar_temp.dta", replace
-restore
+*restore
 
 clear all
 ****************************************
