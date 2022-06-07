@@ -227,6 +227,57 @@ ta DSR30 caste if year==2020, col nofreq
 
 
 
+****************************************
+* DEBT AND OCCUPATION
+****************************************
+use"panel_v10", clear
+
+keep HHID_panel year caste jatis villagearea villageid cl_vuln dummyvuln dummysust wifehusb_* head_* sbd_* DSR DAR_with DAR_without assets_noland annualincome loanamount rel_informal_HH rel_repay_amt_HH rel_formal_HH rel_informal_HH rel_eco_HH rel_current_HH rel_humank_HH rel_social_HH rel_home_HH rel_other_HH
+
+reshape wide annualincome DSR loanamount villageid caste head_sex head_maritalstatus head_age head_edulevel head_occupation wifehusb_sex wifehusb_maritalstatus wifehusb_age wifehusb_edulevel wifehusb_occupation assets_noland jatis villagearea rel_repay_amt_HH rel_formal_HH rel_informal_HH rel_eco_HH rel_current_HH rel_humank_HH rel_social_HH rel_home_HH rel_other_HH DAR_without DAR_with, i(HHID_panel) j(year)
+
+
+********** Change occupation head and husb
+fre head_occupation2010 wifehusb_occupation2010 head_occupation2016 wifehusb_occupation2016 head_occupation2020 wifehusb_occupation2020
+
+foreach x in head wifehusb {
+gen `x'_changeocc_1=.
+gen `x'_changeocc_2=.
+
+replace `x'_changeocc_1=0 if `x'_occupation2010==`x'_occupation2016
+replace `x'_changeocc_2=0 if `x'_occupation2016==`x'_occupation2020
+
+replace `x'_changeocc_1=1 if `x'_occupation2010!=`x'_occupation2016
+replace `x'_changeocc_2=1 if `x'_occupation2016!=`x'_occupation2020
+}
+
+foreach x in head wifehusb {
+gen `x'_changeocc_gl=.
+
+replace `x'_changeocc_gl=0 if `x'_changeocc_1==0 & `x'_changeocc_2==0
+
+replace `x'_changeocc_gl=1 if `x'_changeocc_1==1 & `x'_changeocc_2==0
+replace `x'_changeocc_gl=1 if `x'_changeocc_1==0 & `x'_changeocc_2==1
+
+replace `x'_changeocc_gl=2 if `x'_changeocc_1==1 & `x'_changeocc_2==1
+}
+
+fre head_changeocc_1 head_changeocc_2 head_changeocc_gl
+fre wifehusb_changeocc_1 wifehusb_changeocc_2 wifehusb_changeocc_gl
+
+********** Test econometrisc
+set maxiter 50
+probit dummyvuln i.head_occupation2010 i.wifehusb_occupation2010, baselevels
+
+mprobit wifehusb_occupation2016 i.wifehusb_occupation2010 i.cl_vuln
+
+****************************************
+* END
+
+
+
+
+
 
 /*
 ****************************************
