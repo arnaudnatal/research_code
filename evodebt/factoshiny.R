@@ -26,7 +26,7 @@ data<-read.csv("debttrend_v3.csv")
 
 #--- Matrices creation
 attach(data)
-X<-as.matrix(cbind(sbd_dsr,sbd_dar,sbd_assets_noland,sbd_annualincome,sbd_loanamount))#,cat_assets,cat_income,caste,jatis,villagearea,villageid))
+X<-as.matrix(cbind(sbd_dsr,sbd_dar,sbd_assets_noland,sbd_annualincome))#,sbd_loanamount,cat_assets,cat_income,caste,jatis,villagearea,villageid))
 trend<-as.data.frame(X)
 
 detach(data)
@@ -36,7 +36,7 @@ attach(trend)
 
 
 #--- Factoshiny
-# MCAshiny(trend)
+MCAshiny(trend)
 
 
 

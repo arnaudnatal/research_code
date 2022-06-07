@@ -228,7 +228,7 @@ ta DSR30 caste if year==2020, col nofreq
 
 
 ****************************************
-* DEBT AND OCCUPATION
+* DETER OF FINAN VULN
 ****************************************
 use"panel_v10", clear
 
@@ -266,10 +266,10 @@ fre head_changeocc_1 head_changeocc_2 head_changeocc_gl
 fre wifehusb_changeocc_1 wifehusb_changeocc_2 wifehusb_changeocc_gl
 
 ********** Test econometrisc
-set maxiter 50
 probit dummyvuln i.head_occupation2010 i.wifehusb_occupation2010, baselevels
 
-mprobit wifehusb_occupation2016 i.wifehusb_occupation2010 i.cl_vuln
+ta cl_vuln dummyvuln 
+ta cl_vuln dummysust
 
 ****************************************
 * END
