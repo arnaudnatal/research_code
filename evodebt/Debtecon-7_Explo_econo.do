@@ -155,79 +155,6 @@ save"panel_v10", replace
 
 
 ****************************************
-* ANALYSIS
-****************************************
-use"panel_v10", clear
-
-recode dummyrepay (.=0)
-ta dummyrepay year, col nofreq
-
-preserve
-keep if dummyrepay==1
-ta year
-tabstat rel_repay_amt_HH, stat(n mean sd q) by(year)
-
-tabstat rel_repay_amt_HH if year==2010, stat(n mean sd q) by(cl_vuln)
-tabstat rel_repay_amt_HH if year==2016, stat(n mean sd q) by(cl_vuln)
-tabstat rel_repay_amt_HH if year==2020, stat(n mean sd q) by(cl_vuln)
-
-tabstat rel_repay_amt_HH if year==2010, stat(n mean sd q) by(caste)
-tabstat rel_repay_amt_HH if year==2016, stat(n mean sd q) by(caste)
-tabstat rel_repay_amt_HH if year==2020, stat(n mean sd q) by(caste)
-restore
-
-ta debttrap caste if year==2010, col nofreq
-ta debttrap2 caste if year==2010, col nofreq
-
-
-cls
-tabstat informal_HH rel_informal_HH if year==2010, stat(mean q) by(dummyrepay)
-tabstat informal_HH rel_informal_HH if year==2016, stat(mean q) by(dummyrepay)
-tabstat informal_HH rel_informal_HH if year==2020, stat(mean q) by(dummyrepay)
-
-
-cls
-probit dummyrepay rel_informal_HH loanamount i.caste##i.cl_vuln if year==2010
-probit dummyrepay rel_informal_HH loanamount i.caste##i.cl_vuln if year==2016
-probit dummyrepay rel_informal_HH loanamount i.caste##i.cl_vuln if year==2020
-
-
-xtset panelvar year
-xtprobit dummyrepay rel_informal_HH loanamount
-
-
-ta dummyrepay dummydemonetisation if year==2016, col nofreq
-ta dummyrepay dummydemonetisation if year==2016, row nofreq
-
-
-
-********** Strat
-ta dummymigrstrat year
-ta dummyassestrat year
-
-
-********** Over
-cls
-ta DSR30 caste if year==2010, col nofreq
-ta DSR30 caste if year==2016, col nofreq
-ta DSR30 caste if year==2020, col nofreq
-
-
-****************************************
-* END
-
-
-
-
-
-
-
-
-
-
-
-
-****************************************
 * DETER OF FINAN VULN
 ****************************************
 use"panel_v10", clear
@@ -235,6 +162,16 @@ use"panel_v10", clear
 keep HHID_panel year caste jatis villagearea villageid cl_vuln dummyvuln dummysust wifehusb_* head_* sbd_* DSR DAR_with DAR_without assets_noland annualincome loanamount rel_informal_HH rel_repay_amt_HH rel_formal_HH rel_informal_HH rel_eco_HH rel_current_HH rel_humank_HH rel_social_HH rel_home_HH rel_other_HH
 
 reshape wide annualincome DSR loanamount villageid caste head_sex head_maritalstatus head_age head_edulevel head_occupation wifehusb_sex wifehusb_maritalstatus wifehusb_age wifehusb_edulevel wifehusb_occupation assets_noland jatis villagearea rel_repay_amt_HH rel_formal_HH rel_informal_HH rel_eco_HH rel_current_HH rel_humank_HH rel_social_HH rel_home_HH rel_other_HH DAR_without DAR_with, i(HHID_panel) j(year)
+
+********* xtile income assets
+xtile cat_income=annualincome2010, n(3)
+xtile cat_assets=assets_noland2010, n(3)
+
+label define cat_income 1"T1 in." 2"T2 in." 3"T3 in."
+label define cat_assets 1"T1 as." 2"T2 as." 3"T3 as."
+
+label values cat_income cat_income
+label values cat_assets cat_assets
 
 
 ********** Change occupation head and husb
@@ -259,14 +196,19 @@ replace `x'_changeocc_gl=0 if `x'_changeocc_1==0 & `x'_changeocc_2==0
 replace `x'_changeocc_gl=1 if `x'_changeocc_1==1 & `x'_changeocc_2==0
 replace `x'_changeocc_gl=1 if `x'_changeocc_1==0 & `x'_changeocc_2==1
 
-replace `x'_changeocc_gl=2 if `x'_changeocc_1==1 & `x'_changeocc_2==1
+replace `x'_changeocc_gl=1 if `x'_changeocc_1==1 & `x'_changeocc_2==1
 }
 
 fre head_changeocc_1 head_changeocc_2 head_changeocc_gl
 fre wifehusb_changeocc_1 wifehusb_changeocc_2 wifehusb_changeocc_gl
 
 ********** Test econometrisc
-probit dummyvuln i.head_occupation2010 i.wifehusb_occupation2010, baselevels
+global head i.head_sex2010 head_age2010 i.head_edulevel2010 i.head_occupation2010##i.head_changeocc_gl
+
+global wife i.wifehusb_sex2010 wifehusb_age2010 i.wifehusb_edulevel2010 i.wifehusb_occupation2010
+
+probit dummyvuln $head i.caste2010 i.cat_assets i.cat_income i.villageid2010, baselevels
+
 
 ta cl_vuln dummyvuln 
 ta cl_vuln dummysust
@@ -275,7 +217,7 @@ ta cl_vuln dummysust
 * END
 
 
-
+ 
 
 
 

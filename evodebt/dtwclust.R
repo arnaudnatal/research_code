@@ -8,7 +8,7 @@
 
 #--- Introduction
 rm(list = ls())
-setwd("C:/Users/Arnaud/Documents/GitHub/Analysis/Overindebtedness")
+setwd("C:/Users/Arnaud/Documents/GitHub/research_code/evodebt")
 
 
 
@@ -65,12 +65,15 @@ X_econ_rel<-as.matrix(cbind(rel_eco1, rel_eco2, rel_eco3))
 
 
 #--- Trends analysis clustering
-interactive_clustering(X_income_ihs)
+# interactive_clustering(X_expenses_ihs)
+# interactive_clustering(X_income_ihs)
 # interactive_clustering(X_assets_ihs)
 # interactive_clustering(X_loan_ihs)
 # interactive_clustering(X_DSR_ihs)
 # interactive_clustering(X_ISR_ihs)
 # interactive_clustering(X_DAR_ihs)
+
+interactive_clustering(X_form_rel)
 
 
 #--- Manually trends analysis
@@ -224,7 +227,16 @@ DAR_sbd<-tsclust(
 )
 
 
-
+expenses_sbd<-tsclust(
+  series=X_expenses_ihs,
+  type="partitional",
+  k=3,
+  distance="sbd",
+  centroid="pam",
+  seed=7,
+  trace=TRUE,
+  error.check=TRUE
+)
 
 
 
@@ -247,7 +259,8 @@ sbd_ISR<-ISR_sbd@cluster
 euc_DAR<-DAR_euc@cluster
 sbd_DAR<-DAR_sbd@cluster
 
+sbd_expenses<-expenses_sbd@cluster
 
-data<-cbind(data, euc_annualincome, sbd_annualincome, euc_assets_noland, sbd_assets_noland, euc_loanamount, sbd_loanamount, euc_DSR, sbd_DSR, euc_ISR, sbd_ISR, euc_DAR, sbd_DAR)
+data<-cbind(data, euc_annualincome, sbd_annualincome, euc_assets_noland, sbd_assets_noland, euc_loanamount, sbd_loanamount, euc_DSR, sbd_DSR, euc_ISR, sbd_ISR, euc_DAR, sbd_DAR, sbd_expenses)
 
 write.csv(data,"debttrend_v2.csv")

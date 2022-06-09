@@ -234,6 +234,14 @@ fre caste_code
 drop caste
 rename caste_code caste
 
+
+
+********** Jalil panel
+
+
+
+
+
 save"panel_v2", replace
 ****************************************
 * END
