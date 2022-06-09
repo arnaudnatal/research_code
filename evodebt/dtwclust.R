@@ -74,7 +74,7 @@ X_econ_rel<-as.matrix(cbind(rel_eco1, rel_eco2, rel_eco3))
 # interactive_clustering(X_ISR_ihs)
 # interactive_clustering(X_DAR_ihs)
 
-interactive_clustering(X_expenses_ihs)
+# interactive_clustering(X_expenses_ihs)
 
 # interactive_clustering(X_form_rel)
 
@@ -238,7 +238,7 @@ expenses_sbd<-tsclust(
   k=3,
   distance="sbd",
   centroid="pam",
-  seed=7,
+  seed=3,
   trace=TRUE,
   error.check=TRUE
 )

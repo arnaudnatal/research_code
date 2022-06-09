@@ -444,9 +444,9 @@ name(gph_dir_`i', replace)
 tabstat ihs_yearly_expenses, stat(n mean p50 min max)
 fre sbd_expenses
 forvalues i=1(1)3{
-local d1="Sta-Dec"
-local d2=""
-local d3="d3"
+local d1="Inc-Dec"
+local d2="Dec-Inc"
+local d3="Dec-Dec"
 local j="`d`i''"
 twoway (line ihs_yearly_expenses year if sbd_expenses==`i', c(L) lcolor(black%10)) ///
 , xlabel(2010 2016 2020) xmtick(2010(1)2020) xtitle("Year") ///
@@ -486,16 +486,21 @@ label define sbd_dsr 			1"INC-INC" 2"Inc-Inc" 3"Dec-Dec" 4"Dec-Inc" 5"Sta-Dec"
 label define sbd_assets_noland 	1"Dec-Dec" 2"Inc-Inc" 3"Dec-Inc" 4"DEC-INC"
 label define sbd_loanamount 	1"Inc-Dec" 2"Inc-Inc" 3"Dec-Inc"
 
+label define sbd_expenses		1"Inc-Dec" 2"Dec-Inc" 3"Dec-Dec"
+label define sbd_dir			1"DEC-INC" 2"Inc-Dec" 3"Inc-Inc" 4"Dec-Dec"
+
 label values sbd_annualincome sbd_annualincome
 label values sbd_dar sbd_dar
 label values sbd_dsr sbd_dsr
 label values sbd_assets_noland sbd_assets_noland
 label values sbd_loanamount sbd_loanamount
+label values sbd_expenses sbd_expenses
+label values sbd_dir sbd_dir
 
 preserve
-keep HHID_panel sbd_annualincome sbd_assets_noland sbd_loanamount sbd_dsr sbd_dar cat_income cat_assets jatis caste villageid villagearea
+keep HHID_panel sbd_annualincome sbd_assets_noland sbd_loanamount sbd_dsr sbd_dar sbd_dir sbd_expenses cat_income cat_assets jatis caste villageid villagearea
 duplicates drop
-export delimited using "$git\Analysis\Overindebtedness\debttrend_v3.csv", replace
+export delimited using "$git\research_code\evodebt\debttrend_v3.csv", replace
 
 
 save"panel_v8_wide_cluster", replace
