@@ -235,13 +235,6 @@ drop caste
 rename caste_code caste
 
 
-
-********** Jalil panel
-
-
-
-
-
 save"panel_v2", replace
 ****************************************
 * END
@@ -714,7 +707,7 @@ rename DAR_without DAR
 
 
 ***** Check IHS consistency
-foreach x in ISR DAR DSR {
+foreach x in ISR DAR DSR DIR {
 g `x'10=`x'*10
 g `x'100=`x'*100
 g `x'1000=`x'*1000
@@ -728,7 +721,7 @@ g log_`x'=log(`x')
 
 
 ********** IHS creation
-foreach x in ISR DAR DSR {
+foreach x in ISR DAR DSR DIR {
 gen ihs_`x'=asinh(`x')
 foreach m in 10 100 1000 10000 {
 gen ihs_`x'`m'=asinh(`x'`m')
@@ -796,7 +789,7 @@ global quanti DIR DAR_with DAR_without DSR ISR loanamount annualincome assets_no
 
 global quali DSR30 DSR40 DSR50 dummyIMF dummybank dummymoneylender dummyrepay dummyborrowstrat mainocc_occupation head_edulevel wifehusb_edulevel head_occupation wifehusb_occupation
 
-global var $quanti $quali ihs_ISR ihs_ISR10 ihs_ISR100 ihs_ISR1000 ihs_ISR10000 ihs_DAR ihs_DAR10 ihs_DAR100 ihs_DAR1000 ihs_DAR10000 ihs_DSR ihs_DSR10 ihs_DSR100 ihs_DSR1000 ihs_DSR10000 log_yearly_expenses log_annualincome log_assets_noland log_assets log_loanamount log_ISR10 log_ISR100 log_ISR1000 log_ISR10000 log_ISR log_DAR10 log_DAR100 log_DAR1000 log_DAR10000 log_DAR log_DSR10 log_DSR100 log_DSR1000 log_DSR10000 log_DSR cro_annualincome cro_assets_noland cro_loanamount cro_DSR cro_DAR_without cro_DIR cro_ISR cro_DAR_with ihs_annualincome ihs_assets_noland ihs_loanamount shareagri sharenagri nagri agri ihs_yearly_expenses cro_yearly_expenses
+global var $quanti $quali ihs_ISR ihs_ISR10 ihs_ISR100 ihs_ISR1000 ihs_ISR10000 ihs_DAR ihs_DAR10 ihs_DAR100 ihs_DAR1000 ihs_DAR10000 ihs_DSR ihs_DSR10 ihs_DSR100 ihs_DSR1000 ihs_DSR10000 log_yearly_expenses log_annualincome log_assets_noland log_assets log_loanamount log_ISR10 log_ISR100 log_ISR1000 log_ISR10000 log_ISR log_DAR10 log_DAR100 log_DAR1000 log_DAR10000 log_DAR log_DSR10 log_DSR100 log_DSR1000 log_DSR10000 log_DSR cro_annualincome cro_assets_noland cro_loanamount cro_DSR cro_DAR_without cro_DIR cro_ISR cro_DAR_with ihs_annualincome ihs_assets_noland ihs_loanamount shareagri sharenagri nagri agri ihs_yearly_expenses cro_yearly_expenses ihs_DIR ihs_DIR10 ihs_DIR100 ihs_DIR1000 ihs_DIR10000
 
 sort HHID_panel year
 

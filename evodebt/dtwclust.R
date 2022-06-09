@@ -25,7 +25,7 @@ library(tidyr)
 library(dtwclust)
 library(dplyr)
 library(ggplot2)
-library(RStata)
+# library(RStata)
 
 
 
@@ -44,8 +44,9 @@ X_expenses_ihs<-as.matrix(cbind(ihs_yearly_expenses1, ihs_yearly_expenses2, ihs_
 X_DSR_ihs<-as.matrix(cbind(ihs_DSR1,ihs_DSR2,ihs_DSR3))
 X_DAR_ihs<-as.matrix(cbind(ihs_DAR1,ihs_DAR2,ihs_DAR3))
 X_ISR_ihs<-as.matrix(cbind(ihs_ISR1,ihs_ISR2,ihs_ISR3))
+X_DIR_ihs<-as.matrix(cbind(ihs_DIR1,ihs_DIR2,ihs_DIR3))
 
-# X_info_rel<-as.matrix(cbind(rel_informal1, rel_informal2, rel_informal3))
+X_info_rel<-as.matrix(cbind(rel_informal1, rel_informal2, rel_informal3))
 X_form_rel<-as.matrix(cbind(rel_formal1, rel_formal2, rel_formal3))
 X_econ_rel<-as.matrix(cbind(rel_eco1, rel_eco2, rel_eco3))
 # X_curr_rel<-as.matrix(cbind(rel_current1, rel_current2, rel_current3))
@@ -73,7 +74,11 @@ X_econ_rel<-as.matrix(cbind(rel_eco1, rel_eco2, rel_eco3))
 # interactive_clustering(X_ISR_ihs)
 # interactive_clustering(X_DAR_ihs)
 
-interactive_clustering(X_form_rel)
+interactive_clustering(X_expenses_ihs)
+
+# interactive_clustering(X_form_rel)
+
+# interactive_clustering(X_info_rel)
 
 
 #--- Manually trends analysis
@@ -240,6 +245,19 @@ expenses_sbd<-tsclust(
 
 
 
+DIR_sbd<-tsclust(
+  series=X_DIR_ihs,
+  type="partitional",
+  k=4,
+  distance="sbd",
+  centroid="pam",
+  seed=9,
+  trace=TRUE,
+  error.check=TRUE
+)
+
+
+
 #--- Datasets extraction
 euc_annualincome<-income_euc@cluster
 sbd_annualincome<-income_sbd@cluster
@@ -261,6 +279,9 @@ sbd_DAR<-DAR_sbd@cluster
 
 sbd_expenses<-expenses_sbd@cluster
 
-data<-cbind(data, euc_annualincome, sbd_annualincome, euc_assets_noland, sbd_assets_noland, euc_loanamount, sbd_loanamount, euc_DSR, sbd_DSR, euc_ISR, sbd_ISR, euc_DAR, sbd_DAR, sbd_expenses)
+sbd_DIR<-DIR_sbd@cluster
+
+#--- Step2
+data<-cbind(data, euc_annualincome, sbd_annualincome, euc_assets_noland, sbd_assets_noland, euc_loanamount, sbd_loanamount, euc_DSR, sbd_DSR, euc_ISR, sbd_ISR, euc_DAR, sbd_DAR, sbd_expenses, sbd_DIR)
 
 write.csv(data,"debttrend_v2.csv")

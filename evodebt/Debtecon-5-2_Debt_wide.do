@@ -160,36 +160,6 @@ graph display loanamount_
 
 
 
-
-
-
-
-
-****************************************
-* Debt trap
-****************************************
-use"panel_v5_wide", clear
-
-
-tabplot path_repay caste, percent(caste) showval(format(%3.0f)) frame(100) ///
-xtitle("") ytitle("") ///
-xlab(,ang(0)) ///
-title("") subtitle("")
-
-
-****************************************
-* END
-
-
-
-
-
-
-
-
-
-
-
 ****************************************
 * TABPLOT PATH
 ****************************************
