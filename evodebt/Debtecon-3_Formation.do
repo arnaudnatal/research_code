@@ -787,7 +787,7 @@ rename rel_loanfrom`x' rel_lf_`x'
 ********** Macro
 global quanti DIR DAR_with DAR_without DSR ISR loanamount annualincome assets_noland assets sizeownland yearly_expenses formal_HH informal_HH rel_formal_HH rel_informal_HH eco_HH current_HH humank_HH social_HH home_HH other_HH rel_eco_HH rel_current_HH rel_humank_HH rel_social_HH rel_home_HH rel_other_HH sum_loans_HH lf_IMF_nb_HH lf_IMF_amt_HH lf_bank_nb_HH lf_bank_amt_HH lf_moneylender_nb_HH lf_moneylender_amt_HH repay_nb_HH repay_amt_HH MLborrowstrat_nb_HH MLborrowstrat_amt_HH MLgooddebt_nb_HH MLgooddebt_amt_HH MLbaddebt_nb_HH MLbaddebt_amt_HH mainloan_HH mainloan_amt_HH rel_lf_IMF_amt_HH rel_lf_bank_amt_HH rel_lf_moneylender_amt_HH rel_mainloan_amt_HH rel_repay_amt_HH rel_MLborrowstrat_amt_HH rel_MLbaddebt_amt_HH rel_MLgooddebt_amt_HH ihs_informal_HH ihs_formal_HH ihs_eco_HH ihs_current_HH ihs_humank_HH ihs_social_HH ihs_home_HH ihs_repay_amt_HH ihs_rel_informal_HH ihs_rel_formal_HH ihs_rel_eco_HH ihs_rel_current_HH ihs_rel_humank_HH ihs_rel_social_HH ihs_rel_home_HH ihs_rel_repay_amt_HH MLstrat_asse_nb_HH MLstrat_asse_amt_HH MLstrat_migr_nb_HH MLstrat_migr_amt_HH rel_MLstrat_asse_amt_HH rel_MLstrat_migr_amt_HH dummymigrstrat dummyassestrat
 
-global quali DSR30 DSR40 DSR50 dummyIMF dummybank dummymoneylender dummyrepay dummyborrowstrat mainocc_occupation head_edulevel wifehusb_edulevel head_occupation wifehusb_occupation
+global quali DSR30 DSR40 DSR50 dummyIMF dummybank dummymoneylender dummyrepay dummyborrowstrat mainocc_occupation head_* wifehusb_*
 
 global var $quanti $quali ihs_ISR ihs_ISR10 ihs_ISR100 ihs_ISR1000 ihs_ISR10000 ihs_DAR ihs_DAR10 ihs_DAR100 ihs_DAR1000 ihs_DAR10000 ihs_DSR ihs_DSR10 ihs_DSR100 ihs_DSR1000 ihs_DSR10000 log_yearly_expenses log_annualincome log_assets_noland log_assets log_loanamount log_ISR10 log_ISR100 log_ISR1000 log_ISR10000 log_ISR log_DAR10 log_DAR100 log_DAR1000 log_DAR10000 log_DAR log_DSR10 log_DSR100 log_DSR1000 log_DSR10000 log_DSR cro_annualincome cro_assets_noland cro_loanamount cro_DSR cro_DAR_without cro_DIR cro_ISR cro_DAR_with ihs_annualincome ihs_assets_noland ihs_loanamount shareagri sharenagri nagri agri ihs_yearly_expenses cro_yearly_expenses ihs_DIR ihs_DIR10 ihs_DIR100 ihs_DIR1000 ihs_DIR10000
 
@@ -808,34 +808,6 @@ label define cat_assets 1"T1 as." 2"T2 as." 3"T3 as."
 
 label values cat_income cat_income
 label values cat_assets cat_assets
-
-
-/*
-********** Evolution
-foreach x in $quanti {
-gen d1_`x'=`x'2016-`x'2010
-gen d2_`x'=`x'2020-`x'2016
-}
-
-
-
-********** Categories
-label define evo 1"(Δ+1)&(Δ+2)" 2"(Δ+1)>(Δ-2)" 3"(Δ-1)<(Δ+2)" 4"(Δ+1)<(Δ-2)" 5"(Δ-1)>(Δ+2)" 6"(Δ-1)&(Δ-2)", replace
-
-foreach x in $quanti {
-gen ce_`x'=.
-
-label values ce_`x' evo
-
-replace ce_`x'=1 if d1_`x'>0 & d2_`x'>0
-replace ce_`x'=2 if d1_`x'>0 & d2_`x'<=0 & abs(d1_`x')>abs(d2_`x')
-replace ce_`x'=3 if d1_`x'<=0 & d2_`x'>0 & abs(d2_`x')>abs(d1_`x')
-
-replace ce_`x'=4 if d1_`x'>0 & d2_`x'<=0 & abs(d2_`x')>abs(d1_`x')
-replace ce_`x'=5 if d1_`x'<=0 & d2_`x'>0 & abs(d1_`x')>abs(d2_`x')
-replace ce_`x'=6 if d1_`x'<=0 & d2_`x'<=0
-}
-*/
 
 
 ********** Overindebtedness path
@@ -935,6 +907,37 @@ label values path_`x' pathtrap
 
 
 ta path_borrowstrat caste, col nofreq
+
+
+********** Change occupation head and husb
+fre head_occupation2010 wifehusb_occupation2010 head_occupation2016 wifehusb_occupation2016 head_occupation2020 wifehusb_occupation2020
+
+foreach x in head wifehusb {
+gen `x'_changeocc_1=.
+gen `x'_changeocc_2=.
+
+replace `x'_changeocc_1=0 if `x'_occupation2010==`x'_occupation2016
+replace `x'_changeocc_2=0 if `x'_occupation2016==`x'_occupation2020
+
+replace `x'_changeocc_1=1 if `x'_occupation2010!=`x'_occupation2016
+replace `x'_changeocc_2=1 if `x'_occupation2016!=`x'_occupation2020
+}
+
+foreach x in head wifehusb {
+gen `x'_changeocc_gl=.
+
+replace `x'_changeocc_gl=0 if `x'_changeocc_1==0 & `x'_changeocc_2==0
+
+replace `x'_changeocc_gl=1 if `x'_changeocc_1==1 & `x'_changeocc_2==0
+replace `x'_changeocc_gl=1 if `x'_changeocc_1==0 & `x'_changeocc_2==1
+
+replace `x'_changeocc_gl=1 if `x'_changeocc_1==1 & `x'_changeocc_2==1
+}
+
+fre head_changeocc_1 head_changeocc_2 head_changeocc_gl
+fre wifehusb_changeocc_1 wifehusb_changeocc_2 wifehusb_changeocc_gl
+
+
 
 
 save"panel_v5_wide", replace

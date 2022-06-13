@@ -66,152 +66,22 @@ global loan3 "NEEMSIS2-all_loans"
 
 
 
-****************************************
-* MERGE
-****************************************
-use"panel_v4", clear
-
-drop DIR_r DAR_with_r DAR_without_r DSR_r ISR_r foodexpenses_raw healthexpenses_raw ceremoniesexpenses_raw deathexpenses_raw occinc_agri_raw occinc_agricasual_raw occinc_nonagricasual_raw occinc_nonagriregnonqual_raw occinc_nonagriregqual_raw occinc_selfemp_raw occinc_nrega_raw imp1_ds_tot_raw imp1_is_tot_raw marriageexpenses_raw educationexpenses_raw loanamount_raw annualincome_raw amountownland_raw assets_raw assets_noland_raw livestock_raw housevalue_raw goldquantityamount_raw goodtotalamount_raw agri_raw nagri_raw
-
-********** Var to keep
-*keep HHID_panel year annualincome DSR panel villageid caste religion ownland loans HHsize femtomale head_sex head_maritalstatus head_age head_edulevel head_occupation wifehusb_sex wifehusb_maritalstatus wifehusb_age wifehusb_edulevel wifehusb_occupation assets_noland DAR_without DAR_with time ISR repay_nb_HH repay_amt_HH rel_repay_amt_HH dummyrepay MLborrowstrat_nb_HH MLborrowstrat_amt_HH rel_MLborrowstrat_amt_HH dummyborrowstrat yearly_expenses yearly_expenses_bis
-
-ta panel year
-
-
-********** Merge trends
-merge m:1 HHID_panel using "trends"
-drop _merge
-ta panel
-
-
-
-********** Merge trap
-preserve
-keep if panel==1
-recode dummyrepay (.=0)
-ta dummyrepay year, col nofreq
-keep HHID_panel year dummyrepay
-reshape wide dummyrepay, i(HHID_panel) j(year)
-
-egen debttrap=group(dummyrepay2010 dummyrepay2016 dummyrepay2020), lab
-fre debttrap
-
-gen debttrap2=.
-replace debttrap2=0 if debttrap==1
-replace debttrap2=1 if debttrap==2
-replace debttrap2=1 if debttrap==3
-replace debttrap2=1 if debttrap==5
-replace debttrap2=2 if debttrap==4
-replace debttrap2=2 if debttrap==6
-replace debttrap2=2 if debttrap==7
-replace debttrap2=3 if debttrap==8
-
-label define debttrap2 0"Zero" 1"One" 2"Two" 3"Three"
-label values debttrap2 debttrap2
-
-ta debttrap
-keep HHID_panel debttrap debttrap2
-save "debtrap_temp.dta", replace
-restore
-
-merge m:1 HHID_panel using "debtrap_temp"
-erase "debtrap_temp.dta"
-drop _merge
-ta panel
-
-
-********** Expenses to income ratio test
-ta yearly_expenses
-ta annualincome
-replace yearly_expenses=yearly_expenses/1000
-replace yearly_expenses_bis=yearly_expenses_bis/1000
-gen EIR=yearly_expenses/annualincome
-gen EIR_bis=yearly_expenses_bis/annualincome
-
-tabstat EIR EIR_bis, stat(n mean sd q) by(year)
-
-
-********** Reshape
-/*
-reshape wide time annualincome DSR panel villageid caste religion ownland loans HHsize femtomale head_sex head_maritalstatus head_age head_edulevel head_occupation wifehusb_sex wifehusb_maritalstatus wifehusb_age wifehusb_edulevel wifehusb_occupation assets_noland DAR_without DAR_with, i(HHID_panel) j(year)
-ta time2010
-ta time2016
-ta time2020
-*/
-
-
-*
-save"panel_v10", replace
-****************************************
-* END
-
-
-
-
-
-
-
-
 
 ****************************************
-* DETER OF FINAN VULN
+* ECONOMETRIC
 ****************************************
-use"panel_v10", clear
+use"panel_v10_wide.dta", clear
 
-keep HHID_panel year caste jatis villagearea villageid cl_vuln dummyvuln dummysust wifehusb_* head_* sbd_* DSR DAR_with DAR_without assets_noland annualincome loanamount rel_informal_HH rel_repay_amt_HH rel_formal_HH rel_informal_HH rel_eco_HH rel_current_HH rel_humank_HH rel_social_HH rel_home_HH rel_other_HH
-
-reshape wide annualincome DSR loanamount villageid caste head_sex head_maritalstatus head_age head_edulevel head_occupation wifehusb_sex wifehusb_maritalstatus wifehusb_age wifehusb_edulevel wifehusb_occupation assets_noland jatis villagearea rel_repay_amt_HH rel_formal_HH rel_informal_HH rel_eco_HH rel_current_HH rel_humank_HH rel_social_HH rel_home_HH rel_other_HH DAR_without DAR_with, i(HHID_panel) j(year)
-
-********* xtile income assets
-xtile cat_income=annualincome2010, n(3)
-xtile cat_assets=assets_noland2010, n(3)
-
-label define cat_income 1"T1 in." 2"T2 in." 3"T3 in."
-label define cat_assets 1"T1 as." 2"T2 as." 3"T3 as."
-
-label values cat_income cat_income
-label values cat_assets cat_assets
-
-
-********** Change occupation head and husb
-fre head_occupation2010 wifehusb_occupation2010 head_occupation2016 wifehusb_occupation2016 head_occupation2020 wifehusb_occupation2020
-
-foreach x in head wifehusb {
-gen `x'_changeocc_1=.
-gen `x'_changeocc_2=.
-
-replace `x'_changeocc_1=0 if `x'_occupation2010==`x'_occupation2016
-replace `x'_changeocc_2=0 if `x'_occupation2016==`x'_occupation2020
-
-replace `x'_changeocc_1=1 if `x'_occupation2010!=`x'_occupation2016
-replace `x'_changeocc_2=1 if `x'_occupation2016!=`x'_occupation2020
-}
-
-foreach x in head wifehusb {
-gen `x'_changeocc_gl=.
-
-replace `x'_changeocc_gl=0 if `x'_changeocc_1==0 & `x'_changeocc_2==0
-
-replace `x'_changeocc_gl=1 if `x'_changeocc_1==1 & `x'_changeocc_2==0
-replace `x'_changeocc_gl=1 if `x'_changeocc_1==0 & `x'_changeocc_2==1
-
-replace `x'_changeocc_gl=1 if `x'_changeocc_1==1 & `x'_changeocc_2==1
-}
-
-fre head_changeocc_1 head_changeocc_2 head_changeocc_gl
-fre wifehusb_changeocc_1 wifehusb_changeocc_2 wifehusb_changeocc_gl
+ta cl_vuln dummyvuln
+ta caste dummyvuln
 
 ********** Test econometrisc
-global head i.head_sex2010 head_age2010 i.head_edulevel2010 i.head_occupation2010##i.head_changeocc_gl
+global head head_age2010 i.head_edulevel2010 i.head_occupation2010##i.head_changeocc_gl
 
 global wife i.wifehusb_sex2010 wifehusb_age2010 i.wifehusb_edulevel2010 i.wifehusb_occupation2010
 
-probit dummyvuln $head i.caste2010 i.cat_assets i.cat_income i.villageid2010, baselevels
+probit dummyvuln $head i.caste ib(2).cat_assets ib(2).cat_income i.villageid2010, baselevels
 
-
-ta cl_vuln dummyvuln 
-ta cl_vuln dummysust
 
 ****************************************
 * END
@@ -220,6 +90,9 @@ ta cl_vuln dummysust
  
 
 
+ 
+ 
+ 
 
 /*
 ****************************************
