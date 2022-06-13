@@ -934,10 +934,31 @@ replace `x'_changeocc_gl=1 if `x'_changeocc_1==0 & `x'_changeocc_2==1
 replace `x'_changeocc_gl=1 if `x'_changeocc_1==1 & `x'_changeocc_2==1
 }
 
-fre head_changeocc_1 head_changeocc_2 head_changeocc_gl
-fre wifehusb_changeocc_1 wifehusb_changeocc_2 wifehusb_changeocc_gl
 
 
+********** Increase in formal / informal
+foreach x in formal informal eco current social humank repay_amt {
+gen dummyinc_`x'=.
+replace dummyinc_`x'=0 if `x'_HH2010>=`x'_HH2020
+replace dummyinc_`x'=1 if `x'_HH2010<`x'_HH2020
+
+gen dummyincrel_`x'=.
+replace dummyincrel_`x'=0 if rel_`x'_HH2010>=rel_`x'_HH2020
+replace dummyincrel_`x'=1 if rel_`x'_HH2010<rel_`x'_HH2020
+}
+
+
+********** Evo agri
+foreach x in agri nagri {
+gen dummyinc_`x'=.
+replace dummyinc_`x'=0 if share`x'2010>=share`x'2020
+replace dummyinc_`x'=1 if share`x'2010<share`x'2020
+}
+
+drop assets2010 assets2016 assets2020
+replace assets_noland2010=assets_noland2010/1000
+replace assets_noland2016=assets_noland2016/1000
+replace assets_noland2020=assets_noland2020/1000
 
 
 save"panel_v5_wide", replace
