@@ -75,10 +75,11 @@ global loan3 "NEEMSIS2-all_loans"
 cls
 use"panel_v10_wide.dta", clear
 
-ta cl_vuln caste, col nofreq
+ta dummyvuln
 
 
 ********** Caste and class
+cls
 foreach x in caste cat_income cat_assets {
 ta `x' dummyvuln, row nofreq chi2
 }
@@ -89,14 +90,11 @@ cls
 foreach x in DSR DAR_without DIR assets_noland annualincome loanamount {
 tabstat `x'2010 `x'2016 `x'2020, stat(mean sd p50) by(dummyvuln)
 }
-cls
-foreach x in DSR DAR_without DIR assets_noland annualincome loanamount {
-tabstat `x'2010 `x'2016 `x'2020, stat(mean sd p50) by(cl_vuln)
-}
+
 
 ********** Type and use of debt I
 cls
-foreach x in formal informal eco current humank social home {
+foreach x in formal eco current humank social home {
 tabstat rel_`x'_HH2010 rel_`x'_HH2016 rel_`x'_HH2020, stat(mean sd p50) by (dummyvuln)
 }
 
@@ -106,13 +104,12 @@ foreach x in formal informal eco current humank social home {
 tabstat `x'_HH2010 `x'_HH2016 `x'_HH2020, stat(mean sd p50) by (dummyvuln)
 }
 
-/*
+
 ********** Type and use of debt III
+cls
 foreach x in dummyincrel_formal dummyincrel_informal dummyincrel_repay_amt dummyincrel_eco dummyincrel_current dummyincrel_social dummyincrel_humank dummyinc_nagri {
 ta `x' dummyvuln, col nofreq
 }
-*/
-
 
 
 
@@ -130,8 +127,53 @@ ta `x' dummyvuln, nofreq row
 }
 
 
+********** Good // Bad
+cls
+foreach x in rel_MLgooddebt_amt rel_MLbaddebt_amt {
+tabstat `x'_HH2010 `x'_HH2016 `x'_HH2020, stat(mean sd p50) by(dummyvuln)
+}
 
-*informal + current + humank 
+
+********** Multiple borrowing
+cls
+foreach x in rel_lf_IMF rel_lf_bank rel_lf_moneylender {
+tabstat `x'_amt_HH2010 `x'_amt_HH2016 `x'_amt_HH2020, stat(mean sd p50) by(dummyvuln)
+}
+
+
+********** Threaten debt
+cls
+foreach x in rel_MLstrat_asse rel_MLstrat_migr {
+tabstat `x'_amt_HH2010 `x'_amt_HH2016 `x'_amt_HH2020, stat(mean sd p50) by(dummyvuln)
+}
+
+
+
+********** Over
+cls
+foreach x in 30 40 50 {
+tabstat DSR`x'2010 DSR`x'2016 DSR`x'2020, stat(mean) by(dummyvuln)
+}
+
+
+********** Head
+cls
+foreach x in edulevel occupation {
+ta head_`x'2010 dummyvuln, nofreq row
+*ta head_`x'2016 dummyvuln, nofreq row
+*ta head_`x'2020 dummyvuln, nofreq row
+}
+
+
+********** Wife
+cls
+foreach x in edulevel occupation {
+ta wifehusb_`x'2010 dummyvuln, nofreq row
+*ta wifehusb_`x'2016 dummyvuln, nofreq row
+*ta wifehusb_`x'2020 dummyvuln, nofreq row
+}
+
+
 ****************************************
 * END
 
@@ -153,19 +195,8 @@ ta caste dummyvuln
 
 
 ********** Test econometrisc
-global head head_age2010 i.head_edulevel2010 i.head_occupation2010##i.head_changeocc_gl
-
-global wife i.wifehusb_sex2010 wifehusb_age2010 i.wifehusb_edulevel2010 i.wifehusb_occupation2010
-
 probit dummyvuln i.caste i.villageid2010, baselevels
 
-
-
-********** Evo type and use of debt
-probit dummyvuln i.dummyincrel_formal i.dummyincrel_eco 
-
-
-dummyinc_current dummyincrel_current dummyinc_social dummyincrel_social dummyinc_humank dummyincrel_humank dummyinc_agri dummyinc_nagri
 
 ****************************************
 * END

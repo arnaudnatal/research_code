@@ -284,6 +284,7 @@ ta cl_vuln_raw
 ta cl_vuln_raw caste, row nofreq
 ta cl_vuln_raw caste, col nofreq
 
+*** Test for dummy
 gen test=.
 replace test=1 if cl_vuln_raw==1
 replace test=1 if cl_vuln_raw==2
@@ -388,11 +389,10 @@ graph export "graph/`x'.pdf", as(pdf) replace
 
 ********** Rename and label
 rename cl_vuln_raw cl_vuln
-/*
-label define cl_vuln 1"Unstable debt" 2"Sustainable debt" 3"Vulnerable" 4"Highly vulnerable", replace
+label define cl_vuln 1"Vulnerable" 2"Highly vulnerable" 3"Non-vulnerable" 4"Vulnerable" 5"Non-vulnerable", replace
 label values cl_vuln cl_vuln
 fre cl_vuln
-*/
+
 
 
 ********** Dummy for financial vulnerability
@@ -402,12 +402,12 @@ replace dummyvuln=1 if cl_vuln==1
 replace dummyvuln=0 if cl_vuln==2
 replace dummyvuln=1 if cl_vuln==3
 replace dummyvuln=1 if cl_vuln==4
+*/
 
+rename test dummyvuln
 
 label define yesno 0"No" 1"Yes"
 label values dummyvuln yesno
-*/
-rename test dummyvuln
 
 
 save"panel_v11_cluster", replace
