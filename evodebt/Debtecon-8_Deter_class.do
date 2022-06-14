@@ -64,6 +64,11 @@ global loan3 "NEEMSIS2-all_loans"
 
 
 
+
+
+
+
+
 ****************************************
 * Desc
 ****************************************
@@ -75,42 +80,60 @@ ta cl_vuln caste, col nofreq
 
 ********** Caste and class
 foreach x in caste cat_income cat_assets {
-ta `x' dummyvuln, row nofreq
+ta `x' dummyvuln, row nofreq chi2
 }
+
 
 ********** Burden of debt
 cls
-foreach x in DSR DAR_without assets_noland annualincome {
+foreach x in DSR DAR_without DIR assets_noland annualincome loanamount {
 tabstat `x'2010 `x'2016 `x'2020, stat(mean sd p50) by(dummyvuln)
 }
-
+cls
+foreach x in DSR DAR_without DIR assets_noland annualincome loanamount {
+tabstat `x'2010 `x'2016 `x'2020, stat(mean sd p50) by(cl_vuln)
+}
 
 ********** Type and use of debt I
 cls
-foreach x in formal informal eco current humank social home repay_amt {
+foreach x in formal informal eco current humank social home {
 tabstat rel_`x'_HH2010 rel_`x'_HH2016 rel_`x'_HH2020, stat(mean sd p50) by (dummyvuln)
 }
 
 ********** Type and use of debt II
 cls
-foreach x in formal informal eco current humank social home repay_amt {
+foreach x in formal informal eco current humank social home {
 tabstat `x'_HH2010 `x'_HH2016 `x'_HH2020, stat(mean sd p50) by (dummyvuln)
 }
 
-
-
+/*
 ********** Type and use of debt III
 foreach x in dummyincrel_formal dummyincrel_informal dummyincrel_repay_amt dummyincrel_eco dummyincrel_current dummyincrel_social dummyincrel_humank dummyinc_nagri {
 ta `x' dummyvuln, col nofreq
 }
+*/
+
+
+
+
+********** Trap
+cls
+foreach x in repay_amt rel_repay_amt MLborrowstrat_amt rel_MLborrowstrat_amt {
+tabstat `x'_HH2010 `x'_HH2016 `x'_HH2020, stat(mean sd p50) by (dummyvuln)
+}
+
+
+********** SBD
+cls
+foreach x in sbd_assets_noland sbd_dsr sbd_dar sbd_annualincome sbd_dir {
+ta `x' dummyvuln, nofreq row
+}
+
+
 
 *informal + current + humank 
 ****************************************
 * END
-
-
-
-
 
 
 
@@ -134,7 +157,7 @@ global head head_age2010 i.head_edulevel2010 i.head_occupation2010##i.head_chang
 
 global wife i.wifehusb_sex2010 wifehusb_age2010 i.wifehusb_edulevel2010 i.wifehusb_occupation2010
 
-probit dummyvuln $head i.caste ib(2).cat_assets ib(2).cat_income i.villageid2010, baselevels
+probit dummyvuln i.caste i.villageid2010, baselevels
 
 
 

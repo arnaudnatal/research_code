@@ -26,8 +26,8 @@ data<-read.csv("debttrend_v3.csv")
 
 #--- Matrices creation
 attach(data)
-X<-as.matrix(cbind(sbd_dsr,sbd_dar,sbd_assets_noland,sbd_annualincome))#, sbd_dir, sbd_expenses))
-#X<-as.matrix(cbind(sbd_dar,sbd_assets_noland,sbd_annualincome, sbd_dir))
+X<-as.matrix(cbind(sbd_dsr,sbd_dar,sbd_assets_noland))#,sbd_annualincome, sbd_dir, sbd_expenses))
+# X<-as.matrix(cbind(sbd_dar,sbd_assets_noland,sbd_annualincome, sbd_dsr))
 trend<-as.data.frame(X)
 
 detach(data)
@@ -37,18 +37,17 @@ attach(trend)
 
 
 #--- Factoshiny
-# MCAshiny(trend)
+MCAshiny(trend)
 
 
 
 
 #--- MCA
-res.MCA<-MCA(trend,ncp=5,graph=FALSE)
+res.MCA<-MCA(trend,ncp=4,graph=FALSE)
 
 
 #--- HCPC
-res.HCPC<-HCPC(res.MCA,nb.clust=4,consol=TRUE,graph=FALSE)
-#res.HCPC<-HCPC(res.MCA,nb.clust=3,consol=TRUE,graph=FALSE)
+res.HCPC<-HCPC(res.MCA,nb.clust=5,consol=TRUE,graph=FALSE)
 
 
 inert<-res.HCPC[["call"]][["t"]][["inert.gain"]]

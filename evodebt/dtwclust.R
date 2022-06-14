@@ -71,7 +71,7 @@ X_econ_rel<-as.matrix(cbind(rel_eco1, rel_eco2, rel_eco3))
 # interactive_clustering(X_assets_ihs)
 # interactive_clustering(X_loan_ihs)
 # interactive_clustering(X_DSR_ihs)
-# interactive_clustering(X_ISR_ihs)
+interactive_clustering(X_ISR_ihs)
 # interactive_clustering(X_DAR_ihs)
 
 # interactive_clustering(X_expenses_ihs)

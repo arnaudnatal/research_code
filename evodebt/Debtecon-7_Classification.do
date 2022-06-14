@@ -117,7 +117,7 @@ global var sbd_assets_noland sbd_dsr sbd_dar sbd_annualincome
 fre $var
 
 
-
+/*
 ********** MCA
 mca $var, meth(ind) normal(princ) dim(5) comp
 *mcacontrib
@@ -232,7 +232,7 @@ restore
 
 *** Combine
 graph combine htree inertia, name(hac_comb, replace)
-
+*/
 
 
 ***
@@ -280,8 +280,26 @@ drop _merge
 erase "_temp_HCPC_conso.dta"
 rename clust cl_vuln_raw
 
+ta cl_vuln_raw
+ta cl_vuln_raw caste, row nofreq
+ta cl_vuln_raw caste, col nofreq
+
+gen test=.
+replace test=1 if cl_vuln_raw==1
+replace test=1 if cl_vuln_raw==2
+replace test=0 if cl_vuln_raw==3
+replace test=1 if cl_vuln_raw==4
+replace test=0 if cl_vuln_raw==5
+
+ta test cl_vuln_raw
+ta test caste, nofreq chi2
+ta test caste, exp cchi2
+ta test caste, row nofreq
+ta test caste, col nofreq
+
 
 ********** Plot indiv
+/*
 twoway ///
 (scatter d2 d1 if cl_vuln_raw==1, xline(0) yline(0) msym(+)) ///
 (scatter d2 d1 if cl_vuln_raw==2, msym(o) mcolor(gs0)) ///
@@ -290,12 +308,12 @@ twoway ///
 , xtitle("Dimension 1 (16.3%)") ytitle("Dimension 2 (14.4%)") ///
 legend(pos(6) col(2) order(1 "Cluster 1" 2 "Cluster 2" 3 "Cluster 3" 4 "Cluster 4")) ///
 name(clusd12, replace) aspectratio(1)
-
-
+*/
 
 
 
 ********** Characterise cluster
+/*
 preserve
 import delimited using "$git\research_code\evodebt\HCPCshiny.csv", clear
 *rename cluster1 A
@@ -354,7 +372,7 @@ drop n
 
 grc1leg char_cl1 char_cl2 char_cl3 char_cl4, col(2) leg(char_cl1) name(char_comb, replace)
 restore
-
+*/
 
 
 
@@ -370,13 +388,15 @@ graph export "graph/`x'.pdf", as(pdf) replace
 
 ********** Rename and label
 rename cl_vuln_raw cl_vuln
+/*
 label define cl_vuln 1"Unstable debt" 2"Sustainable debt" 3"Vulnerable" 4"Highly vulnerable", replace
 label values cl_vuln cl_vuln
 fre cl_vuln
-
+*/
 
 
 ********** Dummy for financial vulnerability
+/*
 gen dummyvuln=.
 replace dummyvuln=1 if cl_vuln==1
 replace dummyvuln=0 if cl_vuln==2
@@ -386,15 +406,9 @@ replace dummyvuln=1 if cl_vuln==4
 
 label define yesno 0"No" 1"Yes"
 label values dummyvuln yesno
+*/
+rename test dummyvuln
 
-
-
-*********** Interaction
-foreach x in cl_vuln dummyvuln {
-egen casteX`x'=group(caste `x'), label
-}
-
-fre casteXcl_vuln
 
 save"panel_v11_cluster", replace
 ****************************************
@@ -417,7 +431,7 @@ use"panel_v5_wide", clear
 
 
 ********** Merge
-merge 1:1 HHID_panel using "panel_v11_cluster", keepusing(sbd_annualincome sbd_assets_noland sbd_loanamount sbd_dsr sbd_dar cl_vuln dummyvuln casteXcl_vuln casteXdummyvuln) 
+merge 1:1 HHID_panel using "panel_v11_cluster", keepusing(sbd_annualincome sbd_assets_noland sbd_loanamount sbd_dsr sbd_dar sbd_dir cl_vuln dummyvuln) 
 
 drop _merge
 
@@ -440,10 +454,16 @@ encode HHID_panel, gen(panelvar)
 
 ***** 1k
 foreach i in 2010 2016 2020 {
+foreach x in formal informal eco current humank social home repay_amt {
+replace `x'_HH`i'=`x'_HH`i'/1000
+}
 replace annualincome`i'=annualincome`i'/1000
+replace loanamount`i'=loanamount`i'/1000
 }
 
 ***** Value loan amount already deflate
+
+
 
 save "panel_v10_wide", replace
 ****************************************

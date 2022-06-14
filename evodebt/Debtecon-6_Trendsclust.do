@@ -439,8 +439,6 @@ name(gph_expenses_`i', replace)
 
 
 
-
-
 ***** Combine
 graph combine gph_assets_1 gph_assets_2 gph_assets_3 gph_assets_4, col(2) name(gph_assets, replace)
 graph combine gph_DAR_1 gph_DAR_2 gph_DAR_3 gph_DAR_4, col(2) name(gph_DAR, replace)
