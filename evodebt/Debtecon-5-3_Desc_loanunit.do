@@ -15,10 +15,6 @@ Panel for indebtedness and over-indebtedness
 
 
 
-
-
-
-
 ****************************************
 * INITIALIZATION
 ****************************************

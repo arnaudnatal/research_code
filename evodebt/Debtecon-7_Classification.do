@@ -70,20 +70,55 @@ global loan3 "NEEMSIS2-all_loans"
 
 
 ****************************************
-* Statistics following classification
+* Prepa R for HCPC
 ****************************************
 cls
 graph drop _all
-use"panel_v8_wide_cluster", clear
+use"panel_v8_cluster", clear
+
+keep HHID_panel sbd_annualincome sbd_assets_noland sbd_loanamount sbd_dsr sbd_dar sbd_dir sbd_expenses cat_income cat_assets jatis caste villageid villagearea
+duplicates drop
+export delimited using "$git\research_code\evodebt\debttrend_v3.csv", replace
+
+save"panel_v9_cluster", replace
+****************************************
+* END
+
+
+
+
+
+
+
+********** R analysis with debttrend_v3
+********** R analysis with debttrend_v3
+********** R analysis with debttrend_v3
+********** R analysis with debttrend_v3
+********** R analysis with debttrend_v3
+
+
+
+
+
+
+
+****************************************
+* Stata analysis with same setting as R 
+* for graph representation
+****************************************
+cls
+graph drop _all
+use"panel_v9_cluster", clear
 
 duplicates drop
-
 set graph off
 
 global var sbd_assets_noland sbd_dsr sbd_dar sbd_annualincome
 fre $var
 
-********** MCA without expenses
+
+
+********** MCA
 mca $var, meth(ind) normal(princ) dim(5) comp
 *mcacontrib
 matrix list e(F)
@@ -169,47 +204,9 @@ scatter d2 d1,  xline(0) yline(0) xtitle("Dimension 1 (14.3%)") ytitle("Dimensio
 grc1leg vard1 indivd1, name(mca_combd12, replace) col(2)
 
 
-/*
-***** Dimension 3 and 4
-*** Plot var
-egen labpos2=mlabvpos(varcoord4 varcoord3)
-replace labpos2=12	if varname=="DEC-INC" & varname2=="Assets"
-replace labpos2=6	if varname=="Dec-Inc" & varname2=="Assets"
-replace labpos2=12	if varname=="Inc-Inc" & varname2=="Assets"
-replace labpos2=3	if varname=="Dec-Dec" & varname2=="Assets"
-replace labpos2=3	if varname=="Sta-Dec" & varname2=="DSR"
-replace labpos2=8	if varname=="Dec-Dec" & varname2=="DSR"
-replace labpos2=9	if varname=="INC-INC" & varname2=="DSR"
-replace labpos2=12	if varname=="Dec-Inc" & varname2=="DSR"
-replace labpos2=1 	if varname=="Dec-Inc" & varname2=="DAR"
-replace labpos2=5	if varname=="Inc-Dec" & varname2=="DAR"
-replace labpos2=5	if varname=="Dec-Dec" & varname2=="DAR"
-replace labpos2=1	if varname=="Inc-Inc" & varname2=="DAR"
-replace labpos2=6 	if varname=="Dec-Inc" & varname2=="Debt"
-replace labpos2=12	if varname=="Inc-Dec" & varname2=="Debt"
-replace labpos2=5	if varname=="Inc-Inc" & varname2=="Debt"
-
-twoway ///
-(scatter varcoord4 varcoord3 if varname2=="Assets", xline(0) yline(0) mlab(varname) mlabvpos(labpos2)) ///
-(scatter varcoord4 varcoord3 if varname2=="DSR", xline(0) yline(0) mlab(varname) mlabvpos(labpos2)) ///
-(scatter varcoord4 varcoord3 if varname2=="DAR", xline(0) yline(0) mlab(varname) mlabvpos(labpos2)) ///
-(scatter varcoord4 varcoord3 if varname2=="Debt", xline(0) yline(0) mlab(varname) mlabvpos(labpos2)) ///
-, xtitle("Dimension 3 (11.0%)") ytitle("Dimension 4 (10.3%)") ///
-legend(pos(6) col(4) order(1 "Assets" 2 "DSR" 3 "DAR" 4 "Debt")) aspectratio(0.5) ///
-title("Projection of variables") name(vard3, replace)
-
-*** Plot individual
-scatter d4 d3,  xline(0) yline(0) xtitle("Dimension 3 (11.0%)") ytitle("Dimension 4 (10.3%)") msym(+) aspectratio(0.5) title("Projection of individuals") name(indivd3, replace)
-
-*** Combine
-grc1leg vard3 indivd3, name(mca_combd34, replace) col(2)
-*/
 
 
-/*
-***** Combine all
-grc1leg mca_combd12 mca_combd34, name(mca_comb, replace) col(1)
-*/
+
 
 
 ********** Classification
@@ -237,7 +234,39 @@ restore
 graph combine htree inertia, name(hac_comb, replace)
 
 
-*** Import results
+
+***
+save"panel_v10_cluster", replace
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Import cluster from R
+****************************************
+cls
+graph drop _all
+use"panel_v10_cluster", clear
+
+duplicates drop
+set graph off
+
+global var sbd_assets_noland sbd_dsr sbd_dar sbd_annualincome
+fre $var
+
+
+********** Import results
 preserve
 import delimited using "$git\research_code\evodebt\debttrend_v4.csv", clear
 ta clust
@@ -245,12 +274,14 @@ keep hhid_panel clust
 rename hhid_panel HHID_panel
 save "_temp_HCPC_conso.dta", replace
 restore
+
 merge 1:1 HHID_panel using "_temp_HCPC_conso.dta"
 drop _merge
 erase "_temp_HCPC_conso.dta"
 rename clust cl_vuln_raw
 
-*** Plot indiv
+
+********** Plot indiv
 twoway ///
 (scatter d2 d1 if cl_vuln_raw==1, xline(0) yline(0) msym(+)) ///
 (scatter d2 d1 if cl_vuln_raw==2, msym(o) mcolor(gs0)) ///
@@ -264,7 +295,7 @@ name(clusd12, replace) aspectratio(1)
 
 
 
-*** Characterise cluster
+********** Characterise cluster
 preserve
 import delimited using "$git\research_code\evodebt\HCPCshiny.csv", clear
 *rename cluster1 A
@@ -325,9 +356,10 @@ grc1leg char_cl1 char_cl2 char_cl3 char_cl4, col(2) leg(char_cl1) name(char_comb
 restore
 
 
+
+
+********** Main graph
 /*
-***** Main graph
-*foreach x in inertiamca mca_comb hac_comb clus_t char_comb {
 foreach x in inertiamca mca_combd12 hac_comb clusd12 char_comb {
 graph display `x'
 graph export "graph/`x'.pdf", as(pdf) replace
@@ -341,20 +373,10 @@ rename cl_vuln_raw cl_vuln
 label define cl_vuln 1"Unstable debt" 2"Sustainable debt" 3"Vulnerable" 4"Highly vulnerable", replace
 label values cl_vuln cl_vuln
 fre cl_vuln
-/*
--------------------------------------------------------------------------
-                            |      Freq.    Percent      Valid       Cum.
-----------------------------+--------------------------------------------
-Valid   1 Unstable debt     |         74      19.37      19.37      19.37
-        2 Sustainable debt  |        156      40.84      40.84      60.21
-        3 Vulnerable        |         65      17.02      17.02      77.23
-        4 Highly vulnerable |         87      22.77      22.77     100.00
-        Total               |        382     100.00     100.00           
--------------------------------------------------------------------------
-*/
 
 
-********** Dummy for sustainable of financial situation
+
+********** Dummy for financial vulnerability
 gen dummyvuln=.
 replace dummyvuln=1 if cl_vuln==1
 replace dummyvuln=0 if cl_vuln==2
@@ -365,21 +387,16 @@ replace dummyvuln=1 if cl_vuln==4
 label define yesno 0"No" 1"Yes"
 label values dummyvuln yesno
 
-********** Simple cat
-clonevar cl_vuln2=cl_vuln
-fre cl_vuln
-recode cl_vuln2 (4=3)
-fre cl_vuln2
 
 
-*********** Int
-foreach x in cl_vuln cl_vuln2 dummyvuln {
+*********** Interaction
+foreach x in cl_vuln dummyvuln {
 egen casteX`x'=group(caste `x'), label
 }
 
 fre casteXcl_vuln
 
-save"panel_v9_wide_cluster", replace
+save"panel_v11_cluster", replace
 ****************************************
 * END
 
@@ -400,22 +417,33 @@ use"panel_v5_wide", clear
 
 
 ********** Merge
-merge 1:1 HHID_panel using "panel_v9_wide_cluster", keepusing(sbd_annualincome sbd_assets_noland sbd_loanamount sbd_dsr sbd_dar cl_vuln dummyvuln) 
+merge 1:1 HHID_panel using "panel_v11_cluster", keepusing(sbd_annualincome sbd_assets_noland sbd_loanamount sbd_dsr sbd_dar cl_vuln dummyvuln casteXcl_vuln casteXdummyvuln) 
 
 drop _merge
 
 
 ********** Clean
+***** Drop
 drop log_ISR102010 log_DAR102010 log_DSR102010 ihs_ISR102010 ihs_DAR102010 ihs_DSR102010 log_ISR102016 log_DAR102016 log_DSR102016 ihs_ISR102016 ihs_DAR102016 ihs_DSR102016 log_ISR102020 log_DAR102020 log_DSR102020 ihs_ISR102020 ihs_DAR102020 ihs_DSR102020 log_ISR1002010 log_DAR1002010 log_DSR1002010 ihs_ISR1002010 ihs_DAR1002010 ihs_DSR1002010 log_ISR1002016 log_DAR1002016 log_DSR1002016 ihs_ISR1002016 ihs_DAR1002016 ihs_DSR1002016 log_ISR1002020 log_DAR1002020 log_DSR1002020 ihs_ISR1002020 ihs_DAR1002020 ihs_DSR1002020 log_ISR100002010 log_DAR100002010 log_DSR100002010 ihs_ISR100002010 ihs_DAR100002010 ihs_DSR100002010 log_ISR100002016 log_DAR100002016 log_DSR100002016 ihs_ISR100002016 ihs_DAR100002016 ihs_DSR100002016 log_ISR100002020 log_DAR100002020 log_DSR100002020 ihs_ISR100002020 ihs_DAR100002020 ihs_DSR100002020 log_ISR2010 log_DAR10002010 log_DAR2010 log_DSR10002010 log_DSR2010 log_yearly_expenses2016 log_annualincome2016 log_assets_noland2016 log_assets2016 log_loanamount2016 log_ISR10002016 log_ISR2016 log_DAR10002016 log_DAR2016 log_DSR10002016 log_DSR2016 log_yearly_expenses2020 log_annualincome2020 log_assets_noland2020 log_assets2020 log_loanamount2020 log_ISR10002020 log_ISR2020 log_DAR10002020 log_DAR2020 log_DSR10002020 log_DSR2020 ihs_DAR2010 ihs_DAR2016 ihs_DAR2020 ihs_DSR2010 ihs_DSR2016 ihs_DSR2020 ihs_ISR2010 ihs_ISR2016 ihs_ISR2020 cro_annualincome2010 cro_assets_noland2010 cro_loanamount2010 cro_DSR2010 cro_DAR_without2010 cro_DIR2010 cro_ISR2010 cro_DAR_with2010 cro_yearly_expenses2010 cro_annualincome2016 cro_assets_noland2016 cro_loanamount2016 cro_DSR2016 cro_DAR_without2016 cro_DIR2016 cro_ISR2016 cro_DAR_with2016 cro_yearly_expenses2016 cro_annualincome2020 cro_assets_noland2020 cro_loanamount2020 cro_DSR2020 cro_DAR_without2020 cro_DIR2020 cro_ISR2020 cro_DAR_with2020 cro_yearly_expenses2020 log_yearly_expenses2010 log_annualincome2010 log_assets_noland2010 log_assets2010 log_loanamount2010 log_ISR10002010
 
+***** Rename
 foreach x in ISR DSR DAR {
 rename ihs_`x'10002010 ihs_`x'2010
 rename ihs_`x'10002016 ihs_`x'2016
 rename ihs_`x'10002020 ihs_`x'2020
 }
 
-***panelvar
+
+***** panelvar
 encode HHID_panel, gen(panelvar)
+
+
+***** 1k
+foreach i in 2010 2016 2020 {
+replace annualincome`i'=annualincome`i'/1000
+}
+
+***** Value loan amount already deflate
 
 save "panel_v10_wide", replace
 ****************************************

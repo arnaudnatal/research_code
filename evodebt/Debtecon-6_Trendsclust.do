@@ -66,32 +66,6 @@ global loan3 "NEEMSIS2-all_loans"
 
 
 
-
-
-
-****************************************
-* Descriptive statistics
-****************************************
-use"panel_v5", clear
-
-********** Initialization
-xtset panelvar time
-keep if panel==1
-
-
-********** Desc
-tabstat annualincome assets_noland loanamount DAR_without DSR ISR, stat(mean median skewness kurtosis) by(year)
-
-clear all
-cls
-****************************************
-* END
-
-
-
-
-
-
 ****************************************
 * Datasets preparation
 ****************************************
@@ -251,6 +225,12 @@ tabstat rel_repay1 rel_repay2 rel_repay3, stat(n mean sd p50)
 export delimited using "$git\research_code\evodebt\debttrend.csv", replace
 
 ********* R analysis
+********* R analysis
+********* R analysis
+********* R analysis
+********* R analysis
+
+
 
 ********* Hierarchical
 /*
@@ -319,7 +299,7 @@ order HHID_panel panelvar time caste jatis cat_income cat_assets villageid villa
 ***** Panel declaration
 xtset panelvar time
 
-save"panel_v7_wide_cluster", replace
+save"panel_v7_cluster", replace
 ****************************************
 * END
 
@@ -336,7 +316,7 @@ save"panel_v7_wide_cluster", replace
 ****************************************
 cls
 graph drop _all
-use"panel_v7_wide_cluster", clear
+use"panel_v7_cluster", clear
 
 
 gen year=2010 if time==1
@@ -497,67 +477,6 @@ label values sbd_loanamount sbd_loanamount
 label values sbd_expenses sbd_expenses
 label values sbd_dir sbd_dir
 
-preserve
-keep HHID_panel sbd_annualincome sbd_assets_noland sbd_loanamount sbd_dsr sbd_dar sbd_dir sbd_expenses cat_income cat_assets jatis caste villageid villagearea
-duplicates drop
-export delimited using "$git\research_code\evodebt\debttrend_v3.csv", replace
-
-
-save"panel_v8_wide_cluster", replace
+save"panel_v8_cluster", replace
 ****************************************
 * END
-
-
-
-
-
-
-
-
-
-
-/*
-set graph off
-foreach var in annualincome assets_noland loanamount dsr isr dar {
-foreach type in euc sbd {
-
-qui ta `type'_`var', gen(`type'_`var'_)
-sort `type'_`var' panelvar year
-
-qui sum ihs_`var'
-local min=r(min)
-local max=r(max)
-
-forvalues i=1(1)6{
-
-capture confirm v `type'_`var'_`i'
-if _rc==0 {
-
-twoway (line ihs_`var' year if `type'_`var'==`i', c(L) lcolor(black%10)) ///
-, xlabel(2010 2016 2020) xmtick(2010(1)2020) xtitle("Year") ///
-ylabel(`min'(1)`max') ymtick() ytitle("`var' with `type'") ///
-title("Cluster `i'") ///
-aspectratio(0.5) graphregion(margin(zero)) plotregion(margin(zero))  ///
-name(gph_`type'_`var'_`i', replace)
-
-drop `type'_`var'_`i'
-}
-}
-}
-}
-
-*** if 3 graph
-foreach x in euc_isr sbd_loanamount {
-graph combine gph_`x'_1 gph_`x'_2 gph_`x'_3, col(3) name(gph_`x', replace)
-}
-
-*** if 4 graph
-foreach x in euc_annualincome euc_assets_noland euc_dar euc_loanamount sbd_annualincome sbd_assets_noland sbd_dar {
-graph combine gph_`x'_1 gph_`x'_2 gph_`x'_3 gph_`x'_4, col(2) name(gph_`x', replace)
-}
-
-*** if 5 graph
-foreach x in euc_dsr sbd_dsr sbd_isr {
-graph combine gph_`x'_1 gph_`x'_2 gph_`x'_3 gph_`x'_4 gph_`x'_5, col(2) name(gph_`x', replace)
-}
-*/

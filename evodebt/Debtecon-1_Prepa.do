@@ -62,9 +62,11 @@ grstyle set plain, box nogrid
 *(100/184) if year==2020
 
 
-
 ****************************************
 * END
+
+
+
 
 
 
@@ -101,7 +103,6 @@ merge 1:1 HHID_panel using "_temp$wave2"
 drop _merge
 merge 1:1 HHID_panel using "_temp$wave3"
 drop _merge
-
 
 
 *One var
@@ -150,33 +151,6 @@ Et la wife en mother
 */
 replace relationshiptohead=4 if HHID_panel=="GOV18" & INDID_panel=="Ind_2"
 replace relationshiptohead=3 if HHID_panel=="GOV18" & INDID_panel=="Ind_4"
-
-* AEU
-fre sex
-gen AEU_weight1=.
-replace AEU_weight1=1 if sex==1 & age>=16
-replace AEU_weight1=0.8 if sex==2 & age>=16
-replace AEU_weight1=0.6 if sex==1 & age<16
-replace AEU_weight1=0.6 if sex==2 & age<16
-replace AEU_weight1=0 if livinghome2==0
-
-gen AEU_weight2=.
-replace AEU_weight2=1 if sex==1 & age>=16
-replace AEU_weight2=1 if sex==2 & age>=16
-replace AEU_weight2=0.6 if sex==1 & age<16
-replace AEU_weight2=0.6 if sex==2 & age<16
-replace AEU_weight2=0 if livinghome2==0
-
-gen AEU_weight=.
-replace AEU_weight=1 if sex==1 & age>=16
-replace AEU_weight=1 if sex==2 & age>=16
-replace AEU_weight=1 if sex==1 & age<16
-replace AEU_weight=1 if sex==2 & age<16
-replace AEU_weight=0 if livinghome2==0
-
-foreach x in weight weight1 weight2 {
-bysort HHID_panel: egen AEU_`x'_HH=sum(AEU_`x')
-}
 
 
 *Land property
@@ -231,6 +205,7 @@ replace nonworkers_to_workers_HH=nbnonworkers_HH if nbworkers_HH==0
 gen nontoworkers_HH=nonworkers_to_workers_HH*100
 drop nonworkers_to_workers_HH
 tab nontoworkers_HH
+
 
 *Sex ratio of HH
 fre sex
@@ -314,15 +289,11 @@ global expenses livestockspent foodexpenses educationexpenses healthexpenses cer
 global dep loanamount_HH loans_HH imp1_ds_tot_HH imp1_is_tot_HH loans_HH
 global indep villageid villagearea religion jatis caste assets annualincome_HH nboccupation_HH foodexpenses educationexpenses healthexpenses ceremoniesexpenses deathexpenses HHsize housetype housetitle houseroom nbchildren_HH nontoworkers_HH femtomale_HH head_sex head_maritalstatus head_age head_edulevel head_occupation wifehusb_sex wifehusb_maritalstatus wifehusb_age wifehusb_edulevel wifehusb_occupation sizeownland amountownland ownland goldquantity goldquantityamount effectcrisislostjob mainocc_occupation_HH occinc_HH_agri occinc_HH_agricasual occinc_HH_nonagricasual occinc_HH_nonagriregnonqual occinc_HH_nonagriregqual occinc_HH_selfemp occinc_HH_nrega assets_noland  $asse $nature $expenses
 
-keep HHID_panel year $dep $indep AEU_weight_HH AEU_weight1_HH AEU_weight2_HH
+keep HHID_panel year $dep $indep
 
 duplicates drop
 
-
-
 merge 1:1 HHID_panel using "panel"
-*drop _merge
-*keep if panel==1
 
 mdesc
 
@@ -359,7 +330,6 @@ fre livinghome
 drop if livinghome==3 | livinghome==4
 
 
-
 /*
 Pour KUV42, deux head et deux wifes
 Donc recoder le plus vieux en Father
@@ -367,33 +337,6 @@ Et la wife en mother
 */
 *br INDID_panel dummynewHH name age relationshiptohead mainocc_occupation_indiv if HHID_panel=="KUV42"
 replace relationshiptohead=77 if HHID_panel=="KUV42" & INDID_panel=="Ind_8"
-
-
-* AEU
-fre sex
-gen AEU_weight1=.
-replace AEU_weight1=1 if sex==1 & age>=16
-replace AEU_weight1=0.8 if sex==2 & age>=16
-replace AEU_weight1=0.6 if sex==1 & age<16
-replace AEU_weight1=0.6 if sex==2 & age<16
-
-gen AEU_weight2=.
-replace AEU_weight2=1 if sex==1 & age>=16
-replace AEU_weight2=1 if sex==2 & age>=16
-replace AEU_weight2=0.6 if sex==1 & age<16
-replace AEU_weight2=0.6 if sex==2 & age<16
-
-gen AEU_weight=.
-replace AEU_weight=1 if sex==1 & age>=16
-replace AEU_weight=1 if sex==2 & age>=16
-replace AEU_weight=1 if sex==1 & age<16
-replace AEU_weight=1 if sex==2 & age<16
-
-foreach x in weight weight1 weight2 {
-bysort HHID_panel: egen AEU_`x'_HH=sum(AEU_`x')
-}
-
-
 
 
 ********** Test gold
@@ -420,7 +363,6 @@ replace ownland=0 if sizeownland==0
 *Workage
 gen dummy_workage=0
 replace dummy_workage=1 if age>=15
-
 
 *Job+dummy
 tab nboccupation_indiv
@@ -580,7 +522,7 @@ global expenses foodexpenses healthexpenses ceremoniesexpenses ceremoniesrelativ
 global dep imp1_ds_tot_HH imp1_is_tot_HH loanamount_gm_HH loans_gm_HH loanamount_g_HH loans_g_HH
 global indep villageid villagearea religion jatis caste assets annualincome_HH nboccupation_HH foodexpenses educationexpenses healthexpenses ceremoniesexpenses deathexpenses HHsize housetype housetitle houseroom nbchildren_HH nontoworkers_HH femtomale_HH head_sex head_maritalstatus head_age head_edulevel head_occupation wifehusb_sex wifehusb_maritalstatus wifehusb_age wifehusb_edulevel wifehusb_occupation sizeownland amountownland ownland goldquantity goldquantityamount dummydemonetisation dummymarriage marriageexpenses_HH mainocc_occupation_HH occinc_HH_agri occinc_HH_agricasual occinc_HH_nonagricasual occinc_HH_nonagriregnonqual occinc_HH_nonagriregqual occinc_HH_selfemp occinc_HH_nrega assets_noland $asse $nature $expenses
  
-keep HHID_panel year $dep $indep AEU_weight_HH AEU_weight1_HH AEU_weight2_HH
+keep HHID_panel year $dep $indep
 
 rename loanamount_gm_HH loanamount_HH
 rename loans_gm_HH loans_HH
@@ -599,7 +541,6 @@ restore
 
 duplicates drop
 
-
 merge 1:1 HHID_panel using "panel"
 *drop _merge
 *keep if panel==1
@@ -610,7 +551,6 @@ mdesc
 recode imp1_ds_tot_HH imp1_is_tot_HH loans_HH loanamount_HH marriageexpenses_HH (.=0)
 
 mdesc
-
 
 *
 foreach x in $asse {
@@ -663,32 +603,6 @@ fre livinghome
 drop if livinghome==3 | livinghome==4
 
 drop if HHID_panel==""
-
-
-* AEU
-fre sex
-gen AEU_weight1=.
-replace AEU_weight1=1 if sex==1 & age>=16
-replace AEU_weight1=0.8 if sex==2 & age>=16
-replace AEU_weight1=0.6 if sex==1 & age<16
-replace AEU_weight1=0.6 if sex==2 & age<16
-
-gen AEU_weight2=.
-replace AEU_weight2=1 if sex==1 & age>=16
-replace AEU_weight2=1 if sex==2 & age>=16
-replace AEU_weight2=0.6 if sex==1 & age<16
-replace AEU_weight2=0.6 if sex==2 & age<16
-
-gen AEU_weight=.
-replace AEU_weight=1 if sex==1 & age>=16
-replace AEU_weight=1 if sex==2 & age>=16
-replace AEU_weight=1 if sex==1 & age<16
-replace AEU_weight=1 if sex==2 & age<16
-
-foreach x in weight weight1 weight2 {
-bysort HHID_panel: egen AEU_`x'_HH=sum(AEU_`x')
-}
-
 
 
 *Decision
@@ -929,7 +843,7 @@ global expenses foodexpenses healthexpenses ceremoniesexpenses ceremoniesrelativ
 global dep loanamount_HH loans_HH imp1_ds_tot_HH imp1_is_tot_HH
 global indep villageid villagearea religion jatis caste assets annualincome_HH nboccupation_HH foodexpenses educationexpenses healthexpenses ceremoniesexpenses deathexpenses HHsize housetype housetitle houseroom nbchildren_HH nontoworkers_HH femtomale_HH head_sex head_maritalstatus head_age head_edulevel head_occupation wifehusb_sex wifehusb_maritalstatus wifehusb_age wifehusb_edulevel wifehusb_occupation sizeownland amountownland ownland goldquantity goldquantityamount dummymarriage marriageexpenses_HH assets_noland occinc_HH_agri occinc_HH_agricasual occinc_HH_nonagricasual occinc_HH_nonagriregnonqual occinc_HH_nonagriregqual occinc_HH_selfemp occinc_HH_nrega $asse $nature religion $expenses
  
-keep HHID_panel year $dep $indep AEU_weight_HH AEU_weight1_HH AEU_weight2_HH
+keep HHID_panel year $dep $indep
 
 *Occupation
 preserve

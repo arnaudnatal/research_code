@@ -179,6 +179,12 @@ save"panel_loan", replace
 
 
 
+
+
+
+
+
+
 /*
 ****************************************
 * ALL LOANS in same db
@@ -399,6 +405,7 @@ replace lender=15 if loanlender==15
 label values lender lender
 
 
+
 *** Gen id for main loans
 rename dummymainloans mainloan
 tab mainloan year
@@ -431,6 +438,11 @@ drop _merge
 save"panel_loan_v2", replace
 ****************************************
 * END
+
+
+
+
+
 
 
 
@@ -501,15 +513,6 @@ foreach i in 1 2 3 4 5 6 7 9 10 13 15{
 replace informal=loanamount if loanlender==`i'
 }
 
-/*
-preserve
-bysort HHID_panel year: egen sum_ila=sum(informal)
-bysort HHID_panel year: egen sum_fla=sum(formal)
-bysort HHID_panel year: egen sum_la=sum(loanamount)
-keep if year==2016 & HHID_panel=="ELA1"
-keep sum_*
-restore
-*/
 
 
 ********** Reason given
@@ -765,6 +768,7 @@ ta year
 save "HH_newvar_temp.dta", replace
 *restore
 
-*clear all
+clear all
 ****************************************
 * END
+
