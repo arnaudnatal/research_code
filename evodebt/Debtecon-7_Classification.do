@@ -113,53 +113,49 @@ use"panel_v9_cluster", clear
 duplicates drop
 set graph off
 
-global var sbd_assets_noland sbd_dsr sbd_dar sbd_annualincome
+global var sbd_assets_noland sbd_dsr sbd_dar
 fre $var
 
 
-/*
+
 ********** MCA
-mca $var, meth(ind) normal(princ) dim(5) comp
+mca $var, meth(ind) normal(princ) dim(4) comp
 *mcacontrib
 matrix list e(F)
 *matrix list NewContrib
 matrix coord=e(F)
 svmat coord, names(varcoord)
 mat mcamat=e(cGS)
-mat colnames mcamat = mass qual inert co1 rel1 abs1 co2 rel2 abs2 co3 rel3 abs3 co4 rel4 abs4 co5 rel5 abs5
+mat colnames mcamat = mass qual inert co1 rel1 abs1 co2 rel2 abs2 co3 rel3 abs3 co4 rel4 abs4
 svmat2 mcamat, rname(varname) name(col)
 gen varname2=""
 gen n=_n
 replace varname2="Assets"	if n==1 	| n==2 	| n==3 	| n==4
 replace varname2="DSR"		if n==5 	| n==6 	| n==7 	| n==8 	| n==9
 replace varname2="DAR" 		if n==10 	| n==11 | n==12	| n==13
-replace varname2="Income"	if n==14	| n==15	| n==16	| n==17
 drop n
-predict d1 d2 d3 d4 d5
+predict d1 d2 d3 d4
 
 
 *** Inertia
 preserve
 clear all
 input dim inertia perc totperc
-1	.4647612	14.30	14.30
-2	.3567872	10.98	25.28
-3	.3082466	9.48	34.76
-4	.2947951	9.07	43.83
-5	.2759431	8.49	52.32
-6	.261166	8.04	60.36
-7	.2522397	7.76	68.12
-8	.2290125	7.05	75.17
-9	.2178336	6.70	81.87
-10	.1833391	5.64	87.51
-11	.1813671	5.58	93.09
-12	.120982	3.72	96.81
-13	.1035269	3.19	100.00
+1 	0.57 	17.07 	17.07
+2 	0.44 	13.16 	30.22
+3 	0.40 	11.86 	42.08
+4 	0.38 	11.49 	53.57
+5 	0.34 	10.16 	63.73
+6 	0.32 	9.46 	73.19
+7 	0.28 	8.47 	81.66
+8 	0.25 	7.39 	89.05
+9 	0.22 	6.65 	95.69
+10 	0.14 	4.31 	100.00 
 end
 
 twoway ///
-(bar totperc dim if dim!=5, barw(0.6) color(gs9)) ///
-(bar totperc dim if dim==5, barw(0.6) color(gs1)) ///
+(bar totperc dim if dim!=4, barw(0.6) color(gs9)) ///
+(bar totperc dim if dim==4, barw(0.6) color(gs1)) ///
 , ///
 xlabel(1(1)12) xtitle("Dimension") ///
 ylabel(0(10)100) ytitle("Cumul % of variance") ///
@@ -183,22 +179,17 @@ replace labpos=1 	if varname=="Dec-Inc" & varname2=="DAR"
 replace labpos=12	if varname=="Inc-Dec" & varname2=="DAR"
 replace labpos=1	if varname=="Dec-Dec" & varname2=="DAR"
 replace labpos=11	if varname=="Inc-Inc" & varname2=="DAR"
-replace labpos=12 	if varname=="Dec-Sta" & varname2=="Income"
-replace labpos=12 	if varname=="Dec-Dec" & varname2=="Income"
-replace labpos=11	if varname=="Sta-Dec" & varname2=="Income"
-replace labpos=12	if varname=="Dec-Inc" & varname2=="Income"
 
 twoway ///
 (scatter varcoord2 varcoord1 if varname2=="Assets", xline(0) yline(0) mlab(varname) mlabvpos(labpos)) ///
 (scatter varcoord2 varcoord1 if varname2=="DSR", xline(0) yline(0) mlab(varname) mlabvpos(labpos)) ///
 (scatter varcoord2 varcoord1 if varname2=="DAR", xline(0) yline(0) mlab(varname) mlabvpos(labpos)) ///
-(scatter varcoord2 varcoord1 if varname2=="Income", xline(0) yline(0) mlab(varname) mlabvpos(labpos)) ///
-, xtitle("Dimension 1 (14.3%)") ytitle("Dimension 2 (11.0%)") ///
-legend(pos(6) col(4) order(1 "Assets" 2 "DSR" 3 "DAR" 4 "Income")) aspectratio(1) ///
+, xtitle("Dimension 1 (17.1%)") ytitle("Dimension 2 (13.2%)") ///
+legend(pos(6) col(4) order(1 "Assets" 2 "DSR" 3 "DAR")) aspectratio(1) ///
 title("Projection of variables") name(vard1, replace)
 
 *** Plot individual
-scatter d2 d1,  xline(0) yline(0) xtitle("Dimension 1 (14.3%)") ytitle("Dimension 2 (11.0%)") msym(+) aspectratio(1) title("Projection of individuals") name(indivd1, replace)
+scatter d2 d1,  xline(0) yline(0) xtitle("Dimension 1 (17.1%)") ytitle("Dimension 2 (13.2%)") msym(+) aspectratio(1) title("Projection of individuals") name(indivd1, replace)
 
 *** Combine
 grc1leg vard1 indivd1, name(mca_combd12, replace) col(2)
@@ -210,7 +201,7 @@ grc1leg vard1 indivd1, name(mca_combd12, replace) col(2)
 
 
 ********** Classification
-cluster wardslinkage d1 d2 d3 d4 d5, measure(L2squared)
+cluster wardslinkage d1 d2 d3 d4, measure(L2squared)
 
 
 *** Plot branch
@@ -222,8 +213,8 @@ preserve
 import delimited using "$git\research_code\evodebt\inertia.csv", clear
 drop if v1>15
 twoway ///
-(bar inert v1 if v1<=3, barw(0.6) color(gs1)) ///
-(bar inert v1 if v1>3, barw(0.6) color(gs9)) ///
+(bar inert v1 if v1<=4, barw(0.6) color(gs1)) ///
+(bar inert v1 if v1>4, barw(0.6) color(gs9)) ///
 , ///
 xlabel(1(1)15) xtitle("Class reduction") ///
 yla() ytitle("Inertia gain") aspectratio(1) ///
@@ -232,7 +223,6 @@ restore
 
 *** Combine
 graph combine htree inertia, name(hac_comb, replace)
-*/
 
 
 ***
@@ -256,7 +246,7 @@ save"panel_v10_cluster", replace
 * Import cluster from R
 ****************************************
 cls
-graph drop _all
+*graph drop _all
 use"panel_v10_cluster", clear
 
 duplicates drop
@@ -300,21 +290,20 @@ ta test caste, col nofreq
 
 
 ********** Plot indiv
-/*
 twoway ///
 (scatter d2 d1 if cl_vuln_raw==1, xline(0) yline(0) msym(+)) ///
 (scatter d2 d1 if cl_vuln_raw==2, msym(o) mcolor(gs0)) ///
 (scatter d2 d1 if cl_vuln_raw==3, msym(d)) ///
 (scatter d2 d1 if cl_vuln_raw==4, msym(s) mcolor(gs5)) ///
-, xtitle("Dimension 1 (16.3%)") ytitle("Dimension 2 (14.4%)") ///
-legend(pos(6) col(2) order(1 "Cluster 1" 2 "Cluster 2" 3 "Cluster 3" 4 "Cluster 4")) ///
+(scatter d2 d1 if cl_vuln_raw==5, msym(x) mcolor(gs10)) ///
+, xtitle("Dimension 1 (17.1%)") ytitle("Dimension 2 (13.2%)") ///
+legend(pos(6) col(2) order(1 "Cluster 1" 2 "Cluster 2" 3 "Cluster 3" 4 "Cluster 4" 5 "Cluster 5")) ///
 name(clusd12, replace) aspectratio(1)
-*/
+
 
 
 
 ********** Characterise cluster
-/*
 preserve
 import delimited using "$git\research_code\evodebt\HCPCshiny.csv", clear
 *rename cluster1 A
@@ -339,22 +328,22 @@ rename v123 mod
 replace varname="Assets" if varname=="assets"
 replace varname="DAR" if varname=="dar"
 replace varname="DSR" if varname=="dsr"
-replace varname="Income" if varname=="annualincome"
 order varname mod
 
-egen max=rowmax(cluster1-cluster4)
+egen max=rowmax(cluster1-cluster5)
 
-forvalues i=1(1)4 {
+forvalues i=1(1)5 {
 gen cl`i'=max if cluster`i'==max
 }
 
 egen varmod=concat(varname mod), p(" ")
 
-forvalues i=1(1)4{
-local d1="Unstable debt"
-local d2="Sustainable debt"
-local d3="Vulnerable"
-local d4="Highly vulnerable"
+forvalues i=1(1)5{
+local d1="Vulnerable"
+local d2="Highly vulnerable"
+local d3="Non-ulnerable"
+local d4="Vulnerable"
+local d5="Non-vulnerable"
 local j="`d`i''"
 gsort -cluster`i'
 gen n=_n
@@ -371,19 +360,20 @@ aspectratio(0.5) graphregion(margin(zero))
 drop n
 }
 
-grc1leg char_cl1 char_cl2 char_cl3 char_cl4, col(2) leg(char_cl1) name(char_comb, replace)
+grc1leg char_cl1 char_cl2 char_cl3 char_cl4 char_cl5, col(2) leg(char_cl1) name(char_comb, replace)
 restore
-*/
+
 
 
 
 ********** Main graph
-/*
+graph dir
+set graph on
 foreach x in inertiamca mca_combd12 hac_comb clusd12 char_comb {
 graph display `x'
 graph export "graph/`x'.pdf", as(pdf) replace
 }
-*/
+
 
 
 
