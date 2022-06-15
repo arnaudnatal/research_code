@@ -40,8 +40,6 @@ attach(trend)
 MCAshiny(trend)
 
 
-
-
 #--- MCA
 res.MCA<-MCA(trend,ncp=4,graph=FALSE)
 

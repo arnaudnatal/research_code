@@ -193,9 +193,92 @@ use"panel_v10_wide.dta", clear
 ta cl_vuln dummyvuln
 ta caste dummyvuln
 
+********** store var from v4
+preserve
+use"panel_v4", clear
+label define housetype 1"Concrete house (non-govt)" 2"Government/green house" 3"Thatched roof house"
+label values housetype housetype
+keep if panel==1
+keep HHID_panel year housetype housetitle HHsize nbchildren dummymarriage ownland nontoworkers femtomale
+reshape wide housetype housetitle HHsize nbchildren dummymarriage ownland nontoworkers femtomale, i(HHID_panel) j(year)
+save"_temp_v4", replace
+restore
 
-********** Test econometrisc
-probit dummyvuln i.caste i.villageid2010, baselevels
+merge 1:1 HHID_panel using "_temp_v4"
+drop _merge
+erase "_temp_v4.dta"
+
+********** recode
+foreach t in 2010 2016 2020 {
+***** sex
+recode head_sex`t' (1=0) (2=1)
+rename head_sex`t' head_female`t'
+label define sex2 0"Male" 1"Female", replace
+label values head_female`t' sex2
+recode wifehusb_sex`t' (1=0) (2=1)
+rename wifehusb_sex`t' wifehusb_female`t'
+label values wifehusb_female`t' sex2
+
+***** occupation
+recode head_occupation`t' (5=4)
+recode wifehusb_occupation`t' (5=4)
+
+***** education
+recode head_edulevel`t' (3=2) (4=2) (5=2)
+recode wifehusb_edulevel`t' (3=2) (4=2) (5=2)
+
+***** marital status
+label define marital 1"Married" 2"Unmarried" 3"Widowed" 4"Separated/divorced", replace
+label values head_maritalstatus`t' marital
+label values wifehusb_maritalstatus`t' marital
+recode head_maritalstatus`t' (2=0) (3=0) (4=0)
+recode wifehusb_maritalstatus`t' (2=0) (3=0) (4=0)
+rename head_maritalstatus`t' head_married`t'
+rename wifehusb_maritalstatus`t' wifehusb_married`t'
+
+***** villagearea
+gen village_ur`t'=.
+replace village_ur`t'=0 if villagearea`t'=="Colony"
+replace village_ur`t'=1 if villagearea`t'=="Ur"
+}
+
+********** var to keep
+global id HHID_panel sbd_* dummyvuln cl_vuln dummymarriage*
+global wealth assets_noland* annualincome*
+global hhcharact HHsize* nbchildren* dummymarriage* villageid* village_ur* caste* jatis* ownland* nontoworkers* femtomale* housetype* housetitle*
+global headwife head_* wifehusb_* 
+global debt1 DSR* DIR* ISR* DAR* loanamount*
+global debt2 rel_repay_amt_HH* rel_formal_HH* rel_informal_HH* rel_eco_HH* rel_current_HH* rel_humank_HH* rel_social_HH* rel_home_HH*
+global debt3 dummyIMF* dummybank* dummymoneylender* dummyrepay* dummyborrowstrat* dummymigrstrat* dummyassestrat*
+
+global var $id $wealth $hhcharact $headwife $debt1 $debt2 $debt3
+keep $var 
+
+
+save"panel_v11_wide.dta", replace
+
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* ECONOMETRIC
+****************************************
+use"panel_v11_wide.dta", clear
+
+********** Spec 1
+probit dummyvuln ib(2).caste i.villageid2010, baselevels
+
+
 
 
 ****************************************

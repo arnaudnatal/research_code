@@ -19,33 +19,53 @@ Impact of demonetisation
 ****************************************
 * INITIALIZATION
 ****************************************
-*clear all
+clear all
 macro drop _all
 
-* Scheme
-*net install schemepack, from("https://raw.githubusercontent.com/asjadnaqvi/Stata-schemes/main/schemes/") replace
-*set scheme white_tableau
-set scheme plotplain
-grstyle init
-grstyle set plain, nogrid
-
+global user "Arnaud"
+global folder "Documents"
 
 ********** Path to folder "data" folder.
-*** PC
-global directory = "C:\Users\Arnaud\Documents\_Thesis\Research-Stability_skills\Analysis"
+global directory = "C:\Users\\$user\\$folder\_Thesis\Research-Overindebtedness\Persistence_over"
 cd"$directory"
-global git "C:\Users\Arnaud\Documents\GitHub"
+global git "C:\Users\\$user\\$folder\GitHub"
 
-*** Fac
-*global directory = "C:\Users\anatal\Downloads\_Thesis\Research-Stability_skills\Analysis"
-*cd "$directory"
+*Fac
+*cd "C:\Users\anatal\Downloads\_Thesis\Research-Skills_and_debt\Analysis"
+*set scheme plotplain
+
 *global git "C:\Users\anatal\Downloads\GitHub"
+*global dropbox "C:\Users\anatal\Downloads\Dropbox"
+*global thesis "C:\Users\anatal\Downloads\_Thesis\Research-Skills_and_debt\Analysis"
+
 
 ********** Name of the NEEMSIS2 questionnaire version to clean
+global wave1 "RUME-HH"
 global wave2 "NEEMSIS1-HH"
 global wave3 "NEEMSIS2-HH"
+
+global loan1 "RUME-all_loans"
+global loan2 "NEEMSIS1-all_loans"
+global loan3 "NEEMSIS2-all_loans"
+
+* Scheme
+set scheme plotplain_v2
+grstyle init
+grstyle set plain, box nogrid
+
+********** Deflate
+*https://data.worldbank.org/indicator/FP.CPI.TOTL?locations=IN
+*(100/158) if year==2016
+*(100/184) if year==2020
+
 ****************************************
 * END
+
+
+
+
+
+
 
 
 
@@ -55,72 +75,89 @@ global wave3 "NEEMSIS2-HH"
 * Demonetisation database preparation
 ****************************************
 cls
-use "$wave2~matching_v2.dta", clear
+use "panel_v4", clear
 
-********** username
-replace username="Antoni" if username=="1"
-replace username="Antoni - Vivek Radja" if username=="1 2"
-replace username="Antoni - Raja Annamalai" if username=="1 6"
-replace username="Vivek Radja" if username=="2"
-replace username="Vivek Radja - Mayan" if username=="2 5"
-replace username="Vivek Radja - Raja Annamalai" if username=="2 6"
-replace username="Kumaresh" if username=="3"
-replace username="Kumaresh - Sithanantham" if username=="3 4"
-replace username="Kumaresh - Raja Annamalai" if username=="3 6"
-replace username="Sithanantham" if username=="4"
-replace username="Sithanantham - Raja Annamalai" if username=="4 6"
-replace username="Mayan" if username=="5"
-replace username="Mayan - Raja Annamalai" if username=="5 6"
-replace username="Raja Annamalai" if username=="6"
-replace username="Raja Annamalai - Pazhani" if username=="6 7"
-replace username="Pazhani" if username=="7"
-
-replace username="Antoni" if username=="Antoni - Vivek Radja"
-replace username="Kumaresh" if username=="Kumaresh - Raja Annamalai"
-replace username="Kumaresh" if username=="Kumaresh - Sithanantham"
-replace username="Raja Annamalai" if username=="Antoni - Raja Annamalai"
-replace username="Raja Annamalai" if username=="Mayan - Raja Annamalai"
-replace username="Raja Annamalai" if username=="Raja Annamalai - Pazhani"
-replace username="Raja Annamalai" if username=="Sithanantham - Raja Annamalai"
-replace username="Raja Annamalai" if username=="Vivek Radja - Raja Annamalai"
-replace username="Mayan" if username=="Vivek Radja - Mayan"
-
-encode username, gen(username_code)
-
-ta username_code
+********** 2016-17
+keep if year==2016
 
 
-********** HHsize
-drop if livinghome==3
-drop if livinghome==4
-bys HHID_panel: egen HHsize=sum(1)
+********** recode
+***** sex
+fre head_sex
+recode head_sex (1=0) (2=1)
+rename head_sex head_female
+label define sex2 0"Male" 1"Female"
+label values head_female sex2
+
+fre wifehusb_sex
+recode wifehusb_sex (1=0) (2=1)
+rename wifehusb_sex wifehusb_female
+label values wifehusb_female sex2
+
+fre head_female wifehusb_female
+
+***** occupation
+fre head_occupation
+recode head_occupation (5=4)
+
+fre wifehusb_occupation
+recode wifehusb_occupation (5=4)
+
+***** education
+fre head_edulevel
+recode head_edulevel (3=2) (4=2) (5=2)
+
+fre wifehusb_edulevel
+recode wifehusb_edulevel (3=2) (4=2) (5=2)
+
+***** marital status
+fre head_maritalstatus
+label define marital 1"Married" 2"Unmarried" 3"Widowed" 4"Separated/divorced"
+label values head_maritalstatus marital
+label values wifehusb_maritalstatus marital
+
+fre head_maritalstatus
+recode head_maritalstatus (2=0) (3=0) (4=0)
+
+fre wifehusb_maritalstatus
+recode wifehusb_maritalstatus (2=0) (3=0) (4=0)
+
+rename head_maritalstatus head_married
+rename wifehusb_maritalstatus wifehusb_married
+
+***** house
+fre housetype housetitle
+label define housetype 1"Concrete house (non-govt)" 2"Government/green house" 3"Thatched roof house"
+label values housetype housetype
 
 
-********** Initialization
-drop if egoid==0
+***** villagearea
+gen village_ur=.
+replace village_ur=0 if villagearea=="Colony"
+replace village_ur=1 if villagearea=="Ur"
 
-fre mainocc_occupation_indiv
-recode mainocc_occupation_indiv (.=0)
 
-global quali caste sex mainocc_occupation_indiv edulevel villageid maritalstatus username_code
-foreach x in $quali {
+********** var to keep
+global id HHID_panel dummydemonetisation
+global wealth assets_noland annualincome
+global hhcharact HHsize nbchildren dummymarriage villageid village_ur caste jatis ownland nontoworkers femtomale housetype housetitle
+global headwife head_* wifehusb_* 
+global debt1 DSR DIR DSR30 DSR40 DSR50 ISR DAR_without loanamount
+global debt2 rel_repay_amt_HH rel_formal_HH rel_informal_HH rel_eco_HH rel_current_HH rel_humank_HH rel_social_HH rel_home_HH
+global debt3 dummyIMF dummybank dummymoneylender dummyrepay dummyborrowstrat dummymigrstrat dummyassestrat
+
+global var $id $wealth $hhcharact $headwife $debt1 $debt2 $debt3
+keep $var 
+
+
+********** cat to dummy
+foreach x in villageid caste jatis housetype head_edulevel head_occupation wifehusb_edulevel wifehusb_occupation {
 ta `x', gen(`x'_)
 }
 
-global var age caste_2 caste_3 sex_2 mainocc_occupation_indiv_1 mainocc_occupation_indiv_2 mainocc_occupation_indiv_4 mainocc_occupation_indiv_5 mainocc_occupation_indiv_6 mainocc_occupation_indiv_7 mainocc_occupation_indiv_8 edulevel_2 edulevel_3 edulevel_4 edulevel_5 edulevel_6 maritalstatus_2 maritalstatus_3 maritalstatus_4 username_code_1 username_code_2 username_code_3 username_code_4 username_code_5 username_code_7
-
-global treat dummydemonetisation
-
-
-
-********** vérification des effectifs
-fre HHsize annualincome_indiv maritalstatus_2 maritalstatus_3 maritalstatus_4 villageid_2 villageid_3 villageid_4 villageid_5 villageid_6 villageid_7 villageid_8 villageid_9 villageid_10
-
-recode annualincome_indiv (.=0)
-
-********** Prepare to R
-keep f1_2016 f2_2016 f3_2016 f4_2016 f5_2016 $var $treat villageid_2 villageid_3 villageid_4 villageid_5 villageid_6 villageid_7 villageid_8 villageid_9 villageid_10 HHID_panel INDID_panel egoid cr_OP cr_CO cr_EX cr_AG cr_ES cr_Grit lit_tt num_tt raven_tt annualincome_indiv assets_noland HHsize
+********** rename
 rename dummydemonetisation treat 
+
 saveold "N1_CBPS.dta", version(12) replace
 ****************************************
 * END
@@ -189,22 +226,20 @@ graph save "ADSM_demo.gph", replace
 cls
 use "neemsis1_r.dta", clear
 
-global var age caste_2 caste_3 sex_2 mainocc_occupation_indiv_1 mainocc_occupation_indiv_2 mainocc_occupation_indiv_4 mainocc_occupation_indiv_5 mainocc_occupation_indiv_6 mainocc_occupation_indiv_7 mainocc_occupation_indiv_8 edulevel_2 edulevel_3 edulevel_4 edulevel_5 edulevel_6 maritalstatus_2 maritalstatus_3 maritalstatus_4 annualincome_indiv HHsize villageid_2 villageid_3 villageid_4 villageid_5 villageid_6 villageid_7 villageid_8 villageid_9 villageid_10 username_code_1 username_code_2 username_code_3 username_code_4 username_code_5 username_code_7
-
-
-
+global var head_age head_female head_married head_edulevel_2 head_edulevel_3 head_occupation_2 head_occupation_3 head_occupation_4 head_occupation_5 head_occupation_6 head_occupation_7 caste_2 caste_3 annualincome assets_noland HHsize nbchildren housetype_2 housetype_3 ownland villageid_2 villageid_3 villageid_4 villageid_5 villageid_6 villageid_7 villageid_8 villageid_9 villageid_10
 
 
 ********** Mean diff before weighting
 local i=0
 foreach x in $var {
 local i=`i'+1
-qui reg `x' treat
+reg `x' treat
 est store reg_`i'
 }
+estimates dir
 
 ***** Only constant
-qui esttab reg_1 reg_2 reg_3 reg_4 reg_5 reg_6 reg_7 reg_8 reg_9 reg_10 reg_11 reg_12 reg_13 reg_14 reg_15 reg_16 reg_17 reg_18 reg_19 reg_20 reg_21, replace ///
+qui esttab reg_1 reg_2 reg_3 reg_4 reg_5 reg_6 reg_7 reg_8 reg_9 reg_10 reg_11 reg_12 reg_13 reg_14 reg_15 reg_16 reg_17 reg_18 reg_19 reg_20 reg_21 reg_22 reg_23 reg_24 reg_25 reg_26 reg_27 reg_28 reg_29, replace ///
 	label b(3) p(3) eqlabels(none) ///
 	drop(treat) ///
 	cells("b(fmt(2))") ///
@@ -218,7 +253,7 @@ mat list r(coefs)
 mat rename r(coefs) cons, replace
 
 ***** Only treatment
-qui esttab reg_1 reg_2 reg_3 reg_4 reg_5 reg_6 reg_7 reg_8 reg_9 reg_10 reg_11 reg_12 reg_13 reg_14 reg_15 reg_16 reg_17 reg_18 reg_19 reg_20 reg_21, replace ///
+qui esttab reg_1 reg_2 reg_3 reg_4 reg_5 reg_6 reg_7 reg_8 reg_9 reg_10 reg_11 reg_12 reg_13 reg_14 reg_15 reg_16 reg_17 reg_18 reg_19 reg_20 reg_21 reg_22 reg_23 reg_24 reg_25 reg_26 reg_27 reg_28 reg_29, replace ///
 	label b(3) p(3) eqlabels(none) ///
 	drop(_cons) ///
 	cells("b(fmt(2))") ///
@@ -232,7 +267,7 @@ mat list r(coefs)
 mat rename r(coefs) diff, replace
 
 ***** Only t-stat
-qui esttab reg_1 reg_2 reg_3 reg_4 reg_5 reg_6 reg_7 reg_8 reg_9 reg_10 reg_11 reg_12 reg_13 reg_14 reg_15 reg_16 reg_17 reg_18 reg_19 reg_20 reg_21, replace ///
+qui esttab reg_1 reg_2 reg_3 reg_4 reg_5 reg_6 reg_7 reg_8 reg_9 reg_10 reg_11 reg_12 reg_13 reg_14 reg_15 reg_16 reg_17 reg_18 reg_19 reg_20 reg_21 reg_22 reg_23 reg_24 reg_25 reg_26 reg_27 reg_28 reg_29, replace ///
 	label b(3) p(3) eqlabels(none) ///
 	drop(_cons) ///
 	cells("t(fmt(2))") ///
@@ -257,12 +292,12 @@ matrix before=cons,diff,tstat
 local i=0
 foreach x in $var {
 local i=`i'+1
-qui reg `x' treat [pw=weight]
+reg `x' treat [pw=weights]
 est store reg_`i'
 }
 
 ***** Only constant
-qui esttab reg_1 reg_2 reg_3 reg_4 reg_5 reg_6 reg_7 reg_8 reg_9 reg_10 reg_11 reg_12 reg_13 reg_14 reg_15 reg_16 reg_17 reg_18 reg_19 reg_20 reg_21, replace ///
+qui esttab reg_1 reg_2 reg_3 reg_4 reg_5 reg_6 reg_7 reg_8 reg_9 reg_10 reg_11 reg_12 reg_13 reg_14 reg_15 reg_16 reg_17 reg_18 reg_19 reg_20 reg_21 reg_22 reg_23 reg_24 reg_25 reg_26 reg_27 reg_28 reg_29, replace ///
 	label b(3) p(3) eqlabels(none) ///
 	drop(treat) ///
 	cells("b(fmt(2))") ///
@@ -276,7 +311,7 @@ mat list r(coefs)
 mat rename r(coefs) cons, replace
 
 ***** Only treatment
-qui esttab reg_1 reg_2 reg_3 reg_4 reg_5 reg_6 reg_7 reg_8 reg_9 reg_10 reg_11 reg_12 reg_13 reg_14 reg_15 reg_16 reg_17 reg_18 reg_19 reg_20 reg_21, replace ///
+qui esttab reg_1 reg_2 reg_3 reg_4 reg_5 reg_6 reg_7 reg_8 reg_9 reg_10 reg_11 reg_12 reg_13 reg_14 reg_15 reg_16 reg_17 reg_18 reg_19 reg_20 reg_21 reg_22 reg_23 reg_24 reg_25 reg_26 reg_27 reg_28 reg_29, replace ///
 	label b(3) p(3) eqlabels(none) ///
 	drop(_cons) ///
 	cells("b(fmt(2))") ///
@@ -290,7 +325,7 @@ mat list r(coefs)
 mat rename r(coefs) diff, replace
 
 ***** Only t-stat
-qui esttab reg_1 reg_2 reg_3 reg_4 reg_5 reg_6 reg_7 reg_8 reg_9 reg_10 reg_11 reg_12 reg_13 reg_14 reg_15 reg_16 reg_17 reg_18 reg_19 reg_20 reg_21, replace ///
+qui esttab reg_1 reg_2 reg_3 reg_4 reg_5 reg_6 reg_7 reg_8 reg_9 reg_10 reg_11 reg_12 reg_13 reg_14 reg_15 reg_16 reg_17 reg_18 reg_19 reg_20 reg_21 reg_22 reg_23 reg_24 reg_25 reg_26 reg_27 reg_28 reg_29, replace ///
 	label b(3) p(3) eqlabels(none) ///
 	drop(_cons) ///
 	cells("t(fmt(2))") ///
@@ -340,9 +375,10 @@ matrix list tot
 cls
 use "neemsis1_r.dta", clear
 
-global var age caste_2 caste_3 sex_2 mainocc_occupation_indiv_1 mainocc_occupation_indiv_2 mainocc_occupation_indiv_4 mainocc_occupation_indiv_5 mainocc_occupation_indiv_6 mainocc_occupation_indiv_7 mainocc_occupation_indiv_8 edulevel_2 edulevel_3 edulevel_4 edulevel_5 edulevel_6 maritalstatus_2 maritalstatus_3 maritalstatus_4 annualincome_indiv HHsize villageid_2 villageid_3 villageid_4 villageid_5 villageid_6 villageid_7 villageid_8 villageid_9 villageid_10 username_code_1 username_code_2 username_code_3 username_code_4 username_code_5 username_code_7
+global var head_age head_female head_married head_edulevel_2 head_edulevel_3 head_occupation_2 head_occupation_3 head_occupation_4 head_occupation_5 head_occupation_6 head_occupation_7 caste_2 caste_3 annualincome assets_noland HHsize nbchildren housetype_2 housetype_3 ownland villageid_2 villageid_3 villageid_4 villageid_5 villageid_6 villageid_7 villageid_8 villageid_9 villageid_10
 
 ***** Label
+/*
 label var treat "Demonetisation (T=1)"
 label var age "Age"
 label var caste_2 "Caste: Middle"
@@ -365,11 +401,11 @@ label var maritalstatus_3 "MS: Widowed"
 label var maritalstatus_4 "MS: Divorce/separated"
 label var annualincome_indiv "Income"
 label var HHsize "HH size"
-
+*/
 
 ***** Reg
 cls
-foreach x in f1_2016 f2_2016 f3_2016 f4_2016 f5_2016 raven_tt num_tt lit_tt cr_OP cr_CO cr_EX cr_AG cr_ES cr_Grit {
+foreach x in DSR loanamount DAR_without {
 reg `x' treat $var [pw=weights]
 est store regpw_`x'
 qui reg `x' treat $var

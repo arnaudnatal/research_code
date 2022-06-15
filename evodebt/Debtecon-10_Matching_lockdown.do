@@ -20,34 +20,45 @@ Impact of lockdown
 ****************************************
 * INITIALIZATION
 ****************************************
-*clear all
+clear all
 macro drop _all
 
-
-* Scheme
-*net install schemepack, from("https://raw.githubusercontent.com/asjadnaqvi/Stata-schemes/main/schemes/") replace
-*set scheme white_tableau
-set scheme plotplain
-grstyle init
-grstyle set plain, nogrid
-
-*set scheme black_tableau
-*set scheme swift_red
+global user "Arnaud"
+global folder "Documents"
 
 ********** Path to folder "data" folder.
-*** PC
-global directory = "C:\Users\Arnaud\Documents\_Thesis\Research-Stability_skills\Analysis"
+global directory = "C:\Users\\$user\\$folder\_Thesis\Research-Overindebtedness\Persistence_over"
 cd"$directory"
-global git "C:\Users\Arnaud\Documents\GitHub"
+global git "C:\Users\\$user\\$folder\GitHub"
 
-*** Fac
-*global directory = "C:\Users\anatal\Downloads\_Thesis\Research-Stability_skills\Analysis"
-*cd "$directory"
+*Fac
+*cd "C:\Users\anatal\Downloads\_Thesis\Research-Skills_and_debt\Analysis"
+*set scheme plotplain
+
 *global git "C:\Users\anatal\Downloads\GitHub"
+*global dropbox "C:\Users\anatal\Downloads\Dropbox"
+*global thesis "C:\Users\anatal\Downloads\_Thesis\Research-Skills_and_debt\Analysis"
+
 
 ********** Name of the NEEMSIS2 questionnaire version to clean
+global wave1 "RUME-HH"
 global wave2 "NEEMSIS1-HH"
 global wave3 "NEEMSIS2-HH"
+
+global loan1 "RUME-all_loans"
+global loan2 "NEEMSIS1-all_loans"
+global loan3 "NEEMSIS2-all_loans"
+
+* Scheme
+set scheme plotplain_v2
+grstyle init
+grstyle set plain, box nogrid
+
+********** Deflate
+*https://data.worldbank.org/indicator/FP.CPI.TOTL?locations=IN
+*(100/158) if year==2016
+*(100/184) if year==2020
+
 ****************************************
 * END
 
@@ -63,7 +74,7 @@ global wave3 "NEEMSIS2-HH"
 * Lockdown database preparation
 ****************************************
 cls
-use "$wave3~matching_v2.dta", clear
+use "$wave3", clear
 
 /*
 ********** How much HH regarding date of survey?
@@ -84,13 +95,6 @@ duplicates drop HHID_panel, force
 ta swt
 restore
 */
-
-
-********** Enumerator
-fre username_str
-encode username_str, gen(username_code)
-fre username_code
-
 
 
 ********** HHsize

@@ -186,7 +186,7 @@ replace yearly_expenses=yearly_expenses*(100/184) if year==2020
 replace yearly_expenses_bis=yearly_expenses*(100/158) if year==2016
 replace yearly_expenses_bis=yearly_expenses*(100/184) if year==2020
 
-
+/*
 * Povertyline
 *Tendulkar Expert Group (2009): In 2005, another expert group chaired by Suresh Tendulkar was constituted to review the methodology for poverty estimation.
 * --> food education and health: 2010INR 816 pm pc 
@@ -214,6 +214,7 @@ replace below2=1 if expPLU2<100
 ta below caste if year==2010, col nofreq
 ta below caste if year==2016, col nofreq
 ta below caste if year==2020, col nofreq
+*/
 
 * 1000
 foreach x in loanamount_HH annualincome_HH amountownland assets assets_noland {
@@ -962,6 +963,6 @@ replace assets_noland2020=assets_noland2020/1000
 
 
 save"panel_v5_wide", replace
-clear all
+*clear all
 ****************************************
 * END
