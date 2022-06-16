@@ -52,6 +52,7 @@ global loan1 "RUME-all_loans"
 global loan2 "NEEMSIS1-all_loans"
 global loan3 "NEEMSIS2-all_loans"
 
+set matsize 5000
 
 ********** Deflate
 *https://data.worldbank.org/indicator/FP.CPI.TOTL?locations=IN
@@ -75,7 +76,93 @@ global loan3 "NEEMSIS2-all_loans"
 cls
 use"panel_v10_wide.dta", clear
 
-ta dummyvuln
+
+********** Desc var used
+***** Stat
+tabstat DSR2010 DSR2016 DSR2020 DAR_without2010 DAR_without2016 DAR_without2020 assets_noland2010 assets_noland2016 assets_noland2020, stat(mean sd p50 min max sk k)
+
+tabstat ihs_DSR2010 ihs_DSR2016 ihs_DSR2020 ihs_DAR2010 ihs_DAR2016 ihs_DAR2020 ihs_assets_noland2010 ihs_assets_noland2016 ihs_assets_noland2020, stat(mean sd p50 min max sk k)
+
+***** Corr
+*** 2010
+pwcorr DSR2010 DAR_without2010 assets_noland2010
+
+twoway ///
+(scatter DSR2010 assets_noland2010 if DAR_without2010<5, ms(oh)) ///
+(lfit DSR2010 assets_noland2010 if DAR_without2010<5) ///
+, xtitle("Assets") ytitle("DSR") legend(off) name("gph1_2010", replace) ///
+note("Correlation" "r=0.18", ring(0) pos(1) size(*1) box) aspectratio(1) graphregion(margin(zero)) 
+
+twoway ///
+(scatter DAR_without2010 assets_noland2010 if DAR_without2010<5, ms(oh)) ///
+(lfit DAR_without2010 assets_noland2010 if DAR_without2010<5) ///
+, xtitle("Assets") ytitle("DAR") legend(off) name("gph3_2010", replace) ///
+note("Correlation" "r=-0.08", ring(0) pos(1) size(*1) box) aspectratio(1) graphregion(margin(zero)) 
+
+twoway ///
+(scatter DAR_without2010 DSR2010 if DAR_without2010<5, ms(oh)) ///
+(lfit DAR_without2010 DSR2010 if DAR_without2010<5) ///
+, xtitle("DSR") ytitle("DAR") legend(off) name("gph4_2010", replace) ///
+note("Correlation" "r=0.15", ring(0) pos(1) size(*1) box) aspectratio(1) graphregion(margin(zero)) 
+
+
+*** 2016-17
+pwcorr assets_noland2016 DSR2016 DAR_without2016
+
+twoway ///
+(scatter DSR2016 assets_noland2016 if assets_noland2016<1400 & DSR2016<5 & DAR_without2016<10, ms(oh)) ///
+(lfit DSR2016 assets_noland2016 if assets_noland2016<1400 & DSR2016<5 & DAR_without2016<10) ///
+, xtitle("Assets") ytitle("DSR") legend(off) name("gph1_2016", replace) ///
+note("Correlation" "r=0.05", ring(0) pos(1) size(*1) box) aspectratio(1) graphregion(margin(zero)) 
+
+twoway ///
+(scatter DAR_without2016 assets_noland2016 if assets_noland2016<1400 & DSR2016<5 & DAR_without2016<10, ms(oh)) ///
+(lfit DAR_without2016 assets_noland2016 if assets_noland2016<1400 & DSR2016<5 & DAR_without2016<10) ///
+, xtitle("Assets") ytitle("DAR") legend(off) name("gph3_2016", replace) ///
+note("Correlation" "r=-0.13", ring(0) pos(1) size(*1) box) aspectratio(1) graphregion(margin(zero)) 
+
+twoway ///
+(scatter DAR_without2016 DSR2016 if assets_noland2016<1400 & DSR2016<5 & DAR_without2016<10, ms(oh)) ///
+(lfit DAR_without2016 DSR2016 if assets_noland2016<1400 & DSR2016<5 & DAR_without2016<10) ///
+, xtitle("DSR") ytitle("DAR") legend(off) name("gph4_2016", replace) ///
+note("Correlation" "r=-0.01", ring(0) pos(1) size(*1) box) aspectratio(1) graphregion(margin(zero)) 
+
+
+
+*** 2020-21
+pwcorr assets_noland2020 DSR2020 DAR_without2020
+
+twoway ///
+(scatter DSR2020 assets_noland2020 if assets_noland2020<1400 & DSR2020<5 & DAR_without2020<10, ms(oh)) ///
+(lfit DSR2020 assets_noland2020 if assets_noland2020<1400 & DSR2020<5 & DAR_without2020<10) ///
+, xtitle("Assets") ytitle("DSR") legend(off) name("gph1_2020", replace) ///
+note("Correlation" "r=-0.05", ring(0) pos(1) size(*1) box) aspectratio(1) graphregion(margin(zero)) 
+
+twoway ///
+(scatter DAR_without2020 assets_noland2020 if assets_noland2020<1400 & DSR2020<5 & DAR_without2020<10, ms(oh)) ///
+(lfit DAR_without2020 assets_noland2020 if assets_noland2020<1400 & DSR2020<5 & DAR_without2020<10) ///
+, xtitle("Assets") ytitle("DAR") legend(off) name("gph3_2020", replace) ///
+note("Correlation" "r=-0.17", ring(0) pos(1) size(*1) box) aspectratio(1) graphregion(margin(zero)) 
+
+twoway ///
+(scatter DAR_without2020 DSR2020 if assets_noland2020<1400 & DSR2020<5 & DAR_without2020<10, ms(oh)) ///
+(lfit DAR_without2020 DSR2020 if assets_noland2020<1400 & DSR2020<5 & DAR_without2020<10) ///
+, xtitle("DSR") ytitle("DAR") legend(off) name("gph4_2020", replace) ///
+note("Correlation" "r=0.51", ring(0) pos(1) size(*1) box) aspectratio(1) graphregion(margin(zero)) 
+
+graph combine gph1_2010 gph3_2010 gph4_2010, name(corr2010, replace) title("2010") holes(2) 
+graph export "graph\corr2010.pdf", as(pdf) replace
+
+graph combine gph1_2016 gph3_2016 gph4_2016, name(corr2016, replace) title("2016-17") holes(2)
+graph export "graph\corr2016.pdf", as(pdf) replace
+
+graph combine gph1_2020 gph3_2020 gph4_2020, name(corr2020, replace) title("2020-21") holes(2)
+graph export "graph\corr2020.pdf", as(pdf) replace
+
+
+********** Desc class
+ta cl_vuln
+ta cl_vuln dummyvuln
 
 
 ********** Caste and class
@@ -222,6 +309,9 @@ label values wifehusb_female`t' sex2
 ***** occupation
 recode head_occupation`t' (5=4)
 recode wifehusb_occupation`t' (5=4)
+label define occ 0"No occ." 1"Agri. SE" 2"Agri. casual" 3"Non-agri. casual" 4"Non-agri. reg." 6"Non-agri. SE" 7"NREGA", replace
+label values head_occupation`t' occ
+label values wifehusb_occupation`t' occ
 
 ***** education
 recode head_edulevel`t' (3=2) (4=2) (5=2)
@@ -273,12 +363,76 @@ save"panel_v11_wide.dta", replace
 ****************************************
 * ECONOMETRIC
 ****************************************
+cls
 use"panel_v11_wide.dta", clear
 
-********** Spec 1
-probit dummyvuln ib(2).caste i.villageid2010, baselevels
+foreach y in 2010 2016 2020 {
+global HH`y' i.caste i.housetype`y' HHsize`y' nbchildren`y' annualincome`y' assets_noland`y' ownland`y' i.villageid`y'
+global head`y' head_female`y' head_age`y' i.head_edulevel`y' i.head_occupation`y'
+global wife`y' wifehusb_female`y' wifehusb_age`y' i.wifehusb_edulevel`y' i.wifehusb_occupation`y'
+}
 
 
+********** Spec I
+probit dummyvuln $HH2010
+probit dummyvuln $HH2010 $head2010, baselevels
+probit dummyvuln $HH2010 $wife2010, baselevels
+probit dummyvuln $HH2010 $head2010 $wife2010, baselevels
+
+********** Spec II
+probit dummyvuln $HH2016
+probit dummyvuln $HH2016 $head2016, baselevels
+probit dummyvuln $HH2016 $wife2016, baselevels
+probit dummyvuln $HH2016 $head2016 $wife2016, baselevels
+
+********** Spec III
+probit dummyvuln $HH2020
+probit dummyvuln $HH2020 $head2020, baselevels
+probit dummyvuln $HH2020 $wife2020, baselevels
+probit dummyvuln $HH2020 $head2020 $wife2020, baselevels
+
+
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* ECONOMETRIC II
+****************************************
+cls
+use"panel_v11_wide.dta", clear
+
+********** Pseudo panel
+reshape long annualincome DSR loanamount DIR villageid head_female head_married head_age head_edulevel head_occupation wifehusb_female wifehusb_married wifehusb_age wifehusb_edulevel wifehusb_occupation assets_noland rel_repay_amt_HH rel_formal_HH rel_informal_HH rel_eco_HH rel_current_HH rel_humank_HH rel_social_HH rel_home_HH dummyIMF dummybank dummymoneylender dummyrepay dummyborrowstrat dummymigrstrat dummyassestrat DAR_without DAR_with ISR DSR30 DSR40 DSR50 ownland dummymarriage housetype housetitle HHsize nbchildren nontoworkers femtomale village_ur, i(HHID_panel) j(year)
+
+encode HHID_panel, gen(panelvar)
+xtset panelvar year
+
+global HH i.caste i.housetype HHsize nbchildren annualincome assets_noland ownland i.villageid
+global head head_female head_age i.head_edulevel i.head_occupation
+global wife wifehusb_female wifehusb_age i.wifehusb_edulevel i.wifehusb_occupation
+
+cls
+probit dummyvuln $HH i.year, cluster(panelvar) baselevels
+probit dummyvuln $HH $head i.year, cluster(panelvar) baselevels
+probit dummyvuln $HH $wife i.year, cluster(panelvar) baselevels
+probit dummyvuln $HH $head $wife i.year, cluster(panelvar) baselevels
 
 
 ****************************************
