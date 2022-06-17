@@ -136,13 +136,19 @@ gen village_ur=.
 replace village_ur=0 if villagearea=="Colony"
 replace village_ur=1 if villagearea=="Ur"
 
+***** vuln
+gen static_vuln=.
+replace static_vuln=0 if DSR<40 | DAR_without<50
+replace static_vuln=1 if DSR>=40 | DAR_without>=50
+
+
 
 ********** var to keep
 global id HHID_panel dummydemonetisation
 global wealth assets_noland annualincome
 global hhcharact HHsize nbchildren dummymarriage villageid village_ur caste jatis ownland nontoworkers femtomale housetype housetitle
 global headwife head_* wifehusb_* 
-global debt1 DSR DIR DSR30 DSR40 DSR50 ISR DAR_without loanamount
+global debt1 DSR DIR DSR30 DSR40 DSR50 ISR DAR_without loanamount static_vuln
 global debt2 rel_repay_amt_HH rel_formal_HH rel_informal_HH rel_eco_HH rel_current_HH rel_humank_HH rel_social_HH rel_home_HH
 global debt3 dummyIMF dummybank dummymoneylender dummyrepay dummyborrowstrat dummymigrstrat dummyassestrat
 
@@ -405,10 +411,11 @@ label var HHsize "HH size"
 
 ***** Reg
 cls
-foreach x in DSR loanamount DAR_without {
-reg `x' treat $var [pw=weights]
+*foreach x in DSR loanamount DAR_without {
+foreach x in static_vuln {
+probit `x' treat $var [pw=weights]
 est store regpw_`x'
-qui reg `x' treat $var
+probit `x' treat $var
 est store reg_`x'
 }
 

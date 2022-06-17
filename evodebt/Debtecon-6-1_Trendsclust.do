@@ -450,12 +450,13 @@ graph combine gph_expenses_1 gph_expenses_2 gph_expenses_3, col(2) name(gph_expe
 
 
 ***** Display
+/*
 set graph on
 foreach var in assets loanamount DAR DSR DIR expenses {
 graph display gph_`var'
 graph export "graph/trend_`var'.pdf", as(pdf) replace
 }
-
+*/
 
 ********** Name
 label define sbd_annualincome 	1"Dec-Inc" 2"Inc-Dec" 3"Sta-Dec" 4"Dec-Sta"

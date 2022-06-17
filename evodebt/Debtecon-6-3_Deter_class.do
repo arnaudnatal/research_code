@@ -407,14 +407,20 @@ foreach y in 2010 2016 2020 {
 global HH`y' i.caste i.housetype`y' HHsize`y' nbchildren`y' income`y' assets`y' ownland`y' i.villageid`y'
 global head`y' head_female`y' head_age`y' i.head_edulevel`y' i.head_occupation`y'
 global wife`y' wifehusb_female`y' wifehusb_age`y' i.wifehusb_edulevel`y' i.wifehusb_occupation`y'
+
+global typedebt`y' rel_formal_HH`y'
+global usedebt`y' rel_repay_amt_HH`y' rel_eco_HH`y' rel_current_HH`y' rel_humank_HH`y' rel_social_HH`y' rel_home_HH`y'
 }
 
 
 ********** Spec I
+cls
 probit dummyvuln $HH2010
 probit dummyvuln $HH2010 $head2010, baselevels
 probit dummyvuln $HH2010 $wife2010, baselevels
 probit dummyvuln $HH2010 $head2010 $wife2010, baselevels
+probit dummyvuln $HH2010 $head2010 $wife2010 $typedebt2010 $usedebt2010, baselevels
+
 
 ********** Spec II
 probit dummyvuln $HH2016

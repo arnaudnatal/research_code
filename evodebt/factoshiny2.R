@@ -25,11 +25,10 @@ data<-read.csv("debttrend_new_v1.csv")
 
 #--- Matrices creation
 attach(data)
-X1<-as.matrix(cbind(cat1_assets, cat1_DAR, cat1_DSR))
-X2<-as.matrix(cbind(catb1_assets, catb1_DAR, catb1_DSR))
+X<-as.matrix(cbind(cat_assets_b, cat_DAR_b, cat_DSR_b, cat_income_b))
 
 
-trend<-as.data.frame(X2)
+trend<-as.data.frame(X)
 
 detach(data)
 attach(trend)
@@ -38,14 +37,15 @@ attach(trend)
 
 
 #--- Factoshiny
- MCAshiny(trend)
+MCAshiny(trend)
 
 
 #--- MCA
+res.MCA<-MCA(trend,ncp=4,graph=FALSE)
 
 
 #--- HCPC
-
+res.HCPC<-HCPC(res.MCA,nb.clust=4,consol=TRUE,graph=FALSE)
 
 
 inert<-res.HCPC[["call"]][["t"]][["inert.gain"]]
@@ -58,5 +58,5 @@ inertia<-cbind(inert)
 
 table(vulnerable$clust)
 
-write.csv(data,"debttrend_v4.csv")
-write.csv(inertia,"inertia.csv")
+write.csv(data,"debttrend_new_v2.csv")
+#write.csv(inertia,"inertia.csv")
