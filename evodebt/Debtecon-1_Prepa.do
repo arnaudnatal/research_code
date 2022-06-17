@@ -130,8 +130,84 @@ erase "$directory\_temp$wave3.dta"
 
 
 
+/*
+****************************************
+* Same HH head
+****************************************
+use"odriis-indiv", clear
 
+keep if indivpanel_10_16_20=="Yes"
+gen ok=1 if relationshiptohead2010=="Head" & relationshiptohead2016=="Head" & relationshiptohead2020=="Head"
+bysort HHID_panel: egen sumok=sum(ok)
+ta sumok
 
+preserve
+keep if sumok==1
+duplicates drop HHID_panel ok, force
+drop if ok==.
+drop if ok==0
+ta ok
+restore 
+
+*preserve
+drop if sumok==1
+keep if relationshiptohead2010=="Head" | relationshiptohead2016=="Head" | relationshiptohead2020=="Head"
+
+order HHID_panel INDID_panel relationshiptohead2010 relationshiptohead2016 relationshiptohead2020 age2010 age2016 age2020 livinghome2016 livinghome2020
+
+replace ok=1 if HHID_panel=="ELA1" & INDID_panel=="Ind_1"
+replace ok=1 if HHID_panel=="ELA11" & INDID_panel=="Ind_"
+replace ok=1 if HHID_panel=="ELA15" & INDID_panel=="Ind_"
+replace ok=1 if HHID_panel=="ELA19" & INDID_panel=="Ind_"
+replace ok=1 if HHID_panel=="ELA21" & INDID_panel=="Ind_"
+replace ok=1 if HHID_panel=="ELA23" & INDID_panel=="Ind_"
+replace ok=1 if HHID_panel=="ELA24" & INDID_panel=="Ind_"
+replace ok=1 if HHID_panel=="ELA26" & INDID_panel=="Ind_"
+replace ok=1 if HHID_panel=="ELA27" & INDID_panel=="Ind_"
+replace ok=1 if HHID_panel=="ELA30" & INDID_panel=="Ind_"
+replace ok=1 if HHID_panel=="" & INDID_panel=="Ind_"
+replace ok=1 if HHID_panel=="" & INDID_panel=="Ind_"
+replace ok=1 if HHID_panel=="" & INDID_panel=="Ind_"
+replace ok=1 if HHID_panel=="" & INDID_panel=="Ind_"
+replace ok=1 if HHID_panel=="" & INDID_panel=="Ind_"
+replace ok=1 if HHID_panel=="" & INDID_panel=="Ind_"
+replace ok=1 if HHID_panel=="" & INDID_panel=="Ind_"
+replace ok=1 if HHID_panel=="" & INDID_panel=="Ind_"
+replace ok=1 if HHID_panel=="" & INDID_panel=="Ind_"
+replace ok=1 if HHID_panel=="" & INDID_panel=="Ind_"
+replace ok=1 if HHID_panel=="" & INDID_panel=="Ind_"
+replace ok=1 if HHID_panel=="" & INDID_panel=="Ind_"
+replace ok=1 if HHID_panel=="" & INDID_panel=="Ind_"
+replace ok=1 if HHID_panel=="" & INDID_panel=="Ind_"
+replace ok=1 if HHID_panel=="" & INDID_panel=="Ind_"
+replace ok=1 if HHID_panel=="" & INDID_panel=="Ind_"
+replace ok=1 if HHID_panel=="" & INDID_panel=="Ind_"
+replace ok=1 if HHID_panel=="" & INDID_panel=="Ind_"
+replace ok=1 if HHID_panel=="" & INDID_panel=="Ind_"
+replace ok=1 if HHID_panel=="" & INDID_panel=="Ind_"
+replace ok=1 if HHID_panel=="" & INDID_panel=="Ind_"
+replace ok=1 if HHID_panel=="" & INDID_panel=="Ind_"
+replace ok=1 if HHID_panel=="" & INDID_panel=="Ind_"
+replace ok=1 if HHID_panel=="" & INDID_panel=="Ind_"
+replace ok=1 if HHID_panel=="" & INDID_panel=="Ind_"
+replace ok=1 if HHID_panel=="" & INDID_panel=="Ind_"
+replace ok=1 if HHID_panel=="" & INDID_panel=="Ind_"
+replace ok=1 if HHID_panel=="" & INDID_panel=="Ind_"
+replace ok=1 if HHID_panel=="" & INDID_panel=="Ind_"
+replace ok=1 if HHID_panel=="" & INDID_panel=="Ind_"
+replace ok=1 if HHID_panel=="" & INDID_panel=="Ind_"
+replace ok=1 if HHID_panel=="" & INDID_panel=="Ind_"
+replace ok=1 if HHID_panel=="" & INDID_panel=="Ind_"
+replace ok=1 if HHID_panel=="" & INDID_panel=="Ind_"
+replace ok=1 if HHID_panel=="" & INDID_panel=="Ind_"
+replace ok=1 if HHID_panel=="" & INDID_panel=="Ind_"
+replace ok=1 if HHID_panel=="" & INDID_panel=="Ind_"
+replace ok=1 if HHID_panel=="" & INDID_panel=="Ind_"
+replace ok=1 if HHID_panel=="" & INDID_panel=="Ind_"
+
+****************************************
+* END
+*/
 
 
 
@@ -843,7 +919,7 @@ global expenses foodexpenses healthexpenses ceremoniesexpenses ceremoniesrelativ
 global dep loanamount_HH loans_HH imp1_ds_tot_HH imp1_is_tot_HH
 global indep villageid villagearea religion jatis caste assets annualincome_HH nboccupation_HH foodexpenses educationexpenses healthexpenses ceremoniesexpenses deathexpenses HHsize housetype housetitle houseroom nbchildren_HH nontoworkers_HH femtomale_HH head_sex head_maritalstatus head_age head_edulevel head_occupation wifehusb_sex wifehusb_maritalstatus wifehusb_age wifehusb_edulevel wifehusb_occupation sizeownland amountownland ownland goldquantity goldquantityamount dummymarriage marriageexpenses_HH assets_noland occinc_HH_agri occinc_HH_agricasual occinc_HH_nonagricasual occinc_HH_nonagriregnonqual occinc_HH_nonagriregqual occinc_HH_selfemp occinc_HH_nrega $asse $nature religion $expenses
  
-keep HHID_panel year $dep $indep
+keep HHID_panel year $dep $indep mainocc_occupation_HH
 
 *Occupation
 preserve

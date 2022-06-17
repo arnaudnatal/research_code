@@ -73,19 +73,7 @@ global loan3 "NEEMSIS2-all_loans"
 * Static vulnerability
 ****************************************
 cls
-use"panel_v10_wide", clear
-
-
-********** Rename 
-foreach x in 2010 2016 2020 {
-rename DAR_without`x' DAR`x'
-rename assets_noland`x' assets`x'
-rename annualincome`x' income`x'
-rename yearly_expenses`x' expenses`x'
-rename ihs_annualincome`x' ihs_income`x'
-rename ihs_assets_noland`x' ihs_assets`x'
-}
-
+use"panel_v11_wide", clear
 
 
 ********** ML
@@ -127,19 +115,13 @@ yla(, ang(h)) xla(, noticks)
 
 
 
-********** Main
-foreach x in 2010 2016 2020 {
-gen mainvuln`x'=.
-replace mainvuln`x'=0 if DSR`x'<.4 | DAR`x'<.5
-replace mainvuln`x'=1 if DSR`x'>=.4 | DAR`x'>=.5
-}
-
-ta mainvuln2010 caste, chi2 col nofreq
-ta mainvuln2016 caste, chi2 col nofreq
-ta mainvuln2020 caste, chi2 col nofreq
+***** Verif main
+ta static_vuln2010 caste, chi2 col nofreq
+ta static_vuln2016 caste, chi2 col nofreq
+ta static_vuln2020 caste, chi2 col nofreq
 
 
-save "panel_v11_wide", replace
+save "panel_v12_wide", replace
 ****************************************
 * END
 
@@ -154,7 +136,7 @@ save "panel_v11_wide", replace
 * Dyanmic between 2010-2016 and 2016-2020
 ****************************************
 cls
-use"panel_v11_wide", clear
+use"panel_v12_wide", clear
 
 
 
@@ -165,9 +147,6 @@ gen de2_`x'=(`x'2020-`x'2016)*100/`x'2016
 
 replace de1_`x'=`x'2016 if `x'2010==0
 replace de2_`x'=`x'2020 if `x'2016==0
-
-gen di1_`x'=`x'2016-`x'2010
-gen di2_`x'=`x'2020-`x'2016
 }
 
 
@@ -200,44 +179,44 @@ label values catb2_`x' cut2
 
 ********** Vuln variable
 forvalues i=1(1)2 {
-egen vuln_c`i'=group(catb`i'_assets catb`i'_DSR catb`i'_DAR), label
+egen grp_vuln`i'=group(catb`i'_assets catb`i'_DSR catb`i'_DAR), label
 
-gen dummyvuln_c`i'=.
-replace dummyvuln_c`i'=1 if catb`i'_assets==-1 & catb`i'_DAR==-1 & catb`i'_DSR==-1
-replace dummyvuln_c`i'=1 if catb`i'_assets==-1 & catb`i'_DAR==-1 & catb`i'_DSR==0
-replace dummyvuln_c`i'=1 if catb`i'_assets==-1 & catb`i'_DAR==-1 & catb`i'_DSR==1
-replace dummyvuln_c`i'=1 if catb`i'_assets==-1 & catb`i'_DAR==0 & catb`i'_DSR==-1
-replace dummyvuln_c`i'=1 if catb`i'_assets==-1 & catb`i'_DAR==0 & catb`i'_DSR==0
-replace dummyvuln_c`i'=1 if catb`i'_assets==-1 & catb`i'_DAR==0 & catb`i'_DSR==1
-replace dummyvuln_c`i'=1 if catb`i'_assets==-1 & catb`i'_DAR==1 & catb`i'_DSR==-1
-replace dummyvuln_c`i'=1 if catb`i'_assets==-1 & catb`i'_DAR==1 & catb`i'_DSR==0
-replace dummyvuln_c`i'=1 if catb`i'_assets==-1 & catb`i'_DAR==1 & catb`i'_DSR==1
-replace dummyvuln_c`i'=0 if catb`i'_assets==0 & catb`i'_DAR==-1 & catb`i'_DSR==-1
-replace dummyvuln_c`i'=0 if catb`i'_assets==0 & catb`i'_DAR==-1 & catb`i'_DSR==0
-replace dummyvuln_c`i'=0 if catb`i'_assets==0 & catb`i'_DAR==-1 & catb`i'_DSR==1
-replace dummyvuln_c`i'=0 if catb`i'_assets==0 & catb`i'_DAR==0 & catb`i'_DSR==-1
-replace dummyvuln_c`i'=0 if catb`i'_assets==0 & catb`i'_DAR==0 & catb`i'_DSR==0
-replace dummyvuln_c`i'=1 if catb`i'_assets==0 & catb`i'_DAR==0 & catb`i'_DSR==1
-replace dummyvuln_c`i'=1 if catb`i'_assets==0 & catb`i'_DAR==1 & catb`i'_DSR==-1
-replace dummyvuln_c`i'=1 if catb`i'_assets==0 & catb`i'_DAR==1 & catb`i'_DSR==0
-replace dummyvuln_c`i'=1 if catb`i'_assets==0 & catb`i'_DAR==1 & catb`i'_DSR==1
-replace dummyvuln_c`i'=0 if catb`i'_assets==1 & catb`i'_DAR==-1 & catb`i'_DSR==-1
-replace dummyvuln_c`i'=0 if catb`i'_assets==1 & catb`i'_DAR==-1 & catb`i'_DSR==0
-replace dummyvuln_c`i'=0 if catb`i'_assets==1 & catb`i'_DAR==-1 & catb`i'_DSR==1
-replace dummyvuln_c`i'=0 if catb`i'_assets==1 & catb`i'_DAR==0 & catb`i'_DSR==-1
-replace dummyvuln_c`i'=0 if catb`i'_assets==1 & catb`i'_DAR==0 & catb`i'_DSR==0
-replace dummyvuln_c`i'=0 if catb`i'_assets==1 & catb`i'_DAR==0 & catb`i'_DSR==1
-replace dummyvuln_c`i'=0 if catb`i'_assets==1 & catb`i'_DAR==1 & catb`i'_DSR==-1
-replace dummyvuln_c`i'=1 if catb`i'_assets==1 & catb`i'_DAR==1 & catb`i'_DSR==0
-replace dummyvuln_c`i'=1 if catb`i'_assets==1 & catb`i'_DAR==1 & catb`i'_DSR==1
+gen dynadummyvuln`i'=.
+replace dynadummyvuln`i'=1 if catb`i'_assets==-1 & catb`i'_DAR==-1 & catb`i'_DSR==-1
+replace dynadummyvuln`i'=1 if catb`i'_assets==-1 & catb`i'_DAR==-1 & catb`i'_DSR==0
+replace dynadummyvuln`i'=1 if catb`i'_assets==-1 & catb`i'_DAR==-1 & catb`i'_DSR==1
+replace dynadummyvuln`i'=1 if catb`i'_assets==-1 & catb`i'_DAR==0 & catb`i'_DSR==-1
+replace dynadummyvuln`i'=1 if catb`i'_assets==-1 & catb`i'_DAR==0 & catb`i'_DSR==0
+replace dynadummyvuln`i'=1 if catb`i'_assets==-1 & catb`i'_DAR==0 & catb`i'_DSR==1
+replace dynadummyvuln`i'=1 if catb`i'_assets==-1 & catb`i'_DAR==1 & catb`i'_DSR==-1
+replace dynadummyvuln`i'=1 if catb`i'_assets==-1 & catb`i'_DAR==1 & catb`i'_DSR==0
+replace dynadummyvuln`i'=1 if catb`i'_assets==-1 & catb`i'_DAR==1 & catb`i'_DSR==1
+replace dynadummyvuln`i'=0 if catb`i'_assets==0 & catb`i'_DAR==-1 & catb`i'_DSR==-1
+replace dynadummyvuln`i'=0 if catb`i'_assets==0 & catb`i'_DAR==-1 & catb`i'_DSR==0
+replace dynadummyvuln`i'=0 if catb`i'_assets==0 & catb`i'_DAR==-1 & catb`i'_DSR==1
+replace dynadummyvuln`i'=0 if catb`i'_assets==0 & catb`i'_DAR==0 & catb`i'_DSR==-1
+replace dynadummyvuln`i'=0 if catb`i'_assets==0 & catb`i'_DAR==0 & catb`i'_DSR==0
+replace dynadummyvuln`i'=1 if catb`i'_assets==0 & catb`i'_DAR==0 & catb`i'_DSR==1
+replace dynadummyvuln`i'=1 if catb`i'_assets==0 & catb`i'_DAR==1 & catb`i'_DSR==-1
+replace dynadummyvuln`i'=1 if catb`i'_assets==0 & catb`i'_DAR==1 & catb`i'_DSR==0
+replace dynadummyvuln`i'=1 if catb`i'_assets==0 & catb`i'_DAR==1 & catb`i'_DSR==1
+replace dynadummyvuln`i'=0 if catb`i'_assets==1 & catb`i'_DAR==-1 & catb`i'_DSR==-1
+replace dynadummyvuln`i'=0 if catb`i'_assets==1 & catb`i'_DAR==-1 & catb`i'_DSR==0
+replace dynadummyvuln`i'=0 if catb`i'_assets==1 & catb`i'_DAR==-1 & catb`i'_DSR==1
+replace dynadummyvuln`i'=0 if catb`i'_assets==1 & catb`i'_DAR==0 & catb`i'_DSR==-1
+replace dynadummyvuln`i'=0 if catb`i'_assets==1 & catb`i'_DAR==0 & catb`i'_DSR==0
+replace dynadummyvuln`i'=0 if catb`i'_assets==1 & catb`i'_DAR==0 & catb`i'_DSR==1
+replace dynadummyvuln`i'=0 if catb`i'_assets==1 & catb`i'_DAR==1 & catb`i'_DSR==-1
+replace dynadummyvuln`i'=1 if catb`i'_assets==1 & catb`i'_DAR==1 & catb`i'_DSR==0
+replace dynadummyvuln`i'=1 if catb`i'_assets==1 & catb`i'_DAR==1 & catb`i'_DSR==1
 }
 
-ta dummyvuln_c1, m
-ta dummyvuln_c2, m
-ta dummyvuln_c1 dummyvuln_c2, row nofreq
+ta dynadummyvuln1, m
+ta dynadummyvuln2, m
+ta dynadummyvuln1 dynadummyvuln2, row nofreq
 
-ta dummyvuln_c1 caste, m exp cchi2
-ta dummyvuln_c2 caste, m exp cchi2
+ta dynadummyvuln1 caste, m exp cchi2
+ta dynadummyvuln2 caste, m exp cchi2
 
 
 
@@ -248,16 +227,47 @@ xtile t_assets`t'=assets`t', n(3)
 }
 
 
-ta dummyvuln_c1 t_income2010, chi2 exp cchi2
-ta dummyvuln_c1 t_assets2010, chi2 exp cchi2
+ta dynadummyvuln1 t_income2010, chi2 exp cchi2
+ta dynadummyvuln1 t_assets2010, chi2 exp cchi2
 
-ta dummyvuln_c2 t_income2016, chi2 exp cchi2
-ta dummyvuln_c2 t_assets2016, chi2 exp cchi2
+ta dynadummyvuln2 t_income2016, chi2 exp cchi2
+ta dynadummyvuln2 t_assets2016, chi2 exp cchi2
 
-ta t_assets2010 t_assets2016 if dummyvuln_c1==1, row nofreq
+ta t_assets2010 t_assets2016 if dynadummyvuln1==1, row nofreq
 
 
-save "panel_v12_wide", replace
+
+********** All diff var
+***** Quanti: first diff
+foreach x in income assets nbchildren HHsize rel_repay_amt_HH rel_formal_HH rel_informal_HH rel_eco_HH rel_current_HH rel_humank_HH rel_social_HH rel_home_HH repay_amt_HH formal_HH informal_HH eco_HH current_HH humank_HH social_HH home_HH {
+gen `x'_v1=`x'2016-`x'2010
+gen `x'_v2=`x'2020-`x'2016
+}
+
+
+cls
+***** Quali: change
+
+***
+/*
+Before: agri agri
+*/
+fre mainocc_occupation2016
+foreach x in 2010 2016 2020 {
+clonevar occupation`x'=mainocc_occupation`x'
+recode occupation`x' (2=1) (3=2) (4=2) (6=2) (7=2)
+label define occup 1"Agri." 2"Non-agri.", replace
+label values occupation`x' occup 
+}
+***
+foreach x in mainocc_occupation housetype housetitle ownland occupation {
+ta `x'2010 `x'2016
+ta `x'2016 `x'2020
+egen `x'_v1=group(`x'2010 `x'2016), label
+egen `x'_v2=group(`x'2016 `x'2020), label
+}
+
+save "panel_v13_wide", replace
 ****************************************
 * END
 
@@ -271,21 +281,96 @@ save "panel_v12_wide", replace
 
 
 ****************************************
-* Desc
+* Reshape long --> one line, one year
 ****************************************
 cls
-use"panel_v12_wide", clear
+use"panel_v13_wide", clear
+
+reshape long grp_vuln dynadummyvuln income_v assets_v nbchildren_v HHsize_v rel_repay_amt_HH_v rel_formal_HH_v rel_informal_HH_v rel_eco_HH_v rel_current_HH_v rel_humank_HH_v rel_social_HH_v rel_home_HH_v repay_amt_HH_v formal_HH_v informal_HH_v eco_HH_v current_HH_v humank_HH_v social_HH_v home_HH_v mainocc_occupation_v housetype_v housetitle_v ownland_v occupation_v, i(HHID_panel) j(p)
+xtset panelvar p
+
+fre occupation_v
+xtprobit dynadummyvuln i.caste i.occupation_v, baselevel
 
 
-ta mainvuln2010 dummyvuln_c1, row nofreq
-ta mainvuln2016 dummyvuln_c1, row nofreq
-
-ta mainvuln2016 dummyvuln_c2, row nofreq
-ta mainvuln2020 dummyvuln_c2, row nofreq
+save "panel_v13_long", replace
+****************************************
+* END
 
 
 
 
+
+
+
+
+****************************************
+* Analysis 1
+****************************************
+cls
+use"panel_v13_wide", clear
+
+
+********** Step 1: Static analysis of financial vulnerability
+
+ta static_vuln2010
+ta static_vuln2016
+ta static_vuln2020
+
+/*
+Why not CRO model for caste integration?
+However, not take into account the fact that financial vulnerability is 
+a dynamic phenomenon.
+Thus, we investigate the dynamic of financial vulnerability in step 2
+*/
+
+
+
+
+********** Step 2: Dynamic analysis of financial vulnerability
+
+ta dynadummyvuln1
+ta dynadummyvuln2
+
+ta static_vuln2010 dynadummyvuln1, row nofreq chi2
+ta static_vuln2016 dynadummyvuln2, row nofreq chi2
+
+
+/*
+Same: CRE model with 2 obs/indv: d1 and d2
+Vuln = a + b*change in occupation + c*change in income + e
+
+Split the analysis between those who are financial vulnerable in t (with
+static measure) and those who are not.
+*/
+
+***** X var
+ta head_occupation2010 head_occupation2016
+
+
+****************************************
+* END
+
+
+
+
+
+
+
+****************************************
+* Analysis 2
+****************************************
+cls
+use"panel_v13_wide", clear
+
+/*
+Level of financial vulnerability in 2010;
+Look at the dynamic over 10 years
+Then look at the level of financial vulnerability in 2020.
+*/
+
+ta static_vuln2010 dummyvuln, row
+ta static_vuln2020 dummyvuln, row
 
 
 ****************************************
