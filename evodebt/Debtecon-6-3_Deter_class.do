@@ -344,28 +344,6 @@ global debt3 dummyIMF* dummybank* dummymoneylender* dummyrepay* dummyborrowstrat
 global var $id $wealth $hhcharact $headwife $debt1 $debt2 $debt3
 keep $var 
 
-
-save"panel_v11_wide.dta", replace
-
-****************************************
-* END
-
-
-
-
-
-
-
-
-
-
-
-****************************************
-* ECONOMETRIC
-****************************************
-cls
-use"panel_v11_wide.dta", clear
-
 foreach y in 2010 2016 2020 {
 global HH`y' i.caste i.housetype`y' HHsize`y' nbchildren`y' annualincome`y' assets_noland`y' ownland`y' i.villageid`y'
 global head`y' head_female`y' head_age`y' i.head_edulevel`y' i.head_occupation`y'
@@ -390,50 +368,6 @@ probit dummyvuln $HH2020
 probit dummyvuln $HH2020 $head2020, baselevels
 probit dummyvuln $HH2020 $wife2020, baselevels
 probit dummyvuln $HH2020 $head2020 $wife2020, baselevels
-
-
-****************************************
-* END
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-****************************************
-* ECONOMETRIC II
-****************************************
-cls
-use"panel_v11_wide.dta", clear
-
-********** Pseudo panel
-reshape long annualincome DSR loanamount DIR villageid head_female head_married head_age head_edulevel head_occupation wifehusb_female wifehusb_married wifehusb_age wifehusb_edulevel wifehusb_occupation assets_noland rel_repay_amt_HH rel_formal_HH rel_informal_HH rel_eco_HH rel_current_HH rel_humank_HH rel_social_HH rel_home_HH dummyIMF dummybank dummymoneylender dummyrepay dummyborrowstrat dummymigrstrat dummyassestrat DAR_without DAR_with ISR DSR30 DSR40 DSR50 ownland dummymarriage housetype housetitle HHsize nbchildren nontoworkers femtomale village_ur, i(HHID_panel) j(year)
-
-encode HHID_panel, gen(panelvar)
-xtset panelvar year
-
-global HH i.caste i.housetype HHsize nbchildren annualincome assets_noland ownland i.villageid
-global head head_female head_age i.head_edulevel i.head_occupation
-global wife wifehusb_female wifehusb_age i.wifehusb_edulevel i.wifehusb_occupation
-
-cls
-probit dummyvuln $HH i.year, cluster(panelvar) baselevels
-probit dummyvuln $HH $head i.year, cluster(panelvar) baselevels
-probit dummyvuln $HH $wife i.year, cluster(panelvar) baselevels
-probit dummyvuln $HH $head $wife i.year, cluster(panelvar) baselevels
-
 
 ****************************************
 * END
