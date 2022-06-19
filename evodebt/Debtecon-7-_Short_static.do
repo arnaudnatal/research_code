@@ -143,6 +143,38 @@ tabstat DSR2016 DAR2016 assets2016, stat(n q) by(static_ml_vuln2016)
 tabstat DSR2020 DAR2020 assets2020, stat(n q) by(static_ml_vuln2020)
 
 
+
+
+
+
+********* Program
+program define stripgraph
+stripplot `1', over(dummyvuln) vert ///
+stack width(0.05) jitter(0) ///
+box(barw(0.1)) boffset(-0.1) pctile(10) ///
+ms(oh oh oh) msize(small) mc(red%30) ///
+yla(, ang(h)) xla(, noticks)
+end
+
+stripgraph assets2010
+
+
+********** Monte Carlo
+program define loinorm, rclass
+syntax [, obs(integer 1) mu(real 0) sigma(real 1)]
+drop _all
+set obs `obs'
+tempvar z
+gen z=exp(`mu'+`sigma'*invnorm(uniform()))
+sum `z'
+return scalar mean=r(mean)
+return scalar Var=r(Var)
+end
+
+clear all
+loinorm
+
+
 save "panel_v12_wide", replace
 ****************************************
 * END
