@@ -156,10 +156,11 @@ ms(oh oh oh) msize(small) mc(red%30) ///
 yla(, ang(h)) xla(, noticks)
 end
 
-stripgraph assets2010
+*stripgraph assets2010
 
 
 ********** Monte Carlo
+/*
 program define loinorm, rclass
 syntax [, obs(integer 1) mu(real 0) sigma(real 1)]
 drop _all
@@ -173,7 +174,7 @@ end
 
 clear all
 loinorm
-
+*/
 
 save "panel_v12_wide", replace
 ****************************************
@@ -201,6 +202,10 @@ gen de2_`x'=(`x'2020-`x'2016)*100/`x'2016
 
 replace de1_`x'=`x'2016 if `x'2010==0
 replace de2_`x'=`x'2020 if `x'2016==0
+
+gen di1_`x'=`x'2016-`x'2010
+gen di2_`x'=`x'2020-`x'2016
+
 }
 
 
@@ -236,6 +241,15 @@ label values cat_`x'_b2 cut2
 ********** R 
 preserve
 keep HHID_panel cat_assets_b* cat_DAR_b* cat_DSR_b* cat_income_b* cat_ISR_b* cat_expenses_b*
+
+/*
+foreach i in 1 2 {
+foreach x in assets DAR DSR income ISR expenses {
+rename di`i'_`x' di_`x'`i'
+rename de`i'_`x' de_`x'`i'
+}
+}
+*/
 reshape long cat_assets_b cat_DAR_b cat_DSR_b cat_income_b cat_ISR_b cat_expenses_b, i(HHID_panel) j(tempo)
 export delimited using "$git\research_code\evodebt\debttrend_new_v1.csv", replace
 restore
