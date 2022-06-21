@@ -242,8 +242,16 @@ ta dubvuln1
 ta dubvuln2
 
 
+********** Var creation
+foreach x in assets income DSR DAR {
+foreach y in 2010 2016 2020 {
+xtile `x'_q`y'=`x'`y', n(3)
+}
+}
+
+
 ***** Clean
-foreach x in income DSR loanamount DIR villageid sizeownland mainocc_occupation head_female head_married head_age head_edulevel head_occupation wifehusb_female wifehusb_married wifehusb_age wifehusb_edulevel wifehusb_occupation expenses assets villagearea agri nagri shareagri sharenagri repay_amt_HH rel_repay_amt_HH rel_formal_HH rel_informal_HH rel_eco_HH rel_current_HH rel_humank_HH rel_social_HH rel_home_HH rel_other_HH informal_HH formal_HH eco_HH current_HH humank_HH social_HH home_HH other_HH lf_IMF_nb_HH lf_IMF_amt_HH lf_bank_nb_HH lf_bank_amt_HH lf_moneylender_nb_HH lf_moneylender_amt_HH repay_nb_HH MLborrowstrat_nb_HH MLborrowstrat_amt_HH MLgooddebt_nb_HH MLgooddebt_amt_HH MLbaddebt_nb_HH MLbaddebt_amt_HH MLstrat_asse_nb_HH MLstrat_asse_amt_HH MLstrat_migr_nb_HH MLstrat_migr_amt_HH mainloan_HH mainloan_amt_HH rel_lf_IMF_amt_HH rel_lf_bank_amt_HH rel_lf_moneylender_amt_HH rel_mainloan_amt_HH rel_MLborrowstrat_amt_HH rel_MLbaddebt_amt_HH rel_MLgooddebt_amt_HH rel_MLstrat_asse_amt_HH rel_MLstrat_migr_amt_HH dummyIMF dummybank dummymoneylender dummyrepay dummyborrowstrat dummymigrstrat dummyassestrat sum_loans_HH DAR DAR_with ISR DSR30 DSR40 DSR50 ihs_ISR ihs_DAR ihs_DSR ihs_DIR ihs_DIR10 ihs_DIR100 ihs_DIR1000 ihs_DIR10000 ihs_loanamount ihs_income ihs_assets ihs_yearly_expenses ihs_informal_HH ihs_rel_informal_HH ihs_formal_HH ihs_rel_formal_HH ihs_eco_HH ihs_rel_eco_HH ihs_current_HH ihs_rel_current_HH ihs_humank_HH ihs_rel_humank_HH ihs_social_HH ihs_rel_social_HH ihs_home_HH ihs_rel_home_HH ihs_repay_amt_HH ihs_rel_repay_amt_HH ownland dummymarriage housetype housetitle HHsize nbchildren nontoworkers femtomale village_ur occupation {
+foreach x in income DSR loanamount DIR villageid sizeownland mainocc_occupation head_female head_married head_age head_edulevel head_occupation wifehusb_female wifehusb_married wifehusb_age wifehusb_edulevel wifehusb_occupation expenses assets villagearea agri nagri shareagri sharenagri repay_amt_HH rel_repay_amt_HH rel_formal_HH rel_informal_HH rel_eco_HH rel_current_HH rel_humank_HH rel_social_HH rel_home_HH rel_other_HH informal_HH formal_HH eco_HH current_HH humank_HH social_HH home_HH other_HH lf_IMF_nb_HH lf_IMF_amt_HH lf_bank_nb_HH lf_bank_amt_HH lf_moneylender_nb_HH lf_moneylender_amt_HH repay_nb_HH MLborrowstrat_nb_HH MLborrowstrat_amt_HH MLgooddebt_nb_HH MLgooddebt_amt_HH MLbaddebt_nb_HH MLbaddebt_amt_HH MLstrat_asse_nb_HH MLstrat_asse_amt_HH MLstrat_migr_nb_HH MLstrat_migr_amt_HH mainloan_HH mainloan_amt_HH rel_lf_IMF_amt_HH rel_lf_bank_amt_HH rel_lf_moneylender_amt_HH rel_mainloan_amt_HH rel_MLborrowstrat_amt_HH rel_MLbaddebt_amt_HH rel_MLgooddebt_amt_HH rel_MLstrat_asse_amt_HH rel_MLstrat_migr_amt_HH dummyIMF dummybank dummymoneylender dummyrepay dummyborrowstrat dummymigrstrat dummyassestrat sum_loans_HH DAR DAR_with ISR DSR30 DSR40 DSR50 ihs_ISR ihs_DAR ihs_DSR ihs_DIR ihs_DIR10 ihs_DIR100 ihs_DIR1000 ihs_DIR10000 ihs_loanamount ihs_income ihs_assets ihs_yearly_expenses ihs_informal_HH ihs_rel_informal_HH ihs_formal_HH ihs_rel_formal_HH ihs_eco_HH ihs_rel_eco_HH ihs_current_HH ihs_rel_current_HH ihs_humank_HH ihs_rel_humank_HH ihs_social_HH ihs_rel_social_HH ihs_home_HH ihs_rel_home_HH ihs_repay_amt_HH ihs_rel_repay_amt_HH ownland dummymarriage housetype housetitle HHsize nbchildren nontoworkers femtomale village_ur occupation assets_q income_q DSR_q DAR_q  {
 rename `x'2010 `x'1
 rename `x'2016 `x'2
 drop `x'2020
@@ -255,65 +263,9 @@ drop if caste2010==. & caste2016==. & caste2020!=.
 
 
 ********** Reshape
-reshape long ubclust bclust dbvuln dubvuln income_v assets_v nbchildren_v HHsize_v rel_repay_amt_HH_v rel_formal_HH_v rel_informal_HH_v rel_eco_HH_v rel_current_HH_v rel_humank_HH_v rel_social_HH_v rel_home_HH_v repay_amt_HH_v formal_HH_v informal_HH_v eco_HH_v current_HH_v humank_HH_v social_HH_v home_HH_v mainocc_occupation_v housetype_v housetitle_v ownland_v occupation_v income DSR loanamount DIR villageid sizeownland mainocc_occupation head_female head_married head_age head_edulevel head_occupation wifehusb_female wifehusb_married wifehusb_age wifehusb_edulevel wifehusb_occupation expenses assets villagearea agri nagri shareagri sharenagri repay_amt_HH rel_repay_amt_HH rel_formal_HH rel_informal_HH rel_eco_HH rel_current_HH rel_humank_HH rel_social_HH rel_home_HH rel_other_HH informal_HH formal_HH eco_HH current_HH humank_HH social_HH home_HH other_HH lf_IMF_nb_HH lf_IMF_amt_HH lf_bank_nb_HH lf_bank_amt_HH lf_moneylender_nb_HH lf_moneylender_amt_HH repay_nb_HH MLborrowstrat_nb_HH MLborrowstrat_amt_HH MLgooddebt_nb_HH MLgooddebt_amt_HH MLbaddebt_nb_HH MLbaddebt_amt_HH MLstrat_asse_nb_HH MLstrat_asse_amt_HH MLstrat_migr_nb_HH MLstrat_migr_amt_HH mainloan_HH mainloan_amt_HH rel_lf_IMF_amt_HH rel_lf_bank_amt_HH rel_lf_moneylender_amt_HH rel_mainloan_amt_HH rel_MLborrowstrat_amt_HH rel_MLbaddebt_amt_HH rel_MLgooddebt_amt_HH rel_MLstrat_asse_amt_HH rel_MLstrat_migr_amt_HH dummyIMF dummybank dummymoneylender dummyrepay dummyborrowstrat dummymigrstrat dummyassestrat sum_loans_HH DAR DAR_with ISR DSR30 DSR40 DSR50 ihs_ISR ihs_DAR ihs_DSR ihs_DIR ihs_DIR10 ihs_DIR100 ihs_DIR1000 ihs_DIR10000 ihs_loanamount ihs_income ihs_assets ihs_yearly_expenses ihs_informal_HH ihs_rel_informal_HH ihs_formal_HH ihs_rel_formal_HH ihs_eco_HH ihs_rel_eco_HH ihs_current_HH ihs_rel_current_HH ihs_humank_HH ihs_rel_humank_HH ihs_social_HH ihs_rel_social_HH ihs_home_HH ihs_rel_home_HH ihs_repay_amt_HH ihs_rel_repay_amt_HH ownland dummymarriage housetype housetitle HHsize nbchildren nontoworkers femtomale village_ur static_vuln km static_ml_vuln occupation dummy_income_v dummy_assets_v dummy_nbchildren_v dummy_HHsize_v dummy_rel_repay_amt_HH_v dummy_rel_formal_HH_v dummy_rel_eco_HH_v dummy_rel_current_HH_v dummy_rel_humank_HH_v dummy_rel_social_HH_v dummy_rel_home_HH_v, i(HHID_panel) j(p)
+reshape long ubclust bclust dbvuln dubvuln income_v assets_v nbchildren_v HHsize_v rel_repay_amt_HH_v rel_formal_HH_v rel_informal_HH_v rel_eco_HH_v rel_current_HH_v rel_humank_HH_v rel_social_HH_v rel_home_HH_v repay_amt_HH_v formal_HH_v informal_HH_v eco_HH_v current_HH_v humank_HH_v social_HH_v home_HH_v mainocc_occupation_v housetype_v housetitle_v ownland_v occupation_v income DSR loanamount DIR villageid sizeownland mainocc_occupation head_female head_married head_age head_edulevel head_occupation wifehusb_female wifehusb_married wifehusb_age wifehusb_edulevel wifehusb_occupation expenses assets villagearea agri nagri shareagri sharenagri repay_amt_HH rel_repay_amt_HH rel_formal_HH rel_informal_HH rel_eco_HH rel_current_HH rel_humank_HH rel_social_HH rel_home_HH rel_other_HH informal_HH formal_HH eco_HH current_HH humank_HH social_HH home_HH other_HH lf_IMF_nb_HH lf_IMF_amt_HH lf_bank_nb_HH lf_bank_amt_HH lf_moneylender_nb_HH lf_moneylender_amt_HH repay_nb_HH MLborrowstrat_nb_HH MLborrowstrat_amt_HH MLgooddebt_nb_HH MLgooddebt_amt_HH MLbaddebt_nb_HH MLbaddebt_amt_HH MLstrat_asse_nb_HH MLstrat_asse_amt_HH MLstrat_migr_nb_HH MLstrat_migr_amt_HH mainloan_HH mainloan_amt_HH rel_lf_IMF_amt_HH rel_lf_bank_amt_HH rel_lf_moneylender_amt_HH rel_mainloan_amt_HH rel_MLborrowstrat_amt_HH rel_MLbaddebt_amt_HH rel_MLgooddebt_amt_HH rel_MLstrat_asse_amt_HH rel_MLstrat_migr_amt_HH dummyIMF dummybank dummymoneylender dummyrepay dummyborrowstrat dummymigrstrat dummyassestrat sum_loans_HH DAR DAR_with ISR DSR30 DSR40 DSR50 ihs_ISR ihs_DAR ihs_DSR ihs_DIR ihs_DIR10 ihs_DIR100 ihs_DIR1000 ihs_DIR10000 ihs_loanamount ihs_income ihs_assets ihs_yearly_expenses ihs_informal_HH ihs_rel_informal_HH ihs_formal_HH ihs_rel_formal_HH ihs_eco_HH ihs_rel_eco_HH ihs_current_HH ihs_rel_current_HH ihs_humank_HH ihs_rel_humank_HH ihs_social_HH ihs_rel_social_HH ihs_home_HH ihs_rel_home_HH ihs_repay_amt_HH ihs_rel_repay_amt_HH ownland dummymarriage housetype housetitle HHsize nbchildren nontoworkers femtomale village_ur static_vuln km static_ml_vuln occupation dummy_income_v dummy_assets_v dummy_nbchildren_v dummy_HHsize_v dummy_rel_repay_amt_HH_v dummy_rel_formal_HH_v dummy_rel_eco_HH_v dummy_rel_current_HH_v dummy_rel_humank_HH_v dummy_rel_social_HH_v dummy_rel_home_HH_v assets_q income_q DSR_q DAR_q, i(HHID_panel) j(p)
 
 drop dummy_rel_informal_HH_v1 dummy_rel_informal_HH_v2 dummy_rel_eco_HH_v dummy_rel_current_HH_v dummy_rel_humank_HH_v dummy_rel_social_HH_v dummy_rel_home_HH_v dummy_repay_amt_HH_v1 dummy_repay_amt_HH_v2 dummy_formal_HH_v1 dummy_formal_HH_v2 dummy_informal_HH_v1 dummy_informal_HH_v2 dummy_eco_HH_v1 dummy_eco_HH_v2 dummy_current_HH_v1 dummy_current_HH_v2 dummy_humank_HH_v1 dummy_humank_HH_v2 dummy_social_HH_v1 dummy_social_HH_v2 dummy_home_HH_v1 dummy_home_HH_v2
-
-
-xtset panelvar p
-
-global head head_female head_age i.head_edulevel i.head_occupation
-global wifehusb wifehusb_female wifehusb_age i.wifehusb_edulevel i.wifehusb_occupation
-global wealth income assets
-global HH HHsize nbchildren i.housetype ownland i.villageid
-
-global varv dummy_nbchildren_v dummy_HHsize_v dummy_rel_repay_amt_HH_v dummy_rel_formal_HH_v
-
-
-ta dubvuln p, col 
-ta dbvuln p, col
-
-********** Cross section
-
-cls
-***** 2010 - 2016-17
-preserve
-keep if p==1
-
-probit dubvuln i.caste2016 $head $wealth $HH
-probit dubvuln i.caste2016 $varv
-
-probit dbvuln i.caste2016 $head $wealth $HH
-probit dbvuln i.caste2016 $varv
-restore
-
-
-cls
-***** 2016-17 - 2020-21
-preserve
-keep if p==2
-
-probit dubvuln i.caste2016 $head $wealth $HH
-probit dubvuln i.caste2016 $varv
-
-probit dbvuln i.caste2016 $head $wealth $HH
-probit dbvuln i.caste2016 $varv
-restore
-
-cls
-********** Panel model
-xtprobit dubvuln i.caste2016##i.p $head $wealth $HH
-xtprobit dubvuln i.caste2016 $varv
-
-xtprobit dbvuln i.caste2016 $head $wealth $HH
-xtprobit dbvuln i.caste2016 $varv
-
-
-*** CRE
-/*
-egen xbar=mean(x), by(HHID_panel)
-xtprobit sdvuln , re  
-*/
 
 
 save "panel_v12_long", replace
@@ -327,49 +279,35 @@ save "panel_v12_long", replace
 
 
 
+
 ****************************************
-* Analysis 1
+* Analysis in cross section: 2010 / 2016-17
 ****************************************
-cls
-use"panel_v12_wide", clear
+use "panel_v12_long", clear
+keep if p==1
+keep if caste2010!=. & caste2016!=.
+
+global head head_female head_age i.head_edulevel i.head_occupation
+global wifehusb wifehusb_female wifehusb_age i.wifehusb_edulevel i.wifehusb_occupation
+global wealth income assets
+global HH HHsize nbchildren i.housetype ownland i.villageid
+
+global varv dummy_nbchildren_v dummy_HHsize_v dummy_rel_repay_amt_HH_v dummy_rel_formal_HH_v
 
 
-********** Step 1: Static analysis of financial vulnerability
-
-ta static_vuln2010
-ta static_vuln2016
-ta static_vuln2020
-
-/*
-Why not CRO model for caste integration?
-However, not take into account the fact that financial vulnerability is 
-a dynamic phenomenon.
-Thus, we investigate the dynamic of financial vulnerability in step 2
-*/
-
-
-
-
-********** Step 2: Dynamic analysis of financial vulnerability
-
-ta dynadummyvuln1
-ta dynadummyvuln2
-
-ta static_vuln2010 dynadummyvuln1, row nofreq chi2
-ta static_vuln2016 dynadummyvuln2, row nofreq chi2
-
-
-/*
-Same: CRE model with 2 obs/indv: d1 and d2
-Vuln = a + b*change in occupation + c*change in income + e
-
-Split the analysis between those who are financial vulnerable in t (with
-static measure) and those who are not.
-*/
-
-***** X var
-ta head_occupation2010 head_occupation2016
-
+**********
+probit dubvuln i.caste2016 $wealth $HH
+probit dubvuln i.caste2016 $wealth $HH $head
+probit dubvuln i.caste2016 $wealth $HH $head i.assets_q
+probit dubvuln i.caste2016 $wealth $HH $head i.income_q
+probit dubvuln i.caste2016 $wealth $HH $head i.DSR_q
+probit dubvuln i.caste2016 $wealth $HH $head i.DAR_q
+probit dubvuln i.caste2016 $wealth $HH $head i.DSR30
+probit dubvuln i.caste2016 $wealth $HH $head i.DSR40
+probit dubvuln i.caste2016 $wealth $HH $head i.DSR50
+probit dubvuln i.caste2016 $wealth $HH $head i.dummyincrel_formal
+probit dubvuln i.caste2016 $wealth $HH $head rel_formal_HH
+probit dubvuln i.caste2016 $wealth $HH $head i.assets_q i.income_q i.DSR_q i.DAR_q
 
 ****************************************
 * END
@@ -380,21 +318,90 @@ ta head_occupation2010 head_occupation2016
 
 
 
+
+
+
 ****************************************
-* Analysis 2
+* Analysis in cross section: 2016-17 / 2020-21
 ****************************************
-cls
-use"panel_v12_wide", clear
+use "panel_v12_long", clear
+keep if p==2
+keep if caste2016!=. & caste2020!=.
 
-/*
-Level of financial vulnerability in 2010;
-Look at the dynamic over 10 years
-Then look at the level of financial vulnerability in 2020.
-*/
+global head head_female head_age i.head_edulevel i.head_occupation
+global wifehusb wifehusb_female wifehusb_age i.wifehusb_edulevel i.wifehusb_occupation
+global wealth income assets
+global HH HHsize nbchildren i.housetype ownland i.villageid
 
-ta static_vuln2010 dummyvuln, row
-ta static_vuln2020 dummyvuln, row
+global varv dummy_nbchildren_v dummy_HHsize_v dummy_rel_repay_amt_HH_v dummy_rel_formal_HH_v
 
+
+**********
+probit dubvuln i.caste2016 $wealth $HH
+probit dubvuln i.caste2016 $wealth $HH $head
+probit dubvuln i.caste2016 $wealth $HH $head i.assets_q
+probit dubvuln i.caste2016 $wealth $HH $head i.income_q
+probit dubvuln i.caste2016 $wealth $HH $head i.DSR_q
+probit dubvuln i.caste2016 $wealth $HH $head i.DAR_q
+probit dubvuln i.caste2016 $wealth $HH $head i.DSR30
+probit dubvuln i.caste2016 $wealth $HH $head i.DSR40
+probit dubvuln i.caste2016 $wealth $HH $head i.DSR50
+probit dubvuln i.caste2016 $wealth $HH $head i.dummyincrel_formal
+probit dubvuln i.caste2016 $wealth $HH $head rel_formal_HH
+probit dubvuln i.caste2016 $wealth $HH $head i.assets_q i.income_q i.DSR_q i.DAR_q
 
 ****************************************
 * END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Analysis in panel setting
+****************************************
+use "panel_v12_long", clear
+
+xtset panelvar p
+
+global head head_female head_age i.head_edulevel i.head_occupation
+global wifehusb wifehusb_female wifehusb_age i.wifehusb_edulevel i.wifehusb_occupation
+global wealth income assets
+global HH HHsize nbchildren i.housetype ownland i.villageid
+
+global varv dummy_nbchildren_v dummy_HHsize_v dummy_rel_repay_amt_HH_v dummy_rel_formal_HH_v
+
+
+**********
+xtprobit dubvuln i.caste2016 $wealth $HH
+xtprobit dubvuln i.caste2016 $wealth $HH $head
+xtprobit dubvuln i.caste2016 $wealth $HH $head i.assets_q
+xtprobit dubvuln i.caste2016 $wealth $HH $head i.income_q
+xtprobit dubvuln i.caste2016 $wealth $HH $head i.DSR_q
+xtprobit dubvuln i.caste2016 $wealth $HH $head i.DAR_q
+xtprobit dubvuln i.caste2016 $wealth $HH $head i.DSR30
+xtprobit dubvuln i.caste2016 $wealth $HH $head i.DSR40
+xtprobit dubvuln i.caste2016 $wealth $HH $head i.DSR50
+xtprobit dubvuln i.caste2016 $wealth $HH $head i.dummyincrel_formal
+xtprobit dubvuln i.caste2016 $wealth $HH $head rel_formal_HH
+xtprobit dubvuln i.caste2016 $wealth $HH $head i.assets_q i.income_q i.DSR_q i.DAR_q
+
+****************************************
+* END
+
