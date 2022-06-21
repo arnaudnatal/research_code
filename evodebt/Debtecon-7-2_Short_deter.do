@@ -238,24 +238,43 @@ label values cat_`x'_b2 cut2
 }
 
 
-********** R 
+********** R -1
 preserve
-keep HHID_panel cat_assets_b* cat_DAR_b* cat_DSR_b* cat_income_b* cat_ISR_b* cat_expenses_b*
+keep HHID_panel cat_assets_b* cat_DAR_b* cat_DSR_b* cat_income_b* cat_ISR_b* cat_expenses_b* ihs_ISR* ihs_DAR* ihs_DSR* ihs_income* ihs_assets* ISR* DAR* DSR* income* assets* 
+drop DSR302010 DSR402010 DSR502010 DSR302016 DSR402016 DSR502016 DSR302020 DSR402020 DSR502020 DAR_with2010 DAR_with2016 DAR_with2020
 
-/*
-foreach i in 1 2 {
-foreach x in assets DAR DSR income ISR expenses {
-rename di`i'_`x' di_`x'`i'
-rename de`i'_`x' de_`x'`i'
-}
-}
-*/
 reshape long cat_assets_b cat_DAR_b cat_DSR_b cat_income_b cat_ISR_b cat_expenses_b, i(HHID_panel) j(tempo)
 export delimited using "$git\research_code\evodebt\debttrend_new_v1.csv", replace
 restore
 
+/*
+********** R -2
 preserve
-import delimited using "$git\research_code\evodebt\debttrend_new_v2.csv", clear
+keep HHID_panel cat_assets_b* cat_DAR_b* cat_DSR_b* cat_income_b* cat_ISR_b* cat_expenses_b* ihs_ISR* ihs_DAR* ihs_DSR* ihs_income* ihs_assets* ISR* DAR* DSR* income* assets* 
+drop DSR302010 DSR402010 DSR502010 DSR302016 DSR402016 DSR502016 DSR302020 DSR402020 DSR502020 DAR_with2010 DAR_with2016 DAR_with2020
+
+foreach x in ihs_ISR ihs_DAR ihs_DSR ihs_income ihs_assets ISR DAR DSR income assets {
+rename `x'2010 `x'_1_2010
+rename `x'2016 `x'_2_2010
+clonevar `x'_1_2016=`x'_2_2010
+rename `x'2020 `x'_2_2016
+}
+
+reshape long income_1_ DSR_1_ assets_1_ DAR_1_ ISR_1_ ihs_ISR_1_ ihs_DAR_1_ ihs_DSR_1_ ihs_income_1_ ihs_assets_1_ ihs_ISR_2_ ihs_DAR_2_ ihs_DSR_2_ ihs_income_2_ ihs_assets_2_ ISR_2_ DAR_2_ DSR_2_ income_2_ assets_2_, i(HHID_panel) j(t)
+
+foreach x in income_1 DSR_1 assets_1 DAR_1 ISR_1 ihs_ISR_1 ihs_DAR_1 ihs_DSR_1 ihs_income_1 ihs_assets_1 income_2 DSR_2 assets_2 DAR_2 ISR_2 ihs_ISR_2 ihs_DAR_2 ihs_DSR_2 ihs_income_2 ihs_assets_2 {
+rename `x'_ `x'
+}
+
+order HHID_panel t income_1 income_2 DSR_1 DSR_2 assets_1 assets_2 DAR_1 DAR_2 ISR_1 ISR_2 ihs_income_1 ihs_income_2 ihs_DSR_1 ihs_DSR_2 ihs_assets_1 ihs_assets_2 ihs_DAR_1 ihs_DAR_2 ihs_ISR_1 ihs_ISR_2
+
+export delimited using "$git\research_code\evodebt\debttrend_new_v2.csv", replace
+restore
+*/
+
+
+preserve
+import delimited using "$git\research_code\evodebt\debttrend_new_v3.csv", clear
 gen sdvuln=.
 replace sdvuln=0 if clust==1
 replace sdvuln=0 if clust==2
@@ -367,7 +386,7 @@ restore
 
 
 ********** Panel model
-xtprobit sdvuln i.caste $head $wealth $HH
+xtprobit sdvuln i.caste $head $wealth $HH i.p
 xtprobit sdvuln i.caste $varv
 
 *** CRE

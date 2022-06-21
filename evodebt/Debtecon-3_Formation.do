@@ -662,7 +662,7 @@ save"panel_v4", replace
 use"panel_v4", clear
 
 ********** Panel
-keep if panel==1
+*keep if panel==1
 
 
 ********** Nb of missings for transformation
@@ -774,7 +774,7 @@ use"panel_v5", clear
 
 ********** Initialization
 xtset panelvar time
-keep if panel==1
+*keep if panel==1
 
 ********** Rename for size
 foreach x in IMF_nb_HH IMF_amt_HH bank_nb_HH bank_amt_HH moneylender_nb_HH moneylender_amt_HH {
@@ -797,7 +797,7 @@ sort HHID_panel year
 
 ********** Select+reshape
 keep HHID_panel year panel caste $var dummyIMF dummybank dummymoneylender dummyrepay villageid villagearea jatis
-reshape wide $var villageid villagearea , i(HHID_panel) j(year)
+reshape wide $var villageid villagearea caste jatis, i(HHID_panel) j(year)
 
 
 ********* xtile income assets
@@ -905,9 +905,6 @@ replace path_`x'=8 if dummy`x'2010==0 & dummy`x'2016==0 & dummy`x'2020==0
 
 label values path_`x' pathtrap
 }
-
-
-ta path_borrowstrat caste, col nofreq
 
 
 ********** Change occupation head and husb

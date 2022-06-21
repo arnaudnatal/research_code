@@ -108,14 +108,14 @@ global var7 rel_formal_HH2010 rel_informal_HH2010 rel_eco_HH2010 rel_current_HH2
 global var8 ihs_rel_informal_HH2010 ihs_rel_formal_HH2010 ihs_rel_eco_HH2010 ihs_rel_current_HH2010 ihs_rel_humank_HH2010 ihs_rel_social_HH2010 ihs_rel_home_HH2010 ihs_rel_repay_amt_HH2010 ihs_rel_informal_HH2016 ihs_rel_formal_HH2016 ihs_rel_eco_HH2016 ihs_rel_current_HH2016 ihs_rel_humank_HH2016 ihs_rel_social_HH2016 ihs_rel_home_HH2016 ihs_rel_repay_amt_HH2016 ihs_rel_informal_HH2020 ihs_rel_formal_HH2020 ihs_rel_eco_HH2020 ihs_rel_current_HH2020 ihs_rel_humank_HH2020 ihs_rel_social_HH2020 ihs_rel_home_HH2020 ihs_rel_repay_amt_HH2020
 
 ***** Keep
-keep HHID_panel panelvar caste jatis villagearea* villageid* loanamount* DSR* DAR_without* DAR_with* annualincome* assets_noland* yearly_expenses* ISR* DIR* $var1 $var2 $var3 $var4 $var5 $var6 $var7 $var8
+keep HHID_panel panelvar caste* jatis* villagearea* villageid* loanamount* DSR* DAR_without* DAR_with* annualincome* assets_noland* yearly_expenses* ISR* DIR* $var1 $var2 $var3 $var4 $var5 $var6 $var7 $var8 panel
 
 
 * Oups
 drop DAR_with2010 DAR_with2016 DAR_with2020
 
 * Order and sort
-order panelvar caste jatis
+order panelvar caste* jatis*
 sort panelvar
 
 save"panel_v5_wide_cluster", replace
@@ -221,6 +221,8 @@ replace `x'=0 if `x'==.
 
 tabstat repay1 repay2 repay3, stat(n mean sd p50)
 tabstat rel_repay1 rel_repay2 rel_repay3, stat(n mean sd p50)
+
+keep if panel==1
 
 export delimited using "$git\research_code\evodebt\debttrend.csv", replace
 

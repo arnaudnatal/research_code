@@ -79,7 +79,7 @@ preserve
 use"panel_v4", clear
 label define housetype 1"Concrete house (non-govt)" 2"Government/green house" 3"Thatched roof house"
 label values housetype housetype
-keep if panel==1
+*keep if panel==1
 keep HHID_panel year housetype housetitle HHsize nbchildren dummymarriage ownland nontoworkers femtomale
 reshape wide housetype housetitle HHsize nbchildren dummymarriage ownland nontoworkers femtomale, i(HHID_panel) j(year)
 save"_temp_v4", replace
@@ -143,12 +143,6 @@ rename ihs_assets_noland`x' ihs_assets`x'
 rename sbd_annualincome sbd_income
 rename sbd_assets_noland sbd_assets
 
-***** Statitc
-foreach x in 2010 2016 2020 {
-gen static_vuln`x'=.
-replace static_vuln`x'=0 if DSR`x'<.4 | DAR`x'<.5
-replace static_vuln`x'=1 if DSR`x'>=.4 | DAR`x'>=.5
-}
 
 save"panel_v11_wide.dta", replace
 ****************************************
@@ -256,7 +250,7 @@ ta cl_vuln dummyvuln
 
 ********** Caste and class
 cls
-foreach x in caste cat_income cat_assets {
+foreach x in caste2010 cat_income cat_assets {
 ta `x' dummyvuln, row nofreq chi2
 }
 
@@ -350,27 +344,6 @@ ta wifehusb_`x'2010 dummyvuln, nofreq row
 }
 
 
-
-
-********** Départ dyna results
-cls
-ta static_vuln2010 dummyvuln, col
-ta dummyvuln static_vuln2020 if static_vuln2010==0, row col
-ta dummyvuln static_vuln2020 if static_vuln2010==1, row col
-
-/*
-In 2010:
-207 HH are not vulnerable: 54%
-175 HH are vulnerable: 46%
-
-On the 207 not vulnerable, 154 are in a vulnerable dynamic.
-On the 175 vulnerable, 83 are in a vulnerable dynamic.
-
-Among the 154 in a vulnerable dynamic, 107 become vulnerable in 2020.
-Among the 83 in a vulnerable dynamic, 59 become vulnerable in 2020.
-*/
-
-
 ****************************************
 * END
 
@@ -388,7 +361,9 @@ Among the 83 in a vulnerable dynamic, 59 become vulnerable in 2020.
 use"panel_v11_wide.dta", clear
 
 ta cl_vuln dummyvuln
-ta caste dummyvuln
+ta caste2010 dummyvuln
+ta caste2016 dummyvuln
+ta caste2020 dummyvuln
 
 
 ********** var to keep
@@ -401,10 +376,9 @@ global debt2 rel_repay_amt_HH* rel_formal_HH* rel_informal_HH* rel_eco_HH* rel_c
 global debt3 dummyIMF* dummybank* dummymoneylender* dummyrepay* dummyborrowstrat* dummymigrstrat* dummyassestrat*
 
 global var $id $wealth $hhcharact $headwife $debt1 $debt2 $debt3
-*keep $var 
 
 foreach y in 2010 2016 2020 {
-global HH`y' i.caste i.housetype`y' HHsize`y' nbchildren`y' income`y' assets`y' ownland`y' i.villageid`y'
+global HH`y' i.caste`y' i.housetype`y' HHsize`y' nbchildren`y' income`y' assets`y' ownland`y' i.villageid`y'
 global head`y' head_female`y' head_age`y' i.head_edulevel`y' i.head_occupation`y'
 global wife`y' wifehusb_female`y' wifehusb_age`y' i.wifehusb_edulevel`y' i.wifehusb_occupation`y'
 

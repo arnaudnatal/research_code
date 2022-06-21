@@ -30,71 +30,35 @@ library(ggplot2)
 
 
 #--- Open datasets
-data<-read.csv("debttrend_new_v1.csv")
+data<-read.csv("debttrend_new_v2.csv")
 attach(data)
 
 
 
 #--- Matrices creation
 
-X_assets_1<-as.matrix(cbind(ihs_assets_noland1,ihs_assets_noland2))
-X_DSR_1<-as.matrix(cbind(DSR1,DSR2))
-X_DAR_1<-as.matrix(cbind(DAR1,DAR2))
+X_assets<-as.matrix(cbind(ihs_assets_1,ihs_assets_2))
+X_income<-as.matrix(cbind(ihs_income_1,ihs_income_2))
+X_DSR<-as.matrix(cbind(ihs_DSR_1,ihs_DSR_2))
+X_DAR<-as.matrix(cbind(ihs_DAR_1,ihs_DAR_2))
 
-X_assets_2<-as.matrix(cbind(assets_noland2,assets_noland3))
-X_DSR_2<-as.matrix(cbind(DSR2,DSR3))
-X_DAR_2<-as.matrix(cbind(DAR2,DAR3))
 
 #--- Trends analysis clustering
-# interactive_clustering(X_expenses_ihs)
-# interactive_clustering(X_income_ihs)
-# interactive_clustering(X_assets_ihs)
-# interactive_clustering(X_loan_ihs)
-# interactive_clustering(X_DSR_ihs)
-interactive_clustering(X_assets_1)
-# interactive_clustering(X_DAR_ihs)
+#interactive_clustering(X_assets)
+interactive_clustering(X_income)
+interactive_clustering(X_DSR)
+interactive_clustering(X_DAR)
 
-# interactive_clustering(X_expenses_ihs)
-
-# interactive_clustering(X_form_rel)
-
-# interactive_clustering(X_info_rel)
 
 
 #--- Manually trends analysis
-income_euc<-tsclust(
-  series=X_income_ihs,
-  type="partitional",
-  k=4,
-  distance="euclidean",
-  centroid="mean",
-  seed=4,
-  trace=TRUE,
-  error.check=TRUE
-)
-
 income_sbd<-tsclust(
   series=X_income_ihs,
   type="partitional",
   k=4,
   distance="sbd",
   centroid="pam",
-  seed=3,
-  trace=TRUE,
-  error.check=TRUE
-)
-
-
-
-
-
-assets_euc<-tsclust(
-  series=X_assets_ihs,
-  type="partitional",
-  k=4,
-  distance="euclidean",
-  centroid="mean",
-  seed=8,
+  seed=1,
   trace=TRUE,
   error.check=TRUE
 )
@@ -105,47 +69,7 @@ assets_sbd<-tsclust(
   k=4,
   distance="sbd",
   centroid="pam",
-  seed=5,
-  trace=TRUE,
-  error.check=TRUE
-)
-
-
-
-
-loan_euc<-tsclust(
-  series=X_loan_ihs,
-  type="partitional",
-  k=4,
-  distance="euclidean",
-  centroid="mean",
-  seed=2,
-  trace=TRUE,
-  error.check=TRUE
-)
-
-loan_sbd<-tsclust(
-  series=X_loan_ihs,
-  type="partitional",
-  k=3,
-  distance="sbd",
-  centroid="pam",
-  seed=2,
-  trace=TRUE,
-  error.check=TRUE
-)
-
-
-
-
-
-DSR_euc<-tsclust(
-  series=X_DSR_ihs,
-  type="partitional",
-  k=5,
-  distance="euclidean",
-  centroid="mean",
-  seed=7,
+  seed=1,
   trace=TRUE,
   error.check=TRUE
 )
@@ -161,20 +85,6 @@ DSR_sbd<-tsclust(
   error.check=TRUE
 )
 
-
-
-
-ISR_euc<-tsclust(
-  series=X_ISR_ihs,
-  type="partitional",
-  k=3,
-  distance="euclidean",
-  centroid="mean",
-  seed=1,
-  trace=TRUE,
-  error.check=TRUE
-)
-
 ISR_sbd<-tsclust(
   series=X_ISR_ihs,
   type="partitional",
@@ -186,20 +96,6 @@ ISR_sbd<-tsclust(
   error.check=TRUE
 )
 
-
-
-
-DAR_euc<-tsclust(
-  series=X_DAR_ihs,
-  type="partitional",
-  k=4,
-  distance="euclidean",
-  centroid="mean",
-  seed=1,
-  trace=TRUE,
-  error.check=TRUE
-)
-
 DAR_sbd<-tsclust(
   series=X_DAR_ihs,
   type="partitional",
@@ -207,31 +103,6 @@ DAR_sbd<-tsclust(
   distance="sbd",
   centroid="pam",
   seed=2,
-  trace=TRUE,
-  error.check=TRUE
-)
-
-
-expenses_sbd<-tsclust(
-  series=X_expenses_ihs,
-  type="partitional",
-  k=3,
-  distance="sbd",
-  centroid="pam",
-  seed=3,
-  trace=TRUE,
-  error.check=TRUE
-)
-
-
-
-DIR_sbd<-tsclust(
-  series=X_DIR_ihs,
-  type="partitional",
-  k=4,
-  distance="sbd",
-  centroid="pam",
-  seed=9,
   trace=TRUE,
   error.check=TRUE
 )
