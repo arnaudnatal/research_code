@@ -68,125 +68,6 @@ global loan3 "NEEMSIS2-all_loans"
 
 
 
-
-****************************************
-* Static vulnerability
-****************************************
-cls
-use"panel_v11_wide", clear
-
-
-********** ML
-***** 2010
-cluster wardslinkage ihs_DSR2010 ihs_DAR2010 ihs_assets2010, measure(Euclidean) name(CAH2010)
-*cluster dendrogram, cutnumber(100)
-cluster gen CAHgrp2010=groups(2), name(CAH2010)
-ta CAHgrp2010
-cluster kmeans ihs_DSR2010 ihs_DAR2010 ihs_assets2010, k(2) start(g(CAHgrp2010)) measure(Euclidean) name(km2010)
-tabstat DSR2010 DAR2010 assets2010, stat(n q) by(km2010)
-drop CAH2010_id CAH2010_ord CAH2010_hgt CAHgrp2010
-
-***** 2016-17
-cluster wardslinkage ihs_DSR2016 ihs_DAR2016 ihs_assets2016, measure(Euclidean) name(CAH2016)
-*cluster dendrogram, cutnumber(100)
-cluster gen CAHgrp2016=groups(2), name(CAH2016)
-ta CAHgrp2016
-cluster kmeans ihs_DSR2016 ihs_DAR2016 ihs_assets2016, k(2) start(g(CAHgrp2016)) measure(Euclidean) name(km2016)
-tabstat DSR2016 DAR2016 assets2016, stat(n q) by(km2016)
-drop CAH2016_id CAH2016_ord CAH2016_hgt CAHgrp2016
-
-***** 2020-21
-cluster wardslinkage ihs_DSR2020 ihs_DAR2020 ihs_assets2020, measure(Euclidean) name(CAH2020)
-*cluster dendrogram, cutnumber(100)
-cluster gen CAHgrp2020=groups(2), name(CAH2020)
-ta CAHgrp2020
-cluster kmeans ihs_DSR2020 ihs_DAR2020 ihs_assets2020, k(2) start(g(CAHgrp2020)) measure(Euclidean) name(km2020)
-tabstat DSR2020 DAR2020 assets2020, stat(n q) by(km2020)
-drop CAH2020_id CAH2020_ord CAH2020_hgt CAHgrp2020
-
-
-**********
-/*
-stripplot assets2010, over(_clus_2) vert ///
-stack width(0.05) jitter(0) ///
-box(barw(0.1)) boffset(-0.1) pctile(10) ///
-ms(oh oh oh) msize(small) mc(red%30) ///
-yla(, ang(h)) xla(, noticks)
-*/
-
-
-********** Codage main
-foreach x in 2010 2016 2020 {
-tabstat DSR`x' DAR`x' assets`x', stat(n q) by(km`x')
-}
-
-gen static_ml_vuln2010=.
-replace static_ml_vuln2010=0 if km2010==2
-replace static_ml_vuln2010=1 if km2010==1
-
-gen static_ml_vuln2016=.
-replace static_ml_vuln2016=0 if km2016==2
-replace static_ml_vuln2016=1 if km2016==1
-
-
-gen static_ml_vuln2020=.
-replace static_ml_vuln2020=0 if km2020==1
-replace static_ml_vuln2020=1 if km2020==2
-
-label define vuln 0"No" 1"Yes"
-label values static_ml_vuln2010 vuln
-label values static_ml_vuln2016 vuln
-label values static_ml_vuln2020 vuln
-
-tabstat DSR2010 DAR2010 assets2010, stat(n q) by(static_ml_vuln2010)
-tabstat DSR2016 DAR2016 assets2016, stat(n q) by(static_ml_vuln2016)
-tabstat DSR2020 DAR2020 assets2020, stat(n q) by(static_ml_vuln2020)
-
-
-
-
-
-
-********* Program
-program define stripgraph
-stripplot `1', over(dummyvuln) vert ///
-stack width(0.05) jitter(0) ///
-box(barw(0.1)) boffset(-0.1) pctile(10) ///
-ms(oh oh oh) msize(small) mc(red%30) ///
-yla(, ang(h)) xla(, noticks)
-end
-
-*stripgraph assets2010
-
-
-********** Monte Carlo
-/*
-program define loinorm, rclass
-syntax [, obs(integer 1) mu(real 0) sigma(real 1)]
-drop _all
-set obs `obs'
-tempvar z
-gen z=exp(`mu'+`sigma'*invnorm(uniform()))
-sum `z'
-return scalar mean=r(mean)
-return scalar Var=r(Var)
-end
-
-clear all
-loinorm
-*/
-
-save "panel_v12_wide", replace
-****************************************
-* END
-
-
-
-
-
-
-
-
 ****************************************
 * Dyanmic between 2010-2016 and 2016-2020
 ****************************************
@@ -194,9 +75,8 @@ cls
 use"panel_v12_wide", clear
 
 
-
 ********** Calcul diff and delta
-foreach x in assets DAR DSR income ISR expenses {
+foreach x in assets DAR DSR income {
 gen de1_`x'=(`x'2016-`x'2010)*100/`x'2010
 gen de2_`x'=(`x'2020-`x'2016)*100/`x'2016
 
@@ -205,27 +85,12 @@ replace de2_`x'=`x'2020 if `x'2016==0
 
 gen di1_`x'=`x'2016-`x'2010
 gen di2_`x'=`x'2020-`x'2016
-
 }
 
 
-
-
-
 ********** Cat evolution
-foreach x in assets DAR DSR income ISR expenses {
-***** 5 level
-egen cat1_`x'=cut(de1_`x'), at(-999999 -50 -10 10 50 9999999)
-egen cat2_`x'=cut(de2_`x'), at(-999999 -50 -10 10 50 9999999)
+foreach x in assets DAR DSR income {
 
-recode cat1_`x' (-999999=-2) (-50=-1) (-10=0) (10=1) (50=2)
-recode cat2_`x' (-999999=-2) (-50=-1) (-10=0) (10=1) (50=2)
-
-label define cut1 -2"Hi dec" -1"Dec" 0"Stable" 1"Inc" 2"Hi inc", replace
-label values cat1_`x' cut1
-label values cat2_`x' cut1
-
-***** 3 level
 egen cat_`x'_b1=cut(de1_`x'), at(-999999 -10 10 9999999)
 egen cat_`x'_b2=cut(de2_`x'), at(-999999 -10 10 9999999)
 
@@ -240,10 +105,15 @@ label values cat_`x'_b2 cut2
 
 ********** R -1
 preserve
-keep HHID_panel cat_assets_b* cat_DAR_b* cat_DSR_b* cat_income_b* cat_ISR_b* cat_expenses_b* ihs_ISR* ihs_DAR* ihs_DSR* ihs_income* ihs_assets* ISR* DAR* DSR* income* assets* 
-drop DSR302010 DSR402010 DSR502010 DSR302016 DSR402016 DSR502016 DSR302020 DSR402020 DSR502020 DAR_with2010 DAR_with2016 DAR_with2020
+keep HHID_panel cat_assets_b* cat_DAR_b* cat_DSR_b* cat_income_b* DAR* DSR* income* assets* 
 
-reshape long cat_assets_b cat_DAR_b cat_DSR_b cat_income_b cat_ISR_b cat_expenses_b, i(HHID_panel) j(tempo)
+drop DSR302010 DSR402010 DSR502010 DSR302016 DSR402016 DSR502016 DSR302020 DSR402020 DSR502020 DAR_with2010 DAR_with2016 DAR_with2020
+drop assets_BU2010 income_BU2010 DSR_BU2010 DAR_BU2010 assets_BU2016 income_BU2016 DSR_BU2016 DAR_BU2016 assets_BU2020 income_BU2020 DSR_BU2020 DAR_BU2020
+
+reshape long cat_assets_b cat_DAR_b cat_DSR_b cat_income_b, i(HHID_panel) j(tempo)
+
+drop if cat_assets_b==.
+
 export delimited using "$git\research_code\evodebt\debttrend_new_v1.csv", replace
 restore
 

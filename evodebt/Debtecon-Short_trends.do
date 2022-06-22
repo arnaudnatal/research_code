@@ -219,6 +219,13 @@ egen `x'_v1=group(`x'2010 `x'2016), label
 egen `x'_v2=group(`x'2016 `x'2020), label
 }
 
+
+
+********** Small cross
+cls
+tabstat assets2010 assets2016 DAR2010 DAR2016 income2010 income2016 DSR2010 DSR2016, stat(mean med) by(dubvuln1)
+tabstat assets2016 assets2020 DAR2016 DAR2020 income2016 income2020 DSR2016 DSR2020, stat(mean med) by(dubvuln2)
+
 save "panel_v12_wide", replace
 ****************************************
 * END
@@ -268,6 +275,22 @@ reshape long ubclust bclust dbvuln dubvuln income_v assets_v nbchildren_v HHsize
 drop dummy_rel_informal_HH_v1 dummy_rel_informal_HH_v2 dummy_rel_eco_HH_v dummy_rel_current_HH_v dummy_rel_humank_HH_v dummy_rel_social_HH_v dummy_rel_home_HH_v dummy_repay_amt_HH_v1 dummy_repay_amt_HH_v2 dummy_formal_HH_v1 dummy_formal_HH_v2 dummy_informal_HH_v1 dummy_informal_HH_v2 dummy_eco_HH_v1 dummy_eco_HH_v2 dummy_current_HH_v1 dummy_current_HH_v2 dummy_humank_HH_v1 dummy_humank_HH_v2 dummy_social_HH_v1 dummy_social_HH_v2 dummy_home_HH_v1 dummy_home_HH_v2
 
 
+
+********** Stat desc
+/*
+program drop _all
+program define stripgraph
+stripplot `1' if `1'<`4', over(`2') by(`3') vert ///
+stack width(10) jitter(5) ///
+box(barw(0.1)) boffset(-0.1) pctile(10) ///
+ms(oh oh oh) msize(small) mc(red%30) ///
+yla(, ang(h)) xla(, noticks)
+end
+
+stripgraph assets p dubvuln 2000
+*/
+
+
 save "panel_v12_long", replace
 ****************************************
 * END
@@ -296,18 +319,35 @@ global varv dummy_nbchildren_v dummy_HHsize_v dummy_rel_repay_amt_HH_v dummy_rel
 
 
 **********
-probit dubvuln i.caste2016 $wealth $HH
-probit dubvuln i.caste2016 $wealth $HH $head
-probit dubvuln i.caste2016 $wealth $HH $head i.assets_q
-probit dubvuln i.caste2016 $wealth $HH $head i.income_q
-probit dubvuln i.caste2016 $wealth $HH $head i.DSR_q
-probit dubvuln i.caste2016 $wealth $HH $head i.DAR_q
-probit dubvuln i.caste2016 $wealth $HH $head i.DSR30
-probit dubvuln i.caste2016 $wealth $HH $head i.DSR40
-probit dubvuln i.caste2016 $wealth $HH $head i.DSR50
-probit dubvuln i.caste2016 $wealth $HH $head i.dummyincrel_formal
-probit dubvuln i.caste2016 $wealth $HH $head rel_formal_HH
-probit dubvuln i.caste2016 $wealth $HH $head i.assets_q i.income_q i.DSR_q i.DAR_q
+estimates clear
+cls
+qui probit dubvuln i.caste2016 $wealth $HH $head
+est store spec1
+qui probit dubvuln i.caste2016 $wealth $HH $head i.assets_q
+est store spec2
+qui probit dubvuln i.caste2016 $wealth $HH $head i.income_q
+est store spec3
+qui probit dubvuln i.caste2016 $wealth $HH $head i.DSR_q
+est store spec4
+qui probit dubvuln i.caste2016 $wealth $HH $head i.DAR_q
+est store spec5
+qui probit dubvuln i.caste2016 $wealth $HH $head i.DSR30
+est store spec6
+qui probit dubvuln i.caste2016 $wealth $HH $head i.DSR40
+est store spec7
+qui probit dubvuln i.caste2016 $wealth $HH $head i.DSR50
+est store spec8
+qui probit dubvuln i.caste2016 $wealth $HH $head i.dummyincrel_formal
+est store spec9
+qui probit dubvuln i.caste2016 $wealth $HH $head rel_formal_HH
+est store spec10
+qui probit dubvuln i.caste2016 $wealth $HH $head i.assets_q i.income_q i.DSR_q i.DAR_q
+est store spec11
+
+cls
+esttab spec1 spec2 spec3 spec4 spec5, drop(1.villageid 2.villageid 3.villageid 4.villageid 5.villageid 6.villageid 7.villageid 8.villageid 9.villageid 10.villageid) stats(N r2_p)
+esttab spec6 spec7 spec8 spec9 spec10, drop(1.villageid 2.villageid 3.villageid 4.villageid 5.villageid 6.villageid 7.villageid 8.villageid 9.villageid 10.villageid) stats(N r2_p)
+esttab spec11, drop(1.villageid 2.villageid 3.villageid 4.villageid 5.villageid 6.villageid 7.villageid 8.villageid 9.villageid 10.villageid) stats(N r2_p)
 
 ****************************************
 * END
@@ -337,18 +377,35 @@ global varv dummy_nbchildren_v dummy_HHsize_v dummy_rel_repay_amt_HH_v dummy_rel
 
 
 **********
-probit dubvuln i.caste2016 $wealth $HH
-probit dubvuln i.caste2016 $wealth $HH $head
-probit dubvuln i.caste2016 $wealth $HH $head i.assets_q
-probit dubvuln i.caste2016 $wealth $HH $head i.income_q
-probit dubvuln i.caste2016 $wealth $HH $head i.DSR_q
-probit dubvuln i.caste2016 $wealth $HH $head i.DAR_q
-probit dubvuln i.caste2016 $wealth $HH $head i.DSR30
-probit dubvuln i.caste2016 $wealth $HH $head i.DSR40
-probit dubvuln i.caste2016 $wealth $HH $head i.DSR50
-probit dubvuln i.caste2016 $wealth $HH $head i.dummyincrel_formal
-probit dubvuln i.caste2016 $wealth $HH $head rel_formal_HH
-probit dubvuln i.caste2016 $wealth $HH $head i.assets_q i.income_q i.DSR_q i.DAR_q
+estimates clear
+cls
+qui probit dubvuln i.caste2016 $wealth $HH $head
+est store spec1
+qui probit dubvuln i.caste2016 $wealth $HH $head i.assets_q
+est store spec2
+qui probit dubvuln i.caste2016 $wealth $HH $head i.income_q
+est store spec3
+qui probit dubvuln i.caste2016 $wealth $HH $head i.DSR_q
+est store spec4
+qui probit dubvuln i.caste2016 $wealth $HH $head i.DAR_q
+est store spec5
+qui probit dubvuln i.caste2016 $wealth $HH $head i.DSR30
+est store spec6
+qui probit dubvuln i.caste2016 $wealth $HH $head i.DSR40
+est store spec7
+qui probit dubvuln i.caste2016 $wealth $HH $head i.DSR50
+est store spec8
+qui probit dubvuln i.caste2016 $wealth $HH $head i.dummyincrel_formal
+est store spec9
+qui probit dubvuln i.caste2016 $wealth $HH $head rel_formal_HH
+est store spec10
+qui probit dubvuln i.caste2016 $wealth $HH $head i.assets_q i.income_q i.DSR_q i.DAR_q
+est store spec11
+
+cls
+esttab spec1 spec2 spec3 spec4 spec5, drop(1.villageid 2.villageid 3.villageid 4.villageid 5.villageid 6.villageid 7.villageid 8.villageid 9.villageid 10.villageid) stats(N r2_p)
+esttab spec6 spec7 spec8 spec9 spec10, drop(1.villageid 2.villageid 3.villageid 4.villageid 5.villageid 6.villageid 7.villageid 8.villageid 9.villageid 10.villageid) stats(N r2_p)
+esttab spec11, drop(1.villageid 2.villageid 3.villageid 4.villageid 5.villageid 6.villageid 7.villageid 8.villageid 9.villageid 10.villageid) stats(N r2_p)
 
 ****************************************
 * END
@@ -389,18 +446,50 @@ global varv dummy_nbchildren_v dummy_HHsize_v dummy_rel_repay_amt_HH_v dummy_rel
 
 
 **********
-xtprobit dubvuln i.caste2016 $wealth $HH
-xtprobit dubvuln i.caste2016 $wealth $HH $head
-xtprobit dubvuln i.caste2016 $wealth $HH $head i.assets_q
-xtprobit dubvuln i.caste2016 $wealth $HH $head i.income_q
-xtprobit dubvuln i.caste2016 $wealth $HH $head i.DSR_q
-xtprobit dubvuln i.caste2016 $wealth $HH $head i.DAR_q
-xtprobit dubvuln i.caste2016 $wealth $HH $head i.DSR30
-xtprobit dubvuln i.caste2016 $wealth $HH $head i.DSR40
-xtprobit dubvuln i.caste2016 $wealth $HH $head i.DSR50
-xtprobit dubvuln i.caste2016 $wealth $HH $head i.dummyincrel_formal
-xtprobit dubvuln i.caste2016 $wealth $HH $head rel_formal_HH
-xtprobit dubvuln i.caste2016 $wealth $HH $head i.assets_q i.income_q i.DSR_q i.DAR_q
+estimates clear
+cls
+qui xtlogit dubvuln i.caste2016 $wealth $HH $head, fe
+est store spec000
+qui xtlogit dubvuln i.caste2016 $wealth $HH $head, re
+est store spec00
+qui xtprobit dubvuln i.caste2016 $wealth $HH $head, pa
+est store spec0
+qui xtprobit dubvuln i.caste2016 $wealth $HH $head
+est store spec1
+qui xtprobit dubvuln i.caste2016 $wealth $HH $head i.assets_q
+est store spec2
+qui xtprobit dubvuln i.caste2016 $wealth $HH $head i.income_q
+est store spec3
+qui xtprobit dubvuln i.caste2016 $wealth $HH $head i.DSR_q
+est store spec4
+qui xtprobit dubvuln i.caste2016 $wealth $HH $head i.DAR_q
+est store spec5
+qui xtprobit dubvuln i.caste2016 $wealth $HH $head i.DSR30
+est store spec6
+qui xtprobit dubvuln i.caste2016 $wealth $HH $head i.DSR40
+est store spec7
+qui xtprobit dubvuln i.caste2016 $wealth $HH $head i.DSR50
+est store spec8
+qui xtprobit dubvuln i.caste2016 $wealth $HH $head i.dummyincrel_formal
+est store spec9
+qui xtprobit dubvuln i.caste2016 $wealth $HH $head rel_formal_HH
+est store spec10
+qui xtprobit dubvuln i.caste2016 $wealth $HH $head i.assets_q i.income_q i.DSR_q i.DAR_q
+est store spec11
+
+esttab spec000 spec00 spec0 spec1, drop(1.villageid 2.villageid 3.villageid 4.villageid 5.villageid 6.villageid 7.villageid 8.villageid 9.villageid 10.villageid) stats(N rho)
+
+cls
+esttab spec1 spec2 spec3 spec4 spec5, drop(1.villageid 2.villageid 3.villageid 4.villageid 5.villageid 6.villageid 7.villageid 8.villageid 9.villageid 10.villageid) stats(N rho)
+esttab spec6 spec7 spec8 spec9 spec10, drop(1.villageid 2.villageid 3.villageid 4.villageid 5.villageid 6.villageid 7.villageid 8.villageid 9.villageid 10.villageid) stats(N rho)
+esttab spec11, drop(1.villageid 2.villageid 3.villageid 4.villageid 5.villageid 6.villageid 7.villageid 8.villageid 9.villageid 10.villageid) stats(N rho)
+
+
+/*
+https://www.statalist.org/forums/forum/general-stata-discussion/general/1376221-probit-logit-with-panel-data-should-i-use-probit-or-xtprobit
+
+If after running -xtprobit- you find that rho (at the very end of the output table) is very close to zero, then it would be acceptable to say that the extent of intra-panel correlation is small enough to ignore and if there is some other advantage to using -probit-, you could then use -probit- (and would get nearly identical results). But otherwise, it is wrong to use a one-level model such as -probit- on panel data.
+*/
 
 ****************************************
 * END
