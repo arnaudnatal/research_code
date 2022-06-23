@@ -70,20 +70,58 @@ global loan3 "NEEMSIS2-all_loans"
 
 
 ****************************************
+* Descriptive
+****************************************
+cls
+use"panel_v13_period_wide", clear
+
+
+********** Non-weak + Vulnerable trajectory = Weak?
+ta clust1 sdvuln1
+ta clust2 if clust1==0 & sdvuln1==1
+
+ta clust2 sdvuln2
+ta clust3 if clust2==0 & sdvuln2==1
+
+
+*** Yes
+
+
+
+
+********** Descriptive
+ta sdvuln clust if potimes==1, chi2 cchi2 exp
+ta sdvuln clust if potimes==1, col nofreq
+
+ta sdvuln clust if potimes==2, chi2 cchi2 exp
+ta sdvuln clust if potimes==2, col nofreq
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
 * Econometrics
 ****************************************
 cls
-use"panel_v13_period", clear
+use"panel_v13_period_long", clear
 
 xtset panelvar potimes
-
-********** Descriptive
-ta sdvuln clust if potimes==1, chi2
-ta sdvuln clust if potimes==1, col nofreq
-
-ta sdvuln clust if potimes==2, chi2
-ta sdvuln clust if potimes==2, col nofreq
-
 
 ********** Macro
 global head head_female head_age i.head_edulevel i.head_occupation

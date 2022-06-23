@@ -105,7 +105,6 @@ cluster kmeans std_income std_assets std_DSR std_DAR, k(3) measure(Euclidean) na
 drop _clus_* cah_clust
 ta clust
 
-recode clust (2=1) (3=0)
 
 ***** Interpretation of clusters
 cls
@@ -114,7 +113,9 @@ ta clust year, col nofreq
 tabstat assets income DSR DAR, stat(mean p50) by(clust)
 tabstat assets income DSR DAR, stat(p1 p5 p10 q p90 p95 p99) by(clust)
 
+
 ***** Clean
+recode clust (2=1) (3=0)
 label define clust 0"Non-weak" 1"Weak"
 label values clust clust
 
@@ -194,11 +195,111 @@ rename MLstrat_`x'_amt_HH`y' MLstrat`x'`y'
 drop lf_IMF_nb_HH2010 lf_bank_nb_HH2010 lf_moneylender_nb_HH2010 repay_nb_HH2010 MLborrowstrat_nb_HH2010 MLgooddebt_nb_HH2010 MLbaddebt_nb_HH2010 MLstrat_asse_nb_HH2010 MLstrat_migr_nb_HH2010 lf_IMF_nb_HH2016 lf_bank_nb_HH2016 lf_moneylender_nb_HH2016 repay_nb_HH2016 MLborrowstrat_nb_HH2016 MLgooddebt_nb_HH2016 MLbaddebt_nb_HH2016 MLstrat_asse_nb_HH2016 MLstrat_migr_nb_HH2016 lf_IMF_nb_HH2020 lf_bank_nb_HH2020 lf_moneylender_nb_HH2020 repay_nb_HH2020 MLborrowstrat_nb_HH2020 MLgooddebt_nb_HH2020 MLbaddebt_nb_HH2020 MLstrat_asse_nb_HH2020 MLstrat_migr_nb_HH2020 dummyinc_formal dummyincrel_formal dummyinc_informal dummyincrel_informal dummyinc_eco dummyincrel_eco dummyinc_current dummyincrel_current dummyinc_social dummyincrel_social dummyinc_humank dummyincrel_humank dummyinc_repay_amt dummyincrel_repay_amt dummyinc_agri dummyinc_nagri
 
 
+********** Add shock variables
+*Marriage, demonetisation, COVID-19
+
+***** 2016-17
+preserve
+use"$wave2", clear
+keep HHID_panel INDID name relationshiptohead dummydemonetisation dummymarriage marriedlist sex
+*** Marriage
+fre relationshiptohead
+drop if relationshiptohead==7
+drop if relationshiptohead==8
+split marriedlist
+destring marriedlist1 marriedlist2 marriedlist3 marriedlist4, replace
+drop marriedlist
+
+gen dummymarriagedaughter=.
+replace dummymarriagedaughter=1 if INDID==marriedlist1 & sex==2
+replace dummymarriagedaughter=1 if INDID==marriedlist2 & sex==2
+replace dummymarriagedaughter=1 if INDID==marriedlist3 & sex==2
+replace dummymarriagedaughter=1 if INDID==marriedlist4 & sex==2
+gen dummymarriageson=.
+replace dummymarriageson=1 if INDID==marriedlist1 & sex==1
+replace dummymarriageson=1 if INDID==marriedlist2 & sex==1
+replace dummymarriageson=1 if INDID==marriedlist3 & sex==1
+replace dummymarriageson=1 if INDID==marriedlist4 & sex==1
+foreach x in dummymarriagedaughter dummymarriageson {
+bysort HHID_panel: egen sum_`x'=sum(`x')
+drop `x'
+rename sum_`x' `x'
+}
+
+drop INDID name sex marriedlist1 marriedlist2 marriedlist3 marriedlist4 relationshiptohead
+duplicates drop
+foreach x in dummydemonetisation dummymarriage dummymarriagedaughter dummymarriageson {
+rename `x' `x'2016
+}
+drop dummymarriage2016
+replace dummymarriagedaughter2016=1 if dummymarriagedaughter2016>1
+replace dummymarriageson2016=1 if dummymarriageson2016>1 
+save"$wave2~shocks", replace
+restore
+
+***** 2020-21
+preserve
+use"$wave3", clear
+keep HHID_panel dummymarriage dummy_marriedlist sex relationshiptohead covsick start_HH_quest
+*** Marriage
+fre relationshiptohead
+drop if relationshiptohead==7
+drop if relationshiptohead==8
+
+gen dummymarriagedaughter=.
+replace dummymarriagedaughter=1 if dummy_marriedlist==1 & sex==2
+gen dummymarriageson=.
+replace dummymarriageson=1 if dummy_marriedlist==1 & sex==1
+foreach x in dummymarriagedaughter dummymarriageson {
+bysort HHID_panel: egen sum_`x'=sum(`x')
+drop `x'
+rename sum_`x' `x'
+}
+drop sex relationshiptohead dummy_marriedlist
+rename start_HH_quest startHHquest2020
+drop dummymarriage
+rename dummymarriagedaughter dummymarriagedaughter2020
+rename dummymarriageson dummymarriageson2020
+replace dummymarriagedaughter2020=1 if dummymarriagedaughter2020>1
+replace dummymarriageson2020=1 if dummymarriageson2020>1 
+duplicates drop
+save"$wave3~shocks", replace
+restore
+
+***** Merge
+merge 1:1 HHID_panel using "$wave2~shocks"
+drop _merge
+merge 1:1 HHID_panel using "$wave3~shocks"
+drop _merge
+
+***** Lockdown exposure var creation
+gen tos=dofc(startHHquest2020)
+format tos %td
+gen dummylock2020=.
+replace dummylock2020=1 if tos<d(05apr2021)
+replace dummylock2020=2 if tos>=d(05apr2021) & tos<=d(15jun2021)
+replace dummylock2020=3 if tos>d(15jun2021)
+replace dummylock2020=. if income2020==.
+drop tos startHHquest2020
+label define lock 1"Before" 2"During" 3"After"
+label values dummylock lock
+ta dummylock2020
+rename covsick covsick2020
+
+***** Marriage
+fre dummymarriage2010 dummymarriage2016 dummymarriage2020 dummymarriagedaughter2016 dummymarriageson2016 dummymarriagedaughter2020 dummymarriageson2020
+gen dummymarriagedaughter2010=0 if dummymarriage2010==0
+gen dummymarriageson2010=0 if dummymarriage2010==0
+
+***** Save
 save"panel_v12_wide", replace
 
+*fre dummymarriage2016 dummymarriage2020 dummydemonetisation dummylock2
+*rename dummydemonetisation dummydemonetisation2016
+*rename dummylock2 dummylock2020
 
 ********** Reshape for long
-reshape long DAR	DAR_BU	DAR_with	DIR	DIR_BU	DSR	DSR30	DSR40	DSR50	DSR_BU	HHsize	IMF	ISR	ISR_BU	MLbaddebt	MLborrowstrat	MLgooddebt	MLstratasse	MLstratmigr	agri	assets	assets_BU	bank	caste	cat_as	cat_in	clust	current	dummyIMF	dummyassestrat	dummybank	dummyborrowstrat	dummymarriage	dummymigrstrat	dummymoneylender	dummyrepay	eco	expenses	femtomale	formal	head_age	head_edulevel	head_female	head_married	head_occupation	home	housetitle	housetype	humank	income	income_BU	informal	jatis	loanamount	loanamount_BU	mainloan_HH	mainocc_occupation	moneylender	nagri	nbchildren	nontoworkers	other	ownland	rel_IMF	rel_MLbaddebt	rel_MLborrowstrat	rel_MLgooddebt	rel_MLstratasse	rel_MLstratmigr	rel_bank	rel_current	rel_eco	rel_formal	rel_home	rel_humank	rel_informal	rel_moneylender	rel_other	rel_repay	rel_social	repay	shareagri	sharenagri	sizeownland	social	std_DAR	std_DSR	std_assets	std_income	sum_loans_HH	village_ur	villagearea	villageid	wifehusb_age	wifehusb_edulevel	wifehusb_female	wifehusb_married	wifehusb_occupation, i(HHID_panel) j(year)
+reshape long DAR	DAR_BU	DAR_with	DIR	DIR_BU	DSR	DSR30	DSR40	DSR50	DSR_BU	HHsize	IMF	ISR	ISR_BU	MLbaddebt	MLborrowstrat	MLgooddebt	MLstratasse	MLstratmigr	agri	assets	assets_BU	bank	caste	cat_as	cat_in	clust	current	dummyIMF	dummyassestrat	dummybank	dummyborrowstrat	dummymarriage	dummymigrstrat	dummymoneylender	dummyrepay	eco	expenses	femtomale	formal	head_age	head_edulevel	head_female	head_married	head_occupation	home	housetitle	housetype	humank	income	income_BU	informal	jatis	loanamount	loanamount_BU	mainloan_HH	mainocc_occupation	moneylender	nagri	nbchildren	nontoworkers	other	ownland	rel_IMF	rel_MLbaddebt	rel_MLborrowstrat	rel_MLgooddebt	rel_MLstratasse	rel_MLstratmigr	rel_bank	rel_current	rel_eco	rel_formal	rel_home	rel_humank	rel_informal	rel_moneylender	rel_other	rel_repay	rel_social	repay	shareagri	sharenagri	sizeownland	social	std_DAR	std_DSR	std_assets	std_income	sum_loans_HH	village_ur	villagearea	villageid	wifehusb_age	wifehusb_edulevel	wifehusb_female	wifehusb_married	wifehusb_occupation dummydemonetisation dummylock dummymarriagedaughter dummymarriageson covsick, i(HHID_panel) j(year)
 
 gen time=.
 replace time=1 if year==2010
@@ -207,8 +308,25 @@ replace time=3 if year==2020
 
 label define time 1"2010" 2"2016-17" 3"2020-21"
 label values time time
+label var year "Year"
 
 drop if income==.
+
+ta dummymarriage year
+ta dummydemonetisation year
+ta dummylock year
+
+label define yesnoshocks 0"No" 1"Yes"
+label values dummymarriage yesnoshock
+label values dummymarriagedaughter yesnoshock
+label values dummymarriageson yesnoshock
+label values dummydemonetisation yesnoshock
+
+
+global shocks dummylock dummydemonetisation covsick dummymarriage dummymarriageson dummymarriagedaughter
+fre $shocks
+recode $shocks (.=0)
+
 
 save "panel_v12_long", replace
 ****************************************

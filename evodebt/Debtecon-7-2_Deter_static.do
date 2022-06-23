@@ -72,28 +72,50 @@ global loan3 "NEEMSIS2-all_loans"
 cls
 use"panel_v12_long", clear
 
-xtset panelva time
+ta clust dummymarriage if year==2016, row nofreq chi2
+ta clust dummymarriage if year==2020, row nofreq chi2
+
+ta clust dummymarriage if year==2016, cchi2 exp chi2
+ta clust dummymarriage if year==2020, cchi2 exp chi2
+
+xtset panelvar time
 ta time clust
 
 global head head_female head_age i.head_edulevel i.head_occupation
 global wifehusb wifehusb_female wifehusb_age i.wifehusb_edulevel i.wifehusb_occupation
 global wealth income assets
 global HH HHsize nbchildren i.housetype ownland i.villageid
+global shocks dummydemonetisation i.dummylock
+global marglo dummymarriage
+global marson dummymarriageson
+global mardau dummymarriagedaughter
 
 ********** Cross section evidence
-probit clust i.caste $head $HH if year==2010
-predict prob2010
-probit clust i.caste $head $HH if year==2016
-predict prob2016
-probit clust i.caste $head $HH if year==2020
-predict prob2020
+cls
+probit clust i.caste $head $HH $shocks if year==2010
 
+cls
+probit clust i.caste $head $HH $shocks $marglo if year==2016
+probit clust i.caste $head $HH $shocks $marson if year==2016
+probit clust i.caste $head $HH $shocks $mardau if year==2016
+probit clust i.caste $head $HH $shocks $marson $mardau if year==2016
+
+cls
+probit clust i.caste $head $HH $shocks $marglo if year==2020
+probit clust i.caste $head $HH $shocks $marson if year==2020
+probit clust i.caste $head $HH $shocks $mardau if year==2020
+probit clust i.caste $head $HH $shocks $marson $mardau if year==2020
 
 ********** STEP 1: xtprobit classic
 gen clust_lag=L1.clust
 order HHID_panel year clust clust_lag
-xtprobit clust clust_lag i.caste $head $HH
-xtprobit clust clust_lag i.caste $head $wifehusb $HH
+
+cls
+xtprobit clust clust_lag i.caste $head $HH $shocks
+xtprobit clust clust_lag i.caste $head $HH $shocks $marglo
+xtprobit clust clust_lag i.caste $head $HH $shocks $marson
+xtprobit clust clust_lag i.caste $head $HH $shocks $mardau
+xtprobit clust clust_lag i.caste $head $HH $shocks $marson $mardau
 
 ****************************************
 * END

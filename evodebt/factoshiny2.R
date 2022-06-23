@@ -18,7 +18,6 @@ setwd("C:/Users/Arnaud/Documents/GitHub/research_code/evodebt")
 library(Factoshiny)
 library(tidyverse)
 
-
 #--- Open datasets
 data<-read.csv("shortdebttrend_v1.csv")
 
@@ -37,7 +36,7 @@ attach(trend)
 
 
 #--- Factoshiny
-MCAshiny(trend)
+# MCAshiny(trend)
 
 
 #--- HCPC

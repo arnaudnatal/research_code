@@ -153,56 +153,69 @@ reshape long cat_assets_b cat_DAR_b cat_DSR_b cat_income_b, i(HHID_panel) j(temp
 
 drop if cat_assets_b==.
 
+
+********** Test kmeans
+/*
+foreach x in cat_assets_b cat_DAR_b cat_DSR_b cat_income_b {
+ta `x', gen(`x'_)
+}
+cluster wardslinkage cat_assets_b_1 cat_assets_b_2 cat_assets_b_3 cat_DAR_b_1 cat_DAR_b_2 cat_DAR_b_3 cat_DSR_b_1 cat_DSR_b_2 cat_DSR_b_3 cat_income_b_1 cat_income_b_2 cat_income_b_3, measure(matching)
+cluster dendro, cutnumber(50)
+cluster gen cah_clust=groups(2)
+cluster kmeans cat_assets_b_1 cat_assets_b_2 cat_assets_b_3 cat_DAR_b_1 cat_DAR_b_2 cat_DAR_b_3 cat_DSR_b_1 cat_DSR_b_2 cat_DSR_b_3 cat_income_b_1 cat_income_b_2 cat_income_b_3, k(2) measure(matching) name(clust) start(group(cah_clust))
+drop _clus_* cah_clust
+ta clust
+foreach x in assets income DAR DSR {
+ta clust cat_`x'_b, row nofreq
+}
+*/
 export delimited using "$git\research_code\evodebt\shortdebttrend_v1.csv", replace
 restore
 
 
+
 ********** Reintroduce in dataset
+cls
 import delimited using "$git\research_code\evodebt\shortdebttrend_v2.csv", clear
-ta clust
-gen sdvuln=.
-replace sdvuln=0 if clust==1
-replace sdvuln=0 if clust==2
-replace sdvuln=1 if clust==3
-replace sdvuln=1 if clust==4
-ta sdvuln tempo, col nofreq
-keep hhid_panel tempo clust sdvuln
-reshape wide clust sdvuln, i(hhid_panel) j(tempo)
-ta sdvuln1 sdvuln2, row nofreq
-
-ta sdvuln1
-ta sdvuln2
-
-rename clust1 sdclust1 
-rename clust2 sdclust2
-
 rename hhid_panel HHID_panel
+rename cat_dar_b cat_DAR_b
+rename cat_dsr_b cat_DSR_b
+rename clust sdclust
+
+*** Charact
+foreach x in DAR DSR assets income {
+ta sdclust cat_`x'_b, row nofreq
+}
+
+*** Vuln
+gen sdvuln=.
+replace sdvuln=0 if sdclust==1
+replace sdvuln=0 if sdclust==2
+replace sdvuln=0 if sdclust==3
+replace sdvuln=1 if sdclust==4
+
+ta sdvuln
+
+foreach x in DAR DSR assets income {
+ta sdvuln cat_`x'_b, row nofreq
+}
+
+*** Introduce
+keep HHID_panel tempo sdclust sdvuln
+reshape wide sdclust sdvuln, i(HHID_panel) j(tempo)
 merge 1:1 HHID_panel using "panel_v13_wide"
+drop _merge
+
+ta sdvuln1 sdclust1, col row
+ta sdvuln2 sdclust2, col row
+
 
 ***** Check
 cls
 ta sdclust1 sdvuln1
 ta sdclust2 sdvuln2
-ta sdvuln1 caste2016, nofreq col
-ta sdvuln2 caste2016, nofreq col
-ta sdvuln1 caste2016, nofreq row
-ta sdvuln2 caste2016, nofreq row
-
-
-********** Cluster characteristics
-cls
-forvalues i=1/2 {
-foreach x in assets income DAR DSR {
-ta sdclust`i' cat_`x'_b`i'
-}
-}
-
-cls
-forvalues i=1/2 {
-foreach x in assets income DAR DSR {
-ta sdvuln`i' cat_`x'_b`i', row nofreq
-}
-}
+ta sdvuln1 caste2016, cchi2 exp chi2
+ta sdvuln2 caste2016, cchi2 exp chi2
 
 save "panel_v13_wide", replace
 ****************************************
@@ -224,7 +237,7 @@ cls
 use"panel_v13_wide", clear
 
 ***** Clean
-global var DAR	DAR_BU	DAR_with	DIR	DIR_BU	DSR	DSR30	DSR40	DSR50	DSR_BU	HHsize	IMF	ISR	ISR_BU	MLbaddebt	MLborrowstrat	MLgooddebt	MLstratasse	MLstratmigr	agri	assets	assets_BU	bank	caste	clust	current	dummyIMF	dummyassestrat	dummybank	dummyborrowstrat	dummymarriage	dummymigrstrat	dummymoneylender	dummyrepay	eco	expenses	femtomale	formal	head_age	head_edulevel	head_female	head_married	head_occupation	home	housetitle	housetype	humank	income	income_BU	informal	jatis	loanamount	loanamount_BU	mainloan_HH	mainocc_occupation	moneylender	nagri	nbchildren	nontoworkers	occupation	other	ownland	rel_IMF	rel_MLbaddebt	rel_MLborrowstrat	rel_MLgooddebt	rel_MLstratasse	rel_MLstratmigr	rel_bank	rel_current	rel_eco	rel_formal	rel_home	rel_humank	rel_informal	rel_moneylender	rel_other	rel_repay	rel_social	repay	shareagri	sharenagri	sizeownland	social	std_DAR	std_DSR	std_assets	std_income	sum_loans_HH	village_ur	villagearea	villageid	wifehusb_age	wifehusb_edulevel	wifehusb_female	wifehusb_married	wifehusb_occupation
+global var DAR	DAR_BU	DAR_with	DIR	DIR_BU	DSR	DSR30	DSR40	DSR50	DSR_BU	HHsize	IMF	ISR	ISR_BU	MLbaddebt	MLborrowstrat	MLgooddebt	MLstratasse	MLstratmigr	agri	assets	assets_BU	bank	caste	current	dummyIMF	dummyassestrat	dummybank	dummyborrowstrat	dummymarriage	dummymigrstrat	dummymoneylender	dummyrepay	eco	expenses	femtomale	formal	head_age	head_edulevel	head_female	head_married	head_occupation	home	housetitle	housetype	humank	income	income_BU	informal	jatis	loanamount	loanamount_BU	mainloan_HH	mainocc_occupation	moneylender	nagri	nbchildren	nontoworkers	occupation	other	ownland	rel_IMF	rel_MLbaddebt	rel_MLborrowstrat	rel_MLgooddebt	rel_MLstratasse	rel_MLstratmigr	rel_bank	rel_current	rel_eco	rel_formal	rel_home	rel_humank	rel_informal	rel_moneylender	rel_other	rel_repay	rel_social	repay	shareagri	sharenagri	sizeownland	social	std_DAR	std_DSR	std_assets	std_income	sum_loans_HH	village_ur	villagearea	villageid	wifehusb_age	wifehusb_edulevel	wifehusb_female	wifehusb_married	wifehusb_occupation
 
 foreach x in $var {
 rename `x'2010 `x'1
@@ -232,7 +245,13 @@ rename `x'2016 `x'2
 drop `x'2020
 }
 
+rename clust2010 clust1
+rename clust2016 clust2
+rename clust2020 clust3
 
+save "panel_v13_period_wide", replace
+
+drop clust3
 
 ********** Reshape
 global vardiff sdclust sdvuln cat_assets_b cat_DAR_b cat_DSR_b cat_income_b dummy_income_var	dummy_assets_var	dummy_rel_repay_var	dummy_rel_formal_var	dummy_rel_informal_var	dummy_rel_eco_var	dummy_rel_current_var	dummy_rel_humank_var	dummy_rel_social_var	dummy_rel_home_var	dummy_repay_var	dummy_formal_var	dummy_informal_var	dummy_eco_var	dummy_current_var	dummy_humank_var	dummy_social_var	dummy_home_var	mainocc_occupation_var	housetype_var	housetitle_var	ownland_var	occupation_var
@@ -246,6 +265,6 @@ dropmiss, force
 order HHID_panel panelvar potimes sdclust sdvuln cat_assets_b cat_DAR_b cat_DSR_b cat_income_b
 sort HHID_panel
 
-save "panel_v13_period", replace
+save "panel_v13_period_long", replace
 ****************************************
 * END
