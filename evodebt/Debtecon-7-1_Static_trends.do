@@ -291,6 +291,13 @@ fre dummymarriage2010 dummymarriage2016 dummymarriage2020 dummymarriagedaughter2
 gen dummymarriagedaughter2010=0 if dummymarriage2010==0
 gen dummymarriageson2010=0 if dummymarriage2010==0
 
+gen dummylock2010=0
+gen dummylock2016=0
+gen covsick2010=0
+gen covsick2016=0
+gen dummydemonetisation2010=0
+gen dummydemonetisation2020=0
+
 ***** Save
 save"panel_v12_wide", replace
 

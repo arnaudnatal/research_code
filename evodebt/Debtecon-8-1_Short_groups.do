@@ -153,22 +153,6 @@ reshape long cat_assets_b cat_DAR_b cat_DSR_b cat_income_b, i(HHID_panel) j(temp
 
 drop if cat_assets_b==.
 
-
-********** Test kmeans
-/*
-foreach x in cat_assets_b cat_DAR_b cat_DSR_b cat_income_b {
-ta `x', gen(`x'_)
-}
-cluster wardslinkage cat_assets_b_1 cat_assets_b_2 cat_assets_b_3 cat_DAR_b_1 cat_DAR_b_2 cat_DAR_b_3 cat_DSR_b_1 cat_DSR_b_2 cat_DSR_b_3 cat_income_b_1 cat_income_b_2 cat_income_b_3, measure(matching)
-cluster dendro, cutnumber(50)
-cluster gen cah_clust=groups(2)
-cluster kmeans cat_assets_b_1 cat_assets_b_2 cat_assets_b_3 cat_DAR_b_1 cat_DAR_b_2 cat_DAR_b_3 cat_DSR_b_1 cat_DSR_b_2 cat_DSR_b_3 cat_income_b_1 cat_income_b_2 cat_income_b_3, k(2) measure(matching) name(clust) start(group(cah_clust))
-drop _clus_* cah_clust
-ta clust
-foreach x in assets income DAR DSR {
-ta clust cat_`x'_b, row nofreq
-}
-*/
 export delimited using "$git\research_code\evodebt\shortdebttrend_v1.csv", replace
 restore
 
@@ -237,30 +221,25 @@ cls
 use"panel_v13_wide", clear
 
 ***** Clean
-global var DAR	DAR_BU	DAR_with	DIR	DIR_BU	DSR	DSR30	DSR40	DSR50	DSR_BU	HHsize	IMF	ISR	ISR_BU	MLbaddebt	MLborrowstrat	MLgooddebt	MLstratasse	MLstratmigr	agri	assets	assets_BU	bank	caste	current	dummyIMF	dummyassestrat	dummybank	dummyborrowstrat	dummymarriage	dummymigrstrat	dummymoneylender	dummyrepay	eco	expenses	femtomale	formal	head_age	head_edulevel	head_female	head_married	head_occupation	home	housetitle	housetype	humank	income	income_BU	informal	jatis	loanamount	loanamount_BU	mainloan_HH	mainocc_occupation	moneylender	nagri	nbchildren	nontoworkers	occupation	other	ownland	rel_IMF	rel_MLbaddebt	rel_MLborrowstrat	rel_MLgooddebt	rel_MLstratasse	rel_MLstratmigr	rel_bank	rel_current	rel_eco	rel_formal	rel_home	rel_humank	rel_informal	rel_moneylender	rel_other	rel_repay	rel_social	repay	shareagri	sharenagri	sizeownland	social	std_DAR	std_DSR	std_assets	std_income	sum_loans_HH	village_ur	villagearea	villageid	wifehusb_age	wifehusb_edulevel	wifehusb_female	wifehusb_married	wifehusb_occupation
+global var DAR	DAR_BU	DAR_with	DIR	DIR_BU	DSR	DSR30	DSR40	DSR50	DSR_BU	HHsize	IMF	ISR	ISR_BU	MLbaddebt	MLborrowstrat	MLgooddebt	MLstratasse	MLstratmigr	agri	assets	assets_BU	bank	caste	current	dummyIMF	dummyassestrat	dummybank	dummyborrowstrat	dummymarriage	dummymigrstrat	dummymoneylender	dummyrepay	eco	expenses	femtomale	formal	head_age	head_edulevel	head_female	head_married	head_occupation	home	housetitle	housetype	humank	income	income_BU	informal	jatis	loanamount	loanamount_BU	mainloan_HH	mainocc_occupation	moneylender	nagri	nbchildren	nontoworkers	occupation	other	ownland	rel_IMF	rel_MLbaddebt	rel_MLborrowstrat	rel_MLgooddebt	rel_MLstratasse	rel_MLstratmigr	rel_bank	rel_current	rel_eco	rel_formal	rel_home	rel_humank	rel_informal	rel_moneylender	rel_other	rel_repay	rel_social	repay	shareagri	sharenagri	sizeownland	social	std_DAR	std_DSR	std_assets	std_income	sum_loans_HH	village_ur	villagearea	villageid	wifehusb_age	wifehusb_edulevel	wifehusb_female	wifehusb_married	wifehusb_occupation dummymarriagedaughter dummymarriageson dummylock covsick dummydemonetisation clust
 
 foreach x in $var {
 rename `x'2010 `x'1
 rename `x'2016 `x'2
-drop `x'2020
+rename `x'2020 `x'3
 }
 
-rename clust2010 clust1
-rename clust2016 clust2
-rename clust2020 clust3
 
 save "panel_v13_period_wide", replace
 
-drop clust3
 
 ********** Reshape
 global vardiff sdclust sdvuln cat_assets_b cat_DAR_b cat_DSR_b cat_income_b dummy_income_var	dummy_assets_var	dummy_rel_repay_var	dummy_rel_formal_var	dummy_rel_informal_var	dummy_rel_eco_var	dummy_rel_current_var	dummy_rel_humank_var	dummy_rel_social_var	dummy_rel_home_var	dummy_repay_var	dummy_formal_var	dummy_informal_var	dummy_eco_var	dummy_current_var	dummy_humank_var	dummy_social_var	dummy_home_var	mainocc_occupation_var	housetype_var	housetitle_var	ownland_var	occupation_var
 
-
 reshape long $var $vardiff, i(HHID_panel) j(potimes)
-drop if sdclust==.
-ta potimes
 dropmiss, force
+drop if clust==.
+ta potimes
 
 order HHID_panel panelvar potimes sdclust sdvuln cat_assets_b cat_DAR_b cat_DSR_b cat_income_b
 sort HHID_panel

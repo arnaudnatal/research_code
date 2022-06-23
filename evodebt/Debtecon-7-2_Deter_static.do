@@ -111,7 +111,6 @@ gen clust_lag=L1.clust
 order HHID_panel year clust clust_lag
 
 cls
-xtprobit clust clust_lag i.caste $head $HH $shocks
 xtprobit clust clust_lag i.caste $head $HH $shocks $marglo
 xtprobit clust clust_lag i.caste $head $HH $shocks $marson
 xtprobit clust clust_lag i.caste $head $HH $shocks $mardau
