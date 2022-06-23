@@ -96,17 +96,17 @@ global varv dummy_rel_repay_amt_HH_var dummy_rel_formal_HH_var
 ********** Cross section
 preserve
 keep if potimes==1
-probit sdvuln i.caste $head $HH $wealth
+probit sdvuln i.caste $head $HH $wealth dummy_rel_repay_var dummy_rel_formal_var dummy_rel_informal_var dummy_rel_eco_var dummy_rel_current_var dummy_rel_humank_var dummy_rel_social_var dummy_rel_home_var
 restore
 
 preserve
 keep if potimes==2
-probit sdvuln i.caste $head $HH $wealth
+probit sdvuln i.caste $head $HH $wealth dummy_rel_repay_var dummy_rel_formal_var dummy_rel_informal_var dummy_rel_eco_var dummy_rel_current_var dummy_rel_humank_var dummy_rel_social_var dummy_rel_home_var
 restore
 
 
 ********** Panel model
-xtprobit sdvuln i.caste $head $HH $wealth
+xtprobit sdvuln i.caste $head $HH $wealth dummy_rel_repay_var dummy_rel_formal_var dummy_rel_informal_var dummy_rel_eco_var dummy_rel_current_var dummy_rel_humank_var dummy_rel_social_var dummy_rel_home_var
 
 
 *** CRE

@@ -189,6 +189,21 @@ ta sdvuln1 caste2016, nofreq row
 ta sdvuln2 caste2016, nofreq row
 
 
+********** Cluster characteristics
+cls
+forvalues i=1/2 {
+foreach x in assets income DAR DSR {
+ta sdclust`i' cat_`x'_b`i'
+}
+}
+
+cls
+forvalues i=1/2 {
+foreach x in assets income DAR DSR {
+ta sdvuln`i' cat_`x'_b`i', row nofreq
+}
+}
+
 save "panel_v13_wide", replace
 ****************************************
 * END

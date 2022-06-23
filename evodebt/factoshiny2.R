@@ -37,7 +37,7 @@ attach(trend)
 
 
 #--- Factoshiny
-#MCAshiny(trend)
+MCAshiny(trend)
 
 
 #--- HCPC
