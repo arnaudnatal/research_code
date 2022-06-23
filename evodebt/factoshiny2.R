@@ -20,7 +20,7 @@ library(tidyverse)
 
 
 #--- Open datasets
-data<-read.csv("debttrend_new_v1.csv")
+data<-read.csv("shortdebttrend_v1.csv")
 
 
 #--- Matrices creation
@@ -40,12 +40,9 @@ attach(trend)
 #MCAshiny(trend)
 
 
-#--- MCA
-res.MCA<-MCA(trend,ncp=4,graph=FALSE)
-
-
 #--- HCPC
-res.HCPC<-HCPC(res.MCA,nb.clust=5,consol=TRUE,graph=FALSE)
+res.MCA<-MCA(trend,ncp=5,graph=FALSE)
+res.HCPC<-HCPC(res.MCA,nb.clust=4,consol=TRUE,graph=FALSE)
 
 
 inert<-res.HCPC[["call"]][["t"]][["inert.gain"]]
@@ -58,5 +55,5 @@ inertia<-cbind(inert)
 
 table(vulnerable$clust)
 
-write.csv(data,"debttrend_new_v3.csv")
+write.csv(data,"shortdebttrend_v2.csv")
 #write.csv(inertia,"inertia.csv")

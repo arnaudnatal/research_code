@@ -130,10 +130,10 @@ ms(oh oh oh) msize(small) mc(red%30) ///
 yla(, ang(h)) xla(, noticks)
 end
 
-stripgraph assets year clust 2000
-stripgraph income year clust 500
-stripgraph DSR year clust 500
-stripgraph DAR year clust 500
+*stripgraph assets year clust 2000
+*stripgraph income year clust 500
+*stripgraph DSR year clust 500
+*stripgraph DAR year clust 500
 
 
 
@@ -156,13 +156,49 @@ merge 1:1 HHID_panel using "panel_v11_wide"
 drop _merge
 
 drop *ihs*
-	
+
+drop over30path_d1 over30path_d2 over40path_d1 over40path_d2 over50path_d1 over50path_d2 path_30 path_40 path_50 path_repay_d1 path_repay_d2 path_borrowstrat_d1 path_borrowstrat_d2 path_repay path_borrowstrat
+
+
+********** Clean
+foreach y in 2010 2016 2020 {
+
+rename rel_repay_amt_HH`y' rel_repay`y'
+rename repay_amt_HH`y' repay`y'
+
+
+foreach x in formal informal eco current humank social home other {
+rename rel_`x'_HH`y' rel_`x'`y'
+rename `x'_HH`y' `x'`y'
+}
+
+foreach x in IMF bank moneylender {
+rename rel_lf_`x'_amt_HH`y' rel_`x'`y'
+rename lf_`x'_amt_HH`y' `x'`y'
+}
+
+drop rel_mainloan_amt_HH`y'
+drop mainloan_amt_HH`y'
+
+foreach x in borrowstrat baddebt gooddebt {
+rename rel_ML`x'_amt_HH`y' rel_ML`x'`y'
+rename ML`x'_amt_HH`y' ML`x'`y'
+}
+
+foreach x in asse migr {
+rename rel_MLstrat_`x'_amt_HH`y' rel_MLstrat`x'`y'
+rename MLstrat_`x'_amt_HH`y' MLstrat`x'`y'
+}
+}
+
+drop lf_IMF_nb_HH2010 lf_bank_nb_HH2010 lf_moneylender_nb_HH2010 repay_nb_HH2010 MLborrowstrat_nb_HH2010 MLgooddebt_nb_HH2010 MLbaddebt_nb_HH2010 MLstrat_asse_nb_HH2010 MLstrat_migr_nb_HH2010 lf_IMF_nb_HH2016 lf_bank_nb_HH2016 lf_moneylender_nb_HH2016 repay_nb_HH2016 MLborrowstrat_nb_HH2016 MLgooddebt_nb_HH2016 MLbaddebt_nb_HH2016 MLstrat_asse_nb_HH2016 MLstrat_migr_nb_HH2016 lf_IMF_nb_HH2020 lf_bank_nb_HH2020 lf_moneylender_nb_HH2020 repay_nb_HH2020 MLborrowstrat_nb_HH2020 MLgooddebt_nb_HH2020 MLbaddebt_nb_HH2020 MLstrat_asse_nb_HH2020 MLstrat_migr_nb_HH2020
+
+
 save"panel_v12_wide", replace
 
 
 ********** Reshape for long
-
-reshape long std_assets	std_income	std_DSR	std_DAR	clust	income	DSR	loanamount	DIR	villageid	caste	sizeownland	mainocc_occupation	head_female	head_married	head_age	head_edulevel	head_occupation	wifehusb_female	wifehusb_married	wifehusb_age	wifehusb_edulevel	wifehusb_occupation	expenses	assets	jatis	villagearea	agri	nagri	shareagri	sharenagri	repay_amt_HH	rel_repay_amt_HH	rel_formal_HH	rel_informal_HH	rel_eco_HH	rel_current_HH	rel_humank_HH	rel_social_HH	rel_home_HH	rel_other_HH	informal_HH	formal_HH	eco_HH	current_HH	humank_HH	social_HH	home_HH	other_HH	lf_IMF_nb_HH	lf_IMF_amt_HH	lf_bank_nb_HH	lf_bank_amt_HH	lf_moneylender_nb_HH	lf_moneylender_amt_HH	repay_nb_HH	MLborrowstrat_nb_HH	MLborrowstrat_amt_HH	MLgooddebt_nb_HH	MLgooddebt_amt_HH	MLbaddebt_nb_HH	MLbaddebt_amt_HH	MLstrat_asse_nb_HH	MLstrat_asse_amt_HH	MLstrat_migr_nb_HH	MLstrat_migr_amt_HH	mainloan_HH	mainloan_amt_HH	rel_lf_IMF_amt_HH	rel_lf_bank_amt_HH	rel_lf_moneylender_amt_HH	rel_mainloan_amt_HH	rel_MLborrowstrat_amt_HH	rel_MLbaddebt_amt_HH	rel_MLgooddebt_amt_HH	rel_MLstrat_asse_amt_HH	rel_MLstrat_migr_amt_HH	dummyIMF	dummybank	dummymoneylender	dummyrepay	dummyborrowstrat	dummymigrstrat	dummyassestrat	sum_loans_HH	DAR	DAR_with	ISR	DSR30	DSR40	DSR50	ihs_ISR	ihs_DAR	ihs_DSR	ihs_DIR	ihs_DIR10	ihs_DIR100	ihs_DIR1000	ihs_DIR10000	ihs_loanamount	ihs_income	ihs_assets	ihs_yearly_expenses	ihs_informal_HH	ihs_rel_informal_HH	ihs_formal_HH	ihs_rel_formal_HH	ihs_eco_HH	ihs_rel_eco_HH	ihs_current_HH	ihs_rel_current_HH	ihs_humank_HH	ihs_rel_humank_HH	ihs_social_HH	ihs_rel_social_HH	ihs_home_HH	ihs_rel_home_HH	ihs_repay_amt_HH	ihs_rel_repay_amt_HH	ownland	dummymarriage	housetype	housetitle	HHsize	nbchildren	nontoworkers	femtomale	village_ur assets_BU income_BU DSR_BU DAR_BU, i(HHID_panel) j(year)
+reshape long DAR	DAR_BU	DAR_with	DIR	DIR_BU	DSR	DSR30	DSR40	DSR50	DSR_BU	HHsize	IMF	ISR	ISR_BU	MLbaddebt	MLborrowstrat	MLgooddebt	MLstratasse	MLstratmigr	agri	assets	assets_BU	bank	caste	cat_as	cat_in	clust	current	dummyIMF	dummyassestrat	dummybank	dummyborrowstrat	dummymarriage	dummymigrstrat	dummymoneylender	dummyrepay	eco	expenses	femtomale	formal	head_age	head_edulevel	head_female	head_married	head_occupation	home	housetitle	housetype	humank	income	income_BU	informal	jatis	loanamount	loanamount_BU	mainloan_HH	mainocc_occupation	moneylender	nagri	nbchildren	nontoworkers	other	ownland	rel_IMF	rel_MLbaddebt	rel_MLborrowstrat	rel_MLgooddebt	rel_MLstratasse	rel_MLstratmigr	rel_bank	rel_current	rel_eco	rel_formal	rel_home	rel_humank	rel_informal	rel_moneylender	rel_other	rel_repay	rel_social	repay	shareagri	sharenagri	sizeownland	social	std_DAR	std_DSR	std_assets	std_income	sum_loans_HH	village_ur	villagearea	villageid	wifehusb_age	wifehusb_edulevel	wifehusb_female	wifehusb_married	wifehusb_occupation, i(HHID_panel) j(year)
 
 gen time=.
 replace time=1 if year==2010
