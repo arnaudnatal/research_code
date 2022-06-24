@@ -115,9 +115,15 @@ gen `x'_var2=`x'2020-`x'2016
 
 gen dummy_`x'_var1=0
 replace dummy_`x'_var1=1 if `x'_var1>0
-
 gen dummy_`x'_var2=0
 replace dummy_`x'_var2=1 if `x'_var2>0
+
+gen dummy_`x'_varbis1=0
+gen dummy_`x'_varbis2=0
+replace dummy_`x'_varbis2=1 if `x'_var1>0
+gen dummy_`x'_varbis3=0
+replace dummy_`x'_varbis3=1 if `x'_var2>0
+
 
 drop `x'_var1 `x'_var2
 }
@@ -137,9 +143,15 @@ ta `x'2010 `x'2016
 ta `x'2016 `x'2020
 egen `x'_var1=group(`x'2010 `x'2016), label
 egen `x'_var2=group(`x'2016 `x'2020), label
+
+egen `x'_varbis2=group(`x'2010 `x'2016), label
+egen `x'_varbis3=group(`x'2016 `x'2020), label
 }
 
 save "panel_v13_wide", replace
+
+fre occupation_var1
+codebook occupation_var1
 
 
 ********** R
@@ -221,7 +233,7 @@ cls
 use"panel_v13_wide", clear
 
 ***** Clean
-global var DAR	DAR_BU	DAR_with	DIR	DIR_BU	DSR	DSR30	DSR40	DSR50	DSR_BU	HHsize	IMF	ISR	ISR_BU	MLbaddebt	MLborrowstrat	MLgooddebt	MLstratasse	MLstratmigr	agri	assets	assets_BU	bank	caste	current	dummyIMF	dummyassestrat	dummybank	dummyborrowstrat	dummymarriage	dummymigrstrat	dummymoneylender	dummyrepay	eco	expenses	femtomale	formal	head_age	head_edulevel	head_female	head_married	head_occupation	home	housetitle	housetype	humank	income	income_BU	informal	jatis	loanamount	loanamount_BU	mainloan_HH	mainocc_occupation	moneylender	nagri	nbchildren	nontoworkers	occupation	other	ownland	rel_IMF	rel_MLbaddebt	rel_MLborrowstrat	rel_MLgooddebt	rel_MLstratasse	rel_MLstratmigr	rel_bank	rel_current	rel_eco	rel_formal	rel_home	rel_humank	rel_informal	rel_moneylender	rel_other	rel_repay	rel_social	repay	shareagri	sharenagri	sizeownland	social	std_DAR	std_DSR	std_assets	std_income	sum_loans_HH	village_ur	villagearea	villageid	wifehusb_age	wifehusb_edulevel	wifehusb_female	wifehusb_married	wifehusb_occupation dummymarriagedaughter dummymarriageson dummylock covsick dummydemonetisation clust
+global var DAR	DAR_BU	DAR_with	DIR	DIR_BU	DSR	DSR30	DSR40	DSR50	DSR_BU	HHsize	IMF	ISR	ISR_BU	MLbaddebt	MLborrowstrat	MLgooddebt	MLstratasse	MLstratmigr	agri	assets	assets_BU	bank	caste	current	dummyIMF	dummyassestrat	dummybank	dummyborrowstrat	dummymigrstrat	dummymoneylender	dummyrepay	eco	expenses	femtomale	formal	head_age	head_edulevel	head_female	head_married	head_occupation	home	housetitle	housetype	humank	income	income_BU	informal	jatis	loanamount	loanamount_BU	mainloan_HH	mainocc_occupation	moneylender	nagri	nbchildren	nontoworkers	occupation	other	ownland	rel_IMF	rel_MLbaddebt	rel_MLborrowstrat	rel_MLgooddebt	rel_MLstratasse	rel_MLstratmigr	rel_bank	rel_current	rel_eco	rel_formal	rel_home	rel_humank	rel_informal	rel_moneylender	rel_other	rel_repay	rel_social	repay	shareagri	sharenagri	sizeownland	social	std_DAR	std_DSR	std_assets	std_income	sum_loans_HH	village_ur	villagearea	villageid	wifehusb_age	wifehusb_edulevel	wifehusb_female	wifehusb_married	wifehusb_occupation clust
 
 foreach x in $var {
 rename `x'2010 `x'1
@@ -229,20 +241,34 @@ rename `x'2016 `x'2
 rename `x'2020 `x'3
 }
 
+global shockvar dummymarriage dummymarriagedaughter dummymarriageson dummylock covsick dummydemonetisation
+foreach x in  $shockvar {
+drop `x'2010
+rename `x'2016 `x'1
+rename `x'2020 `x'2
+}
+
+
 
 save "panel_v13_period_wide", replace
 
 
 ********** Reshape
-global vardiff sdclust sdvuln cat_assets_b cat_DAR_b cat_DSR_b cat_income_b dummy_income_var	dummy_assets_var	dummy_rel_repay_var	dummy_rel_formal_var	dummy_rel_informal_var	dummy_rel_eco_var	dummy_rel_current_var	dummy_rel_humank_var	dummy_rel_social_var	dummy_rel_home_var	dummy_repay_var	dummy_formal_var	dummy_informal_var	dummy_eco_var	dummy_current_var	dummy_humank_var	dummy_social_var	dummy_home_var	mainocc_occupation_var	housetype_var	housetitle_var	ownland_var	occupation_var
+global vardiff sdclust sdvuln cat_assets_b cat_DAR_b cat_DSR_b cat_income_b dummy_income_var	dummy_assets_var	dummy_rel_repay_var	dummy_rel_formal_var	dummy_rel_informal_var	dummy_rel_eco_var	dummy_rel_current_var	dummy_rel_humank_var	dummy_rel_social_var	dummy_rel_home_var	dummy_repay_var	dummy_formal_var	dummy_informal_var	dummy_eco_var	dummy_current_var	dummy_humank_var	dummy_social_var	dummy_home_var	mainocc_occupation_var	housetype_var	housetitle_var	ownland_var	occupation_var ///
+dummy_income_varbis dummy_assets_varbis dummy_rel_repay_varbis dummy_rel_formal_varbis dummy_rel_informal_varbis dummy_rel_eco_varbis dummy_rel_current_varbis dummy_rel_humank_varbis dummy_rel_social_varbis dummy_rel_home_varbis dummy_repay_varbis dummy_formal_varbis dummy_informal_varbis dummy_eco_varbis dummy_current_varbis dummy_humank_varbis dummy_social_varbis dummy_home_varbis mainocc_occupation_varbis housetype_varbis housetitle_varbis ownland_varbis occupation_varbis
 
-reshape long $var $vardiff, i(HHID_panel) j(potimes)
+
+reshape long $var $shockvar $vardiff, i(HHID_panel) j(potimes)
 dropmiss, force
 drop if clust==.
 ta potimes
 
 order HHID_panel panelvar potimes sdclust sdvuln cat_assets_b cat_DAR_b cat_DSR_b cat_income_b
 sort HHID_panel
+
+label values occupation_var occupation_var1
+label values ownland_var ownland_var1
+
 
 save "panel_v13_period_long", replace
 ****************************************

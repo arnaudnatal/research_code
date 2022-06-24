@@ -83,18 +83,13 @@ ta clust2 if clust1==0 & sdvuln1==1
 ta clust2 sdvuln2
 ta clust3 if clust2==0 & sdvuln2==1
 
-
 *** Yes
 
 
-
-
 ********** Descriptive
-ta sdvuln clust if potimes==1, chi2 cchi2 exp
-ta sdvuln clust if potimes==1, col nofreq
 
-ta sdvuln clust if potimes==2, chi2 cchi2 exp
-ta sdvuln clust if potimes==2, col nofreq
+
+
 ****************************************
 * END
 
@@ -121,30 +116,62 @@ ta sdvuln clust if potimes==2, col nofreq
 cls
 use"panel_v13_period_long", clear
 
+order HHID_panel panelvar potimes sdclust sdvuln clust dummy_rel_formal_var dummy_rel_formal_varbis
+
 xtset panelvar potimes
+
+global head head_female head_age i.head_edulevel i.head_occupation
+global wifehusb wifehusb_female wifehusb_age i.wifehusb_edulevel i.wifehusb_occupation
+global wealth income assets
+global HH HHsize nbchildren i.housetype ownland i.villageid
+global shocks dummydemonetisation i.dummylock
+global marglo dummymarriage
+global marson dummymarriageson
+global mardau dummymarriagedaughter
+gen clust_lag=L1.clust
+xtprobit clust clust_lag i.caste $head $HH dummy_rel_formal_varbis dummy_rel_repay_varbis dummy_rel_informal_varbis dummy_rel_eco_varbis dummy_rel_current_varbis dummy_rel_humank_varbis dummy_rel_social_varbis dummy_rel_home_varbis
+
+
+drop if potimes==3
+
+
+
+gen sdvuln_lag=L1.sdvuln
+
 
 ********** Macro
 global head head_female head_age i.head_edulevel i.head_occupation
 global wifehusb wifehusb_female wifehusb_age i.wifehusb_edulevel i.wifehusb_occupation
 global wealth income assets
 global HH HHsize nbchildren i.housetype ownland i.villageid
+global shocks dummydemonetisation i.dummylock
+global marglo dummymarriage
+global marson dummymarriageson
+global mardau dummymarriagedaughter
 
-global varv dummy_rel_repay_amt_HH_var dummy_rel_formal_HH_var
+global varv dummy_rel_repay_var dummy_rel_formal_var i.ownland_var i.occupation_var
 
 ********** Cross section
+cls
 preserve
 keep if potimes==1
-probit sdvuln i.caste $head $HH $wealth dummy_rel_repay_var dummy_rel_formal_var dummy_rel_informal_var dummy_rel_eco_var dummy_rel_current_var dummy_rel_humank_var dummy_rel_social_var dummy_rel_home_var
+probit sdvuln i.caste $head $HH $wealth $varv $shocks $marson $mardau, allbase
+probit sdvuln i.caste $head $HH $wealth dummy_income_var dummy_assets_var dummy_rel_repay_var dummy_rel_formal_var dummy_rel_informal_var dummy_rel_eco_var dummy_rel_current_var dummy_rel_humank_var dummy_rel_social_var dummy_rel_home_var, allbase
 restore
 
+cls
 preserve
 keep if potimes==2
-probit sdvuln i.caste $head $HH $wealth dummy_rel_repay_var dummy_rel_formal_var dummy_rel_informal_var dummy_rel_eco_var dummy_rel_current_var dummy_rel_humank_var dummy_rel_social_var dummy_rel_home_var
+probit sdvuln i.caste $head $HH $wealth $varv $shocks $marson $mardau, allbase
+probit sdvuln i.caste $head $HH $wealth dummy_income_var dummy_assets_var dummy_rel_repay_var dummy_rel_formal_var dummy_rel_informal_var dummy_rel_eco_var dummy_rel_current_var dummy_rel_humank_var dummy_rel_social_var dummy_rel_home_var, allbase
 restore
 
 
 ********** Panel model
-xtprobit sdvuln i.caste $head $HH $wealth dummy_rel_repay_var dummy_rel_formal_var dummy_rel_informal_var dummy_rel_eco_var dummy_rel_current_var dummy_rel_humank_var dummy_rel_social_var dummy_rel_home_var
+xtprobit sdvuln i.caste $head $HH $wealth $varv, allbase
+xtprobit sdvuln i.caste $head $HH $wealth $varv $shocks $marson $mardau, allbase
+xtprobit sdvuln i.caste $head $HH $wealth $varv $shocks $marson $mardau, allbase
+
 
 
 *** CRE
