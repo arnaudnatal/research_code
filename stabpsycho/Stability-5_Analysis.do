@@ -305,6 +305,8 @@ dis (40.93-2.85)*100/2.85
 ****************************************
 use "panel_stab_wide_v6", clear
 *keep if age25==1
+estimates clear
+
 
 
 ********** Recode before reg
@@ -344,7 +346,7 @@ i.username_neemsis2 ///
 i.villageid2016 ///
 , link(log) family(igaussian) cluster(cluster) allbase
 *igaussian gamma
-est store inc
+est store all
 /*
 predict pred, mu
 predict res, res
