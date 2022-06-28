@@ -266,9 +266,6 @@ reg abs_diff_fa_ES diff_ars3 i.sex i.caste ib(1).age_cat ib(0).educode i.village
 
 
 
-
-
-
 ********** Contribution of enumerator in score of personality traits
 
 ***** 2016-17
@@ -326,28 +323,12 @@ ta abs_diff_fa_ES_cat10_cont_inc
 codebook caste
 label define castecat2 1"Caste: Dalits" 2"Caste: Middle" 3"Caste: Upper", modify
 
-/*
-********** INC + DEC = FULL SAMPLE WITHOUT INT
-reg abs_diff_fa_ES_cat10_cont ///
-i.female ///
-ib(1).caste ///
-i.educode ///
-i.age_cat ///
-ib(2).moc_indiv ///
-i.marital ///
-ib(2).annualincome_indiv2016_q ///
-i.dummydemonetisation2016 ///
-i.covsellland2020 ///
-ib(2).assets2016_q ///
-i.villageid2016 ///
-ib(2).diff_ars3_cat5 ///
-i.username_neemsis2 ///
-, cluster(cluster) allbase
-est store full
-*/
+ta abs_diff_fa_ES_cat10_cont
 
-********** INC
-reg abs_diff_fa_ES_cat10_cont_inc ///
+
+********** All sample
+rename abs_diff_fa_ES_cat10_cont depvar
+glm depvar ///
 i.female ///
 ib(1).caste ///
 i.educode ///
@@ -361,12 +342,68 @@ ib(2).assets2016_q ///
 ib(1).diff_ars3_cat5 ///
 i.username_neemsis2 ///
 i.villageid2016 ///
-, cluster(cluster) allbase
+, link(log) family(igaussian) cluster(cluster) allbase
+*igaussian gamma
 est store inc
+/*
+predict pred, mu
+predict res, res
+scatter pred res
+scatter pred depvar
+drop pred res
+rename depvar abs_diff_fa_ES_cat10_cont_inc
+*/
+
+/*
+ols: 				AIC=1273.521 BIC=1456.313
+glm, log-gaussian: 	AIC=1.982975 BIC=-3616.999
+glm, log-igaussian: AIC=2.837847 BIC=-3756.35
+glm, log-gamma: 	AIC=2.79641  BIC=-3733.987
+*/
+
+
+
+********** INC
+rename abs_diff_fa_ES_cat10_cont_inc depvar
+glm depvar ///
+i.female ///
+ib(1).caste ///
+i.educode ///
+i.age_cat ///
+ib(2).moc_indiv ///
+i.marital ///
+ib(2).annualincome_indiv2016_q ///
+i.dummydemonetisation2016 ///
+i.covsellland2020 ///
+ib(2).assets2016_q ///
+ib(1).diff_ars3_cat5 ///
+i.username_neemsis2 ///
+i.villageid2016 ///
+, link(log) family(igaussian) cluster(cluster) allbase
+*igaussian gamma
+est store inc
+/*
+predict pred, mu
+predict res, res
+scatter pred res
+scatter pred depvar
+drop pred res
+rename depvar abs_diff_fa_ES_cat10_cont_inc
+*/
+
+/*
+ols: 				AIC=202.0701 BIC=304.2251
+glm, log-gaussian: 	AIC=1.977412 BIC=-233.1528
+glm, log-igaussian: AIC=2.633504 BIC=-237.7469
+glm, log-gamma: 	AIC=2.864126 BIC=-236.9501
+*/
+
+
 
 
 ********** DEC
-reg abs_diff_fa_ES_cat10_cont_dec ///
+rename abs_diff_fa_ES_cat10_cont_dec depvar
+glm abs_diff_fa_ES_cat10_cont_dec ///
 i.female ///
 ib(1).caste ///
 i.educode ///
@@ -380,10 +417,23 @@ ib(2).assets2016_q ///
 ib(1).diff_ars3_cat5 ///
 i.username_neemsis2 ///
 i.villageid2016 ///
-, cluster(cluster) allbase
+, link(log) family(igaussian) cluster(cluster) allbase
+*igaussian gamma
 est store dec
-return list
-ereturn list
+predict pred, mu
+predict res, res
+scatter pred res
+scatter pred depvar
+drop pred res
+rename depvar abs_diff_fa_ES_cat10_cont_dec
+
+/*
+ols: 				AIC=1086.89  BIC=1263.072
+glm, log-gaussian: 	AIC=1.993537 BIC=-2960.46
+glm, log-igaussian: AIC=2.998632 BIC=-3086.693
+glm, log-gamma: 	AIC=2.907795 BIC=-3066.106
+*/
+
 
 	
 esttab inc dec using "reg.tex", replace f ///
