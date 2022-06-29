@@ -328,9 +328,9 @@ label define castecat2 1"Caste: Dalits" 2"Caste: Middle" 3"Caste: Upper", modify
 ta abs_diff_fa_ES_cat10_cont
 
 
-********** All sample
-rename abs_diff_fa_ES_cat10_cont depvar
-glm depvar ///
+
+********** ALL
+glm abs_diff_fa_ES_cat10_cont ///
 i.female ///
 ib(1).caste ///
 i.educode ///
@@ -345,16 +345,9 @@ ib(1).diff_ars3_cat5 ///
 i.username_neemsis2 ///
 i.villageid2016 ///
 , link(log) family(igaussian) cluster(cluster) allbase
-*igaussian gamma
 est store all
-/*
-predict pred, mu
-predict res, res
-scatter pred res
-scatter pred depvar
-drop pred res
-rename depvar abs_diff_fa_ES_cat10_cont_inc
-*/
+return list
+ereturn list
 
 /*
 ols: 				AIC=1273.521 BIC=1456.313
@@ -366,8 +359,7 @@ glm, log-gamma: 	AIC=2.79641  BIC=-3733.987
 
 
 ********** INC
-rename abs_diff_fa_ES_cat10_cont_inc depvar
-glm depvar ///
+glm abs_diff_fa_ES_cat10_cont_inc ///
 i.female ///
 ib(1).caste ///
 i.educode ///
@@ -382,16 +374,7 @@ ib(1).diff_ars3_cat5 ///
 i.username_neemsis2 ///
 i.villageid2016 ///
 , link(log) family(igaussian) cluster(cluster) allbase
-*igaussian gamma
 est store inc
-/*
-predict pred, mu
-predict res, res
-scatter pred res
-scatter pred depvar
-drop pred res
-rename depvar abs_diff_fa_ES_cat10_cont_inc
-*/
 
 /*
 ols: 				AIC=202.0701 BIC=304.2251
@@ -404,7 +387,6 @@ glm, log-gamma: 	AIC=2.864126 BIC=-236.9501
 
 
 ********** DEC
-rename abs_diff_fa_ES_cat10_cont_dec depvar
 glm abs_diff_fa_ES_cat10_cont_dec ///
 i.female ///
 ib(1).caste ///
@@ -420,14 +402,7 @@ ib(1).diff_ars3_cat5 ///
 i.username_neemsis2 ///
 i.villageid2016 ///
 , link(log) family(igaussian) cluster(cluster) allbase
-*igaussian gamma
 est store dec
-predict pred, mu
-predict res, res
-scatter pred res
-scatter pred depvar
-drop pred res
-rename depvar abs_diff_fa_ES_cat10_cont_dec
 
 /*
 ols: 				AIC=1086.89  BIC=1263.072
@@ -437,14 +412,14 @@ glm, log-gamma: 	AIC=2.907795 BIC=-3066.106
 */
 
 
-	
-esttab inc dec using "reg.tex", replace f ///
+********** Format
+esttab all inc dec using "reg.tex", replace f ///
 	label booktabs b(3) p(3) eqlabels(none) alignment(S S) collabels("\multicolumn{1}{c}{$\beta$}" "\multicolumn{1}{c}{Std. Err.}") ///
 	drop(_cons) ///
 	star(* 0.10 ** 0.05 *** 0.01) ///
 	cells("b(fmt(2)star) se(fmt(2)par)") ///
 	refcat(, nolabel) ///
-	stats(N r2 r2_a F p, fmt(0 2 2 2) layout("\multicolumn{1}{c}{@}" "\multicolumn{1}{S}{@}" "\multicolumn{1}{S}{@}" "\multicolumn{1}{S}{@}" "\multicolumn{1}{S}{@}") labels(`"Observations"' `"\(R^{2}\)"' `"Adjusted \(R^{2}\)"' `"F-stat"' `"p-value"'))
+	stats(N dispers_p dispers dispers_p bic ll, fmt(0 2 2 2 2 2) layout("\multicolumn{1}{c}{@}" "\multicolumn{1}{S}{@}" "\multicolumn{1}{S}{@}" "\multicolumn{1}{S}{@}" "\multicolumn{1}{S}{@}" "\multicolumn{1}{S}{@}") labels(`"Observations"' `"Scale"' `"(1/df) Deviance"' `"(1/df) Pearson"' `"BIC"'  `"Log-pseudo likelihood"'))
 
 ****************************************
 * END	
