@@ -57,6 +57,49 @@ graph7 mpg weight, twoway oneway box xla yla
 
 
 
+****************************************
+* Diff ego vs non ego
+****************************************
+use"$wave2", clear
+
+keep HHID_panel INDID_panel year name egoid age caste sex edulevel mainocc_occupation_indiv
+append using "$wave3", keep(HHID_panel INDID_panel year name egoid age caste sex edulevel mainocc_occupation_indiv)
+recode egoid (2=1) (3=1)
+reshape wide egoid name age caste sex edulevel mainocc_occupation_indiv, i(HHID_panel INDID_panel) j(year)
+keep if name2016!="" & name2020!=""
+g egoid=0
+replace egoid=1 if egoid2016==1 & egoid2020==1
+ta egoid
+drop egoid2016 egoid2020
+reshape long name age caste sex edulevel mainocc_occupation_indiv, i(HHID_panel INDID_panel) j(year)
+keep if year==2016
+ta age if egoid==1
+keep if age>=18
+
+recode caste (3=2)
+
+cls
+ta egoid
+ta caste egoid, col nofreq
+ta sex egoid, col nofreq
+tabstat age, stat(n mean sd p50) by(egoid)
+ta edulevel egoid, col nofreq
+ta mainocc_occupation_indiv egoid, col nofreq
+
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
 
 ****************************************
 * Last recode
@@ -304,52 +347,34 @@ graph export "Kernel_PTCS.pdf", as(pdf) replace
 set graph on
 */
 
-********** Advanced descriptive statistics
-global efa base_f1_std base_f2_std base_f3_std base_f5_std
-global cog base_raven_tt_std base_num_tt_std base_lit_tt_std
+********** Indebt vs Non-indebt
+cls
+ta indebt_indiv_2
+ta caste indebt_indiv_2, col nofreq
+ta sex_1 indebt_indiv_2, col nofreq
+tabstat age_1, stat(n mean sd p50) by(indebt_indiv_2)
+ta dummyedulevel indebt_indiv_2, col nofreq
+ta mainocc_occupation_indiv_1 indebt_indiv_2, col nofreq
+tabstat loanamount_indiv, stat(n mean sd p50) by(indebt_indiv_2)
 
-global quali indebt_indiv_2 otherlenderservices_finansupp otherlenderservices_guarantor otherlenderservices_generainf
- 
-global qualiml borrowerservices_none plantorepay_borr dummyproblemtorepay
-
-global quanti loanamount_indiv ISR_indiv
 
 
-*** Scatter with lfit
-*graph7 loanamount_indiv base_f1_std, twoway oneway box xla yla
-/*
-graph drop _all
-foreach x in $cog $efa {
-forvalues i=0(1)1 {
-forvalues j=0(1)1 {
-set graph off
-twoway scatter loanamount_indiv `x' if female==`i' & dalits==`j', name(s_f`i'd`j'_amt_`x', replace)
-set graph on
-}
-}
-}
-graph dir
+********** Indebt with ML vs Indebtd without ML
+ta borrowerservices_none
+g dummyML_2=.
+replace dummyML_2=0 if borrowerservices_none==. & indebt_indiv_2==1
+replace dummyML_2=1 if borrowerservices_none==0
+replace dummyML_2=1 if borrowerservices_none==1
 
-forvalues i=0(1)1 {
-forvalues j=0(1)1 {
-set graph off
-graph combine s_f`i'd`j'_amt_base_lit_tt_std s_f`i'd`j'_amt_base_num_tt_std s_f`i'd`j'_amt_base_raven_tt_std s_f`i'd`j'_amt_base_f1_std s_f`i'd`j'_amt_base_f2_std s_f`i'd`j'_amt_base_f3_std s_f`i'd`j'_amt_base_f5_std, name(combine_f`i'd`j', replace)
-set graph on
-}
-}
+cls
+ta dummyML_2
+ta caste dummyML_2, col nofreq
+ta sex_1 dummyML_2, col nofreq
+tabstat age_1, stat(n mean sd p50) by(dummyML_2)
+ta dummyedulevel dummyML_2, col nofreq
+ta mainocc_occupation_indiv_1 dummyML_2, col nofreq
+tabstat loanamount_indiv, stat(n mean sd p50) by(dummyML_2)
 
-* Male middle upper
-graph display combine_f0d0
-
-* Male dalits
-graph display combine_f0d1
-
-* Female middle upper
-graph display combine_f1d0
-
-* Female dalits
-graph display combine_f1d1
-*/
 ****************************************
 * END
 
