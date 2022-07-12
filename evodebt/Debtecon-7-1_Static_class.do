@@ -111,7 +111,7 @@ cls
 ta clust year
 ta clust year, col nofreq
 tabstat assets income DSR DAR, stat(mean p50) by(clust)
-tabstat assets income DSR DAR, stat(p1 p5 p10 q p90 p95 p99) by(clust)
+*tabstat assets income DSR DAR, stat(p1 p5 p10 q p90 p95 p99) by(clust)
 
 
 ***** Clean
@@ -127,15 +127,16 @@ program define stripgraph
 stripplot `1' if `1'<`4', over(`2') by(`3', title("`1'")) vert ///
 stack width(1) jitter(0) ///
 box(barw(1)) boffset(-0.3) pctile(10) ///
-ms(oh oh oh) msize(small) mc(red%30) ///
+ms(oh oh oh) msize(small) mc(blue%30) ///
 yla(, ang(h)) xla(, noticks)
 end
 
-*stripgraph assets year clust 2000
-*stripgraph income year clust 500
-*stripgraph DSR year clust 500
-*stripgraph DAR year clust 500
+tabstat assets income DSR DAR, stat(n mean p90 p95 p99 max)
 
+stripgraph assets year clust 9999
+stripgraph income year clust 9999
+stripgraph DSR year clust 999
+stripgraph DAR year clust 999
 
 
 ********** Reshape for trajectory in wide
