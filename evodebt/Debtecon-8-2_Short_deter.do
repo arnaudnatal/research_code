@@ -85,20 +85,8 @@ ta clust3 if clust2==0 & sdvuln2==1
 
 *** Yes
 
-
-********** Descriptive
-
-
-
 ****************************************
 * END
-
-
-
-
-
-
-
 
 
 
@@ -132,10 +120,10 @@ gen clust_lag=L1.clust
 xtprobit clust clust_lag i.caste $head $HH dummy_rel_formal_varbis dummy_rel_repay_varbis dummy_rel_informal_varbis dummy_rel_eco_varbis dummy_rel_current_varbis dummy_rel_humank_varbis dummy_rel_social_varbis dummy_rel_home_varbis
 
 
+***** Drop the false period of times 3
 drop if potimes==3
 
-
-
+***** Lag
 gen sdvuln_lag=L1.sdvuln
 
 
@@ -169,7 +157,6 @@ restore
 
 ********** Panel model
 xtprobit sdvuln i.caste $head $HH $wealth $varv, allbase
-xtprobit sdvuln i.caste $head $HH $wealth $varv $shocks $marson $mardau, allbase
 xtprobit sdvuln i.caste $head $HH $wealth $varv $shocks $marson $mardau, allbase
 
 
