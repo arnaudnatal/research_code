@@ -137,6 +137,7 @@ pwcorr fa_ES2016 fa_ES2020
 use "panel_stab_wide_v6", clear
 
 tab age25
+
 *keep if age25==1
 * 740 individuals on 835
 

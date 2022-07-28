@@ -581,6 +581,7 @@ grstyle init
 grstyle set plain, nogrid box
 ****
 **** Modifications for graph aspect
+/*
 heatplot perc x y, ///
 colors(HSV grays, reverse) ///
 statistic(mean) ///
@@ -591,9 +592,22 @@ graph save "heatmap_ES.gph", replace
 graph export "heatmap_ES.pdf", as(pdf) replace
 ta x y, row nofreq
 drop  x_* y_* n_tot* perc_* perc
+*/
 restore
 
 *values(format(%4.2f) color(red)) ///
+
+
+********** Shock classification
+***** Demonetisation
+ta dummydemonetisation2016
+
+***** Lockdown
+gen dummyseclock2020=.
+replace dummyseclock2020=0 if submissiondate2020<d(05apr2021)
+replace dummyseclock2020=1 if submissiondate2020>d(15jun2021)
+ta dummyseclock2020
+
 
 
 save "panel_stab_wide_v6", replace

@@ -90,9 +90,12 @@ save"panel_indiv", replace
 ********** 
 use"$wave2", clear
 merge 1:1 HHID_panel INDID_panel using "panel_indiv"
+
 keep if panel_indiv==1
 keep if egoid>0
 keep if egoid2020>0
+
+*keep if egoid!=0 & egoid!=.
 
 
 ********** Imputation for non corrected one
