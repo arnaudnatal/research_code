@@ -218,6 +218,17 @@ label values locuscat locuscat
 
 ta locus locuscat
 
+********** Locus and income
+*intern --> extern
+tabstat locus, stat(n mean sd p50) by(caste)
+tabstat locus, stat(min p1 p5 p10 q p90 p95 p99 max) by(caste)
+
+ta locus caste
+ta locuscat caste, col nofreq
+ta locuscat caste, chi2 cchi2 exp
+*Ok, upper castes are over rep among intern
+
+
 ***** Save
 save"$wave3~_ego_v2_RED.dta", replace
 
@@ -436,6 +447,11 @@ keep if _merge==3
 drop _merge
 
 
+********** Merge debt
+merge 1:1 HHID_panel INDID_panel using "NEEMSIS2_newvar.dta"
+drop if _merge==2
+drop _merge
+
 save"$wave3~_RED", replace
 ****************************************
 * END
@@ -471,34 +487,86 @@ replace dummydebt=0 if loanamount==.
 
 gen logloanamount=log(loanamount)
 
+ta dummydebt
+
+ta otherlenderservices_finansupp
+
+
+********** Measure of debt
+*kdensity loanamount, normal
+*kdensity logloanamount, normal
+*Not normal at all, so log
+
+
+********** Correlation for the recourse
+probit dummydebt locus raven_tt lit_tt num_tt f1_2020
+
+tabstat locus f1_2020 raven_tt lit_tt num_tt, stat(n mean sd p50) by(dummydebt)
+
+tabstat locus f1_2020 raven_tt lit_tt num_tt, stat(min p1 p5 p10 q p90 p95 p99 max) by(dummydebt)
+
+
+********** Correlation for the intensity
+reg logloanamount locus raven_tt lit_tt num_tt f1_2020
+
+
+********** Correlation for the negotiation
+cls
+foreach x in otherlenderservices_politsupp otherlenderservices_finansupp otherlenderservices_guarantor otherlenderservices_generainf otherlenderservices_none {
+probit `x' locus
+}
+
+foreach x in borrowerservices_freeserv borrowerservices_worklesswage borrowerservices_suppwhenever borrowerservices_none {
+probit `x' locus
+}
+
+*borrowerservices_suppwhenever
+*borrowerservices_none
+
+probit borrowerservices_none locus
+ta locuscat borrowerservices_none, col nofreq
+
+
+********** Correlation for the management
+/*
+cls
+foreach x in plantorepay_chit plantorepay_work plantorepay_migr plantorepay_asse plantorepay_inco plantorepay_borr {
+probit `x' locus
+}
+
+foreach x in settleloanstrat_inco settleloanstrat_sche settleloanstrat_borr settleloanstrat_sell settleloanstrat_land settleloanstrat_cons settleloanstrat_addi settleloanstrat_work settleloanstrat_supp settleloanstrat_harv {
+probit `x' locus
+}
+
+foreach x in dummyproblemtorepay dummyhelptosettleloan {
+probit `x' locus
+}
+*/
+
+
+probit plantorepay_borr locus
+ta locuscat plantorepay_borr, col nofreq
+
+probit settleloanstrat_work locus
+ta locuscat settleloanstrat_work, col nofreq
 
 
 
-********** Recourse
-ta locuscat dummydebt, col nofreq
-ta locuscat dummydebt, row nofreq
-*Nothing
+********** Locus details
+/*
+1. I like taking responsibility.
+2. I find it best to make decisions by myself rather than to rely on fate.
+3. When I encounter problems or opposition, I usually find ways and means to overcome them.
+4. Success often depends more on luck than on effort.
+5. I often have the feeling that I have little influence over what happens to me.
+6. When I make important decisions, I often look at what others have done.
+*/
 
+global locus locuscontrol1 locuscontrol2 locuscontrol3 locuscontrol4 locuscontrol5 locuscontrol6
+fre $locus
 
-
-
-********** Intensity
-tabstat loanamount, stat(n mean sd p50) by(locuscat)
-tabstat loanamount, stat(min p1 p5 p10 q p90 p95 p99 max) by(locuscat)
-
-oneway loanamount locuscat
-
-reg loanamount ib(2).locuscat i.sex i.caste i.edulevel, baselevel 
-reg loanamount locus i.sex i.caste i.edulevel, baselevel
-
-
-
-********** Graph
-twoway ///
-(kdensity loanamount if locuscat==1, bwidth(30)) ///
-(kdensity loanamount if locuscat==2, bwidth(30)) ///
-(kdensity loanamount if locuscat==3, bwidth(30))
-
+probit dummydebt $locus
+reg logloanamount $locus
 
 
 ****************************************
