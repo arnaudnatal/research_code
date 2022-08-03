@@ -452,12 +452,107 @@ merge 1:1 HHID_panel INDID_panel using "NEEMSIS2_newvar.dta"
 drop if _merge==2
 drop _merge
 
+
+***** Recourse
+g debt_reco_indiv=.
+replace debt_reco_indiv=1 if loanamount_indiv!=.
+replace debt_reco_indiv=0 if loanamount_indiv==.
+ta debt_reco_indiv
+
+***** Intensity
+g debt_inte_indiv=log(loanamount_indiv)
+ta debt_inte_indiv
+
+***** Negotiation
+g debt_nego_indiv=otherlenderservices_finansupp+borrowerservices_none
+
+***** Management
+recode plantorepay_borr (0=1) (1=0)
+recode dummyproblemtorepay (0=1) (1=0)
+g debt_mana_indiv=plantorepay_borr+dummyproblemtorepay
+ta debt_mana_indiv
+
+***** Aggregate
+ta debt_reco_indiv
+ta debt_inte_indiv
+ta debt_nego_indiv
+ta debt_mana_indiv
+
+
+
+********** Std var
+foreach x in locus raven_tt lit_tt num_tt f1_2020 {
+egen std_`x'=std(`x')
+}
+
 save"$wave3~_RED", replace
 ****************************************
 * END
 
 
 
+
+
+****************************************
+* Test agg
+****************************************
+cls
+use"$wave3~_RED", clear
+
+
+probit debt_reco_indiv std_locus std_raven_tt std_lit_tt std_num_tt std_f1_2020
+
+
+reg debt_inte_indiv std_locus std_raven_tt std_lit_tt std_num_tt std_f1_2020
+
+ta debt_nego_indiv
+poisson debt_nego_indiv std_locus std_raven_tt std_lit_tt std_num_tt std_f1_2020
+mprobit debt_nego_indiv std_locus std_raven_tt std_lit_tt std_num_tt std_f1_2020
+
+ta debt_mana_indiv
+poisson debt_mana_indiv std_locus std_raven_tt std_lit_tt std_num_tt std_f1_2020
+mprobit debt_mana_indiv std_locus std_raven_tt std_lit_tt std_num_tt std_f1_2020
+
+
+
+********** Locus in details
+cls
+global control raven_tt lit_tt num_tt f1_2020
+global locus locuscontrol1 locuscontrol2 locuscontrol3 locuscontrol4 locuscontrol5 locuscontrol6
+
+probit debt_reco_indiv locus
+probit debt_reco_indiv ib(2).locuscat
+probit debt_reco_indiv $locus
+
+reg debt_inte_indiv locus
+reg debt_inte_indiv ib(2).locuscat
+reg debt_inte_indiv $locus
+
+poisson debt_nego_indiv locus
+poisson debt_nego_indiv ib(2).locuscat
+poisson debt_nego_indiv $locus
+
+poisson debt_mana_indiv locus
+poisson debt_mana_indiv ib(2).locuscat
+poisson debt_mana_indiv $locus
+
+
+********** Desc for mana
+cls
+ta debt_mana_indiv
+
+tabstat locus, stat(n mean sd p50) by(debt_mana_indiv)
+
+poisson debt_mana_indiv locus
+poisson debt_mana_indiv $locus
+
+mprobit debt_mana_indiv locus, base(0)
+mprobit debt_mana_indiv $locus, base(0)
+
+
+
+****************************************
+* END
 
 
 
@@ -471,31 +566,8 @@ save"$wave3~_RED", replace
 ****************************************
 * Correlation with recourse and amount of debt
 ****************************************
-
 ********** 
 use"$wave3~_RED", clear
-
-********** Var crea + transfo
-rename loanamount_indiv loanamount
-replace loanamount=loanamount/1000
-replace loanamount=. if loanamount==0
-
-gen dummydebt=.
-replace dummydebt=1 if loanamount>0
-replace dummydebt=0 if loanamount==0
-replace dummydebt=0 if loanamount==.
-
-gen logloanamount=log(loanamount)
-
-ta dummydebt
-
-ta otherlenderservices_finansupp
-
-
-********** Measure of debt
-*kdensity loanamount, normal
-*kdensity logloanamount, normal
-*Not normal at all, so log
 
 
 ********** Correlation for the recourse
@@ -571,9 +643,3 @@ reg logloanamount $locus
 
 ****************************************
 * END
-
-
-
-
-
-

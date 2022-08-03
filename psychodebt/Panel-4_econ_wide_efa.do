@@ -130,38 +130,26 @@ cls
 *help swindex
 
 
+********** Keep only ML
+*keep if plantorepay_chit!=.
+
+
 ***** Recourse
-ta indebt_indiv_2
-sum loanamount_indiv
 g debt_reco_indiv=indebt_indiv_2
 
-***** Negotiation
-sum ISR_indiv
-ta otherlenderservices_finansupp
-ta borrowerservices_none
-ta otherlenderservices_finansupp borrowerservices_none
-g debt_nego_indiv=otherlenderservices_finansupp+borrowerservices_none
-ta debt_nego_indiv
+***** Intensity
+g debt_inte_indiv=loanamount_indiv
 
+***** Negotiation
+g debt_nego_indiv=otherlenderservices_finansupp+borrowerservices_none
 
 ***** Management
-ta plantorepay_borr
-ta dummyproblemtorepay
-
-ta plantorepay_borr dummyproblemtorepay
-
 g debt_mana_indiv=plantorepay_borr+dummyproblemtorepay
-ta debt_mana_indiv
-
-
 
 ***** Aggregate
 ta debt_reco_indiv
 ta debt_nego_indiv
 ta debt_mana_indiv
-
-
-poisson debt_nego_indiv 
 
 
 ****************************************
