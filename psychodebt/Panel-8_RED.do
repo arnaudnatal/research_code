@@ -170,41 +170,28 @@ use"$wave3~_ego_RED.dta", clear
 global locus locuscontrol1 locuscontrol2 locuscontrol3 locuscontrol4 locuscontrol5 locuscontrol6
 fre $locus
 
+omegacoef locuscontrol1 locuscontrol2 locuscontrol3 locuscontrol4 locuscontrol5 locuscontrol6, reverse(locuscontrol4 locuscontrol5 locuscontrol6) noreverse(locuscontrol1 locuscontrol2 locuscontrol3)
+
+
+***** Reverse locuscontrol4 5 6 for min=intern and max=extern as locuscontrol1 2 3
+forvalues i=4(1)6 {
+vreverse locuscontrol`i', gen(locuscontrol`i'_rv)
+rename locuscontrol`i' locuscontrol`i'_original
+rename locuscontrol`i'_rv locuscontrol`i'
+}
+
+global locus locuscontrol1 locuscontrol2 locuscontrol3 locuscontrol4 locuscontrol5 locuscontrol6
+fre $locus
 
 
 ***** Internal consistency
 omegacoef $locus  // .81
 
 
-***** Reverse locuscontrol4 5 6 for min=intern and max=extern as locuscontrol1 2 3
-forvalues i=4(1)6 {
-vreverse locuscontrol`i', gen(locuscontrol`i'_rv)
-}
-
-
-***** Imputation
-global locus2 locuscontrol1 locuscontrol2 locuscontrol3 locuscontrol4_rv locuscontrol5_rv locuscontrol6_rv
-foreach x in $locus2{
-gen im`x'=`x'
-}
-forvalues j=1(1)3{
-forvalues i=1(1)2{
-foreach x in $locus2{
-qui sum im`x' if sex==`i' & caste==`j' & egoid!=0 & egoid!=.
-replace im`x'=r(mean) if im`x'==. & sex==`i' & caste==`j' & egoid!=0 & egoid!=.
-}
-}
-} 
-
-* Verification
-global imlocus2 imlocuscontrol1 imlocuscontrol2 imlocuscontrol3 imlocuscontrol4_rv imlocuscontrol5_rv imlocuscontrol6_rv
-
-omegacoef $imlocus2  // 0.81
-
 * Score
-egen locus=rowmean($imlocus2)
+egen locus=rowmean($locus)
 replace locus=round(locus, .01)
-label var locus "intern -3-> extern"
+label var locus "intern --> extern"
 
 tabstat locus, stat(n mean sd p50) by(sex)
 ta locus
@@ -457,26 +444,32 @@ drop _merge
 g debt_reco_indiv=.
 replace debt_reco_indiv=1 if loanamount_indiv!=.
 replace debt_reco_indiv=0 if loanamount_indiv==.
-ta debt_reco_indiv
+label define reco 0"No" 1"Yes"
+label values debt_reco_indiv reco
+fre debt_reco_indiv
 
 ***** Intensity
 g debt_inte_indiv=log(loanamount_indiv)
 ta debt_inte_indiv
 
 ***** Negotiation
-g debt_nego_indiv=otherlenderservices_finansupp+borrowerservices_none
+g debt_nego_indiv=borrowerservices_none
+recode debt_nego_indiv (0=1) (1=0)
+label define nego 0"Good" 1"Not good"
+label values debt_nego_indiv nego
+fre debt_nego_indiv
 
 ***** Management
-recode plantorepay_borr (0=1) (1=0)
-recode dummyproblemtorepay (0=1) (1=0)
-g debt_mana_indiv=plantorepay_borr+dummyproblemtorepay
-ta debt_mana_indiv
+g debt_mana_indiv=plantorepay_borr
+label define mana 0"Good" 1"Not good"
+label values debt_mana_indiv mana
+fre debt_mana_indiv
+
 
 ***** Aggregate
 ta debt_reco_indiv
-ta debt_inte_indiv
-ta debt_nego_indiv
-ta debt_mana_indiv
+ta debt_nego_indiv borrowerservices_none
+ta debt_mana_indiv plantorepay_borr
 
 
 
@@ -485,76 +478,23 @@ foreach x in locus raven_tt lit_tt num_tt f1_2020 {
 egen std_`x'=std(`x')
 }
 
+
+********** Social identity
+fre caste
+gen dalit=.
+replace dalit=1 if caste==1
+replace dalit=0 if caste==2
+replace dalit=0 if caste==3
+
+fre sex
+gen female=.
+replace female=1 if sex==2
+replace female=0 if sex==1
+
+
 save"$wave3~_RED", replace
 ****************************************
 * END
-
-
-
-
-
-****************************************
-* Test agg
-****************************************
-cls
-use"$wave3~_RED", clear
-
-
-probit debt_reco_indiv std_locus std_raven_tt std_lit_tt std_num_tt std_f1_2020
-
-
-reg debt_inte_indiv std_locus std_raven_tt std_lit_tt std_num_tt std_f1_2020
-
-ta debt_nego_indiv
-poisson debt_nego_indiv std_locus std_raven_tt std_lit_tt std_num_tt std_f1_2020
-mprobit debt_nego_indiv std_locus std_raven_tt std_lit_tt std_num_tt std_f1_2020
-
-ta debt_mana_indiv
-poisson debt_mana_indiv std_locus std_raven_tt std_lit_tt std_num_tt std_f1_2020
-mprobit debt_mana_indiv std_locus std_raven_tt std_lit_tt std_num_tt std_f1_2020
-
-
-
-********** Locus in details
-cls
-global control raven_tt lit_tt num_tt f1_2020
-global locus locuscontrol1 locuscontrol2 locuscontrol3 locuscontrol4 locuscontrol5 locuscontrol6
-
-probit debt_reco_indiv locus
-probit debt_reco_indiv ib(2).locuscat
-probit debt_reco_indiv $locus
-
-reg debt_inte_indiv locus
-reg debt_inte_indiv ib(2).locuscat
-reg debt_inte_indiv $locus
-
-poisson debt_nego_indiv locus
-poisson debt_nego_indiv ib(2).locuscat
-poisson debt_nego_indiv $locus
-
-poisson debt_mana_indiv locus
-poisson debt_mana_indiv ib(2).locuscat
-poisson debt_mana_indiv $locus
-
-
-********** Desc for mana
-cls
-ta debt_mana_indiv
-
-tabstat locus, stat(n mean sd p50) by(debt_mana_indiv)
-
-poisson debt_mana_indiv locus
-poisson debt_mana_indiv $locus
-
-mprobit debt_mana_indiv locus, base(0)
-mprobit debt_mana_indiv $locus, base(0)
-
-
-
-****************************************
-* END
-
-
 
 
 
@@ -566,65 +506,54 @@ mprobit debt_mana_indiv $locus, base(0)
 ****************************************
 * Correlation with recourse and amount of debt
 ****************************************
-********** 
+cls
 use"$wave3~_RED", clear
 
-
-********** Correlation for the recourse
-probit dummydebt locus raven_tt lit_tt num_tt f1_2020
-
-tabstat locus f1_2020 raven_tt lit_tt num_tt, stat(n mean sd p50) by(dummydebt)
-
-tabstat locus f1_2020 raven_tt lit_tt num_tt, stat(min p1 p5 p10 q p90 p95 p99 max) by(dummydebt)
+*We proxies the recourse to debt with the probability of being in debt
 
 
-********** Correlation for the intensity
-reg logloanamount locus raven_tt lit_tt num_tt f1_2020
+*We proxies the negotiation of debt with the probability that the borrower no need to provide services
+
+*We proxies the management of debt with the probability that the borrower borrow elsewhere to repay the debt
 
 
-********** Correlation for the negotiation
-cls
-foreach x in otherlenderservices_politsupp otherlenderservices_finansupp otherlenderservices_guarantor otherlenderservices_generainf otherlenderservices_none {
-probit `x' locus
+********** Locus of control
+***** Recourse
+qui reg locus debt_reco_indiv
+est store reco
+forvalues i=0/1 {
+forvalues j=0/1 {
+qui reg locus debt_reco_indiv if female==`i' & dalit==`j'
+est store reco_`i'_`j'
 }
-
-foreach x in borrowerservices_freeserv borrowerservices_worklesswage borrowerservices_suppwhenever borrowerservices_none {
-probit `x' locus
 }
-
-*borrowerservices_suppwhenever
-*borrowerservices_none
-
-probit borrowerservices_none locus
-ta locuscat borrowerservices_none, col nofreq
+esttab reco*, b(%6.3f) nostar
 
 
-********** Correlation for the management
-/*
-cls
-foreach x in plantorepay_chit plantorepay_work plantorepay_migr plantorepay_asse plantorepay_inco plantorepay_borr {
-probit `x' locus
+***** Negotiation
+qui reg locus debt_nego_indiv
+est store nego
+forvalues i=0/1 {
+forvalues j=0/1 {
+qui reg locus debt_nego_indiv if female==`i' & dalit==`j'
+est store nego_`i'_`j'
 }
-
-foreach x in settleloanstrat_inco settleloanstrat_sche settleloanstrat_borr settleloanstrat_sell settleloanstrat_land settleloanstrat_cons settleloanstrat_addi settleloanstrat_work settleloanstrat_supp settleloanstrat_harv {
-probit `x' locus
 }
+esttab nego*, b(%6.3f) nostar
 
-foreach x in dummyproblemtorepay dummyhelptosettleloan {
-probit `x' locus
+
+***** Management
+qui reg locus debt_mana_indiv
+est store mana
+forvalues i=0/1 {
+forvalues j=0/1 {
+qui reg locus debt_mana_indiv if female==`i' & dalit==`j'
+est store mana_`i'_`j'
 }
-*/
+}
+esttab mana*, b(%6.3f) nostar
 
 
-probit plantorepay_borr locus
-ta locuscat plantorepay_borr, col nofreq
-
-probit settleloanstrat_work locus
-ta locuscat settleloanstrat_work, col nofreq
-
-
-
-********** Locus details
 /*
 1. I like taking responsibility.
 2. I find it best to make decisions by myself rather than to rely on fate.
@@ -635,10 +564,65 @@ ta locuscat settleloanstrat_work, col nofreq
 */
 
 global locus locuscontrol1 locuscontrol2 locuscontrol3 locuscontrol4 locuscontrol5 locuscontrol6
+
+
+
+cls
+********** Locus of control
+forvalues d=1/6 {
+
+***** Recourse
+qui reg locuscontrol`d' debt_reco_indiv
+est store reco
+forvalues i=0/1 {
+forvalues j=0/1 {
+qui reg locuscontrol`d' debt_reco_indiv if female==`i' & dalit==`j'
+est store reco_`i'_`j'
+}
+}
+esttab reco*, b(%6.3f)
+
+
+***** Negotiation
+qui reg locuscontrol`d' debt_nego_indiv
+est store nego
+forvalues i=0/1 {
+forvalues j=0/1 {
+qui reg locuscontrol`d' debt_nego_indiv if female==`i' & dalit==`j'
+est store nego_`i'_`j'
+}
+}
+esttab nego*, b(%6.3f)
+
+
+***** Management
+qui reg locuscontrol`d' debt_mana_indiv
+est store mana
+forvalues i=0/1 {
+forvalues j=0/1 {
+qui reg locuscontrol`d' debt_mana_indiv if female==`i' & dalit==`j'
+est store mana_`i'_`j'
+}
+}
+esttab mana*, b(%6.3f)
+}
+
+tabstat $locus, stat(mean) by(debt_mana_indiv)
 fre $locus
 
-probit dummydebt $locus
-reg logloanamount $locus
+label define cat 1"Intern" 2"Neutral" 3"Extern"
+forvalues i=1(1)6 {
+gen locuscat`i'=.
+replace locuscat`i'=1 if locuscontrol`i'<3
+replace locuscat`i'=2 if locuscontrol`i'==3
+replace locuscat`i'=3 if locuscontrol`i'>3
+label values locuscat`i' cat
+}
+
+ta locuscat1 locuscat4
+ta locuscat2 locuscat5
+ta locuscat3 locuscat6
+
 
 
 ****************************************
