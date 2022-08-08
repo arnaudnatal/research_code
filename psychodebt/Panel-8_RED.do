@@ -516,6 +516,22 @@ use"$wave3~_RED", clear
 
 *We proxies the management of debt with the probability that the borrower borrow elsewhere to repay the debt
 
+********** Descriptive statistics
+fre edulevel
+recode edulevel (4=3) (5=3) (.=0)
+ta edulevel, gen(edu_)
+
+fre mainocc_occupation_indiv
+recode mainocc_occupation_indiv (.=0) (2=1) (4=3) (5=3) (6=3) (7=3)
+ta mainocc_occupation_indiv, gen(moc_)
+
+sum female dalit age
+sum edu_*
+sum moc_*
+replace annualincome_indiv=annualincome_indiv/1000
+sum annualincome_indiv if mainocc_occupation_indiv!=0
+sum locus debt_reco_indiv debt_nego_indiv
+
 
 ********** Locus of control
 ***** Recourse
@@ -539,7 +555,7 @@ qui reg locus debt_nego_indiv if female==`i' & dalit==`j'
 est store nego_`i'_`j'
 }
 }
-esttab nego*, b(%6.3f) nostar
+esttab nego*, b(%6.3f) 
 
 
 ***** Management
@@ -572,6 +588,7 @@ cls
 forvalues d=1/6 {
 
 ***** Recourse
+/*
 qui reg locuscontrol`d' debt_reco_indiv
 est store reco
 forvalues i=0/1 {
@@ -581,7 +598,7 @@ est store reco_`i'_`j'
 }
 }
 esttab reco*, b(%6.3f)
-
+*/
 
 ***** Negotiation
 qui reg locuscontrol`d' debt_nego_indiv
@@ -596,6 +613,7 @@ esttab nego*, b(%6.3f)
 
 
 ***** Management
+/*
 qui reg locuscontrol`d' debt_mana_indiv
 est store mana
 forvalues i=0/1 {
@@ -605,6 +623,7 @@ est store mana_`i'_`j'
 }
 }
 esttab mana*, b(%6.3f)
+*/
 }
 
 tabstat $locus, stat(mean) by(debt_mana_indiv)
@@ -619,11 +638,23 @@ replace locuscat`i'=3 if locuscontrol`i'>3
 label values locuscat`i' cat
 }
 
-ta locuscat1 locuscat4
-ta locuscat2 locuscat5
-ta locuscat3 locuscat6
 
 
 
+********** Test econometrics
+probit debt_reco_indiv c.locus##i.female##i.dalit
+probit debt_reco_indiv c.locus##i.female##i.dalit ///
+i.relationshiptohead assets_noland annualincome_indiv i.mainocc_occupation_indiv i.edulevel, cluster(HHID_panel)
+margin, dydx(locus) at(dalit=(0 1) female=(0 1))
+
+probit debt_nego_indiv c.locus##i.female##i.dalit
+probit debt_nego_indiv c.locus##i.female##i.dalit ///
+i.relationshiptohead assets_noland annualincome_indiv i.mainocc_occupation_indiv i.edulevel, cluster(HHID_panel)
+margin, dydx(locus) at(dalit=(0 1) female=(0 1))
+
+probit debt_mana_indiv c.locus##i.female##i.dalit
+probit debt_mana_indiv c.locus##i.female##i.dalit ///
+i.relationshiptohead assets_noland annualincome_indiv i.mainocc_occupation_indiv i.edulevel, cluster(HHID_panel)
+margin, dydx(locus) at(dalit=(0 1) female=(0 1))
 ****************************************
 * END
