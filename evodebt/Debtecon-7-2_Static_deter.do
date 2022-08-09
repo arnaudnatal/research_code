@@ -92,29 +92,29 @@ global mardau dummymarriagedaughter
 
 ********** Cross section evidence
 cls
-probit clust i.caste $head $HH $shocks if year==2010
+probit clust i.caste $head $HH $shocks if year==2010, baselevel
 
 cls
-probit clust i.caste $head $HH $shocks $marglo if year==2016
-probit clust i.caste $head $HH $shocks $marson if year==2016
-probit clust i.caste $head $HH $shocks $mardau if year==2016
-probit clust i.caste $head $HH $shocks $marson $mardau if year==2016
+probit clust i.caste $head $HH $shocks $marglo if year==2016, baselevel
+probit clust i.caste $head $HH $shocks $marson if year==2016, baselevel
+probit clust i.caste $head $HH $shocks $mardau if year==2016, baselevel
+probit clust i.caste $head $HH $shocks $marson $mardau if year==2016, baselevel
 
 cls
-probit clust i.caste $head $HH $shocks $marglo if year==2020
-probit clust i.caste $head $HH $shocks $marson if year==2020
-probit clust i.caste $head $HH $shocks $mardau if year==2020
-probit clust i.caste $head $HH $shocks $marson $mardau if year==2020
+probit clust i.caste $head $HH $shocks $marglo if year==2020, baselevel
+probit clust i.caste $head $HH $shocks $marson if year==2020, baselevel
+probit clust i.caste $head $HH $shocks $mardau if year==2020, baselevel
+probit clust i.caste $head $HH $shocks $marson $mardau if year==2020, baselevel
 
 ********** STEP 1: xtprobit classic
 gen clust_lag=L1.clust
 order HHID_panel year clust clust_lag
 
 cls
-xtprobit clust clust_lag i.caste $head $HH $shocks $marglo
-xtprobit clust clust_lag i.caste $head $HH $shocks $marson
-xtprobit clust clust_lag i.caste $head $HH $shocks $mardau
-xtprobit clust clust_lag i.caste $head $HH $shocks $marson $mardau
+xtprobit clust clust_lag i.caste $head $HH $shocks $marglo, baselevel
+xtprobit clust clust_lag i.caste $head $HH $shocks $marson, baselevel
+xtprobit clust clust_lag i.caste $head $HH $shocks $mardau, baselevel
+xtprobit clust clust_lag i.caste $head $HH $shocks $marson $mardau, baselevel
 
 ****************************************
 * END
