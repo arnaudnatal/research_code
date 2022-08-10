@@ -15,56 +15,6 @@ Panel for indebtedness and over-indebtedness
 
 
 
-****************************************
-* INITIALIZATION
-****************************************
-clear all
-macro drop _all
-
-global user "anatal"
-global folder "Downloads"
-
-********** Path to folder "data" folder.
-global directory = "C:\Users\\$user\\$folder\_Thesis\Research-Overindebtedness\Persistence_over"
-cd"$directory"
-global git "C:\Users\\$user\\$folder\GitHub"
-
-
-*Fac
-*cd "C:\Users\anatal\Downloads\_Thesis\Research-Skills_and_debt\Analysis"
-*set scheme plotplain
-
-*global git "C:\Users\anatal\Downloads\GitHub"
-*global dropbox "C:\Users\anatal\Downloads\Dropbox"
-*global thesis "C:\Users\anatal\Downloads\_Thesis\Research-Skills_and_debt\Analysis"
-
-
-********** Name of the NEEMSIS2 questionnaire version to clean
-global wave1 "RUME-HH"
-global wave2 "NEEMSIS1-HH"
-global wave3 "NEEMSIS2-HH"
-
-global loan1 "RUME-all_loans"
-global loan2 "NEEMSIS1-all_loans"
-global loan3 "NEEMSIS2-all_loans"
-
-* Scheme
-set scheme plotplain_v2
-grstyle init
-grstyle set plain, box nogrid
-
-********** Deflate
-*https://data.worldbank.org/indicator/FP.CPI.TOTL?locations=IN
-*(100/158) if year==2016
-*(100/184) if year==2020
-
-****************************************
-* END
-
-
-
-
-
 
 
 
