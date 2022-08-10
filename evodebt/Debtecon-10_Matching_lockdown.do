@@ -1,16 +1,14 @@
+*-------------------------
 cls
-
-/*
--------------------------
-Arnaud Natal
-arnaud.natal@u-bordeaux.fr
-June 14, 2022
------
-Impact of lockdown
------
-
--------------------------
-*/
+*Arnaud NATAL
+*arnaud.natal@u-bordeaux.fr
+*June 14, 2022
+*-----
+gl link = "evodebt"
+*Matching lockdown
+*-----
+do "https://raw.githubusercontent.com/arnaudnatal/folderanalysis/main/$link.do"
+*-------------------------
 
 
 

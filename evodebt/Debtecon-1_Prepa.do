@@ -1,13 +1,13 @@
 *-------------------------
 cls
-*-------------------------
 *Arnaud NATAL
 *arnaud.natal@u-bordeaux.fr
 *September 30, 2021
 *-----
 gl link = "evodebt"
+*Prepa database
 *-----
-qui do "https://raw.githubusercontent.com/arnaudnatal/folderanalysis/main/$link.do"
+do "https://raw.githubusercontent.com/arnaudnatal/folderanalysis/main/$link.do"
 *-------------------------
 
 

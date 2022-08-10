@@ -1,15 +1,14 @@
+*-------------------------
 cls
-/*
--------------------------
-Arnaud Natal
-arnaud.natal@u-bordeaux.fr
-December 07, 2021
------
-Stat for indebtedness and over-indebtedness
------
-
--------------------------
-*/
+*Arnaud NATAL
+*arnaud.natal@u-bordeaux.fr
+*December 07, 2021
+*-----
+gl link = "evodebt"
+*Long database stat desc
+*-----
+do "https://raw.githubusercontent.com/arnaudnatal/folderanalysis/main/$link.do"
+*-------------------------
 
 
 

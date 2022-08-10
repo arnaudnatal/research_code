@@ -1,17 +1,14 @@
+*-------------------------
 cls
-/*
--------------------------
-Arnaud Natal
-arnaud.natal@u-bordeaux.fr
-June 17, 2021
------
-Short trends and static vuln
------
-
--------------------------
-*/
-
-
+*Arnaud NATAL
+*arnaud.natal@u-bordeaux.fr
+*June 17, 2022
+*-----
+gl link = "evodebt"
+*Short deter
+*-----
+do "https://raw.githubusercontent.com/arnaudnatal/folderanalysis/main/$link.do"
+*-------------------------
 
 
 
