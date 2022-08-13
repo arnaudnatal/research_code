@@ -165,15 +165,6 @@ use"$directory\\$wave1", clear
 
 bysort HHID_panel : egen HHsize=sum(1)
 
-gen head=1 if relationshiptohead==1
-bysort HHID_panel: egen sum_head=sum(head)
-ta HHID_panel if sum_head>1
-list HHID_panel INDID_panel name age sex relationshiptohead caste jatis if HHID_panel=="GOV18", clean noobs
-
-gen caste_head=caste if relationshiptohead==1
-replace caste_head=. if HHID_panel=="GOV18" & INDID_panel=="Ind_1"
-ta caste_head
-bysort HHID_panel: egen caste_HH=max(caste_head)
 
 fre sex
 gen male=0
@@ -230,33 +221,8 @@ drop if livinghome==4
 
 bysort HHID_panel : egen HHsize=sum(1)
 
-gen head=1 if relationshiptohead==1
-bysort HHID_panel: egen sum_head=sum(head)
-ta HHID_panel if sum_head>1
-list HHID_panel INDID_panel name age sex relationshiptohead caste jatis if HHID_panel=="KUV36" | HHID_panel=="SEM29", clean noobs
-ta HHID_panel if sum_head<1
-list HHID_panel INDID_panel name age sex relationshiptohead caste jatis if HHID_panel=="ELA35" | HHID_panel=="ELA41" | HHID_panel=="GOV31" | HHID_panel=="KOR12" | HHID_panel=="KOR15" | HHID_panel=="KOR41" | HHID_panel=="KUV23" | HHID_panel=="9" | HHID_panel=="MAN3" | HHID_panel=="MAN45" | HHID_panel=="NAT12" | HHID_panel=="NAT24" | HHID_panel=="NAT39" | HHID_panel=="ORA14" | HHID_panel=="ORA25" | HHID_panel=="SEM44" | HHID_panel=="KUV9" | HHID_panel=="MAN3", clean noobs
 
-gen caste_head=caste if relationshiptohead==1
-replace caste_head=. if HHID_panel=="KUV36" & INDID_panel=="Ind_5"
-replace caste_head=. if HHID_panel=="SEM29" & INDID_panel=="Ind_1"
 
-replace caste_head=1 if HHID_panel=="ELA35" & INDID_panel=="Ind_2"
-replace caste_head=1 if HHID_panel=="ELA41" & INDID_panel=="Ind_2"
-replace caste_head=3 if HHID_panel=="GOV31" & INDID_panel=="Ind_2"
-replace caste_head=2 if HHID_panel=="KOR12" & INDID_panel=="Ind_2"
-replace caste_head=1 if HHID_panel=="KOR15" & INDID_panel=="Ind_2"
-replace caste_head=1 if HHID_panel=="KOR41" & INDID_panel=="Ind_2"
-replace caste_head=2 if HHID_panel=="KUV23" & INDID_panel=="Ind_2"
-replace caste_head=1 if HHID_panel=="KUV9" & INDID_panel=="Ind_2"
-replace caste_head=1 if HHID_panel=="MAN3" & INDID_panel=="Ind_2"
-replace caste_head=2 if HHID_panel=="MAN45" & INDID_panel=="Ind_2"
-replace caste_head=3 if HHID_panel=="NAT12" & INDID_panel=="Ind_2"
-replace caste_head=2 if HHID_panel=="NAT24" & INDID_panel=="Ind_2"
-replace caste_head=3 if HHID_panel=="NAT39" & INDID_panel=="Ind_2"
-replace caste_head=2 if HHID_panel=="ORA14" & INDID_panel=="Ind_2"
-replace caste_head=2 if HHID_panel=="ORA25" & INDID_panel=="Ind_3"
-replace caste_head=3 if HHID_panel=="SEM44" & INDID_panel=="Ind_2"
 ta caste_head
 bysort HHID_panel: egen caste_HH=max(caste_head)
 ta HHID_panel if caste_HH==.
