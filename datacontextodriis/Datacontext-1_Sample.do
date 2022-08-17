@@ -225,8 +225,6 @@ replace assets_noland=assets_noland/1000
 replace annualincome_HH=annualincome_HH/1000
 recode ownland (.=0)
 
-merge 1:1 HHID_panel using "$directory\wave1_checkcastewithnewcleaning.dta"
-
 ***** Tables
 cls
 ta castecorr_HH
@@ -280,12 +278,13 @@ ta DR
 
 keep HHID_panel castecorr_HH villageid HHsize ownland leaseland sizeownland assets_noland assets annualincome_HH nboccupation_HH occinc_HH_agri occinc_HH_agricasual occinc_HH_nonagricasual occinc_HH_nonagriregnonqual occinc_HH_nonagriregqual occinc_HH_selfemp occinc_HH_nrega loanamount_HH loans_HH SR DR housetype
 duplicates drop HHID_panel, force
-replace assets=(assets/1000)*(100/158)
-replace assets_noland=(assets_noland/1000)*(100/158)
-replace annualincome_HH=(annualincome_HH/1000)*(100/158)
+*replace assets=(assets/1000)*(100/158)
+*replace assets_noland=(assets_noland/1000)*(100/158)
+*replace annualincome_HH=(annualincome_HH/1000)*(100/158)
+replace assets=(assets/1000)
+replace assets_noland=(assets_noland/1000)
+replace annualincome_HH=(annualincome_HH/1000)
 recode ownland (.=0)
-
-merge 1:1 HHID_panel using "$directory\wave2_checkcastewithnewcleaning.dta"
 
 ***** Tables
 cls

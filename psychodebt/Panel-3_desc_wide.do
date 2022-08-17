@@ -223,6 +223,10 @@ duplicates drop HHID_panel, force
 
 global hhvar hhsize_1 assets1000_1 incomeHH1000_1 shock_1 covsell villageid_1 villageid_2 villageid_3 villageid_4 villageid_5 villageid_6 villageid_7 villageid_8 villageid_9 villageid_10
 
+
+replace assets_noland_1=assets_noland_1/1000
+tabstat assets_noland_1, stat(n mean sd p50) by(dalit)
+
 cls
 est clear
 eststo ndal: estpost sum $hhvar if dalits==0
