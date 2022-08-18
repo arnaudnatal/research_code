@@ -24,20 +24,27 @@ do "https://raw.githubusercontent.com/arnaudnatal/folderanalysis/main/$link.do"
 ********** RUME
 use"$datarume\\$wave1", clear
 save"$directory\\$wave1", replace
+use"$datarume\\$loan1", clear
+save"$directory\\$loan1", replace
 
 
 ********** NEEMSIS-1
 use"$dataneemsis1\\$wave2", clear
 save"$directory\\$wave2", replace
+use"$dataneemsis1\\$loan2", clear
+save"$directory\\$loan2", replace
 
 ********** NEEMSIS-2
 use"$dataneemsis2\\$wave3", clear
 save"$directory\\$wave3", replace
+use"$dataneemsis2\\$loan3", clear
+save"$directory\\$loan3", replace
 
 ********** ODRIIS HH and indiv
 use"$datapanel\ODRIIS-HH_long.dta", clear
 save"$directory\ODRIIS-HH_long.dta", replace
-
+use"$datapanel\ODRIIS-HH_wide.dta", clear
+save"$directory\ODRIIS-HH_wide.dta", replace
 use"$datapanel\ODRIIS-indiv_long.dta", clear
 save"$directory\ODRIIS-indiv_long.dta", replace
 
@@ -359,3 +366,77 @@ tabstat assets_noland annualincome_HH, stat(n mean sd p50) by(castecorr_HH)
 
 ****************************************
 * END
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Loan level: RUME
+****************************************
+use"$loan1", clear
+
+merge m:m HHID2010 using "ODRIIS-HH_wide", keepusing(HHID_panel)
+keep if _merge==3
+drop _merge
+
+keep if loansettled==0
+
+*** Clientele using it
+fre lender4
+fre lender_cat
+
+forvalues i=1(1)3{
+gen lenders_`i'=0
+}
+forvalues i=1(1)3{
+replace lenders_`i'=1 if lender_cat==`i'
+}
+*
+cls
+preserve 
+forvalues i=1(1)3{
+bysort HHID_panel: egen lendersHH_`i'=max(lenders_`i')
+} 
+bysort HHID_panel year: gen n=_n
+keep if n==1
+forvalues i=1(1)3{
+tab lendersHH_`i' year, m col nofreq
+}
+restore
+
+*** Reason given
+fre reasongiven
+forvalues i=1(1)13{
+gen reason_`i'=0
+}
+forvalues i=1(1)13{
+replace reason_`i'=1 if reasongiven==`i'
+}
+*
+cls
+preserve 
+forvalues i=1(1)13{
+bysort HHID_panel: egen reasonHH_`i'=max(reason_`i')
+} 
+bysort HHID_panel year: gen n=_n
+keep if n==1
+tab caste year
+cls
+forvalues i=1(1)13{
+tab reasonHH_`i' year if caste==1, m col nofreq
+tab reasonHH_`i' year if caste==2, m col nofreq
+tab reasonHH_`i' year if caste==3, m col nofreq
+}
+restore
+****************************************
+* END
+
