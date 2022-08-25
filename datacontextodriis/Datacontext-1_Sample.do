@@ -41,7 +41,7 @@ use"$dataneemsis2\\$loan3", clear
 save"$directory\\$loan3", replace
 
 ********** Tracking 1
-use"$datatracking1\NEEMSIS1-tracking.dta", clear
+use"$datatracking1\NEEMSIS-tracking_v6.dta", clear
 save"$directory\NEEMSIS1-tracking.dta", replace
 
 ********** ODRIIS HH and indiv
@@ -136,55 +136,30 @@ ta villageid
 ********** Tracking-1
 use"$directory\NEEMSIS1-tracking.dta", clear
 
-keep if name==namemigrant
-fre caste
-ta casteother
-rename caste jatis
-gen caste=.
-replace caste=1 if jatis==2
-
-replace caste=2 if jatis==1
-replace caste=2 if jatis==12
-replace caste=2 if jatis==16
-
-replace caste=3 if jatis==4
-replace caste=3 if jatis==6
-replace caste=3 if jatis==11
-replace caste=3 if jatis==77 & casteother=="Yadhavar"
-
-gen edulevel=.
-replace edulevel = 0 if  everattendedschool == 0
-replace edulevel = 0 if classcompleted < 5 & classcompleted != .
-replace edulevel= 1 if classcompleted>=5 & classcompleted != .
-replace edulevel= 2 if classcompleted>=8 & classcompleted != .
-replace edulevel= 3 if classcompleted>=11 & classcompleted != .
-replace edulevel= 4 if classcompleted>=15  & classcompleted != .
-replace edulevel= 5 if classcompleted>=16  & classcompleted != . //Attention! I recoded here cause otherwise all missing are in 5 (Anne, 20/06/17)
-label define edulevel 0 "Below primary" 1 "Primary completed", modify
-label define edulevel 2 "High school (8th-10th)", modify
-label define edulevel 3 "HSC/Diploma (11th-12th)", modify
-label define edulevel 4 "Bachelors (13th-15th)", modify
-label define edulevel 5 "Post graduate (15th and more)", modify
-label values edulevel edulevel
-ta edulevel
+keep if dummymainmigrant==1
 
 ta sex
 ta caste
 sum age
 ta edulevel
 
-fre migrationareatype
-fre migmigration1type
-fre migmigration1type2
+ta occupation_moc_indiv worker, m
+ta working_pop worker, m
+recode occupation_moc_indiv (.=0)
+ta occupation_moc_indiv
 
-ta migmigration1reason
+fre migrationareatype
+fre migration1type2
+
+/*
+ta migration1reason
 
 foreach i in 1 2 3 4 5 6 7 8 9 10 77 {
-gen reason`i'=0 if migmigration1type2==2
-replace reason`i'=1 if strpos(migmigration1reason, "`i'")
+gen reason`i'=0 if migration1type2==2
+replace reason`i'=1 if strpos(migration1reason, "`i'")
 ta reason`i'
 }
-
+*/
 ****************************************
 * END
 
@@ -207,6 +182,7 @@ fre working_pop
 drop if working_pop==1
 fre worker
 
+ta castecorr sex, col nofreq
 ta sex
 ta mainocc_occupation_indiv sex, col nofreq
 ta edulevel sex, col nofreq
@@ -222,6 +198,7 @@ fre working_pop
 drop if working_pop==1
 fre worker
 
+ta castecorr sex, col nofreq
 ta sex
 ta mainocc_occupation_indiv sex, col nofreq
 ta edulevel sex, col nofreq
@@ -239,6 +216,7 @@ fre working_pop
 drop if working_pop==1
 fre worker
 
+ta castecorr sex, col nofreq
 ta sex
 ta mainocc_occupation_indiv sex, col nofreq
 ta edulevel sex, col nofreq
