@@ -132,34 +132,6 @@ duplicates drop HHID_panel, force
 ta villageid
 
 
-
-********** Tracking-1
-use"$directory\NEEMSIS1-tracking.dta", clear
-
-keep if dummymainmigrant==1
-
-ta sex
-ta caste
-sum age
-ta edulevel
-
-ta occupation_moc_indiv worker, m
-ta working_pop worker, m
-recode occupation_moc_indiv (.=0)
-ta occupation_moc_indiv
-
-fre migrationareatype
-fre migration1type2
-
-/*
-ta migration1reason
-
-foreach i in 1 2 3 4 5 6 7 8 9 10 77 {
-gen reason`i'=0 if migration1type2==2
-replace reason`i'=1 if strpos(migration1reason, "`i'")
-ta reason`i'
-}
-*/
 ****************************************
 * END
 
@@ -655,5 +627,56 @@ forvalues i=1(1)5{
 tab reasonHH_`i' caste, m col nofreq
 }
 restore
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Migrants level: NEEMSIS-1
+****************************************
+use"$directory\NEEMSIS1-tracking.dta", clear
+
+keep if dummymainmigrant==1
+
+ta sex
+ta caste
+sum age
+ta edulevel
+
+ta occupation_moc_indiv worker, m
+ta working_pop worker, m
+recode occupation_moc_indiv (.=0)
+ta occupation_moc_indiv
+
+fre migrationareatype
+fre migration1type2
+
+/*
+ta migration1reason
+
+foreach i in 1 2 3 4 5 6 7 8 9 10 77 {
+gen reason`i'=0 if migration1type2==2
+replace reason`i'=1 if strpos(migration1reason, "`i'")
+ta reason`i'
+}
+*/
+
+********** Details of place
+fre migrationplacename 
+
 ****************************************
 * END
