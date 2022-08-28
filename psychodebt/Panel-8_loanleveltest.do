@@ -70,21 +70,23 @@ replace dummyssex=1 if lendersex==2 & female==1
 gen dummyscaste=0
 replace dummyscaste=1
 
+tab loanlender lender_cat
+
+drop if lender_cat==3
+
+
+
 
 ********** Test econo 1
-
-
-local i=0
+cls
 foreach x in otherlenderservices_none borrowerservices_none dummyproblemtorepay dummyhelptosettleloan guarantee_none {
-local i=`i'+1
-qui probit `x' indebt_indiv_1 $indivcontrol $hhcontrol4 $villagesFE ///
+
+qui probit `x' indebt_indiv_1 loanamount i.reason_cat $indivcontrol $hhcontrol4 $villagesFE ///
 c.base_f1_std##i.female##i.dalits c.base_f2_std##i.female##i.dalits c.base_f3_std##i.female##i.dalits c.base_f5_std##i.female##i.dalits c.base_raven_tt_std##i.female##i.dalits c.base_num_tt_std##i.female##i.dalits c.base_lit_tt_std##i.female##i.dalits ///
 , vce(cluster HHINDID)
-est store m`i'
+
 margins, dydx(base_f1_std base_f2_std base_f3_std base_f5_std base_raven_tt_std base_num_tt_std base_lit_tt_std) at(dalits=(0 1) female=(0 1)) atmeans
 }
-
-esttab m1 m2 m3
 
 
 
