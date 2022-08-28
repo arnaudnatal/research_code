@@ -32,7 +32,7 @@ fre cryst
 egen base_cryst_std=std(cryst)
 
 
-foreach x in indebt_indiv_2 borrowerservices_none guarantee_none dummyproblemtorepay dummyhelptosettleloan {
+foreach x in indebt_indiv_2 borrowerservices_none guarantee_none dummyproblemtorepay dummyhelptosettleloan otherlenderservices_finansupp otherlenderservices_none {
 foreach i in 0 1 {
 foreach j in 0 1 {
 ta `x' if female==`i' & dalits==`j'
@@ -44,12 +44,11 @@ ta `x' if female==`i' & dalits==`j'
 
 
 
-
-
+********** Classic
 cls
-foreach x in indebt_indiv_2 borrowerservices_none guarantee_none dummyproblemtorepay dummyhelptosettleloan {
+foreach x in indebt_indiv_2 borrowerservices_none dummyproblemtorepay {
 
-
+/*
 probit `x' indebt_indiv_1 ///
 $indivcontrol $hhcontrol4 $villagesFE ///
 female dalits ///
@@ -61,11 +60,11 @@ female dalits ///
 base_f1_std base_f2_std base_f3_std base_f5_std ///
 base_raven_tt_std base_cryst_std ///
 , vce(cluster HHFE)
-
+*/
 
 
 ***** Interracted variables
-probit `x' indebt_indiv_1 ///
+qui probit `x' indebt_indiv_1 ///
 $indivcontrol $hhcontrol4 $villagesFE ///
 c.base_f1_std##i.female##i.dalits c.base_f2_std##i.female##i.dalits c.base_f3_std##i.female##i.dalits c.base_f5_std##i.female##i.dalits ///
 c.base_raven_tt_std##i.female##i.dalits c.base_cryst_std##i.female##i.dalits ///
@@ -73,27 +72,50 @@ c.base_raven_tt_std##i.female##i.dalits c.base_cryst_std##i.female##i.dalits ///
 
 margins, dydx(base_f1_std base_f2_std base_f3_std base_f5_std base_raven_tt_std base_cryst_std) at(dalits=(0 1) female=(0 1)) atmeans
 
+}
 
 
 
 
-***** Subsample
-foreach i in 0 1 {
-foreach j in 0 1 {
-qui probit `x' indebt_indiv_1 ///
+/*
+qui probit indebt_indiv_2 indebt_indiv_1 ///
+$indivcontrol $hhcontrol4 $villagesFE ///
+c.base_f1_std##i.female##i.dalits c.base_f2_std##i.female##i.dalits c.base_f3_std##i.female##i.dalits c.base_f5_std##i.female##i.dalits ///
+c.base_raven_tt_std##i.female##i.dalits c.base_lit_tt_std##i.female##i.dalits c.base_num_tt_std##i.female##i.dalits ///
+, vce(cluster HHFE)
+
+margins, dydx(base_f1_std base_f2_std base_f3_std base_f5_std base_raven_tt_std base_lit_tt_std base_num_tt_std) at(dalits=(0 1) female=(0 1)) atmeans
+*/
+
+
+
+
+********** News
+cls
+foreach x in guarantee_none dummyhelptosettleloan otherlenderservices_finansupp otherlenderservices_none {
+
+/*
+probit `x' indebt_indiv_1 ///
+$indivcontrol $hhcontrol4 $villagesFE ///
+female dalits ///
+, vce(cluster HHFE)
+
+probit `x' indebt_indiv_1 ///
 $indivcontrol $hhcontrol4 $villagesFE ///
 female dalits ///
 base_f1_std base_f2_std base_f3_std base_f5_std ///
 base_raven_tt_std base_cryst_std ///
-if female==`i' & dalits==`j' ///
 , vce(cluster HHFE)
-margins, dydx(base_f1_std base_f2_std base_f3_std base_f5_std base_raven_tt_std base_cryst_std) atmeans
+*/
+
+
+***** Interracted variables
+qui probit `x' indebt_indiv_1 ///
+$indivcontrol $hhcontrol4 $villagesFE ///
+c.base_f1_std##i.female##i.dalits c.base_f2_std##i.female##i.dalits c.base_f3_std##i.female##i.dalits c.base_f5_std##i.female##i.dalits ///
+c.base_raven_tt_std##i.female##i.dalits c.base_cryst_std##i.female##i.dalits ///
+, vce(cluster HHFE)
+
+margins, dydx(base_f1_std base_f2_std base_f3_std base_f5_std base_raven_tt_std base_cryst_std) at(dalits=(0 1) female=(0 1)) atmeans
+
 }
-}
-
-
-}
-
-
-
-
