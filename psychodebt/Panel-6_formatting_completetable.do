@@ -1,53 +1,15 @@
+*-------------------------
 cls
-/*
--------------------------
-Arnaud Natal
-arnaud.natal@u-bordeaux.fr
-July 06, 2021
------
-Formatting margins
------
-help fvvarlist
--------------------------
-*/
+*Arnaud NATAL
+*arnaud.natal@u-bordeaux.fr
+*July 6, 2021
+*-----
+gl link = "psychodebt"
+*Format table
+*-----
+do "https://raw.githubusercontent.com/arnaudnatal/folderanalysis/main/$link.do"
+*-------------------------
 
-
-
-
-
-****************************************
-* INITIALIZATION
-****************************************
-clear all
-macro drop _all
-set scheme plotplain
-********** Path to folder "data" folder.
-global directory = "C:\Users\Arnaud\Documents\_Thesis\Research-Skills_and_debt\Analysis"
-cd"$directory"
-
-
-*Fac
-*cd "C:\Users\anatal\Downloads\_Thesis\Research-Skills_and_debt\Analysis"
-set scheme plotplain
-
-*global git "C:\Users\anatal\Downloads\GitHub"
-*global dropbox "C:\Users\anatal\Downloads\Dropbox"
-*global thesis "C:\Users\anatal\Downloads\_Thesis\Research-Skills_and_debt\Analysis"
-
-
-
-********** Name of the NEEMSIS2 questionnaire version to clean
-*global wave1 "RUME-HH_v8"
-global wave2 "NEEMSIS1-HH"
-global wave3 "NEEMSIS2-HH"
-
-
-********** Stata package
-
-*coefplot, horizontal xline(0) drop(_cons) levels(95 90 ) ciopts(recast(. rcap))mlabel mlabposition(12) mlabgap(*2)
-
-****************************************
-* END
 
 
 

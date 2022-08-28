@@ -1,49 +1,14 @@
+*-------------------------
 cls
-/*
--------------------------
-Arnaud Natal
-arnaud.natal@u-bordeaux.fr
-May 13, 2021
------
-Personality traits: EFA + panel
------
-
--------------------------
-*/
-
-*ssc install catplot
-*ssc install sencode
-
-****************************************
-* INITIALIZATION
-****************************************
-clear all
-macro drop _all
-********** Path to folder "data" folder.
-global directory = "C:\Users\Arnaud\Documents\_Thesis\Research-Skills_and_debt\Analysis"
-cd"$directory"
-global git "C:\Users\Arnaud\Documents\GitHub"
-
-set scheme plotplain 
-
-*Fac
-*cd "C:\Users\anatal\Downloads\_Thesis\Research-Skills_and_debt\Analysis"
-*set scheme plotplain
-
-*global git "C:\Users\anatal\Downloads\GitHub"
-*global dropbox "C:\Users\anatal\Downloads\Dropbox"
-*global thesis "C:\Users\anatal\Downloads\_Thesis\Research-Skills_and_debt\Analysis"
-
-
-
-********** Name of the NEEMSIS2 questionnaire version to clean
-*global wave1 "RUME-HH_v8"
-global wave2 "NEEMSIS1-HH"
-global wave3 "NEEMSIS2-HH"
-
-global loan "NEEMSIS2-all_loans"
-****************************************
-* END
+*Arnaud NATAL
+*arnaud.natal@u-bordeaux.fr
+*May 13, 2021
+*-----
+gl link = "psychodebt"
+*EFA + panel 2020
+*-----
+do "https://raw.githubusercontent.com/arnaudnatal/folderanalysis/main/$link.do"
+*-------------------------
 
 
 

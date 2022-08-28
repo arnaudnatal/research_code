@@ -1,42 +1,14 @@
+*-------------------------
 cls
-/*
--------------------------
-Arnaud Natal
-arnaud.natal@u-bordeaux.fr
-April 23, 2021
------
-Stability over time of personality traits
------
-
--------------------------
-*/
-
-
-****************************************
-* INITIALIZATION
-****************************************
-clear all
-macro drop _all
-********** Path to folder "data" folder.
-global directory = "C:\Users\Arnaud\Documents\_Thesis\Research-Skills_and_debt\Analysis"
-cd"$directory"
-global git "C:\Users\Arnaud\Documents\GitHub"
-
-*Fac
-*cd "C:\Users\anatal\Downloads\_Thesis\Research-Skills_and_debt\Analysis"
-set scheme plotplain, perm
-
-*global git "C:\Users\anatal\Downloads\GitHub"
-*global dropbox "C:\Users\anatal\Downloads\Dropbox"
-*global thesis "C:\Users\anatal\Downloads\_Thesis\Research-Skills_and_debt\Analysis"
-
-
-********** Name of the NEEMSIS2 questionnaire version to clean
-*global wave1 "RUME-HH_v8"
-global wave2 "NEEMSIS1-HH_v8"
-global wave3 "NEEMSIS2-HH_v19"
-****************************************
-* END
+*Arnaud NATAL
+*arnaud.natal@u-bordeaux.fr
+*April 23, 2021
+*-----
+gl link = "psychodebt"
+*Stab
+*-----
+do "https://raw.githubusercontent.com/arnaudnatal/folderanalysis/main/$link.do"
+*-------------------------
 
 
 

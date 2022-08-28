@@ -1,53 +1,14 @@
+*-------------------------
 cls
-/*
--------------------------
-Arnaud Natal
-arnaud.natal@u-bordeaux.fr
-May 13, 2021
------
-Personality traits & debt AT INDIVIDUAL LEVEL in wide
------
-help fvvarlist
--------------------------
-*/
-
-
-
-
-
-****************************************
-* INITIALIZATION
-****************************************
-clear all
-macro drop _all
-set scheme plotplain
-********** Path to folder "data" folder.
-*global directory = "D:\Documents\_Thesis\Research-Skills_and_debt\Analysis"
-*cd"$directory"
-
-
-*Fac
-cd "C:\Users\anatal\Downloads\_Thesis\Research-Skills_and_debt\Analysis"
-set scheme plotplain
-
-global git "C:\Users\anatal\Downloads\GitHub"
-global dropbox "C:\Users\anatal\Downloads\Dropbox"
-global thesis "C:\Users\anatal\Downloads\_Thesis\Research-Skills_and_debt\Analysis"
-
-
-
-********** Name of the NEEMSIS2 questionnaire version to clean
-global wave1 "RUME-HH_v8"
-global wave2 "NEEMSIS1-HH_v7"
-global wave3 "NEEMSIS2-HH_v16"
-
-
-********** Stata package
-
-*coefplot, horizontal xline(0) drop(_cons) levels(95 90 ) ciopts(recast(. rcap))mlabel mlabposition(12) mlabgap(*2)
-
-****************************************
-* END
+*Arnaud NATAL
+*arnaud.natal@u-bordeaux.fr
+*May 13, 2021
+*-----
+gl link = "psychodebt"
+*Verif Jalil
+*-----
+do "https://raw.githubusercontent.com/arnaudnatal/folderanalysis/main/$link.do"
+*-------------------------
 
 
 

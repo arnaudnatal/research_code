@@ -1,58 +1,14 @@
+*-------------------------
 cls
-/*
--------------------------
-Arnaud Natal
-arnaud.natal@u-bordeaux.fr
-May 13, 2021
------
-Personality traits & debt AT INDIVIDUAL LEVEL in wide
------
-help fvvarlist
--------------------------
-*/
-
-
-
-
-
-****************************************
-* INITIALIZATION
-****************************************
-clear all
-macro drop _all
-set scheme plotplain
-********** Path to folder "data" folder.
-global directory = "C:\Users\Arnaud\Documents\MEGA\Thesis\Thesis_Debt_skills\Analysis"
-*global git "C:\Users\Arnaud\Documents\GitHub"
-*global dropbox "C:\Users\Arnaud\Documents\Dropbox\Arnaud\Thesis_Debt_skills\INPUT"
-
-***
-set scheme plotplain
-cd"$directory"
-
-
-********** Name of the NEEMSIS2 questionnaire version to clean
-global wave2 "NEEMSIS1-HH"
-global wave3 "NEEMSIS2-HH"
-
-
-********** Stata package
-
-*coefplot, horizontal xline(0) drop(_cons) levels(95 90 ) ciopts(recast(. rcap))mlabel mlabposition(12) mlabgap(*2)
-
-/*
-Pour avoir un box plot en colonne et 1 en ligne pour un nuage de points:
-graph7 mpg weight, twoway oneway box xla yla
-*/
-
-*stripplot
-
-****************************************
-* END
-
-
-
-
+*Arnaud NATAL
+*arnaud.natal@u-bordeaux.fr
+*May 13, 2021
+*-----
+gl link = "psychodebt"
+*Econ
+*-----
+do "https://raw.githubusercontent.com/arnaudnatal/folderanalysis/main/$link.do"
+*-------------------------
 
 
 
@@ -230,6 +186,37 @@ est store n3
  
 esttab n1 n2 n3
 ****************************************
+
+
+
+
+probit guarantee_none indebt_indiv_1 $indivcontrol $hhcontrol4 $villagesFE ///
+c.base_f1_std##i.female##i.dalits c.base_f2_std##i.female##i.dalits c.base_f3_std##i.female##i.dalits c.base_f5_std##i.female##i.dalits c.base_raven_tt_std##i.female##i.dalits c.base_num_tt_std##i.female##i.dalits c.base_lit_tt_std##i.female##i.dalits ///
+, vce(cluster HHFE)
+
+margins, dydx(base_f1_std base_f2_std base_f3_std base_f5_std base_raven_tt_std base_num_tt_std base_lit_tt_std) at(dalits=(0 1) female=(0 1)) atmeans
+
+
+ta female dalits
+
+
+cls
+foreach x in dummyproblemtorepay guarantee_none borrowerservices_none dummyhelptosettleloan {
+foreach i in 0 1 {
+foreach j in 0 1 {
+qui probit guarantee_none indebt_indiv_1 $indivcontrol $hhcontrol4 $villagesFE ///
+base_f1_std base_f2_std base_f3_std base_f5_std base_raven_tt_std base_num_tt_std base_lit_tt_std ///
+if female==`i' & dalits==`j' ///
+, vce(cluster HHFE)
+margins, dydx(base_f1_std base_f2_std base_f3_std base_f5_std base_raven_tt_std base_num_tt_std base_lit_tt_std) atmeans
+}
+}
+}
+
+
+
+
+
 
 
 
