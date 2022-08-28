@@ -22,9 +22,9 @@ clear all
 macro drop _all
 set scheme plotplain
 ********** Path to folder "data" folder.
-global directory = "C:\Users\Arnaud\Documents\_Thesis\Research-Skills_and_debt\Analysis"
-global git "C:\Users\Arnaud\Documents\GitHub"
-global dropbox "C:\Users\Arnaud\Documents\Dropbox\Arnaud\Thesis_Debt_skills\INPUT"
+global directory = "C:\Users\Arnaud\Documents\MEGA\Thesis\Thesis_Debt_skills\Analysis"
+*global git "C:\Users\Arnaud\Documents\GitHub"
+*global dropbox "C:\Users\Arnaud\Documents\Dropbox\Arnaud\Thesis_Debt_skills\INPUT"
 
 ***
 set scheme plotplain
@@ -162,6 +162,131 @@ ta debt_mana_indiv
 
 
 ****************************************
+probit indebt_indiv_2 indebt_indiv_1 ///
+age_1 agesq_1 dummyhead_1 cat_mainocc_occupation_indiv_1_1 cat_mainocc_occupation_indiv_1_2 cat_mainocc_occupation_indiv_1_4 cat_mainocc_occupation_indiv_1_5 cat_mainocc_occupation_indiv_1_6 cat_mainocc_occupation_indiv_1_7 dummyedulevel maritalstatus2_1 ///
+assets1000_1 hhsize_1 shock_1 covsell incomeHH1000_1 ///
+villageid_2 villageid_3 villageid_4 villageid_5 villageid_6 villageid_7 villageid_8 villageid_9 villageid_10 ///
+female dalits ///
+, vce(cluster HHFE)
+est store r1
+
+probit indebt_indiv_2 indebt_indiv_1 ///
+age_1 agesq_1 dummyhead_1 cat_mainocc_occupation_indiv_1_1 cat_mainocc_occupation_indiv_1_2 cat_mainocc_occupation_indiv_1_4 cat_mainocc_occupation_indiv_1_5 cat_mainocc_occupation_indiv_1_6 cat_mainocc_occupation_indiv_1_7 dummyedulevel maritalstatus2_1 ///
+assets1000_1 hhsize_1 shock_1 covsell incomeHH1000_1 ///
+villageid_2 villageid_3 villageid_4 villageid_5 villageid_6 villageid_7 villageid_8 villageid_9 villageid_10 ///
+female dalits ///
+base_f1_std base_f2_std base_f3_std base_f5_std ///
+base_raven_tt_std base_num_tt_std base_lit_tt_std ///
+, vce(cluster HHFE)
+est store r2
+
+probit indebt_indiv_2 indebt_indiv_1 ///
+age_1 agesq_1 dummyhead_1 cat_mainocc_occupation_indiv_1_1 cat_mainocc_occupation_indiv_1_2 cat_mainocc_occupation_indiv_1_4 cat_mainocc_occupation_indiv_1_5 cat_mainocc_occupation_indiv_1_6 cat_mainocc_occupation_indiv_1_7 dummyedulevel maritalstatus2_1 ///
+assets1000_1 hhsize_1 shock_1 covsell incomeHH1000_1 ///
+villageid_2 villageid_3 villageid_4 villageid_5 villageid_6 villageid_7 villageid_8 villageid_9 villageid_10 ///
+c.base_f1_std##i.female##i.dalits c.base_f2_std##i.female##i.dalits c.base_f3_std##i.female##i.dalits c.base_f5_std##i.female##i.dalits ///
+c.base_raven_tt_std##i.female##i.dalits c.base_num_tt_std##i.female##i.dalits c.base_lit_tt_std##i.female##i.dalits ///
+, vce(cluster HHFE)
+est store r3
+
+esttab r1 r2 r3
+****************************************
+
+
+
+
+
+****************************************
+probit borrowerservices_none indebt_indiv_1 ///
+age_1 agesq_1 dummyhead_1 cat_mainocc_occupation_indiv_1_1 cat_mainocc_occupation_indiv_1_2 cat_mainocc_occupation_indiv_1_4 cat_mainocc_occupation_indiv_1_5 cat_mainocc_occupation_indiv_1_6 cat_mainocc_occupation_indiv_1_7 dummyedulevel maritalstatus2_1 ///
+assets1000_1 hhsize_1 shock_1 covsell incomeHH1000_1 ///
+villageid_2 villageid_3 villageid_4 villageid_5 villageid_6 villageid_7 villageid_8 villageid_9 villageid_10 ///
+c.share_nb_samesex c.share_nb_samecaste female dalits ///
+, vce(cluster HHFE)
+est store n1
+
+*otherlenderservices_finansupp
+probit borrowerservices_none indebt_indiv_1 ///
+age_1 agesq_1 dummyhead_1 cat_mainocc_occupation_indiv_1_1 cat_mainocc_occupation_indiv_1_2 cat_mainocc_occupation_indiv_1_4 cat_mainocc_occupation_indiv_1_5 cat_mainocc_occupation_indiv_1_6 cat_mainocc_occupation_indiv_1_7 dummyedulevel maritalstatus2_1 ///
+assets1000_1 hhsize_1 shock_1 covsell incomeHH1000_1 ///
+villageid_2 villageid_3 villageid_4 villageid_5 villageid_6 villageid_7 villageid_8 villageid_9 villageid_10 ///
+c.share_nb_samesex c.share_nb_samecaste female dalits ///
+base_f1_std base_f2_std base_f3_std base_f5_std ///
+base_raven_tt_std base_num_tt_std base_lit_tt_std ///
+, vce(cluster HHFE)
+est store n2
+
+
+probit borrowerservices_none indebt_indiv_1 ///
+age_1 agesq_1 dummyhead_1 cat_mainocc_occupation_indiv_1_1 cat_mainocc_occupation_indiv_1_2 cat_mainocc_occupation_indiv_1_4 cat_mainocc_occupation_indiv_1_5 cat_mainocc_occupation_indiv_1_6 cat_mainocc_occupation_indiv_1_7 dummyedulevel maritalstatus2_1 ///
+assets1000_1 hhsize_1 shock_1 covsell incomeHH1000_1 ///
+villageid_2 villageid_3 villageid_4 villageid_5 villageid_6 villageid_7 villageid_8 villageid_9 villageid_10 ///
+c.share_nb_samesex c.share_nb_samecaste ///
+c.base_f1_std##i.female##i.dalits c.base_f2_std##i.female##i.dalits c.base_f3_std##i.female##i.dalits c.base_f5_std##i.female##i.dalits ///
+c.base_raven_tt_std##i.female##i.dalits c.base_num_tt_std##i.female##i.dalits c.base_lit_tt_std##i.female##i.dalits ///
+, vce(cluster HHFE)
+est store n3
+
+ 
+esttab n1 n2 n3
+****************************************
+
+
+
+
+
+
+****************************************
+probit dummyproblemtorepay indebt_indiv_1 ///
+age_1 agesq_1 dummyhead_1 cat_mainocc_occupation_indiv_1_1 cat_mainocc_occupation_indiv_1_2 cat_mainocc_occupation_indiv_1_4 cat_mainocc_occupation_indiv_1_5 cat_mainocc_occupation_indiv_1_6 cat_mainocc_occupation_indiv_1_7 dummyedulevel maritalstatus2_1 ///
+assets1000_1 hhsize_1 shock_1 covsell incomeHH1000_1 ///
+villageid_2 villageid_3 villageid_4 villageid_5 villageid_6 villageid_7 villageid_8 villageid_9 villageid_10 ///
+c.loanamount_indiv female dalits ///
+, vce(cluster HHFE)
+est store m1
+
+probit dummyproblemtorepay indebt_indiv_1 ///
+age_1 agesq_1 dummyhead_1 cat_mainocc_occupation_indiv_1_1 cat_mainocc_occupation_indiv_1_2 cat_mainocc_occupation_indiv_1_4 cat_mainocc_occupation_indiv_1_5 cat_mainocc_occupation_indiv_1_6 cat_mainocc_occupation_indiv_1_7 dummyedulevel maritalstatus2_1 ///
+assets1000_1 hhsize_1 shock_1 covsell incomeHH1000_1 ///
+villageid_2 villageid_3 villageid_4 villageid_5 villageid_6 villageid_7 villageid_8 villageid_9 villageid_10 ///
+c.loanamount_indiv female dalits ///
+base_f1_std base_f2_std base_f3_std base_f5_std ///
+base_raven_tt_std base_num_tt_std base_lit_tt_std ///
+, vce(cluster HHFE)
+est store m2
+
+probit dummyproblemtorepay indebt_indiv_1 ///
+age_1 agesq_1 dummyhead_1 cat_mainocc_occupation_indiv_1_1 cat_mainocc_occupation_indiv_1_2 cat_mainocc_occupation_indiv_1_4 cat_mainocc_occupation_indiv_1_5 cat_mainocc_occupation_indiv_1_6 cat_mainocc_occupation_indiv_1_7 dummyedulevel maritalstatus2_1 ///
+assets1000_1 hhsize_1 shock_1 covsell incomeHH1000_1 ///
+villageid_2 villageid_3 villageid_4 villageid_5 villageid_6 villageid_7 villageid_8 villageid_9 villageid_10 ///
+c.loanamount_indiv ///
+c.base_f1_std##i.female##i.dalits c.base_f2_std##i.female##i.dalits c.base_f3_std##i.female##i.dalits c.base_f5_std##i.female##i.dalits ///
+c.base_raven_tt_std##i.female##i.dalits c.base_num_tt_std##i.female##i.dalits c.base_lit_tt_std##i.female##i.dalits ///
+, vce(cluster HHFE)
+est store m3
+ 
+esttab m1 m2 m3
+****************************************
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
 * PROBIT
 ****************************************
 
@@ -200,11 +325,6 @@ replace v`i'=substr(v`i',1,strlen(v`i')-1)
 export excel using "Probit_indebt.xlsx", sheet("`x'", replace)
 restore
 }
-
-
-
-
-
 
 
 
