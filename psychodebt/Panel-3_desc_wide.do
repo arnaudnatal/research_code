@@ -234,8 +234,9 @@ esttab male female diff using "$dropbox/desc_dep.tex", replace f ///
 
 
 
-/*
+
 ********** EFA
+/*
 set graph off
 twoway ///
 (kdensity base_f1_std if female==0, bwidth(0.25) lpattern(solid) lcolor(gs4)) ///
@@ -301,9 +302,13 @@ legend(position(6) col(4) order(1 "Male in 2016-17" 2 "Female in 2016-17") off) 
 
 
 *All
-grc1leg f_OP f_CO f_EX f_AG f_ES f1 f2 f3 f5 f_rav f_num f_lit, cols(5) holes(10) leg(f_OP) note("Kernel: Epanechnikov" "Bandwidth: 0.25 for factors; 0.35 for Big-5; 0.50 for raven, numeracy and literacy." "Items corrected from acquiesence biais." "NEEMSIS-1 (2016-17) & NEEMSIS-2 (2020-21).", size(tiny))
-graph save "Kernel_PTCS.gph", replace
-graph export "Kernel_PTCS.pdf", as(pdf) replace
+*grc1leg f_OP f_CO f_EX f_AG f_ES f1 f2 f3 f5 f_rav f_num f_lit, cols(5) holes(10) leg(f_OP) note("Kernel: Epanechnikov" "Bandwidth: 0.25 for factors; 0.35 for Big-5; 0.50 for raven, numeracy and literacy." "Items corrected from acquiesence biais." "NEEMSIS-1 (2016-17) & NEEMSIS-2 (2020-21).", size(tiny))
+
+grc1leg f1 f2 f3 f5 f_rav f_num f_lit, cols(4) leg(f1) note("Kernel: Epanechnikov" "Bandwidth: 0.25 for factors; 0.50 for raven, numeracy and literacy." "Items corrected from acquiesence biais." "NEEMSIS-1 (2016-17).", size(tiny))
+
+
+graph save "Kernel_PTCS_beamer.gph", replace
+graph export "Kernel_PTCS_beamer.pdf", as(pdf) replace
 set graph on
 */
 
