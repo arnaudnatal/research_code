@@ -376,161 +376,79 @@ qui margins, dydx(base_f1_std base_f2_std base_f3_std base_f5_std base_raven_tt_
 
 
 
-
-
-
-
-
 ****************************************
-* OLS
+* PROBIT
 ****************************************
-********** Reg RECOURSE
-foreach var in $quanti {
-qui reg `var' indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits, vce(cluster HHFE)
-est store res_1
-
-qui reg `var' indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits $intfem, vce(cluster HHFE)
-est store res_2
-
-qui reg `var' indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits $intdal, vce(cluster HHFE)
-est store res_3
-
-qui reg `var' indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits femXdal $intfem $intdal $three, vce(cluster HHFE)
-est store res_4
-
-esttab res_1 res_2 res_3 res_4 using "_reg.csv", ///
-	cells("b(fmt(2) star)" se(par fmt(2))) ///
-	drop() ///	
-	legend label varlabels(_cons constant) ///
-	stats(N r2 r2_a F p, fmt(0 2 2 2 2) labels(`"Observations"' `"\$R^2$"' `"Adjusted \$R^2$"' `"F-stat"' `"p-value"')) ///
-	starlevels(* 0.10 ** 0.05 *** 0.01) ///
-	replace
-estimates clear
-preserve
-import delimited "_reg.csv", delimiter(",") varnames(nonames) clear
-qui des
-sca def k=r(k)
-forvalues i=1(1)`=scalar(k)'{
-replace v`i'=substr(v`i',3,.)
-replace v`i'=substr(v`i',1,strlen(v`i')-1)
-}
-export excel using "OLS_indebt.xlsx", sheet("`var'", replace)
-restore
-}
 
 
 
 
+********** Macro
+global indivcontrol age_1 agesq_1 dummyhead_1 cat_mainocc_occupation_indiv_1_1 cat_mainocc_occupation_indiv_1_2 cat_mainocc_occupation_indiv_1_4 cat_mainocc_occupation_indiv_1_5 cat_mainocc_occupation_indiv_1_6 cat_mainocc_occupation_indiv_1_7 dummyedulevel maritalstatus2_1
+
+global hhcontrol4 hhsize_1 shock_1 covsell incomeHH1000_1
+
+global villagesFE villageid_2 villageid_3 villageid_4 villageid_5 villageid_6 villageid_7 villageid_8 villageid_9 villageid_10
 
 
 
 
-********** Reg NEGOTIATION
-foreach var in $quantinego {
-qui reg `var' indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits c.share_nb_samesex c.share_nb_samecaste, vce(cluster HHFE)
-est store res_1
-
-qui reg `var' indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits $intfem c.share_nb_samesex c.share_nb_samecaste, vce(cluster HHFE)
-est store res_2
-
-qui reg `var' indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits $intdal c.share_nb_samesex c.share_nb_samecaste, vce(cluster HHFE)
-est store res_3
-
-qui reg `var' indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits femXdal $intfem $intdal $three c.share_nb_samesex c.share_nb_samecaste, vce(cluster HHFE)
-est store res_4
-
-esttab res_1 res_2 res_3 res_4 using "_reg.csv", ///
-	cells("b(fmt(2) star)" se(par fmt(2))) ///
-	drop() ///	
-	legend label varlabels(_cons constant) ///
-	stats(N r2 r2_a F p, fmt(0 2 2 2 2) labels(`"Observations"' `"\$R^2$"' `"Adjusted \$R^2$"' `"F-stat"' `"p-value"')) ///
-	starlevels(* 0.10 ** 0.05 *** 0.01) ///
-	replace
-estimates clear
-preserve
-import delimited "_reg.csv", delimiter(",") varnames(nonames) clear
-qui des
-sca def k=r(k)
-forvalues i=1(1)`=scalar(k)'{
-replace v`i'=substr(v`i',3,.)
-replace v`i'=substr(v`i',1,strlen(v`i')-1)
-}
-export excel using "OLS_indebt.xlsx", sheet("`var'", replace)
-restore
-}
+##i.female##i.dalits
 
 
 
-
-
-
-
-
-
-********** Margins RECOURSE
 cls
-foreach var in $quanti {
-*** No int
-qui reg `var' indebt_indiv_1 $indivcontrol $hhcontrol4 $villagesFE c.base_f1_std c.base_f2_std c.base_f3_std c.base_f5_std c.base_raven_tt_std c.base_num_tt_std c.base_lit_tt_std dalits female, vce(cluster HHFE)
+********** No int
+*** Without
+probit borrowerservices_none indebt_indiv_1 $indivcontrol $hhcontrol4 $villagesFE dalits female c.share_nb_samesex c.share_nb_samecaste c.assets1000_1, vce(cluster HHFE)
 *dy/dx
-qui margins, dydx(base_f1_std base_f2_std base_f3_std base_f5_std base_raven_tt_std base_num_tt_std base_lit_tt_std) atmeans saving(margin_`var'1, replace)
+margins, dydx(assets1000_1) atmeans
 
-*** Female
-qui reg `var' indebt_indiv_1 $indivcontrol $hhcontrol4 $villagesFE c.base_f1_std##i.female c.base_f2_std##i.female c.base_f3_std##i.female c.base_f5_std##i.female c.base_raven_tt_std##i.female c.base_num_tt_std##i.female c.base_lit_tt_std##i.female dalits, vce(cluster HHFE)
+*** With
+probit borrowerservices_none indebt_indiv_1 $indivcontrol $hhcontrol4 $villagesFE c.base_f1_std c.base_f2_std c.base_f3_std c.base_f5_std c.base_raven_tt_std c.base_num_tt_std c.base_lit_tt_std dalits female c.share_nb_samesex c.share_nb_samecaste c.assets1000_1, vce(cluster HHFE)
 *dy/dx
-qui margins, dydx(base_f1_std base_f2_std base_f3_std base_f5_std base_raven_tt_std base_num_tt_std base_lit_tt_std) at(female=(0 1)) atmeans saving(margin_`var'2, replace)
+margins, dydx(assets1000_1) atmeans
 
-*** Dalits
-qui reg `var' indebt_indiv_1 $indivcontrol $hhcontrol4 $villagesFE c.base_f1_std##i.dalits c.base_f2_std##i.dalits c.base_f3_std##i.dalits c.base_f5_std##i.dalits c.base_raven_tt_std##i.dalits c.base_num_tt_std##i.dalits c.base_lit_tt_std##i.dalits female, vce(cluster HHFE)
+
+
+********** Females
+*** Without
+probit borrowerservices_none indebt_indiv_1 $indivcontrol $hhcontrol4 $villagesFE dalits c.share_nb_samesex c.share_nb_samecaste c.assets1000_1##i.female, vce(cluster HHFE)
 *dy/dx
-qui margins, dydx(base_f1_std base_f2_std base_f3_std base_f5_std base_raven_tt_std base_num_tt_std base_lit_tt_std) at(dalits=(0 1)) atmeans saving(margin_`var'3, replace)
+margins, dydx(assets1000_1) at(female=(0 1)) atmeans
 
-*** Three
-qui reg `var' indebt_indiv_1 $indivcontrol $hhcontrol4 $villagesFE c.base_f1_std##i.female##i.dalits c.base_f2_std##i.female##i.dalits c.base_f3_std##i.female##i.dalits c.base_f5_std##i.female##i.dalits c.base_raven_tt_std##i.female##i.dalits c.base_num_tt_std##i.female##i.dalits c.base_lit_tt_std##i.female##i.dalits, vce(cluster HHFE)
+*** With
+probit borrowerservices_none indebt_indiv_1 $indivcontrol $hhcontrol4 $villagesFE c.base_f1_std c.base_f2_std c.base_f3_std c.base_f5_std c.base_raven_tt_std c.base_num_tt_std c.base_lit_tt_std dalits c.share_nb_samesex c.share_nb_samecaste c.assets1000_1##i.female, vce(cluster HHFE)
 *dy/dx
-qui margins, dydx(base_f1_std base_f2_std base_f3_std base_f5_std base_raven_tt_std base_num_tt_std base_lit_tt_std) at(dalits=(0 1) female=(0 1)) atmeans saving(margin_`var'4, replace)
-}
+margins, dydx(assets1000_1) at(female=(0 1)) atmeans
 
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-********** Margins NEGOTIATION
-cls
-foreach var in $quantinego {
-*** No int
-qui reg `var' indebt_indiv_1 $indivcontrol $hhcontrol4 $villagesFE c.base_f1_std c.base_f2_std c.base_f3_std c.base_f5_std c.base_raven_tt_std c.base_num_tt_std c.base_lit_tt_std dalits female c.share_nb_samesex c.share_nb_samecaste, vce(cluster HHFE)
+********** Dalits
+*** Without
+probit borrowerservices_none indebt_indiv_1 $indivcontrol $hhcontrol4 $villagesFE female c.share_nb_samesex c.share_nb_samecaste c.assets1000_1##i.dalits, vce(cluster HHFE)
 *dy/dx
-qui margins, dydx(base_f1_std base_f2_std base_f3_std base_f5_std base_raven_tt_std base_num_tt_std base_lit_tt_std) atmeans saving(margin_`var'1, replace)
+margins, dydx(assets1000_1) at(dalits=(0 1)) atmeans
 
-*** Female
-qui reg `var' indebt_indiv_1 $indivcontrol $hhcontrol4 $villagesFE c.base_f1_std##i.female c.base_f2_std##i.female c.base_f3_std##i.female c.base_f5_std##i.female c.base_raven_tt_std##i.female c.base_num_tt_std##i.female c.base_lit_tt_std##i.female dalits c.share_nb_samesex c.share_nb_samecaste, vce(cluster HHFE)
+*** With
+probit borrowerservices_none indebt_indiv_1 $indivcontrol $hhcontrol4 $villagesFE c.base_f1_std c.base_f2_std c.base_f3_std c.base_f5_std c.base_raven_tt_std c.base_num_tt_std c.base_lit_tt_std female c.share_nb_samesex c.share_nb_samecaste c.assets1000_1##i.dalits, vce(cluster HHFE)
 *dy/dx
-qui margins, dydx(base_f1_std base_f2_std base_f3_std base_f5_std base_raven_tt_std base_num_tt_std base_lit_tt_std) at(female=(0 1)) atmeans saving(margin_`var'2, replace)
+margins, dydx(assets1000_1) at(dalits=(0 1)) atmeans
 
-*** Dalits
-qui reg `var' indebt_indiv_1 $indivcontrol $hhcontrol4 $villagesFE c.base_f1_std##i.dalits c.base_f2_std##i.dalits c.base_f3_std##i.dalits c.base_f5_std##i.dalits c.base_raven_tt_std##i.dalits c.base_num_tt_std##i.dalits c.base_lit_tt_std##i.dalits female c.share_nb_samesex c.share_nb_samecaste, vce(cluster HHFE)
-*dy/dx
-qui margins, dydx(base_f1_std base_f2_std base_f3_std base_f5_std base_raven_tt_std base_num_tt_std base_lit_tt_std) at(dalits=(0 1)) atmeans saving(margin_`var'3, replace)
 
-*** Three
-qui reg `var' indebt_indiv_1 $indivcontrol $hhcontrol4 $villagesFE c.base_f1_std##i.female##i.dalits c.base_f2_std##i.female##i.dalits c.base_f3_std##i.female##i.dalits c.base_f5_std##i.female##i.dalits c.base_raven_tt_std##i.female##i.dalits c.base_num_tt_std##i.female##i.dalits c.base_lit_tt_std##i.female##i.dalits c.share_nb_samesex c.share_nb_samecaste, vce(cluster HHFE)
+
+********** Three
+*** Without
+probit borrowerservices_none indebt_indiv_1 $indivcontrol $hhcontrol4 $villagesFE c.share_nb_samesex c.share_nb_samecaste c.assets1000_1##i.female##i.dalits, vce(cluster HHFE)
 *dy/dx
-qui margins, dydx(base_f1_std base_f2_std base_f3_std base_f5_std base_raven_tt_std base_num_tt_std base_lit_tt_std) at(dalits=(0 1) female=(0 1)) atmeans saving(margin_`var'4, replace)
-}
+margins, dydx(assets1000_1) at(dalits=(0 1) female=(0 1)) atmeans
+
+*** With
+probit borrowerservices_none indebt_indiv_1 $indivcontrol $hhcontrol4 $villagesFE c.base_f1_std c.base_f2_std c.base_f3_std c.base_f5_std c.base_raven_tt_std c.base_num_tt_std c.base_lit_tt_std c.share_nb_samesex c.share_nb_samecaste c.assets1000_1##i.female##i.dalits, vce(cluster HHFE)
+*dy/dx
+margins, dydx(assets1000_1) at(dalits=(0 1) female=(0 1)) atmeans
+
 
 ****************************************
 * END
