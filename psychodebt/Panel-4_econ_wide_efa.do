@@ -237,7 +237,7 @@ restore
 *********** Marges RECOURSE
 foreach x in $quali {
 *** No int
-qui probit `x' indebt_indiv_1 $indivcontrol $hhcontrol4 $villagesFE c.base_f1_std c.base_f2_std c.base_f3_std c.base_f5_std c.base_raven_tt_std c.base_num_tt_std c.base_lit_tt_std dalits female, vce(cluster HHFE)
+probit `x' indebt_indiv_1 $indivcontrol $hhcontrol4 $villagesFE c.base_f1_std c.base_f2_std c.base_f3_std c.base_f5_std c.base_raven_tt_std c.base_num_tt_std c.base_lit_tt_std dalits female, vce(cluster HHFE)
 *dy/dx
 qui margins, dydx(base_f1_std base_f2_std base_f3_std base_f5_std base_raven_tt_std base_num_tt_std base_lit_tt_std) atmeans saving(margin_`x'1, replace)
 
@@ -382,7 +382,6 @@ qui margins, dydx(base_f1_std base_f2_std base_f3_std base_f5_std base_raven_tt_
 
 
 
-
 ********** Macro
 global indivcontrol age_1 agesq_1 dummyhead_1 cat_mainocc_occupation_indiv_1_1 cat_mainocc_occupation_indiv_1_2 cat_mainocc_occupation_indiv_1_4 cat_mainocc_occupation_indiv_1_5 cat_mainocc_occupation_indiv_1_6 cat_mainocc_occupation_indiv_1_7 dummyedulevel maritalstatus2_1
 
@@ -392,47 +391,45 @@ global villagesFE villageid_2 villageid_3 villageid_4 villageid_5 villageid_6 vi
 
 
 
-
-##i.female##i.dalits
-
-
-
 cls
 ********** No int
 *** Without
-probit borrowerservices_none indebt_indiv_1 $indivcontrol $hhcontrol4 $villagesFE dalits female c.share_nb_samesex c.share_nb_samecaste c.assets1000_1, vce(cluster HHFE)
+probit indebt_indiv_2 indebt_indiv_1 $indivcontrol $hhcontrol4 $villagesFE dalits female c.assets1000_1, vce(cluster HHFE)
 *dy/dx
 margins, dydx(assets1000_1) atmeans
 
 *** With
-probit borrowerservices_none indebt_indiv_1 $indivcontrol $hhcontrol4 $villagesFE c.base_f1_std c.base_f2_std c.base_f3_std c.base_f5_std c.base_raven_tt_std c.base_num_tt_std c.base_lit_tt_std dalits female c.share_nb_samesex c.share_nb_samecaste c.assets1000_1, vce(cluster HHFE)
+probit indebt_indiv_2 indebt_indiv_1 $indivcontrol $hhcontrol4 $villagesFE c.base_f1_std c.base_f2_std c.base_f3_std c.base_f5_std c.base_raven_tt_std c.base_num_tt_std c.base_lit_tt_std dalits female  c.assets1000_1, vce(cluster HHFE)
 *dy/dx
 margins, dydx(assets1000_1) atmeans
+
+
+
+
 
 
 
 ********** Females
 *** Without
-probit borrowerservices_none indebt_indiv_1 $indivcontrol $hhcontrol4 $villagesFE dalits c.share_nb_samesex c.share_nb_samecaste c.assets1000_1##i.female, vce(cluster HHFE)
+probit indebt_indiv_2 indebt_indiv_1 $indivcontrol $hhcontrol4 $villagesFE dalits  c.assets1000_1##i.female, vce(cluster HHFE)
 *dy/dx
 margins, dydx(assets1000_1) at(female=(0 1)) atmeans
 
 *** With
-probit borrowerservices_none indebt_indiv_1 $indivcontrol $hhcontrol4 $villagesFE c.base_f1_std c.base_f2_std c.base_f3_std c.base_f5_std c.base_raven_tt_std c.base_num_tt_std c.base_lit_tt_std dalits c.share_nb_samesex c.share_nb_samecaste c.assets1000_1##i.female, vce(cluster HHFE)
+probit indebt_indiv_2 indebt_indiv_1 $indivcontrol $hhcontrol4 $villagesFE c.base_f1_std c.base_f2_std c.base_f3_std c.base_f5_std c.base_raven_tt_std c.base_num_tt_std c.base_lit_tt_std dalits  c.assets1000_1##i.female, vce(cluster HHFE)
 *dy/dx
 margins, dydx(assets1000_1) at(female=(0 1)) atmeans
-
 
 
 
 ********** Dalits
 *** Without
-probit borrowerservices_none indebt_indiv_1 $indivcontrol $hhcontrol4 $villagesFE female c.share_nb_samesex c.share_nb_samecaste c.assets1000_1##i.dalits, vce(cluster HHFE)
+probit indebt_indiv_2 indebt_indiv_1 $indivcontrol $hhcontrol4 $villagesFE female  c.assets1000_1##i.dalits, vce(cluster HHFE)
 *dy/dx
 margins, dydx(assets1000_1) at(dalits=(0 1)) atmeans
 
 *** With
-probit borrowerservices_none indebt_indiv_1 $indivcontrol $hhcontrol4 $villagesFE c.base_f1_std c.base_f2_std c.base_f3_std c.base_f5_std c.base_raven_tt_std c.base_num_tt_std c.base_lit_tt_std female c.share_nb_samesex c.share_nb_samecaste c.assets1000_1##i.dalits, vce(cluster HHFE)
+probit indebt_indiv_2 indebt_indiv_1 $indivcontrol $hhcontrol4 $villagesFE c.base_f1_std c.base_f2_std c.base_f3_std c.base_f5_std c.base_raven_tt_std c.base_num_tt_std c.base_lit_tt_std female  c.assets1000_1##i.dalits, vce(cluster HHFE)
 *dy/dx
 margins, dydx(assets1000_1) at(dalits=(0 1)) atmeans
 
@@ -440,15 +437,14 @@ margins, dydx(assets1000_1) at(dalits=(0 1)) atmeans
 
 ********** Three
 *** Without
-probit borrowerservices_none indebt_indiv_1 $indivcontrol $hhcontrol4 $villagesFE c.share_nb_samesex c.share_nb_samecaste c.assets1000_1##i.female##i.dalits, vce(cluster HHFE)
+probit indebt_indiv_2 indebt_indiv_1 $indivcontrol $hhcontrol4 $villagesFE  c.assets1000_1##i.female##i.dalits, vce(cluster HHFE)
 *dy/dx
 margins, dydx(assets1000_1) at(dalits=(0 1) female=(0 1)) atmeans
 
 *** With
-probit borrowerservices_none indebt_indiv_1 $indivcontrol $hhcontrol4 $villagesFE c.base_f1_std c.base_f2_std c.base_f3_std c.base_f5_std c.base_raven_tt_std c.base_num_tt_std c.base_lit_tt_std c.share_nb_samesex c.share_nb_samecaste c.assets1000_1##i.female##i.dalits, vce(cluster HHFE)
+probit indebt_indiv_2 indebt_indiv_1 $indivcontrol $hhcontrol4 $villagesFE c.base_f1_std c.base_f2_std c.base_f3_std c.base_f5_std c.base_raven_tt_std c.base_num_tt_std c.base_lit_tt_std  c.assets1000_1##i.female##i.dalits, vce(cluster HHFE)
 *dy/dx
 margins, dydx(assets1000_1) at(dalits=(0 1) female=(0 1)) atmeans
-
 
 ****************************************
 * END
