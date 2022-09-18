@@ -89,6 +89,21 @@ margins, dydx(base_f1_std base_f2_std base_f3_std base_f5_std base_raven_tt_std 
 }
 
 
+********** Negotiation
+probit borrowerservices_none indebt_indiv_1 loanamount i.reason_cat $indivcontrol $hhcontrol4 $villagesFE ///
+c.base_f1_std##i.female##i.dalits c.base_f2_std##i.female##i.dalits c.base_f3_std##i.female##i.dalits c.base_f5_std##i.female##i.dalits c.base_raven_tt_std##i.female##i.dalits c.base_num_tt_std##i.female##i.dalits c.base_lit_tt_std##i.female##i.dalits ///
+, vce(cluster HHINDID)
+
+overfit: probit borrowerservices_none indebt_indiv_1 loanamount i.reason_cat $indivcontrol $hhcontrol4 $villagesFE ///
+c.base_f1_std##i.female##i.dalits c.base_f2_std##i.female##i.dalits c.base_f3_std##i.female##i.dalits c.base_f5_std##i.female##i.dalits c.base_raven_tt_std##i.female##i.dalits c.base_num_tt_std##i.female##i.dalits c.base_lit_tt_std##i.female##i.dalits ///
+, vce(cluster HHINDID)
+
+
+
+
+
+
+
 
 ********** Test econo 2
 cls
