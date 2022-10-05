@@ -110,6 +110,13 @@ graph display loanamount_
 ****************************************
 use"panel_v5_wide", clear
 
+keep HHID_panel cat_income caste2010
+tabplot cat_income caste2010, percent(caste2010) showval(format(%3.0f)) frame(100) ///
+xtitle("") ytitle("") ///
+xlab(,ang(0)) ///
+title("") subtitle("") 
+
+
 ********** DEBT, WEALTH, INCOME, EXPENSES PATH over INCOME, WEALTH AND CASTE
 graph drop _all
 global yvar income assetsnl loanamount sum_loans DSR ISR
