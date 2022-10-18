@@ -32,7 +32,7 @@ grstyle set plain, nogrid
 
 ********** Path to folder "data" folder.
 *** PC
-global directory = "C:\Users\Arnaud\Documents\_Thesis\Research-Stability_skills\Analysis"
+global directory = "C:\Users\Arnaud\Documents\MEGA\Thesis\Thesis_Stability\Analysis"
 cd"$directory"
 global git "C:\Users\Arnaud\Documents\GitHub"
 
@@ -458,16 +458,20 @@ label var HHsize "HH size"
 
 ***** Reg
 cls
-foreach x in f1_2016 f2_2016 f3_2016 f4_2016 f5_2016 raven_tt num_tt lit_tt cr_OP cr_CO cr_EX cr_AG cr_ES cr_Grit {
-reg `x' treat $var [pw=weights]
+foreach x in f1_2016 f2_2016 f3_2016 f4_2016 f5_2016 {
+glm `x' treat $var [pw=weights], link(log) family(igaussian)
 est store regpw_`x'
-qui reg `x' treat $var
+qui glm `x' treat $var, link(log) family(igaussian)
 est store reg_`x'
 }
 
+*foreach x in f1_2016 f2_2016 f3_2016 f4_2016 f5_2016 {
+*glm `x' treat $var [pw=weights], link(log) family(igaussian)
+*}
+
 
 ***** Before weighting
-esttab reg_f1_2016 reg_f2_2016 reg_f3_2016 reg_f5_2016 reg_raven_tt reg_num_tt reg_lit_tt using "reg_demo_nopw.tex", replace f ///
+esttab reg_f1_2016 reg_f2_2016 reg_f3_2016 reg_f5_2016 using "reg_demo_nopw.tex", replace f ///
 	label booktabs b(3) p(3) eqlabels(none) alignment(S) collabels("\multicolumn{1}{c}{$\beta$ / Std. Err.}") ///
 	drop(_cons $var) ///
 	star(* 0.10 ** 0.05 *** 0.01) ///
@@ -477,7 +481,7 @@ esttab reg_f1_2016 reg_f2_2016 reg_f3_2016 reg_f5_2016 reg_raven_tt reg_num_tt r
 
 
 ***** After weighting
-esttab regpw_f1_2016 regpw_f2_2016 regpw_f3_2016 regpw_f5_2016 regpw_raven_tt regpw_num_tt regpw_lit_tt using "reg_demo_pw.tex", replace f ///
+esttab regpw_f1_2016 regpw_f2_2016 regpw_f3_2016 regpw_f5_2016 using "reg_demo_pw.tex", replace f ///
 	label booktabs b(3) p(3) eqlabels(none) alignment(S) collabels("\multicolumn{1}{c}{$\beta$ / Std. Err.}") ///
 	drop(_cons $var) ///
 	star(* 0.10 ** 0.05 *** 0.01) ///
