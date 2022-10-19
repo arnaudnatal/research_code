@@ -1,41 +1,14 @@
+*-------------------------
 cls
-
-/*
--------------------------
-Arnaud Natal
-arnaud.natal@u-bordeaux.fr
-October 25, 2021
------
-Stability over time of personality traits
------
-
--------------------------
-*/
-
-
-****************************************
-* INITIALIZATION
-****************************************
-clear all
-macro drop _all
-set scheme plotplain
-
-********** Path to folder "data" folder.
-*** PC
-global directory = "C:\Users\Arnaud\Documents\_Thesis\Research-Stability_skills\Analysis"
-cd"$directory"
-global git "C:\Users\Arnaud\Documents\GitHub"
-
-*** Fac
-*global directory = "C:\Users\anatal\Downloads\_Thesis\Research-Stability_skills\Analysis"
-*cd "$directory"
-*global git "C:\Users\anatal\Downloads\GitHub"
-
-********** Name of the NEEMSIS2 questionnaire version to clean
-global wave2 "NEEMSIS1-HH"
-global wave3 "NEEMSIS2-HH"
-****************************************
-* END
+*Arnaud NATAL
+*arnaud.natal@u-bordeaux.fr
+*April 23, 2021
+*-----
+gl link = "stabpsycho"
+*Stab
+*-----
+do "https://raw.githubusercontent.com/arnaudnatal/folderanalysis/main/$link.do"
+*-------------------------
 
 
 
@@ -462,6 +435,7 @@ ta abs_diff_fa_ES_cat10_cont_dec
 ta abs_diff_fa_ES_cat10_cont_inc
 
 
+/*
 ********** Qreg diff
 sqreg abs_diff_fa_ES female caste_2 caste_3 educode_2 educode_3 educode_4 age_cat_1 age_cat_3 age_cat_4 age_cat_5 moc_indiv_1 moc_indiv_2 moc_indiv_4 moc_indiv_5 moc_indiv_6 moc_indiv_7 moc_indiv_8 marital annualincome_indiv2016_q_2 annualincome_indiv2016_q_3 dummydemonetisation2016 covsellland2020, quantile(.1 .2 .3 .4 .5 .6 .7 .8 .9) reps(100)
 

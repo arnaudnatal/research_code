@@ -1,55 +1,16 @@
+*-------------------------
 cls
-
-/*
--------------------------
-Arnaud Natal
-arnaud.natal@u-bordeaux.fr
-October 1, 2021
------
-Stability over time of personality traits: merging des bases
------
-
--------------------------
-*/
+*Arnaud NATAL
+*arnaud.natal@u-bordeaux.fr
+*April 23, 2021
+*-----
+gl link = "stabpsycho"
+*Stab
+*-----
+do "https://raw.githubusercontent.com/arnaudnatal/folderanalysis/main/$link.do"
+*-------------------------
 
 
-****************************************
-* INITIALIZATION
-****************************************
-clear all
-macro drop _all
-set scheme plotplain
-
-********** Path to folder "data" folder.
-*** PC
-global directory = "C:\Users\Arnaud\Documents\_Thesis\Research-Stability_skills\Analysis"
-cd"$directory"
-global git "C:\Users\Arnaud\Documents\GitHub"
-
-*** Fac
-*global directory = "C:\Users\anatal\Downloads\_Thesis\Research-Stability_skills\Analysis"
-*cd "$directory"
-*global git "C:\Users\anatal\Downloads\GitHub"
-
-********** Name of the NEEMSIS2 questionnaire version to clean
-global wave2 "NEEMSIS1-HH"
-global wave3 "NEEMSIS2-HH"
-****************************************
-* END
-
-
-
-
-/*
-Commencer par aborder le questionnaire
-Puis la méthode de correction du biais d'acquiesement
-Ca marche super bien pour 2016, mais pas pour 2020
-Sauf pour ES, donc ES on va pouvoir regarder la stabilité dans le temps en corr
-Pq est-ce que le biais est fort ? Enquêteur ? Caste ? Sexe ? Age ? Education ? Proximité au choc ?
-
-
-Regarder stabilité
-*/
 
 
 

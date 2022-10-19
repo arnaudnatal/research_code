@@ -1,56 +1,14 @@
+*-------------------------
 cls
-
-/*
--------------------------
-Arnaud Natal
-arnaud.natal@u-bordeaux.fr
-March 30, 2022
------
-Stability over time of personality traits
------
-
--------------------------
-*/
-
-
-
-
-
-****************************************
-* INITIALIZATION
-****************************************
-*clear all
-macro drop _all
-
-* Scheme
-*net install schemepack, from("https://raw.githubusercontent.com/asjadnaqvi/Stata-schemes/main/schemes/") replace
-*set scheme white_tableau
-set scheme plotplain
-grstyle init
-grstyle set plain, nogrid
-
-
-********** Path to folder "data" folder.
-*** PC
-global directory = "C:\Users\Arnaud\Documents\MEGA\Thesis\Thesis_Stability\Analysis"
-cd"$directory"
-global git "C:\Users\Arnaud\Documents\GitHub"
-
-*** Fac
-*global directory = "C:\Users\anatal\Downloads\_Thesis\Research-Stability_skills\Analysis"
-*cd "$directory"
-*global git "C:\Users\anatal\Downloads\GitHub"
-
-********** Name of the NEEMSIS2 questionnaire version to clean
-global wave2 "NEEMSIS1-HH"
-global wave3 "NEEMSIS2-HH"
-****************************************
-* END
-
-
-
-
-
+*Arnaud NATAL
+*arnaud.natal@u-bordeaux.fr
+*April 23, 2021
+*-----
+gl link = "stabpsycho"
+*Stab
+*-----
+do "https://raw.githubusercontent.com/arnaudnatal/folderanalysis/main/$link.do"
+*-------------------------
 
 
 
