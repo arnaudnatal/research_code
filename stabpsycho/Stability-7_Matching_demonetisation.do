@@ -469,6 +469,9 @@ est store reg_`x'
 *glm `x' treat $var [pw=weights], link(log) family(igaussian)
 *}
 
+esttab regpw_f1_2016 regpw_f2_2016 regpw_f3_2016 regpw_f5_2016
+
+
 
 ***** Before weighting
 esttab reg_f1_2016 reg_f2_2016 reg_f3_2016 reg_f5_2016 using "reg_demo_nopw.tex", replace f ///

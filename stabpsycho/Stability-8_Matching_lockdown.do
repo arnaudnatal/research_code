@@ -16,13 +16,11 @@ Stability over time of personality traits
 
 
 
-
 ****************************************
 * INITIALIZATION
 ****************************************
 *clear all
 macro drop _all
-
 
 * Scheme
 *net install schemepack, from("https://raw.githubusercontent.com/asjadnaqvi/Stata-schemes/main/schemes/") replace
@@ -31,12 +29,10 @@ set scheme plotplain
 grstyle init
 grstyle set plain, nogrid
 
-*set scheme black_tableau
-*set scheme swift_red
 
 ********** Path to folder "data" folder.
 *** PC
-global directory = "C:\Users\Arnaud\Documents\_Thesis\Research-Stability_skills\Analysis"
+global directory = "C:\Users\Arnaud\Documents\MEGA\Thesis\Thesis_Stability\Analysis"
 cd"$directory"
 global git "C:\Users\Arnaud\Documents\GitHub"
 
@@ -50,6 +46,7 @@ global wave2 "NEEMSIS1-HH"
 global wave3 "NEEMSIS2-HH"
 ****************************************
 * END
+
 
 
 
@@ -543,17 +540,21 @@ label var maritalstatus_4 "MS: Divorce/separated"
 label var annualincome_indiv "Income"
 label var HHsize "HH size"
 
+replace f1_2020=0.01 if f1_2020>0
 cls
-foreach x in f1_2020 f2_2020 f3_2020 f4_2020 f5_2020 raven_tt num_tt lit_tt cr_OP cr_CO cr_EX cr_AG cr_ES cr_Grit locus {
-reg `x' treat $var [pw=weights]
+foreach x in f1_2020 locus {
+glm `x' treat $var [pw=weights], link(log) family(igaussian)
 est store regpw_`x'
-qui reg `x' treat $var
+qui glm `x' treat $var, link(log) family(igaussian)
 est store reg_`x'
 }
 
+esttab regpw_f1_2020 regpw_locus
+
+
 
 ***** Before weighting
-esttab reg_f1_2020 reg_raven_tt reg_num_tt reg_lit_tt reg_locus using "reg_lock_nopw.tex", replace f ///
+esttab reg_f1_2020 reg_locus using "reg_lock_nopw.tex", replace f ///
 	label booktabs b(3) p(3) eqlabels(none) alignment(S) collabels("\multicolumn{1}{c}{$\beta$ / Std. Err.}") ///
 	drop(_cons $var) ///
 	star(* 0.10 ** 0.05 *** 0.01) ///
@@ -562,7 +563,7 @@ esttab reg_f1_2020 reg_raven_tt reg_num_tt reg_lit_tt reg_locus using "reg_lock_
 	stats(N r2 r2_a F p, fmt(0 2 2 2) layout("\multicolumn{1}{c}{@}" "\multicolumn{1}{S}{@}" "\multicolumn{1}{S}{@}" "\multicolumn{1}{S}{@}" "\multicolumn{1}{S}{@}") labels(`"Observations"' `"\(R^{2}\)"' `"Adjusted \(R^{2}\)"' `"F-stat"' `"p-value"'))
 
 ***** After weighting
-esttab regpw_f1_2020 regpw_raven_tt regpw_num_tt regpw_lit_tt regpw_locus using "reg_lock_pw.tex", replace f ///
+esttab regpw_f1_2020 regpw_locus using "reg_lock_pw.tex", replace f ///
 	label booktabs b(3) p(3) eqlabels(none) alignment(S) collabels("\multicolumn{1}{c}{$\beta$ / Std. Err.}") ///
 	drop(_cons $var) ///
 	star(* 0.10 ** 0.05 *** 0.01) ///
