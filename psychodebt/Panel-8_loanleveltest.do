@@ -13,17 +13,11 @@ do "https://raw.githubusercontent.com/arnaudnatal/folderanalysis/main/$link.do"
 
 
 
-
-
-
-
-
 ****************************************
 * Loandata base
 ****************************************
 
-
-********** Macro
+********** Macro for merging
 global intfem fem_base_f1_std fem_base_f2_std fem_base_f3_std fem_base_f5_std fem_base_raven_tt_std fem_base_lit_tt_std fem_base_num_tt_std
 
 global intdal dal_base_f1_std dal_base_f2_std dal_base_f3_std dal_base_f5_std dal_base_raven_tt_std dal_base_lit_tt_std dal_base_num_tt_std
@@ -42,42 +36,140 @@ global villagesFE villageid_2 villageid_3 villageid_4 villageid_5 villageid_6 vi
 
 
 
-
+********** Open loan database
 use"NEEMSIS2-newloans_v5.dta", clear
 
-drop version_HH sex caste jatis edulevel egoid loan_database borrowerid year
+drop version_HH sex caste jatis edulevel egoid borrowerid year
 
+
+********** Merge Control var and PTCS
 merge m:1 HHID_panel INDID_panel using "panel_wide_v4", keepusing($intfem $intdal $three $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalit femXdal indebt_indiv_1)
 
 keep if _merge==3
 drop _merge
 
-preserve
-duplicates drop HHID_panel INDID_panel, force
-ta HHID_panel
-restore
 
+********** Check nb of obs
+bysort HHID_panel INDID_panel: gen count=_n
+replace count=. if count>1
+ta count
+drop count
+
+bysort HHID_panel: gen count=_n
+replace count=. if count>1
+ta count
+drop count
+
+
+save"NEEMSIS2-loans_PTCS_v1.dta", replace
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Loandata base --> keep informal loans and new var
+****************************************
+use"NEEMSIS2-loans_PTCS_v1.dta", clear
+
+
+********** Informal loan
+fre loanlender
+fre lender_cat
+ta loanlender loan_database, m
+*replace loanlender=6 if loanlender==. & loan_database=="GOLD"
+
+fre lender4
+ta lender4 loan_database, m
+*replace lender4=5 if lender4==. & loan_database=="GOLD"
+
+tab loanlender lender_cat
+tab lender4 lender_cat
+
+drop if lender_cat==3
+
+
+********** HHINDID unique
 egen HHINDID_panel=concat(HHID_panel INDID_panel), p(/)
 fre HHINDID_panel
 encode HHINDID_panel, gen(HHINDID)
 
 
-********** Sex, caste
+
+********** Charact of the lender: is the same caste? same sex?
 gen dummyssex=0
 replace dummyssex=1 if lendersex==1 & female==0
 replace dummyssex=1 if lendersex==2 & female==1
 
 gen dummyscaste=0
-replace dummyscaste=1
-
-tab loanlender lender_cat
-
-drop if lender_cat==3
+replace dummyscaste=1 if 
 
 
 
+********** Test effectif
+fre borrowerservices_none
+fre dummyproblemtorepay
 
-********** Test econo 1
+ta borrowerservices_none loan_database, m
+
+drop if borrowerservices_none==.
+
+fre borrowerservices_none
+fre dummyproblemtorepay
+
+
+save"NEEMSIS2-loans_PTCS_v2.dta", replace
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+****************************************
+* ECONO
+****************************************
+use"NEEMSIS2-loans_PTCS_v2.dta", clear
+
+
+
+********** XT
+xtset HHINDID
+
+xtprobit borrowerservices_none base_f1_std base_f2_std base_f3_std base_f5_std base_raven_tt_std base_num_tt_std base_lit_tt_std dummyscaste female age_1 indebt_indiv_1 dummyedulevel cat_mainocc_occupation_indiv_1_1 cat_mainocc_occupation_indiv_1_2 cat_mainocc_occupation_indiv_1_4 cat_mainocc_occupation_indiv_1_5 cat_mainocc_occupation_indiv_1_6 cat_mainocc_occupation_indiv_1_7 dummyhead_1 maritalstatus2_1  dummyssex loanamount hhsize_1 shock_1 villageid_2 villageid_3 villageid_4 villageid_5 villageid_6 villageid_7 villageid_8 villageid_9 villageid_10 assets1000_1 incomeHH1000_1 dalits, vce(cluster HHID_panel)
+
+
+
+
+********** Probit
+probit borrowerservices_none base_f1_std base_f2_std base_f3_std base_f5_std base_raven_tt_std base_num_tt_std base_lit_tt_std dummyscaste female age_1 indebt_indiv_1 dummyedulevel cat_mainocc_occupation_indiv_1_1 cat_mainocc_occupation_indiv_1_2 cat_mainocc_occupation_indiv_1_4 cat_mainocc_occupation_indiv_1_5 cat_mainocc_occupation_indiv_1_6 cat_mainocc_occupation_indiv_1_7 dummyhead_1 maritalstatus2_1  dummyssex loanamount hhsize_1 shock_1 villageid_2 villageid_3 villageid_4 villageid_5 villageid_6 villageid_7 villageid_8 villageid_9 villageid_10 assets1000_1 incomeHH1000_1 dalits, vce(cluster HHINDID)
+
+
+
+
+
+
+********** Multilevel model
+meprobit borrowerservices_none dummyssex loanamount || HHINDID_panel: base_f1_std base_f2_std base_f3_std base_f5_std base_raven_tt_std base_num_tt_std base_lit_tt_std dummyscaste female age_1 indebt_indiv_1 dummyedulevel cat_mainocc_occupation_indiv_1_1 cat_mainocc_occupation_indiv_1_2 cat_mainocc_occupation_indiv_1_4 cat_mainocc_occupation_indiv_1_5 cat_mainocc_occupation_indiv_1_6 cat_mainocc_occupation_indiv_1_7 dummyhead_1 maritalstatus2_1
+
+
+
+
+
 cls
 foreach x in otherlenderservices_none borrowerservices_none dummyproblemtorepay dummyhelptosettleloan guarantee_none {
 
@@ -118,8 +210,6 @@ margins, dydx(base_f1_std base_f2_std base_f3_std base_f5_std base_raven_tt_std 
 }
 }
 }
-
-
 
 
 ****************************************
