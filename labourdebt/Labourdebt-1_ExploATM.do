@@ -112,6 +112,14 @@ Total                           |       2696     100.00
 
 * NEEMSIS-2
 use"NEEMSIS2-HH", clear
+
+preserve
+keep HHID2020 villageid caste compensation compensationamount
+duplicates drop
+ta caste compensation, col nofreq
+ta villageid compensation, col nofreq
+ta compensationamount
+restore
 count if marriagedowry!=.
 /*
 176 marriages
@@ -145,6 +153,243 @@ Total         |       3647     100.00
 * END
 
 
+/*
+Debt can be bad if it is costly, such as when exorbitant interest rates are charged or if it is risky, such as when one risks losing one's land documents or gold. 
+It can be bad when it threatens one's freedom of labour, as in situations of debt bondage, or when one's status and dignity are at risk, such as when moneylenders shout at your door. 
+Or, it can simply be bad because one no longer has the earning capacity to repay and risks sliding into deeper debt, exposing borrowers to various forms of exploitation and humiliation. 
+Loans that push one into ‘too much’ debt, or as one informant put it ‘that submerge you,’ are seen as highly problematic.
+
+- exorbitant interest rates
+- risk losing one's land documents or gold
+- threatens one's freedom of labour
+- moneylenders shout at your door
+- sliding into deeper debt
+
+Good debt, by contrast, is debt that is cheap, or at least more affordable, not socially debasing and that might even enhance one's status within the family or wider community. 
+Good debt allows one to invest in the future, through marriages, education or house building, and can be both status enhancing and productive in the long run. 
+As Guérin writes, unless debts become unmanageable, being in debt itself ‘is not a symptom of poor management or financial illiteracy but a sign of responsibility’ (2014, p. S44). 
+Indeed, rather than being frowned upon, getting into debt can be morally accepted and even valued, such as when you borrow to contribute to ceremonial exchanges (seeru), help with family emergencies, invest in education, or spend on children's marriages.
+Women's borrowing to buy gold for their daughters, for example, is widely valued as an honourable and responsible thing to do.
+
+- cheap
+- enhance one's status within the family of wider community
+- housing
+- ceremonial exchanges
+- family emergencies
+- invest in education
+- marriage
+- buy gold
+
+*/
+
+
+
+
+****************************************
+* Good debt / Bad debt with NEEMSIS-1
+****************************************
+use"NEEMSIS1-loans_mainloans_new", clear
+gen dummymainloan=0
+replace dummymainloan=1 if lendername!=""
+ta dummymainloan // 1091
+
+* Keep ML
+keep if dummymainloan==1
+
+
+* Type of loans
+ta loanreasongiven
+ta lender4
+ta loanlender
+
+
+***** Bad debt
+/*
+- exorbitant interest rates
+- risk losing one's land documents or gold
+- threatens one's freedom of labour
+- moneylenders shout at your door
+- sliding into deeper debt
+*/
+* Losing land documents or gold
+fre plantorep_asse
+fre settlestrat_sell
+fre prodpledge_land
+*fre prodpledge_gold  // 99% des prêts sont concernés, conditions trop simple à remplir pour être considérer comme mauvais je pense
+*fre guarantee_doc guarantee_jewe
+
+* Threathens one's freedom of labour
+fre borrservices_work
+fre plantorep_migr
+
+* Moneyleders shout at your door
+fre problemdelayrepayment
+gen pbrep_noth=0
+gen pbrep_shou=0
+gen pbrep_pres=0
+gen pbrep_comp=0
+gen pbrep_info=0
+gen pbrep_othe=0
+replace pbrep_noth=1 if strpos(problemdelayrepayment,"1")
+replace pbrep_shou=1 if strpos(problemdelayrepayment,"2")
+replace pbrep_pres=1 if strpos(problemdelayrepayment,"3")
+replace pbrep_comp=1 if strpos(problemdelayrepayment,"4")
+replace pbrep_info=1 if strpos(problemdelayrepayment,"5")
+replace pbrep_othe=1 if strpos(problemdelayrepayment,"77")
+
+fre pbrep_shou pbrep_pres pbrep_info
+
+* Sliding into deeper debt
+fre given_repa
+fre effective_repa 
+
+
+*** Sum
+egen nbptbad=rowtotal(plantorep_asse settlestrat_sell prodpledge_land borrservices_work plantorep_migr pbrep_shou pbrep_pres pbrep_info given_repa effective_repa)
+gen dummybad=0
+replace dummybad=1 if nbptbad>0
+fre dummybad
+
+
+***** Good debt
+/*
+- cheap
+- enhance one's status within the family of wider community
+- housing
+- ceremonial exchanges
+- family emergencies
+- invest in education
+- marriage
+- buy gold
+*/
+* Ceremonial
+fre given_cere 
+fre given_deat
+fre effective_cere
+fre effective_deat
+
+* Housing
+fre given_hous 
+fre effective_hous  
+
+* Family emergencies
+fre given_rela 
+fre effective_rela  
+
+* Education
+fre given_educ
+fre effective_educ 
+
+* Marriage
+fre given_marr
+fre effective_marr
+
+*** Sum
+egen nbptgood=rowtotal(given_cere given_deat effective_cere effective_deat given_hous effective_hous given_rela effective_rela given_educ effective_educ given_marr effective_marr)
+gen dummygood=0
+replace dummygood=1 if nbptgood>0
+fre dummygood
+
+
+***** Cross
+ta dummygood dummybad, cell nofreq
+
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+****************************************
+* Prêts
+****************************************
+use"RUME-loans_mainloans_new", clear
+
+keep HHID2010 year loanid loanlender loanreasongiven lender4 reason_cat loansettled
+foreach x in loanreasongiven loanlender reason_cat lender4 {
+decode `x', gen(`x'_str)
+drop `x'
+rename `x'_str `x'
+}
+
+
+*** 2016-17
+preserve
+use"NEEMSIS1-loans_mainloans_new", clear
+
+keep HHID2016 INDID2016 year loanid loanlender loanreasongiven lender4 reason_cat loan_database loansettled
+foreach x in loanreasongiven loanlender reason_cat lender4 {
+decode `x', gen(`x'_str)
+drop `x'
+rename `x'_str `x'
+}
+tostring loanid, replace
+save"temp_NEEMSIS1-loans", replace
+restore
+
+
+*** 2020-21
+preserve
+use"NEEMSIS2-loans_mainloans_new", clear
+
+keep HHID2020 INDID2020 year loanid loanlender loanreasongiven lender4 reason_cat loan_database loansettled
+foreach x in loanreasongiven loanlender reason_cat lender4 {
+decode `x', gen(`x'_str)
+drop `x'
+rename `x'_str `x'
+}
+tostring loanid, replace
+save"temp_NEEMSIS2-loans", replace
+restore
+
+
+append using "temp_NEEMSIS1-loans"
+append using "temp_NEEMSIS2-loans"
+
+
+* Clean
+drop years_diff
+recode year (.=2020)
+gen HHID=""
+replace HHID=HHID2010 if year==2010
+replace HHID=HHID2016 if year==2016
+replace HHID=HHID2020 if year==2020
+drop HHID2010 HHID2016 HHID2020
+
+gen INDID=.
+replace INDID=INDID2016 if year==2016
+replace INDID=INDID2020 if year==2020
+drop INDID2016 INDID2020
+
+order HHID INDID year loan_database loanid
+
+fre loanreasongiven
+replace loanreasongiven="Family" if loanreasongiven=="Family expenses"
+replace loanreasongiven="Health" if loanreasongiven=="Health expenses"
+replace loanreasongiven="Ceremonies" if loanreasongiven=="Death"
+drop if loanreasongiven=="No reason"
+drop if loanreasongiven=="Other"
+
+fre loanlender
+replace loanlender="Finance" if loanlender=="Finance (moneylenders)"
+replace loanlender="Pawn Broker" if loanlender=="Pawn broker"
+replace loanlender="Sugar mill loan" if loanlender=="Sugar mills loan"
+
+
+* Cross table
+ta lender4 reason_cat
+ta lender4 loanreasongiven
+ta loanlender loanreasongiven
+
+****************************************
+* END
+
+/*
 
 
 
@@ -155,6 +400,27 @@ Total         |       3647     100.00
 
 
 
+
+
+
+
+* NEEMSIS-1
+use"NEEMSIS1-loans_mainloans", clear
+
+
+loanproductpledge
+
+
+
+* NEEMSIS-2
+use"NEEMSIS2-loans_mainloans", clear
+
+
+
+
+
+****************************************
+* END
 
 
 
@@ -275,9 +541,6 @@ box(barw(0.2))  pctile(90) ///
 ms(oh) msize(small) mc(black%30) ///
 xmtick() xtitle("") ///
 ytitle("Debt measure") xlabel(0 "No marriage" 1 "Marriage",angle(0))
-
-
-
 
 ****************************************
 * END
