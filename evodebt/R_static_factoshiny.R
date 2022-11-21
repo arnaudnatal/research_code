@@ -56,3 +56,9 @@ table(vulnerable$clust)
 
 write.csv(data,"shortdebttrend_v2.csv")
 #write.csv(inertia,"inertia.csv")
+
+
+
+
+mcacoord<-res.MCA$ind
+data<-cbind(data,mcacoord)
