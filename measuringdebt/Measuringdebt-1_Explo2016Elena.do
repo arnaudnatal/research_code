@@ -51,6 +51,8 @@ loandurati~h |      1697  53.56369  55.08383        17  35.66667  69.66666
 
 
 
+use"RUME-loans_mainloans", clear
+
 
 
 
@@ -107,12 +109,12 @@ dis 6*100/492
 
 
 ***** Debt trap
-ta nbHH_given_repa
-dis 100-83.57
-
 ta dumHH_given_repa
-ta nbHH_effective_repa
+ta nbHH_given_repa
+
 ta dumHH_effective_repa
+ta nbHH_effective_repa
+
 
 tabstat totHH_givenamt_repa, stat(n mean sd min max q)
 
