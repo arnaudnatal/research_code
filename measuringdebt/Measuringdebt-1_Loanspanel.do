@@ -139,6 +139,40 @@ use "temp_NEEMSIS2loanpanel", clear
 append using "temp_NEEMSIS1loanpanel"
 append using "temp_RUMEloanpanel"
 
+
+fre loanreasongiven
+codebook loanreasongiven
+label define loanreasongiven 1"agri" 2"fami" 3"heal" 4"repa" 5"hous" 6"inve" 7"cere" 8"marr" 9"educ" 10"rela" 11"deat" 12"nore" 77"othe", modify
+fre loanreasongive
+
+fre loanlender
+codebook loanlender
+label define loanlender 1"wkp" 2"rela" 3"empl" 4"mais" 5"coll" 6"pawn" 7"shop" 8"fina" 9"frie" 10"shg" 11"bank" 12"coop" 13"suga" 14"grou" 15"than", modify
+
+fre loaneffectivereason
+codebook loaneffectivereason
+label define goldreasonpledgemain 1"wkp" 2"rela" 3"empl" 4"mais" 5"coll" 6"pawn" 7"shop" 8"fina" 9"frie" 10"shg" 11"bank" 12"coop" 13"suga" 14"grou" 15"than", modify
+
+fre reason_cat
+codebook reason_cat
+label define reason_cat 1"econ" 2"curr" 3"huma" 4"soci" 5"hous" 6"nore" 77"othe", modify
+
+fre lender4
+codebook lender4
+label define lender3 1"wkp" 2"rela" 3"labo" 4"pawn" 5"shop" 6"mone" 7"frie" 8"micr" 9"bank" 10"than", modify
+
+fre lender_cat
+codebook lender_cat
+label define lender_cat 1"info" 2"semi" 3"form", modify
+
+compress
+
+/*
+ATTENTION, REMPLACER CE QUI VA SUIVRE DANS LES .do DE GITHUB QUI FABRIQUENT LES VAR IMPT
+*/
+
+replace imp1_interest_service=imp1_debt_service if imp1_interest_service>imp1_debt_service
+
 save"panel_loans", replace
 
 
