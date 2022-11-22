@@ -286,6 +286,10 @@ save"temp_NEEMSIS2", replace
 
 
 
+
+
+
+
 ****************************************
 * Panel and construction
 ****************************************
@@ -325,6 +329,10 @@ sort HHID_panel year
 save"panel_HH", replace
 ****************************************
 * END
+
+
+
+
 
 
 
