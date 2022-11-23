@@ -19,21 +19,36 @@ do "https://raw.githubusercontent.com/arnaudnatal/folderanalysis/main/$link.do"
 use"panel_HH", clear
 
 
-* Debt
-tabstat dsr isr dar, stat(n mean sd min max q) by(year)
-
-
-* Debt trap
-ta dumHH_given_repa year, col
-ta dumHH_effective_repa year, col
 /*
-I think it is better to use given as it is for all loans for all years
-(effective only for ML in 2010)
+DSR = service  / annual income --> burden of debt
+ISR = interest / annual income -->
+DIR = amount   / annual income -->
+DAR = amount   / assets --------->
+TDR = bad debt / amount ---------> share of bad debt as debt is not necessary bad
+FM  = Rest of liquid wealth after debt payment and consumption
 */
 
-tabstat dsr isr dar tdr tar if year==2010, stat(n mean cv q) by(dumHH_given_repa) long
-tabstat dsr isr dar tdr tar if year==2016, stat(n mean cv q) by(dumHH_given_repa) long
-tabstat dsr isr dar tdr tar if year==2020, stat(n mean cv q) by(dumHH_given_repa) long
+
+
+
+
+* Monetary indicators
+tabstat annualincome_HH assets annualexpenses loanamount_HH imp1_ds_tot_HH imp1_is_tot_HH totHH_givenamt_repa, stat(n q) by(year) long
+
+tabstat annualincome_HH assets annualexpenses loanamount_HH imp1_ds_tot_HH imp1_is_tot_HH totHH_givenamt_repa if year==2010, stat(n q) by(caste) long
+tabstat annualincome_HH assets annualexpenses loanamount_HH imp1_ds_tot_HH imp1_is_tot_HH totHH_givenamt_repa if year==2016, stat(n q) by(caste) long
+tabstat annualincome_HH assets annualexpenses loanamount_HH imp1_ds_tot_HH imp1_is_tot_HH totHH_givenamt_repa if year==2020, stat(n q) by(caste) long
+
+
+
+
+
+* Debt indicators
+tabstat dsr isr dar dir tdr tar fm if year==2010, stat(n q) by(caste) long
+tabstat dsr isr dar dir tdr tar fm if year==2016, stat(n q) by(caste) long
+tabstat dsr isr dar dir tdr tar fm if year==2020, stat(n q) by(caste) long
+
+
 
 ****************************************
 * END
@@ -49,16 +64,6 @@ tabstat dsr isr dar tdr tar if year==2020, stat(n mean cv q) by(dumHH_given_repa
 * Factor analysis 
 ****************************************
 use"panel_HH", clear
-
-
-***** Var to be used
-/*
-DSR = service  / annual income --> burden of debt
-ISR = interest / annual income -->
-DIR = amount   / annual income -->
-DAR = amount   / assets --------->
-TDR = bad debt / amount ---------> share of bad debt as debt is not necessary bad
-*/
 
 
 ***** Correlation

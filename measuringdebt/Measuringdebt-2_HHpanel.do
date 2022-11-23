@@ -85,14 +85,14 @@ foreach x in productexpenses1 productexpenses2 productexpenses3 productexpenses4
 replace `x'=0 if `x'==.
 }
 
-gen annualexpenses1=52*foodexpenses+educationexpenses+healthexpenses+ceremoniesexpenses+deathexpenses
+gen annualexpenses=52*foodexpenses+educationexpenses+healthexpenses+ceremoniesexpenses+deathexpenses
 
-gen annualexpenses2=productexpenses1+productexpenses2+productexpenses3+productexpenses4+productexpenses5+52*foodexpenses+educationexpenses+healthexpenses+ceremoniesexpenses+deathexpenses
 drop productexpenses1 productexpenses2 productexpenses3 productexpenses4 productexpenses5 foodexpenses educationexpenses healthexpenses ceremoniesexpenses deathexpenses
 
 * Gold
+ta goldquantity
+sum goldquantity, det
 gen goldamount=goldquantity*2000
-drop goldquantity
 
 save"temp_RUME", replace
 ****************************************
@@ -174,14 +174,17 @@ foreach x in productexpenses_paddy productexpenses_ragi productexpenses_millets 
 replace `x'=0 if `x'==.
 }
 
-gen annualexpenses1=52*foodexpenses+educationexpenses+healthexpenses+ceremoniesexpenses+deathexpenses+ceremoniesrelativesexpenses+marriageexpenses
+gen annualexpenses=52*foodexpenses+educationexpenses+healthexpenses+ceremoniesexpenses+deathexpenses+ceremoniesrelativesexpenses+marriageexpenses
 
-gen annualexpenses2=productexpenses_paddy+productexpenses_ragi+productexpenses_millets+productexpenses_tapioca+productexpenses_cotton+productexpenses_sugarca+productexpenses_savukku+productexpenses_guava+productexpenses_groundnut+52*foodexpenses+educationexpenses+healthexpenses+ceremoniesexpenses+deathexpenses+ceremoniesrelativesexpenses+marriageexpenses
 drop productexpenses_paddy productexpenses_ragi productexpenses_millets productexpenses_tapioca productexpenses_cotton productexpenses_sugarca productexpenses_savukku productexpenses_guava productexpenses_groundnut foodexpenses educationexpenses healthexpenses ceremoniesexpenses deathexpenses ceremoniesrelativesexpenses marriageexpenses
 
 * Gold
+ta goldquantity
+sum goldquantity, det
+* Correct gold quantity
+replace goldquantity=200 if goldquantity>200
 gen goldamount=goldquantity*2700
-drop goldquantity
+*drop goldquantity
 
 
 
@@ -262,13 +265,16 @@ foreach x in productexpenses_paddy productexpenses_cotton productexpenses_sugarc
 replace `x'=0 if `x'==.
 }
 
-gen annualexpenses1=52*foodexpenses+educationexpenses+healthexpenses+ceremoniesexpenses+deathexpenses+ceremoniesrelativesexpenses+marriageexpenses
+gen annualexpenses=52*foodexpenses+educationexpenses+healthexpenses+ceremoniesexpenses+deathexpenses+ceremoniesrelativesexpenses+marriageexpenses
 
-gen annualexpenses2=productexpenses_paddy+productexpenses_cotton+productexpenses_sugarcane+productexpenses_savukku+productexpenses_guava+productexpenses_groundnut+productexpenses_millets+productexpenses_cashew+productexpenses_other+52*foodexpenses+educationexpenses+healthexpenses+ceremoniesexpenses+deathexpenses+ceremoniesrelativesexpenses+marriageexpenses
 drop productexpenses_paddy productexpenses_cotton productexpenses_sugarcane productexpenses_savukku productexpenses_guava productexpenses_groundnut productexpenses_millets productexpenses_cashew productexpenses_other foodexpenses healthexpenses ceremoniesexpenses ceremoniesrelativesexpenses deathexpenses educationexpenses marriageexpenses
 
 
 * Gold
+ta goldquantity
+sum goldquantity, det
+* Correct gold quantity
+replace goldquantity=200 if goldquantity>200
 gen goldamount=goldquantity*2700
 drop goldquantity
 
@@ -309,7 +315,7 @@ rename castecode caste
 fre caste
 
 *** Deflate and round
-foreach x in loanamount_HH imp1_ds_tot_HH imp1_is_tot_HH totHH_lenderamt_WKP totHH_lenderamt_rela totHH_lenderamt_empl totHH_lenderamt_mais totHH_lenderamt_coll totHH_lenderamt_pawn totHH_lenderamt_shop totHH_lenderamt_fina totHH_lenderamt_frie totHH_lenderamt_SHG totHH_lenderamt_bank totHH_lenderamt_coop totHH_lenderamt_suga totHH_lenderamt_grou totHH_lenderamt_than totHH_lender4amt_WKP totHH_lender4amt_rela totHH_lender4amt_labo totHH_lender4amt_pawn totHH_lender4amt_shop totHH_lender4amt_mone totHH_lender4amt_frie totHH_lender4amt_micr totHH_lender4amt_bank totHH_lender4amt_neig totHH_lendercatamt_info totHH_lendercatamt_semi totHH_lendercatamt_form totHH_givenamt_agri totHH_givenamt_fami totHH_givenamt_heal totHH_givenamt_repa totHH_givenamt_hous totHH_givenamt_inve totHH_givenamt_cere totHH_givenamt_marr totHH_givenamt_educ totHH_givenamt_rela totHH_givenamt_deat totHH_givenamt_nore totHH_givenamt_othe totHH_givencatamt_econ totHH_givencatamt_curr totHH_givencatamt_huma totHH_givencatamt_soci totHH_givencatamt_hous totHH_givencatamt_nore totHH_givencatamt_othe totHH_effectiveamt_agri totHH_effectiveamt_fami totHH_effectiveamt_heal totHH_effectiveamt_repa totHH_effectiveamt_hous totHH_effectiveamt_inve totHH_effectiveamt_cere totHH_effectiveamt_marr totHH_effectiveamt_educ totHH_effectiveamt_rela totHH_effectiveamt_deat totHH_effectiveamt_nore totHH_effectiveamt_othe assets assets_noland assets_noprop assets1000 assets1000_noland assets1000_noprop incomeagri_HH incomenonagri_HH annualincome_HH incagrise_HH incagricasual_HH incnonagricasual_HH incnonagriregnonquali_HH incnonagriregquali_HH incnonagrise_HH incnrega_HH annualexpenses1 annualexpenses2 goldamount remreceived_HH remsent_HH remittnet_HH {
+foreach x in loanamount_HH imp1_ds_tot_HH imp1_is_tot_HH totHH_lenderamt_WKP totHH_lenderamt_rela totHH_lenderamt_empl totHH_lenderamt_mais totHH_lenderamt_coll totHH_lenderamt_pawn totHH_lenderamt_shop totHH_lenderamt_fina totHH_lenderamt_frie totHH_lenderamt_SHG totHH_lenderamt_bank totHH_lenderamt_coop totHH_lenderamt_suga totHH_lenderamt_grou totHH_lenderamt_than totHH_lender4amt_WKP totHH_lender4amt_rela totHH_lender4amt_labo totHH_lender4amt_pawn totHH_lender4amt_shop totHH_lender4amt_mone totHH_lender4amt_frie totHH_lender4amt_micr totHH_lender4amt_bank totHH_lender4amt_neig totHH_lendercatamt_info totHH_lendercatamt_semi totHH_lendercatamt_form totHH_givenamt_agri totHH_givenamt_fami totHH_givenamt_heal totHH_givenamt_repa totHH_givenamt_hous totHH_givenamt_inve totHH_givenamt_cere totHH_givenamt_marr totHH_givenamt_educ totHH_givenamt_rela totHH_givenamt_deat totHH_givenamt_nore totHH_givenamt_othe totHH_givencatamt_econ totHH_givencatamt_curr totHH_givencatamt_huma totHH_givencatamt_soci totHH_givencatamt_hous totHH_givencatamt_nore totHH_givencatamt_othe totHH_effectiveamt_agri totHH_effectiveamt_fami totHH_effectiveamt_heal totHH_effectiveamt_repa totHH_effectiveamt_hous totHH_effectiveamt_inve totHH_effectiveamt_cere totHH_effectiveamt_marr totHH_effectiveamt_educ totHH_effectiveamt_rela totHH_effectiveamt_deat totHH_effectiveamt_nore totHH_effectiveamt_othe assets assets_noland assets_noprop assets1000 assets1000_noland assets1000_noprop incomeagri_HH incomenonagri_HH annualincome_HH incagrise_HH incagricasual_HH incnonagricasual_HH incnonagriregnonquali_HH incnonagriregquali_HH incnonagrise_HH incnrega_HH annualexpenses goldamount remreceived_HH remsent_HH remittnet_HH {
 replace `x'=`x'*(100/158) if year==2016
 replace `x'=`x'*(100/184) if year==2020
 replace `x'=round(`x',1)
@@ -413,7 +419,7 @@ ms(oh) msize(small) mc(black%30)
 
 * FM
 *goldamount
-gen fm=annualincome_HH+remittnet_HH-imp1_ds_tot_HH-annualexpenses2
+gen fm=annualincome_HH+remittnet_HH-imp1_ds_tot_HH-annualexpenses
 replace fm=0 if fm==.
 gen dummyfmpos=0
 replace dummyfmpos=1 if fm>0
@@ -432,7 +438,7 @@ ms(oh) msize(small) mc(black%30)
 
 
 ***** Clean
-foreach x in loanamount_HH annualincome_HH assets imp1_ds_tot_HH imp1_is_tot_HH totHH_givenamt_repa dsr isr dar dir tdr tar fm annualexpenses1 annualexpenses2 remreceived_HH remsent_HH remittnet_HH {
+foreach x in loanamount_HH annualincome_HH assets imp1_ds_tot_HH imp1_is_tot_HH totHH_givenamt_repa dsr isr dar dir tdr tar fm annualexpenses remreceived_HH remsent_HH remittnet_HH {
 egen `x'_std=std(`x')
 gen `x'_cr=`x'^(1/3)
 }
