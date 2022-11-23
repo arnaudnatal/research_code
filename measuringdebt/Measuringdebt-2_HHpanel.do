@@ -206,27 +206,45 @@ replace `x'=round(`x',1)
 *** Construction v1
 * DSR
 tabstat imp1_ds_tot_HH annualincome_HH, stat(min p1 p5 p10 q p90 p95 p99 max)
-* Replace annualincome at 12000 py min
-*replace annualincome_HH=12000 if annualincome_HH<12000
 gen dsr=imp1_ds_tot_HH*100/annualincome_HH
 replace dsr=0 if dsr==.
+tabstat dsr, stat(n mean cv q p90 p95 p99 max)
+ta year if dsr>200
+ta year if dsr>300
+ta year if dsr>400
+replace dsr=400 if dsr>400  // 0.2%, 1%, 3.5%
+
 
 * ISR
 gen isr=imp1_is_tot_HH*100/annualincome_HH
 replace isr=0 if isr==.
+tabstat isr, stat(n mean cv q p90 p95 p99 max)
+ta year if isr>200
+ta year if isr>300
+ta year if isr>400
+replace isr=200 if isr>200  // 0.2%, 1.2%, 2.4%
+
 
 * DAR
 gen dar=loanamount_HH*100/assets
 replace dar=0 if dar==.
+tabstat dar, stat(n mean cv q p90 p95 p99 max)
+ta year if dar>200
+ta year if dar>300
+ta year if dar>400
+replace dar=400 if dar>400  // 0.2%, 3.5%, 0.3%
+
 
 *TDR
 gen tdr=totHH_givenamt_repa*100/loanamount_HH
-gen effectiveTDR=totHH_effectiveamt_repa*100/loanamount_HH
+replace tdr=0 if tdr==.
+tabstat tdr, stat(n mean cv q p90 p95 p99 max)
+
 
 *TAR
 gen tar=totHH_givenamt_repa*100/assets
-gen effectiveTAR=totHH_effectiveamt_repa*100/assets
-
+replace tar=0 if tar==.
+tabstat tar, stat(n mean cv q p90 p95 p99 max)
 
 *** Cube root
 foreach x in dsr isr dar tdr tar {
@@ -237,7 +255,6 @@ tabstat isr isr_cr, stat(cv min p1 p5 p10 q p90 p95 p99 max)
 tabstat dar dar_cr, stat(cv min p1 p5 p10 q p90 p95 p99 max)
 tabstat tdr tdr_cr, stat(cv min p1 p5 p10 q p90 p95 p99 max)
 tabstat tar tar_cr, stat(cv min p1 p5 p10 q p90 p95 p99 max)
-
 
 *** Order
 order HHID_panel year

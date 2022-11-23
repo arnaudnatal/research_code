@@ -60,7 +60,30 @@ foreach x in $var {
 egen `x'_std=std(`x')
 }
 
-pwcorr loanamount_HH annualincome_HH assets imp1_ds_tot_HH imp1_is_tot_HH totHH_givenamt_repa dsr isr dar tdr tar
+graph matrix loanamount_HH annualincome_HH assets imp1_ds_tot_HH imp1_is_tot_HH totHH_givenamt_repa, half
+
+graph matrix dsr isr dar tdr tar, half
+
+***** Mean
+egen meandex1=rowmean(dsr dar tdr)
+egen meandex2=rowmean(dsr dar tar)
+egen meandex3=rowmean(isr dar tdr)
+egen meandex4=rowmean(isr dar tar)
+egen meandex5=rowmean(dsr isr dar tdr)
+egen meandex6=rowmean(dsr isr dar tar)
+egen meandex7=rowmean(dsr isr dar tdr tar)
+
+tabstat meandex*, stat(n mean cv q min max) by(year)
+
+forvalues i=1/7 {
+xtile meandex`i'cat=meandex`i',n(4)
+}
+
+forvalues i=1/7 {
+tabstat loanamount_HH annualincome_HH assets imp1_ds_tot_HH imp1_is_tot_HH totHH_givenamt_repa dsr isr dar tdr tar, stat(n q) by(meandex`i'cat)
+}
+
+
 
 
 ***** FA
@@ -76,8 +99,10 @@ pwcorr loanamount_HH annualincome_HH assets imp1_ds_tot_HH imp1_is_tot_HH totHH_
 ** global varstd isr_std dar_std assets_std tdr_std
 
 *global varstd imp1_ds_tot_HH_std annualincome_HH_std assets_std totHH_givenamt_repa
-global varstd dsr_cr isr_cr dar_cr tdr_cr
+*global varstd dsr_cr isr_cr dar_cr tdr_cr
 *global varstd dsr_cr isr_cr dar_cr tar_cr
+
+global varstd dsr isr dar tdr tar
 
 pwcorr $varstd, star(.05)
 factor $varstd, pcf
