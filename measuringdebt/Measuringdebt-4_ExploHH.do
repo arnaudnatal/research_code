@@ -51,58 +51,63 @@ tabstat dsr isr dar tdr tar if year==2020, stat(n mean cv q) by(dumHH_given_repa
 use"panel_HH", clear
 
 
-pwcorr dsr isr dar tdr tar
+***** Clean
+tabstat dsr_cr isr_cr dar_cr tar_cr tdr_cr, stat(n min max mean sd cv)
 
-pwcorr loanamount_HH annualincome_HH assets imp1_ds_tot_HH imp1_is_tot_HH totHH_givenamt_repa
-
-pwcorr loanamount_HH annualincome_HH assets imp1_ds_tot_HH imp1_is_tot_HH totHH_givenamt_repa dsr isr dar tdr tar
-
-pwcorr dsr dar tar annualincome_HH
-
-***** FA No.1
-global var loanamount_HH annualincome_HH assets imp1_ds_tot_HH imp1_is_tot_HH totHH_givenamt_repa
-
+global var loanamount_HH annualincome_HH assets imp1_ds_tot_HH imp1_is_tot_HH totHH_givenamt_repa dsr isr dar tdr tar
+tabstat $var, stat(n p50 p90 p95 p99 max)
 foreach x in $var {
 egen `x'_std=std(`x')
 }
 
-global varstd loanamount_HH_std annualincome_HH_std assets_std imp1_ds_tot_HH_std imp1_is_tot_HH_std totHH_givenamt_repa_std
+pwcorr loanamount_HH annualincome_HH assets imp1_ds_tot_HH imp1_is_tot_HH totHH_givenamt_repa dsr isr dar tdr tar
 
 
-minap $var
-factor $var, pcf
+***** FA
+
+*global varstd dsr_std dar_std annualincome_HH_std tar_std
+** global varstd isr_std dar_std annualincome_HH_std tar_std
+** global varstd dsr_std dar_std annualincome_HH_std tdr_std
+** global varstd isr_std dar_std annualincome_HH_std tdr_std
+
+*global varstd dsr_std dar_std assets_std tar_std
+** global varstd isr_std dar_std assets_std tar_std
+** global varstd dsr_std dar_std assets_std tdr_std
+** global varstd isr_std dar_std assets_std tdr_std
+
+*global varstd imp1_ds_tot_HH_std annualincome_HH_std assets_std totHH_givenamt_repa
+global varstd dsr_cr isr_cr dar_cr tdr_cr
+*global varstd dsr_cr isr_cr dar_cr tar_cr
+
+pwcorr $varstd, star(.05)
+factor $varstd, pcf
 estat kmo
 rotate, quartimin
-predict fact1 fact2 fact3
+estat rotatecompare
 
-foreach x in fact1 fact2 fact3 {
-qui summ `x'
-gen `x'_std = (`x'-r(min))/(r(max)-r(min))
+predict fact1 fact2
+forvalues i=1/2 {
+qui summ fact`i'
+gen fact`i'_std = (fact`i'-r(min))/(r(max)-r(min))
 }
-
-dis 34.92/79.39
-dis 23.13/79.39
-dis 21.33/79.39
-gen finindex=(fact1_std*0.44)+(fact2_std*0.29)+(fact3_std*0.27)
-
-tabstat finindex, stat(n mean sd q) by(year)
-
-pwcorr finindex $varstd
-
-pwcorr finindex dsr isr dar tdr tar
-
+dis 48/73
+dis 25/73
+gen finindex=(fact1_std*0.66)+(fact2_std*0.34)
+pwcorr finindex $varstd, star(.05)
+pwcorr finindex dsr dar tdr tar, star(.05)
+order HHID_panel year finindex fact*
+sort HHID_panel year
 xtile finindex_cat=finindex, n(4)
-
+tabstat $var, stat(q) by(finindex_cat)
 tabstat dsr isr dar tdr tar, stat(q) by(finindex_cat)
+tabstat finindex, stat(n mean q) by(year)
 
-
-
-
-
-
-
-
-
+graph box annualincome_HH, over(finindex_cat)
+graph box assets, over(finindex_cat)
+graph box loanamount_HH, over(finindex_cat)
+graph box imp1_ds_tot_HH, over(finindex_cat)
+graph box imp1_is_tot_HH, over(finindex_cat)
+graph box totHH_givenamt_repa, over(finindex_cat)
 
 ****************************************
 * END

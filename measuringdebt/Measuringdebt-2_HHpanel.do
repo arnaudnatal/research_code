@@ -196,9 +196,18 @@ use"temp_NEEMSIS2", clear
 append using "temp_NEEMSIS1"
 append using "temp_RUME"
 
+*** Deflate and round
+foreach x in loanamount_HH imp1_ds_tot_HH imp1_is_tot_HH totHH_lenderamt_WKP totHH_lenderamt_rela totHH_lenderamt_empl totHH_lenderamt_mais totHH_lenderamt_coll totHH_lenderamt_pawn totHH_lenderamt_shop totHH_lenderamt_fina totHH_lenderamt_frie totHH_lenderamt_SHG totHH_lenderamt_bank totHH_lenderamt_coop totHH_lenderamt_suga totHH_lenderamt_grou totHH_lenderamt_than totHH_lender4amt_WKP totHH_lender4amt_rela totHH_lender4amt_labo totHH_lender4amt_pawn totHH_lender4amt_shop totHH_lender4amt_mone totHH_lender4amt_frie totHH_lender4amt_micr totHH_lender4amt_bank totHH_lender4amt_neig totHH_lendercatamt_info totHH_lendercatamt_semi totHH_lendercatamt_form totHH_givenamt_agri totHH_givenamt_fami totHH_givenamt_heal totHH_givenamt_repa totHH_givenamt_hous totHH_givenamt_inve totHH_givenamt_cere totHH_givenamt_marr totHH_givenamt_educ totHH_givenamt_rela totHH_givenamt_deat totHH_givenamt_nore totHH_givenamt_othe totHH_givencatamt_econ totHH_givencatamt_curr totHH_givencatamt_huma totHH_givencatamt_soci totHH_givencatamt_hous totHH_givencatamt_nore totHH_givencatamt_othe totHH_effectiveamt_agri totHH_effectiveamt_fami totHH_effectiveamt_heal totHH_effectiveamt_repa totHH_effectiveamt_hous totHH_effectiveamt_inve totHH_effectiveamt_cere totHH_effectiveamt_marr totHH_effectiveamt_educ totHH_effectiveamt_rela totHH_effectiveamt_deat totHH_effectiveamt_nore totHH_effectiveamt_othe assets assets_noland assets_noprop assets1000 assets1000_noland assets1000_noprop incomeagri_HH incomenonagri_HH annualincome_HH incagrise_HH incagricasual_HH incnonagricasual_HH incnonagriregnonquali_HH incnonagriregquali_HH incnonagrise_HH incnrega_HH {
+replace `x'=`x'*(100/158) if year==2016
+replace `x'=`x'*(100/184) if year==2020
+replace `x'=round(`x',1)
+}
 
 *** Construction v1
 * DSR
+tabstat imp1_ds_tot_HH annualincome_HH, stat(min p1 p5 p10 q p90 p95 p99 max)
+* Replace annualincome at 12000 py min
+*replace annualincome_HH=12000 if annualincome_HH<12000
 gen dsr=imp1_ds_tot_HH*100/annualincome_HH
 replace dsr=0 if dsr==.
 
@@ -217,6 +226,17 @@ gen effectiveTDR=totHH_effectiveamt_repa*100/loanamount_HH
 *TAR
 gen tar=totHH_givenamt_repa*100/assets
 gen effectiveTAR=totHH_effectiveamt_repa*100/assets
+
+
+*** Cube root
+foreach x in dsr isr dar tdr tar {
+gen `x'_cr=`x'^(1/3)
+}
+tabstat dsr dsr_cr, stat(cv min p1 p5 p10 q p90 p95 p99 max)
+tabstat isr isr_cr, stat(cv min p1 p5 p10 q p90 p95 p99 max)
+tabstat dar dar_cr, stat(cv min p1 p5 p10 q p90 p95 p99 max)
+tabstat tdr tdr_cr, stat(cv min p1 p5 p10 q p90 p95 p99 max)
+tabstat tar tar_cr, stat(cv min p1 p5 p10 q p90 p95 p99 max)
 
 
 *** Order
