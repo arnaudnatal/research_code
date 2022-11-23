@@ -64,6 +64,11 @@ merge 1:1 HHID2010 using "raw/RUME-occup_HH"
 drop _merge
 
 
+* Add remittances
+merge 1:1 HHID2010 using "raw/RUME-transferts_HH"
+drop _merge
+
+
 * Panel
 merge 1:m HHID2010 using"raw/ODRIIS-HH_wide", keepusing(HHID_panel)
 keep if _merge==3
@@ -148,6 +153,11 @@ merge 1:1 HHID2016 using "raw/NEEMSIS1-occup_HH"
 drop _merge
 
 
+* Add remittances
+merge 1:1 HHID2016 using "raw/NEEMSIS1-transferts_HH"
+drop _merge pension_HH transferts_HH
+
+
 * Panel
 merge 1:m HHID2016 using"raw/ODRIIS-HH_wide", keepusing(HHID_panel)
 keep if _merge==3
@@ -230,6 +240,12 @@ drop _merge
 merge 1:1 HHID2020 using "raw/NEEMSIS2-occup_HH"
 drop _merge
 
+
+* Add remittances
+merge 1:1 HHID2020 using "raw/NEEMSIS2-transferts_HH"
+drop _merge pension_HH transferts_HH
+
+
 * Panel
 merge 1:m HHID2020 using"raw/ODRIIS-HH_wide", keepusing(HHID_panel)
 keep if _merge==3
@@ -271,8 +287,6 @@ save"temp_NEEMSIS2", replace
 
 
 
-
-
 ****************************************
 * Panel and construction
 ****************************************
@@ -281,12 +295,32 @@ use"temp_NEEMSIS2", clear
 append using "temp_NEEMSIS1"
 append using "temp_RUME"
 
+* Caste
+tostring year, replace
+merge 1:1 HHID_panel year using "raw/ODRIIS-HH_long", keepusing(castecorr)
+keep if _merge==3
+drop _merge
+rename castecorr caste
+destring year, replace
+ta caste
+encode caste, gen(castecode)
+drop caste
+rename castecode caste
+fre caste
+
 *** Deflate and round
-foreach x in loanamount_HH imp1_ds_tot_HH imp1_is_tot_HH totHH_lenderamt_WKP totHH_lenderamt_rela totHH_lenderamt_empl totHH_lenderamt_mais totHH_lenderamt_coll totHH_lenderamt_pawn totHH_lenderamt_shop totHH_lenderamt_fina totHH_lenderamt_frie totHH_lenderamt_SHG totHH_lenderamt_bank totHH_lenderamt_coop totHH_lenderamt_suga totHH_lenderamt_grou totHH_lenderamt_than totHH_lender4amt_WKP totHH_lender4amt_rela totHH_lender4amt_labo totHH_lender4amt_pawn totHH_lender4amt_shop totHH_lender4amt_mone totHH_lender4amt_frie totHH_lender4amt_micr totHH_lender4amt_bank totHH_lender4amt_neig totHH_lendercatamt_info totHH_lendercatamt_semi totHH_lendercatamt_form totHH_givenamt_agri totHH_givenamt_fami totHH_givenamt_heal totHH_givenamt_repa totHH_givenamt_hous totHH_givenamt_inve totHH_givenamt_cere totHH_givenamt_marr totHH_givenamt_educ totHH_givenamt_rela totHH_givenamt_deat totHH_givenamt_nore totHH_givenamt_othe totHH_givencatamt_econ totHH_givencatamt_curr totHH_givencatamt_huma totHH_givencatamt_soci totHH_givencatamt_hous totHH_givencatamt_nore totHH_givencatamt_othe totHH_effectiveamt_agri totHH_effectiveamt_fami totHH_effectiveamt_heal totHH_effectiveamt_repa totHH_effectiveamt_hous totHH_effectiveamt_inve totHH_effectiveamt_cere totHH_effectiveamt_marr totHH_effectiveamt_educ totHH_effectiveamt_rela totHH_effectiveamt_deat totHH_effectiveamt_nore totHH_effectiveamt_othe assets assets_noland assets_noprop assets1000 assets1000_noland assets1000_noprop incomeagri_HH incomenonagri_HH annualincome_HH incagrise_HH incagricasual_HH incnonagricasual_HH incnonagriregnonquali_HH incnonagriregquali_HH incnonagrise_HH incnrega_HH {
+foreach x in loanamount_HH imp1_ds_tot_HH imp1_is_tot_HH totHH_lenderamt_WKP totHH_lenderamt_rela totHH_lenderamt_empl totHH_lenderamt_mais totHH_lenderamt_coll totHH_lenderamt_pawn totHH_lenderamt_shop totHH_lenderamt_fina totHH_lenderamt_frie totHH_lenderamt_SHG totHH_lenderamt_bank totHH_lenderamt_coop totHH_lenderamt_suga totHH_lenderamt_grou totHH_lenderamt_than totHH_lender4amt_WKP totHH_lender4amt_rela totHH_lender4amt_labo totHH_lender4amt_pawn totHH_lender4amt_shop totHH_lender4amt_mone totHH_lender4amt_frie totHH_lender4amt_micr totHH_lender4amt_bank totHH_lender4amt_neig totHH_lendercatamt_info totHH_lendercatamt_semi totHH_lendercatamt_form totHH_givenamt_agri totHH_givenamt_fami totHH_givenamt_heal totHH_givenamt_repa totHH_givenamt_hous totHH_givenamt_inve totHH_givenamt_cere totHH_givenamt_marr totHH_givenamt_educ totHH_givenamt_rela totHH_givenamt_deat totHH_givenamt_nore totHH_givenamt_othe totHH_givencatamt_econ totHH_givencatamt_curr totHH_givencatamt_huma totHH_givencatamt_soci totHH_givencatamt_hous totHH_givencatamt_nore totHH_givencatamt_othe totHH_effectiveamt_agri totHH_effectiveamt_fami totHH_effectiveamt_heal totHH_effectiveamt_repa totHH_effectiveamt_hous totHH_effectiveamt_inve totHH_effectiveamt_cere totHH_effectiveamt_marr totHH_effectiveamt_educ totHH_effectiveamt_rela totHH_effectiveamt_deat totHH_effectiveamt_nore totHH_effectiveamt_othe assets assets_noland assets_noprop assets1000 assets1000_noland assets1000_noprop incomeagri_HH incomenonagri_HH annualincome_HH incagrise_HH incagricasual_HH incnonagricasual_HH incnonagriregnonquali_HH incnonagriregquali_HH incnonagrise_HH incnrega_HH annualexpenses1 annualexpenses2 goldamount remreceived_HH remsent_HH remittnet_HH {
 replace `x'=`x'*(100/158) if year==2016
 replace `x'=`x'*(100/184) if year==2020
 replace `x'=round(`x',1)
 }
+
+
+*** Clean
+foreach x in totHH_lenderamt_WKP totHH_lenderamt_rela totHH_lenderamt_empl totHH_lenderamt_mais totHH_lenderamt_coll totHH_lenderamt_pawn totHH_lenderamt_shop totHH_lenderamt_fina totHH_lenderamt_frie totHH_lenderamt_SHG totHH_lenderamt_bank totHH_lenderamt_coop totHH_lenderamt_suga totHH_lenderamt_grou totHH_lenderamt_than totHH_lender4amt_WKP totHH_lender4amt_rela totHH_lender4amt_labo totHH_lender4amt_pawn totHH_lender4amt_shop totHH_lender4amt_mone totHH_lender4amt_frie totHH_lender4amt_micr totHH_lender4amt_bank totHH_lender4amt_neig totHH_lendercatamt_info totHH_lendercatamt_semi totHH_lendercatamt_form totHH_givenamt_agri totHH_givenamt_fami totHH_givenamt_heal totHH_givenamt_repa totHH_givenamt_hous totHH_givenamt_inve totHH_givenamt_cere totHH_givenamt_marr totHH_givenamt_educ totHH_givenamt_rela totHH_givenamt_deat totHH_givenamt_nore totHH_givenamt_othe totHH_givencatamt_econ totHH_givencatamt_curr totHH_givencatamt_huma totHH_givencatamt_soci totHH_givencatamt_hous totHH_givencatamt_nore totHH_givencatamt_othe totHH_effectiveamt_agri totHH_effectiveamt_fami totHH_effectiveamt_heal totHH_effectiveamt_repa totHH_effectiveamt_hous totHH_effectiveamt_inve totHH_effectiveamt_cere totHH_effectiveamt_marr totHH_effectiveamt_educ totHH_effectiveamt_rela totHH_effectiveamt_deat totHH_effectiveamt_nore totHH_effectiveamt_othe imp1_ds_tot_HH imp1_is_tot_HH remreceived_HH remsent_HH remittnet_HH {
+recode `x' (.=0)
+}
+
 
 *** Construction v1
 * DSR
@@ -353,7 +387,7 @@ replace dir=1400 if dir>1400  // 0.2%, 3.9%, 4.6%
 
 
 
-*TDR
+* TDR
 gen tdr=totHH_givenamt_repa*100/loanamount_HH
 replace tdr=0 if tdr==.
 tabstat tdr, stat(n mean cv q p90 p95 p99 max)
@@ -365,7 +399,7 @@ ms(oh) msize(small) mc(black%30)
 */
 
 
-*TAR
+* TAR
 gen tar=totHH_givenamt_repa*100/assets
 replace tar=0 if tar==.
 tabstat tar, stat(n mean cv q p90 p95 p99 max)
@@ -377,8 +411,28 @@ ms(oh) msize(small) mc(black%30)
 */
 
 
+* FM
+*goldamount
+gen fm=annualincome_HH+remittnet_HH-imp1_ds_tot_HH-annualexpenses2
+replace fm=0 if fm==.
+gen dummyfmpos=0
+replace dummyfmpos=1 if fm>0
+gen fm2=abs(fm)
+ta dummyfmpos year, col
+ta dummyfmpos caste if year==2010, col
+ta dummyfmpos caste if year==2016, col
+ta dummyfmpos caste if year==2020, col
+tabstat fm, stat(n mean cv q min max) by(dummyfmpos)
+/*
+stripplot fm2, over(dummyfm) vert ///
+stack width(5000) jitter(1) ///
+box(barw(0.2)) boffset(-0.2) pctile(95) ///
+ms(oh) msize(small) mc(black%30)
+*/
+
+
 ***** Clean
-foreach x in loanamount_HH annualincome_HH assets imp1_ds_tot_HH imp1_is_tot_HH totHH_givenamt_repa dsr isr dar dir tdr tar {
+foreach x in loanamount_HH annualincome_HH assets imp1_ds_tot_HH imp1_is_tot_HH totHH_givenamt_repa dsr isr dar dir tdr tar fm annualexpenses1 annualexpenses2 remreceived_HH remsent_HH remittnet_HH {
 egen `x'_std=std(`x')
 gen `x'_cr=`x'^(1/3)
 }
