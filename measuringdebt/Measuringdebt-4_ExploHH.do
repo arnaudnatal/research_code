@@ -51,18 +51,19 @@ tabstat dsr isr dar tdr tar if year==2020, stat(n mean cv q) by(dumHH_given_repa
 use"panel_HH", clear
 
 
-***** Clean
-tabstat dsr_cr isr_cr dar_cr tar_cr tdr_cr, stat(n min max mean sd cv)
+***** Var to be used
+/*
+DSR = service  / annual income --> burden of debt
+ISR = interest / annual income -->
+DIR = amount   / annual income -->
+DAR = amount   / assets --------->
+TDR = bad debt / amount ---------> share of bad debt as debt is not necessary bad
+*/
 
-global var loanamount_HH annualincome_HH assets imp1_ds_tot_HH imp1_is_tot_HH totHH_givenamt_repa dsr isr dar tdr tar
-tabstat $var, stat(n p50 p90 p95 p99 max)
-foreach x in $var {
-egen `x'_std=std(`x')
-}
 
-graph matrix loanamount_HH annualincome_HH assets imp1_ds_tot_HH imp1_is_tot_HH totHH_givenamt_repa, half
-
-graph matrix dsr isr dar tdr tar, half
+***** Correlation
+pwcorr annualincome_HH assets loanamount_HH imp1_ds_tot_HH, star(.05)
+graph matrix dsr isr dar tdr, half msize(vsmall) msymbol(oh)
 
 ***** Mean
 egen meandex1=rowmean(dsr dar tdr)

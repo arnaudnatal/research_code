@@ -19,8 +19,11 @@ do "https://raw.githubusercontent.com/arnaudnatal/folderanalysis/main/$link.do"
 ****************************************
 use"raw/RUME-HH", clear
 
-keep HHID2010 village villagearea
+* To keep
+keep HHID2010 village villagearea foodexpenses educationexpenses healthexpenses ceremoniesexpenses deathexpenses productexpenses1 productexpenses2 productexpenses3 productexpenses4 productexpenses5 goldquantity
 
+
+* Clean
 decode village, gen(villageid)
 drop village
 rename villageid village
@@ -39,13 +42,17 @@ decode villagearea, gen(vi)
 drop villagearea
 rename vi area
 
+
+* Uniq HH
 duplicates drop
 count
+
 
 * Add debt
 merge 1:1 HHID2010 using "raw/RUME-loans_HH"
 drop _merge
 drop nbHH_othlendserv_poli dumHH_othlendserv_poli nbHH_othlendserv_fina dumHH_othlendserv_fina nbHH_othlendserv_guar dumHH_othlendserv_guar nbHH_othlendserv_gene dumHH_othlendserv_gene nbHH_othlendserv_othe dumHH_othlendserv_othe nbHH_othlendserv_6 dumHH_othlendserv_6 nbHH_othlendserv_nrep dumHH_othlendserv_nrep nbHH_guarantee_chit dumHH_guarantee_chit nbHH_guarantee_shg dumHH_guarantee_shg nbHH_guarantee_both dumHH_guarantee_both nbHH_guarantee_none dumHH_guarantee_none nbHH_borrservices_free dumHH_borrservices_free nbHH_borrservices_work dumHH_borrservices_work nbHH_borrservices_supp dumHH_borrservices_supp nbHH_borrservices_othe dumHH_borrservices_othe nbHH_borrservices_nrep dumHH_borrservices_nrep nbHH_plantorep_chit dumHH_plantorep_chit nbHH_plantorep_work dumHH_plantorep_work nbHH_plantorep_migr dumHH_plantorep_migr nbHH_plantorep_asse dumHH_plantorep_asse nbHH_plantorep_inco dumHH_plantorep_inco nbHH_plantorep_borr dumHH_plantorep_borr nbHH_plantorep_noth dumHH_plantorep_noth nbHH_plantorep_othe dumHH_plantorep_othe nbHH_plantorep_nrep dumHH_plantorep_nrep
+
 
 * Add assets
 merge 1:1 HHID2010 using "raw/RUME-assets"
@@ -56,14 +63,31 @@ drop _merge
 merge 1:1 HHID2010 using "raw/RUME-occup_HH"
 drop _merge
 
+
 * Panel
 merge 1:m HHID2010 using"raw/ODRIIS-HH_wide", keepusing(HHID_panel)
 keep if _merge==3
 drop _merge
 drop HHID2010
 
+
+*Year
 gen year=2010
 
+
+* Annual expenses
+foreach x in productexpenses1 productexpenses2 productexpenses3 productexpenses4 productexpenses5 foodexpenses educationexpenses healthexpenses ceremoniesexpenses deathexpenses {
+replace `x'=0 if `x'==.
+}
+
+gen annualexpenses1=52*foodexpenses+educationexpenses+healthexpenses+ceremoniesexpenses+deathexpenses
+
+gen annualexpenses2=productexpenses1+productexpenses2+productexpenses3+productexpenses4+productexpenses5+52*foodexpenses+educationexpenses+healthexpenses+ceremoniesexpenses+deathexpenses
+drop productexpenses1 productexpenses2 productexpenses3 productexpenses4 productexpenses5 foodexpenses educationexpenses healthexpenses ceremoniesexpenses deathexpenses
+
+* Gold
+gen goldamount=goldquantity*2000
+drop goldquantity
 
 save"temp_RUME", replace
 ****************************************
@@ -84,7 +108,16 @@ save"temp_RUME", replace
 ****************************************
 use"raw/NEEMSIS1-HH", clear
 
-keep HHID2016 villageid villagearea
+* To keep
+keep HHID2016 villageid villagearea educationexpenses foodexpenses healthexpenses ceremoniesexpenses ceremoniesrelativesexpenses deathexpenses marriageexpenses productexpenses_paddy productexpenses_ragi productexpenses_millets productexpenses_tapioca productexpenses_cotton productexpenses_sugarca productexpenses_savukku productexpenses_guava productexpenses_groundnut goldquantity
+
+
+* Clean
+foreach x in goldquantity educationexpenses marriageexpenses {
+bysort HHID2016: egen `x'_HH=sum(`x')
+drop `x'
+rename `x'_HH `x'
+}
 
 decode villageid, gen(village)
 drop villageid
@@ -93,8 +126,11 @@ decode villagearea, gen(vi)
 drop villagearea
 rename vi area
 
+
+* Drop
 duplicates drop
 count
+
 
 * Add debt
 merge 1:1 HHID2016 using "raw/NEEMSIS1-loans_HH"
@@ -111,13 +147,32 @@ drop _merge
 merge 1:1 HHID2016 using "raw/NEEMSIS1-occup_HH"
 drop _merge
 
+
 * Panel
 merge 1:m HHID2016 using"raw/ODRIIS-HH_wide", keepusing(HHID_panel)
 keep if _merge==3
 drop _merge
 drop HHID2016
 
+
+* Year
 gen year=2016
+
+
+* Annual expenses
+foreach x in productexpenses_paddy productexpenses_ragi productexpenses_millets productexpenses_tapioca productexpenses_cotton productexpenses_sugarca productexpenses_savukku productexpenses_guava productexpenses_groundnut foodexpenses educationexpenses healthexpenses ceremoniesexpenses deathexpenses ceremoniesrelativesexpenses marriageexpenses {
+replace `x'=0 if `x'==.
+}
+
+gen annualexpenses1=52*foodexpenses+educationexpenses+healthexpenses+ceremoniesexpenses+deathexpenses+ceremoniesrelativesexpenses+marriageexpenses
+
+gen annualexpenses2=productexpenses_paddy+productexpenses_ragi+productexpenses_millets+productexpenses_tapioca+productexpenses_cotton+productexpenses_sugarca+productexpenses_savukku+productexpenses_guava+productexpenses_groundnut+52*foodexpenses+educationexpenses+healthexpenses+ceremoniesexpenses+deathexpenses+ceremoniesrelativesexpenses+marriageexpenses
+drop productexpenses_paddy productexpenses_ragi productexpenses_millets productexpenses_tapioca productexpenses_cotton productexpenses_sugarca productexpenses_savukku productexpenses_guava productexpenses_groundnut foodexpenses educationexpenses healthexpenses ceremoniesexpenses deathexpenses ceremoniesrelativesexpenses marriageexpenses
+
+* Gold
+gen goldamount=goldquantity*2700
+drop goldquantity
+
 
 
 save"temp_NEEMSIS1", replace
@@ -136,7 +191,16 @@ save"temp_NEEMSIS1", replace
 ****************************************
 use"raw/NEEMSIS2-HH", clear
 
-keep HHID2020 villageid villagearea
+* Clean
+keep HHID2020 villageid villagearea educationexpenses productexpenses_paddy productexpenses_cotton productexpenses_sugarcane productexpenses_savukku productexpenses_guava productexpenses_groundnut productexpenses_millets productexpenses_cashew productexpenses_other foodexpenses healthexpenses ceremoniesexpenses ceremoniesrelativesexpenses deathexpenses marriageexpenses goldquantity
+
+
+* Clean
+foreach x in goldquantity educationexpenses marriageexpenses {
+bysort HHID2020: egen `x'_HH=sum(`x')
+drop `x'
+rename `x'_HH `x'
+}
 
 decode villageid, gen(village)
 drop villageid
@@ -145,8 +209,11 @@ decode villagearea, gen(vi)
 drop villagearea
 rename vi area
 
+
+* Drop
 duplicates drop
 count
+
 
 * Add debt
 merge 1:1 HHID2020 using "raw/NEEMSIS2-loans_HH"
@@ -169,7 +236,25 @@ keep if _merge==3
 drop _merge
 drop HHID2020
 
+
+* Year
 gen year=2020
+
+
+* Annual expenses
+foreach x in productexpenses_paddy productexpenses_cotton productexpenses_sugarcane productexpenses_savukku productexpenses_guava productexpenses_groundnut productexpenses_millets productexpenses_cashew productexpenses_other foodexpenses healthexpenses ceremoniesexpenses ceremoniesrelativesexpenses deathexpenses educationexpenses marriageexpenses {
+replace `x'=0 if `x'==.
+}
+
+gen annualexpenses1=52*foodexpenses+educationexpenses+healthexpenses+ceremoniesexpenses+deathexpenses+ceremoniesrelativesexpenses+marriageexpenses
+
+gen annualexpenses2=productexpenses_paddy+productexpenses_cotton+productexpenses_sugarcane+productexpenses_savukku+productexpenses_guava+productexpenses_groundnut+productexpenses_millets+productexpenses_cashew+productexpenses_other+52*foodexpenses+educationexpenses+healthexpenses+ceremoniesexpenses+deathexpenses+ceremoniesrelativesexpenses+marriageexpenses
+drop productexpenses_paddy productexpenses_cotton productexpenses_sugarcane productexpenses_savukku productexpenses_guava productexpenses_groundnut productexpenses_millets productexpenses_cashew productexpenses_other foodexpenses healthexpenses ceremoniesexpenses ceremoniesrelativesexpenses deathexpenses educationexpenses marriageexpenses
+
+
+* Gold
+gen goldamount=goldquantity*2700
+drop goldquantity
 
 
 save"temp_NEEMSIS2", replace
@@ -212,16 +297,27 @@ tabstat dsr, stat(n mean cv q p90 p95 p99 max)
 ta year if dsr>200
 ta year if dsr>300
 ta year if dsr>400
-replace dsr=400 if dsr>400  // 0.2%, 1%, 3.5%
+/*
+stripplot dsr, over(year) vert refline ///
+stack width(5) jitter(1) ///
+box(barw(0.2)) boffset(-0.2) pctile(95) ///
+ms(oh) msize(small) mc(black%30)
+*/
+replace dsr=400 if dsr>400
 
 
 * ISR
 gen isr=imp1_is_tot_HH*100/annualincome_HH
 replace isr=0 if isr==.
 tabstat isr, stat(n mean cv q p90 p95 p99 max)
+ta year if isr>150
 ta year if isr>200
-ta year if isr>300
-ta year if isr>400
+/*
+stripplot isr, over(year) vert refline ///
+stack width(5) jitter(1) ///
+box(barw(0.2)) boffset(-0.2) pctile(95) ///
+ms(oh) msize(small) mc(black%30)
+*/
 replace isr=200 if isr>200  // 0.2%, 1.2%, 2.4%
 
 
@@ -232,29 +328,62 @@ tabstat dar, stat(n mean cv q p90 p95 p99 max)
 ta year if dar>200
 ta year if dar>300
 ta year if dar>400
-replace dar=400 if dar>400  // 0.2%, 3.5%, 0.3%
+/*
+stripplot dar, over(year) vert refline ///
+stack width(5) jitter(1) ///
+box(barw(0.2)) boffset(-0.2) pctile(95) ///
+ms(oh) msize(small) mc(black%30)
+*/
+replace dar=300 if dar>300  // 0.2%, 3.5%, 0.3%
+
+
+* DIR
+gen dir=loanamount_HH*100/annualincome_HH
+replace dir=0 if dir==.
+tabstat dir, stat(n mean cv q p90 p95 p99 max)
+ta year if dir>600
+ta year if dir>1400
+/*
+stripplot dir, over(year) vert refline ///
+stack width(5) jitter(1) ///
+box(barw(0.2)) boffset(-0.2) pctile(95) ///
+ms(oh) msize(small) mc(black%30)
+*/
+replace dir=1400 if dir>1400  // 0.2%, 3.9%, 4.6%
+
 
 
 *TDR
 gen tdr=totHH_givenamt_repa*100/loanamount_HH
 replace tdr=0 if tdr==.
 tabstat tdr, stat(n mean cv q p90 p95 p99 max)
+/*
+stripplot tdr, over(year) vert refline ///
+stack width(5) jitter(1) ///
+box(barw(0.2)) boffset(-0.2) pctile(95) ///
+ms(oh) msize(small) mc(black%30)
+*/
 
 
 *TAR
 gen tar=totHH_givenamt_repa*100/assets
 replace tar=0 if tar==.
 tabstat tar, stat(n mean cv q p90 p95 p99 max)
+/*
+stripplot tar, over(year) vert refline ///
+stack width(5) jitter(1) ///
+box(barw(0.2)) boffset(-0.2) pctile(95) ///
+ms(oh) msize(small) mc(black%30)
+*/
 
-*** Cube root
-foreach x in dsr isr dar tdr tar {
+
+***** Clean
+foreach x in loanamount_HH annualincome_HH assets imp1_ds_tot_HH imp1_is_tot_HH totHH_givenamt_repa dsr isr dar dir tdr tar {
+egen `x'_std=std(`x')
 gen `x'_cr=`x'^(1/3)
 }
-tabstat dsr dsr_cr, stat(cv min p1 p5 p10 q p90 p95 p99 max)
-tabstat isr isr_cr, stat(cv min p1 p5 p10 q p90 p95 p99 max)
-tabstat dar dar_cr, stat(cv min p1 p5 p10 q p90 p95 p99 max)
-tabstat tdr tdr_cr, stat(cv min p1 p5 p10 q p90 p95 p99 max)
-tabstat tar tar_cr, stat(cv min p1 p5 p10 q p90 p95 p99 max)
+
+
 
 *** Order
 order HHID_panel year
