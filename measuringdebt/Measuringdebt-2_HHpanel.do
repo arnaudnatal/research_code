@@ -358,6 +358,7 @@ stack width(5) jitter(1) ///
 box(barw(0.2)) boffset(-0.2) pctile(95) ///
 ms(oh) msize(small) mc(black%30)
 */
+/*
 replace isr=200 if isr>200  // 0.2%, 1.2%, 2.4%
 
 

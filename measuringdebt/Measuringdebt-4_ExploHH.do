@@ -19,6 +19,9 @@ do "https://raw.githubusercontent.com/arnaudnatal/folderanalysis/main/$link.do"
 use"panel_HH", clear
 
 
+tabstat dsr isr dar, stat(n mean sd p50) by(year)
+
+
 /*
 DSR = service  / annual income --> burden of debt
 ISR = interest / annual income -->
