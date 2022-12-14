@@ -7,8 +7,12 @@ cls
 gl link = "measuringdebt"
 *Prepa database
 *-----
-do "https://raw.githubusercontent.com/arnaudnatal/folderanalysis/main/$link.do"
+*do "https://raw.githubusercontent.com/arnaudnatal/folderanalysis/main/$link.do"
+do"C:\Users\Arnaud\Documents\GitHub\folderanalysis\measuringdebt.do"
 *-------------------------
+
+
+
 
 
 
@@ -19,8 +23,43 @@ do "https://raw.githubusercontent.com/arnaudnatal/folderanalysis/main/$link.do"
 ****************************************
 use"raw/RUME-HH", clear
 
+* Gen HH size
+bysort HHID2010: egen HHsize=sum(1)
+
+* Sex age compo
+gen count_male_0_14=1 if sex==1 & age<15
+gen count_female_0_14=1 if sex==2 & age<15
+
+gen count_male_15_25=1 if sex==1 & age>=15 & age<=25
+gen count_female_15_25=1 if sex==2 & age>=15 & age<=25
+
+gen count_male_26_35=1 if sex==1 & age>=26 & age<=35
+gen count_female_26_35=1 if sex==2 & age>=26 & age<=35
+
+gen count_male_36_45=1 if sex==1 & age>=36 & age<=45
+gen count_female_36_45=1 if sex==2 & age>=36 & age<=45
+
+gen count_male_46_55=1 if sex==1 & age>=46 & age<=55
+gen count_female_46_55=1 if sex==2 & age>=46 & age<=55
+
+gen count_male_56_70=1 if sex==1 & age>=56 & age<=70
+gen count_female_56_70=1 if sex==2 & age>=56 & age<=70
+
+gen count_male_71_99=1 if sex==1 & age>=71
+gen count_female_71_99=1 if sex==2 & age>=71
+
+foreach x in count_male_0_14 count_female_0_14 count_male_15_25 count_female_15_25 count_male_26_35 count_female_26_35 count_male_36_45 count_female_36_45 count_male_46_55 count_female_46_55 count_male_56_70 count_female_56_70 count_male_71_99 count_female_71_99 {
+recode `x' (.=0)
+bysort HHID2010: egen HH_`x'=sum(`x')
+}
+
+egen test=rowtotal(HH_count_male_71_99 HH_count_male_56_70 HH_count_male_46_55 HH_count_male_36_45 HH_count_male_26_35 HH_count_male_15_25 HH_count_male_0_14 HH_count_female_71_99 HH_count_female_56_70 HH_count_female_46_55 HH_count_female_36_45 HH_count_female_26_35 HH_count_female_15_25 HH_count_female_0_14)
+gen test2=test-HHsize
+drop test test2
+
+
 * To keep
-keep HHID2010 village villagearea foodexpenses educationexpenses healthexpenses ceremoniesexpenses deathexpenses productexpenses1 productexpenses2 productexpenses3 productexpenses4 productexpenses5 goldquantity
+keep HHID2010 village villagearea foodexpenses educationexpenses healthexpenses ceremoniesexpenses deathexpenses productexpenses1 productexpenses2 productexpenses3 productexpenses4 productexpenses5 goldquantity HH_count_male_71_99 HH_count_male_56_70 HH_count_male_46_55 HH_count_male_36_45 HH_count_male_26_35 HH_count_male_15_25 HH_count_male_0_14 HH_count_female_71_99 HH_count_female_56_70 HH_count_female_46_55 HH_count_female_36_45 HH_count_female_26_35 HH_count_female_15_25 HH_count_female_0_14 HHsize
 
 
 * Clean
@@ -87,6 +126,11 @@ replace `x'=0 if `x'==.
 
 gen annualexpenses=52*foodexpenses+educationexpenses+healthexpenses+ceremoniesexpenses+deathexpenses
 
+gen annualfoodexpenses=52*foodexpenses
+gen annualeducationexpenses=educationexpenses
+gen annualhealth=healthexpenses
+gen annualceremonies=ceremoniesexpenses+deathexpenses
+
 drop productexpenses1 productexpenses2 productexpenses3 productexpenses4 productexpenses5 foodexpenses educationexpenses healthexpenses ceremoniesexpenses deathexpenses
 
 * Gold
@@ -113,8 +157,50 @@ save"temp_RUME", replace
 ****************************************
 use"raw/NEEMSIS1-HH", clear
 
+* Drop migrants
+fre livinghome
+drop if livinghome==3
+drop if livinghome==4
+
+* Gen HH size
+bysort HHID2016: egen HHsize=sum(1)
+
+* Sex age compo
+gen count_male_0_14=1 if sex==1 & age<15
+gen count_female_0_14=1 if sex==2 & age<15
+
+gen count_male_15_25=1 if sex==1 & age>=15 & age<=25
+gen count_female_15_25=1 if sex==2 & age>=15 & age<=25
+
+gen count_male_26_35=1 if sex==1 & age>=26 & age<=35
+gen count_female_26_35=1 if sex==2 & age>=26 & age<=35
+
+gen count_male_36_45=1 if sex==1 & age>=36 & age<=45
+gen count_female_36_45=1 if sex==2 & age>=36 & age<=45
+
+gen count_male_46_55=1 if sex==1 & age>=46 & age<=55
+gen count_female_46_55=1 if sex==2 & age>=46 & age<=55
+
+gen count_male_56_70=1 if sex==1 & age>=56 & age<=70
+gen count_female_56_70=1 if sex==2 & age>=56 & age<=70
+
+gen count_male_71_99=1 if sex==1 & age>=71
+gen count_female_71_99=1 if sex==2 & age>=71
+
+foreach x in count_male_0_14 count_female_0_14 count_male_15_25 count_female_15_25 count_male_26_35 count_female_26_35 count_male_36_45 count_female_36_45 count_male_46_55 count_female_46_55 count_male_56_70 count_female_56_70 count_male_71_99 count_female_71_99 {
+recode `x' (.=0)
+bysort HHID2016: egen HH_`x'=sum(`x')
+}
+
+egen test=rowtotal(HH_count_male_71_99 HH_count_male_56_70 HH_count_male_46_55 HH_count_male_36_45 HH_count_male_26_35 HH_count_male_15_25 HH_count_male_0_14 HH_count_female_71_99 HH_count_female_56_70 HH_count_female_46_55 HH_count_female_36_45 HH_count_female_26_35 HH_count_female_15_25 HH_count_female_0_14)
+gen test2=test-HHsize
+ta test2
+drop test test2
+
+
+
 * To keep
-keep HHID2016 villageid villagearea educationexpenses foodexpenses healthexpenses ceremoniesexpenses ceremoniesrelativesexpenses deathexpenses marriageexpenses productexpenses_paddy productexpenses_ragi productexpenses_millets productexpenses_tapioca productexpenses_cotton productexpenses_sugarca productexpenses_savukku productexpenses_guava productexpenses_groundnut goldquantity
+keep HHID2016 villageid villagearea educationexpenses foodexpenses healthexpenses ceremoniesexpenses ceremoniesrelativesexpenses deathexpenses marriageexpenses productexpenses_paddy productexpenses_ragi productexpenses_millets productexpenses_tapioca productexpenses_cotton productexpenses_sugarca productexpenses_savukku productexpenses_guava productexpenses_groundnut goldquantity HH_count_male_0_14 HH_count_female_0_14 HH_count_male_15_25 HH_count_female_15_25 HH_count_male_26_35 HH_count_female_26_35 HH_count_male_36_45 HH_count_female_36_45 HH_count_male_46_55 HH_count_female_46_55 HH_count_male_56_70 HH_count_female_56_70 HH_count_male_71_99 HH_count_female_71_99 HHsize
 
 
 * Clean
@@ -174,7 +260,13 @@ foreach x in productexpenses_paddy productexpenses_ragi productexpenses_millets 
 replace `x'=0 if `x'==.
 }
 
-gen annualexpenses=52*foodexpenses+educationexpenses+healthexpenses+ceremoniesexpenses+deathexpenses+ceremoniesrelativesexpenses+marriageexpenses
+gen annualexpenses=52*foodexpenses+educationexpenses+healthexpenses+ceremoniesexpenses+deathexpenses+ceremoniesrelativesexpenses
+
+gen annualfoodexpenses=52*foodexpenses
+gen annualeducationexpenses=educationexpenses
+gen annualhealth=healthexpenses
+gen annualceremonies=ceremoniesexpenses+deathexpenses+ceremoniesrelativesexpenses
+gen annualmarriage=marriageexpenses
 
 drop productexpenses_paddy productexpenses_ragi productexpenses_millets productexpenses_tapioca productexpenses_cotton productexpenses_sugarca productexpenses_savukku productexpenses_guava productexpenses_groundnut foodexpenses educationexpenses healthexpenses ceremoniesexpenses deathexpenses ceremoniesrelativesexpenses marriageexpenses
 
@@ -199,13 +291,58 @@ save"temp_NEEMSIS1", replace
 
 
 
+
+
+
 ****************************************
 * 2020-21
 ****************************************
 use"raw/NEEMSIS2-HH", clear
 
+* Drop migrants
+fre livinghome
+drop if livinghome==3
+drop if livinghome==4
+drop if dummylefthousehold==1
+
+* Gen HH size
+bysort HHID2020: egen HHsize=sum(1)
+
+* Sex age compo
+gen count_male_0_14=1 if sex==1 & age<15
+gen count_female_0_14=1 if sex==2 & age<15
+
+gen count_male_15_25=1 if sex==1 & age>=15 & age<=25
+gen count_female_15_25=1 if sex==2 & age>=15 & age<=25
+
+gen count_male_26_35=1 if sex==1 & age>=26 & age<=35
+gen count_female_26_35=1 if sex==2 & age>=26 & age<=35
+
+gen count_male_36_45=1 if sex==1 & age>=36 & age<=45
+gen count_female_36_45=1 if sex==2 & age>=36 & age<=45
+
+gen count_male_46_55=1 if sex==1 & age>=46 & age<=55
+gen count_female_46_55=1 if sex==2 & age>=46 & age<=55
+
+gen count_male_56_70=1 if sex==1 & age>=56 & age<=70
+gen count_female_56_70=1 if sex==2 & age>=56 & age<=70
+
+gen count_male_71_99=1 if sex==1 & age>=71
+gen count_female_71_99=1 if sex==2 & age>=71
+
+foreach x in count_male_0_14 count_female_0_14 count_male_15_25 count_female_15_25 count_male_26_35 count_female_26_35 count_male_36_45 count_female_36_45 count_male_46_55 count_female_46_55 count_male_56_70 count_female_56_70 count_male_71_99 count_female_71_99 {
+recode `x' (.=0)
+bysort HHID2020: egen HH_`x'=sum(`x')
+}
+
+egen test=rowtotal(HH_count_male_71_99 HH_count_male_56_70 HH_count_male_46_55 HH_count_male_36_45 HH_count_male_26_35 HH_count_male_15_25 HH_count_male_0_14 HH_count_female_71_99 HH_count_female_56_70 HH_count_female_46_55 HH_count_female_36_45 HH_count_female_26_35 HH_count_female_15_25 HH_count_female_0_14)
+gen test2=test-HHsize
+ta test2
+drop test test2
+
+
 * Clean
-keep HHID2020 villageid villagearea educationexpenses productexpenses_paddy productexpenses_cotton productexpenses_sugarcane productexpenses_savukku productexpenses_guava productexpenses_groundnut productexpenses_millets productexpenses_cashew productexpenses_other foodexpenses healthexpenses ceremoniesexpenses ceremoniesrelativesexpenses deathexpenses marriageexpenses goldquantity
+keep HHID2020 villageid villagearea educationexpenses productexpenses_paddy productexpenses_cotton productexpenses_sugarcane productexpenses_savukku productexpenses_guava productexpenses_groundnut productexpenses_millets productexpenses_cashew productexpenses_other foodexpenses healthexpenses ceremoniesexpenses ceremoniesrelativesexpenses deathexpenses marriageexpenses goldquantity HH_count_male_0_14 HH_count_female_0_14 HH_count_male_15_25 HH_count_female_15_25 HH_count_male_26_35 HH_count_female_26_35 HH_count_male_36_45 HH_count_female_36_45 HH_count_male_46_55 HH_count_female_46_55 HH_count_male_56_70 HH_count_female_56_70 HH_count_male_71_99 HH_count_female_71_99 HHsize
 
 
 * Clean
@@ -265,7 +402,13 @@ foreach x in productexpenses_paddy productexpenses_cotton productexpenses_sugarc
 replace `x'=0 if `x'==.
 }
 
-gen annualexpenses=52*foodexpenses+educationexpenses+healthexpenses+ceremoniesexpenses+deathexpenses+ceremoniesrelativesexpenses+marriageexpenses
+gen annualexpenses=52*foodexpenses+educationexpenses+healthexpenses+ceremoniesexpenses+deathexpenses+ceremoniesrelativesexpenses
+
+gen annualfoodexpenses=52*foodexpenses
+gen annualeducationexpenses=educationexpenses
+gen annualhealth=healthexpenses
+gen annualceremonies=ceremoniesexpenses+deathexpenses+ceremoniesrelativesexpenses
+gen annualmarriage=marriageexpenses
 
 drop productexpenses_paddy productexpenses_cotton productexpenses_sugarcane productexpenses_savukku productexpenses_guava productexpenses_groundnut productexpenses_millets productexpenses_cashew productexpenses_other foodexpenses healthexpenses ceremoniesexpenses ceremoniesrelativesexpenses deathexpenses educationexpenses marriageexpenses
 
@@ -301,6 +444,9 @@ use"temp_NEEMSIS2", clear
 append using "temp_NEEMSIS1"
 append using "temp_RUME"
 
+*Expenses
+replace annualexpenses=annualexpenses/1000
+
 * Caste
 tostring year, replace
 merge 1:1 HHID_panel year using "raw/ODRIIS-HH_long", keepusing(castecorr)
@@ -315,7 +461,7 @@ rename castecode caste
 fre caste
 
 *** Deflate and round
-foreach x in loanamount_HH imp1_ds_tot_HH imp1_is_tot_HH totHH_lenderamt_WKP totHH_lenderamt_rela totHH_lenderamt_empl totHH_lenderamt_mais totHH_lenderamt_coll totHH_lenderamt_pawn totHH_lenderamt_shop totHH_lenderamt_fina totHH_lenderamt_frie totHH_lenderamt_SHG totHH_lenderamt_bank totHH_lenderamt_coop totHH_lenderamt_suga totHH_lenderamt_grou totHH_lenderamt_than totHH_lender4amt_WKP totHH_lender4amt_rela totHH_lender4amt_labo totHH_lender4amt_pawn totHH_lender4amt_shop totHH_lender4amt_mone totHH_lender4amt_frie totHH_lender4amt_micr totHH_lender4amt_bank totHH_lender4amt_neig totHH_lendercatamt_info totHH_lendercatamt_semi totHH_lendercatamt_form totHH_givenamt_agri totHH_givenamt_fami totHH_givenamt_heal totHH_givenamt_repa totHH_givenamt_hous totHH_givenamt_inve totHH_givenamt_cere totHH_givenamt_marr totHH_givenamt_educ totHH_givenamt_rela totHH_givenamt_deat totHH_givenamt_nore totHH_givenamt_othe totHH_givencatamt_econ totHH_givencatamt_curr totHH_givencatamt_huma totHH_givencatamt_soci totHH_givencatamt_hous totHH_givencatamt_nore totHH_givencatamt_othe totHH_effectiveamt_agri totHH_effectiveamt_fami totHH_effectiveamt_heal totHH_effectiveamt_repa totHH_effectiveamt_hous totHH_effectiveamt_inve totHH_effectiveamt_cere totHH_effectiveamt_marr totHH_effectiveamt_educ totHH_effectiveamt_rela totHH_effectiveamt_deat totHH_effectiveamt_nore totHH_effectiveamt_othe assets assets_noland assets_noprop assets1000 assets1000_noland assets1000_noprop incomeagri_HH incomenonagri_HH annualincome_HH incagrise_HH incagricasual_HH incnonagricasual_HH incnonagriregnonquali_HH incnonagriregquali_HH incnonagrise_HH incnrega_HH annualexpenses goldamount remreceived_HH remsent_HH remittnet_HH {
+foreach x in loanamount_HH imp1_ds_tot_HH imp1_is_tot_HH totHH_lenderamt_WKP totHH_lenderamt_rela totHH_lenderamt_empl totHH_lenderamt_mais totHH_lenderamt_coll totHH_lenderamt_pawn totHH_lenderamt_shop totHH_lenderamt_fina totHH_lenderamt_frie totHH_lenderamt_SHG totHH_lenderamt_bank totHH_lenderamt_coop totHH_lenderamt_suga totHH_lenderamt_grou totHH_lenderamt_than totHH_lender4amt_WKP totHH_lender4amt_rela totHH_lender4amt_labo totHH_lender4amt_pawn totHH_lender4amt_shop totHH_lender4amt_mone totHH_lender4amt_frie totHH_lender4amt_micr totHH_lender4amt_bank totHH_lender4amt_neig totHH_lendercatamt_info totHH_lendercatamt_semi totHH_lendercatamt_form totHH_givenamt_agri totHH_givenamt_fami totHH_givenamt_heal totHH_givenamt_repa totHH_givenamt_hous totHH_givenamt_inve totHH_givenamt_cere totHH_givenamt_marr totHH_givenamt_educ totHH_givenamt_rela totHH_givenamt_deat totHH_givenamt_nore totHH_givenamt_othe totHH_givencatamt_econ totHH_givencatamt_curr totHH_givencatamt_huma totHH_givencatamt_soci totHH_givencatamt_hous totHH_givencatamt_nore totHH_givencatamt_othe totHH_effectiveamt_agri totHH_effectiveamt_fami totHH_effectiveamt_heal totHH_effectiveamt_repa totHH_effectiveamt_hous totHH_effectiveamt_inve totHH_effectiveamt_cere totHH_effectiveamt_marr totHH_effectiveamt_educ totHH_effectiveamt_rela totHH_effectiveamt_deat totHH_effectiveamt_nore totHH_effectiveamt_othe assets assets_noland assets_noprop assets1000 assets1000_noland assets1000_noprop incomeagri_HH incomenonagri_HH annualincome_HH incagrise_HH incagricasual_HH incnonagricasual_HH incnonagriregnonquali_HH incnonagriregquali_HH incnonagrise_HH incnrega_HH annualexpenses goldamount remreceived_HH remsent_HH remittnet_HH annualfoodexpenses annualeducationexpenses annualhealth annualceremonies annualmarriage {
 replace `x'=`x'*(100/158) if year==2016
 replace `x'=`x'*(100/184) if year==2020
 replace `x'=round(`x',1)
@@ -343,7 +489,7 @@ stack width(5) jitter(1) ///
 box(barw(0.2)) boffset(-0.2) pctile(95) ///
 ms(oh) msize(small) mc(black%30)
 */
-replace dsr=400 if dsr>400
+*replace dsr=400 if dsr>400
 
 
 * ISR
@@ -358,8 +504,8 @@ stack width(5) jitter(1) ///
 box(barw(0.2)) boffset(-0.2) pctile(95) ///
 ms(oh) msize(small) mc(black%30)
 */
-/*
-replace isr=200 if isr>200  // 0.2%, 1.2%, 2.4%
+
+*replace isr=200 if isr>200  // 0.2%, 1.2%, 2.4%
 
 
 * DAR
@@ -390,7 +536,7 @@ stack width(5) jitter(1) ///
 box(barw(0.2)) boffset(-0.2) pctile(95) ///
 ms(oh) msize(small) mc(black%30)
 */
-replace dir=1400 if dir>1400  // 0.2%, 3.9%, 4.6%
+*replace dir=1400 if dir>1400  // 0.2%, 3.9%, 4.6%
 
 
 
@@ -436,6 +582,79 @@ stack width(5000) jitter(1) ///
 box(barw(0.2)) boffset(-0.2) pctile(95) ///
 ms(oh) msize(small) mc(black%30)
 */
+
+
+
+********** Corr HH size
+egen HH_count_child=rowtotal(HH_count_male_0_14 HH_count_female_0_14)
+egen HH_count_adult=rowtotal(HH_count_male_15_25 HH_count_female_15_25 HH_count_male_26_35 HH_count_female_26_35 HH_count_male_36_45 HH_count_female_36_45 HH_count_male_46_55 HH_count_female_46_55 HH_count_male_56_70 HH_count_female_56_70 HH_count_male_71_99 HH_count_female_71_99)
+
+* Equivalence scale
+gen HH_count_adult_equi=((HH_count_adult-1)*0.7)+1
+gen HH_count_child_equi=HH_count_child*0.5
+gen equiscale_HHsize=HH_count_adult_equi+HH_count_child_equi
+drop HH_count_adult_equi HH_count_child_equi
+
+* Equivalence scale modified
+gen HH_count_adult_equi=((HH_count_adult-1)*0.5)+1
+gen HH_count_child_equi=HH_count_child*0.3
+gen equimodiscale_HHsize=HH_count_adult_equi+HH_count_child_equi
+drop HH_count_adult_equi HH_count_child_equi
+
+* Square root scale
+gen squareroot_HHsize=sqrt(HHsize)
+
+* HH income per capita
+gen dailyincome1_pc=(annualincome_HH/365)/HHsize
+gen dailyincome2_pc=(annualincome_HH/365)/equiscale_HHsize
+gen dailyincome3_pc=(annualincome_HH/365)/equimodiscale_HHsize
+gen dailyincome4_pc=(annualincome_HH/365)/squareroot_HHsize
+
+* USD in 2010: 1 USD = 45.73 INR
+gen dailyusdincome1_pc=dailyincome1_pc/45.73
+gen dailyusdincome2_pc=dailyincome2_pc/45.73
+gen dailyusdincome3_pc=dailyincome3_pc/45.73
+gen dailyusdincome4_pc=dailyincome4_pc/45.73
+
+* PL net
+gen dailyplincome1_pc=dailyusdincome1_pc-1.9
+gen dailyplincome2_pc=dailyusdincome2_pc-1.9
+gen dailyplincome3_pc=dailyusdincome3_pc-1.9
+gen dailyplincome4_pc=dailyusdincome4_pc-1.9
+
+* PL dummy
+gen pl1=1 if dailyplincome1_pc<0
+gen pl2=1 if dailyplincome2_pc<0
+gen pl3=1 if dailyplincome3_pc<0
+gen pl4=1 if dailyplincome4_pc<0
+
+recode pl1 pl2 pl3 pl4 (.=0)
+
+
+***** Desc
+tabstat HHsize equiscale_HHsize equimodiscale_HHsize squareroot_HHsize, stat(n mean sd p50) by(year) long
+
+tabstat dailyincome1_pc dailyincome2_pc dailyincome3_pc dailyincome4_pc, stat(q) by(year) long
+
+tabstat dailyusdincome1_pc dailyusdincome2_pc dailyusdincome3_pc dailyusdincome4_pc, stat(q) by(year) long
+
+cls
+ta pl1 caste if year==2010, col nofreq
+ta pl2 caste if year==2010, col nofreq
+ta pl3 caste if year==2010, col nofreq
+ta pl4 caste if year==2010, col nofreq
+
+cls
+ta pl1 caste if year==2016, col nofreq
+ta pl2 caste if year==2016, col nofreq
+ta pl3 caste if year==2016, col nofreq
+ta pl4 caste if year==2016, col nofreq
+
+cls
+ta pl1 caste if year==2020, col nofreq
+ta pl2 caste if year==2020, col nofreq
+ta pl3 caste if year==2020, col nofreq
+ta pl4 caste if year==2020, col nofreq
 
 
 ***** Clean
