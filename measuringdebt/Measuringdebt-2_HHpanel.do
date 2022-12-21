@@ -564,65 +564,13 @@ save"panel_v2", replace
 
 
 
-
-
-
-
-
-
-****************************************
-* Construction: descriptive
-****************************************
-use"panel_v2", clear
-
-tabstat HHsize equiscale_HHsize equimodiscale_HHsize squareroot_HHsize, stat(n mean sd p50) by(year) long
-
-tabstat dailyincome1_pc dailyincome2_pc dailyincome3_pc dailyincome4_pc, stat(q) by(year) long
-
-tabstat dailyusdincome1_pc dailyusdincome2_pc dailyusdincome3_pc dailyusdincome4_pc, stat(q) by(year) long
-
-cls
-ta pl1 caste if year==2010, col nofreq
-ta pl2 caste if year==2010, col nofreq
-ta pl3 caste if year==2010, col nofreq
-ta pl4 caste if year==2010, col nofreq
-
-cls
-ta pl1 caste if year==2016, col nofreq
-ta pl2 caste if year==2016, col nofreq
-ta pl3 caste if year==2016, col nofreq
-ta pl4 caste if year==2016, col nofreq
-
-cls
-ta pl1 caste if year==2020, col nofreq
-ta pl2 caste if year==2020, col nofreq
-ta pl3 caste if year==2020, col nofreq
-ta pl4 caste if year==2020, col nofreq
-
-
-save"panel_v3", replace
-****************************************
-* END
-
-
-
-
-
-
-
-
-
-
-
-
-
 ****************************************
 * Construction: clean
 ****************************************
 use"panel_v2", clear
 
 
-foreach x in loanamount_HH annualincome_HH assets_total imp1_ds_tot_HH imp1_is_tot_HH totHH_givenamt_repa dsr isr dar dir tdr tar fm expenses_total remreceived_HH remsent_HH remittnet_HH {
+foreach x in loanamount_HH annualincome_HH assets_total imp1_ds_tot_HH imp1_is_tot_HH totHH_givenamt_repa dsr isr dar dir tdr tar fm expenses_total remreceived_HH remsent_HH remittnet_HH dailyincome4_pc {
 egen `x'_std=std(`x')
 *gen `x'_cr=`x'^(1/3)
 }
@@ -633,6 +581,6 @@ egen `x'_std=std(`x')
 order HHID_panel year
 sort HHID_panel year
 
-save"panel_v4", replace
+save"panel_v3", replace
 ****************************************
 * END
