@@ -16,6 +16,9 @@ do"C:\Users\Arnaud\Documents\GitHub\folderanalysis\measuringdebt.do"
 
 
 
+
+
+
 ****************************************
 * Stat HH
 ****************************************
@@ -112,7 +115,7 @@ tabstat assets_total, stat(n mean cv p50) by(year)
 
 
 ****************************************
-* Factor analysis 
+* Factor analysis: Tests
 ****************************************
 use"panel_v3", clear
 
@@ -136,21 +139,249 @@ Anderloni et al.:
 pwcorr dailyincome4_pc_std annualincome_HH_std expenses_total_std assets_total_std totHH_givenamt_repa_std imp1_ds_tot_HH_std imp1_is_tot_HH_std dar_std dsr_std isr_std tar_std tdr_std fm_std, star(.05)
 
 
-*** Var
-global varstd dailyincome4_pc_std assets_total_std tdr_std isr_std 
+
+
+********** Spec 1: Wealth + Livelihood + Cost of debt per year + Share of bad debt
+global varstd assets_total_std dailyincome4_pc_std isr_std tdr_std
 
 pwcorr $varstd, star(.05)
-*graph matrix $varstd, half msize(vsmall) msymbol(oh)
-
 pca $varstd
-*screeplot, ci 
-*estat kmo
-*rotate, quartimin
-*estat rotatecompare
+*59
+estat kmo
+/*
+    -----------------------
+        Variable |     kmo 
+    -------------+---------
+    assets_to~td |  0.5032 
+    dailyincom~d |  0.5026 
+         isr_std |  0.5090 
+         tdr_std |  0.4869 
+    -------------+---------
+         Overall |  0.5033 
+    -----------------------
+*/
+predict sp1fact1 sp1fact2
+forvalues i=1/2 {
+qui sum sp1fact`i'
+gen sp1fact`i'_std = (sp1fact`i'-r(min))/(r(max)-r(min))
+}
+gen sp1finindex=(sp1fact1_std*0.55)+(sp1fact2_std*0.45)
+drop sp1fact*
+
+
+
+********** Spec 2: Wealth + Livelihood + Cost of debt per year + Share of bad debt + Expenses
+global varstd assets_total_std dailyincome4_pc_std isr_std tdr_std expenses_total_std
+
+pwcorr $varstd, star(.05)
+pca $varstd
+*53
+estat kmo
+/*
+    -----------------------
+        Variable |     kmo 
+    -------------+---------
+    assets_to~td |  0.5875 
+    dailyincom~d |  0.6002 
+         isr_std |  0.5241 
+         tdr_std |  0.5960 
+    expenses_t~d |  0.5933 
+    -------------+---------
+         Overall |  0.5871 
+    -----------------------
+*/
+predict sp2fact1 sp2fact2
+forvalues i=1/2 {
+qui sum sp2fact`i'
+gen sp2fact`i'_std = (sp2fact`i'-r(min))/(r(max)-r(min))
+}
+gen sp2finindex=(sp2fact1_std*0.59)+(sp2fact2_std*0.41)
+drop sp2fact*
+
+
+
+
+
+
+********** Spec 3: Wealth + Livelihood + Cost of debt per year + Expenses
+global varstd assets_total_std dailyincome4_pc_std isr_std expenses_total_std
+
+pwcorr $varstd, star(.05)
+pca $varstd
+*64
+estat kmo
+/*
+    -----------------------
+        Variable |     kmo 
+    -------------+---------
+    assets_to~td |  0.5837 
+    dailyincom~d |  0.6025 
+         isr_std |  0.5227 
+    expenses_t~d |  0.5855 
+    -------------+---------
+         Overall |  0.5836 
+    -----------------------
+*/
+predict sp3fact1 sp3fact2
+forvalues i=1/2 {
+qui sum sp3fact`i'
+gen sp3fact`i'_std = (sp3fact`i'-r(min))/(r(max)-r(min))
+}
+gen sp3finindex=(sp3fact1_std*0.60)+(sp3fact2_std*0.40)
+drop sp3fact*
+
+
+
+********** Spec 4: Wealth + Income after payment + Cost of debt per year + Amount of bad debt
+global varstd assets_total_std fm_std isr_std totHH_givenamt_repa_std
+
+pwcorr $varstd, star(.05)
+pca $varstd
+*57
+estat kmo
+/*
+    -----------------------
+        Variable |     kmo 
+    -------------+---------
+    assets_to~td |  0.5683 
+          fm_std |  0.5051 
+         isr_std |  0.5054 
+    totHH_giv~pa |  0.5178 
+    -------------+---------
+         Overall |  0.5077 
+    -----------------------
+*/
+predict sp4fact1 sp4fact2
+forvalues i=1/2 {
+qui sum sp4fact`i'
+gen sp4fact`i'_std = (sp4fact`i'-r(min))/(r(max)-r(min))
+}
+gen sp4finindex=(sp4fact1_std*0.55)+(sp4fact2_std*0.45)
+drop sp4fact*
+
+
+
+
+
+********** Spec 5: Wealth + Livelihood + Cost of debt per year + Amount of bad debt + Expenses
+global varstd assets_total_std dailyincome4_pc_std isr_std totHH_givenamt_repa_std expenses_total_std
+
+pwcorr $varstd, star(.05)
+pca $varstd
+*72
+estat kmo
+/*
+    -----------------------
+        Variable |     kmo 
+    -------------+---------
+    assets_to~td |  0.5667 
+    dailyincom~d |  0.6048 
+         isr_std |  0.5194 
+    totHH_give~d |  0.4536 
+    expenses_t~d |  0.5759 
+    -------------+---------
+         Overall |  0.5704 
+    -----------------------
+*/
+predict sp5fact1 sp5fact2 sp5fact3
+forvalues i=1/3 {
+qui sum sp5fact`i'
+gen sp5fact`i'_std = (sp5fact`i'-r(min))/(r(max)-r(min))
+}
+gen sp5finindex=(sp5fact1_std*0.43)+(sp5fact2_std*0.29)+(sp5fact3_std*0.28)
+drop sp5fact*
+
+
+
+
+
+********** Check consistency between measures
+pwcorr sp1finindex sp2finindex sp3finindex sp4finindex sp5finindex, star(.05)
+/*
+             | sp1fin~x sp2fin~x sp3fin~x sp4fin~x sp5fin~x
+-------------+---------------------------------------------
+ sp1finindex |   1.0000 
+ sp2finindex |   0.8646*  1.0000 
+ sp3finindex |   0.6788*  0.9151*  1.0000 
+ sp4finindex |  -0.1935* -0.3255* -0.1863*  1.0000 
+ sp5finindex |   0.1193*  0.4084*  0.6593*  0.3701*  1.0000 
+*/
+
+graph matrix sp1finindex sp2finindex sp3finindex sp4finindex sp5finindex, half msize(vsmall) msymbol(oh)
+
+
+/*
+1 & 2
+1 & 3
+2 & 3
+3 & 5
+
+4 is reverse.
+
+1, 2, 3, and 5.
+*/
+
+
+
+
+********** Check consistency with other indicators
+*** Finindex No.1
+pwcorr sp1finindex dsr_std isr_std dar_std dir_std tdr_std dailyincome4_pc_std annualincome_HH_std assets_total_std expenses_total_std fm_std, p(.05)
+reg sp1finindex i.year i.caste
+
+
+*** Finindex No.2
+pwcorr sp2finindex dsr_std isr_std dar_std dir_std tdr_std dailyincome4_pc_std annualincome_HH_std assets_total_std expenses_total_std fm_std, p(.05)
+reg sp2finindex i.year i.caste
+
+
+*** Finindex No.3
+pwcorr sp3finindex dsr_std isr_std dar_std dir_std tdr_std dailyincome4_pc_std annualincome_HH_std assets_total_std expenses_total_std fm_std, p(.05)
+reg sp3finindex i.year i.caste
+
+
+*** Finindex No.5
+pwcorr sp5finindex dsr_std isr_std dar_std dir_std tdr_std dailyincome4_pc_std annualincome_HH_std assets_total_std expenses_total_std fm_std, p(.05)
+reg sp4finindex i.year i.caste dsr_std dar_std dailyincome4_pc_std expenses_total_std tdr_std isr_std assets_total_std
+sort sp5finindex
+br HHID_panel year caste typeoffamily sp5finindex dsr isr dar 
+
+
+
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Factor analysis: Final specification
+****************************************
+use"panel_v3", clear
+
+global varstd
+
+pwcorr $varstd, star(.05)
+graph matrix $varstd, half msize(vsmall) msymbol(oh)
+pca $varstd
+screeplot, ci addplot(function y=1, range(1 4))
+estat kmo
+rotate, quartimin
+estat rotatecompare
+
+
 
 predict fact1 fact2
 forvalues i=1/2 {
-qui summ fact`i'
+qui sum fact`i'
 gen fact`i'_std = (fact`i'-r(min))/(r(max)-r(min))
 }
 dis 33/60
@@ -196,6 +427,13 @@ save"panel_v4", replace
 
 
 
+
+
+
+
+
+
+
 ****************************************
 * Econometrics
 ****************************************
@@ -222,7 +460,11 @@ xtgee finindex dailyincome4_pc i.caste, family(binomial) link(logit)
 
 
 
-/*
+
+
+
+
+
 ****************************************
 * ML dimension with subsample
 ****************************************
