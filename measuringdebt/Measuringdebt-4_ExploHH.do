@@ -294,20 +294,58 @@ drop sp5fact*
 
 
 
+********** Spec 6: Wealth + Livelihood + Cost of debt per year + Amount of bad debt
+
+global varstd assets_total_std fm_std isr_std tdr_std
+
+pwcorr $varstd, star(.05)
+pca $varstd
+*59
+estat kmo
+/*
+    -----------------------
+        Variable |     kmo 
+    -------------+---------
+    assets_to~td |  0.5025 
+          fm_std |  0.5036 
+         isr_std |  0.5076 
+         tdr_std |  0.4895 
+    -------------+---------
+         Overall |  0.5040 
+    -----------------------
+*/
+predict sp6fact1 sp6fact2
+forvalues i=1/2 {
+qui sum sp6fact`i'
+gen sp6fact`i'_std = (sp6fact`i'-r(min))/(r(max)-r(min))
+}
+gen sp6finindex=(sp6fact1_std*0.53)+(sp6fact2_std*0.47)
+drop sp6fact*
+
+
+
+
+
+
+
+
+
+
 
 ********** Check consistency between measures
-pwcorr sp1finindex sp2finindex sp3finindex sp4finindex sp5finindex, star(.05)
+pwcorr sp1finindex sp2finindex sp3finindex sp4finindex sp5finindex sp6finindex, star(.05)
 /*
-             | sp1fin~x sp2fin~x sp3fin~x sp4fin~x sp5fin~x
--------------+---------------------------------------------
+             | sp1fin~x sp2fin~x sp3fin~x sp4fin~x sp5fin~x sp6fin~x
+-------------+------------------------------------------------------
  sp1finindex |   1.0000 
  sp2finindex |   0.8646*  1.0000 
  sp3finindex |   0.6788*  0.9151*  1.0000 
  sp4finindex |  -0.1935* -0.3255* -0.1863*  1.0000 
  sp5finindex |   0.1193*  0.4084*  0.6593*  0.3701*  1.0000 
+ sp6finindex |  -0.6290* -0.6818* -0.4546*  0.8113*  0.1139*  1.0000 
 */
 
-graph matrix sp1finindex sp2finindex sp3finindex sp4finindex sp5finindex, half msize(vsmall) msymbol(oh)
+graph matrix sp1finindex sp2finindex sp3finindex sp4finindex sp5finindex sp6finindex, half msize(vsmall) msymbol(oh)
 
 
 /*
@@ -342,11 +380,20 @@ reg sp3finindex i.year i.caste
 
 *** Finindex No.5
 pwcorr sp5finindex dsr_std isr_std dar_std dir_std tdr_std dailyincome4_pc_std annualincome_HH_std assets_total_std expenses_total_std fm_std, p(.05)
-reg sp4finindex i.year i.caste dsr_std dar_std dailyincome4_pc_std expenses_total_std tdr_std isr_std assets_total_std
+reg sp5finindex i.year i.caste dsr_std dar_std dailyincome4_pc_std expenses_total_std tdr_std isr_std assets_total_std fm_std
 sort sp5finindex
 br HHID_panel year caste typeoffamily sp5finindex dsr isr dar 
 
 
+*** Finindex No.6
+pwcorr sp6finindex dsr_std isr_std dar_std dir_std tdr_std dailyincome4_pc_std annualincome_HH_std assets_total_std expenses_total_std fm_std, p(.05)
+reg sp6finindex i.year i.caste dsr_std dar_std dailyincome4_pc_std tdr_std assets_total_std
+sort sp6finindex
+br HHID_panel year caste typeoffamily sp6finindex dsr isr dar 
+
+
+
+tabstat 
 
 ****************************************
 * END
