@@ -213,7 +213,9 @@ global imcor imcr_curious imcr_interestedbyart imcr_repetitivetasks imcr_inventi
 
 ********** Factor analyses: without grit
 minap $imcor
-qui factor $imcor, pcf fa(5) // 5
+
+factor $imcor, pcf fa(5) // 5
+estat kmo
 *rotate, promax
 rotate, quartimin
 *putexcel set "EFA_2016.xlsx", modify sheet(without_panel)

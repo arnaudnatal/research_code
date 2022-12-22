@@ -26,7 +26,6 @@ drop if loanreasongiven==77
 ta loanlender loanreasongiven
 ta lender4 loanreasongiven
 
-
 ****************************************
 * END
 
@@ -82,12 +81,11 @@ drop if loanreasongiven==77
 
 
 *** Deflate and round
-foreach x in loanamount imp1_debt_service imp1_interest_service {
+foreach x in loanamount2 imp1_debt_service imp1_interest_service {
 replace `x'=`x'*(100/158) if year==2016
 replace `x'=`x'*(100/184) if year==2020
 replace `x'=round(`x',1)
 }
-
 
 
 *** New grp for lender and reason
@@ -131,31 +129,6 @@ label values reason2_cat reason2_cat
 *** Group quanti var
 tabstat loanamount imp1_debt_service imp1_interest_service, stat(min p1 p5 p10 q p90 p95 p99 max)
 
-* When the debt is costly?
-gen idr=imp1_interest_service*100/imp1_debt_service
-replace idr=round(idr,1)
-tabstat idr, stat(n min p1 p5 p10 q p90 p95 p99 max)
-ta idr
-*twoway (histogram idr, w(1))
-
-ta idr if idr>0 & idr<100
-*twoway (histogram idr if idr>0 & idr<100, w(1))
-*twoway (histogram idr if idr>0 & idr<100, w(10) percent)
-*twoway (histogram idr if idr>0 & idr<100, w(5) percent)
-
-* 
-gen cost=.
-replace cost=1 if idr==0
-replace cost=1 if idr==.
-replace cost=2 if idr>0 & idr<40
-replace cost=3 if idr>=40
-
-label define cost 1"No cost" 2"0-40%" 3"40-100%"
-label values cost cost
-ta cost
-
-rename imp1_interest_service costamount
-
 * When the debt amount is high?
 tabstat loanamount, stat(min p1 p5 p10 q p90 p95 p99 max)
 gen amount=.
@@ -172,14 +145,17 @@ fre amount
 *
 
 *** Clean
+/*
 preserve
 keep HHID_panel INDID_panel year loanid loan_database loanlender lender4 lender_cat lender2_cat loanreasongiven reason_cat reason2_cat costamount cost amount
 export delimited using "debtMCA.csv", replace q
 restore
+*/
+
 
 *** Test using Stata
-*cls
-*mca lender4 reason_cat, meth(ind) normal(princ) comp
+cls
+mca lender2_cat reason2_cat amount, meth(ind) normal(princ) comp
 
 ****************************************
 * END

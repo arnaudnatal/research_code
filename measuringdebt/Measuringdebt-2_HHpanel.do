@@ -570,7 +570,7 @@ save"panel_v2", replace
 use"panel_v2", clear
 
 
-foreach x in loanamount_HH annualincome_HH assets_total imp1_ds_tot_HH imp1_is_tot_HH totHH_givenamt_repa dsr isr dar dir tdr tar fm expenses_total remreceived_HH remsent_HH remittnet_HH dailyincome4_pc {
+foreach x in loanamount_HH annualincome_HH assets_total imp1_ds_tot_HH imp1_is_tot_HH totHH_givenamt_repa dsr isr dar dir tdr tar fm expenses_total remreceived_HH remsent_HH remittnet_HH dailyincome4_pc assets_gold goldquantity_HH {
 egen `x'_std=std(`x')
 *gen `x'_cr=`x'^(1/3)
 }
