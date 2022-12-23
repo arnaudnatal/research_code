@@ -262,13 +262,11 @@ drop sp7fact*
 ********** Spec 8: Try to improve the 7
 global varstd dailyincome4_pc_std tdr_std isr_std assets_total_std
 
-pwcorr $varstd, star(.05)
-
-preserve
 factor $varstd, pcf
-*screeplot, mean
 estat kmo
 rotate, quartimin
+
+preserve
 predict sp8fact1 sp8fact2
 forvalues i=1/2 {
 qui sum sp8fact`i'
@@ -278,88 +276,11 @@ gen sp8finindex=((sp8fact1_std*0.55)+(sp8fact2_std*0.45))*100
 drop sp8fact*
 
 reg sp8finindex $varstd
-reg sp8finindex i.year i.caste
+*reg sp8finindex i.year i.caste
 restore
 
 ****************************************
 * END
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-****************************************
-* Average
-****************************************
-use"panel_v3", clear
-
-tabstat isr dar tdr, stat(n mean cv p50 min max)
-
-egen finindex=rowmean(isr dar tdr)
-replace finindex=100 if finindex>100
-
-tabstat finindex, stat(n mean cv p50 min max) by(year)
-tabstat finindex, stat(n mean cv p50 min max) by(caste)
-
-pwcorr finindex assets_total dailyincome4_pc expenses_total, star(.05)
-
-sort finindex
-*br HHID_panel year caste finindex dar tdr isr assets_total dailyincome4_pc expenses_total loanamount_HH dsr  dir
-
-*kdensity finindex, norm
-
-global varstd dsr_std dar_std dailyincome4_pc_std assets_total_std expenses_total_std loanamount_HH_std
-
-pwcorr $varstd, star(.05)
-
-factor $varstd, pcf
-factor $varstd, pcf
-
-rotate, quartimin
-estat kmo
-****************************************
-* END
-
-
-
-
-
-
-
-
-
-
-
-****************************************
-* kmeans
-****************************************
-use"panel_v3", clear
-
-cluster wardslinkage isr_std tdr_std dailyincome4_pc_std assets_total_std
-*cluster dendrogram, cutnumber(20)
-cluster generate clus=groups(3)
-
-tabstat isr tdr dailyincome4_pc assets_total, stat(n mean cv p50) by(clus)
-
-ta clus year, col nofreq
-
-****************************************
-* END
-
-
-
-
-
 
 
 
@@ -384,14 +305,14 @@ pwcorr $varstd, star(.05)
 
 ********* Factor analysis
 factor $varstd, pcf
-*screeplot, mean
+screeplot, mean
 estat kmo
 rotate, quartimin
 estat rotatecompare
 
 
 ********* Projection of variables
-*loadingplot , component(2) combined xline(0) yline(0) aspect(1)
+loadingplot , component(2) combined xline(0) yline(0) aspect(1)
 
 
 ********* Projection of individuals
@@ -567,6 +488,238 @@ xtreg finindex dailyincome4_pc i.caste
 
 
 
+
+
+
+
+****************************************
+* MCA of trends
+****************************************
+use"panel_v3", clear
+
+
+global var dailyincome4_pc assets_total tdr isr
+
+********** Reshape
+keep HHID_panel year $var
+reshape wide $var, i(HHID_panel) j(year)
+
+
+********** Gen diff
+foreach x in $var {
+gen `x'_d1=(`x'2016-`x'2010)*100/`x'2010
+gen `x'_d2=(`x'2020-`x'2016)*100/`x'2016
+}
+
+foreach x in $var {
+gen `x'_cat1=0
+gen `x'_cat2=0
+}
+
+recode dailyincome4_pc_d1 assets_total_d1 tdr_d1 isr_d1 dailyincome4_pc_d2 assets_total_d2 tdr_d2 isr_d2 (.=0)
+
+foreach x in $var {
+forvalues i=1/2 {
+replace `x'_cat`i'=1 if `x'_d`i'>-10 & `x'_d`i'<10 & `x'_d`i'!=.
+replace `x'_cat`i'=2 if `x'_d`i'>=10 & `x'_d`i'!=.
+replace `x'_cat`i'=3 if `x'_d`i'<=-10 & `x'_d`i'!=.
+}
+}
+
+********** Reshape
+keep HHID_panel dailyincome4_pc_cat1 dailyincome4_pc_cat2 assets_total_cat1 assets_total_cat2 tdr_cat1 tdr_cat2 isr_cat1 isr_cat2
+reshape long dailyincome4_pc_cat assets_total_cat tdr_cat isr_cat, i(HHID_panel) j(time)
+drop if dailyincome4_pc_cat==0
+
+
+********** Label
+label define pente 1"Stable" 2"Increase" 3"Decrease"
+foreach x in dailyincome4_pc_cat assets_total_cat tdr_cat isr_cat {
+label values `x' pente
+}
+
+
+********** MCA test
+mca dailyincome4_pc_cat assets_total_cat tdr_cat isr_cat, method (indicator) normal(princ) comp
+
+mcaplot, overlay legend(off) xline(0) yline(0) scale(.8)
+
+
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Average
+****************************************
+use"panel_v3", clear
+
+tabstat isr dar tdr, stat(n mean cv p50 min max)
+
+********** Mean
+egen finindex=rowmean(isr dar tdr)
+gen lambda=(dailyusdincome4_pc-1.9)/1.9
+replace lambda=0.99 if lambda>0.99
+replace lambda=0.01 if lambda<0.01
+gen puissa=1-lambda
+
+gen finindex2=finindex^puissa
+
+tabstat finindex2, stat(n mean cv p50 min max)
+reg finindex2 i.year i.caste
+
+
+sort finindex2
+br HHID_panel year finindex finindex2 dailyusdincome4_pc isr dar tdr
+
+*replace finindex=finindex/100
+replace finindex=100 if finindex>100
+
+
+********** Charact
+tabstat finindex, stat(n mean cv p50 min max) by(year)
+tabstat finindex, stat(n mean cv p50 min max) by(caste)
+
+graph box finindex if caste==1, over(year) noout
+graph box finindex if caste==2, over(year) noout
+graph box finindex if caste==3, over(year) noout
+
+graph box finindex, over(year) noout
+
+
+graph box finindex if year==2010, over(caste) noout
+graph box finindex if year==2016, over(caste) noout
+graph box finindex if year==2020, over(caste) noout
+
+
+pwcorr finindex assets_total dailyincome4_pc expenses_total, star(.05)
+
+
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* K means
+****************************************
+use"panel_v3", clear
+
+global varcr dailyincome4_pc_cr assets_total_cr tdr_cr isr_cr
+global varstd dailyincome4_pc_std assets_total_std tdr_std isr_std
+global var dailyincome4_pc assets_total tdr isr
+
+
+********** Tabstat
+tabstat $varstd, stat(n mean cv p50 p75 p90 p95 p99 max)
+/*
+foreach x in $varstd {
+replace `x'=3 if `x'>3
+}
+*/
+
+********** Corr
+pwcorr $varstd, star(.05)
+pwcorr $varcr, star(.05)
+pwcorr $var, star(.05)
+graph matrix $varstd, half msize(vsmall) msymbol(oh)
+
+
+********** Cluster
+cluster wardslinkage $varstd, measure(Euclidean)
+cluster dendrogram, cutnumber(100)
+cluster gen cah_clust=groups(3)
+cluster kmeans $varstd, k(3) measure(Euclidean) name(clust) start(group(cah_clust))
+drop _clus_*
+
+*ta cah_clust
+ta clust
+
+*ta cah_clust year, col nofreq
+ta clust year, col nofreq
+
+
+***** Interpretation
+foreach x in $var {
+reg `x' i.clust
+*graph box `x', over(cah_clust) noout name(bp`x', replace)
+}
+
+
+***** Clean
+label define clust 1"Weak" 2"Distress" 3"Wealthy"
+label values clust clust
+
+
+***** Characteristics
+ta clust caste, chi2 exp cchi2
+
+foreach x in dsr dar {
+*graph box `x', over(clust) noout name(bp`x', replace)
+}
+
+
+********** Transition matrix
+keep HHID_panel year clust
+reshape wide clust, i(HHID_panel) j(year)
+
+ta clust2010 clust2016, row nofreq
+ta clust2016 clust2020, row nofreq
+
+/*
+Household stay blocked
+*/
+
+
+
+****************************************
+* END
+
+
+
+
+/*
+stripplot `x', over(clust) vert ///
+stack width(0.2) jitter(1) ///
+box(barw(0.2)) boffset(-0.2) pctile(10) ///
+ms(oh oh oh) msize(small) mc(blue%30) ///
+yla(, ang(h)) xla(, noticks) name(sp`x', replace)
+*/
+
+
+/*
+program drop _all
+program define stripgraph
+stripplot `1' if `1'<`4', over(`2') by(`3', title("`1'")) vert ///
+stack width(1) jitter(0) ///
+box(barw(1)) boffset(-0.3) pctile(10) ///
+ms(oh oh oh) msize(small) mc(blue%30) ///
+yla(, ang(h)) xla(, noticks)
+end
+*/
 
 
 
