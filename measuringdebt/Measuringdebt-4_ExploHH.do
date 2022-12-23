@@ -263,63 +263,23 @@ drop sp7fact*
 global varstd dailyincome4_pc_std tdr_std isr_std assets_total_std
 
 pwcorr $varstd, star(.05)
+
+preserve
 factor $varstd, pcf
 *screeplot, mean
 estat kmo
-*rotate, quartimin
+rotate, quartimin
 predict sp8fact1 sp8fact2
 forvalues i=1/2 {
 qui sum sp8fact`i'
 gen sp8fact`i'_std = (sp8fact`i'-r(min))/(r(max)-r(min))
 }
-gen sp8finindex=(sp8fact1_std*0.55)+(sp8fact2_std*0.45)
+gen sp8finindex=((sp8fact1_std*0.55)+(sp8fact2_std*0.45))*100
 drop sp8fact*
 
 reg sp8finindex $varstd
-
 reg sp8finindex i.year i.caste
-
-
-
-
-
-
-
-
-
-
-
-********** Check consistency between measures
-global index sp1finindex sp2finindex sp4finindex sp5finindex sp6finindex sp7finindex sp8finindex
-pwcorr $index, star(.05)
-/*
-
-
-             | sp1fin~x sp2fin~x sp4fin~x sp5fin~x sp6fin~x sp7fin~x sp8fin~x
--------------+---------------------------------------------------------------
- sp1finindex |   1.0000 
- sp2finindex |   0.8646*  1.0000 
- sp4finindex |  -0.1935* -0.3255*  1.0000 
- sp5finindex |   0.1193*  0.4084*  0.3701*  1.0000 
- sp6finindex |  -0.6290* -0.6818*  0.8113*  0.1139*  1.0000 
- sp7finindex |   0.2331*  0.3098*  0.3942*  0.7240*  0.2498*  1.0000 
- sp8finindex |   0.1192*  0.0312   0.0372  -0.1507* -0.0520* -0.1369*  1.0000 
-
-
-*/
-
-
-graph matrix $index, half msize(vsmall) msymbol(oh)
-
-
-
-********** Way of indic
-reg sp8finindex dailyincome4_pc_std assets_total_std dar_std tdr_std isr_std expenses_total_std
-
-
-********** Check consistency with other indicators
-reg sp8finindex i.year i.caste
-
+restore
 
 ****************************************
 * END
@@ -358,9 +318,6 @@ sort finindex
 
 *kdensity finindex, norm
 
-
-
-
 global varstd dsr_std dar_std dailyincome4_pc_std assets_total_std expenses_total_std loanamount_HH_std
 
 pwcorr $varstd, star(.05)
@@ -368,13 +325,18 @@ pwcorr $varstd, star(.05)
 factor $varstd, pcf
 factor $varstd, pcf
 
-
 rotate, quartimin
 estat kmo
-
-
 ****************************************
 * END
+
+
+
+
+
+
+
+
 
 
 
@@ -384,7 +346,7 @@ estat kmo
 use"panel_v3", clear
 
 cluster wardslinkage isr_std tdr_std dailyincome4_pc_std assets_total_std
-cluster dendrogram, cutnumber(20)
+*cluster dendrogram, cutnumber(20)
 cluster generate clus=groups(3)
 
 tabstat isr tdr dailyincome4_pc assets_total, stat(n mean cv p50) by(clus)
@@ -411,51 +373,78 @@ ta clus year, col nofreq
 ****************************************
 use"panel_v3", clear
 
-global varstd assets_total_std dailyincome4_pc_std isr_std tdr_std
 
+global varstd dailyincome4_pc_std tdr_std isr_std assets_total_std
+
+
+********** Desc
 pwcorr $varstd, star(.05)
 *graph matrix $varstd, half msize(vsmall) msymbol(oh)
+
+
+********* Factor analysis
 factor $varstd, pcf
-*screeplot, ci mean
+*screeplot, mean
 estat kmo
-*rotate, quartimin
-rotate, varimax
-*estat rotatecompare
-loadingplot , component(2) combined xline(0) yline(0) aspect(1)
+rotate, quartimin
+estat rotatecompare
 
 
+********* Projection of variables
+*loadingplot , component(2) combined xline(0) yline(0) aspect(1)
+
+
+********* Projection of individuals
 predict fact1 fact2
+*twoway (scatter fact2 fact1, xline(0) yline(0))
 forvalues i=1/2 {
 qui sum fact`i'
 gen fact`i'_std = (fact`i'-r(min))/(r(max)-r(min))
 }
+*twoway (scatter fact2_std fact1_std)
+
+
+********** Index construction
 gen finindex=(fact1_std*0.55)+(fact2_std*0.45)
+
+
+********** Index modifications
+*** Log
+*gen _temp1logfinindex=finindex/(1-finindex)
+*gen logfinindex=log(_temp1logfinindex)
+*drop _temp1logfinindex
+
+*** Cat
 xtile finindex_cat=finindex, n(3)
-order HHID_panel year finindex fact* dsr dar annualincome_HH assets_total caste
-sort finindex
 
 
-*** Interpretation
-tabstat finindex, stat(mean cv p1 p5 p10 q p90 p95 p99)
-pwcorr finindex $varstd, star(.05)
-pwcorr finindex dsr isr dar tdr dailyincome4_pc assets_total, star(.05)
-tabstat finindex dsr isr dar tdr dailyincome4_pc assets_total, stat(q) by(finindex_cat) long
+********** Interpretation
+reg finindex $varstd
+*betareg finindex $varstd
+*glm finindex $varstd, family(gamma) link(probit)
 
+
+********* Representation
+*kdensity finindex, norm
+*kdensity logfinindex, norm
+*twoway (scatter logfinindex finindex)
+tabstat finindex, stat(n mean cv p50)
+tabstat finindex, stat(min p1 p5 p10 q p90 p95 p99 max)
+
+
+********** Interpretation part 2
+reg finindex dsr dar i.caste i.year
 
 
 
 ********** Evolution test
 preserve
-keep HHID_panel year finindex finindex_cat
-reshape wide finindex finindex_cat, i(HHID_panel) j(year)
+keep HHID_panel year finindex
+reshape wide finindex, i(HHID_panel) j(year)
 
+*** Correlation
 pwcorr finindex2010 finindex2016 finindex2020, star(0.05)
 *graph matrix finindex2010 finindex2016 finindex2020, half msize(vsmall) msymbol(oh)
-
-ta finindex_cat2010 finindex_cat2016, nofreq row
-ta finindex_cat2016 finindex_cat2020, nofreq row
-
-ta finindex_cat2010 finindex_cat2020, nofreq row
 restore
 
 save"panel_v4", replace
@@ -466,6 +455,88 @@ save"panel_v4", replace
 
 
 
+
+
+
+
+
+
+
+
+****************************************
+* DTWclust preparation
+****************************************
+use"panel_v4", clear
+
+keep HHID_panel year finindex dailyincome4_pc_std tdr_std isr_std assets_total_std dailyincome4_pc tdr isr assets_total dsr dsr_std dar dar_std fm fm_std expenses_total_std expenses_total caste
+
+gen panel=year
+
+reshape wide panel caste expenses_total assets_total dsr isr dar tdr fm dailyincome4_pc assets_total_std dsr_std isr_std dar_std tdr_std fm_std expenses_total_std dailyincome4_pc_std finindex, i(HHID_panel) j(year)
+
+order HHID_panel panel2010 panel2016 panel2020
+sort HHID_panel
+gen dummypanel=0
+replace dummypanel=1 if panel2010==2010 & panel2016==2016 & panel2020==2020
+
+keep if dummypanel==1
+ta caste2010 caste2016
+ta caste2016 caste2020
+
+export delimited "C:\Users\Arnaud\Documents\GitHub\research_code\measuringdebt\debtnew.csv", replace
+
+
+********** Manually create groups for finindex
+gen variarate1=(finindex2016-finindex2010)*100/finindex2010
+gen variarate2=(finindex2020-finindex2016)*100/finindex2016
+
+
+*** Groups
+label define dynamic 1"Sta-Sta" 2"Sta-Inc" 3"Inc-Sta" 4"Inc-Inc" 5"Sta-Dec" 6"Dec-Sta" 7"Dec-Dec" 8"Inc-Dec" 9"Dec-Inc"
+
+gen finindexdynamic=0
+
+replace finindexdynamic=1 if variarate1<5 & variarate1>-5 & variarate2<5 & variarate2>-5 
+
+replace finindexdynamic=2 if variarate1<5 & variarate1>-5 & variarate2>=5 
+replace finindexdynamic=3 if variarate1>=5 & variarate2<5 & variarate2>-5 
+replace finindexdynamic=4 if variarate1>=5 & variarate2>=5 
+
+replace finindexdynamic=5 if variarate1<5 & variarate1>-5 & variarate2<=-5 
+replace finindexdynamic=6 if variarate1<=-5 & variarate2<5 & variarate2>-5 
+replace finindexdynamic=7 if variarate1<=-5 & variarate2<=-5 
+
+replace finindexdynamic=8 if variarate1>=5 & variarate2<=-5 
+replace finindexdynamic=9 if variarate1<=-5 & variarate2>=5
+
+label values finindexdynamic dynamic
+
+tab finindexdynamic
+/*
+finindexdyn |
+       amic |      Freq.     Percent        Cum.
+------------+-----------------------------------
+    Sta-Sta |        126       32.98       32.98
+    Sta-Inc |         16        4.19       37.17
+    Inc-Sta |         27        7.07       44.24
+    Inc-Inc |          5        1.31       45.55
+    Sta-Dec |         69       18.06       63.61
+    Dec-Sta |         40       10.47       74.08
+    Dec-Dec |         25        6.54       80.63
+    Inc-Dec |         24        6.28       86.91
+    Dec-Inc |         50       13.09      100.00
+------------+-----------------------------------
+      Total |        382      100.00
+*/
+
+*** Check consistency
+cls
+forvalues i=1/9 {
+tabstat finindex2010 finindex2016 finindex2020 if finindexdynamic==`i', stat(n mean cv p50)
+}
+
+****************************************
+* END
 
 
 
@@ -487,18 +558,10 @@ xtset panelvar year
 
 
 xtreg finindex dailyincome4_pc i.caste
-
-glm finindex dailyincome4_pc i.caste, family(binomial) link(logit)
-
-xtgee finindex dailyincome4_pc i.caste, family(binomial) link(logit)
-
-
+*xtgee finindex dailyincome4_pc i.caste, family(binomial) link(logit)
 
 ****************************************
 * END
-
-
-
 
 
 
@@ -513,13 +576,14 @@ xtgee finindex dailyincome4_pc i.caste, family(binomial) link(logit)
 ****************************************
 use"panel_v3", clear
 
-
+/*
 forvalues i=1/99 {
 preserve
 sample 500, count
 mean year
 restore
 }
+*/
 
 ****************************************
 * END

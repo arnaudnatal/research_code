@@ -308,8 +308,8 @@ sem ///
 
 ********** Factor analyses: without grit
 minap $imcor
-qui factor $imcor, pcf fa(5) // 2
-*rotate, promax
+factor $imcor, pcf fa(5) // 2
+estat kmo
 rotate, quartimin
 *putexcel set "EFA_2020.xlsx", modify sheet(without_panel)
 *putexcel (E2)=matrix(e(r_L))
