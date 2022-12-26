@@ -19,20 +19,51 @@ do "https://raw.githubusercontent.com/arnaudnatal/folderanalysis/main/$link.do"
 ****************************************
 * Panel
 ****************************************
-use"$wave3", clear
+
+********** 2020-21
+use"raw\\$wave3", clear
 gen year2020=2020
 rename egoid egoid2020
-keep HHID_panel INDID_panel egoid2020 year2020
+keep HHID2020 INDID2020 egoid2020 year2020
+merge m:m HHID2020 using "raw\ODRIIS-HH_wide", keepusing(HHID_panel)
+keep if _merge==3
+drop _merge
+tostring INDID2020, replace
+merge m:m HHID_panel INDID2020 using "raw\ODRIIS-Indiv_wide", keepusing(INDID_panel)
+destring INDID2020, replace
+keep if _merge==3
+drop _merge
+order HHID2020 INDID2020 HHID_panel INDID_panel
 save"$wave3~_temp", replace
 
-use"$wave2", clear
+
+********** 2016-17
+use"raw\\$wave2", clear
 gen year2016=2016
 rename egoid egoid2016
-keep HHID_panel INDID_panel egoid2016 year2016
-merge 1:1 HHID_panel INDID_panel using "$wave3~_temp"
+keep HHID2016 INDID2016 egoid2016 year2016
+merge m:m HHID2016 using "raw\ODRIIS-HH_wide", keepusing(HHID_panel)
+keep if _merge==3
+drop _merge
+tostring INDID2016, replace
+merge m:m HHID_panel INDID2016 using "raw\ODRIIS-Indiv_wide", keepusing(INDID_panel)
+destring INDID2016, replace
+keep if _merge==3
+drop _merge
+order HHID2016 INDID2016 HHID_panel INDID_panel
+save"$wave2~_temp", replace
+
+
+
+********** Merge
+use"$wave3~_temp", clear
+
+merge 1:1 HHID_panel INDID_panel using "$wave2~_temp"
+
 gen panel_indiv=0
 replace panel_indiv=1 if _merge==3
 drop _merge
+
 save"panel_indiv", replace
 
 ****************************************
@@ -50,11 +81,15 @@ save"panel_indiv", replace
 
 ****************************************
 * EFA 2016
-****************************************
+**************************************** 
+use"raw\\$wave2", clear
 
-********** 
-use"$wave2", clear
-merge 1:1 HHID_panel INDID_panel using "panel_indiv"
+* Indiv
+tostring INDID2016, replace
+merge m:m HHID2016 INDID2016 using "panel_indiv"
+keep if _merge==3
+drop _merge
+destring INDID2016, replace
 
 keep if panel_indiv==1
 keep if egoid>0
@@ -143,202 +178,64 @@ save"$wave2~_ego.dta", replace
 ****************************************
 * Prepa 2016
 ****************************************
+use"raw\\$wave2", clear
 
-********** 
-use"$wave2", clear
-*HH size
-keep if livinghome==1 | livinghome==2
-/*
-drop if egoid==0
-duplicates drop HHID_panel, force
-
-2 HH without ego
-*/
-bysort HHID_panel: gen hhsize=_N
-
-*
-sum loanamount_indiv
-
-
-*Nb children
-gen child=0
-replace child=1 if age<=14
-bysort HHID_panel: egen nbchild=sum(child)
-
-*Sex ratio
-gen female=0
-gen male=0
-replace female=1 if sex==2
-replace male=1 if sex==1
-bysort HHID_panel: egen nbfemale=sum(female)
-bysort HHID_panel: egen nbmale=sum(male)
-
-*Savings
-egen savingsamount_temp_HH=rowtotal(savingsamount1 savingsamount2 savingsamount3 savingsamount4)
-bysort HHID_panel: egen savingsamount_HH=sum(savingsamount_temp_HH)
-
-*Expenses
-bysort HHID_panel: egen educationexpenses_HH=sum(educationexpenses)
-egen productexpenses_HH=rowtotal(productexpenses_paddy productexpenses_ragi productexpenses_millets productexpenses_tapioca productexpenses_cotton productexpenses_sugarca productexpenses_savukku productexpenses_guava productexpenses_groundnut)
-bysort HHID_panel: egen businessexpenses_HH=sum(businessexpenses)
-gen foodexpenses_HH=foodexpenses*52
-gen healthexpenses_HH=healthexpenses
-gen ceremoniesexpenses_HH=ceremoniesexpenses
-gen deathexpenses_HH=deathexpenses
-egen livestockexpenses_HH=rowtotal(livestockspent_cow livestockspent_goat livestockspent_chicken livestockspent_bullock)
-
-/*
-*Chitfunds
-egen chitfundpaymentamount_temp_HH=rowmean(chitfundpaymentamount1 chitfundpaymentamount2)
-egen chitfundamount_temp_HH=rowmean(chitfundamount1 chitfundamount2)
-egen chitfundamounttot_temp_HH=rowtotal(chitfundamount1 chitfundamount2)
-bysort HHID_panel: egen chitfundpaymentamount_HH=mean(chitfundpaymentamount_temp_HH)
-bysort HHID_panel: egen chitfundamount_HH=mean(chitfundamount_temp_HH)
-bysort HHID_panel: egen chitfundamounttot_HH=sum(chitfundamounttot_temp_HH)
-bysort HHID_panel: egen nbchitfunds_HH=sum(nbchitfunds)
-
-*Lending
-bysort HHID_panel: egen amountlent_HH=sum(amountlent)
-bysort HHID_panel: egen interestlending_HH=mean(interestlending)
-bysort HHID_panel: egen problemrepayment_HH=sum(problemrepayment)
-
-*Gold
-bysort HHID_panel: egen goldquantity_HH=sum(goldquantity)
-bysort HHID_panel: egen goldquantitypledge_HH=sum(goldquantitypledge)
-
-*Insurance
-bysort HHID_panel: egen nbinsurance_HH=sum(nbinsurance)
-egen insuranceamount=rowtotal(insuranceamount1 insuranceamount2)
-egen insuranceamountm=rowmean(insuranceamount1 insuranceamount2)
-bysort HHID_panel: egen insuranceamount_HH=mean(insuranceamountm)
-bysort HHID_panel: egen insuranceamounttot_HH=sum(insuranceamount)
-bysort HHID_panel: egen insurancebenefitamount_HH=mean(insurancebenefitamount)
-bysort HHID_panel: egen insurancebenefitamounttot_HH=sum(insurancebenefitamount)
-*/
-
-*Land purchased as investment
-tab landpurchased
-tab landpurchasedacres
-tab landpurchasedamount
-tab landpurchasedhowbuy
-
-*Equipment
-foreach x in tractor bullockcart ploughmach {
-gen investequip_`x'=.
-}
-foreach x in tractor bullockcart ploughmach {
-replace investequip_`x'=equiowncost_`x' if equiownyear_`x'>=2010
-}
-egen investequiptot_HH=rowtotal(investequip_tractor investequip_bullockcart investequip_ploughmach)
-
-
-*** Network :
-* Asso
-sort HHID_panel INDID_panel
-fre associationlist
-gen dummy_asso=0
-replace dummy_asso=1 if associationlist!="" & associationlist!="13"
-ta dummy_asso
-
-* Chitfund
-ta chitfundbelongerlist
-split chitfundbelongerlist
-destring chitfundbelongerlist1 chitfundbelongerlist2, replace
-gen dummy_chit=0
-replace dummy_chit=1 if chitfundbelongerlist1==INDID | chitfundbelongerlist2==INDID
-ta dummy_chit
-
-/*
-* SHG
-preserve
-use "NEEMSIS1-loans_v4", clear
-fre loanlender
-gen dummy_shg=0
-replace dummy_shg=1 if loanlender==10
-bysort parent_key INDID: egen dummy_shg_tot=sum(dummy_shg)
-drop dummy_shg
-rename dummy_shg_tot dummy_shg
-replace dummy_shg=1 if dummy_shg>1
-keep parent_key INDID dummy_shg
-duplicates drop
-rename parent_key HHID2016
-save "NEEMSIS1-shg", replace
-restore
-
-merge 1:1 HHID2016 INDID using "NEEMSIS1-shg"
-drop if _merge==2
+* Indiv
+tostring INDID2016, replace
+merge m:m HHID2016 INDID2016 using "panel_indiv"
+keep if _merge==3
 drop _merge
-recode dummy_shg (.=0)
+destring INDID2016, replace
 
+* Caste / jatis
+merge 1:1 HHID2016 INDID2016 using "raw\NEEMSIS1-caste"
+drop _merge
 
-* Global asso
-gen dummy_network=dummy_asso+dummy_chit+dummy_shg
-order dummy_asso dummy_chit dummy_shg dummy_network, last
-replace dummy_network=1 if dummy_network>1
-ta dummy_network egoid
-*/
+* Education
+merge 1:1 HHID2016 INDID2016 using "raw\NEEMSIS1-education"
+drop _merge
 
+* Occupation
+merge 1:1 HHID2016 INDID2016 using "raw\NEEMSIS1-occup_indiv", keepusing(mainocc_profession_indiv mainocc_occupation_indiv mainocc_sector_indiv mainocc_annualincome_indiv mainocc_occupationname_indiv annualincome_indiv nboccupation_indiv)
+drop _merge
 
-*** Dependency ratio :
-* Debt
-gen debtor=0
-replace debtor=1 if loanamount_indiv>0 & loanamount_indiv!=.
-gen nondebtor=0
-replace nondebtor=1 if debtor==0 & debtor!=.
+* Assets
+merge m:1 HHID2016 using "raw\NEEMSIS1-assets", keepusing(assets_sizeownland assets_housevalue assets_livestock assets_goods assets_ownland assets_gold assets_total assets_totalnoland assets_totalnoprop)
+drop _merge
 
-* Worker
-gen nonworker=0
-replace nonworker=1 if worker==0 & worker!=.
+* Income
+merge m:1 HHID2016 using "raw\NEEMSIS1-occup_HH", keepusing(incomeagri_HH incomenonagri_HH annualincome_HH shareincomeagri_HH shareincomenonagri_HH nbworker_HH nbnonworker_HH)
+drop _merge
 
-* HH level
-foreach x in debtor nondebtor worker nonworker {
-bysort HHID_panel: egen `x'_HH=sum(`x')
-}
-gen debtorratio=debtor_HH/nondebtor_HH
-clonevar debtorratio2=debtorratio
-replace debtorratio2=debtor_HH if debtorratio==.
+* Family
+merge m:1 HHID2016 using "raw\NEEMSIS1-family", keepusing(nbmale nbfemale age_group HHsize typeoffamily waystem dummypolygamous)
+drop _merge
 
-gen workerratio=worker_HH/nonworker_HH
-clonevar workerratio2=workerratio
-replace workerratio2=worker_HH if workerratio==.
+* Villages
+merge m:1 HHID2016 using "raw\NEEMSIS1-villages", keepusing(livingarea villagename2016_club)
+drop _merge
+rename villagename2016_club villageid2016
 
-preserve
-duplicates drop HHID_panel, force
-fre debtorratio debtorratio2
-fre workerratio workerratio2
-restore
+* Indiv debt
+merge 1:1 HHID2016 INDID2016 using "raw\NEEMSIS1-loans_indiv", keepusing(nbloans_indiv loanamount_indiv)
+drop _merge
 
-
-*Only ego
+* Only ego
 fre egoid
 drop if egoid==0
+keep if panel_indiv==1
 
 
-*Macro for rename
-global charactindiv maritalstatus edulevel relationshiptohead sex age readystartjob methodfindjob jobpreference moveoutsideforjob moveoutsideforjobreason aspirationminimumwage dummyaspirationmorehours aspirationminimumwage2 name
+* Macro for rename
+global charactindiv maritalstatus edulevel relationshiptohead sex age name mainocc_profession_indiv mainocc_occupation_indiv mainocc_sector_indiv mainocc_annualincome_indiv mainocc_occupationname_indiv annualincome_indiv nboccupation_indiv nbloans_indiv loanamount_indiv
+
+global wealth assets_sizeownland assets_housevalue assets_livestock assets_goods assets_ownland assets_gold assets_total assets_totalnoland assets_totalnoprop incomeagri_HH incomenonagri_HH annualincome_HH shareincomeagri_HH shareincomenonagri_HH nbworker_HH nbnonworker_HH
  
-global characthh villageid assets assets_noland sizeownland ownland house jatis caste dummymarriage hhsize nbchild nbfemale nbmale interviewplace address religion dummyeverhadland villageid_new dummydemonetisation
+global characthh villageid jatis caste dummymarriage dummydemonetisation nbmale nbfemale age_group HHsize typeoffamily waystem dummypolygamous villageid2016 livingarea
 
-global wealthindiv annualincome_indiv totalincome_indiv mainocc_kindofwork_indiv mainocc_profession_indiv mainocc_occupation_indiv mainocc_annualincome_indiv nboccupation_indiv
+keep HHID_panel INDID_panel egoid $charactindiv $characthh $wealth 
 
-global wealthhh annualincome_HH totalincome_HH nboccupation_HH foodexpenses healthexpenses ceremoniesexpenses ceremoniesrelativesexpenses deathexpenses marriageexpenses businessexpenses
-
-global debtindiv imp1_ds_tot_indiv imp1_is_tot_indiv loanamount_indiv loans_indiv debtor nondebtor worker nonworker
-
-global debthh imp1_ds_tot_HH imp1_is_tot_HH loanamount_HH loans_HH debtorratio workerratio debtorratio2 workerratio2 debtor_HH nondebtor_HH worker_HH nonworker_HH
-
-global perso cr_OP cr_CO cr_EX cr_AG cr_ES cr_Grit OP CO EX AG ES Grit raven_tt num_tt lit_tt 
-
-global expenses educationexpenses_HH productexpenses_HH businessexpenses_HH foodexpenses_HH healthexpenses_HH ceremoniesexpenses_HH deathexpenses_HH landpurchased investequiptot_HH 
-
-global all $charactindiv $characthh $wealthindiv $wealthhh $debtindiv $debthh $perso $expenses nbercontactphone dummycontactleaders nbcontact_headbusiness nbcontact_policeman nbcontact_civilserv nbcontact_bankemployee nbcontact_panchayatcommittee nbcontact_peoplecouncil nbcontact_recruiter nbcontact_headunion nberpersonfamilyevent associationlist networkhelpkinmember demotrustbank_ego trustneighborhood trustemployees networkpeoplehelping trustingofother_backup
-
-keep $all HHID_panel INDID_panel egoid //dummy_asso dummy_shg dummy_chit dummy_network
-
-*merge m:1 HHID_panel using"$wave3~efa_ego.dta"
-*drop _merge
-
-*Rename
+* Rename
 foreach x in $all {
 rename `x' `x'_1
 }
@@ -353,7 +250,7 @@ restore
 
 
 
-********** Merge factor
+* Merge factor
 merge 1:1 HHID_panel INDID_panel using "$wave2~_ego.dta"
 keep if _merge==3
 drop _merge
