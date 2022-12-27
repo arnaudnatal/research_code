@@ -44,7 +44,10 @@ global efa base_f1_std base_f2_std base_f3_std base_f5_std
 
 global cog base_raven_tt_std base_num_tt_std base_lit_tt_std
 
-global indivcontrol age_1 agesq_1 dummyhead_1 cat_mainocc_occupation_indiv_1_1 cat_mainocc_occupation_indiv_1_2 cat_mainocc_occupation_indiv_1_4 cat_mainocc_occupation_indiv_1_5 cat_mainocc_occupation_indiv_1_6 cat_mainocc_occupation_indiv_1_7 dummyedulevel maritalstatus2_1
+*global indivcontrol age_1 agesq_1 dummyhead_1 cat_mainocc_occupation_indiv_1_1 cat_mainocc_occupation_indiv_1_2 cat_mainocc_occupation_indiv_1_4 cat_mainocc_occupation_indiv_1_5 cat_mainocc_occupation_indiv_1_6 cat_mainocc_occupation_indiv_1_7 dummyedulevel maritalstatus2_1
+
+global indivcontrol age_1 cat_mainocc_occupation_indiv_1_1 cat_mainocc_occupation_indiv_1_2 cat_mainocc_occupation_indiv_1_4 cat_mainocc_occupation_indiv_1_5 cat_mainocc_occupation_indiv_1_6 cat_mainocc_occupation_indiv_1_7 dummyedulevel maritalstatus2_1
+
 
 global hhcontrol4 assets1000_1 hhsize_1 shock_1 covsell incomeHH1000_1
 
@@ -86,18 +89,23 @@ mdesc $quali $qualiml $quanti
 * PROBIT
 ****************************************
 
+
+
 ********** Probit RECOURSE
 qui probit indebt_indiv_2 indebt_indiv_1 $indivcontrol $hhcontrol4 $villagesFE female dalits, vce(cluster HHFE)
 overfit: probit indebt_indiv_2 indebt_indiv_1 $indivcontrol $hhcontrol4 $villagesFE female dalits, vce(cluster HHFE)
 est store res_0
 
 qui probit indebt_indiv_2 indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits, vce(cluster HHFE)
+overfit: probit indebt_indiv_2 indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits, vce(cluster HHFE)
 est store res_1
 
 qui probit indebt_indiv_2 indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits $intfem, vce(cluster HHFE)
+overfit: probit indebt_indiv_2 indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits $intfem, vce(cluster HHFE)
 est store res_2
 
 qui probit indebt_indiv_2 indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits $intdal, vce(cluster HHFE)
+overfit: probit indebt_indiv_2 indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits $intdal, vce(cluster HHFE)
 est store res_3
 
 qui probit indebt_indiv_2 indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits femXdal $intfem $intdal $three, vce(cluster HHFE)
@@ -129,21 +137,24 @@ restore
 
 
 ********** Probit NEGOTIATION
-qui probit borrowerservices_none indebt_indiv_1 $indivcontrol $hhcontrol4 $villagesFE female dalits c.share_nb_samesex c.share_nb_samecaste, vce(cluster HHFE)
+probit borrowerservices_none indebt_indiv_1 $indivcontrol $hhcontrol4 $villagesFE female dalits c.share_nb_samesex c.share_nb_samecaste, vce(cluster HHFE)
 overfit: probit borrowerservices_none indebt_indiv_1 $indivcontrol $hhcontrol4 $villagesFE female dalits c.share_nb_samesex c.share_nb_samecaste, vce(cluster HHFE)
-
 est store res_0
 
-qui probit borrowerservices_none indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits c.share_nb_samesex c.share_nb_samecaste, vce(cluster HHFE)
+probit borrowerservices_none indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits c.share_nb_samesex c.share_nb_samecaste, vce(cluster HHFE)
+overfit: probit borrowerservices_none indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits c.share_nb_samesex c.share_nb_samecaste, vce(cluster HHFE)
 est store res_1
 
-qui probit borrowerservices_none indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits $intfem c.share_nb_samesex c.share_nb_samecaste, vce(cluster HHFE)
+probit borrowerservices_none indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits $intfem c.share_nb_samesex c.share_nb_samecaste, vce(cluster HHFE)
+overfit: probit borrowerservices_none indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits $intfem c.share_nb_samesex c.share_nb_samecaste, vce(cluster HHFE)
 est store res_2
 
 qui probit borrowerservices_none indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits $intdal c.share_nb_samesex c.share_nb_samecaste, vce(cluster HHFE)
+overfit: probit borrowerservices_none indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits $intdal c.share_nb_samesex c.share_nb_samecaste, vce(cluster HHFE)
 est store res_3
 
 qui probit borrowerservices_none indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits femXdal $intfem $intdal $three c.share_nb_samesex c.share_nb_samecaste, vce(cluster HHFE)
+lroc
 overfit: probit borrowerservices_none indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits femXdal $intfem $intdal $three c.share_nb_samesex c.share_nb_samecaste, vce(cluster HHFE)
 est store res_4
 
@@ -176,18 +187,23 @@ restore
 
 ********** Probit MANAGEMENT
 qui probit dummyproblemtorepay indebt_indiv_1 $indivcontrol $hhcontrol4 $villagesFE female dalits c.loanamount_indiv, vce(cluster HHFE)
+overfit: probit dummyproblemtorepay indebt_indiv_1 $indivcontrol $hhcontrol4 $villagesFE female dalits c.loanamount_indiv, vce(cluster HHFE)
 est store res_0
 
 qui probit dummyproblemtorepay indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits c.loanamount_indiv, vce(cluster HHFE)
+overfit: probit dummyproblemtorepay indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits c.loanamount_indiv, vce(cluster HHFE)
 est store res_1
 
 qui probit dummyproblemtorepay indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits $intfem c.loanamount_indiv, vce(cluster HHFE)
+overfit: probit dummyproblemtorepay indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits $intfem c.loanamount_indiv, vce(cluster HHFE)
 est store res_2
 
 qui probit dummyproblemtorepay indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits $intdal c.loanamount_indiv, vce(cluster HHFE)
+overfit: probit dummyproblemtorepay indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits $intdal c.loanamount_indiv, vce(cluster HHFE)
 est store res_3
 
-qui probit dummyproblemtorepay indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits femXdal $intfem $intdal $three c.loanamount_indiv, vce(cluster HHFE)
+probit dummyproblemtorepay indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits femXdal $intfem $intdal $three c.loanamount_indiv, vce(cluster HHFE)
+overfit: probit dummyproblemtorepay indebt_indiv_1 $efa $cog $indivcontrol $hhcontrol4 $villagesFE female dalits femXdal $intfem $intdal $three c.loanamount_indiv, vce(cluster HHFE)
 est store res_4
 
 esttab res_0 res_1 res_2 res_3 res_4 using "_reg.csv", ///
@@ -216,6 +232,7 @@ restore
 
 
 
+overfit: probit dummyproblemtorepay indebt_indiv_1 $indivcontrol $hhcontrol4 $villagesFE female dalits c.loanamount_indiv, vce(cluster HHFE)
 
 
 
@@ -343,11 +360,27 @@ qui margins, dydx(base_f1_std base_f2_std base_f3_std base_f5_std base_raven_tt_
 
 
 
+global intfem fem_base_f1_std fem_base_f2_std fem_base_f3_std fem_base_f5_std
+
+global intdal dal_base_f1_std dal_base_f2_std dal_base_f3_std dal_base_f5_std  
+
+global three thr_base_f1_std thr_base_f2_std thr_base_f3_std thr_base_f5_std  
+
+global efa base_f1_std base_f2_std base_f3_std base_f5_std
+
+global cog base_raven_tt_std base_num_tt_std base_lit_tt_std
+
+global indivcontrol age_1 cat_mainocc_occupation_indiv_1_1 cat_mainocc_occupation_indiv_1_2 cat_mainocc_occupation_indiv_1_4 cat_mainocc_occupation_indiv_1_5 cat_mainocc_occupation_indiv_1_6 cat_mainocc_occupation_indiv_1_7 dummyedulevel maritalstatus2_1
+
+global hhcontrol4 assets1000_1 hhsize_1 shock_1 covsell incomeHH1000_1
+
+global villagesFE villageid_2 villageid_3 villageid_4 villageid_5 villageid_6 villageid_7 villageid_8 villageid_9 villageid_10
 
 
 
 
 
+overfit: probit dummyproblemtorepay female dalits
 
 
 

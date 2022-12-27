@@ -189,7 +189,7 @@ save"$wave2~_ego.dta", replace
 use"raw\\$wave2", clear
 
 * To keep
-keep HHID2016 INDID2016 egoid name age sex livinghome dummymarriage dummydemonetisation relationshiptohead maritalstatus
+keep HHID2016 INDID2016 egoid name age sex livinghome dummymarriage dummydemonetisation relationshiptohead maritalstatus villageid
 
 * Indiv
 *tostring INDID2016, replace
@@ -226,9 +226,9 @@ merge m:1 HHID2016 using "raw\NEEMSIS1-family", keepusing(nbmale nbfemale age_gr
 drop _merge
 
 * Villages
-merge m:1 HHID2016 using "raw\NEEMSIS1-villages", keepusing(livingarea villagename2016_club)
-drop _merge
-rename villagename2016_club villageid2016
+*merge m:1 HHID2016 using "raw\NEEMSIS1-villages", keepusing(livingarea villagename2016_club)
+*drop _merge
+*rename villagename2016_club villageid2016
 
 * Indiv debt
 merge 1:1 HHID2016 INDID2016 using "raw\NEEMSIS1-loans_indiv", keepusing(nbloans_indiv loanamount_indiv)
@@ -261,6 +261,7 @@ rename raven_tt base_raven_tt
 
 gen indebt_indiv=0
 replace indebt_indiv=1 if loanamount_indiv>0 & loanamount_indiv!=.
+drop nbloans_indiv loanamount_indiv
 
 save"$wave2~panel", replace
 ****************************************
@@ -481,14 +482,3 @@ gen femXdal=female*dalits
 save"panel_wide_v2", replace
 ****************************************
 * END
-
-
-
-
-
-
-
-
-
-
-
