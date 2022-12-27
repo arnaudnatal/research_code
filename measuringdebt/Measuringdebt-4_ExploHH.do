@@ -128,6 +128,31 @@ pwcorr dailyincome4_pc_std annualincome_HH_std expenses_total_std assets_total_s
 
 
 
+********** Spec 0: Debt only debt
+global varstd assets_total_std isr_std tdr_std dailyincome4_pc_std
+
+pwcorr $varstd, star(.05)
+factor $varstd, pcf
+estat kmo
+
+
+
+
+
+
+********** Spec 0: Debt only debt
+global varstd assets_total_std isr_std tdr_std dailyincome4_pc_std
+
+pwcorr $varstd, star(.05)
+factor $varstd, pcf
+estat kmo
+
+
+
+
+
+
+
 
 ********** Spec 1: Wealth + Livelihood + Cost of debt per year + Share of bad debt
 global varstd assets_total_std dailyincome4_pc_std isr_std tdr_std
@@ -262,6 +287,7 @@ drop sp7fact*
 ********** Spec 8: Try to improve the 7
 global varstd dailyincome4_pc_std tdr_std isr_std assets_total_std
 
+pwcorr $varstd, star(.05)
 factor $varstd, pcf
 estat kmo
 rotate, quartimin
@@ -576,7 +602,8 @@ gen puissa=1-lambda
 gen finindex2=finindex^puissa
 
 tabstat finindex2, stat(n mean cv p50 min max)
-reg finindex2 i.year i.caste
+reg finindex i.year i.caste dailyusdincome4_pc
+reg finindex2 i.year i.caste dailyusdincome4_pc
 
 
 sort finindex2
@@ -603,6 +630,19 @@ graph box finindex if year==2020, over(caste) noout
 
 
 pwcorr finindex assets_total dailyincome4_pc expenses_total, star(.05)
+
+
+
+
+* reg
+encode HHID_panel, gen(panelvar)
+xtset panelvar year
+
+encode typeoffamily, gen(tof)
+fre head_sex head_age head_mocc_occupation head_edulevel head_widowseparated
+
+xtreg finindex2 i.caste head_sex head_age i.head_mocc_occupation i.head_edulevel i.tof assets_total_std
+
 
 
 ****************************************
