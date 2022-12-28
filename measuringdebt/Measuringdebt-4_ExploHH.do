@@ -323,7 +323,7 @@ restore
 use"panel_v3", clear
 
 *** Measures of financial distress
-global overlap dar_std dsr_std afm_std tdr_std isr_std
+global overlap dar_std dsr_std afm_std tdr_std isr_std dailyincome4_pc_std assets_total_std
 
 corr $overlap
 graph matrix $overlap, half msize(vsmall) msymbol(oh)
@@ -337,12 +337,20 @@ A household can have high value on one aspect, low in another one.
 
 
 /*
-This result reinforce the use of multidimensional index to assesse financial vulnerability to take into account each dimensions
+This result reinforce the use of a multidimensional index to assesse financial vulnerability to take into account each dimensions
 
 Indeed, if many overlap, we can only use one aspect.
 */
 
+/*
+We choose a compensatory approach: a debt that is costly can be compensated with a low level of debt, or a low level of impoverishing debt.
 
+2 strategies:
+- data dependend method (PCA)
+- simple method (mean)
+
+We will test the two
+*/
 
 
 ****************************************

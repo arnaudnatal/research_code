@@ -617,7 +617,7 @@ save"panel_v2", replace
 ****************************************
 use"panel_v2", clear
 
-tabstat dsr isr dar dir tdr tar rfm, stat(n mean cv min p1 p5 p10 q p90 p95 p99 max)
+tabstat dsr isr dar dir tdr tar rfm dailyincome4_pc assets_total, stat(n mean cv min p1 p5 p10 q p90 p95 p99 max)
 
 count if dsr>430
 count if isr>190
@@ -625,6 +625,8 @@ count if dar>420
 count if dir>2800
 count if tar>39
 count if rfm>7 | rfm<-10
+count if dailyincome4_pc>600
+count if assets_total>6000000
 
 replace dsr=430 if dsr>430
 replace isr=190 if isr>190
@@ -633,8 +635,10 @@ replace dir=2800 if dir>2800
 replace tar=39 if tar>39
 replace rfm=7 if rfm>7
 replace rfm=-10 if rfm<-10
+replace dailyincome4_pc=600 if dailyincome4_pc>600
+replace assets_total=6000000 if assets_total>6000000
 
-tabstat dsr isr dar dir tdr tar rfm, stat(n mean cv min p1 p5 p10 q p90 p95 p99 max)
+tabstat dsr isr dar dir tdr tar rfm dailyincome4_pc assets_total, stat(n mean cv min p1 p5 p10 q p90 p95 p99 max)
 
 
 foreach x in loanamount_HH annualincome_HH assets_total imp1_ds_tot_HH imp1_is_tot_HH totHH_givenamt_repa dsr isr dar dir tdr tar afm rfm expenses_total remreceived_HH remsent_HH remittnet_HH dailyincome4_pc assets_gold goldquantity_HH {
@@ -642,7 +646,15 @@ egen `x'_std=std(`x')
 gen `x'_cr=`x'^(1/3)
 }
 
-
+*** Label
+label var dar_std "DAR (std)"
+label var dsr_std "DSR (std)"
+label var afm_std "AFM (std)"
+label var rfm_std "RFM (std)"
+label var tdr_std "TDR (std)"
+label var isr_std "ISR (std)"
+label var dailyincome4_pc_std "Livelihood (std)"
+label var assets_total_std "Wealth (std)"
 
 *** Order
 order HHID_panel year
