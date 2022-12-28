@@ -323,7 +323,7 @@ restore
 use"panel_v3", clear
 
 *** Measures of financial distress
-global overlap dar_std dsr_std afm_std tdr_std isr_std dailyincome4_pc_std assets_total_std
+global overlap dar_std dsr_std afm_std rfm_std isr_std dailyincome4_pc_std assets_total_std
 
 corr $overlap
 graph matrix $overlap, half msize(vsmall) msymbol(oh)
@@ -362,15 +362,19 @@ We will test the two
 
 
 
+
+
+
+
+
 ****************************************
 * Factor analysis: Final specification
 ****************************************
 use"panel_v3", clear
 
-global varstd afm_std isr_std tdr_std dar_std
+global varstd dailyincome4_pc_std dar_std rfm_std isr_std
 
-********** Desc
-tabstat $varstd, stat(mean cv min p1 p5 p10 q p90 p95 p99 max)
+********** Corr
 pwcorr $varstd, star(.05)
 *graph matrix $varstd, half msize(vsmall) msymbol(oh)
 
@@ -380,17 +384,19 @@ factor $varstd, pcf
 *screeplot, mean
 estat kmo
 rotate, quartimin
-estat rotatecompare
 
 
 ********* Projection of variables
-*loadingplot , component(2) combined xline(0) yline(0) aspect(1)
+loadingplot , component(2) combined xline(0) yline(0) aspect(1)
+
+
+
 
 
 ********* Projection of individuals
 predict fact1 fact2
 tabstat fact1 fact2, stat(mean cv min p1 p5 p10 q p90 p95 p99 max)
-*twoway (scatter fact2 fact1, xline(0) yline(0))
+twoway (scatter fact2 fact1, xline(0) yline(0))
 
 
 ********* Corr between var and fact
@@ -454,6 +460,12 @@ restore
 save"panel_v4", replace
 ****************************************
 * END
+
+
+
+
+
+
 
 
 

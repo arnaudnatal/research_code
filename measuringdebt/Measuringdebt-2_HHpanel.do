@@ -521,6 +521,11 @@ gen rfm=afm/annualincome_HH
 ta rfm
 
 
+* Total Expenses to Income Ratio
+gen teir=(expenses_educ+expenses_food+expenses_heal)/annualincome_HH
+
+ta teir
+
 
 /*
 stripplot fm2, over(dummyfm) vert ///
@@ -581,9 +586,12 @@ gen apl4=0 if dailyplincome4_pc<0
 
 recode apl1 apl2 apl3 apl4 (.=1)
 
-
 ta apl4 
 ta dummyafmpos apl4
+
+* % of PL
+gen incpercpl=100+((dailyusdincome4_pc-1.9)*100/1.9)
+ta incpercpl
 
 
 * Financial distress
@@ -617,7 +625,7 @@ save"panel_v2", replace
 ****************************************
 use"panel_v2", clear
 
-tabstat dsr isr dar dir tdr tar rfm dailyincome4_pc assets_total, stat(n mean cv min p1 p5 p10 q p90 p95 p99 max)
+tabstat dsr isr dar dir tdr tar rfm dailyincome4_pc assets_total incpercpl goldreadyamount teir, stat(n mean cv min p1 p5 p10 q p90 p95 p99 max)
 
 count if dsr>430
 count if isr>190
@@ -627,6 +635,8 @@ count if tar>39
 count if rfm>7 | rfm<-10
 count if dailyincome4_pc>600
 count if assets_total>6000000
+count if incpercpl>600
+count if goldreadyamount>400000
 
 replace dsr=430 if dsr>430
 replace isr=190 if isr>190
@@ -637,11 +647,14 @@ replace rfm=7 if rfm>7
 replace rfm=-10 if rfm<-10
 replace dailyincome4_pc=600 if dailyincome4_pc>600
 replace assets_total=6000000 if assets_total>6000000
+replace incpercpl=600 if incpercpl>600
+replace goldreadyamount=400000 if goldreadyamount>400000
+replace teir=10 if teir>10
 
-tabstat dsr isr dar dir tdr tar rfm dailyincome4_pc assets_total, stat(n mean cv min p1 p5 p10 q p90 p95 p99 max)
+tabstat dsr isr dar dir tdr tar rfm dailyincome4_pc assets_total incpercpl, stat(n mean cv min p1 p5 p10 q p90 p95 p99 max)
 
 
-foreach x in loanamount_HH annualincome_HH assets_total imp1_ds_tot_HH imp1_is_tot_HH totHH_givenamt_repa dsr isr dar dir tdr tar afm rfm expenses_total remreceived_HH remsent_HH remittnet_HH dailyincome4_pc assets_gold goldquantity_HH {
+foreach x in loanamount_HH annualincome_HH assets_total imp1_ds_tot_HH imp1_is_tot_HH totHH_givenamt_repa dsr isr dar dir tdr tar afm rfm expenses_total remreceived_HH remsent_HH remittnet_HH dailyincome4_pc assets_gold goldquantity_HH incpercpl goldreadyamount teir {
 egen `x'_std=std(`x')
 gen `x'_cr=`x'^(1/3)
 }
@@ -652,9 +665,11 @@ label var dsr_std "DSR (std)"
 label var afm_std "AFM (std)"
 label var rfm_std "RFM (std)"
 label var tdr_std "TDR (std)"
+label var tar_std "TAR (std)"
 label var isr_std "ISR (std)"
 label var dailyincome4_pc_std "Livelihood (std)"
 label var assets_total_std "Wealth (std)"
+label var teir_std "TEIR (std)"
 
 *** Order
 order HHID_panel year
