@@ -315,35 +315,84 @@ restore
 
 
 
+
+
+****************************************
+* Overlap between measures
+****************************************
+use"panel_v3", clear
+
+*** Measures of financial distress
+global overlap dar_std dsr_std afm_std tdr_std isr_std
+
+corr $overlap
+graph matrix $overlap, half msize(vsmall) msymbol(oh)
+
+
+/*
+Not really overlap
+Each measures seems to measure a precise aspect of indebtedness
+A household can have high value on one aspect, low in another one.
+*/
+
+
+/*
+This result reinforce the use of multidimensional index to assesse financial vulnerability to take into account each dimensions
+
+Indeed, if many overlap, we can only use one aspect.
+*/
+
+
+
+
+****************************************
+* END
+
+
+
+
+
+
+
 ****************************************
 * Factor analysis: Final specification
 ****************************************
 use"panel_v3", clear
 
-
-global varstd dailyincome4_pc_std tdr_std isr_std assets_total_std
-
+global varstd afm_std isr_std tdr_std dar_std
 
 ********** Desc
+tabstat $varstd, stat(mean cv min p1 p5 p10 q p90 p95 p99 max)
 pwcorr $varstd, star(.05)
 *graph matrix $varstd, half msize(vsmall) msymbol(oh)
 
 
 ********* Factor analysis
 factor $varstd, pcf
-screeplot, mean
+*screeplot, mean
 estat kmo
 rotate, quartimin
 estat rotatecompare
 
 
 ********* Projection of variables
-loadingplot , component(2) combined xline(0) yline(0) aspect(1)
+*loadingplot , component(2) combined xline(0) yline(0) aspect(1)
 
 
 ********* Projection of individuals
 predict fact1 fact2
+tabstat fact1 fact2, stat(mean cv min p1 p5 p10 q p90 p95 p99 max)
 *twoway (scatter fact2 fact1, xline(0) yline(0))
+
+
+********* Corr between var and fact
+cpcorr $varstd \ fact1 fact2
+cpcorr $varstd \ fact1 fact2 if year==2010
+cpcorr $varstd \ fact1 fact2 if year==2016
+cpcorr $varstd \ fact1 fact2 if year==2020
+
+
+********* Std indiv score
 forvalues i=1/2 {
 qui sum fact`i'
 gen fact`i'_std = (fact`i'-r(min))/(r(max)-r(min))
@@ -589,6 +638,13 @@ mcaplot, overlay legend(off) xline(0) yline(0) scale(.8)
 * Average
 ****************************************
 use"panel_v3", clear
+
+
+* Poverty in %
+gen diffPL=1.9-dailyusdincome4_pc
+replace diffPL=0 if diffPL<0
+ta diffPL
+
 
 tabstat isr dar tdr, stat(n mean cv p50 min max)
 

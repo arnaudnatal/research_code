@@ -89,8 +89,15 @@ rename HHID2010 HHID
 
 *Year
 gen year=2010
-
 ta village livingarea
+
+
+* Gold not pledge
+gen test=assets_gold-(goldquantity_HH*2000)
+ta test
+drop test
+gen goldreadyamount=(goldquantity_HH-goldquantitypledge_HH)*2000
+tabstat assets_gold goldreadyamount, stat(n mean cv q)
 
 
 save"temp_RUME", replace
@@ -180,6 +187,12 @@ rename HHID2016 HHID
 * Year
 gen year=2016
 
+* Gold not pledge
+gen test=assets_gold-(goldquantity_HH*2700)
+ta test
+drop test
+gen goldreadyamount=(goldquantity_HH-goldquantitypledge_HH)*2700
+tabstat assets_gold goldreadyamount, stat(n mean cv q)
 
 
 save"temp_NEEMSIS1", replace
@@ -281,6 +294,14 @@ rename HHID2020 HHID
 * Year
 gen year=2020
 
+* Gold not pledge
+gen test=assets_gold-(goldquantity_HH*2700)
+ta test
+drop test
+gen goldreadyamount=(goldquantity_HH-goldquantitypledge_HH)*2700
+tabstat assets_gold goldreadyamount, stat(n mean cv q)
+
+
 
 save"temp_NEEMSIS2", replace
 ****************************************
@@ -338,7 +359,8 @@ global quanti3 expenses_total expenses_food expenses_educ expenses_heal expenses
 global quanti4 assets_housevalue assets_livestock assets_goods assets_ownland assets_gold assets_total assets_totalnoland assets_totalnoprop assets_total1000 assets_totalnoland1000 assets_totalnoprop1000
 global quanti5 incomeagri_HH incomenonagri_HH annualincome_HH incagrise_HH incagricasual_HH incnonagricasual_HH incnonagriregnonquali_HH incnonagriregquali_HH incnonagrise_HH incnrega_HH
 global quanti6 remreceived_HH remsent_HH remittnet_HH
-global quanti $quanti1 $quanti2 $quanti3 $quanti4 $quanti5 $quanti6
+global quant7 goldreadyamount
+global quanti $quanti1 $quanti2 $quanti3 $quanti4 $quanti5 $quanti6 $quanti7
 
 
 
@@ -478,22 +500,28 @@ ms(oh) msize(small) mc(black%30)
 */
 
 
-* FM
+* AFM - Absolut Financial Margin
 gen temp=1 if imp1_ds_tot_HH==.
 recode imp1_ds_tot_HH (.=0)
-gen fm=annualincome_HH+remittnet_HH-imp1_ds_tot_HH-expenses_total
+gen afm=annualincome_HH+remittnet_HH+goldreadyamount-imp1_ds_tot_HH-expenses_total
+*gen fm=annualincome_HH+remittnet_HH+assets_gold-imp1_ds_tot_HH-expenses_educ-expenses_food-expenses_heal
 replace imp1_ds_tot_HH=. if temp==1
 drop temp
 
-gen dummyfmpos=0
-replace dummyfmpos=1 if fm>0
-gen fm2=abs(fm)
-ta dummyfmpos year, col
-ta dummyfmpos caste if year==2010, col
-ta dummyfmpos caste if year==2016, col
-ta dummyfmpos caste if year==2020, col
-tabstat fm, stat(n mean cv q min max) by(dummyfmpos)
-tabstat fm2, stat(n mean cv q min max) by(dummyfmpos)
+gen dummyafmpos=0
+replace dummyafmpos=1 if afm>0
+ta dummyafmpos year, col
+ta dummyafmpos caste if year==2010, row nofreq
+ta dummyafmpos caste if year==2016, row nofreq
+ta dummyafmpos caste if year==2020, row nofreq
+
+
+* RFM - Relative Financial Margin
+gen rfm=afm/annualincome_HH
+ta rfm
+
+
+
 /*
 stripplot fm2, over(dummyfm) vert ///
 stack width(5000) jitter(1) ///
@@ -546,12 +574,32 @@ gen dailyplincome3_pc=dailyusdincome3_pc-1.9
 gen dailyplincome4_pc=dailyusdincome4_pc-1.9
 
 * PL dummy
-gen pl1=1 if dailyplincome1_pc<0
-gen pl2=1 if dailyplincome2_pc<0
-gen pl3=1 if dailyplincome3_pc<0
-gen pl4=1 if dailyplincome4_pc<0
+gen apl1=0 if dailyplincome1_pc<0
+gen apl2=0 if dailyplincome2_pc<0
+gen apl3=0 if dailyplincome3_pc<0
+gen apl4=0 if dailyplincome4_pc<0
 
-recode pl1 pl2 pl3 pl4 (.=0)
+recode apl1 apl2 apl3 apl4 (.=1)
+
+
+ta apl4 
+ta dummyafmpos apl4
+
+
+* Financial distress
+egen fd=group(apl4 dummyafmpos), label
+fre fd
+recode fd (2=1) (3=1) (4=0)
+label define fd 0"Non-poor" 1"Distress", replace
+label values fd fd
+
+ta fd year, col nofreq
+
+ta fd caste, col nofreq
+ta fd caste if year==2010, col nofreq
+ta fd caste if year==2016, col nofreq
+ta fd caste if year==2020, col nofreq
+
 
 save"panel_v2", replace
 ****************************************
@@ -569,8 +617,27 @@ save"panel_v2", replace
 ****************************************
 use"panel_v2", clear
 
+tabstat dsr isr dar dir tdr tar rfm, stat(n mean cv min p1 p5 p10 q p90 p95 p99 max)
 
-foreach x in loanamount_HH annualincome_HH assets_total imp1_ds_tot_HH imp1_is_tot_HH totHH_givenamt_repa dsr isr dar dir tdr tar fm expenses_total remreceived_HH remsent_HH remittnet_HH dailyincome4_pc assets_gold goldquantity_HH {
+count if dsr>430
+count if isr>190
+count if dar>420
+count if dir>2800
+count if tar>39
+count if rfm>7 | rfm<-10
+
+replace dsr=430 if dsr>430
+replace isr=190 if isr>190
+replace dar=420 if dar>420
+replace dir=2800 if dir>2800
+replace tar=39 if tar>39
+replace rfm=7 if rfm>7
+replace rfm=-10 if rfm<-10
+
+tabstat dsr isr dar dir tdr tar rfm, stat(n mean cv min p1 p5 p10 q p90 p95 p99 max)
+
+
+foreach x in loanamount_HH annualincome_HH assets_total imp1_ds_tot_HH imp1_is_tot_HH totHH_givenamt_repa dsr isr dar dir tdr tar afm rfm expenses_total remreceived_HH remsent_HH remittnet_HH dailyincome4_pc assets_gold goldquantity_HH {
 egen `x'_std=std(`x')
 gen `x'_cr=`x'^(1/3)
 }

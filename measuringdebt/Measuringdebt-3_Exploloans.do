@@ -156,6 +156,6 @@ restore
 *** Test using Stata
 cls
 mca lender2_cat reason2_cat amount, meth(ind) normal(princ) comp
-
+mca lender4 loanreasongiven amount, meth(ind) normal(princ) comp
 ****************************************
 * END
