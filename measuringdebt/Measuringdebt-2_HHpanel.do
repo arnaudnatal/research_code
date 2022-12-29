@@ -126,7 +126,7 @@ drop if livinghome==4
 
 
 * To keep
-keep HHID2016 villagearea villageid
+keep HHID2016 villagearea villageid dummydemonetisation dummymarriage
 duplicates drop
 decode villagearea, gen(vi)
 drop villagearea
@@ -222,7 +222,7 @@ drop if dummylefthousehold==1
 
 
 * To keep
-keep HHID2020 villagearea villageid
+keep HHID2020 villagearea villageid dummymarriage
 duplicates drop
 decode villagearea, gen(vi)
 drop villagearea
@@ -337,6 +337,9 @@ ta dummypanel
 order HHID_panel HHID year dummypanel
 sort HHID_panel year
 
+* Shock
+recode dummydemonetisation (.=0)
+recode dummymarriage (.=0)
 
 * Caste
 tostring year, replace
@@ -504,7 +507,6 @@ ms(oh) msize(small) mc(black%30)
 gen temp=1 if imp1_ds_tot_HH==.
 recode imp1_ds_tot_HH (.=0)
 gen afm=annualincome_HH+remittnet_HH+goldreadyamount-imp1_ds_tot_HH-expenses_total
-*gen fm=annualincome_HH+remittnet_HH+assets_gold-imp1_ds_tot_HH-expenses_educ-expenses_food-expenses_heal
 replace imp1_ds_tot_HH=. if temp==1
 drop temp
 
@@ -521,10 +523,11 @@ gen rfm=afm/annualincome_HH
 ta rfm
 
 
-* Total Expenses to Income Ratio
-gen teir=(expenses_educ+expenses_food+expenses_heal)/annualincome_HH
+* AFM2 - Absolut Financial Margin
+gen temp=1 if imp1_ds_tot_HH==.
+recode imp1_ds_tot_HH (.=0)
+gen afm2=annualincome_HH+remittnet_HH+goldreadyamount-imp1_ds_tot_HH-expenses_total-expenses_marr
 
-ta teir
 
 
 /*
@@ -625,7 +628,7 @@ save"panel_v2", replace
 ****************************************
 use"panel_v2", clear
 
-tabstat dsr isr dar dir tdr tar rfm dailyincome4_pc assets_total incpercpl goldreadyamount teir, stat(n mean cv min p1 p5 p10 q p90 p95 p99 max)
+tabstat dsr isr dar dir tdr tar rfm dailyincome4_pc assets_total incpercpl goldreadyamount afm afm2, stat(n mean cv min p1 p5 p10 q p90 p95 p99 max)
 
 count if dsr>430
 count if isr>190
@@ -649,12 +652,14 @@ replace dailyincome4_pc=600 if dailyincome4_pc>600
 replace assets_total=6000000 if assets_total>6000000
 replace incpercpl=600 if incpercpl>600
 replace goldreadyamount=400000 if goldreadyamount>400000
-replace teir=10 if teir>10
+replace afm=60000 if afm>60000
+replace afm=-20000 if afm<-20000
+replace afm2=60000 if afm2>60000
+replace afm2=-30000 if afm2<-30000
 
-tabstat dsr isr dar dir tdr tar rfm dailyincome4_pc assets_total incpercpl, stat(n mean cv min p1 p5 p10 q p90 p95 p99 max)
 
 
-foreach x in loanamount_HH annualincome_HH assets_total imp1_ds_tot_HH imp1_is_tot_HH totHH_givenamt_repa dsr isr dar dir tdr tar afm rfm expenses_total remreceived_HH remsent_HH remittnet_HH dailyincome4_pc assets_gold goldquantity_HH incpercpl goldreadyamount teir {
+foreach x in loanamount_HH annualincome_HH assets_total imp1_ds_tot_HH imp1_is_tot_HH totHH_givenamt_repa dsr isr dar dir tdr tar afm rfm expenses_total remreceived_HH remsent_HH remittnet_HH dailyincome4_pc assets_gold goldquantity_HH incpercpl goldreadyamount afm2 {
 egen `x'_std=std(`x')
 gen `x'_cr=`x'^(1/3)
 }
@@ -669,7 +674,7 @@ label var tar_std "TAR (std)"
 label var isr_std "ISR (std)"
 label var dailyincome4_pc_std "Livelihood (std)"
 label var assets_total_std "Wealth (std)"
-label var teir_std "TEIR (std)"
+label var afm2_std "AFM2 (std)"
 
 *** Order
 order HHID_panel year

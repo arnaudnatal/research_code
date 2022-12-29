@@ -15,106 +15,6 @@ do"C:\Users\Arnaud\Documents\GitHub\folderanalysis\measuringdebt.do"
 
 
 
-****************************************
-* Stat HH
-****************************************
-use"panel_v3", clear
-
-
-********** Expenses
-tabstat expenses_total expenses_food expenses_educ expenses_heal expenses_cere, stat(n mean cv p50) by(year) long
-
-tabstat shareexpenses_food shareexpenses_educ shareexpenses_heal shareexpenses_cere, stat(n mean cv p50) by(year) long
-
-tabstat expenses_total if caste==1, stat(n mean cv p50) by(year)
-tabstat expenses_total if caste==2, stat(n mean cv p50) by(year)
-tabstat expenses_total if caste==3, stat(n mean cv p50) by(year)
-tabstat expenses_total, stat(n mean cv p50) by(year)
-
-
-********** Debt
-/*
-DSR = service  / annual income --> burden of debt
-ISR = interest / annual income -->
-DIR = amount   / annual income -->
-DAR = amount   / assets --------->
-TDR = bad debt / amount ---------> share of bad debt as debt is not necessary bad
-FM  = Rest of liquid wealth after debt payment and consumption
-*/
-
-*** Ratio
-tabstat dsr isr dar tdr tar fm, stat(n mean sd p50) by(year)
-
-tabstat dsr isr dar dir tdr tar fm if year==2010, stat(n q) by(caste) long
-tabstat dsr isr dar dir tdr tar fm if year==2016, stat(n q) by(caste) long
-tabstat dsr isr dar dir tdr tar fm if year==2020, stat(n q) by(caste) long
-
-*** Raw
-tabstat loanamount_HH imp1_ds_tot_HH imp1_is_tot_HH totHH_givenamt_repa, stat(n q) by(year) long
-
-tabstat loanamount_HH imp1_ds_tot_HH imp1_is_tot_HH totHH_givenamt_repa if year==2010, stat(n q) by(caste) long
-tabstat loanamount_HH imp1_ds_tot_HH imp1_is_tot_HH totHH_givenamt_repa if year==2016, stat(n q) by(caste) long
-tabstat loanamount_HH imp1_ds_tot_HH imp1_is_tot_HH totHH_givenamt_repa if year==2020, stat(n q) by(caste) long
-
-
-
-
-********** Income
-*** HH level
-tabstat annualincome_HH, stat(n mean cv p50) by(year) long
-
-*** per capita INR
-tabstat dailyincome1_pc dailyincome2_pc dailyincome3_pc dailyincome4_pc, stat(q) by(year) long
-
-*** per capita USD
-tabstat dailyusdincome1_pc dailyusdincome2_pc dailyusdincome3_pc dailyusdincome4_pc, stat(q) by(year) long
-
-*** Poverty line
-cls
-ta pl1 caste if year==2010, col nofreq
-ta pl2 caste if year==2010, col nofreq
-ta pl3 caste if year==2010, col nofreq
-ta pl4 caste if year==2010, col nofreq
-
-cls
-ta pl1 caste if year==2016, col nofreq
-ta pl2 caste if year==2016, col nofreq
-ta pl3 caste if year==2016, col nofreq
-ta pl4 caste if year==2016, col nofreq
-
-cls
-ta pl1 caste if year==2020, col nofreq
-ta pl2 caste if year==2020, col nofreq
-ta pl3 caste if year==2020, col nofreq
-ta pl4 caste if year==2020, col nofreq
-
-
-
-********** Wealth
-tabstat assets_total assets_housevalue assets_livestock assets_goods assets_ownland assets_gold, stat(n mean cv p50) by(year) long
-
-tabstat shareassets_housevalue shareassets_livestock shareassets_goods shareassets_ownland shareassets_gold, stat(n mean cv p50) by(year) long
-
-tabstat assets_total if caste==1, stat(n mean cv p50) by(year)
-tabstat assets_total if caste==2, stat(n mean cv p50) by(year)
-tabstat assets_total if caste==3, stat(n mean cv p50) by(year)
-tabstat assets_total, stat(n mean cv p50) by(year)
-
-
-********** Matrix
-tabstat fm_std, stat(min p1 p5 p10 q p90 p95 p99 max)
-drop if fm_std>3
-drop if fm_std<-3
-*graph matrix fm_std expenses_total_std dailyincome4_pc_std dsr_std isr_std, half msize(vsmall) msymbol(oh)
-
-****************************************
-* END
-
-
-
-
-
-
 
 
 
@@ -132,7 +32,7 @@ use"panel_v3", clear
 global overlap dar_std dsr_std afm_std rfm_std isr_std dailyincome4_pc_std assets_total_std
 
 corr $overlap
-graph matrix $overlap, half msize(vsmall) msymbol(oh)
+*graph matrix $overlap, half msize(vsmall) msymbol(oh)
 
 
 /*
@@ -159,109 +59,33 @@ We will test the two
 */
 
 
-****************************************
-* END
+********** Recode
+*** Inc better to worse
+gen incomerev=dailyincome4_pc*(-1)
+tabstat dailyincome4_pc incomerev, stat(n q)
+egen incomerev_std=std(incomerev)
+
+*** RFM better to worse
+gen rfmrev=rfm*(-1)
+tabstat rfm rfmrev, stat(n q)
+egen rfmrev_std=std(rfmrev)
+
+*** Assets better to worse
+gen assetsrev=assets_total*(-1)
+tabstat assets_total assetsrev, stat(n q)
+egen assetsrev_std=std(assetsrev)
+
+*** AFM better to worse
+gen afmrev=afm*(-1)
+tabstat afm afmrev, stat(n q)
+egen afmrev_std=std(afmrev)
+
+*** AFM2 better to worse
+gen afm2rev=afm2*(-1)
+tabstat afm2 afm2rev, stat(n q)
+egen afm2rev_std=std(afm2rev)
 
 
-
-
-
-
-
-
-
-
-
-
-****************************************
-* Factor analysis: Final specification
-****************************************
-use"panel_v3", clear
-
-global varstd dailyincome4_pc_std dar_std rfm_std isr_std
-
-********** Corr
-pwcorr $varstd, star(.05)
-*graph matrix $varstd, half msize(vsmall) msymbol(oh)
-
-
-********* Factor analysis
-factor $varstd, pcf
-*screeplot, mean
-estat kmo
-rotate, quartimin
-
-
-********* Projection of variables
-loadingplot , component(2) combined xline(0) yline(0) aspect(1)
-
-
-
-
-
-********* Projection of individuals
-predict fact1 fact2
-tabstat fact1 fact2, stat(mean cv min p1 p5 p10 q p90 p95 p99 max)
-twoway (scatter fact2 fact1, xline(0) yline(0))
-
-
-********* Corr between var and fact
-cpcorr $varstd \ fact1 fact2
-cpcorr $varstd \ fact1 fact2 if year==2010
-cpcorr $varstd \ fact1 fact2 if year==2016
-cpcorr $varstd \ fact1 fact2 if year==2020
-
-
-********* Std indiv score
-forvalues i=1/2 {
-qui sum fact`i'
-gen fact`i'_std = (fact`i'-r(min))/(r(max)-r(min))
-}
-*twoway (scatter fact2_std fact1_std)
-
-
-********** Index construction
-gen finindex=(fact1_std*0.55)+(fact2_std*0.45)
-
-
-********** Index modifications
-*** Log
-*gen _temp1logfinindex=finindex/(1-finindex)
-*gen logfinindex=log(_temp1logfinindex)
-*drop _temp1logfinindex
-
-*** Cat
-xtile finindex_cat=finindex, n(3)
-
-
-********** Interpretation
-reg finindex $varstd
-*betareg finindex $varstd
-*glm finindex $varstd, family(gamma) link(probit)
-
-
-********* Representation
-*kdensity finindex, norm
-*kdensity logfinindex, norm
-*twoway (scatter logfinindex finindex)
-tabstat finindex, stat(n mean cv p50)
-tabstat finindex, stat(min p1 p5 p10 q p90 p95 p99 max)
-
-
-********** Interpretation part 2
-reg finindex dsr dar i.caste i.year
-
-
-
-********** Evolution test
-preserve
-keep HHID_panel year finindex
-reshape wide finindex, i(HHID_panel) j(year)
-
-*** Correlation
-pwcorr finindex2010 finindex2016 finindex2020, star(0.05)
-*graph matrix finindex2010 finindex2016 finindex2020, half msize(vsmall) msymbol(oh)
-restore
 
 save"panel_v4", replace
 ****************************************
@@ -277,256 +101,141 @@ save"panel_v4", replace
 
 
 
-
-
-
-
-
-
-
-
 ****************************************
-* DTWclust preparation
+* Specification no. 1
 ****************************************
 use"panel_v4", clear
 
-keep HHID_panel year finindex dailyincome4_pc_std tdr_std isr_std assets_total_std dailyincome4_pc tdr isr assets_total dsr dsr_std dar dar_std fm fm_std expenses_total_std expenses_total caste
 
-gen panel=year
-
-reshape wide panel caste expenses_total assets_total dsr isr dar tdr fm dailyincome4_pc assets_total_std dsr_std isr_std dar_std tdr_std fm_std expenses_total_std dailyincome4_pc_std finindex, i(HHID_panel) j(year)
-
-order HHID_panel panel2010 panel2016 panel2020
-sort HHID_panel
-gen dummypanel=0
-replace dummypanel=1 if panel2010==2010 & panel2016==2016 & panel2020==2020
-
-keep if dummypanel==1
-ta caste2010 caste2016
-ta caste2016 caste2020
-
-export delimited "C:\Users\Arnaud\Documents\GitHub\research_code\measuringdebt\debtnew.csv", replace
+********** Var
+global varstd incomerev_std dar_std rfmrev_std dsr_std
+pwcorr $varstd, star(.05)
 
 
-********** Manually create groups for finindex
-gen variarate1=(finindex2016-finindex2010)*100/finindex2010
-gen variarate2=(finindex2020-finindex2016)*100/finindex2016
 
 
-*** Groups
-label define dynamic 1"Sta-Sta" 2"Sta-Inc" 3"Inc-Sta" 4"Inc-Inc" 5"Sta-Dec" 6"Dec-Sta" 7"Dec-Dec" 8"Inc-Dec" 9"Dec-Inc"
 
-gen finindexdynamic=0
-
-replace finindexdynamic=1 if variarate1<5 & variarate1>-5 & variarate2<5 & variarate2>-5 
-
-replace finindexdynamic=2 if variarate1<5 & variarate1>-5 & variarate2>=5 
-replace finindexdynamic=3 if variarate1>=5 & variarate2<5 & variarate2>-5 
-replace finindexdynamic=4 if variarate1>=5 & variarate2>=5 
-
-replace finindexdynamic=5 if variarate1<5 & variarate1>-5 & variarate2<=-5 
-replace finindexdynamic=6 if variarate1<=-5 & variarate2<5 & variarate2>-5 
-replace finindexdynamic=7 if variarate1<=-5 & variarate2<=-5 
-
-replace finindexdynamic=8 if variarate1>=5 & variarate2<=-5 
-replace finindexdynamic=9 if variarate1<=-5 & variarate2>=5
-
-label values finindexdynamic dynamic
-
-tab finindexdynamic
+********* Method 1: Factor analysis
+factor $varstd, pcf
+*screeplot, mean
+estat kmo
+rotate, quartimin
 /*
-finindexdyn |
-       amic |      Freq.     Percent        Cum.
-------------+-----------------------------------
-    Sta-Sta |        126       32.98       32.98
-    Sta-Inc |         16        4.19       37.17
-    Inc-Sta |         27        7.07       44.24
-    Inc-Inc |          5        1.31       45.55
-    Sta-Dec |         69       18.06       63.61
-    Dec-Sta |         40       10.47       74.08
-    Dec-Dec |         25        6.54       80.63
-    Inc-Dec |         24        6.28       86.91
-    Dec-Inc |         50       13.09      100.00
-------------+-----------------------------------
-      Total |        382      100.00
+-----------------------------------------------
+Factor 1:		(-) --------------> (+)
+-----------------------------------------------
+DSR (+84%):		Low cost			High cost
+RFM (+74%):		High margin			Weak margin
+Inc (+62%):		Rich				Poor
+---
+DAR (+15%):		Low stock			High stock
+-----------------------------------------------
+Interpretation: Low burden			High burden
+-----------------------------------------------
+
+
+
+-----------------------------------------------
+Factor 2:		(-) --------------> (+)
+-----------------------------------------------
+DAR (+87%):		Low stock			High stock
+Inc (-48%):		Poor				Rich
+---
+RFM (+27%):		High margin			Weak margin
+DSR (+07%):		Low cost			High cost
+-----------------------------------------------
+Interpretation: Low stock			High stock
+-----------------------------------------------
 */
 
-*** Check consistency
-cls
-forvalues i=1/9 {
-tabstat finindex2010 finindex2016 finindex2020 if finindexdynamic==`i', stat(n mean cv p50)
-}
 
-****************************************
-* END
+*** Projection of individuals
+predict fact1 fact2
 
 
+*** Corr between var and fact
+cpcorr $varstd \ fact1 fact2
 
 
-
-
-
-
-
-
-
-****************************************
-* Econometrics
-****************************************
-use"panel_v4", clear
-
-encode HHID_panel, gen(panelvar)
-xtset panelvar year
-
-
-xtreg finindex dailyincome4_pc i.caste
-*xtgee finindex dailyincome4_pc i.caste, family(binomial) link(logit)
-
-****************************************
-* END
-
-
-
-
-
-
-
-
-
-****************************************
-* MCA of trends
-****************************************
-use"panel_v3", clear
-
-
-global var dailyincome4_pc assets_total tdr isr
-
-********** Reshape
-keep HHID_panel year $var
-reshape wide $var, i(HHID_panel) j(year)
-
-
-********** Gen diff
-foreach x in $var {
-gen `x'_d1=(`x'2016-`x'2010)*100/`x'2010
-gen `x'_d2=(`x'2020-`x'2016)*100/`x'2016
-}
-
-foreach x in $var {
-gen `x'_cat1=0
-gen `x'_cat2=0
-}
-
-recode dailyincome4_pc_d1 assets_total_d1 tdr_d1 isr_d1 dailyincome4_pc_d2 assets_total_d2 tdr_d2 isr_d2 (.=0)
-
-foreach x in $var {
+*** Std indiv score
 forvalues i=1/2 {
-replace `x'_cat`i'=1 if `x'_d`i'>-10 & `x'_d`i'<10 & `x'_d`i'!=.
-replace `x'_cat`i'=2 if `x'_d`i'>=10 & `x'_d`i'!=.
-replace `x'_cat`i'=3 if `x'_d`i'<=-10 & `x'_d`i'!=.
-}
-}
-
-********** Reshape
-keep HHID_panel dailyincome4_pc_cat1 dailyincome4_pc_cat2 assets_total_cat1 assets_total_cat2 tdr_cat1 tdr_cat2 isr_cat1 isr_cat2
-reshape long dailyincome4_pc_cat assets_total_cat tdr_cat isr_cat, i(HHID_panel) j(time)
-drop if dailyincome4_pc_cat==0
-
-
-********** Label
-label define pente 1"Stable" 2"Increase" 3"Decrease"
-foreach x in dailyincome4_pc_cat assets_total_cat tdr_cat isr_cat {
-label values `x' pente
+qui sum fact`i'
+gen fact`i'_std = (fact`i'-r(min))/(r(max)-r(min))
 }
 
 
-********** MCA test
-mca dailyincome4_pc_cat assets_total_cat tdr_cat isr_cat, method (indicator) normal(princ) comp
-
-mcaplot, overlay legend(off) xline(0) yline(0) scale(.8)
+*** Index construction
+gen PCA_finindex=((fact1_std*0.62)+(fact2_std*0.38))*100
 
 
-****************************************
-* END
-
-
+*** Index meaning
+cpcorr $varstd fact1 fact2 \ PCA_finindex
+reg PCA_finindex $varstd
+reg PCA_finindex i.caste i.year assets_total_std, base
 
 
 
 
 
+********** Method 2: Arithmetic mean of std
+egen _tempfinindex=rowmean($varstd)
+
+qui sum _tempfinindex
+gen M_finindex=((_tempfinindex-r(min))/(r(max)-r(min)))*100
+
+*** Index meaning
+reg M_finindex $varstd
+reg M_finindex i.caste i.year assets_total_std, base
 
 
 
-
-
-****************************************
-* Average
-****************************************
-use"panel_v3", clear
-
-
-* Poverty in %
-gen diffPL=1.9-dailyusdincome4_pc
-replace diffPL=0 if diffPL<0
-ta diffPL
-
-
-tabstat isr dar tdr, stat(n mean cv p50 min max)
-
-********** Mean
-egen finindex=rowmean(isr dar tdr)
-gen lambda=(dailyusdincome4_pc-1.9)/1.9
-replace lambda=0.99 if lambda>0.99
-replace lambda=0.01 if lambda<0.01
-gen puissa=1-lambda
-
-gen finindex2=finindex^puissa
-
-tabstat finindex2, stat(n mean cv p50 min max)
-reg finindex i.year i.caste dailyusdincome4_pc
-reg finindex2 i.year i.caste dailyusdincome4_pc
-
-
-sort finindex2
-br HHID_panel year finindex finindex2 dailyusdincome4_pc isr dar tdr
-
-*replace finindex=finindex/100
-replace finindex=100 if finindex>100
-
-
-********** Charact
-tabstat finindex, stat(n mean cv p50 min max) by(year)
-tabstat finindex, stat(n mean cv p50 min max) by(caste)
-
-graph box finindex if caste==1, over(year) noout
-graph box finindex if caste==2, over(year) noout
-graph box finindex if caste==3, over(year) noout
-
-graph box finindex, over(year) noout
-
-
-graph box finindex if year==2010, over(caste) noout
-graph box finindex if year==2016, over(caste) noout
-graph box finindex if year==2020, over(caste) noout
-
-
-pwcorr finindex assets_total dailyincome4_pc expenses_total, star(.05)
+********** PCA vs Arithmetic mean
+plot M_finindex PCA_finindex
+cpcorr $varstd \ PCA_finindex M_finindex
+/*
+Finindex
+Good to bad
+*/
 
 
 
-
-* reg
+********** Econometric tests
 encode HHID_panel, gen(panelvar)
 xtset panelvar year
-
+encode villageid, gen(vill)
 encode typeoffamily, gen(tof)
-fre head_sex head_age head_mocc_occupation head_edulevel head_widowseparated
 
-xtreg finindex2 i.caste head_sex head_age i.head_mocc_occupation i.head_edulevel i.tof assets_total_std
-
+xtreg PCA_finindex i.caste i.tof i.head_sex head_age i.head_mocc_occupation i.head_edulevel i.dummypolygamous squareroot_HHsize i.vill, base
 
 
+
+
+********** Stability over time
+preserve
+keep HHID_panel year PCA_finindex M_finindex caste
+reshape wide PCA_finindex M_finindex, i(HHID_panel) j(year)
+
+corr PCA_finindex2010 PCA_finindex2016 PCA_finindex2020
+corr M_finindex2010 M_finindex2016 M_finindex2020
+
+corr PCA_finindex2010 PCA_finindex2016 PCA_finindex2020 if caste==1
+corr M_finindex2010 M_finindex2016 M_finindex2020 if caste==1
+
+corr PCA_finindex2010 PCA_finindex2016 PCA_finindex2020 if caste==2
+corr M_finindex2010 M_finindex2016 M_finindex2020 if caste==2
+
+corr PCA_finindex2010 PCA_finindex2016 PCA_finindex2020 if caste==3
+corr M_finindex2010 M_finindex2016 M_finindex2020 if caste==3
+restore
+
+
+********** Clean
+drop fact1 fact2 fact1_std fact2_std _tempfinindex
+rename PCA_finindex PCA_finindex1
+rename M_finindex M_finindex1
+
+
+save"panel_v5", replace
 ****************************************
 * END
 
@@ -545,6 +254,205 @@ xtreg finindex2 i.caste head_sex head_age i.head_mocc_occupation i.head_edulevel
 
 
 
+
+
+****************************************
+* Specification no. 2
+****************************************
+use"panel_v5", clear
+
+
+
+********** Var
+global varstd isr_std tdr_std incomerev_std dar_std rfmrev_std assetsrev_std
+pwcorr $varstd, star(.05)
+
+
+
+
+********* Method 1: Factor analysis
+factor $varstd, pcf
+*screeplot, mean
+estat kmo
+rotate, quartimin
+
+
+*** Projection of individuals
+predict fact1 fact2 fact3
+
+
+*** Corr between var and fact
+cpcorr $varstd \ fact1 fact2 fact3
+
+
+*** Std indiv score
+forvalues i=1/3 {
+qui sum fact`i'
+gen fact`i'_std = (fact`i'-r(min))/(r(max)-r(min))
+}
+
+
+*** Index construction
+gen PCA_finindex=((fact1_std*0.42)+(fact2_std*0.31)+(fact3_std*0.27))*100
+
+
+*** Index meaning
+cpcorr $varstd fact1 fact2 fact3 \ PCA_finindex
+reg PCA_finindex $varstd
+reg PCA_finindex i.caste i.year, base
+
+
+
+
+
+********** Method 2: Arithmetic mean of std
+egen _tempfinindex=rowmean($varstd)
+
+qui sum _tempfinindex
+gen M_finindex=((_tempfinindex-r(min))/(r(max)-r(min)))*100
+
+*** Index meaning
+reg M_finindex $varstd
+reg M_finindex i.caste i.year, base
+
+
+
+
+
+********** PCA vs Arithmetic mean
+plot M_finindex PCA_finindex
+cpcorr $varstd \ PCA_finindex M_finindex
+/*
+Finindex
+Good to bad
+*/
+
+
+
+
+********** Econometric tests
+xtset panelvar year
+
+xtreg PCA_finindex i.caste i.tof i.head_sex head_age i.head_mocc_occupation i.head_edulevel i.dummypolygamous squareroot_HHsize i.vill, base
+
+
+
+********** Stability over time
+preserve
+keep HHID_panel year PCA_finindex M_finindex caste
+gen panel=1
+reshape wide panel PCA_finindex M_finindex, i(HHID_panel) j(year)
+
+corr PCA_finindex2010 PCA_finindex2016 PCA_finindex2020
+corr M_finindex2010 M_finindex2016 M_finindex2020
+
+corr PCA_finindex2010 PCA_finindex2016 PCA_finindex2020 if caste==1
+corr M_finindex2010 M_finindex2016 M_finindex2020 if caste==1
+
+corr PCA_finindex2010 PCA_finindex2016 PCA_finindex2020 if caste==2
+corr M_finindex2010 M_finindex2016 M_finindex2020 if caste==2
+
+corr PCA_finindex2010 PCA_finindex2016 PCA_finindex2020 if caste==3
+corr M_finindex2010 M_finindex2016 M_finindex2020 if caste==3
+restore
+
+
+
+
+
+********** Clean
+drop fact1 fact2 fact3 fact1_std fact2_std fact3_std _tempfinindex
+rename PCA_finindex PCA_finindex2
+rename M_finindex M_finindex2
+
+
+
+save"panel_v6", replace
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Overlap specifications and shocks
+****************************************
+use"panel_v6", clear
+
+
+
+***** Overlap 2 specifications
+*graph matrix PCA_finindex1 M_finindex1 PCA_finindex2 M_finindex2 PCA_finindex3 M_finindex3, half msize(vsmall) msymbol(oh)
+
+
+
+***** Trends
+/*
+gen dummypanel=0
+replace dummypanel=1 if panel2010==1 & panel2016==1 & panel2020==1
+keep if dummypanel==1
+drop panel2010 panel2016 panel2020
+order HHID_panel dummypanel caste
+export delimited "C:\Users\Arnaud\Documents\GitHub\research_code\measuringdebt\debtnew.csv", replace
+*/
+
+
+***** Contrib of shocks
+*** Demonetisation 2016-17
+reg PCA_finindex1 dummydemonetisation if year==2016
+reg M_finindex1 dummydemonetisation if year==2016
+reg PCA_finindex2 dummydemonetisation if year==2016
+reg M_finindex2 dummydemonetisation if year==2016
+
+
+*** Marriage 2016-17
+reg PCA_finindex1 dummymarriage if year==2016
+reg M_finindex1 dummymarriage if year==2016
+reg PCA_finindex2 dummymarriage if year==2016
+reg M_finindex2 dummymarriage if year==2016
+
+
+*** Marriage 2020-21
+reg PCA_finindex1 dummymarriage if year==2020
+reg M_finindex1 dummymarriage if year==2020
+reg PCA_finindex2 dummymarriage if year==2020
+reg M_finindex2 dummymarriage if year==2020
+
+
+
+****************************************
+* END
+
+
+
+
+
+
+
+
+/*
 ****************************************
 * K means
 ****************************************
@@ -619,6 +527,43 @@ Household stay blocked
 
 ****************************************
 * END
+*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+********* Graph
+/*
+graph matrix $varstd, half msize(vsmall) msymbol(oh)
+
+loadingplot , component(2) combined xline(0) yline(0) aspect(1)
+
+twoway (scatter fact2 fact1, xline(0) yline(0) mcolor(black%30)), name(rev, replace)
+
+twoway (scatter fact2 fact1 if year==2010, xline(0) yline(0) mcolor(black%30)), name(year2010, replace)
+twoway (scatter fact2 fact1 if year==2016, xline(0) yline(0) mcolor(black%30)), name(year2016, replace)
+twoway (scatter fact2 fact1 if year==2020, xline(0) yline(0) mcolor(black%30)), name(year2020, replace)
+
+combineplot fact1 ($varstd): scatter @y @x || lfit @y @x
+combineplot fact2 ($varstd): scatter @y @x || lfit @y @x
+*/
+
+
+
+
 
 
 
@@ -642,23 +587,3 @@ ms(oh oh oh) msize(small) mc(blue%30) ///
 yla(, ang(h)) xla(, noticks)
 end
 */
-
-
-
-
-****************************************
-* ML dimension with subsample
-****************************************
-use"panel_v3", clear
-
-/*
-forvalues i=1/99 {
-preserve
-sample 500, count
-mean year
-restore
-}
-*/
-
-****************************************
-* END
