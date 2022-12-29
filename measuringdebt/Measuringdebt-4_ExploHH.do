@@ -419,31 +419,74 @@ export delimited "C:\Users\Arnaud\Documents\GitHub\research_code\measuringdebt\d
 */
 
 
-***** Contrib of shocks
+
+
+********** Panel analysis
+
+* Caste
+fre caste
+gen dalits=caste
+recode dalits (2=0) (3=0)
+label values dalits yesno
+ta dalits year, col nofreq
+
+* Type of family
+fre tof
+gen stem=tof
+recode stem (2=0) (3=1)
+label values stem yesno
+ta stem year, col nofreq
+
+* Initialize
+global control stem dalits HHsize
+global control2 dalits c.HHsize##i.stem
+xtset panelvar year
+
+xtreg PCA_finindex1 $control
+xtreg M_finindex1 $control
+xtreg PCA_finindex2 $control
+xtreg M_finindex2 $control
+
+
+xtreg PCA_finindex1 $control2
+xtreg M_finindex1 $control2
+xtreg PCA_finindex2 $control2
+xtreg M_finindex2 $control2
+
+
+
+
+
+
+********** Contrib of shocks
+
+*** Prepa
+global control i.tof HHsize i.caste
+
+
 *** Demonetisation 2016-17
-reg PCA_finindex1 dummydemonetisation if year==2016
-reg M_finindex1 dummydemonetisation if year==2016
-reg PCA_finindex2 dummydemonetisation if year==2016
-reg M_finindex2 dummydemonetisation if year==2016
+reg PCA_finindex1 dummydemonetisation $control if year==2016
+reg M_finindex1 dummydemonetisation $control if year==2016
+reg PCA_finindex2 dummydemonetisation $control if year==2016
+reg M_finindex2 dummydemonetisation $control if year==2016
 
 *** Second lockdown 2021
-reg PCA_finindex1 i.secondlockdownexposure if year==2020
-reg M_finindex1 i.secondlockdownexposure if year==2020
-reg PCA_finindex2 i.secondlockdownexposure if year==2020
-reg M_finindex2 i.secondlockdownexposure if year==2020
+reg PCA_finindex1 dummyexposure $control if year==2020
+reg M_finindex1 dummyexposure $control if year==2020
+reg PCA_finindex2 dummyexposure $control if year==2020
+reg M_finindex2 dummyexposure $control if year==2020
 
 *** Marriage 2016-17
-reg PCA_finindex1 dummymarriage if year==2016
-reg M_finindex1 dummymarriage if year==2016
-reg PCA_finindex2 dummymarriage if year==2016
-reg M_finindex2 dummymarriage if year==2016
-
+reg PCA_finindex1 dummymarriage $control if year==2016
+reg M_finindex1 dummymarriage $control if year==2016
+reg PCA_finindex2 dummymarriage $control if year==2016
+reg M_finindex2 dummymarriage $control if year==2016
 
 *** Marriage 2020-21
-reg PCA_finindex1 dummymarriage if year==2020
-reg M_finindex1 dummymarriage if year==2020
-reg PCA_finindex2 dummymarriage if year==2020
-reg M_finindex2 dummymarriage if year==2020
+reg PCA_finindex1 dummymarriage $control if year==2020
+reg M_finindex1 dummymarriage $control if year==2020
+reg PCA_finindex2 dummymarriage $control if year==2020
+reg M_finindex2 dummymarriage $control if year==2020
 
 
 
