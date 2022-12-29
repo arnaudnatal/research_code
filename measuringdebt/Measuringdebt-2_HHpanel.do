@@ -283,7 +283,9 @@ merge 1:1 HHID2020 using "raw/NEEMSIS2-gold_HH"
 drop _merge
 drop goldamount_HH goldamountpledge_HH
 
-
+* Add covid
+merge 1:1 HHID2020 using "raw/NEEMSIS2-covid", keepusing(secondlockdownexposure dummysell)
+drop _merge
 
 * Panel
 merge 1:m HHID2020 using"raw/ODRIIS-HH_wide", keepusing(HHID_panel)

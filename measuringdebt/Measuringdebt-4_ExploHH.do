@@ -426,6 +426,11 @@ reg M_finindex1 dummydemonetisation if year==2016
 reg PCA_finindex2 dummydemonetisation if year==2016
 reg M_finindex2 dummydemonetisation if year==2016
 
+*** Second lockdown 2021
+reg PCA_finindex1 i.secondlockdownexposure if year==2020
+reg M_finindex1 i.secondlockdownexposure if year==2020
+reg PCA_finindex2 i.secondlockdownexposure if year==2020
+reg M_finindex2 i.secondlockdownexposure if year==2020
 
 *** Marriage 2016-17
 reg PCA_finindex1 dummymarriage if year==2016
