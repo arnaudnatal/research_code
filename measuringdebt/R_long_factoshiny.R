@@ -21,11 +21,15 @@ library(tidyverse)
 
 
 #--- Open datasets
-data<-read.csv("pcaR.csv")
+data<-read.csv("debtnew.csv")
 
 
 #--- Matrices creation
 attach(data)
+
+Factoshiny(data)
+
+
 X<-as.matrix(cbind(dar_std, dsr_std, afm_std, rfm_std, tdr_std, isr_std, dailyincome4_pc_std, assets_total_std, incpercpl_std, dir_std))
 debt<-as.data.frame(X)
 

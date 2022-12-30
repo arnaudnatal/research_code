@@ -28,8 +28,33 @@ do"C:\Users\Arnaud\Documents\GitHub\folderanalysis\measuringdebt.do"
 ****************************************
 use"panel_v3", clear
 
+
+********** Recode
+*** Inc better to worse
+gen incomerev=dailyincome4_pc*(-1)
+tabstat dailyincome4_pc incomerev, stat(n q)
+egen incomerev_std=std(incomerev)
+
+*** RFM better to worse
+gen rfmrev=rfm*(-1)
+tabstat rfm rfmrev, stat(n q)
+egen rfmrev_std=std(rfmrev)
+
+*** Assets better to worse
+gen assetsrev=assets_total*(-1)
+tabstat assets_total assetsrev, stat(n q)
+egen assetsrev_std=std(assetsrev)
+
+*** AFM better to worse
+gen afmrev=afm*(-1)
+tabstat afm afmrev, stat(n q)
+egen afmrev_std=std(afmrev)
+
 *** Measures of financial distress
 global overlap dar_std dsr_std afm_std rfm_std isr_std dailyincome4_pc_std assets_total_std
+
+global overlap incomerev_std dar_std rfmrev_std dsr_std
+
 
 corr $overlap
 *graph matrix $overlap, half msize(vsmall) msymbol(oh)
@@ -59,37 +84,18 @@ We will test the two
 */
 
 
-********** Recode
-*** Inc better to worse
-gen incomerev=dailyincome4_pc*(-1)
-tabstat dailyincome4_pc incomerev, stat(n q)
-egen incomerev_std=std(incomerev)
-
-*** RFM better to worse
-gen rfmrev=rfm*(-1)
-tabstat rfm rfmrev, stat(n q)
-egen rfmrev_std=std(rfmrev)
-
-*** Assets better to worse
-gen assetsrev=assets_total*(-1)
-tabstat assets_total assetsrev, stat(n q)
-egen assetsrev_std=std(assetsrev)
-
-*** AFM better to worse
-gen afmrev=afm*(-1)
-tabstat afm afmrev, stat(n q)
-egen afmrev_std=std(afmrev)
-
-*** AFM2 better to worse
-gen afm2rev=afm2*(-1)
-tabstat afm2 afm2rev, stat(n q)
-egen afm2rev_std=std(afm2rev)
-
-
-
 save"panel_v4", replace
 ****************************************
 * END
+
+
+
+
+
+
+
+
+
 
 
 
@@ -106,52 +112,78 @@ save"panel_v4", replace
 ****************************************
 use"panel_v4", clear
 
+gen dummytrap="No"
+replace dummytrap="Yes" if tdr>0
+ta dummytrap
+
+********** Factoshiny
+/*
+preserve
+keep HHID_panel year dailyincome4_pc_std assets_total_std rfm_std dsr_std dar_std afm_std isr_std dummytrap
+export delimited "C:\Users\Arnaud\Documents\GitHub\research_code\measuringdebt\debtnew.csv", replace
+restore
+*/
 
 ********** Var
-global varstd incomerev_std dar_std rfmrev_std dsr_std
-pwcorr $varstd, star(.05)
+*global varstd assetsrev_std incomerev_std isr_std tdr_std
+*global varstd assetsrev_std incomerev_std tdr_std dsr_std
+
+*global varstd assetsrev_std incomerev_std isr_std tdr_std dar_std
+*global varstd assetsrev_std incomerev_std dsr_std tdr_std dar_std
+
+*global varstd assetsrev_std isr_std tdr_std dar_std
+*global varstd assetsrev_std dsr_std tdr_std dar_std
+
+*global varstd incomerev_std isr_std tdr_std dar_std
+*global varstd incomerev_std dsr_std tdr_std dar_std
+
+*global varstd incpercpl_std isr_std tdr_std dar_std
+*global varstd incpercpl_std dsr_std tdr_std dar_std
+
+*global varstd annualincome_HH_std isr_std tdr_std dar_std
+*global varstd annualincome_HH_std dsr_std tdr_std dar_std
+
+*global varstd annualincome_HH_std assets_total_std isr_std tdr_std dar_std
+*global varstd annualincome_HH_std assets_total_std dsr_std tdar_std dar_std
+
+*global varstd annualincome_HH_std assets_total_std isr_std tar_std dar_std
+*global varstd annualincome_HH_std assets_total_std dsr_std tar_std dar_std
+
+*global varstd dailyincome4_pc_std afm_std dsr_std tdr_std dar_std
+*global varstd dailyincome4_pc_std afm_std isr_std tdr_std dar_std
+*global varstd dailyincome4_pc_std afm_std dsr_std isr_std tdr_std dar_std
+
+*global varstd dailyincome4_pc_std rfm_std dsr_std tdr_std dar_std
+*global varstd dailyincome4_pc_std rfm_std isr_std tdr_std dar_std
+
+*global varstd afm_std dsr_std tdr_std dar_std 
+*global varstd afm_std isr_std tdr_std dar_std
+
+global varstd dailyincome4_pc_std assets_total_std afm_std dsr_std dar_std
+
+*global varstd annualincome_HH_std assets_total_std afm_std dsr_std tdr_std dar_std
 
 
-
+corr $varstd
+*graph matrix $varstd, half msize(vsmall) msymbol(oh) mcolor(black%30)
+factortest $varstd
 
 
 ********* Method 1: Factor analysis
 factor $varstd, pcf
-*screeplot, mean
-estat kmo
 rotate, quartimin
-/*
------------------------------------------------
-Factor 1:		(-) --------------> (+)
------------------------------------------------
-DSR (+84%):		Low cost			High cost
-RFM (+74%):		High margin			Weak margin
-Inc (+62%):		Rich				Poor
----
-DAR (+15%):		Low stock			High stock
------------------------------------------------
-Interpretation: Low burden			High burden
------------------------------------------------
-
-
-
------------------------------------------------
-Factor 2:		(-) --------------> (+)
------------------------------------------------
-DAR (+87%):		Low stock			High stock
-Inc (-48%):		Poor				Rich
----
-RFM (+27%):		High margin			Weak margin
-DSR (+07%):		Low cost			High cost
------------------------------------------------
-Interpretation: Low stock			High stock
------------------------------------------------
-*/
 
 
 *** Projection of individuals
 predict fact1 fact2
+twoway (scatter fact2 fact1, xline(0) yline(0) mcolor(black%30) msymbol(oh)), name(fact12, replace)
+twoway (scatter fact3 fact1, xline(0) yline(0) mcolor(black%30) msymbol(oh)), name(fact13, replace)
+twoway (scatter fact3 fact2, xline(0) yline(0) mcolor(black%30) msymbol(oh)), name(fact23, replace)
 
+
+graph3d fact1 fact2 fact3, mark cuboid format("%03.0f") 
+
+graph3d fact1 fact2 fact3, colorscheme(cr)
 
 *** Corr between var and fact
 cpcorr $varstd \ fact1 fact2
@@ -171,7 +203,6 @@ gen PCA_finindex=((fact1_std*0.62)+(fact2_std*0.38))*100
 *** Index meaning
 cpcorr $varstd fact1 fact2 \ PCA_finindex
 reg PCA_finindex $varstd
-reg PCA_finindex i.caste i.year assets_total_std, base
 
 
 
@@ -179,23 +210,54 @@ reg PCA_finindex i.caste i.year assets_total_std, base
 
 ********** Method 2: Arithmetic mean of std
 egen _tempfinindex=rowmean($varstd)
-
 qui sum _tempfinindex
 gen M_finindex=((_tempfinindex-r(min))/(r(max)-r(min)))*100
+drop _tempfinindex
 
-*** Index meaning
-reg M_finindex $varstd
-reg M_finindex i.caste i.year assets_total_std, base
+
+
+
+
+
+********** Method 3: Arithmetic mean weighted by income
+egen step1=rowmean(dar dsr rfmrev)
+*replace step1=0 if step1<0
+gen lambda=(dailyusdincome4_pc-1.9)/1.9
+gen lambdarev=lambda*(-1)
+replace lambdarev=0 if lambdarev<0
+gen MW_finindex=step1*(1+lambdarev)
+drop step1 lambda lambdarev
+
+
+********** Method 4: Arithmetic mean weighted by income
+egen step1=rowmean(dar dsr tdr)
+*replace step1=0 if step1<0
+gen lambda=(dailyusdincome4_pc-1.9)/1.9
+gen lambdarev=lambda*(-1)
+ta lambdarev
+replace lambdarev=0 if lambdarev<0
+ta lambdarev
+gen MW2_finindex=step1*(1+lambdarev)
+drop step1 lambda lambdarev
 
 
 
 ********** PCA vs Arithmetic mean
-plot M_finindex PCA_finindex
-cpcorr $varstd \ PCA_finindex M_finindex
-/*
-Finindex
-Good to bad
-*/
+tabstat PCA_finindex M_finindex MW_finindex MW2_finindex, stat(n mean cv q)
+
+* Diff
+sort MW2_finindex
+gen n_MW2=_n
+
+sort PCA_finindex
+gen n_PCA=_n
+
+gen diff=n_MW2-n_PCA
+gen absdiff=abs(diff)
+ta absdiff
+
+sort MW2_finindex
+br HHID_panel year absdiff PCA_finindex n_PCA MW2_finindex n_MW2 dailyusdincome4_pc dar dsr rfmrev step1 lambda lambdarev
 
 
 
@@ -264,7 +326,7 @@ use"panel_v5", clear
 
 
 ********** Var
-global varstd isr_std tdr_std incomerev_std dar_std rfmrev_std assetsrev_std
+global varstd isr_std tdr_std dar_std rfmrev_std dir_std dsr_std
 pwcorr $varstd, star(.05)
 
 
