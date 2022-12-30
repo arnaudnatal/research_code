@@ -112,8 +112,8 @@ save"panel_v4", replace
 ****************************************
 use"panel_v4", clear
 
-gen dummytrap="No"
-replace dummytrap="Yes" if tdr>0
+gen dummytrap=0
+replace dummytrap=1 if tdr>0
 ta dummytrap
 
 ********** Factoshiny
@@ -159,7 +159,7 @@ restore
 *global varstd afm_std dsr_std tdr_std dar_std 
 *global varstd afm_std isr_std tdr_std dar_std
 
-global varstd dailyincome4_pc_std assets_total_std afm_std dsr_std dar_std
+global varstd dailyincome4_pc_std afm_std dsr_std dar_std nbloans_HH_std
 
 *global varstd annualincome_HH_std assets_total_std afm_std dsr_std tdr_std dar_std
 
@@ -175,18 +175,25 @@ rotate, quartimin
 
 
 *** Projection of individuals
-predict fact1 fact2
-twoway (scatter fact2 fact1, xline(0) yline(0) mcolor(black%30) msymbol(oh)), name(fact12, replace)
-twoway (scatter fact3 fact1, xline(0) yline(0) mcolor(black%30) msymbol(oh)), name(fact13, replace)
-twoway (scatter fact3 fact2, xline(0) yline(0) mcolor(black%30) msymbol(oh)), name(fact23, replace)
+predict fact1 fact2 fact3
+twoway (scatter fact2 fact1, xline(0) yline(0) mcolor(black%30) msymbol(oh))
+
+twoway (scatter fact2 fact1 if dummytrap==0, xline(0) yline(0) mcolor(black%30) msymbol(oh)) ///
+(scatter fact2 fact1 if dummytrap==1, xline(0) yline(0) mcolor(green%30) msymbol(oh)), name(fact12, replace)
+
+twoway (scatter fact2 fact1 if caste==1, xline(0) yline(0) mcolor(black%30) msymbol(oh)) ///
+(scatter fact2 fact1 if caste>2, xline(0) yline(0) mcolor(green%30) msymbol(oh)), name(fact12, replace)
 
 
-graph3d fact1 fact2 fact3, mark cuboid format("%03.0f") 
 
-graph3d fact1 fact2 fact3, colorscheme(cr)
+twoway (scatter fact2 fact1 if year==2010, xline(0) yline(0) mcolor(black%30) msymbol(oh)) ///
+(scatter fact2 fact1 if year==2016, xline(0) yline(0) mcolor(green%30) msymbol(oh)) ///
+(scatter fact2 fact1 if year==2020, xline(0) yline(0) mcolor(red%30) msymbol(oh)), name(fact12, replace)
+
+
 
 *** Corr between var and fact
-cpcorr $varstd \ fact1 fact2
+cpcorr $varstd \ fact1 fact2 fact3
 
 
 *** Std indiv score
