@@ -159,10 +159,12 @@ restore
 *global varstd afm_std dsr_std tdr_std dar_std 
 *global varstd afm_std isr_std tdr_std dar_std
 
-global varstd dailyincome4_pc_std afm_std dsr_std dar_std nbloans_HH_std
+*global varstd dailyincome4_pc_std afm_std dsr_std dar_std nbloans_HH_std
 
 *global varstd annualincome_HH_std assets_total_std afm_std dsr_std tdr_std dar_std
 
+*global varstd dailyincome4_pc_std assets_total_std afm_std dsr_std dar_std
+global varstd assetsrev_std incomerev_std afmrev_std dsr_std dar_std
 
 corr $varstd
 *graph matrix $varstd, half msize(vsmall) msymbol(oh) mcolor(black%30)
@@ -171,29 +173,20 @@ factortest $varstd
 
 ********* Method 1: Factor analysis
 factor $varstd, pcf
+/*
+Factor1	1.83325	0.56665	0.3666	0.3666
+Factor2	1.26660	0.39246	0.2533	0.6200
+*/
 rotate, quartimin
 
 
 *** Projection of individuals
-predict fact1 fact2 fact3
-twoway (scatter fact2 fact1, xline(0) yline(0) mcolor(black%30) msymbol(oh))
-
-twoway (scatter fact2 fact1 if dummytrap==0, xline(0) yline(0) mcolor(black%30) msymbol(oh)) ///
-(scatter fact2 fact1 if dummytrap==1, xline(0) yline(0) mcolor(green%30) msymbol(oh)), name(fact12, replace)
-
-twoway (scatter fact2 fact1 if caste==1, xline(0) yline(0) mcolor(black%30) msymbol(oh)) ///
-(scatter fact2 fact1 if caste>2, xline(0) yline(0) mcolor(green%30) msymbol(oh)), name(fact12, replace)
-
-
-
-twoway (scatter fact2 fact1 if year==2010, xline(0) yline(0) mcolor(black%30) msymbol(oh)) ///
-(scatter fact2 fact1 if year==2016, xline(0) yline(0) mcolor(green%30) msymbol(oh)) ///
-(scatter fact2 fact1 if year==2020, xline(0) yline(0) mcolor(red%30) msymbol(oh)), name(fact12, replace)
-
+predict fact1 fact2
+*twoway (scatter fact2 fact1, xline(0) yline(0) mcolor(black%30) msymbol(oh))
 
 
 *** Corr between var and fact
-cpcorr $varstd \ fact1 fact2 fact3
+cpcorr $varstd \ fact1 fact2
 
 
 *** Std indiv score
@@ -204,7 +197,7 @@ gen fact`i'_std = (fact`i'-r(min))/(r(max)-r(min))
 
 
 *** Index construction
-gen PCA_finindex=((fact1_std*0.62)+(fact2_std*0.38))*100
+gen PCA_finindex=((fact1_std*0.59)+(fact2_std*0.41))*100
 
 
 *** Index meaning
@@ -227,7 +220,9 @@ drop _tempfinindex
 
 
 ********** Method 3: Arithmetic mean weighted by income
-egen step1=rowmean(dar dsr rfmrev)
+*assetsrev incomerev afmrev
+
+egen step1=rowmean(dar dsr)
 *replace step1=0 if step1<0
 gen lambda=(dailyusdincome4_pc-1.9)/1.9
 gen lambdarev=lambda*(-1)
