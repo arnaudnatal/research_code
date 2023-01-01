@@ -387,6 +387,9 @@ recode `x' (.=0)
 }
 */
 
+recode dummyexposure (.=0)
+recode head_mocc_occupation (.=0)
+recode head_nboccupation (.=0)
 
 save"panel_v0", replace
 ****************************************
@@ -444,7 +447,8 @@ ms(oh) msize(small) mc(black%30)
 
 
 * DAR
-gen dar=loanamount_HH*100/assets_total
+tabstat loanamount_HH assets_total assets_totalnoland assets_totalnoprop, stat(n mean cv p50) by(year)
+gen dar=loanamount_HH*100/assets_totalnoprop
 replace dar=0 if dar==.
 tabstat dar, stat(n mean cv q p90 p95 p99 max) by(year)
 ta year if dar>200
@@ -525,19 +529,11 @@ gen rfm=afm/annualincome_HH
 ta rfm
 
 
+* LPC - Loans per capita
+gen lpc=nbloans_HH/squareroot_HHsize
+ta lpc
+replace lpc=0 if lpc==.
 
-
-
-
-
-
-
-/*
-stripplot fm2, over(dummyfm) vert ///
-stack width(5000) jitter(1) ///
-box(barw(0.2)) boffset(-0.2) pctile(95) ///
-ms(oh) msize(small) mc(black%30)
-*/
 
 save"panel_v1", replace
 ****************************************
@@ -596,6 +592,39 @@ drop dailyplincome1_pc dailyplincome2_pc dailyplincome3_pc dailyplincome4_pc
 gen incpercpl=(dailyusdincome4_pc-1.9)*100/1.9
 
 
+* Assets pc
+gen assets_pc=assets_total/squareroot_HHsize
+corr assets_total assets_pc
+plot assets_pc assets_total
+
+* Inc better to worse
+gen incomerev=dailyincome4_pc*(-1)
+tabstat dailyincome4_pc incomerev, stat(n q)
+egen incomerev_std=std(incomerev)
+
+* RFM better to worse
+gen rfmrev=rfm*(-1)
+tabstat rfm rfmrev, stat(n q)
+egen rfmrev_std=std(rfmrev)
+
+* Assets better to worse
+gen assetsrev=assets_total*(-1)
+tabstat assets_total assetsrev, stat(n q)
+egen assetsrev_std=std(assetsrev)
+
+* AFM better to worse
+gen afmrev=afm*(-1)
+tabstat afm afmrev, stat(n q)
+egen afmrev_std=std(afmrev)
+
+* Other var
+encode HHID_panel, gen(panelvar)
+encode villageid, gen(vill)
+replace typeoffamily="stem" if typeoffamily=="joint-stem"
+encode typeoffamily, gen(tof)
+gen dummytrap=0
+replace dummytrap=1 if tdr>0
+
 
 save"panel_v2", replace
 ****************************************
@@ -613,7 +642,7 @@ save"panel_v2", replace
 ****************************************
 use"panel_v2", clear
 
-tabstat dsr isr dar dir tdr tar rfm dailyincome4_pc assets_total goldreadyamount afm incpercpl, stat(n mean cv min p1 p5 p10 q p90 p95 p99 max)
+tabstat dsr isr dar dir tdr tar rfm dailyincome4_pc assets_total goldreadyamount afm incpercpl assets_pc lpc, stat(n mean cv min p1 p5 p10 q p90 p95 p99 max)
 
 
 replace dsr=430 if dsr>430
@@ -625,13 +654,14 @@ replace rfm=7 if rfm>7
 replace rfm=-10 if rfm<-10
 replace dailyincome4_pc=600 if dailyincome4_pc>600
 replace assets_total=6000000 if assets_total>6000000
+replace assets_pc=3000000 if assets_pc>3000000
 replace goldreadyamount=400000 if goldreadyamount>400000
-replace afm=60000 if afm>60000
-replace afm=-20000 if afm<-20000
+replace afm=570000 if afm>570000
+replace afm=-150000 if afm<-150000
 replace incpercpl=600 if incpercpl>600
 
 
-foreach x in loanamount_HH annualincome_HH assets_total imp1_ds_tot_HH imp1_is_tot_HH totHH_givenamt_repa dsr isr dar dir tdr tar afm rfm expenses_total remreceived_HH remsent_HH remittnet_HH dailyincome4_pc assets_gold goldquantity_HH goldreadyamount nbloans_HH incpercpl {
+foreach x in loanamount_HH annualincome_HH assets_total imp1_ds_tot_HH imp1_is_tot_HH totHH_givenamt_repa dsr isr dar dir tdr tar afm rfm expenses_total remreceived_HH remsent_HH remittnet_HH dailyincome4_pc assets_gold goldquantity_HH goldreadyamount nbloans_HH incpercpl assets_pc lpc {
 egen `x'_std=std(`x')
 }
 

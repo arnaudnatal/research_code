@@ -37,11 +37,10 @@ attach(data)
 
 #--- Matrices creation
 PCA_finindex<-as.matrix(cbind(PCA_finindex2010,PCA_finindex2016,PCA_finindex2020))
-M_finindex<-as.matrix(cbind(M_finindex2010,M_finindex2016,M_finindex2020))
 
 
 #--- Trends analysis clustering
-interactive_clustering(M_finindex)
+interactive_clustering(PCA_finindex)
 
 
 
