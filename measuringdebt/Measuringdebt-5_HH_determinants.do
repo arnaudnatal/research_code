@@ -1,0 +1,181 @@
+*-------------------------
+cls
+*Arnaud NATAL
+*arnaud.natal@u-bordeaux.fr
+*November 19, 2022
+*-----
+gl link = "measuringdebt"
+*Prepa database
+*-----
+*do "https://raw.githubusercontent.com/arnaudnatal/folderanalysis/main/$link.do"
+do"C:\Users\Arnaud\Documents\GitHub\folderanalysis\measuringdebt.do"
+*-------------------------
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Determinants
+****************************************
+use"panel_v7", clear
+
+
+********** RE
+* BP LM test
+xtreg pca2index dalits stem HHsize HH_count_child head_female head_age head_occ2 head_occ3 head_occ4 head_occ5 head_occ6 head_occ7 head_educ2 head_educ3 head_educ4 head_nonmarried dummymarriage assets_pc dailyincome_pc i.vill, base re
+est store pcaRE
+xttest0
+/*
+pvalue higher than .05, we do not reject H0
+-> No random effect
+*/
+
+xtreg m2index dalits stem HHsize HH_count_child head_female head_age head_occ2 head_occ3 head_occ4 head_occ5 head_occ6 head_occ7 head_educ2 head_educ3 head_educ4 head_nonmarried dummymarriage assets_pc dailyincome_pc i.vill, base re
+est store mRE
+xttest0
+/*
+pvalue higher than .05, we do not reject H0
+-> No random effect
+*/
+
+
+
+********** FE
+xtreg pca2index dalits stem HHsize HH_count_child head_female head_age head_occ2 head_occ3 head_occ4 head_occ5 head_occ6 head_occ7 head_educ2 head_educ3 head_educ4 head_nonmarried dummymarriage assets_pc dailyincome_pc i.vill, base fe
+est store pcaFE
+/*
+pvalue lower than .05, we reject H0
+-> Fixed effect
+*/
+
+xtreg m2index dalits stem HHsize HH_count_child head_female head_age head_occ2 head_occ3 head_occ4 head_occ5 head_occ6 head_occ7 head_educ2 head_educ3 head_educ4 head_nonmarried dummymarriage assets_pc dailyincome_pc i.vill, base fe
+est store mFE
+/*
+pvalue lower than .05, we reject H0
+-> Fixed effect
+*/
+
+
+
+********** CRE to have FE with constant terms as caste
+global mean stem_mean HHsize_mean HH_count_child_mean head_female_mean head_age_mean head_occ2_mean head_occ3_mean head_occ4_mean head_occ5_mean head_occ6_mean head_occ7_mean head_educ2_mean head_educ3_mean head_educ4_mean head_nonmarried_mean dummymarriage_mean assets_pc_mean dailyincome_pc_mean
+
+xtreg pca2index dalits stem HHsize HH_count_child head_female head_age head_occ2 head_occ3 head_occ4 head_occ5 head_occ6 head_occ7 head_educ2 head_educ3 head_educ4 head_nonmarried dummymarriage assets_pc dailyincome_pc i.vill $mean, base re
+
+xtreg m2index dalits stem HHsize HH_count_child head_female head_age head_occ2 head_occ3 head_occ4 head_occ5 head_occ6 head_occ7 head_educ2 head_educ3 head_educ4 head_nonmarried dummymarriage assets_pc dailyincome_pc i.vill $mean, base re
+
+
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Effect of marriage in 2020-21 to observe trend before
+****************************************
+use"panel_v7", clear
+
+keep if year==2020
+
+*** 
+
+reg pca2index dalits stem HHsize HH_count_child head_female head_age head_occ2 head_occ3 head_occ4 head_occ5 head_occ6 head_occ7 head_educ2 head_educ3 head_educ4 head_nonmarried dummymarriage assets_pc dailyincome_pc i.vill if year==2020
+
+
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+/*
+****************************************
+* Trends
+****************************************
+use"panel_v7", clear
+
+
+***** Trends
+preserve
+keep if dummypanel==1
+keep HHID_panel year pca2index m2index
+
+reshape wide pca2index m2index, i(HHID_panel) j(year)
+export delimited "C:\Users\Arnaud\Documents\GitHub\research_code\measuringdebt\debtnew.csv", replace
+restore
+
+****************************************
+* END
+*/
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+****************************************
+* Graph PCA
+****************************************
+use"panel_v3", clear
+/*
+graph matrix $varstd, half msize(vsmall) msymbol(oh)
+
+loadingplot , component(2) combined xline(0) yline(0) aspect(1)
+
+twoway (scatter fact2 fact1, xline(0) yline(0) mcolor(black%30)), name(rev, replace)
+
+twoway (scatter fact2 fact1 if year==2010, xline(0) yline(0) mcolor(black%30)), name(year2010, replace)
+twoway (scatter fact2 fact1 if year==2016, xline(0) yline(0) mcolor(black%30)), name(year2016, replace)
+twoway (scatter fact2 fact1 if year==2020, xline(0) yline(0) mcolor(black%30)), name(year2020, replace)
+
+combineplot fact1 ($varstd): scatter @y @x || lfit @y @x
+combineplot fact2 ($varstd): scatter @y @x || lfit @y @x
+
+
+stripplot `x', over(clust) vert ///
+stack width(0.2) jitter(1) ///
+box(barw(0.2)) boffset(-0.2) pctile(10) ///
+ms(oh oh oh) msize(small) mc(blue%30) ///
+yla(, ang(h)) xla(, noticks) name(sp`x', replace)
+
+
+program drop _all
+program define stripgraph
+stripplot `1' if `1'<`4', over(`2') by(`3', title("`1'")) vert ///
+stack width(1) jitter(0) ///
+box(barw(1)) boffset(-0.3) pctile(10) ///
+ms(oh oh oh) msize(small) mc(blue%30) ///
+yla(, ang(h)) xla(, noticks)
+end
+****************************************
+* END
+*/
