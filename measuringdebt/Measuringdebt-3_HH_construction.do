@@ -233,7 +233,7 @@ ta head_mocc_occupation, gen(head_occ)
 
 * Head edulevel
 fre head_edulevel
-recode head_edulevel (4=3) (5=3)
+recode head_edulevel (3=2) (4=2) (5=2)
 ta head_edulevel, gen(head_educ)
 
 
@@ -263,7 +263,7 @@ fre head_nonmarried
 
 
 ********** CRE
-global head head_female head_occ1 head_occ2 head_occ3 head_occ4 head_occ5 head_occ6 head_occ7 head_educ1 head_educ2 head_educ3 head_educ4 head_agesq head_agecat head_agecat1 head_agecat2 head_agecat3 head_agecat4 head_nonmarried head_age
+global head head_female head_occ1 head_occ2 head_occ3 head_occ4 head_occ5 head_occ6 head_occ7 head_educ1 head_educ2 head_educ3 head_agesq head_agecat head_agecat1 head_agecat2 head_agecat3 head_agecat4 head_nonmarried head_age
 global income annualincome_HH dailyincome_pc shareincomeagri_HH incomeagri_HH incomenonagri_HH shareincomenonagri_HH
 global assets assets_total assets_pc
 global expenses expenses_total shareexpenses_food shareexpenses_educ shareexpenses_heal shareexpenses_cere
