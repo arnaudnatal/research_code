@@ -407,6 +407,14 @@ rename M_finindexnew m2index
 ********** Overlap
 *graph matrix pcaindex pca2index m2index, half msize(vsmall) msymbol(oh) mcolor(black%30)
 
+***
+gen time=0
+replace time=1 if year==2010
+replace time=2 if year==2016
+replace time=3 if year==2020
+
+label define time 1"2010" 2"2016-17" 3"2020-21"
+label values time time
 
 save"panel_v7", replace
 ****************************************

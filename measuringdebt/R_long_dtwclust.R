@@ -42,50 +42,25 @@ mindex<-as.matrix(cbind(m2index2010, m2index2016, m2index2020))
 
 #--- Trends analysis clustering
 interactive_clustering(pcaindex)
+interactive_clustering(mindex)
 
 
 
 
 #--- Manually trends analysis
-income_euc<-tsclust(
-  series=X_income_ihs,
-  type="partitional",
-  k=4,
-  distance="euclidean",
-  centroid="mean",
-  seed=4,
-  trace=TRUE,
-  error.check=TRUE
-)
-
-income_sbd<-tsclust(
-  series=X_income_ihs,
+pca_clust<-tsclust(
+  series=pcaindex,
   type="partitional",
   k=4,
   distance="sbd",
   centroid="pam",
-  seed=3,
+  seed=11,
   trace=TRUE,
   error.check=TRUE
 )
 
-
-
-
-
-assets_euc<-tsclust(
-  series=X_assets_ihs,
-  type="partitional",
-  k=4,
-  distance="euclidean",
-  centroid="mean",
-  seed=8,
-  trace=TRUE,
-  error.check=TRUE
-)
-
-assets_sbd<-tsclust(
-  series=X_assets_ihs,
+m_clust<-tsclust(
+  series=mindex,
   type="partitional",
   k=4,
   distance="sbd",
@@ -98,155 +73,15 @@ assets_sbd<-tsclust(
 
 
 
-loan_euc<-tsclust(
-  series=X_loan_ihs,
-  type="partitional",
-  k=4,
-  distance="euclidean",
-  centroid="mean",
-  seed=2,
-  trace=TRUE,
-  error.check=TRUE
-)
-
-loan_sbd<-tsclust(
-  series=X_loan_ihs,
-  type="partitional",
-  k=3,
-  distance="sbd",
-  centroid="pam",
-  seed=2,
-  trace=TRUE,
-  error.check=TRUE
-)
-
-
-
-
-
-DSR_euc<-tsclust(
-  series=X_DSR_ihs,
-  type="partitional",
-  k=5,
-  distance="euclidean",
-  centroid="mean",
-  seed=7,
-  trace=TRUE,
-  error.check=TRUE
-)
-
-DSR_sbd<-tsclust(
-  series=X_DSR_ihs,
-  type="partitional",
-  k=5,
-  distance="sbd",
-  centroid="pam",
-  seed=2,
-  trace=TRUE,
-  error.check=TRUE
-)
-
-
-
-
-ISR_euc<-tsclust(
-  series=X_ISR_ihs,
-  type="partitional",
-  k=3,
-  distance="euclidean",
-  centroid="mean",
-  seed=1,
-  trace=TRUE,
-  error.check=TRUE
-)
-
-ISR_sbd<-tsclust(
-  series=X_ISR_ihs,
-  type="partitional",
-  k=5,
-  distance="sbd",
-  centroid="pam",
-  seed=16,
-  trace=TRUE,
-  error.check=TRUE
-)
-
-
-
-
-DAR_euc<-tsclust(
-  series=X_DAR_ihs,
-  type="partitional",
-  k=4,
-  distance="euclidean",
-  centroid="mean",
-  seed=1,
-  trace=TRUE,
-  error.check=TRUE
-)
-
-DAR_sbd<-tsclust(
-  series=X_DAR_ihs,
-  type="partitional",
-  k=4,
-  distance="sbd",
-  centroid="pam",
-  seed=2,
-  trace=TRUE,
-  error.check=TRUE
-)
-
-
-expenses_sbd<-tsclust(
-  series=X_expenses_ihs,
-  type="partitional",
-  k=3,
-  distance="sbd",
-  centroid="pam",
-  seed=3,
-  trace=TRUE,
-  error.check=TRUE
-)
-
-
-
-DIR_sbd<-tsclust(
-  series=X_DIR_ihs,
-  type="partitional",
-  k=4,
-  distance="sbd",
-  centroid="pam",
-  seed=9,
-  trace=TRUE,
-  error.check=TRUE
-)
-
-
 
 #--- Datasets extraction
-euc_annualincome<-income_euc@cluster
-sbd_annualincome<-income_sbd@cluster
+pca_cluster<-pca_clust@cluster
+m_cluster<-m_clust@cluster
 
-euc_assets_noland<-assets_euc@cluster
-sbd_assets_noland<-assets_sbd@cluster
 
-euc_loanamount<-loan_euc@cluster
-sbd_loanamount<-loan_sbd@cluster
 
-euc_DSR<-DSR_euc@cluster
-sbd_DSR<-DSR_sbd@cluster
-
-euc_ISR<-ISR_euc@cluster
-sbd_ISR<-ISR_sbd@cluster
-
-euc_DAR<-DAR_euc@cluster
-sbd_DAR<-DAR_sbd@cluster
-
-sbd_expenses<-expenses_sbd@cluster
-
-sbd_DIR<-DIR_sbd@cluster
 
 #--- Step2
-data<-cbind(data, euc_annualincome, sbd_annualincome, euc_assets_noland, sbd_assets_noland, euc_loanamount, sbd_loanamount, euc_DSR, sbd_DSR, euc_ISR, sbd_ISR, euc_DAR, sbd_DAR, sbd_expenses, sbd_DIR)
+data<-cbind(data, pca_cluster, m_cluster)
 
-write.csv(data,"debttrend_v2.csv")
+write.csv(data,"indextrend.csv")
