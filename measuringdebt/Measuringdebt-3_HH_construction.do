@@ -326,6 +326,7 @@ label var isr_std "ISR (std)"
 label var dailyincome_pc_std "Livelihood (std)"
 label var assets_total_std "Wealth (std)"
 label var nbloans_HH_std "Nb loans (std)"
+label var lpc_std "Loans pc (std)"
 
 
 * Inc better to worse
@@ -337,6 +338,7 @@ egen incomerev_std=std(incomerev)
 gen rfmrev=rfm*(-1)
 tabstat rfm rfmrev, stat(n q)
 egen rfmrev_std=std(rfmrev)
+label var rfmrev_std "RFM rev. (std)"
 
 * Assets better to worse
 gen assetsrev=assets_total*(-1)

@@ -19,6 +19,34 @@ do"C:\Users\Arnaud\Documents\GitHub\folderanalysis\measuringdebt.do"
 
 
 
+****************************************
+* Evo over time
+****************************************
+use"panel_v7", clear
+
+
+tabstat pca2index m2index, stat(n mean cv p50) by(year) long
+
+
+tabstat dsr_std dar_std lpc_std rfmrev_std tdr_std, stat(n mean cv p50) by(year) long
+
+
+tabstat dsr dar lpc rfmrev tdr, stat(n mean cv p50) by(year) long
+
+
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
 
 ****************************************
 * FE vs RE?
@@ -111,15 +139,34 @@ xtreg m2index dalits stem HHsize HH_count_child head_female head_age head_occ2 h
 ****************************************
 use"panel_v7", clear
 
+xtreg dsr_std dalits stem HHsize HH_count_child head_female head_age head_occ2 head_occ3 head_occ4 head_occ5 head_occ6 head_occ7 head_educ2 head_educ3 head_nonmarried dummymarriage assets_pc dailyincome_pc i.vill, base fe
+est store dsr
 
+xtreg dar_std dalits stem HHsize HH_count_child head_female head_age head_occ2 head_occ3 head_occ4 head_occ5 head_occ6 head_occ7 head_educ2 head_educ3 head_nonmarried dummymarriage assets_pc dailyincome_pc i.vill, base fe
+est store dar
+
+xtreg lpc_std dalits stem HHsize HH_count_child head_female head_age head_occ2 head_occ3 head_occ4 head_occ5 head_occ6 head_occ7 head_educ2 head_educ3 head_nonmarried dummymarriage assets_pc dailyincome_pc i.vill, base fe
+est store lpc
+
+xtreg tdr_std dalits stem HHsize HH_count_child head_female head_age head_occ2 head_occ3 head_occ4 head_occ5 head_occ6 head_occ7 head_educ2 head_educ3 head_nonmarried dummymarriage assets_pc dailyincome_pc i.vill, base fe
+est store tdr
+
+xtreg rfmrev_std dalits stem HHsize HH_count_child head_female head_age head_occ2 head_occ3 head_occ4 head_occ5 head_occ6 head_occ7 head_educ2 head_educ3 head_nonmarried dummymarriage assets_pc dailyincome_pc i.vill, base fe
+est store rfmrev
 
 xtreg pca2index dalits stem HHsize HH_count_child head_female head_age head_occ2 head_occ3 head_occ4 head_occ5 head_occ6 head_occ7 head_educ2 head_educ3 head_nonmarried dummymarriage assets_pc dailyincome_pc i.vill, base fe
 est store pca
 
-
-
 xtreg m2index dalits stem HHsize HH_count_child head_female head_age head_occ2 head_occ3 head_occ4 head_occ5 head_occ6 head_occ7 head_educ2 head_educ3 head_nonmarried dummymarriage assets_pc dailyincome_pc i.vill, base fe
 est store m
+
+esttab dsr dar tdr rfmrev lpc, ///
+	cells("b(fmt(2) star)" se(par fmt(2))) ///
+	drop() ///
+	legend label varlabels(_cons constant) ///
+	stats(N r2_p ll chi2 p, fmt(0 2 2 2 2) labels(`"Observations"' `"Pseudo \$R^2$"' `"Log-likelihood"' `"$\upchi^2$"' `"p-value"')) ///
+	starlevels(* 0.10 ** 0.05 *** 0.01) ///
+	replace	
 
 esttab pca m, ///
 	cells("b(fmt(2) star)" se(par fmt(2))) ///
