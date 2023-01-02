@@ -525,7 +525,7 @@ ta dummyafmpos caste if year==2020, row nofreq
 
 
 * RFM - Relative Financial Margin
-gen rfm=afm/annualincome_HH
+gen rfm=(afm*100)/annualincome_HH
 ta rfm
 
 
@@ -591,31 +591,10 @@ drop dailyplincome1_pc dailyplincome2_pc dailyplincome3_pc dailyplincome4_pc
 * Incpercpl
 gen incpercpl=(dailyusdincome4_pc-1.9)*100/1.9
 
-
 * Assets pc
 gen assets_pc=assets_total/squareroot_HHsize
 corr assets_total assets_pc
 plot assets_pc assets_total
-
-* Inc better to worse
-gen incomerev=dailyincome4_pc*(-1)
-tabstat dailyincome4_pc incomerev, stat(n q)
-egen incomerev_std=std(incomerev)
-
-* RFM better to worse
-gen rfmrev=rfm*(-1)
-tabstat rfm rfmrev, stat(n q)
-egen rfmrev_std=std(rfmrev)
-
-* Assets better to worse
-gen assetsrev=assets_total*(-1)
-tabstat assets_total assetsrev, stat(n q)
-egen assetsrev_std=std(assetsrev)
-
-* AFM better to worse
-gen afmrev=afm*(-1)
-tabstat afm afmrev, stat(n q)
-egen afmrev_std=std(afmrev)
 
 * Other var
 encode HHID_panel, gen(panelvar)
@@ -642,7 +621,7 @@ save"panel_v2", replace
 ****************************************
 use"panel_v2", clear
 
-tabstat dsr isr dar dir tdr tar rfm dailyincome4_pc assets_total goldreadyamount afm incpercpl assets_pc lpc, stat(n mean cv min p1 p5 p10 q p90 p95 p99 max)
+tabstat dsr isr dar dir tdr tar rfm dailyincome4_pc assets_total goldreadyamount afm incpercpl assets_pc lpc , stat(n mean cv min p1 p5 p10 q p90 p95 p99 max)
 
 
 replace dsr=430 if dsr>430
@@ -650,8 +629,8 @@ replace isr=190 if isr>190
 replace dar=420 if dar>420
 replace dir=2800 if dir>2800
 replace tar=39 if tar>39
-replace rfm=7 if rfm>7
-replace rfm=-10 if rfm<-10
+replace rfm=700 if rfm>700
+replace rfm=-1000 if rfm<-1000
 replace dailyincome4_pc=600 if dailyincome4_pc>600
 replace assets_total=6000000 if assets_total>6000000
 replace assets_pc=3000000 if assets_pc>3000000
@@ -676,6 +655,29 @@ label var isr_std "ISR (std)"
 label var dailyincome4_pc_std "Livelihood (std)"
 label var assets_total_std "Wealth (std)"
 label var nbloans_HH_std "Nb loans (std)"
+
+
+* Inc better to worse
+gen incomerev=dailyincome4_pc*(-1)
+tabstat dailyincome4_pc incomerev, stat(n q)
+egen incomerev_std=std(incomerev)
+
+* RFM better to worse
+gen rfmrev=rfm*(-1)
+tabstat rfm rfmrev, stat(n q)
+egen rfmrev_std=std(rfmrev)
+
+* Assets better to worse
+gen assetsrev=assets_total*(-1)
+tabstat assets_total assetsrev, stat(n q)
+egen assetsrev_std=std(assetsrev)
+
+* AFM better to worse
+gen afmrev=afm*(-1)
+tabstat afm afmrev, stat(n q)
+egen afmrev_std=std(afmrev)
+
+
 
 *** Order
 order HHID_panel year

@@ -29,8 +29,6 @@ do"C:\Users\Arnaud\Documents\GitHub\folderanalysis\measuringdebt.do"
 use"panel_v3", clear
 
 
-
-
 *** Measures of financial distress
 global overlap dar_std dsr_std afm_std rfm_std isr_std dailyincome4_pc_std assets_total_std
 
@@ -79,14 +77,24 @@ We will test the two
 
 
 ****************************************
-* Finindex
+* Finindex no. 1
 ****************************************
 use"panel_v3", clear
 
+/*
+- Livelihood pc
+- Wealth pc
+- Relative financial margin
+- Debt service
+- Trap ratio
+- Loans per capita
+- Debt to assets
+*/
 
 ********** Global
 global varstd dailyincome4_pc_std assets_pc_std rfm_std dsr_std tdr_std lpc_std dar_std
 global var dailyincome4_pc assets_pc rfm dsr tdr lpc dar
+
 
 
 ********** Desc
@@ -98,6 +106,8 @@ factortest $varstd
 
 
 ********* PCA
+pca $varstd
+estat kmo
 pca $varstd, comp(3)
 *screeplot, ci mean
 rotate, quartimin
@@ -112,7 +122,6 @@ cpcorr $varstd \ fact1 fact2 fact3
 
 
 *** More is bad
-*replace fact1=fact1*(-1)
 replace fact2=fact2*(-1)
 cpcorr $varstd \ fact1 fact2 fact3
 
@@ -134,22 +143,9 @@ tabstat PCA_finindex, stat(n mean cv q) by(year)
 tabstat PCA_finindex, stat(n mean cv q) by(caste)
 
 
-/*
-stripplot PCA_finindex, over(year) vert ///
-stack width(0.2) jitter(1) refline ///
-box(barw(0.2)) boffset(-0.2) pctile(10) ///
-ms(oh oh oh) msize(small) mc(blue%30) ///
-yla(, ang(h)) xla(, noticks)
-*/
-
+*** Econo
 xtset panelvar year
-
-mdesc PCA_finindex caste tof HHsize HH_count_child head_sex head_age head_mocc_occupation head_edulevel vill dummydemonetisation dummyexposure
-
 xtreg PCA_finindex i.caste i.tof c.HHsize c.HH_count_child i.head_sex head_age i.head_mocc_occupation i.head_edulevel i.vill, base
-
-xtreg PCA_finindex i.caste i.tof c.HHsize c.HH_count_child i.head_sex head_age i.head_mocc_occupation i.head_edulevel i.vill i.dummydemonetisation i.dummyexposure, base
-
 
 
 
@@ -163,6 +159,10 @@ corr PCA_finindex2010 PCA_finindex2016 PCA_finindex2020 if caste==1
 corr PCA_finindex2010 PCA_finindex2016 PCA_finindex2020 if caste==2
 corr PCA_finindex2010 PCA_finindex2016 PCA_finindex2020 if caste==3
 restore
+
+
+********* Clean
+drop fact1 fact2 fact3 fact1_std fact2_std fact3_std
 
 
 save"panel_v4", replace
@@ -182,35 +182,102 @@ save"panel_v4", replace
 
 
 
+
+
 ****************************************
-* Trends and shocks
+* Finindex no. 2
 ****************************************
 use"panel_v4", clear
 
+/*
+- Relative financial margin
+- Debt service
+- Trap ratio
+- Loans per capita
+- Debt to assets
+*/
 
-***** Trends
+
+********** Global
+global varstd rfm_std dsr_std tdr_std lpc_std dar_std
+global var rfm dsr tdr lpc dar
+
+
+********** Desc
+tabstat $var, stat(n mean cv p50) by(year)
+
+corr $varstd
+
+factortest $varstd
+
+
+********* PCA
+pca $varstd
+pca $varstd, comp(2)
+estat kmo
+*screeplot, ci mean
+rotate, quartimin
+
+*** Projection of individuals
+predict fact1 fact2
+*twoway (scatter fact2 fact1, xline(0) yline(0) mcolor(black%30) msymbol(oh))
+
+
+*** Corr between var and fact
+cpcorr $varstd \ fact1 fact2
+
+
+*** Std indiv score
+forvalues i=1/2 {
+qui sum fact`i'
+gen fact`i'_std = (fact`i'-r(min))/(r(max)-r(min))
+}
+
+
+*** Index construction
+gen PCA_finindexnew=((fact1_std*0.62)+(fact2_std*0.38))*100
+
+
+*** Index meaning
+cpcorr fact1 fact2 $varstd \ PCA_finindexnew
+tabstat PCA_finindexnew, stat(n mean cv q) by(year)
+tabstat PCA_finindexnew, stat(n mean cv q) by(caste)
+
+
+
+*** Econo
+xtset panelvar year
+xtreg PCA_finindexnew i.caste i.tof c.HHsize c.HH_count_child i.head_sex head_age i.head_mocc_occupation i.head_edulevel i.vill, base
+
+
+
+
+********** Stability over time
 preserve
-keep if dummypanel==1
-keep HHID_panel year PCA_finindex
-reshape wide PCA_finindex, i(HHID_panel) j(year)
-export delimited "C:\Users\Arnaud\Documents\GitHub\research_code\measuringdebt\debtnew.csv", replace
+keep HHID_panel year PCA_finindexnew caste
+reshape wide PCA_finindexnew, i(HHID_panel) j(year)
+cls
+corr PCA_finindexnew2010 PCA_finindexnew2016 PCA_finindexnew2020
+corr PCA_finindexnew2010 PCA_finindexnew2016 PCA_finindexnew2020 if caste==1
+corr PCA_finindexnew2010 PCA_finindexnew2016 PCA_finindexnew2020 if caste==2
+corr PCA_finindexnew2010 PCA_finindexnew2016 PCA_finindexnew2020 if caste==3
 restore
 
 
 
+********* Clean
+drop fact1 fact2 fact1_std fact2_std
 
 
-********** Contrib of shocks
-global control ib(2).caste
 
-reg PCA_finindex dummydemonetisation $control if year==2016, base
-reg PCA_finindex dummyexposure $control if year==2020, base
-*reg PCA_finindex dummymarriage $control if year==2016
-*reg PCA_finindex dummymarriage $control if year==2020
-*reg PCA_finindex dummymarriage $control if year!=2016
-
+save"panel_v5", replace
 ****************************************
 * END
+
+
+
+
+
 
 
 
@@ -223,17 +290,92 @@ reg PCA_finindex dummyexposure $control if year==2020, base
 ****************************************
 * Finindex by simple calculation to compare
 ****************************************
-use"panel_v4", clear
+use"panel_v5", clear
 
 
-********** Global
+
+********** Specification no. 1
+/*
+- Livelihood pc
+- Wealth pc
+- Relative financial margin
+- Debt service
+- Trap ratio
+- Loans per capita
+- Debt to assets
+*/
 global varstd dailyincome4_pc_std assets_pc_std rfm_std dsr_std tdr_std lpc_std dar_std
 global var dailyincome4_pc assets_pc rfm dsr tdr lpc dar
 
+tabstat $varstd, stat(n mean cv p50 min max)
+tabstat $var, stat(n mean cv p50 min max)
 
-********** Desc
-mdesc $var PCA_finindex
-tabstat $var PCA_finindex, stat(n mean cv p50) by(year)
+
+
+
+********** Specification no.2 
+/*
+- Relative financial margin
+- Debt service
+- Trap ratio
+- Loans per capita
+- Debt to assets
+*/
+global varnewstd rfmrev_std dsr_std tdr_std lpc_std dar_std
+global varnew rfmrev dsr tdr lpc dar
+
+tabstat $varnewstd, stat(n mean cv q min max)
+tabstat $varnew, stat(n mean cv q min max)
+
+
+* Step 1: Reduce
+/*
+replace rfmrev=200 if rfmrev>200
+replace rfmrev=-300 if rfmrev<-300
+replace dsr=100 if dsr>100
+replace dar=100 if dar>100
+*/
+tabstat $varnew, stat(min p1 p5 p10 q p90 p95 p99 max)
+
+
+* Step 2: Rowmean of %
+*egen percmean=rowmean(rfmrev dsr tdr dar)
+gen percmean=(tdr*0.5)+(dsr*0.2)+(dar*0.2)+(rfmrev*0.1)
+
+tabstat $varnew percmean, stat(n mean cv p50 min max)
+
+
+* Step 3: Nb of loan in % by divided by 100
+*ta lpc
+gen multinbl=1+(lpc/10)
+
+
+* Step 4: Final res
+gen M_finindexnew=percmean*multinbl
+cpcorr $varnew \ M_finindexnew
+
+
+* Comparison with PCA
+corr M_finindexnew PCA_finindexnew
+
+tabstat M_finindexnew PCA_finindexnew, stat(n mean cv q min max)
+
+twoway ///
+(scatter M_finindexnew PCA_finindexnew) ///
+(qfit M_finindexnew PCA_finindexnew)
+
+
+
+
+save"panel_v6", replace
+****************************************
+* END
+
+
+
+
+
+
 
 
 
@@ -242,7 +384,104 @@ tabstat $var PCA_finindex, stat(n mean cv p50) by(year)
 
 
 ****************************************
+* Overlap 2 specifications
+****************************************
+use"panel_v6", clear
+
+
+********** Prepa
+xtset panelvar year
+
+
+
+********** Overlap
+/*
+twoway ///
+(scatter PCA_finindexnew PCA_finindex)
+*/
+
+
+
+********** Prediction of assets and income for 2nd specification
+qui xtreg PCA_finindexnew i.caste i.tof c.HHsize c.HH_count_child i.head_sex head_age i.head_mocc_occupation i.head_edulevel i.vill, base re
+est store store1
+
+qui xtreg PCA_finindexnew i.caste i.tof c.HHsize c.HH_count_child i.head_sex head_age i.head_mocc_occupation i.head_edulevel i.vill  i.dummydemonetisation i.dummymarriage i.dummyexposure assets_pc_std dailyincome4_pc_std, base re
+est store store2
+
+qui xtreg PCA_finindexnew i.caste i.tof c.HHsize c.HH_count_child i.head_sex head_age i.head_mocc_occupation i.head_edulevel i.vill, base fe
+est store store3
+
+qui xtreg PCA_finindexnew i.caste i.tof c.HHsize c.HH_count_child i.head_sex head_age i.head_mocc_occupation i.head_edulevel i.vill  i.dummydemonetisation i.dummymarriage i.dummyexposure assets_pc_std dailyincome4_pc_std, base fe
+est store store4
+
+esttab store1 store2 store3 store4
+
+
+
+
+********** Determinants comparison
+foreach y in PCA_finindex PCA_finindexnew {
+qui xtreg `y' i.caste i.tof c.HHsize c.HH_count_child i.head_sex head_age i.head_mocc_occupation i.head_edulevel i.vill, base re
+est store RE_`y'_1
+
+qui xtreg `y' i.caste i.tof c.HHsize c.HH_count_child i.head_sex head_age i.head_mocc_occupation i.head_edulevel i.vill  i.dummydemonetisation i.dummymarriage i.dummyexposure, base re
+est store RE_`y'_2
+
+qui xtreg `y' i.caste i.tof c.HHsize c.HH_count_child i.head_sex head_age i.head_mocc_occupation i.head_edulevel i.vill, base fe
+est store FE_`y'_1
+
+qui xtreg `y' i.caste i.tof c.HHsize c.HH_count_child i.head_sex head_age i.head_mocc_occupation i.head_edulevel i.vill  i.dummydemonetisation i.dummymarriage i.dummyexposure, base fe
+est store FE_`y'_2
+}
+
+cls
+esttab RE_PCA_finindex_1 RE_PCA_finindexnew_1
+esttab RE_PCA_finindex_2 RE_PCA_finindexnew_2
+esttab FE_PCA_finindex_1 FE_PCA_finindexnew_1
+esttab FE_PCA_finindex_2 FE_PCA_finindexnew_2
+
+
+
+****************************************
 * END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Trends
+****************************************
+use"panel_v6", clear
+
+
+***** Trends
+preserve
+keep if dummypanel==1
+keep HHID_panel year PCA_finindex
+reshape wide PCA_finindex, i(HHID_panel) j(year)
+export delimited "C:\Users\Arnaud\Documents\GitHub\research_code\measuringdebt\debtnew.csv", replace
+restore
+
+****************************************
+* END
+
+
+
+
+
 
 
 
@@ -261,49 +500,64 @@ tabstat $var PCA_finindex, stat(n mean cv p50) by(year)
 ****************************************
 * Prediction power
 ****************************************
-use"panel_v4", clear
+use"panel_v6", clear
 
 
 ********** To keep
-keep panelvar year PCA_finindex dsr dar head_mocc_occupation head_nboccupation nbworker_HH
-mdesc 
+global vardebt PCA_finindex PCA_finindexnew dsr dar rfm tdr lpc
+global varlabour head_nboccupation nbworker_HH hoursayear_HH hoursayearagri_HH hoursayearnonagri_HH sharehoursayearagri_HH sharehoursayearnonagri_HH
+keep panelvar year $vardebt $varlabour
+mdesc $vardebt $varlabour
 
 
 ********** Reshape
-reshape wide PCA_finindex dsr dar head_mocc_occupation head_nboccupation nbworker_HH, i(panelvar) j(year)
+reshape wide $vardebt $varlabour, i(panelvar) j(year)
 
 
 ********** Re-organize the dataset
-drop head_mocc_occupation2010 head_nboccupation2010 nbworker_HH2010 PCA_finindex2020 dar2020 dsr2020
+*** Drop occ 2010
+foreach x in $varlabour {
+drop `x'2010
+}
 
-rename PCA_finindex2010 PCA_finindex1
-rename head_mocc_occupation2016 head_mocc_occupation1
-rename head_nboccupation2016 head_nboccupation1
-rename nbworker_HH2016 nbworker_HH1
+*** Drop debt 2020
+foreach x in $vardebt {
+drop `x'2020
+}
 
-rename PCA_finindex2016 PCA_finindex2
-rename head_mocc_occupation2020 head_mocc_occupation2
-rename head_nboccupation2020 head_nboccupation2
-rename nbworker_HH2020 nbworker_HH2
+*** Rename
+foreach x in $vardebt {
+rename `x'2010 `x'1
+rename `x'2016 `x'2
+}
 
+foreach x in $varlabour {
+rename `x'2016 `x'1
+rename `x'2020 `x'2
+}
 
-********** Clean with only full obs, i.e. full panel HH
+*** Clean with only full obs, i.e. full panel HH
 drop if PCA_finindex1==.
 drop if PCA_finindex2==.
-drop if head_mocc_occupation2==.
+drop if head_nboccupation2==.
 
 
-********** Reshape
-reshape long PCA_finindex head_mocc_occupation head_nboccupation nbworker_HH, i(panelvar) j(period)
-mdesc
+*** Reshape
+reshape long $vardebt $varlabour, i(panelvar) j(period)
+mdesc $vardebt $varlabour
 
 
 
 ********** Test econometrics
 xtset panelvar period
-tabstat nbworker_HH head_nboccupation, stat(n mean cv p50 min max)
+tabstat $varlabour, stat(n mean cv p50 min max)
 
-xtreg nbworker_HH PCA_finindex
+cls
+foreach y in $vardebt {
+foreach x in $varlabour {
+xtreg `y' `x', fe
+}
+}
 
 
 ****************************************
