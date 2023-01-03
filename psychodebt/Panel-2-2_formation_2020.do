@@ -225,10 +225,11 @@ probit s_dummyproblemtorepay2020 i.female##i.dalits##c.base_f1_std i.female##i.d
 
 
 
-/*
+
+
 
 *************************************
-* Debt negociation
+* Debt negotiation
 *************************************
 use"panel_wide_v3", clear
 
@@ -249,61 +250,6 @@ ta borrservices_none if dalits==0 & female==1
 ta borrservices_none if dalits==0 & female==0
 
 
-***** LPM
-reg borrservices_none female dalits $PTCS $XLoan $XIndiv $XHH $XVillages
-est store LPM
-
-
-***** Probit
-probit borrservices_none female dalits $PTCS $XLoan $XIndiv $XHH $XVillages
-est store PBM
-
-
-***** MLM Step 1: Intercept only model (IOM)
-melogit borrservices_none || HHID:  || INDID:
-est store IOM
-estat icc
-
-
-***** MLM Step 2: Constrained intermerdiate model (CIM)
-melogit borrservices_none female dalits $PTCS $XLoan $XIndiv $XHH $XVillages || HHID:  || INDID:
-est store CIM
-estat icc
-
-
-***** MLM Step 3: Interaction terms
-* All PT without CS
-* Fact 1
-melogit borrservices_none i.dalits##i.female##c.base_f1_std i.dalits##i.female##c.base_f2_std i.dalits##i.female##c.base_f3_std i.dalits##i.female##c.base_f5_std $XIndiv $XHH $XVillages || HHID:  || INDID:
-est store nego1
-
-* Fact 1
-melogit borrservices_none i.dalits##i.female##c.base_f1_std c.base_f2_std c.base_f3_std c.base_f5_std c.base_raven_tt_std c.base_num_tt_std c.base_lit_tt_std $XIndiv $XHH $XVillages || HHID:  || INDID:
-est store nego2
-
-* Fact 2
-melogit borrservices_none c.base_f1_std i.dalits##i.female##c.base_f2_std c.base_f3_std c.base_f5_std c.base_raven_tt_std c.base_num_tt_std c.base_lit_tt_std $XIndiv $XHH $XVillages || HHID:  || INDID:
-est store nego3
-
-* Fact 3
-melogit borrservices_none c.base_f1_std c.base_f2_std i.dalits##i.female##c.base_f3_std c.base_f5_std c.base_raven_tt_std c.base_num_tt_std c.base_lit_tt_std $XIndiv $XHH $XVillages || HHID:  || INDID:
-est store nego4
-
-* Fact 5
-melogit borrservices_none c.base_f1_std c.base_f2_std c.base_f3_std i.dalits##i.female##c.base_f5_std c.base_raven_tt_std c.base_num_tt_std c.base_lit_tt_std $XIndiv $XHH $XVillages || HHID:  || INDID:
-est store nego5
-
-* Raven
-melogit borrservices_none c.base_f1_std c.base_f2_std c.base_f3_std c.base_f5_std i.dalits##i.female##c.base_raven_tt_std c.base_num_tt_std c.base_lit_tt_std $XIndiv $XHH $XVillages || HHID:  || INDID:
-est store nego6
-
-* Num
-melogit borrservices_none c.base_f1_std c.base_f2_std c.base_f3_std c.base_f5_std c.base_raven_tt_std i.dalits##i.female##c.base_num_tt_std c.base_lit_tt_std $XIndiv $XHH $XVillages || HHID:  || INDID:
-est store nego7
-
-* Lit
-melogit borrservices_none c.base_f1_std c.base_f2_std c.base_f3_std c.base_f5_std c.base_raven_tt_std c.base_num_tt_std i.dalits##i.female##c.base_lit_tt_std $XIndiv $XHH $XVillages || HHID:  || INDID:
-est store nego8
 
 
 
@@ -327,39 +273,18 @@ est store nego8
 *************************************
 use"panel_wide_v3", clear
 
-global PTCS base_f1_std base_f2_std base_f3_std base_f5_std base_raven_tt_std base_num_tt_std base_lit_tt_std
-
-global XLoan loanamount
-
-global XIndiv age maritalstatus2 dummyedulevel cat_mainocc_occupation_indiv_1 cat_mainocc_occupation_indiv_2 cat_mainocc_occupation_indiv_4 cat_mainocc_occupation_indiv_5 cat_mainocc_occupation_indiv_6 cat_mainocc_occupation_indiv_7
-
-global XHH HHsize assets1000 incomeHH1000 shock
-
-global XVillages villageid_2 villageid_3 villageid_4 villageid_5 villageid_6 villageid_7 villageid_8 villageid_9 villageid_10
-
-mdesc $PTCS $XLoan $XIndiv $XHH $XVillages
-
-drop if base_lit_tt_std==.
-
-fre dummyproblemtorepay
-ta dummyproblemtorepay if dalits==1
-ta dummyproblemtorepay if dalits==0
-ta dummyproblemtorepay if female==1
-ta dummyproblemtorepay if female==0
-ta dummyproblemtorepay if dalits==1 & female==1
-ta dummyproblemtorepay if dalits==1 & female==0
-ta dummyproblemtorepay if dalits==0 & female==1
-ta dummyproblemtorepay if dalits==0 & female==0
 
 
-***** LPM
-reg dummyproblemtorepay $PTCS $XLoan $XIndiv $XHH $XVillages
-
-***** Probit
-probit dummyproblemtorepay $PTCS $XIndiv $XHH $XVillages
-est store PBM
 
 
+
+
+*************************************
+* END
+
+
+
+/*
 
 ***** Multivel probit
 * Step 1: Intercept only model (IOM)
@@ -402,33 +327,3 @@ global XIndiv age agesq maritalstatus2 dummyhead dummyedulevel cat_mainocc_occup
 melogit dummyproblemtorepay c.base_f1_std c.base_f2_std c.base_f3_std c.base_f5_std c.base_raven_tt_std c.base_num_tt_std c.base_lit_tt_std female caste $XIndiv $XHH $XVillages || HHID:  || INDID:
 est store mana1
 
-* Fact 1
-melogit dummyproblemtorepay i.dalits##i.female##c.base_f1_std c.base_f2_std c.base_f3_std c.base_f5_std c.base_raven_tt_std c.base_num_tt_std c.base_lit_tt_std $XIndiv $XHH $XVillages || HHID:  || INDID:
-est store mana2
-
-* Fact 2
-melogit dummyproblemtorepay c.base_f1_std i.dalits##i.female##c.base_f2_std c.base_f3_std c.base_f5_std c.base_raven_tt_std c.base_num_tt_std c.base_lit_tt_std $XIndiv $XHH $XVillages || HHID:  || INDID:
-est store mana3
-
-* Fact 3
-melogit dummyproblemtorepay c.base_f1_std c.base_f2_std i.dalits##i.female##c.base_f3_std c.base_f5_std c.base_raven_tt_std c.base_num_tt_std c.base_lit_tt_std $XIndiv $XHH $XVillages || HHID:  || INDID:
-est store mana4
-
-* Fact 5
-melogit dummyproblemtorepay c.base_f1_std c.base_f2_std c.base_f3_std i.dalits##i.female##c.base_f5_std c.base_raven_tt_std c.base_num_tt_std c.base_lit_tt_std $XIndiv $XHH $XVillages || HHID:  || INDID:
-est store mana5
-
-* Raven
-melogit dummyproblemtorepay c.base_f1_std c.base_f2_std c.base_f3_std c.base_f5_std i.dalits##i.female##c.base_raven_tt_std c.base_num_tt_std c.base_lit_tt_std $XIndiv $XHH $XVillages || HHID:  || INDID:
-est store mana6
-
-* Num
-melogit dummyproblemtorepay c.base_f1_std c.base_f2_std c.base_f3_std c.base_f5_std c.base_raven_tt_std i.dalits##i.female##c.base_num_tt_std c.base_lit_tt_std $XIndiv $XHH $XVillages || HHID:  || INDID:
-est store mana7
-
-* Lit
-melogit dummyproblemtorepay c.base_f1_std c.base_f2_std c.base_f3_std c.base_f5_std c.base_raven_tt_std c.base_num_tt_std i.dalits##i.female##c.base_lit_tt_std $XIndiv $XHH $XVillages || HHID:  || INDID:
-est store mana8
-
-*************************************
-* END
