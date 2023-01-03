@@ -214,6 +214,8 @@ global imcor imcr_curious imcr_interestedbyart imcr_repetitivetasks imcr_inventi
 ********** Factor analyses: without grit
 minap $imcor
 
+factortest $imcor
+
 factor $imcor, pcf fa(5) // 5
 estat kmo
 *rotate, promax
@@ -308,6 +310,7 @@ sem ///
 
 ********** Factor analyses: without grit
 minap $imcor
+factortest $imcor
 factor $imcor, pcf fa(5) // 2
 estat kmo
 rotate, quartimin
