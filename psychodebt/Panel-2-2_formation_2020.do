@@ -153,14 +153,23 @@ restore
 ta covsellgoods
 ta covsellgoods_none
 
+*** Label
+label var indebt_indiv "Indebted in 2016-17"
+label var sharesex "\% debt same sex"
+label var sharecaste "\% debt same caste"
+label var s_loanamount "Total amount of debt (\rupee)"
+
+
+*** Check hypotheses
+probit s_dummyproblemtorepay2020 s_loanamount dalits female
+
+probit s_borrservices_none2020 sharesex sharecaste dalits female
+
+
 
 save"panel_wide_v3", replace
 *************************************
 * END
-
-
-
-
 
 
 
@@ -231,7 +240,7 @@ esttab pr0 pr1 pr2 pr3 pr4 using "Reco.csv", ///
 	cells("b(fmt(2) star)" se(par fmt(2))) ///
 	drop($Xrest _cons) ///
 	legend label varlabels(_cons constant) ///
-	stats(N r2_p ll chi2 p, fmt(0 2 2 2 2) labels(`"Observations"' `"Pseudo \$R^2$"' `"Log-likelihood"' `"$\upchi^2$"' `"p-value"')) ///
+	stats(N r2_p ll chi2 p, fmt(0 2 2 2 2) labels(`"Observations"' `"Pseudo \$R^2$"' `"Log-likelihood"' `"$\chi^2$"' `"p-value"')) ///
 	starlevels(* 0.10 ** 0.05 *** 0.01) ///
 	replace	
 	
@@ -291,7 +300,7 @@ esttab pr0 pr1 pr2 pr3 pr4 using "Nego.csv", ///
 	cells("b(fmt(2) star)" se(par fmt(2))) ///
 	drop($Xrest sharesex sharecaste _cons) ///
 	legend label varlabels(_cons constant) ///
-	stats(N r2_p ll chi2 p, fmt(0 2 2 2 2) labels(`"Observations"' `"Pseudo \$R^2$"' `"Log-likelihood"' `"$\upchi^2$"' `"p-value"')) ///
+	stats(N r2_p ll chi2 p, fmt(0 2 2 2 2) labels(`"Observations"' `"Pseudo \$R^2$"' `"Log-likelihood"' `"$\chi^2$"' `"p-value"')) ///
 	starlevels(* 0.10 ** 0.05 *** 0.01) ///
 	replace	
 	
@@ -318,34 +327,34 @@ est clear
 * Management
 *************************************
 
-qui probit s_dummyproblemtorepay2020 indebt_indiv i.female i.dalits $XIndiv $XHH $Xrest, cluster(HHID)
+qui probit s_dummyproblemtorepay2020 indebt_indiv i.female i.dalits $XIndiv $XHH $Xrest s_loanamount, cluster(HHID)
 est store pr0
 
-qui probit s_dummyproblemtorepay2020 indebt_indiv $PTCS $XIndiv $XHH $Xrest, cluster(HHID) 
+qui probit s_dummyproblemtorepay2020 indebt_indiv $PTCS $XIndiv $XHH $Xrest s_loanamount, cluster(HHID) 
 est store pr1
 qui margins, dydx($PTCSma) atmeans post
 est store marg1
 
-qui probit s_dummyproblemtorepay2020 indebt_indiv $intfem $XIndiv $XHH $Xrest, cluster(HHID) 
+qui probit s_dummyproblemtorepay2020 indebt_indiv $intfem $XIndiv $XHH $Xrest s_loanamount, cluster(HHID) 
 est store pr2
 qui margins, dydx($PTCSma) at(female=(0 1)) atmeans post
 est store marg2
 
-qui probit s_dummyproblemtorepay2020 indebt_indiv $intdal $XIndiv $XHH $Xrest, cluster(HHID) 
+qui probit s_dummyproblemtorepay2020 indebt_indiv $intdal $XIndiv $XHH $Xrest s_loanamount, cluster(HHID) 
 est store pr3
 qui margins, dydx($PTCSma) at(dalits=(0 1)) atmeans post
 est store marg3
 
-qui probit s_dummyproblemtorepay2020 indebt_indiv $inttot $XIndiv $XHH $Xrest, cluster(HHID) 
+qui probit s_dummyproblemtorepay2020 indebt_indiv $inttot $XIndiv $XHH $Xrest s_loanamount, cluster(HHID) 
 est store pr4
 qui margins, dydx($PTCSma) at(dalits=(0 1) female=(0 1)) atmeans post
 est store marg4
 
 esttab pr0 pr1 pr2 pr3 pr4 using "Mana.csv", ///
 	cells("b(fmt(2) star)" se(par fmt(2))) ///
-	drop($Xrest _cons) ///
+	drop($Xrest s_loanamount _cons) ///
 	legend label varlabels(_cons constant) ///
-	stats(N r2_p ll chi2 p, fmt(0 2 2 2 2) labels(`"Observations"' `"Pseudo \$R^2$"' `"Log-likelihood"' `"$\upchi^2$"' `"p-value"')) ///
+	stats(N r2_p ll chi2 p, fmt(0 2 2 2 2) labels(`"Observations"' `"Pseudo \$R^2$"' `"Log-likelihood"' `"$\chi^2$"' `"p-value"')) ///
 	starlevels(* 0.10 ** 0.05 *** 0.01) ///
 	replace	
 
@@ -375,54 +384,62 @@ est clear
 
 
 
+*************************************
+* Multicolinearity
+*************************************
+
+********** Reco
+qui reg s_indebt2020 indebt_indiv i.female i.dalits $XIndiv $XHH $Xrest, cluster(HHID)
+vif
+qui reg s_indebt2020 indebt_indiv $PTCS $XIndiv $XHH $Xrest, cluster(HHID) 
+vif
+qui reg s_indebt2020 indebt_indiv $intfem $XIndiv $XHH $Xrest, cluster(HHID) 
+vif
+qui reg s_indebt2020 indebt_indiv $intdal $XIndiv $XHH $Xrest, cluster(HHID) 
+vif
+qui reg s_indebt2020 indebt_indiv $inttot $XIndiv $XHH $Xrest, cluster(HHID) 
+vif
+
+
+********** Nego
+qui reg s_borrservices_none2020 indebt_indiv i.female i.dalits $XIndiv $XHH $Xrest sharesex sharecaste, cluster(HHID)
+vif
+qui reg s_borrservices_none2020 indebt_indiv $PTCS $XIndiv $XHH $Xrest sharesex sharecaste, cluster(HHID) 
+vif
+qui reg s_borrservices_none2020 indebt_indiv $intfem $XIndiv $XHH $Xrest sharesex sharecaste, cluster(HHID) 
+vif
+qui reg s_borrservices_none2020 indebt_indiv $intdal $XIndiv $XHH $Xrest sharesex sharecaste, cluster(HHID) 
+vif
+qui reg s_borrservices_none2020 indebt_indiv $inttot $XIndiv $XHH $Xrest sharesex sharecaste, cluster(HHID) 
+vif
+
+
+********** Mana
+qui reg s_dummyproblemtorepay2020 indebt_indiv i.female i.dalits $XIndiv $XHH $Xrest s_loanamount, cluster(HHID)
+vif
+
+qui reg s_dummyproblemtorepay2020 indebt_indiv $PTCS $XIndiv $XHH $Xrest s_loanamount, cluster(HHID) 
+vif
+
+qui reg s_dummyproblemtorepay2020 indebt_indiv $intfem $XIndiv $XHH $Xrest s_loanamount, cluster(HHID) 
+vif
+
+qui reg s_dummyproblemtorepay2020 indebt_indiv $intdal $XIndiv $XHH $Xrest s_loanamount, cluster(HHID) 
+vif
+
+qui reg s_dummyproblemtorepay2020 indebt_indiv $inttot $XIndiv $XHH $Xrest s_loanamount, cluster(HHID) 
+vif
+
+*************************************
+* END
 
 
 
 
-/*
-
-***** Multivel probit
-* Step 1: Intercept only model (IOM)
-melogit dummyproblemtorepay || HHID:  || INDID:
-est store IOM
-estat icc
-
-* Step 2: Constrained intermerdiate model (CIM)
-melogit dummyproblemtorepay $PTCS $XIndiv $XHH $XVillages || HHID:  || INDID:
-est store CIM
-*estat icc
-*melogit dummyproblemtorepay $PTCS $XIndiv $XHH $XVillages || HHID:  || INDID:, or
-*est store CIMor
 
 
 
-* Step 3: Augmented intermediate model (AIM)
-/*
-foreach x in $PTCS $XIndiv {
-melogit dummyproblemtorepay $PTCS $XIndiv $XHH $XVillages || HHID:  || INDID: `x'
-est store AIM_`x'
-estat icc
-melogit dummyproblemtorepay $PTCS $XIndiv $XHH $XVillages || HHID:  || INDID: `x', or
-est store AIMor_`x'
-}
-*/
 
-* Step 4: Compare CIM with AIM
-*lrtest CIM AIM
-
-
-
-* Step 5: Interaction terms
-set maxiter 16000
-global PTCS base_f1_std base_f2_std base_f3_std base_f5_std base_raven_tt_std base_num_tt_std base_lit_tt_std
-
-global XIndiv age agesq maritalstatus2 dummyhead dummyedulevel cat_mainocc_occupation_indiv_1 cat_mainocc_occupation_indiv_2 cat_mainocc_occupation_indiv_4 cat_mainocc_occupation_indiv_5 cat_mainocc_occupation_indiv_6 cat_mainocc_occupation_indiv_7
-
-* No int
-melogit dummyproblemtorepay c.base_f1_std c.base_f2_std c.base_f3_std c.base_f5_std c.base_raven_tt_std c.base_num_tt_std c.base_lit_tt_std female caste $XIndiv $XHH $XVillages || HHID:  || INDID:
-est store mana1
-
-*/
 
 
 
@@ -430,73 +447,29 @@ est store mana1
 
 
 *************************************
-* Recourse
+* Overfit
 *************************************
 
+********** Reco
 overfit: probit s_indebt2020 indebt_indiv i.female i.dalits $XIndiv $XHH $Xrest, cluster(HHID)
-
 overfit: probit s_indebt2020 indebt_indiv $PTCS $XIndiv $XHH $Xrest, cluster(HHID) 
-
 overfit: probit s_indebt2020 indebt_indiv $intfem $XIndiv $XHH $Xrest, cluster(HHID) 
-
 overfit: probit s_indebt2020 indebt_indiv $intdal $XIndiv $XHH $Xrest, cluster(HHID) 
-
 overfit: probit s_indebt2020 indebt_indiv $inttot $XIndiv $XHH $Xrest, cluster(HHID) 
 
-*************************************
-* END
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-*************************************
-* Negotiation
-*************************************
-
+********** Nego
 overfit: probit s_borrservices_none2020 indebt_indiv i.female i.dalits $XIndiv $XHH $Xrest sharesex sharecaste, cluster(HHID)
-
 overfit: probit s_borrservices_none2020 indebt_indiv $PTCS $XIndiv $XHH $Xrest sharesex sharecaste, cluster(HHID) 
-
 overfit: probit s_borrservices_none2020 indebt_indiv $intfem $XIndiv $XHH $Xrest sharesex sharecaste, cluster(HHID) 
-
 overfit: probit s_borrservices_none2020 indebt_indiv $intdal $XIndiv $XHH $Xrest sharesex sharecaste, cluster(HHID) 
-
 overfit: probit s_borrservices_none2020 indebt_indiv $inttot $XIndiv $XHH $Xrest sharesex sharecaste, cluster(HHID) 
 
-*************************************
-* END
-
-
-
-
-
-
-
-
-
-*************************************
-* Management
-*************************************
-
-overfit: probit s_dummyproblemtorepay2020 indebt_indiv i.female i.dalits $XIndiv $XHH $Xrest, cluster(HHID)
-
-overfit: probit s_dummyproblemtorepay2020 indebt_indiv $PTCS $XIndiv $XHH $Xrest, cluster(HHID) 
-
-overfit: probit s_dummyproblemtorepay2020 indebt_indiv $intfem $XIndiv $XHH $Xrest, cluster(HHID) 
-
-overfit: probit s_dummyproblemtorepay2020 indebt_indiv $intdal $XIndiv $XHH $Xrest, cluster(HHID) 
-
-overfit: probit s_dummyproblemtorepay2020 indebt_indiv $inttot $XIndiv $XHH $Xrest, cluster(HHID) 
+********** Mana
+overfit: probit s_dummyproblemtorepay2020 indebt_indiv i.female i.dalits $XIndiv $XHH $Xrest s_loanamount, cluster(HHID)
+overfit: probit s_dummyproblemtorepay2020 indebt_indiv $PTCS $XIndiv $XHH $Xrest s_loanamount, cluster(HHID) 
+overfit: probit s_dummyproblemtorepay2020 indebt_indiv $intfem $XIndiv $XHH $Xrest s_loanamount, cluster(HHID) 
+overfit: probit s_dummyproblemtorepay2020 indebt_indiv $intdal $XIndiv $XHH $Xrest s_loanamount, cluster(HHID) 
+overfit: probit s_dummyproblemtorepay2020 indebt_indiv $inttot $XIndiv $XHH $Xrest s_loanamount, cluster(HHID) 
 *************************************
 * END
