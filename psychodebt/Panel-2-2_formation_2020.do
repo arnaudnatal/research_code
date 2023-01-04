@@ -200,34 +200,31 @@ global inttot c.base_f1_std##i.female##i.dalits c.base_f2_std##i.female##i.dalit
 
 
 
-
-
-
 *************************************
 * Recourse
 *************************************
 
-qui probit s_indebt2020 indebt_indiv i.female i.dalits $XIndiv $XHH $Xrest, cluster(HHID)
+probit s_indebt2020 indebt_indiv i.female i.dalits $XIndiv $XHH $Xrest, cluster(HHID)
 est store pr0
 
-qui probit s_indebt2020 indebt_indiv $PTCS $XIndiv $XHH $Xrest, cluster(HHID) 
+probit s_indebt2020 indebt_indiv $PTCS $XIndiv $XHH $Xrest, cluster(HHID) 
 est store pr1
- margins, dydx($PTCSma) atmeans post
+qui margins, dydx($PTCSma) atmeans post
 est store marg1
 
-qui probit s_indebt2020 indebt_indiv $intfem $XIndiv $XHH $Xrest, cluster(HHID) 
+probit s_indebt2020 indebt_indiv $intfem $XIndiv $XHH $Xrest, cluster(HHID) 
 est store pr2
-margins, dydx($PTCSma) at(female=(0 1)) atmeans post
+qui margins, dydx($PTCSma) at(female=(0 1)) atmeans post
 est store marg2
 
 qui probit s_indebt2020 indebt_indiv $intdal $XIndiv $XHH $Xrest, cluster(HHID) 
 est store pr3
- margins, dydx($PTCSma) at(dalits=(0 1)) atmeans post
+qui margins, dydx($PTCSma) at(dalits=(0 1)) atmeans post
 est store marg3
 
 qui probit s_indebt2020 indebt_indiv $inttot $XIndiv $XHH $Xrest, cluster(HHID) 
 est store pr4
- margins, dydx($PTCSma) at(dalits=(0 1) female=(0 1)) atmeans post
+qui margins, dydx($PTCSma) at(dalits=(0 1) female=(0 1)) atmeans post
 est store marg4
 
 esttab pr0 pr1 pr2 pr3 pr4 using "Reco.csv", ///
@@ -326,22 +323,22 @@ est store pr0
 
 qui probit s_dummyproblemtorepay2020 indebt_indiv $PTCS $XIndiv $XHH $Xrest, cluster(HHID) 
 est store pr1
-margins, dydx($PTCSma) atmeans post
+qui margins, dydx($PTCSma) atmeans post
 est store marg1
 
 qui probit s_dummyproblemtorepay2020 indebt_indiv $intfem $XIndiv $XHH $Xrest, cluster(HHID) 
 est store pr2
-margins, dydx($PTCSma) at(female=(0 1)) atmeans post
+qui margins, dydx($PTCSma) at(female=(0 1)) atmeans post
 est store marg2
 
 qui probit s_dummyproblemtorepay2020 indebt_indiv $intdal $XIndiv $XHH $Xrest, cluster(HHID) 
 est store pr3
-margins, dydx($PTCSma) at(dalits=(0 1)) atmeans post
+qui margins, dydx($PTCSma) at(dalits=(0 1)) atmeans post
 est store marg3
 
 qui probit s_dummyproblemtorepay2020 indebt_indiv $inttot $XIndiv $XHH $Xrest, cluster(HHID) 
 est store pr4
-margins, dydx($PTCSma) at(dalits=(0 1) female=(0 1)) atmeans post
+qui margins, dydx($PTCSma) at(dalits=(0 1) female=(0 1)) atmeans post
 est store marg4
 
 esttab pr0 pr1 pr2 pr3 pr4 using "Mana.csv", ///
