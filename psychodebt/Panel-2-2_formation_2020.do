@@ -449,7 +449,7 @@ vif
 *************************************
 * Overfit
 *************************************
-
+cls
 ********** Reco
 overfit: probit s_indebt2020 indebt_indiv i.female i.dalits $XIndiv $XHH $Xrest, cluster(HHID)
 overfit: probit s_indebt2020 indebt_indiv $PTCS $XIndiv $XHH $Xrest, cluster(HHID) 
