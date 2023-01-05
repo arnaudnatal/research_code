@@ -21,8 +21,11 @@ do "https://raw.githubusercontent.com/arnaudnatal/folderanalysis/main/$link.do"
 ****************************************
 use"raw\NEEMSIS2-loans_mainloans_new", clear
 
-keep HHID2020 INDID2020 loanamount lenderscaste lendersex dummyproblemtorepay borrservices_none lenderfirsttime loanduration_month loan_database
+keep HHID2020 INDID2020 loanamount2 lenderscaste lendersex dummyproblemtorepay borrservices_none lenderfirsttime loanduration_month loan_database
 ta loanduration_month
+
+rename loanamount2 loanamount
+replace loanamount=loanamount/1000
 
 * Id ML
 gen dummyml=0
@@ -33,7 +36,11 @@ ta dummyml
 drop if loanduration_month>48
 
 * Merge charact
-merge m:1 HHID2020 INDID2020 using "raw\NEEMSIS2-HH", keepusing(name age sex caste egoid covsellgoods covsellgoods_none)
+merge m:1 HHID2020 INDID2020 using "raw\NEEMSIS2-HH", keepusing(name age sex caste egoid)
+drop _merge
+
+* Merge covid
+merge m:1 HHID2020 using "raw\NEEMSIS2-covid", keepusing(dummysell)
 drop _merge
 
 * Same caste, same sex
@@ -149,9 +156,6 @@ duplicates drop HHID, force
 count
 restore
 
-*** Shock COVID
-ta covsellgoods
-ta covsellgoods_none
 
 *** Label
 label var indebt_indiv "Indebted in 2016-17"
@@ -159,12 +163,67 @@ label var sharesex "\% debt same sex"
 label var sharecaste "\% debt same caste"
 label var s_loanamount "Total amount of debt (\rupee)"
 
+*** Stat desc HH
+preserve
+duplicates drop HHID_panel, force
+sum HHsize assets1000 incomeHH1000 shock dummysell villageid_1 villageid_2 villageid_3 villageid_4 villageid_5 villageid_6 villageid_7 villageid_8 villageid_9 villageid_10 if dalits==0, sep(100)
 
-*** Check hypotheses
-probit s_dummyproblemtorepay2020 s_loanamount dalits female
+sum HHsize assets1000 incomeHH1000 shock dummysell villageid_1 villageid_2 villageid_3 villageid_4 villageid_5 villageid_6 villageid_7 villageid_8 villageid_9 villageid_10 if dalits==1, sep(100)
+restore
 
-probit s_borrservices_none2020 sharesex sharecaste dalits female
+*** Stat desc Indiv
+sum dalits age dummyhead maritalstatus2 dummyedulevel cat_mainocc_occupation_indiv_1 cat_mainocc_occupation_indiv_2 cat_mainocc_occupation_indiv_3 cat_mainocc_occupation_indiv_4 cat_mainocc_occupation_indiv_5 cat_mainocc_occupation_indiv_6 cat_mainocc_occupation_indiv_7 dummymultipleoccupation_indiv annualincome_indiv if female==0, sep(100)
 
+sum dalits age dummyhead maritalstatus2 dummyedulevel cat_mainocc_occupation_indiv_1 cat_mainocc_occupation_indiv_2 cat_mainocc_occupation_indiv_3 cat_mainocc_occupation_indiv_4 cat_mainocc_occupation_indiv_5 cat_mainocc_occupation_indiv_6 cat_mainocc_occupation_indiv_7 dummymultipleoccupation_indiv annualincome_indiv if female==1, sep(100)
+
+
+*** Stat desc Y
+preserve
+replace s_loanamount=. if s_loanamount==0
+sum s_indebt2020 s_loanamount s_borrservices_none2020 s_dummyproblemtorepay2020 if female==0
+sum s_indebt2020 s_loanamount s_borrservices_none2020 s_dummyproblemtorepay2020 if female==1
+restore
+
+*** Stat desc ptcs
+set graph off
+twoway ///
+(kdensity base_f1_std if female==0, lp(solid) lcolor(black)) ///
+(kdensity base_f1_std if female==1, lp(dash) lcolor(black)) ///
+, ytitle("Density") xtitle("Emotional stability (std)") legend(order(1 "Male" 2 "Female") pos(6) col(2) off) name(gph1, replace)
+
+twoway ///
+(kdensity base_f2_std if female==0, lp(solid) lcolor(black)) ///
+(kdensity base_f2_std if female==1, lp(dash) lcolor(black)) ///
+, ytitle("Density") xtitle("Conscientiousness (std)") name(gph2, replace)
+
+twoway ///
+(kdensity base_f3_std if female==0, lp(solid) lcolor(black)) ///
+(kdensity base_f3_std if female==1, lp(dash) lcolor(black)) ///
+, ytitle("Density") xtitle("Openness-extraversion (std)") name(gph3, replace)
+
+twoway ///
+(kdensity base_f5_std if female==0, lp(solid) lcolor(black)) ///
+(kdensity base_f5_std if female==1, lp(dash) lcolor(black)) ///
+, ytitle("Density") xtitle("Agreeableness (std)") name(gph4, replace)
+
+twoway ///
+(kdensity base_raven_tt_std if female==0, lp(solid) lcolor(black)) ///
+(kdensity base_raven_tt_std if female==1, lp(dash) lcolor(black)) ///
+, ytitle("Density") xtitle("Raven (std)") name(gph5, replace)
+
+twoway ///
+(kdensity base_num_tt_std if female==0, lp(solid) lcolor(black)) ///
+(kdensity base_num_tt_std if female==1, lp(dash) lcolor(black)) ///
+, ytitle("Density") xtitle("Numeracy (std)") name(gph6, replace)
+
+twoway ///
+(kdensity base_lit_tt_std if female==0, lp(solid) lcolor(black)) ///
+(kdensity base_lit_tt_std if female==1, lp(dash) lcolor(black)) ///
+, ytitle("Density") xtitle("Literacy (std)") name(gph7, replace)
+
+grc1leg gph1 gph2 gph3 gph4 gph5 gph6 gph7, col(4) name(ptcs, replace)
+set graph on
+graph export "ptcs.pdf", as(pdf) replace
 
 
 save"panel_wide_v3", replace
@@ -195,7 +254,7 @@ global XIndiv age dummyhead cat_mainocc_occupation_indiv_1 cat_mainocc_occupatio
 
 global XHH assets1000 HHsize incomeHH1000
 
-global Xrest villageid_2 villageid_3 villageid_4 villageid_5 villageid_6 villageid_7 villageid_8 villageid_9 villageid_10 shock covsellgoods_none
+global Xrest villageid_2 villageid_3 villageid_4 villageid_5 villageid_6 villageid_7 villageid_8 villageid_9 villageid_10 shock dummysell
 
 global intfem c.base_f1_std##i.female c.base_f2_std##i.female c.base_f3_std##i.female c.base_f5_std##i.female c.base_raven_tt_std##i.female c.base_num_tt_std##i.female c.base_lit_tt_std##i.female i.dalits
 
@@ -213,7 +272,7 @@ global inttot c.base_f1_std##i.female##i.dalits c.base_f2_std##i.female##i.dalit
 * Recourse
 *************************************
 
-probit s_indebt2020 indebt_indiv i.female i.dalits $XIndiv $XHH $Xrest, cluster(HHID)
+qui probit s_indebt2020 indebt_indiv i.female i.dalits $XIndiv $XHH $Xrest, cluster(HHID)
 est store pr0
 
 probit s_indebt2020 indebt_indiv $PTCS $XIndiv $XHH $Xrest, cluster(HHID) 
@@ -233,7 +292,7 @@ est store marg3
 
 qui probit s_indebt2020 indebt_indiv $inttot $XIndiv $XHH $Xrest, cluster(HHID) 
 est store pr4
-qui margins, dydx($PTCSma) at(dalits=(0 1) female=(0 1)) atmeans post
+margins, dydx($PTCSma) at(dalits=(0 1) female=(0 1)) atmeans post
 est store marg4
 
 esttab pr0 pr1 pr2 pr3 pr4 using "Reco.csv", ///
