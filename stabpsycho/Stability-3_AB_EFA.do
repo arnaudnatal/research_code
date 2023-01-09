@@ -174,6 +174,25 @@ tabstat ars32020, stat(n mean sd p50 min max range) by(ars32020_q)
 *Matrix
 tab ars32016_q ars32020_q, row nofreq
 
+
+********** Impact of enum
+
+encode username2016, gen(user16)
+encode username2020, gen(user20)
+
+***** 2016-17
+reg ars32016 i.sex i.caste age2016 i.edulevel2016 i.villageid2016, allbase
+* R2 --> 3.76
+reg ars32016 i.sex i.caste age2016 i.edulevel2016 i.villageid2016 i.user16, allbase
+* R2 --> 26.39
+
+
+***** 2016-17
+reg ars32020 i.sex i.caste age2020 i.edulevel2020 i.villageid2020, allbase
+* R2 --> 5.89
+reg ars32020 i.sex i.caste age2020 i.edulevel2020 i.villageid2020 i.user20, allbase
+* R2 --> 14.72
+
 ****************************************
 * END
 

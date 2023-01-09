@@ -561,6 +561,9 @@ ta dummydemonetisation2016
 ***** Lockdown
 ta dummyexposure2020
 
+*** Recode moc
+recode moc_indiv (.=0)
+
 
 save "panel_stab_wide_v6", replace
 ****************************************

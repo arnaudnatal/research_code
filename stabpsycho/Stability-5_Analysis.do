@@ -186,7 +186,7 @@ preserve
 replace cr_`x'2016=0 if cr_`x'2016<0 & cr_`x'2016!=.
 replace cr_`x'2020=0 if cr_`x'2020<0 & cr_`x'2020!=.
 set graph off
-twoway (scatter cr_`x'2020 cr_`x'2016) (function y=x, range(0 6)), xtitle("Score in 2016-17") ytitle("Score in 2020-21") title("`x'") name(s_`x') legend(order(1 "Individual" 2 "First bisector") pos(6) col(2))
+twoway (scatter cr_`x'2020 cr_`x'2016, mcolor(black%30)) (function y=x, range(0 6)), xtitle("Score in 2016-17") ytitle("Score in 2020-21") title("`x'") name(s_`x') legend(order(1 "Individual" 2 "First bisector") pos(6) col(2))
 restore
 }
 set graph on
@@ -195,8 +195,9 @@ graph export "sub_ES.pdf", as(pdf) replace
 graph save "sub_ES.gph", replace
 
 
+
 ********** Difference over trajectory
-*** Descriptive statistics for factor Big-5
+*** Row
 cls
 ta diff_fa_ES_cat10
 ta sex diff_fa_ES_cat10, row nofreq chi2
@@ -205,38 +206,53 @@ ta age_cat diff_fa_ES_cat10, row nofreq chi2
 ta educode diff_fa_ES_cat10, row nofreq chi2
 ta moc_indiv diff_fa_ES_cat10, row nofreq chi2
 ta annualincome_indiv2016_q diff_fa_ES_cat10, row nofreq chi2
-ta dummydemonetisation2016 diff_fa_ES_cat10, row nofreq chi2
-ta covsellland2020 diff_fa_ES_cat10, row nofreq chi2
-
+ta dummysell2020 diff_fa_ES_cat10, row nofreq chi2
+ta dummysell2020 diff_fa_ES_cat10, row nofreq chi2
 ta villageid2016 diff_fa_ES_cat10, row nofreq chi2
 ta diff_ars3_cat5 diff_fa_ES_cat10, row nofreq chi2
 ta username_neemsis2 diff_fa_ES_cat10, row nofreq chi2
-
 tabstat age2016 annualincome_indiv2016 assets2016 diff_ars3 ars32016 ars32020, stat(n mean sd p50) by(diff_fa_ES_cat10)
 
+*** Col
+cls
+ta diff_fa_ES_cat10
+ta sex diff_fa_ES_cat10, col nofreq chi2
+ta caste diff_fa_ES_cat10, col nofreq chi2
+ta age_cat diff_fa_ES_cat10, col nofreq chi2
+ta educode diff_fa_ES_cat10, col nofreq chi2
+ta moc_indiv diff_fa_ES_cat10, col nofreq chi2
+ta annualincome_indiv2016_q diff_fa_ES_cat10, col nofreq chi2
+ta dummysell2020 diff_fa_ES_cat10, col nofreq chi2
+ta dummysell2020 diff_fa_ES_cat10, col nofreq chi2
+ta villageid2016 diff_fa_ES_cat10, col nofreq chi2
+ta diff_ars3_cat5 diff_fa_ES_cat10, col nofreq chi2
+ta username_neemsis2 diff_fa_ES_cat10, col nofreq chi2
+tabstat age2016 annualincome_indiv2016 assets2016 diff_ars3 ars32016 ars32020, stat(n mean sd p50) by(diff_fa_ES_cat10)
+
+*** Chi2
+cls
 ta caste diff_fa_ES_cat10, cchi2 exp chi2
 ta age_cat diff_fa_ES_cat10, cchi2 exp chi2
 ta educode diff_fa_ES_cat10, cchi2 exp chi2
 ta moc_indiv diff_fa_ES_cat10, cchi2 exp chi2
 ta dummydemonetisation2016 diff_fa_ES_cat10, cchi2 exp chi2
-ta covsellland2020 diff_fa_ES_cat10, cchi2 exp chi2
-
+ta dummysell2020 diff_fa_ES_cat10, cchi2 exp chi2
 ta diff_ars3_cat5 diff_fa_ES_cat10, cchi2 exp chi2
 ta diff_ars3_cat5 diff_fa_ES_cat10, nofreq row
-
 ta username_neemsis2 diff_fa_ES_cat10, cchi2 exp
+
 
 ********** How much the bias explain?
 reg abs_diff_fa_ES_cat5 i.sex i.caste ib(1).age_cat ib(0).educode i.villageid2020, allbase
-* R2 --> 3.85
+* R2 --> 2.62
 reg abs_diff_fa_ES_cat5 diff_ars3 i.sex i.caste ib(1).age_cat ib(0).educode i.villageid2020, allbase
-* R2 --> 3.74
+* R2 --> 3.88
 
 
 reg abs_diff_fa_ES i.sex i.caste ib(1).age_cat ib(0).educode i.villageid2020, allbase
-* R2 --> 7.40
+* R2 --> 7.88
 reg abs_diff_fa_ES diff_ars3 i.sex i.caste ib(1).age_cat ib(0).educode i.villageid2020, allbase
-* R2 --> 13.89
+* R2 --> 13.99
 
 
 
@@ -244,17 +260,21 @@ reg abs_diff_fa_ES diff_ars3 i.sex i.caste ib(1).age_cat ib(0).educode i.village
 
 ***** 2016-17
 reg fa_ES2016 i.female ib(1).caste i.educode i.age_cat ib(2).moc_indiv i.marital ib(2).annualincome_indiv2016_q, allbase
-*R2a=0.0892
+*R2a=0.1089
 reg fa_ES2016 i.username_neemsis1 i.female ib(1).caste i.educode i.age_cat ib(2).moc_indiv i.marital ib(2).annualincome_indiv2016_q, allbase
-*R2a=0.3036
-dis (30.36-8.92)*100/8.92
+*R2a=0.3277
+*dis (30.36-8.92)*100/8.92
+dis (32.77-10.89)*100/10.89
+*200.91827%
 
 ***** 2020-21
 reg fa_ES2020 i.female ib(1).caste i.educode i.age_cat ib(2).moc_indiv i.marital ib(2).annualincome_indiv2016_q, allbase
-*R2a=0.0285
+*R2a=0.0264
 reg fa_ES2020 i.username_neemsis2 i.female ib(1).caste i.educode i.age_cat ib(2).moc_indiv i.marital ib(2).annualincome_indiv2016_q, allbase
-*R2a=0.4093
-dis (40.93-2.85)*100/2.85
+*R2a=0.4195
+*dis (40.93-2.85)*100/2.85
+dis (41.95-2.64)*100/2.64
+*1489.0152%
 
 
 
@@ -313,7 +333,7 @@ ib(2).moc_indiv ///
 i.marital ///
 ib(2).annualincome_indiv2016_q ///
 i.dummydemonetisation2016 ///
-i.covsellland2020 ///
+i.dummysell2020 ///
 ib(2).assets2016_q ///
 ib(1).diff_ars3_cat5 ///
 i.username_neemsis2 ///
@@ -342,7 +362,7 @@ ib(2).moc_indiv ///
 i.marital ///
 ib(2).annualincome_indiv2016_q ///
 i.dummydemonetisation2016 ///
-i.covsellland2020 ///
+i.dummysell2020 ///
 ib(2).assets2016_q ///
 ib(1).diff_ars3_cat5 ///
 i.username_neemsis2 ///
@@ -370,7 +390,7 @@ ib(2).moc_indiv ///
 i.marital ///
 ib(2).annualincome_indiv2016_q ///
 i.dummydemonetisation2016 ///
-i.covsellland2020 ///
+i.dummysell2020 ///
 ib(2).assets2016_q ///
 ib(1).diff_ars3_cat5 ///
 i.username_neemsis2 ///
@@ -394,79 +414,6 @@ esttab all inc dec using "reg.tex", replace f ///
 	cells("b(fmt(2)star) se(fmt(2)par)") ///
 	refcat(, nolabel) ///
 	stats(N dispers_p dispers dispers_p bic ll, fmt(0 2 2 2 2 2) layout("\multicolumn{1}{c}{@}" "\multicolumn{1}{S}{@}" "\multicolumn{1}{S}{@}" "\multicolumn{1}{S}{@}" "\multicolumn{1}{S}{@}" "\multicolumn{1}{S}{@}") labels(`"Observations"' `"Scale"' `"(1/df) Deviance"' `"(1/df) Pearson"' `"BIC"'  `"Log-pseudo likelihood"'))
-
-****************************************
-* END	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-****************************************
-* QUANTILE REG
-****************************************
-use "panel_stab_wide_v6", clear
-*keep if age25==1
-
-
-********** Recode before reg
-recode pathabs_diff_fa_cat10 (1=0) (2=1)
-label define pathabs_diff_fa_cat10 0"Decreasing" 1"Increasing"
-label values pathabs_diff_fa_cat10 pathabs_diff_fa_cat10
-
-ta pathabs_diff_fa_cat10
-
-gen abs_diff_fa_ES_cat10_cont_dec=abs_diff_fa_ES_cat10_cont if pathabs_diff_fa_cat10==0
-gen abs_diff_fa_ES_cat10_cont_inc=abs_diff_fa_ES_cat10_cont if pathabs_diff_fa_cat10==1
-
-ta abs_diff_fa_ES_cat10_cont_dec
-ta abs_diff_fa_ES_cat10_cont_inc
-
-
-/*
-********** Qreg diff
-sqreg abs_diff_fa_ES female caste_2 caste_3 educode_2 educode_3 educode_4 age_cat_1 age_cat_3 age_cat_4 age_cat_5 moc_indiv_1 moc_indiv_2 moc_indiv_4 moc_indiv_5 moc_indiv_6 moc_indiv_7 moc_indiv_8 marital annualincome_indiv2016_q_2 annualincome_indiv2016_q_3 dummydemonetisation2016 covsellland2020, quantile(.1 .2 .3 .4 .5 .6 .7 .8 .9) reps(100)
-
-preserve
-gen q = _n*10 in 1/9
-
-foreach var of varlist female caste_2 caste_3 educode_2 educode_3 educode_4 age_cat_1 age_cat_3 age_cat_4 age_cat_5 moc_indiv_1 moc_indiv_2 moc_indiv_4 moc_indiv_5 moc_indiv_6 moc_indiv_7 moc_indiv_8 marital annualincome_indiv2016_q_2 annualincome_indiv2016_q_3 dummydemonetisation2016 covsellland2020 {
-    gen _b_`var'  = .
-    gen _lb_`var' = .
-    gen _ub_`var' = .
-
-    local i = 1
-    foreach q of numlist 10(10)90 {
-        replace _b_`var' = _b[q`q':`var'] in `i'
-        replace _lb_`var' = _b[q`q':`var'] - _se[q`q':`var']*invnormal(.95) in `i'
-        replace _ub_`var' = _b[q`q':`var'] + _se[q`q':`var']*invnormal(.95) in `i++'
-    }
-}
-keep q _b_* _lb_* _ub_*
-keep in 1/9
-reshape long _b_ _lb_ _ub_, i(q) j(var) string
-twoway rarea _lb_ _ub_ q, astyle(ci) yline(0) acolor(%90) || ///
-   line _b_ q,                                               ///
-   by(var, yrescale xrescale note("") legend(at(4) pos(0)))  ///
-   legend(order(2 "effect"                                   ///      
-                1 "95% confidence" "interval")               ///
-          cols(1))                                           ///
-   ytitle("")                       ///
-   ylab(,angle(0) format(%7.0gc))                            ///    
-   xlab(10(10)90) xtitle("")
-restore
 
 ****************************************
 * END
