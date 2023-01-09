@@ -327,16 +327,6 @@ global imcorgrit imcr_curious imcr_interestedbyart imcr_repetitivetasks imcr_inv
 global imcor imcr_curious imcr_interestedbyart imcr_repetitivetasks imcr_inventive imcr_liketothink imcr_newideas imcr_activeimagination imcr_organized imcr_makeplans imcr_workhard imcr_appointmentontime imcr_putoffduties imcr_easilydistracted imcr_completeduties imcr_enjoypeople imcr_sharefeelings imcr_shywithpeople imcr_enthusiastic imcr_talktomanypeople imcr_talkative imcr_expressingthoughts imcr_workwithother imcr_understandotherfeeling imcr_trustingofother imcr_rudetoother imcr_toleratefaults imcr_forgiveother imcr_helpfulwithothers imcr_managestress imcr_nervous imcr_changemood imcr_feeldepressed imcr_easilyupset imcr_worryalot imcr_staycalm
 
 
-********** CFA first
-/*
-sem ///
-(imcr_appointmentontime imcr_makeplans imcr_completeduties imcr_enthusiastic imcr_organized imcr_workhard imcr_workwithother imcr_putoffduties <- CO) ///
-(imcr_easilyupset imcr_worryalot imcr_feeldepressed imcr_nervous imcr_repetitivetasks imcr_shywithpeople imcr_changemood imcr_easilydistracted imcr_rudetoother <- ES) ///
-(imcr_expressingthoughts imcr_liketothink imcr_sharefeelings imcr_activeimagination imcr_newideas imcr_talktomanypeople imcr_inventive imcr_curious imcr_talkative imcr_understandotherfeeling imcr_interestedbyart <- EXOP) ///
-(imcr_forgiveother imcr_toleratefaults imcr_trustingofother imcr_helpfulwithothers imcr_enjoypeople <-AG) ///
-, method(ml) standardized 
-*/
-
 ********** Factor analyses: without grit
 minap $imcor
 factortest $imcor

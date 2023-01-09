@@ -16,32 +16,12 @@ do "https://raw.githubusercontent.com/arnaudnatal/folderanalysis/main/$link.do"
 
 
 
-
 ****************************************
 * Personality traits construction
 ****************************************
 cls
-use "$wave3", clear
-
-
-********** How much HH regarding date of survey?
-gen tos=dofc(start_HH_quest)
-format tos %td
-ta tos
-
-ta tos if tos<d(01jan2021)
-ta tos if tos>d(01jun2021)
-
-gen swt=.
-replace swt=1 if tos<d(05apr2021)
-replace swt=2 if tos>=d(05apr2021) & tos<=d(15jun2021)
-replace swt=3 if tos>d(15jun2021)
-
-preserve
-duplicates drop HHID_panel, force
-ta swt
-restore
-
+use"panel_stab_v2", clear
+keep if year==2020
 
 
 ********** Imputation for non corrected one
@@ -62,51 +42,58 @@ replace im`x'=r(mean) if im`x'==. & sex==`i' & caste==`j' & egoid!=0 & egoid!=.
 
 
 ********** Macro
+global imcorgrit imcr_curious imcr_interestedbyart imcr_repetitivetasks imcr_inventive imcr_liketothink imcr_newideas imcr_activeimagination imcr_organized imcr_makeplans imcr_workhard imcr_appointmentontime imcr_putoffduties imcr_easilydistracted imcr_completeduties imcr_enjoypeople imcr_sharefeelings imcr_shywithpeople imcr_enthusiastic imcr_talktomanypeople imcr_talkative imcr_expressingthoughts imcr_workwithother imcr_understandotherfeeling imcr_trustingofother imcr_rudetoother imcr_toleratefaults imcr_forgiveother imcr_helpfulwithothers imcr_managestress imcr_nervous imcr_changemood imcr_feeldepressed imcr_easilyupset imcr_worryalot imcr_staycalm imcr_tryhard imcr_stickwithgoals imcr_goaftergoal imcr_finishwhatbegin imcr_finishtasks imcr_keepworking
+
 global imcor imcr_curious imcr_interestedbyart imcr_repetitivetasks imcr_inventive imcr_liketothink imcr_newideas imcr_activeimagination imcr_organized imcr_makeplans imcr_workhard imcr_appointmentontime imcr_putoffduties imcr_easilydistracted imcr_completeduties imcr_enjoypeople imcr_sharefeelings imcr_shywithpeople imcr_enthusiastic imcr_talktomanypeople imcr_talkative imcr_expressingthoughts imcr_workwithother imcr_understandotherfeeling imcr_trustingofother imcr_rudetoother imcr_toleratefaults imcr_forgiveother imcr_helpfulwithothers imcr_managestress imcr_nervous imcr_changemood imcr_feeldepressed imcr_easilyupset imcr_worryalot imcr_staycalm
 
 
+********** CFA first
+/*
+sem ///
+(imcr_appointmentontime imcr_makeplans imcr_completeduties imcr_enthusiastic imcr_organized imcr_workhard imcr_workwithother imcr_putoffduties <- CO) ///
+(imcr_easilyupset imcr_worryalot imcr_feeldepressed imcr_nervous imcr_repetitivetasks imcr_shywithpeople imcr_changemood imcr_easilydistracted imcr_rudetoother <- ES) ///
+(imcr_expressingthoughts imcr_liketothink imcr_sharefeelings imcr_activeimagination imcr_newideas imcr_talktomanypeople imcr_inventive imcr_curious imcr_talkative imcr_understandotherfeeling imcr_interestedbyart <- EXOP) ///
+(imcr_forgiveother imcr_toleratefaults imcr_trustingofother imcr_helpfulwithothers imcr_enjoypeople <-AG) ///
+, method(ml) standardized 
+*/
+
 ********** Factor analyses: without grit
 minap $imcor
-qui factor $imcor, pcf fa(5) // 5
+factortest $imcor
+factor $imcor, pcf fa(5) // 2
+estat kmo
 rotate, quartimin
-*putexcel set "EFA_2020.xlsx", modify sheet(without)
+*putexcel set "EFA_2020.xlsx", modify sheet(without_panel)
 *putexcel (E2)=matrix(e(r_L))
+
 
 
 ********** omegacoef with Laajaj approach for factor analysis and Cobb Clark
 ** F1
-global f1 imcr_worryalot imcr_easilydistracted imcr_feeldepressed imcr_easilyupset imcr_changemood imcr_nervous imcr_repetitivetasks imcr_putoffduties imcr_shywithpeople imcr_rudetoother
-
+** F1
+global f1 imcr_worryalot imcr_easilydistracted imcr_feeldepressed imcr_easilyupset imcr_changemood imcr_repetitivetasks imcr_nervous imcr_putoffduties imcr_shywithpeople imcr_rudetoother imcr_enjoypeople imcr_toleratefaults
 ** F2
-global f2 imcr_enthusiastic imcr_expressingthoughts imcr_forgiveother imcr_organized imcr_talktomanypeople imcr_completeduties imcr_workhard imcr_activeimagination imcr_appointmentontime imcr_workwithother imcr_newideas imcr_enjoypeople imcr_makeplans imcr_understandotherfeeling
-
+global f2 imcr_workhard imcr_enthusiastic imcr_talktomanypeople imcr_appointmentontime imcr_forgiveother imcr_expressingthoughts imcr_interestedbyart imcr_newideas imcr_understandotherfeeling imcr_makeplans imcr_completeduties
 ** F3
-global f3 imcr_staycalm imcr_talkative imcr_helpfulwithothers imcr_inventive imcr_trustingofother imcr_liketothink imcr_sharefeelings
-
+global f3 imcr_trustingofother imcr_inventive imcr_liketothink imcr_curious imcr_sharefeelings imcr_workwithother
 ** F4
-global f4 imcr_curious imcr_toleratefaults
+global f4 imcr_organized imcr_helpfulwithothers imcr_staycalm imcr_activeimagination imcr_talkative
 
-** F5
-global f5 imcr_managestress imcr_interestedbyart
 
 *** omegacoef
-omegacoef $f1  // .91
-omegacoef $f2  // .56
-omegacoef $f3  // .46
-alpha $f4  // .07
-alpha $f5  // .03
+omegacoef $f1
+omegacoef $f2
+omegacoef $f3
+omegacoef $f4
 
 *** Score
 egen f1_2020=rowmean($f1)
-egen f2_2020=rowmean($f2)
-egen f3_2020=rowmean($f3)
-egen f4_2020=rowmean($f4)
-egen f5_2020=rowmean($f5)
 
 save"$wave3~matching_v2.dta", replace
 *clear all
 ****************************************
 * END
+
 
 
 

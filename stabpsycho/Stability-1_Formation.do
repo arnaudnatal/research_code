@@ -309,6 +309,10 @@ foreach x in cr_OP cr_EX cr_ES cr_AG cr_CO cr_Grit {
 rename `x' `x'_corrdataset
 }
 
+
+*** 
+recode mainocc_occupation_indiv (.=0)
+
 save"panel_stab_v1", replace
 ****************************************
 * END
