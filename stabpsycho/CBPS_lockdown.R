@@ -14,12 +14,8 @@ library(car)
 neemsis2<-read.dta("N2_CBPS.dta")
 attach(neemsis2)
 
-# Initialize matrix
-#X_mat<-as.matrix(cbind(age, caste_2, caste_3, sex_2, mainocc_occupation_indiv_1, mainocc_occupation_indiv_2, mainocc_occupation_indiv_4, mainocc_occupation_indiv_5, mainocc_occupation_indiv_6, mainocc_occupation_indiv_7, mainocc_occupation_indiv_8, edulevel_2, edulevel_3, edulevel_4, edulevel_5, edulevel_6, HHsize, annualincome_indiv, maritalstatus_2, maritalstatus_3, maritalstatus_4, villageid_2, villageid_3, villageid_4, villageid_5, villageid_6, villageid_7, villageid_8, villageid_9, villageid_10))
-
 
 # CBPS
-#fit<-CBPS(treat~age+caste_2+caste_3+sex_2+mainocc_occupation_indiv_1+mainocc_occupation_indiv_2+mainocc_occupation_indiv_4+mainocc_occupation_indiv_5+mainocc_occupation_indiv_6+mainocc_occupation_indiv_7+mainocc_occupation_indiv_8+edulevel_2+edulevel_3+edulevel_4+edulevel_5+edulevel_6+HHsize+annualincome_indiv+maritalstatus_2+maritalstatus_3+maritalstatus_4+villageid_2+villageid_3+villageid_4+villageid_5+villageid_6+villageid_7+villageid_8+villageid_9+villageid_10, ATT=0, baseline.formula=NULL, diff.formula=NULL)
 fit<-CBPS(treat~age+caste_2+caste_3+sex_2+mainocc_occupation_indiv_1+mainocc_occupation_indiv_2+mainocc_occupation_indiv_4+mainocc_occupation_indiv_5+mainocc_occupation_indiv_6+mainocc_occupation_indiv_7+mainocc_occupation_indiv_8+edulevel_2+edulevel_3+edulevel_4+edulevel_5+edulevel_6+HHsize+annualincome_indiv+maritalstatus_2+maritalstatus_3+maritalstatus_4, ATT=0, baseline.formula=NULL, diff.formula=NULL)
 summary(fit)
 

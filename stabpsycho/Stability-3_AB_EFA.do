@@ -23,10 +23,11 @@ do "https://raw.githubusercontent.com/arnaudnatal/folderanalysis/main/$link.do"
 * 1. ACQUIESCENCE BIAS
 ****************************************
 use"panel_stab_v2", clear
-set graph off
+
 fre panel
 ********** Graph
 *** General
+/*
 stripplot ars3 if panel==1, over(time) separate(caste) ///
 cumul cumprob box centre vertical refline /// 
 xsize(5) xtitle("") xlabel(,angle(0))  ///
@@ -36,10 +37,10 @@ note("2016: n=835" "2020: n=835", size(vsmall)) ///
 legend(order(1 "Mean" 5 "Individual")) ///
 name(biaspanel, replace)
 graph export bias_panel_old.pdf, replace
-
+*/
 
 stripplot ars3 if panel==1, over(time) vert ///
-stack width(0.000005) jitter(0) ///
+stack width(0.01) jitter(0) ///
 box(barw(0.05)) boffset(-0.1) pctile(25) ///
 ms(oh) msize(small) mc(black%30) ///
 ylabel(0(.2)1.6) ymtick(0(.1)1.7) ytitle("") ///
@@ -49,35 +50,42 @@ name(biaspanel2, replace)
 graph export bias_panel.pdf, replace
 
 
-
 *** By sex
+/*
 stripplot ars3 if year==2020 & panel==1, over(sex) separate() ///
 cumul cumprob box centre vertical refline /// 
 xsize(4) xtitle("") xlabel(,angle(45))  ///
 ylabel(0(.2)1.6) ymtick(0(.1)1.7) ytitle("") ///
 msymbol(oh oh oh) mcolor(ply1 plr1 plb1)  ///
 legend(pos(6) col(3))
+*/
 
 *** By caste
+/*
 stripplot ars3 if year==2020 & panel==1, over(caste) separate() ///
 cumul cumprob box centre vertical refline /// 
 xsize(4) xtitle("") xlabel(,angle(45))  ///
 ylabel(0(.2)1.6) ymtick(0(.1)1.7) ytitle("") ///
 msymbol(oh oh oh) mcolor(ply1 plr1 plb1)  ///
 legend(pos(6) col(3))
+*/
 
 *** By age
+/*
 twoway ///
 (scatter ars3 age if year==2020 & panel==1) ///
 (lfit ars3 age if year==2020 & panel==1)
+*/
 
 *** By education level
+/*
 stripplot ars3 if year==2020 & panel==1, over(edulevel) separate() ///
 cumul cumprob box centre vertical refline /// 
 xsize(4) xtitle("") xlabel(,angle(45))  ///
 ylabel(0(.2)1.6) ymtick(0(.1)1.7) ytitle("") ///
 msymbol(oh oh oh) mcolor(ply1 plr1 plb1)  ///
 legend(pos(6) col(3))
+*/
 
 *** By traits
 /*
@@ -97,6 +105,7 @@ twoway ///
 */
 
 *** By enumerator
+/*
 stripplot ars3 if year==2016 & panel==1, over(username_2016_code) separate() ///
 cumul cumprob box centre vertical refline /// 
 xsize(4) xtitle("") xlabel(,angle(45))  ///
@@ -112,18 +121,19 @@ msymbol(oh oh oh) mcolor(ply1 plr1 plb1)  ///
 legend(pos(6) col(3)) title("2020-21") name(bias_enum20, replace)
 
 graph combine bias_enum16 bias_enum20, name(bias_enum, replace)
-
+*/
 
 
 ********** Reg test
+/*
 qui reg ars3 ib(1).sex ib(1).caste c.age##c.age ib(freq).edulevel ib(freq).username_2016_code ib(freq).mainocc_occupation_indiv ib(freq).villageid if year==2016 & panel==1, allbaselevels
 est store bias16
 qui reg ars3 ib(1).sex ib(1).caste c.age##c.age ib(freq).edulevel ib(3).username_2020_code ib(freq).mainocc_occupation_indiv ib(freq).villageid if year==2020 & panel==1, allbaselevels
 est store bias20
 
 estout bias16 bias20, cells("b(fmt(3)) p(fmt(2))" se(fmt(2))) stats(N r2 r2_a, fmt(0 2 2)) 
+*/
 
-set graph on
 ****************************************
 * END
 

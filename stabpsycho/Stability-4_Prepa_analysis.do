@@ -410,7 +410,7 @@ label define villageid 1"Vill: ELA" 2"Vill: GOV" 3"Vill: KAR" 4"Vill: KOR" 5"Vil
 
 
 * Wealth
-xtile assets2016_q=assets2016, n(3)
+xtile assets2016_q=assets_total10002016, n(3)
 xtile annualincome_HH2016_q=annualincome_HH2016, n(3)
 recode annualincome_indiv2016 (.=0)
 xtile annualincome_indiv2016_q=annualincome_indiv2016, n(3)
@@ -422,30 +422,13 @@ label values annualincome_indiv2016_q income
 
 
 * Cov expo
-destring covsellland2020, replace
-recode covsellland2020 (66=2)
-recode covsellland2020 (2=0)
+destring dummysell2020, replace
 label define cov 0 "Cov: Not exp" 1 "Cov: Exposed"
-label values covsellland2020 cov
-fre covsellland2020
-
-
-* Marriage
-fre dummymarriage2016 dummymarriage2020
-label define marriage 0"Marriage: No" 1"Marriage: Yes"
-label values dummymarriage2020 marriage
-
-
-* Health
-gen shockhealth=.
-replace shockhealth=0 if healthexpenses2020<=healthexpenses2016
-replace shockhealth=1 if healthexpenses2020>healthexpenses2016
-label define shockhealth 0"Health: No shock" 1"Health: Shock"
-label values shockhealth shockhealth
-
+label values dummysell2020 cov
+fre dummysell2020
 
 * General shock
-gen shock=shockhealth+dummydemonetisation2016+covsellland2020
+gen shock=dummydemonetisation2016+dummysell2020
 fre shock
 
 
@@ -576,11 +559,7 @@ restore
 ta dummydemonetisation2016
 
 ***** Lockdown
-gen dummyseclock2020=.
-replace dummyseclock2020=0 if submissiondate2020<d(05apr2021)
-replace dummyseclock2020=1 if submissiondate2020>d(15jun2021)
-ta dummyseclock2020
-
+ta dummyexposure2020
 
 
 save "panel_stab_wide_v6", replace
