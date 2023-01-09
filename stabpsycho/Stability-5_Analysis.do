@@ -22,23 +22,7 @@ do "https://raw.githubusercontent.com/arnaudnatal/folderanalysis/main/$link.do"
 ****************************************
 * ECON on bias
 ****************************************
-use "panel_stab_wide_v6", clear
-
-fre moc_indiv
-
-fre pathabs_delta_fa_cat5 pathabs_delta_fa_cat10
-
-********** Assessment: bias higher in 2020-21 than in 2016-17.
-/*
-stripplot ars32016 ars32020, over() separate() ///
-cumul cumprob box centre vertical refline /// 
-xsize(5) xtitle("") xlabel(1 "2016-17" 2 "2020-21",angle(0))  ///
-msymbol(oh oh oh oh oh oh oh) mcolor()  ///
-ylabel() ymtick() ytitle("") ///
-legend(order(1 "Mean" 5 "Individual") off) name(ars_global, replace)
-graph export "bias_panel.pdf", replace
-*/
-
+use "panel_stab_wide_v5", clear
 
 ********** Role of enumerator
 label define usercode 1"Enum: 1" 2"Enum: 2" 3"Enum: 3" 4"Enum: 4" 5"Enum: 5" 6"Enum: 6" 7"Enum: 7" 8"Enum: 8"
@@ -80,14 +64,15 @@ esttab ars1_1 ars1_2 ars2_1 ars2_2 using "_reg.csv", ///
 
 
 
+
+
+
 ****************************************
 * Reliability
 ****************************************
-use "panel_stab_wide_v6", clear
+use "panel_stab_wide_v5", clear
 
 canon (fa_ES2016) (fa_ES2020), lc(1)
-*0.0307
-
 pwcorr fa_ES2016 fa_ES2020
 
 ****************************************
@@ -107,7 +92,7 @@ pwcorr fa_ES2016 fa_ES2020
 ****************************************
 * Desc p1
 ****************************************
-use "panel_stab_wide_v6", clear
+use "panel_stab_wide_v5", clear
 
 tab age25
 
@@ -117,7 +102,6 @@ tab age25
 
 
 ********** Histo + kdensity
-/*
 twoway__histogram_gen diff_fa_ES, percent bin(70) gen(h x, replace)
 twoway ///
 (bar h x if x<-.5, color() barwidth(0.1)) ///
@@ -130,51 +114,7 @@ ylabel(, grid gmax gmin) xlabel(, nogrid gmax gmin) ///
 plotregion(margin(none)) legend(order(1 "Decreasing" 2 "Stable" 3 "Increasing") pos(6) col(3)) note("Kernel: epanechnikov" "Bandwidth=0.2", size(vsmall))
 graph save "histo_ES.gph", replace
 graph export "histo_ES.pdf", as(pdf) replace
-*/
 
-
-/*
-*** Scatter
-twoway ///
-(scatter diff_fa_ES diff_cr_ES, xline(-.5 .5) yline(-.5 .5) msymbol() msize(vsmall)) ///
-(lfit diff_fa_ES diff_cr_ES, lpattern(solid)), ///
-xtitle("ΔES - Naïve appr.") ytitle("ΔES - Factor app.") ///
-xlabel(-4"0" -2"-2" 0"0" 2"2", gmax gmin grid) ylabel(-4"" -2"-2" 0"0" 2"2" 4"4", gmin gmax grid) ///
-plotregion(margin(none)) ///
-legend(order(1 "Indiv." 2 "Fit.") pos(11) col(2) off) name(scatter_cent, replace) ysc(alt) xsc(alt)
-
-
-*** histo x
-twoway__histogram_gen diff_cr_ES, percent bin(71) gen(h x, replace)
-twoway ///
-(bar h x if x<-.5, color() barwidth(0.08)) ///
-(bar h x if x>=-.5 & x<=.5, color() barwidth(0.08)) ///
-(bar h x if x>.5, color() barwidth(0.08)) ///
-, ///
-xtitle("ΔES - Naïve app.") ytitle("Percent") ///
-ylabel(0" 0" 1"1" 2"2" 3"3" 4"4" 5"5", nogrid gmax gmin labsize(small)) xlabel(, grid gmax gmin) ///
-plotregion(margin(none)) legend(order(1 "Stab." 2 "Instab.") pos(6) col(2) off) name(histo_x, replace) ysc(reverse alt)
-
-
-*** histo y
-twoway__histogram_gen diff_fa_ES, percent bin(70) gen(h x, replace)
-twoway ///
-(bar h x if x<-.5, color() barwidth(0.1) horizontal) ///
-(bar h x if x>=-.5 & x<=.5, color() barwidth(0.1) horizontal) ///
-(bar h x if x>.5, color() barwidth(0.1) horizontal) ///
-, ///
-xtitle("Percent") ytitle("ΔES - Factor app.") ///
-ylabel(, grid gmax gmin) xlabel(, nogrid gmax gmin) ///
-plotregion(margin(none)) legend(order(1 "Decreasing" 2 "Stable" 3 "Increasing") pos(1) col(3) off) name(histo_y, replace) xsc(reverse alt)
-
-
-*** Combine
-grc1leg histo_y scatter_cent histo_x ///
-, hole(3) imargin(0 0 0 0) graphregion(margin(l=0 r=0)) ///
-leg(histo_y) ///
-name(scatter_histo_new, replace) scale(1)
-graph export "histo_abs.pdf", replace
-*/
 
 
 
@@ -297,7 +237,7 @@ dis (41.95-2.64)*100/2.64
 ****************************************
 * ECON on abs var
 ****************************************
-use "panel_stab_wide_v6", clear
+use "panel_stab_wide_v5", clear
 *keep if age25==1
 estimates clear
 
@@ -417,3 +357,51 @@ esttab all inc dec using "reg.tex", replace f ///
 
 ****************************************
 * END
+
+
+
+
+
+
+
+
+/*
+twoway ///
+(scatter diff_fa_ES diff_cr_ES, xline(-.5 .5) yline(-.5 .5) msymbol() msize(vsmall)) ///
+(lfit diff_fa_ES diff_cr_ES, lpattern(solid)), ///
+xtitle("ΔES - Naïve appr.") ytitle("ΔES - Factor app.") ///
+xlabel(-4"0" -2"-2" 0"0" 2"2", gmax gmin grid) ylabel(-4"" -2"-2" 0"0" 2"2" 4"4", gmin gmax grid) ///
+plotregion(margin(none)) ///
+legend(order(1 "Indiv." 2 "Fit.") pos(11) col(2) off) name(scatter_cent, replace) ysc(alt) xsc(alt)
+
+
+*** histo x
+twoway__histogram_gen diff_cr_ES, percent bin(71) gen(h x, replace)
+twoway ///
+(bar h x if x<-.5, color() barwidth(0.08)) ///
+(bar h x if x>=-.5 & x<=.5, color() barwidth(0.08)) ///
+(bar h x if x>.5, color() barwidth(0.08)) ///
+, ///
+xtitle("ΔES - Naïve app.") ytitle("Percent") ///
+ylabel(0" 0" 1"1" 2"2" 3"3" 4"4" 5"5", nogrid gmax gmin labsize(small)) xlabel(, grid gmax gmin) ///
+plotregion(margin(none)) legend(order(1 "Stab." 2 "Instab.") pos(6) col(2) off) name(histo_x, replace) ysc(reverse alt)
+
+
+*** histo y
+twoway__histogram_gen diff_fa_ES, percent bin(70) gen(h x, replace)
+twoway ///
+(bar h x if x<-.5, color() barwidth(0.1) horizontal) ///
+(bar h x if x>=-.5 & x<=.5, color() barwidth(0.1) horizontal) ///
+(bar h x if x>.5, color() barwidth(0.1) horizontal) ///
+, ///
+xtitle("Percent") ytitle("ΔES - Factor app.") ///
+ylabel(, grid gmax gmin) xlabel(, nogrid gmax gmin) ///
+plotregion(margin(none)) legend(order(1 "Decreasing" 2 "Stable" 3 "Increasing") pos(1) col(3) off) name(histo_y, replace) xsc(reverse alt)
+
+
+*** Combine
+grc1leg histo_y scatter_cent histo_x ///
+, hole(3) imargin(0 0 0 0) graphregion(margin(l=0 r=0)) ///
+leg(histo_y) ///
+name(scatter_histo_new, replace) scale(1)
+graph export "histo_abs.pdf", replace

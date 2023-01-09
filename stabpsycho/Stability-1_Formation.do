@@ -20,7 +20,7 @@ do "https://raw.githubusercontent.com/arnaudnatal/folderanalysis/main/$link.do"
 use"$directory\raw\NEEMSIS1-HH.dta", clear
 
 keep HHID2016 INDID2016 egoid name age sex dummydemonetisation submissiondate villageid relationshiptohead maritalstatus username
-rename submissiondate submissiondate2016
+rename submissiondate submissiondate2016 
 
 gen year=2016
 
@@ -66,7 +66,7 @@ drop _merge
 destring INDID2016, replace
 
 * PTCS
-merge 1:1 HHID2016 INDID2016 using "raw\NEEMSIS1-PTCS.dta", keepusing(cr_* ra1 rab1 rb1 ra2 rab2 rb2 ra3 rab3 rb3 ra4 rab4 rb4 ra5 rab5 rb5 ra6 rab6 rb6 ra7 rab7 rb7 ra8 rab8 rb8 ra9 rab9 rb9 ra10 rab10 rb10 ra11 rab11 rb11 ra12 rab12 rb12 set_a set_ab set_b raven_tt refuse num_tt lit_tt)
+merge 1:1 HHID2016 INDID2016 using "raw\NEEMSIS1-PTCS.dta", keepusing(ra1 rab1 rb1 ra2 rab2 rb2 ra3 rab3 rb3 ra4 rab4 rb4 ra5 rab5 rb5 ra6 rab6 rb6 ra7 rab7 rb7 ra8 rab8 rb8 ra9 rab9 rb9 ra10 rab10 rb10 ra11 rab11 rb11 ra12 rab12 rb12 set_a set_ab set_b raven_tt refuse num_tt lit_tt)
 drop _merge
 
 * Ego
@@ -109,6 +109,7 @@ foreach x in $tokeep dummydemonetisation {
 rename `x' `x'_2016
 }
 */
+
 
 save"$wave2-_ego", replace
 ****************************************
@@ -178,13 +179,12 @@ drop _merge
 destring INDID2020, replace
 
 * PTCS
-merge 1:1 HHID2020 INDID2020 using "raw\NEEMSIS2-PTCS.dta", keepusing(cr_* ra1 rab1 rb1 ra2 rab2 rb2 ra3 rab3 rb3 ra4 rab4 rb4 ra5 rab5 rb5 ra6 rab6 rb6 ra7 rab7 rb7 ra8 rab8 rb8 ra9 rab9 rb9 ra10 rab10 rb10 ra11 rab11 rb11 ra12 rab12 rb12 set_a set_ab set_b raven_tt refuse num_tt lit_tt)
+merge 1:1 HHID2020 INDID2020 using "raw\NEEMSIS2-PTCS.dta", keepusing(ra1 rab1 rb1 ra2 rab2 rb2 ra3 rab3 rb3 ra4 rab4 rb4 ra5 rab5 rb5 ra6 rab6 rb6 ra7 rab7 rb7 ra8 rab8 rb8 ra9 rab9 rb9 ra10 rab10 rb10 ra11 rab11 rb11 ra12 rab12 rb12 set_a set_ab set_b raven_tt refuse num_tt lit_tt)
 drop _merge
 
 * Ego
 merge 1:1 HHID2020 INDID2020 using "raw\NEEMSIS2-ego.dta", keepusing(aspirationminimumwage dummyaspirationmorehours aspirationminimumwage2 enjoypeople curious organized managestress interestedbyart tryhard workwithother makeplans sharefeelings nervous stickwithgoals repetitivetasks shywithpeople workhard changemood understandotherfeeling inventive enthusiastic feeldepressed appointmentontime goaftergoal easilyupset talktomanypeople liketothink finishwhatbegin putoffduties rudetoother finishtasks toleratefaults worryalot easilydistracted keepworking completeduties talkative trustingofother newideas staycalm forgiveother activeimagination expressingthoughts helpfulwithothers canreadcard1a canreadcard1b canreadcard1c canreadcard2 numeracy1 numeracy2 numeracy3 numeracy4 numeracy5 numeracy6 a1 a2 a3 a4 a5 a6 a7 a8 a9 a10 a11 a12 ab1 ab2 ab3 ab4 ab5 ab6 ab7 ab8 ab9 ab10 ab11 ab12 b1 b2 b3 b4 b5 b6 b7 b8 b9 b10 b11 b12)
 drop _merge
-
 
 * Recode for refuse
 fre canreadcard1a canreadcard1b canreadcard1c canreadcard2
@@ -303,12 +303,6 @@ gen tos=dofc(submissiondate)
 format tos %td
 drop submissiondate2016 submissiondate2020 submissiondate
 rename tos submissiondate
-
-*** Drop
-foreach x in cr_OP cr_EX cr_ES cr_AG cr_CO cr_Grit {
-rename `x' `x'_corrdataset
-}
-
 
 *** 
 recode mainocc_occupation_indiv (.=0)

@@ -331,6 +331,10 @@ save "panel_stab_wide_v4", replace
 ****************************************
 use "panel_stab_wide_v4", clear
 
+*** Panel
+keep if panel2016==1
+keep if panel2020==1
+
 *** Controle var
 * Sex
 desc sex
@@ -501,91 +505,11 @@ ta username_neemsis1 sex
 
 
 
-****************************************
-* Heatmap / transition matrix
-****************************************
-use "panel_stab_wide_v5", clear
-
-
-*** Heatmap
-preserve
-macro drop _all
-****
-**** Enter Varname
-global varx fa_ES2016
-global vary fa_ES2020
-****
-**** Enter nb of bin
-global nbin 5
-****
-**** Calculations
-xtile x=$varx, n($nbin)
-xtile y=$vary, n($nbin)
-ta x y, row nofreq
-qui ta x, gen(x_)
-qui ta y, gen(y_)
-forvalues i=1(1)$nbin {
-bysort x y: egen n_tot`i'=sum(x_`i')
-qui count if n_tot`i'!=0
-gen perc_`i'=n_tot`i'/r(N)
-}
-gen perc=.
-forvalues i=1(1)$nbin{
-replace perc=perc_`i' if perc_`i'!=0
-}
-grstyle init
-grstyle set plain, nogrid box
-****
-**** Modifications for graph aspect
-/*
-heatplot perc x y, ///
-colors(HSV grays, reverse) ///
-statistic(mean) ///
-xscale(alt) xbwidth(1) xlab(0(1)$nbin) xtitle("Decile of the emotional stability score in 2020-21") ///
-yscale(reverse) ybwidth(1) ylab(0(1)$nbin) ytitle("Decile of the emotional stability score in 2016-17") ///
-legend(off) title("")
-graph save "heatmap_ES.gph", replace
-graph export "heatmap_ES.pdf", as(pdf) replace
-ta x y, row nofreq
-drop  x_* y_* n_tot* perc_* perc
-*/
-restore
-
-*values(format(%4.2f) color(red)) ///
-
-
-********** Shock classification
-***** Demonetisation
-ta dummydemonetisation2016
-
-***** Lockdown
-ta dummyexposure2020
-
-*** Recode moc
-recode moc_indiv (.=0)
-
-
-save "panel_stab_wide_v6", replace
-****************************************
-* END
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 ****************************************
 * reshape + intraclass correlation
 ****************************************
-use "panel_stab_wide_v6", clear
+use "panel_stab_wide_v5", clear
 
 keep HHID_panel INDID_panel fa_ES2016 fa_ES2020 sex age2016 caste jatis edulevel2016 edulevel2020 villageid2016 mainocc_occupation_indiv2020
 
@@ -599,27 +523,6 @@ rename HHINDID2 HHINDID
 xtset HHINDID year
 
 icc fa_ES HHINDID
-/*
-Intraclass correlations
-One-way random-effects model
-Absolute agreement
-
-Random effects: HHINDID          Number of targets =       835
-                                 Number of raters  =         2
-
---------------------------------------------------------------
-                 fa_ES |        ICC       [95% Conf. Interval]
------------------------+--------------------------------------
-            Individual |  -.2116272      -.2754639   -.1459294
-               Average |  -.5368708      -.7603871   -.3417269
---------------------------------------------------------------
-F test that
-  ICC=0.00: F(834.0, 835.0) = 0.65            Prob > F = 1.000
-
-Note: ICCs estimate correlations between individual measurements
-      and between average measurements made on the same target.
-*/
-
 
 save "panel_stab_v6", replace
 ****************************************
