@@ -20,7 +20,7 @@ do "https://raw.githubusercontent.com/arnaudnatal/folderanalysis/main/$link.do"
 
 
 ****************************************
-* 1. ACQUIESCENCE BIAS
+* Acquiescence bias
 ****************************************
 use"panel_stab_v2", clear
 
@@ -39,6 +39,7 @@ name(biaspanel, replace)
 graph export bias_panel_old.pdf, replace
 */
 
+/*
 stripplot ars3 if panel==1, over(time) vert ///
 stack width(0.01) jitter(0) ///
 box(barw(0.05)) boffset(-0.1) pctile(25) ///
@@ -48,46 +49,52 @@ xmtick(0.9(0)2.5) xtitle("") ///
 note("2016: n=835" "2020: n=835", size(vsmall)) ///
 name(biaspanel2, replace)
 graph export bias_panel.pdf, replace
+*/
 
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Impact of enumerators on bias
+****************************************
+use"panel_stab_v2", clear
+
+
+*** 2016-17
+qui reg ars3 i.sex i.caste age ib(0).edulevel i.villageid if year==2016
+est store ars1_1
+qui reg ars3 i.sex i.caste age ib(0).edulevel i.villageid i.username_2016_code if year==2016
+est store ars1_2
+
+
+*** 2016-17
+qui reg ars3 i.sex i.caste age ib(0).edulevel i.villageid if year==2020
+est store ars2_1
+qui reg ars3 i.sex i.caste age ib(0).edulevel i.villageid i.username_2020_code if year==2020
+est store ars2_2
+
+esttab ars1_1 ars1_2 ars2_1 ars2_2, ///
+	star(* 0.10 ** 0.05 *** 0.01) ///
+	cells("b(fmt(2) star)" se(par fmt(2))) ///
+	drop() ///	
+	legend label varlabels(_cons constant) ///
+	stats(N r2, fmt(0 3) labels(`"Observations"' `"\$R^2$"'))
 
 ****************************************
 * END
 
 
 
-
-
-
-
-
-
-****************************************
-* Evolution acquiesence bias
-****************************************
-use"panel_stab_v2_wide", clear
-
-
-*keep if egoid2016!=. & egoid2020!=.
-
-
-********** Impact of enum
-encode username2016, gen(user16)
-encode username2020, gen(user20)
-
-***** 2016-17
-reg ars32016 i.sex2016 i.caste2016 age2016 i.edulevel2016 i.villageid2016
-reg ars32016 i.sex2016 i.caste2016 age2016 i.edulevel2016 i.villageid2016 i.user16
-* 2.91 --> 26.32
-
-
-***** 2016-17
-reg ars32020 i.sex2020 i.caste2020 age2020 i.edulevel2020 i.villageid2020
-* R2 --> 5.77
-reg ars32020 i.sex2020 i.caste2020 age2020 i.edulevel2020 i.villageid2020 i.user20
-* R2 --> 12.16
-
-****************************************
-* END
 
 
 
@@ -223,7 +230,6 @@ save "panel_stab_v2_2016", replace
 use"panel_stab_v2", clear
 keep if year==2020
 
-*keep if panel==1
 
 ********** Imputation for non corrected one
 global big5cr cr_curious cr_interestedbyart cr_repetitivetasks cr_inventive cr_liketothink cr_newideas cr_activeimagination cr_organized cr_makeplans cr_workhard cr_appointmentontime cr_putoffduties cr_easilydistracted cr_completeduties cr_enjoypeople cr_sharefeelings cr_shywithpeople cr_enthusiastic cr_talktomanypeople cr_talkative cr_expressingthoughts cr_workwithother cr_understandotherfeeling cr_trustingofother cr_rudetoother cr_toleratefaults cr_forgiveother cr_helpfulwithothers cr_managestress cr_nervous cr_changemood cr_feeldepressed cr_easilyupset cr_worryalot cr_staycalm cr_tryhard cr_stickwithgoals cr_goaftergoal cr_finishwhatbegin cr_finishtasks cr_keepworking

@@ -38,42 +38,13 @@ replace im`x'=r(mean) if im`x'==. & sex==`i' & caste==`j' & egoid!=0 & egoid!=.
 }
 }
 
-
-********** Macro
-global imcor imcr_curious imcr_interestedbyart imcr_repetitivetasks imcr_inventive imcr_liketothink imcr_newideas imcr_activeimagination imcr_organized imcr_makeplans imcr_workhard imcr_appointmentontime imcr_putoffduties imcr_easilydistracted imcr_completeduties imcr_enjoypeople imcr_sharefeelings imcr_shywithpeople imcr_enthusiastic imcr_talktomanypeople imcr_talkative imcr_expressingthoughts imcr_workwithother imcr_understandotherfeeling imcr_trustingofother imcr_rudetoother imcr_toleratefaults imcr_forgiveother imcr_helpfulwithothers imcr_managestress imcr_nervous imcr_changemood imcr_feeldepressed imcr_easilyupset imcr_worryalot imcr_staycalm
-
-
-********** Factor analyses: without grit
-minap $imcor
-qui factor $imcor, pcf fa(5) // 5
-rotate, quartimin
-*putexcel set "EFA_2016.xlsx", modify sheet(without)
-*putexcel (E2)=matrix(e(r_L))
-
-
-********** omegacoef with Laajaj approach for factor analysis and Cobb Clark
-** F1
+********** Traits
 global f1 imcr_easilyupset imcr_nervous imcr_feeldepressed imcr_worryalot imcr_changemood imcr_easilydistracted imcr_shywithpeople imcr_putoffduties imcr_rudetoother imcr_repetitivetasks
-
-** F2
 global f2 imcr_makeplans imcr_appointmentontime imcr_completeduties imcr_enthusiastic imcr_organized imcr_workhard imcr_workwithother
-
-** F3
 global f3 imcr_liketothink imcr_expressingthoughts imcr_activeimagination imcr_sharefeelings imcr_newideas imcr_inventive imcr_curious imcr_talktomanypeople imcr_talkative imcr_understandotherfeeling imcr_interestedbyart
-
-** F4
 global f4 imcr_staycalm imcr_managestress
-** F5
 global f5 imcr_forgiveother imcr_toleratefaults imcr_trustingofother imcr_enjoypeople imcr_helpfulwithothers
 
-*** omegacoef
-omegacoef $f1
-omegacoef $f2
-omegacoef $f3
-alpha $f4
-omegacoef $f5
-
-*** Score
 egen f1_2016=rowmean($f1)
 egen f2_2016=rowmean($f2)
 egen f3_2016=rowmean($f3)
@@ -81,7 +52,6 @@ egen f4_2016=rowmean($f4)
 egen f5_2016=rowmean($f5)
 
 save"$wave2~matching_v2.dta", replace
-*clear all
 ****************************************
 * END
 
@@ -102,7 +72,6 @@ save"$wave2~matching_v2.dta", replace
 ****************************************
 cls
 use "$wave2~matching_v2.dta", clear
-
 
 ********** Username
 encode username, gen(username_code)
@@ -130,6 +99,12 @@ global treat dummydemonetisation
 ********** Prepare to R
 keep f1_2016 f2_2016 f3_2016 f4_2016 f5_2016 $var $treat villageid_2 villageid_3 villageid_4 villageid_5 villageid_6 villageid_7 villageid_8 villageid_9 villageid_10 HHID_panel INDID_panel egoid cr_OP cr_CO cr_EX cr_AG cr_ES cr_Grit lit_tt num_tt raven_tt annualincome_indiv assets_total1000 HHsize
 rename dummydemonetisation treat 
+
+
+* Test logit
+logit treat age caste_2 caste_3 sex_2 mainocc_occupation_indiv_1 mainocc_occupation_indiv_2 mainocc_occupation_indiv_4 mainocc_occupation_indiv_5 mainocc_occupation_indiv_6 mainocc_occupation_indiv_7 mainocc_occupation_indiv_8 edulevel_2 edulevel_3 edulevel_4 edulevel_5 HHsize annualincome_indiv maritalstatus_2
+
+
 saveold "N1_CBPS.dta", version(12) replace
 ****************************************
 * END
@@ -142,7 +117,7 @@ saveold "N1_CBPS.dta", version(12) replace
 
 
 ****************************************
-* ADMS graph
+* ADSM graph
 ****************************************
 cls
 use "adsm_n1_r.dta", clear
@@ -400,5 +375,7 @@ esttab regpw_f1_2016 regpw_f2_2016 regpw_f3_2016 regpw_f5_2016 using "reg_demo_p
 	refcat(, nolabel) ///
 	stats(N r2 r2_a F p, fmt(0 2 2 2) layout("\multicolumn{1}{c}{@}" "\multicolumn{1}{S}{@}" "\multicolumn{1}{S}{@}" "\multicolumn{1}{S}{@}" "\multicolumn{1}{S}{@}") labels(`"Observations"' `"\(R^{2}\)"' `"Adjusted \(R^{2}\)"' `"F-stat"' `"p-value"'))
 
+ta treat
+	
 ****************************************
 * END

@@ -1,6 +1,9 @@
 rm(list=ls())
 
-# Open Datasetwd("C:/Users/Arnaud/Documents/MEGA/Thesis/Thesis_Stability/Analysis")
+# Open Data
+setwd("C:/Users/Arnaud/Documents/MEGA/Thesis/Thesis_Stability/Analysis")
+par("mar")
+par(mar=c(1,1,1,1))
 
 #install.packages("CBPS", dependencies=TRUE)
 #install.packages("MatchIt", dependencies=TRUE)

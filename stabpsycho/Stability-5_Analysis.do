@@ -19,75 +19,6 @@ do "https://raw.githubusercontent.com/arnaudnatal/folderanalysis/main/$link.do"
 
 
 
-****************************************
-* ECON on bias
-****************************************
-use "panel_stab_wide_v5", clear
-
-********** Role of enumerator
-label define usercode 1"Enum: 1" 2"Enum: 2" 3"Enum: 3" 4"Enum: 4" 5"Enum: 5" 6"Enum: 6" 7"Enum: 7" 8"Enum: 8"
-label values username_neemsis1 usercode
-label values username_neemsis2 usercode
-fre username_neemsis1 username_neemsis2
-
-*** 2016-17
-reg ars32016 i.sex i.caste ib(1).age_cat ib(0).educode i.villageid2016, allbase
-est store ars1_1
-
-reg ars32016 i.sex i.caste ib(1).age_cat ib(0).educode i.villageid2016 ib(4).username_neemsis1, allbase
-est store ars1_2
-
-
-*** 2020-21
-reg ars32020 i.sex i.caste ib(1).age_cat ib(0).educode i.villageid2020, allbase
-est store ars2_1
-
-reg ars32020 i.sex i.caste ib(1).age_cat ib(0).educode i.villageid2020 ib(4).username_neemsis2, allbase
-est store ars2_2
-
-/*
-esttab ars1_1 ars1_2 ars2_1 ars2_2 using "_reg.csv", ///
-	star(* 0.10 ** 0.05 *** 0.01) ///
-	cells("b(fmt(2)) t(fmt(2)par)") /// 
-	drop() ///	
-	legend label varlabels(_cons constant) ///
-	stats(N r2 F, fmt(0 3 3) labels(`"Observations"' `"\$R^2$"' `"F"')) ///
-	replace
-*/
-	
-****************************************
-* END
-
-
-
-
-
-
-
-
-
-
-****************************************
-* Reliability
-****************************************
-use "panel_stab_wide_v5", clear
-
-canon (fa_ES2016) (fa_ES2020), lc(1)
-pwcorr fa_ES2016 fa_ES2020
-
-****************************************
-* END
-
-
-
-
-
-
-
-
-
-
-
 
 ****************************************
 * Desc p1
@@ -137,23 +68,6 @@ graph save "sub_ES.gph", replace
 
 
 ********** Difference over trajectory
-*** Row
-cls
-ta diff_fa_ES_cat10
-ta sex diff_fa_ES_cat10, row nofreq chi2
-ta caste diff_fa_ES_cat10, row nofreq chi2
-ta age_cat diff_fa_ES_cat10, row nofreq chi2
-ta educode diff_fa_ES_cat10, row nofreq chi2
-ta moc_indiv diff_fa_ES_cat10, row nofreq chi2
-ta annualincome_indiv2016_q diff_fa_ES_cat10, row nofreq chi2
-ta dummysell2020 diff_fa_ES_cat10, row nofreq chi2
-ta dummysell2020 diff_fa_ES_cat10, row nofreq chi2
-ta villageid2016 diff_fa_ES_cat10, row nofreq chi2
-ta diff_ars3_cat5 diff_fa_ES_cat10, row nofreq chi2
-ta username_neemsis2 diff_fa_ES_cat10, row nofreq chi2
-tabstat age2016 annualincome_indiv2016 assets2016 diff_ars3 ars32016 ars32020, stat(n mean sd p50) by(diff_fa_ES_cat10)
-
-*** Col
 cls
 ta diff_fa_ES_cat10
 ta sex diff_fa_ES_cat10, col nofreq chi2
@@ -162,60 +76,9 @@ ta age_cat diff_fa_ES_cat10, col nofreq chi2
 ta educode diff_fa_ES_cat10, col nofreq chi2
 ta moc_indiv diff_fa_ES_cat10, col nofreq chi2
 ta annualincome_indiv2016_q diff_fa_ES_cat10, col nofreq chi2
+ta dummydemonetisation2016 diff_fa_ES_cat10, col nofreq chi2
 ta dummysell2020 diff_fa_ES_cat10, col nofreq chi2
-ta dummysell2020 diff_fa_ES_cat10, col nofreq chi2
-ta villageid2016 diff_fa_ES_cat10, col nofreq chi2
 ta diff_ars3_cat5 diff_fa_ES_cat10, col nofreq chi2
-ta username_neemsis2 diff_fa_ES_cat10, col nofreq chi2
-tabstat age2016 annualincome_indiv2016 assets2016 diff_ars3 ars32016 ars32020, stat(n mean sd p50) by(diff_fa_ES_cat10)
-
-*** Chi2
-cls
-ta caste diff_fa_ES_cat10, cchi2 exp chi2
-ta age_cat diff_fa_ES_cat10, cchi2 exp chi2
-ta educode diff_fa_ES_cat10, cchi2 exp chi2
-ta moc_indiv diff_fa_ES_cat10, cchi2 exp chi2
-ta dummydemonetisation2016 diff_fa_ES_cat10, cchi2 exp chi2
-ta dummysell2020 diff_fa_ES_cat10, cchi2 exp chi2
-ta diff_ars3_cat5 diff_fa_ES_cat10, cchi2 exp chi2
-ta diff_ars3_cat5 diff_fa_ES_cat10, nofreq row
-ta username_neemsis2 diff_fa_ES_cat10, cchi2 exp
-
-
-********** How much the bias explain?
-reg abs_diff_fa_ES_cat5 i.sex i.caste ib(1).age_cat ib(0).educode i.villageid2020, allbase
-* R2 --> 2.62
-reg abs_diff_fa_ES_cat5 diff_ars3 i.sex i.caste ib(1).age_cat ib(0).educode i.villageid2020, allbase
-* R2 --> 3.88
-
-
-reg abs_diff_fa_ES i.sex i.caste ib(1).age_cat ib(0).educode i.villageid2020, allbase
-* R2 --> 7.88
-reg abs_diff_fa_ES diff_ars3 i.sex i.caste ib(1).age_cat ib(0).educode i.villageid2020, allbase
-* R2 --> 13.99
-
-
-
-********** Contribution of enumerator in score of personality traits
-
-***** 2016-17
-reg fa_ES2016 i.female ib(1).caste i.educode i.age_cat ib(2).moc_indiv i.marital ib(2).annualincome_indiv2016_q, allbase
-*R2a=0.1089
-reg fa_ES2016 i.username_neemsis1 i.female ib(1).caste i.educode i.age_cat ib(2).moc_indiv i.marital ib(2).annualincome_indiv2016_q, allbase
-*R2a=0.3277
-*dis (30.36-8.92)*100/8.92
-dis (32.77-10.89)*100/10.89
-*200.91827%
-
-***** 2020-21
-reg fa_ES2020 i.female ib(1).caste i.educode i.age_cat ib(2).moc_indiv i.marital ib(2).annualincome_indiv2016_q, allbase
-*R2a=0.0264
-reg fa_ES2020 i.username_neemsis2 i.female ib(1).caste i.educode i.age_cat ib(2).moc_indiv i.marital ib(2).annualincome_indiv2016_q, allbase
-*R2a=0.4195
-*dis (40.93-2.85)*100/2.85
-dis (41.95-2.64)*100/2.64
-*1489.0152%
-
 
 
 ****************************************
