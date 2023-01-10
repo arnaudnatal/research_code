@@ -196,8 +196,8 @@ egen f4_2016=rowmean($f4)
 egen f5_2016=rowmean($f5)
 
 
-
 * To keep
+keep if panel==1
 keep HHID_panel INDID_panel f1_2016 f2_2016 f3_2016 f4_2016 f5_2016
 save "panel_stab_v2_2016", replace
 ****************************************
@@ -257,57 +257,33 @@ rotate, quartimin
 
 ********** omegacoef with Laajaj approach for factor analysis and Cobb Clark
 ** F1
-global f1 imcr_worryalot imcr_easilydistracted imcr_feeldepressed imcr_easilyupset imcr_changemood imcr_repetitivetasks imcr_nervous imcr_putoffduties imcr_shywithpeople imcr_rudetoother imcr_understandotherfeeling
+global f1 imcr_worryalot imcr_easilydistracted imcr_feeldepressed imcr_easilyupset imcr_changemood imcr_nervous imcr_repetitivetasks imcr_putoffduties imcr_shywithpeople imcr_rudetoother imcr_understandotherfeeling
 /*
-worryalot
-easilydistracted
-feeldepressed
-easilyupset
-changemood
-nervous
-repetitivetasks
-putoffduties
-shywithpeople
-rudetoother
-understandotherfeeling
+imcr_worryalot imcr_easilydistracted imcr_feeldepressed imcr_easilyupset imcr_changemood imcr_nervous imcr_repetitivetasks imcr_putoffduties imcr_shywithpeople imcr_rudetoother imcr_understandotherfeeling
 */
 
 ** F2
-global f2 imcr_workhard imcr_enthusiastic imcr_talktomanypeople imcr_appointmentontime imcr_forgiveother imcr_expressingthoughts imcr_interestedbyart imcr_newideas imcr_understandotherfeeling imcr_makeplans imcr_completeduties
+global f2 imcr_talkative imcr_helpfulwithothers imcr_inventive imcr_staycalm imcr_trustingofother imcr_liketothink imcr_sharefeelings imcr_organized imcr_appointmentontime
 /*
-talkative
-helpfulwithothers
-inventive
-staycalm
-trustingofother
-liketothink
-sharefeelings
-organized
-appointmentontime
+imcr_talkative imcr_helpfulwithothers imcr_inventive imcr_staycalm imcr_trustingofother imcr_liketothink imcr_sharefeelings imcr_organized imcr_appointmentontime
 */
 
 ** F3
-global f3 imcr_trustingofother imcr_inventive imcr_liketothink imcr_curious imcr_sharefeelings imcr_workwithother
+global f3 imcr_enthusiastic imcr_talktomanypeople imcr_completeduties imcr_forgiveother imcr_expressingthoughts imcr_activeimagination imcr_makeplans imcr_workwithother
 /*
-enthusiastic
-talktomanypeople
-completeduties
-forgiveother
-expressedthoughts
-activeimagination
-makeplans
-workwithother
+imcr_enthusiastic imcr_talktomanypeople imcr_completeduties imcr_forgiveother imcr_expressedthoughts imcr_activeimagination imcr_makeplans imcr_workwithother
 */
 
 ** F4
-global f4 imcr_organized imcr_helpfulwithothers imcr_staycalm imcr_activeimagination imcr_talkative
+global f4 imcr_curious imcr_interestedbyart imcr_workhard imcr_enjoypeople imcr_newideas imcr_toleratefaults
 /*
-curious
-interestbyart
-workhard
-enjoypeople
-newideas
-toleratefaults
+imcr_curious imcr_interestbyart imcr_workhard imcr_enjoypeople imcr_newideas imcr_toleratefaults
+*/
+
+** F5
+global f5 imcr_managestress
+/*
+imcr_managestress
 */
 
 
@@ -322,11 +298,11 @@ omegacoef imcr_managestress  imcr_nervous  imcr_changemood imcr_feeldepres~d imc
 
 *** omegacoef for factor approach
 cls
-omegacoef $f1  //.9
+omegacoef $f1
 omegacoef $f2
 omegacoef $f3
 omegacoef $f4
-omegacoef $f5
+*omegacoef $f5
 
 
 *** Score
@@ -336,6 +312,7 @@ egen f3_2020=rowmean($f3)
 egen f4_2020=rowmean($f4)
 
 * To keep
+keep if panel==1
 keep HHID_panel INDID_panel f1_2020 f2_2020 f3_2020 f4_2020
 save "panel_stab_v2_2020", replace
 ****************************************

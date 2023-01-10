@@ -22,6 +22,8 @@ do "https://raw.githubusercontent.com/arnaudnatal/folderanalysis/main/$link.do"
 ****************************************
 use"panel_stab_v2_wide", clear
 
+keep if panel2016==1
+
 merge 1:1 HHID_panel INDID_panel using "panel_stab_v2_2016"
 drop _merge
 merge 1:1 HHID_panel INDID_panel using "panel_stab_v2_2020"
@@ -40,8 +42,6 @@ drop cr_curious2016 cr_interestedbyart2016 cr_inventive2016 cr_liketothink2016 c
 
 drop ra12016 rab12016 rb12016 ra22016 rab22016 rb22016 ra32016 rab32016 rb32016 ra42016 rab42016 rb42016 ra52016 rab52016 rb52016 ra62016 rab62016 rb62016 ra72016 rab72016 rb72016 ra82016 rab82016 rb82016 ra92016 rab92016 rb92016 ra102016 rab102016 rb102016 ra112016 rab112016 rb112016 ra122016 rab122016 rb122016 set_a2016 set_ab2016 set_b2016
 
-drop _1_ars2016 _1_ars22016 _1_ars32016 _2_ars2016 _2_ars22016 _2_ars32016 _3_ars2016 _3_ars22016 _3_ars32016 _4_ars2016 _4_ars22016 _4_ars32016 _5_ars2016 _5_ars22016 _5_ars32016 _6_ars2016 _6_ars22016 _6_ars32016 _7_ars2016 _7_ars22016 _7_ars32016 ars2_AG2016 ars3_AG2016 ars2_CO2016 ars3_CO2016 ars2_EX2016 ars3_EX2016 ars2_OP2016 ars3_OP2016 ars2_ES2016 ars3_ES2016
-
 
 
 ********** 2020
@@ -54,8 +54,6 @@ drop a12020 a22020 a32020 a42020 a52020 a62020 a72020 a82020 a92020 a102020 a112
 
 
 drop ra12020 rab12020 rb12020 ra22020 rab22020 rb22020 ra32020 rab32020 rb32020 ra42020 rab42020 rb42020 ra52020 rab52020 rb52020 ra62020 rab62020 rb62020 ra72020 rab72020 rb72020 ra82020 rab82020 rb82020 ra92020 rab92020 rb92020 ra102020 rab102020 rb102020 ra112020 rab112020 rb112020 ra122020 rab122020 rb122020 set_a2020 set_ab2020 set_b2020
-
-drop _1_ars2020 _1_ars22020 _1_ars32020 _2_ars2020 _2_ars22020 _2_ars32020 _3_ars2020 _3_ars22020 _3_ars32020 _4_ars2020 _4_ars22020 _4_ars32020 _5_ars2020 _5_ars22020 _5_ars32020 _6_ars2020 _6_ars22020 _6_ars32020 _7_ars2020 _7_ars22020 _7_ars32020 ars2_AG2020 ars3_AG2020 ars2_CO2020 ars3_CO2020 ars2_EX2020 ars3_EX2020 ars2_OP2020 ars3_OP2020 ars2_ES2020 ars3_ES2020
 
 
 *** Username
@@ -337,6 +335,8 @@ keep if panel2020==1
 
 *** Controle var
 * Sex
+rename sex2016 sex
+drop sex2020
 desc sex
 label define sex 1"Sex: Male" 2"Sex: Female", modify
 fre sex
@@ -401,6 +401,9 @@ label values female female
 
 
 * Caste
+ta caste2016 caste2020
+drop caste2020
+rename caste2016 caste
 label define castecat 1"Caste: Dalits" 2"Caste: Middle" 3"Caste: Upper", modify
 
 
@@ -511,7 +514,7 @@ ta username_neemsis1 sex
 ****************************************
 use "panel_stab_wide_v5", clear
 
-keep HHID_panel INDID_panel fa_ES2016 fa_ES2020 sex age2016 caste jatis edulevel2016 edulevel2020 villageid2016 mainocc_occupation_indiv2020
+keep HHID_panel INDID_panel fa_ES2016 fa_ES2020 sex age2016 caste edulevel2016 edulevel2020 villageid2016 mainocc_occupation_indiv2020
 
 reshape long fa_ES edulevel, i(HHID_panel INDID_panel) j(year)
 
