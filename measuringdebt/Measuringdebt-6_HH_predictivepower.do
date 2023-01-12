@@ -28,7 +28,7 @@ use"panel_v8", clear
 
 
 ********** To keep
-global vardebt pcaindex mindex dsr dar rfm tdr lpc
+global vardebt pcaindex pca2index m2index dsr dar rfm tdr lpc
 global varlabour head_nboccupation nbworker_HH hoursayear_HH hoursayearagri_HH hoursayearnonagri_HH sharehoursayearagri_HH sharehoursayearnonagri_HH
 keep panelvar year $vardebt $varlabour
 mdesc $vardebt $varlabour

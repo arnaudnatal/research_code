@@ -103,11 +103,13 @@ tabstat $var, stat(n mean cv p50) by(year)
 corr $varstd
 
 factortest $varstd
+* Bartlett: 0.00
+* KMO: 0.586
 
 
 ********* PCA
 pca $varstd
-estat kmo
+* 3 compo --> 62.05%
 pca $varstd, comp(3)
 *screeplot, ci mean
 rotate, quartimin
@@ -209,10 +211,12 @@ tabstat $var, stat(n mean cv p50) by(year)
 corr $varstd
 
 factortest $varstd
-
+* Bartlett: 0.00
+* KMO: 0.628
 
 ********* PCA
 pca $varstd
+* 2 compo --> 60.65%
 pca $varstd, comp(2)
 estat kmo
 *screeplot, ci mean

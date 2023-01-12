@@ -260,12 +260,34 @@ label define head_nonmarried 0"Married" 1"Non-married"
 label values head_nonmarried head_nonmarried
 fre head_nonmarried
 
+* Class
+** Categorize assets 
+/*
+by year to take into account the
+increasing level of consumption
+see ref on conspicuous consumption
+*/
+tabstat assets_total, stat(q) by(year)
+foreach i in 2010 2016 2020 {
+xtile assets_`i'=assets_total if year==`i', n(3) 
+}
+gen assets_cat=.
+replace assets_cat=assets_2010 if year==2010
+replace assets_cat=assets_2016 if year==2016
+replace assets_cat=assets_2020 if year==2020
+drop assets_2010 assets_2016 assets_2020
+ta assets_cat
+label define assets_cat 1"Wealth: Poor" 2"Wealth: Middle" 3"Wealth: Rich"
+label values assets_cat assets_cat
+fre assets_cat
+ta assets_cat caste, chi2 cchi2 exp
+ta assets_cat, gen(assets_cat)
 
 
 ********** CRE
 global head head_female head_occ1 head_occ2 head_occ3 head_occ4 head_occ5 head_occ6 head_occ7 head_educ1 head_educ2 head_educ3 head_agesq head_agecat head_agecat1 head_agecat2 head_agecat3 head_agecat4 head_nonmarried head_age
 global income annualincome_HH dailyincome_pc shareincomeagri_HH incomeagri_HH incomenonagri_HH shareincomenonagri_HH
-global assets assets_total assets_pc
+global assets assets_total assets_pc assets_cat1 assets_cat2 assets_cat3
 global expenses expenses_total shareexpenses_food shareexpenses_educ shareexpenses_heal shareexpenses_cere
 global rest dummytrap dummymarriage stem HH_count_child HH_count_adult HHsize
 
