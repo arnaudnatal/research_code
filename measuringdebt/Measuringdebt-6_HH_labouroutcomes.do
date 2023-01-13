@@ -330,14 +330,13 @@ replace `x'_indiv=1 if `x'!=0
 
 foreach x in $totalocc {
 local new=substr("`x'",5,32)
-rename `x'_indiv indiv_`new'
+rename `x'_indiv ind_`new'
 }
 
 
 
 ********** Household level for all
-
-global fulltotal occ_total occ_female occ_male occ_dep occ_agriself occ_agricasual occ_casual occ_regnonquali occ_regquali occ_selfemp occ_nrega occ_agri occ_nona occ_regu occ_casu occ_self occ_othe occ_agriself_male occ_agriself_female occ_agricasual_male occ_agricasual_female occ_casual_male occ_casual_female occ_regnonquali_male occ_regnonquali_female occ_regquali_male occ_regquali_female occ_selfemp_male occ_selfemp_female occ_nrega_male occ_nrega_female occ_agri_male occ_agri_female occ_nona_male occ_nona_female occ_regu_male occ_regu_female occ_casu_male occ_casu_female occ_self_male occ_self_female occ_othe_male occ_othe_female occ_agriself_dep occ_agricasual_dep occ_casual_dep occ_regnonquali_dep occ_regquali_dep occ_selfemp_dep occ_nrega_dep occ_agri_dep occ_nona_dep occ_regu_dep occ_casu_dep occ_self_dep occ_othe_dep indiv_total indiv_female indiv_male indiv_dep indiv_agriself indiv_agricasual indiv_casual indiv_regnonquali indiv_regquali indiv_selfemp indiv_nrega indiv_agri indiv_nona indiv_regu indiv_casu indiv_self indiv_othe indiv_agriself_male indiv_agriself_female indiv_agricasual_male indiv_agricasual_female indiv_casual_male indiv_casual_female indiv_regnonquali_male indiv_regnonquali_female indiv_regquali_male indiv_regquali_female indiv_selfemp_male indiv_selfemp_female indiv_nrega_male indiv_nrega_female indiv_agri_male indiv_agri_female indiv_nona_male indiv_nona_female indiv_regu_male indiv_regu_female indiv_casu_male indiv_casu_female indiv_self_male indiv_self_female indiv_othe_male indiv_othe_female indiv_agriself_dep indiv_agricasual_dep indiv_casual_dep indiv_regnonquali_dep indiv_regquali_dep indiv_selfemp_dep indiv_nrega_dep indiv_agri_dep indiv_nona_dep indiv_regu_dep indiv_casu_dep indiv_self_dep indiv_othe_dep
+global fulltotal occ_total occ_female occ_male occ_dep occ_agriself occ_agricasual occ_casual occ_regnonquali occ_regquali occ_selfemp occ_nrega occ_agri occ_nona occ_regu occ_casu occ_self occ_othe occ_agriself_male occ_agriself_female occ_agricasual_male occ_agricasual_female occ_casual_male occ_casual_female occ_regnonquali_male occ_regnonquali_female occ_regquali_male occ_regquali_female occ_selfemp_male occ_selfemp_female occ_nrega_male occ_nrega_female occ_agri_male occ_agri_female occ_nona_male occ_nona_female occ_regu_male occ_regu_female occ_casu_male occ_casu_female occ_self_male occ_self_female occ_othe_male occ_othe_female occ_agriself_dep occ_agricasual_dep occ_casual_dep occ_regnonquali_dep occ_regquali_dep occ_selfemp_dep occ_nrega_dep occ_agri_dep occ_nona_dep occ_regu_dep occ_casu_dep occ_self_dep occ_othe_dep ind_total ind_female ind_male ind_dep ind_agriself ind_agricasual ind_casual ind_regnonquali ind_regquali ind_selfemp ind_nrega ind_agri ind_nona ind_regu ind_casu ind_self ind_othe ind_agriself_male ind_agriself_female ind_agricasual_male ind_agricasual_female ind_casual_male ind_casual_female ind_regnonquali_male ind_regnonquali_female ind_regquali_male ind_regquali_female ind_selfemp_male ind_selfemp_female ind_nrega_male ind_nrega_female ind_agri_male ind_agri_female ind_nona_male ind_nona_female ind_regu_male ind_regu_female ind_casu_male ind_casu_female ind_self_male ind_self_female ind_othe_male ind_othe_female ind_agriself_dep ind_agricasual_dep ind_casual_dep ind_regnonquali_dep ind_regquali_dep ind_selfemp_dep ind_nrega_dep ind_agri_dep ind_nona_dep ind_regu_dep ind_casu_dep ind_self_dep ind_othe_dep
 
 foreach x in $fulltotal {
 bysort HHID_panel year: egen _`x'=sum(`x')
@@ -370,26 +369,6 @@ destring year, replace
 sort HHID_panel year
 ta year
 
-
-********** Stat check
-global occ occ_total occ_female occ_male occ_dep occ_agriself occ_agricasual occ_casual occ_regnonquali occ_regquali occ_selfemp occ_nrega occ_agri occ_nona occ_regu occ_casu occ_self occ_othe occ_agriself_male occ_agriself_female occ_agricasual_male occ_agricasual_female occ_casual_male occ_casual_female occ_regnonquali_male occ_regnonquali_female occ_regquali_male occ_regquali_female occ_selfemp_male occ_selfemp_female occ_nrega_male occ_nrega_female occ_agri_male occ_agri_female occ_nona_male occ_nona_female occ_regu_male occ_regu_female occ_casu_male occ_casu_female occ_self_male occ_self_female occ_othe_male occ_othe_female occ_agriself_dep occ_agricasual_dep occ_casual_dep occ_regnonquali_dep occ_regquali_dep occ_selfemp_dep occ_nrega_dep occ_agri_dep occ_nona_dep occ_regu_dep occ_casu_dep occ_self_dep occ_othe_dep
-
-global indiv indiv_total indiv_female indiv_male indiv_dep indiv_agriself indiv_agricasual indiv_casual indiv_regnonquali indiv_regquali indiv_selfemp indiv_nrega indiv_agri indiv_nona indiv_regu indiv_casu indiv_self indiv_othe indiv_agriself_male indiv_agriself_female indiv_agricasual_male indiv_agricasual_female indiv_casual_male indiv_casual_female indiv_regnonquali_male indiv_regnonquali_female indiv_regquali_male indiv_regquali_female indiv_selfemp_male indiv_selfemp_female indiv_nrega_male indiv_nrega_female indiv_agri_male indiv_agri_female indiv_nona_male indiv_nona_female indiv_regu_male indiv_regu_female indiv_casu_male indiv_casu_female indiv_self_male indiv_self_female indiv_othe_male indiv_othe_female indiv_agriself_dep indiv_agricasual_dep indiv_casual_dep indiv_regnonquali_dep indiv_regquali_dep indiv_selfemp_dep indiv_nrega_dep indiv_agri_dep indiv_nona_dep indiv_regu_dep indiv_casu_dep indiv_self_dep indiv_othe_dep
-
-* Sum
-sum $occ if year==2010, sep(100)
-sum $occ if year==2016, sep(100)
-sum $occ if year==2020, sep(100)
-
-sum $indiv if year==2010, sep(100)
-sum $indiv if year==2016, sep(100)
-sum $indiv if year==2020, sep(100)
-
-* Nb
-cls
-foreach x in $indiv {
-ta `x' year
-}
 
 
 ********** Save
