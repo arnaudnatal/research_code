@@ -176,13 +176,9 @@ xtreg m2index i.caste stem HHsize HH_count_child head_female head_age head_occ2 
 cls
 use"panel_v7", clear
 
-
 xtset panelvar time
 
-xtreg pcaindex i.caste##ib(1).assets_cat i.stem HHsize HH_count_child head_female head_age head_occ2 head_occ3 head_occ4 head_occ5 head_occ6 head_occ7 head_educ2 head_educ3 head_nonmarried dummymarriage assets_pc dailyincome_pc i.vill, base fe
-
-
-xtreg pca2index i.caste i.assets_cat i.stem HHsize HH_count_child head_female head_age head_occ2 head_occ3 head_occ4 head_occ5 head_occ6 head_occ7 head_educ2 head_educ3 head_nonmarried dummymarriage assets_pc dailyincome_pc i.vill, base fe
+xtreg pca2index i.caste i.stem c.HHsize##c.dependencyratio HH_count_child head_female head_age head_occ2 head_occ3 head_occ4 head_occ5 head_occ6 head_occ7 head_educ2 head_educ3 head_nonmarried dummymarriage assets_pc dailyincome_pc i.vill, base fe
 
 
 
