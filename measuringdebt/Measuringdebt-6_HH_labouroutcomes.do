@@ -27,154 +27,29 @@ use"raw/RUME-occupnew", clear
 fre kindofwork
 drop if kindofwork==9
 
-keep HHID2010 INDID2010 profession sector occupation annualincome_indiv nboccupation_indiv construction_coolie construction_regular construction_qualified
+keep HHID2010 INDID2010 profession sector occupation nboccupation_indiv annualincome
 fre occupation
-ta occupation, gen(occ_)
-
-gen acttype=0
-replace acttype=1 if occupation==1
-replace acttype=1 if occupation==2
-replace acttype=2 if occupation==3
-replace acttype=2 if occupation==4
-replace acttype=2 if occupation==5
-replace acttype=2 if occupation==6
-replace acttype=2 if occupation==7
-label define acttype 1"Agri." 2"Non-agri"
-label values acttype acttype
-
-ta occupation acttype 
-ta acttype, gen(type_)
-
-*** Indiv level
-forvalues i=1/7 {
-bysort HHID2010 INDID2010: egen nbocc`i'=sum(occ_`i')
-}
-rename nbocc1 nbocc_agriself
-rename nbocc2 nbocc_agricasu
-rename nbocc3 nbocc_nonacasu
-rename nbocc4 nbocc_nonarnqu
-rename nbocc5 nbocc_nonarqua
-rename nbocc6 nbocc_nonaself
-rename nbocc7 nbocc_nonanreg
-
-forvalues i=1/2 {
-bysort HHID2010 INDID2010: egen nbocc`i'=sum(type_`i')
-}
-rename nbocc1 nbocc_agri
-rename nbocc2 nbocc_nonagri
-
-keep HHID2010 INDID2010 nbocc_*
-duplicates drop
 
 *** Merge charact
-merge 1:1 HHID2010 INDID2010 using "raw/RUME-HH", keepusing(age sex)
+merge m:1 HHID2010 INDID2010 using "raw/RUME-HH", keepusing(name age sex)
+keep if _merge==3
 drop _merge
-
-
-*** Merge indiv
-merge 1:1 HHID2010 INDID2010 using "raw/RUME-occup_indiv", keepusing(dummyworkedpastyear working_pop mainocc_profession_indiv mainocc_occupation_indiv mainocc_sector_indiv mainocc_annualincome_indiv mainocc_occupationname_indiv annualincome_indiv nboccupation_indiv)
-drop _merge
-
-drop nbocc_agriself nbocc_agricasu nbocc_nonacasu nbocc_nonarnqu nbocc_nonarqua nbocc_nonaself nbocc_nonanreg
 
 gen dep=0
 replace dep=1 if age<15
 replace dep=1 if age>64
 
-********** Dummies for nb individuals at HH level
-gen occ_all=0
-replace occ_all=1 if nboccupation_indiv>0 & nboccupation_indiv!=.
-
-gen occ_female=0
-replace occ_female=1 if sex==2 & nboccupation_indiv>0 & nboccupation_indiv!=.
-
-gen occ_male=0
-replace occ_male=1 if sex==1 & nboccupation_indiv>0 & nboccupation_indiv!=.
-
-gen occ_agri=0
-replace occ_agri=1 if nbocc_agri!=0 & nbocc_agri!=. & nboccupation_indiv>0 & nboccupation_indiv!=.
-
-gen occ_nonagri=0
-replace occ_nonagri=1 if nbocc_nonagri!=0 & nbocc_nonagri!=. & nboccupation_indiv>0 & nboccupation_indiv!=.
-
-gen occ_female_agri=0
-replace occ_female_agri=1 if sex==2 & nboccupation_indiv>0 & nboccupation_indiv!=. & nbocc_agri!=0 & nbocc_agri!=.
-
-gen occ_female_nonagri=0
-replace occ_female_nonagri=1 if sex==2 & nboccupation_indiv>0 & nboccupation_indiv!=. & nbocc_nonagri!=0 & nbocc_nonagri!=.
-
-gen occ_male_agri=0
-replace occ_male_agri=1 if sex==1 & nboccupation_indiv>0 & nboccupation_indiv!=. & nbocc_agri!=0 & nbocc_agri!=.
-
-gen occ_male_nonagri=0
-replace occ_male_nonagri=1 if sex==1 & nboccupation_indiv>0 & nboccupation_indiv!=. & nbocc_nonagri!=0 & nbocc_nonagri!=.
-
-gen occ_dep=0
-replace occ_dep=1 if nboccupation_indiv>0 & nboccupation_indiv!=. & dep==1
-
-gen occ_dep_female=0
-replace occ_dep_female=1 if nboccupation_indiv>0 & nboccupation_indiv!=. & dep==1 & sex==2
-
-gen occ_dep_male=0
-replace occ_dep_male=1 if nboccupation_indiv>0 & nboccupation_indiv!=. & dep==1 & sex==1
-
-********** Nb occ at HH level
-gen nbocc_all=0
-replace nbocc_all=nboccupation_indiv if nboccupation_indiv>0 & nboccupation_indiv!=.
-
-gen nbocc_female=0
-replace nbocc_female=nboccupation_indiv if sex==2 & nboccupation_indiv>0 & nboccupation_indiv!=.
-
-gen nbocc_male=0
-replace nbocc_male=nboccupation_indiv if sex==1 & nboccupation_indiv>0 & nboccupation_indiv!=.
-
-gen nbocc_female_agri=0
-replace nbocc_female_agri=nboccupation_indiv if sex==2 & nboccupation_indiv>0 & nboccupation_indiv!=. & nbocc_agri!=0 & nbocc_agri!=.
-
-gen nbocc_female_nonagri=0
-replace nbocc_female_nonagri=nboccupation_indiv if sex==2 & nboccupation_indiv>0 & nboccupation_indiv!=. & nbocc_nonagri!=0 & nbocc_nonagri!=.
-
-gen nbocc_male_agri=0
-replace nbocc_male_agri=nboccupation_indiv if sex==1 & nboccupation_indiv>0 & nboccupation_indiv!=. & nbocc_agri!=0 & nbocc_agri!=.
-
-gen nbocc_male_nonagri=0
-replace nbocc_male_nonagri=nboccupation_indiv if sex==1 & nboccupation_indiv>0 & nboccupation_indiv!=. & nbocc_nonagri!=0 & nbocc_nonagri!=.
-
-gen nbocc_dep=0
-replace nbocc_dep=nboccupation_indiv if nboccupation_indiv>0 & nboccupation_indiv!=. & dep==1
-
-gen nbocc_dep_female=0
-replace nbocc_dep_female=nboccupation_indiv if nboccupation_indiv>0 & nboccupation_indiv!=. & dep==1 & sex==2
-
-gen nbocc_dep_male=0
-replace nbocc_dep_male=nboccupation_indiv if nboccupation_indiv>0 & nboccupation_indiv!=. & dep==1 & sex==1
-
-********** HH level
-foreach x in occ_all occ_female occ_male occ_agri occ_nonagri occ_female_agri occ_female_nonagri occ_male_agri occ_male_nonagri nbocc_agri nbocc_nonagri nbocc_all nbocc_female nbocc_male nbocc_female_agri nbocc_female_nonagri nbocc_male_agri nbocc_male_nonagri nbocc_dep nbocc_dep_male nbocc_dep_female occ_dep occ_dep_male occ_dep_female {
-bysort HHID2010: egen `x'_HH=sum(`x')
-}
-
-bysort HHID2010: egen nboccupation_HH=sum(nboccupation_indiv)
-
-keep HHID2010 occ_all_HH occ_female_HH occ_male_HH occ_agri_HH occ_nonagri_HH occ_female_agri_HH occ_female_nonagri_HH occ_male_agri_HH occ_male_nonagri_HH nbocc_agri_HH nbocc_nonagri_HH nbocc_all_HH nbocc_female_HH nbocc_male_HH nbocc_female_agri_HH nbocc_female_nonagri_HH nbocc_male_agri_HH nbocc_male_nonagri_HH nboccupation_HH nbocc_dep_HH nbocc_dep_male_HH nbocc_dep_female_HH occ_dep_HH occ_dep_male_HH occ_dep_female_HH
-duplicates drop
-
-
-*** Merge nbworkers
-merge 1:1 HHID2010 using "raw/RUME-occup_HH", keepusing(nbworker_HH nbnonworker_HH)
-drop _merge
 
 *** Merge HHID_panel
-merge 1:m HHID2010 using "raw/ODRIIS-HH_wide", keepusing(HHID_panel)
+merge m:m HHID2010 using "raw/ODRIIS-HH_wide", keepusing(HHID_panel)
 keep if _merge==3
 drop _merge
 gen year=2010
 
+
 save"RUME-newoccvar", replace
 ****************************************
 * END
-
-
 
 
 
@@ -192,148 +67,21 @@ use"raw/NEEMSIS1-occupnew", clear
 
 fre kindofwork
 
-keep HHID2016 INDID2016 profession sector occupation annualincome_indiv nboccupation_indiv construction_coolie construction_regular construction_qualified
+keep HHID2016 INDID2016 profession sector occupation nboccupation_indiv annualincome
 fre occupation
-ta occupation, gen(occ_)
-
-gen acttype=0
-replace acttype=1 if occupation==1
-replace acttype=1 if occupation==2
-replace acttype=2 if occupation==3
-replace acttype=2 if occupation==4
-replace acttype=2 if occupation==5
-replace acttype=2 if occupation==6
-replace acttype=2 if occupation==7
-label define acttype 1"Agri." 2"Non-agri"
-label values acttype acttype
-
-ta occupation acttype 
-ta acttype, gen(type_)
-
-*** Indiv level
-forvalues i=1/7 {
-bysort HHID2016 INDID2016: egen nbocc`i'=sum(occ_`i')
-}
-rename nbocc1 nbocc_agriself
-rename nbocc2 nbocc_agricasu
-rename nbocc3 nbocc_nonacasu
-rename nbocc4 nbocc_nonarnqu
-rename nbocc5 nbocc_nonarqua
-rename nbocc6 nbocc_nonaself
-rename nbocc7 nbocc_nonanreg
-
-forvalues i=1/2 {
-bysort HHID2016 INDID2016: egen nbocc`i'=sum(type_`i')
-}
-rename nbocc1 nbocc_agri
-rename nbocc2 nbocc_nonagri
-
-keep HHID2016 INDID2016 nbocc_*
-duplicates drop
 
 *** Merge charact
-merge 1:1 HHID2016 INDID2016 using "raw/NEEMSIS1-HH", keepusing(age sex)
+merge m:1 HHID2016 INDID2016 using "raw/NEEMSIS1-HH", keepusing(name age sex)
+keep if _merge==3
 drop _merge
-
-
-*** Merge indiv
-merge 1:1 HHID2016 INDID2016 using "raw/NEEMSIS1-occup_indiv", keepusing(dummyworkedpastyear working_pop mainocc_profession_indiv mainocc_occupation_indiv mainocc_sector_indiv mainocc_annualincome_indiv mainocc_occupationname_indiv annualincome_indiv nboccupation_indiv)
-drop _merge
-
-drop nbocc_agriself nbocc_agricasu nbocc_nonacasu nbocc_nonarnqu nbocc_nonarqua nbocc_nonaself nbocc_nonanreg
 
 gen dep=0
 replace dep=1 if age<15
 replace dep=1 if age>64
 
-********** Dummies for nb individuals at HH level
-gen occ_all=0
-replace occ_all=1 if nboccupation_indiv>0 & nboccupation_indiv!=.
-
-gen occ_female=0
-replace occ_female=1 if sex==2 & nboccupation_indiv>0 & nboccupation_indiv!=.
-
-gen occ_male=0
-replace occ_male=1 if sex==1 & nboccupation_indiv>0 & nboccupation_indiv!=.
-
-gen occ_agri=0
-replace occ_agri=1 if nbocc_agri!=0 & nbocc_agri!=. & nboccupation_indiv>0 & nboccupation_indiv!=.
-
-gen occ_nonagri=0
-replace occ_nonagri=1 if nbocc_nonagri!=0 & nbocc_nonagri!=. & nboccupation_indiv>0 & nboccupation_indiv!=.
-
-gen occ_female_agri=0
-replace occ_female_agri=1 if sex==2 & nboccupation_indiv>0 & nboccupation_indiv!=. & nbocc_agri!=0 & nbocc_agri!=.
-
-gen occ_female_nonagri=0
-replace occ_female_nonagri=1 if sex==2 & nboccupation_indiv>0 & nboccupation_indiv!=. & nbocc_nonagri!=0 & nbocc_nonagri!=.
-
-gen occ_male_agri=0
-replace occ_male_agri=1 if sex==1 & nboccupation_indiv>0 & nboccupation_indiv!=. & nbocc_agri!=0 & nbocc_agri!=.
-
-gen occ_male_nonagri=0
-replace occ_male_nonagri=1 if sex==1 & nboccupation_indiv>0 & nboccupation_indiv!=. & nbocc_nonagri!=0 & nbocc_nonagri!=.
-
-gen occ_dep=0
-replace occ_dep=1 if nboccupation_indiv>0 & nboccupation_indiv!=. & dep==1
-
-gen occ_dep_female=0
-replace occ_dep_female=1 if nboccupation_indiv>0 & nboccupation_indiv!=. & dep==1 & sex==2
-
-gen occ_dep_male=0
-replace occ_dep_male=1 if nboccupation_indiv>0 & nboccupation_indiv!=. & dep==1 & sex==1
-
-
-
-********** Nb occ at HH level
-gen nbocc_all=0
-replace nbocc_all=nboccupation_indiv if nboccupation_indiv>0 & nboccupation_indiv!=.
-
-gen nbocc_female=0
-replace nbocc_female=nboccupation_indiv if sex==2 & nboccupation_indiv>0 & nboccupation_indiv!=.
-
-gen nbocc_male=0
-replace nbocc_male=nboccupation_indiv if sex==1 & nboccupation_indiv>0 & nboccupation_indiv!=.
-
-gen nbocc_female_agri=0
-replace nbocc_female_agri=nboccupation_indiv if sex==2 & nboccupation_indiv>0 & nboccupation_indiv!=. & nbocc_agri!=0 & nbocc_agri!=.
-
-gen nbocc_female_nonagri=0
-replace nbocc_female_nonagri=nboccupation_indiv if sex==2 & nboccupation_indiv>0 & nboccupation_indiv!=. & nbocc_nonagri!=0 & nbocc_nonagri!=.
-
-gen nbocc_male_agri=0
-replace nbocc_male_agri=nboccupation_indiv if sex==1 & nboccupation_indiv>0 & nboccupation_indiv!=. & nbocc_agri!=0 & nbocc_agri!=.
-
-gen nbocc_male_nonagri=0
-replace nbocc_male_nonagri=nboccupation_indiv if sex==1 & nboccupation_indiv>0 & nboccupation_indiv!=. & nbocc_nonagri!=0 & nbocc_nonagri!=.
-
-gen nbocc_dep=0
-replace nbocc_dep=nboccupation_indiv if nboccupation_indiv>0 & nboccupation_indiv!=. & dep==1
-
-gen nbocc_dep_female=0
-replace nbocc_dep_female=nboccupation_indiv if nboccupation_indiv>0 & nboccupation_indiv!=. & dep==1 & sex==2
-
-gen nbocc_dep_male=0
-replace nbocc_dep_male=nboccupation_indiv if nboccupation_indiv>0 & nboccupation_indiv!=. & dep==1 & sex==1
-
-********** HH level
-foreach x in occ_all occ_female occ_male occ_agri occ_nonagri occ_female_agri occ_female_nonagri occ_male_agri occ_male_nonagri nbocc_agri nbocc_nonagri nbocc_all nbocc_female nbocc_male nbocc_female_agri nbocc_female_nonagri nbocc_male_agri nbocc_male_nonagri nbocc_dep nbocc_dep_male nbocc_dep_female occ_dep occ_dep_male occ_dep_female {
-bysort HHID2016: egen `x'_HH=sum(`x')
-}
-
-bysort HHID2016: egen nboccupation_HH=sum(nboccupation_indiv)
-
-keep HHID2016 occ_all_HH occ_female_HH occ_male_HH occ_agri_HH occ_nonagri_HH occ_female_agri_HH occ_female_nonagri_HH occ_male_agri_HH occ_male_nonagri_HH nbocc_agri_HH nbocc_nonagri_HH nbocc_all_HH nbocc_female_HH nbocc_male_HH nbocc_female_agri_HH nbocc_female_nonagri_HH nbocc_male_agri_HH nbocc_male_nonagri_HH nboccupation_HH nbocc_dep_HH nbocc_dep_male_HH nbocc_dep_female_HH occ_dep_HH occ_dep_male_HH occ_dep_female_HH
-duplicates drop
-
-
-*** Merge nbworkers
-merge 1:1 HHID2016 using "raw/NEEMSIS1-occup_HH", keepusing(nbworker_HH nbnonworker_HH)
-drop _merge
-
 
 *** Merge HHID_panel
-merge 1:m HHID2016 using "raw/ODRIIS-HH_wide", keepusing(HHID_panel)
+merge m:m HHID2016 using "raw/ODRIIS-HH_wide", keepusing(HHID_panel)
 keep if _merge==3
 drop _merge
 gen year=2016
@@ -350,25 +98,6 @@ save"NEEMSIS1-newoccvar", replace
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ****************************************
 * Labour var: 2020-21
 ****************************************
@@ -376,147 +105,21 @@ use"raw/NEEMSIS2-occupnew", clear
 
 fre kindofwork
 
-keep HHID2020 INDID2020 profession sector occupation annualincome_indiv nboccupation_indiv construction_coolie construction_regular construction_qualified
+keep HHID2020 INDID2020 profession sector occupation nboccupation_indiv annualincome
 fre occupation
-ta occupation, gen(occ_)
-
-gen acttype=0
-replace acttype=1 if occupation==1
-replace acttype=1 if occupation==2
-replace acttype=2 if occupation==3
-replace acttype=2 if occupation==4
-replace acttype=2 if occupation==5
-replace acttype=2 if occupation==6
-replace acttype=2 if occupation==7
-label define acttype 1"Agri." 2"Non-agri"
-label values acttype acttype
-
-ta occupation acttype 
-ta acttype, gen(type_)
-
-*** Indiv level
-forvalues i=1/7 {
-bysort HHID2020 INDID2020: egen nbocc`i'=sum(occ_`i')
-}
-rename nbocc1 nbocc_agriself
-rename nbocc2 nbocc_agricasu
-rename nbocc3 nbocc_nonacasu
-rename nbocc4 nbocc_nonarnqu
-rename nbocc5 nbocc_nonarqua
-rename nbocc6 nbocc_nonaself
-rename nbocc7 nbocc_nonanreg
-
-forvalues i=1/2 {
-bysort HHID2020 INDID2020: egen nbocc`i'=sum(type_`i')
-}
-rename nbocc1 nbocc_agri
-rename nbocc2 nbocc_nonagri
-
-keep HHID2020 INDID2020 nbocc_*
-duplicates drop
 
 *** Merge charact
-merge 1:1 HHID2020 INDID2020 using "raw/NEEMSIS2-HH", keepusing(age sex)
+merge m:1 HHID2020 INDID2020 using "raw/NEEMSIS2-HH", keepusing(name age sex)
+keep if _merge==3
 drop _merge
-
-
-*** Merge indiv
-merge 1:1 HHID2020 INDID2020 using "raw/NEEMSIS2-occup_indiv", keepusing(dummyworkedpastyear working_pop mainocc_profession_indiv mainocc_occupation_indiv mainocc_sector_indiv mainocc_annualincome_indiv mainocc_occupationname_indiv annualincome_indiv nboccupation_indiv)
-drop _merge
-
-drop nbocc_agriself nbocc_agricasu nbocc_nonacasu nbocc_nonarnqu nbocc_nonarqua nbocc_nonaself nbocc_nonanreg
 
 gen dep=0
 replace dep=1 if age<15
 replace dep=1 if age>64
 
-********** Dummies for nb individuals at HH level
-gen occ_all=0
-replace occ_all=1 if nboccupation_indiv>0 & nboccupation_indiv!=.
-
-gen occ_female=0
-replace occ_female=1 if sex==2 & nboccupation_indiv>0 & nboccupation_indiv!=.
-
-gen occ_male=0
-replace occ_male=1 if sex==1 & nboccupation_indiv>0 & nboccupation_indiv!=.
-
-gen occ_agri=0
-replace occ_agri=1 if nbocc_agri!=0 & nbocc_agri!=. & nboccupation_indiv>0 & nboccupation_indiv!=.
-
-gen occ_nonagri=0
-replace occ_nonagri=1 if nbocc_nonagri!=0 & nbocc_nonagri!=. & nboccupation_indiv>0 & nboccupation_indiv!=.
-
-gen occ_female_agri=0
-replace occ_female_agri=1 if sex==2 & nboccupation_indiv>0 & nboccupation_indiv!=. & nbocc_agri!=0 & nbocc_agri!=.
-
-gen occ_female_nonagri=0
-replace occ_female_nonagri=1 if sex==2 & nboccupation_indiv>0 & nboccupation_indiv!=. & nbocc_nonagri!=0 & nbocc_nonagri!=.
-
-gen occ_male_agri=0
-replace occ_male_agri=1 if sex==1 & nboccupation_indiv>0 & nboccupation_indiv!=. & nbocc_agri!=0 & nbocc_agri!=.
-
-gen occ_male_nonagri=0
-replace occ_male_nonagri=1 if sex==1 & nboccupation_indiv>0 & nboccupation_indiv!=. & nbocc_nonagri!=0 & nbocc_nonagri!=.
-
-gen occ_dep=0
-replace occ_dep=1 if nboccupation_indiv>0 & nboccupation_indiv!=. & dep==1
-
-gen occ_dep_female=0
-replace occ_dep_female=1 if nboccupation_indiv>0 & nboccupation_indiv!=. & dep==1 & sex==2
-
-gen occ_dep_male=0
-replace occ_dep_male=1 if nboccupation_indiv>0 & nboccupation_indiv!=. & dep==1 & sex==1
-
-
-********** Nb occ at HH level
-gen nbocc_all=0
-replace nbocc_all=nboccupation_indiv if nboccupation_indiv>0 & nboccupation_indiv!=.
-
-gen nbocc_female=0
-replace nbocc_female=nboccupation_indiv if sex==2 & nboccupation_indiv>0 & nboccupation_indiv!=.
-
-gen nbocc_male=0
-replace nbocc_male=nboccupation_indiv if sex==1 & nboccupation_indiv>0 & nboccupation_indiv!=.
-
-gen nbocc_female_agri=0
-replace nbocc_female_agri=nboccupation_indiv if sex==2 & nboccupation_indiv>0 & nboccupation_indiv!=. & nbocc_agri!=0 & nbocc_agri!=.
-
-gen nbocc_female_nonagri=0
-replace nbocc_female_nonagri=nboccupation_indiv if sex==2 & nboccupation_indiv>0 & nboccupation_indiv!=. & nbocc_nonagri!=0 & nbocc_nonagri!=.
-
-gen nbocc_male_agri=0
-replace nbocc_male_agri=nboccupation_indiv if sex==1 & nboccupation_indiv>0 & nboccupation_indiv!=. & nbocc_agri!=0 & nbocc_agri!=.
-
-gen nbocc_male_nonagri=0
-replace nbocc_male_nonagri=nboccupation_indiv if sex==1 & nboccupation_indiv>0 & nboccupation_indiv!=. & nbocc_nonagri!=0 & nbocc_nonagri!=.
-
-gen nbocc_dep=0
-replace nbocc_dep=nboccupation_indiv if nboccupation_indiv>0 & nboccupation_indiv!=. & dep==1
-
-gen nbocc_dep_female=0
-replace nbocc_dep_female=nboccupation_indiv if nboccupation_indiv>0 & nboccupation_indiv!=. & dep==1 & sex==2
-
-gen nbocc_dep_male=0
-replace nbocc_dep_male=nboccupation_indiv if nboccupation_indiv>0 & nboccupation_indiv!=. & dep==1 & sex==1
-
-********** HH level
-foreach x in occ_all occ_female occ_male occ_agri occ_nonagri occ_female_agri occ_female_nonagri occ_male_agri occ_male_nonagri nbocc_agri nbocc_nonagri nbocc_all nbocc_female nbocc_male nbocc_female_agri nbocc_female_nonagri nbocc_male_agri nbocc_male_nonagri nbocc_dep nbocc_dep_male nbocc_dep_female occ_dep occ_dep_male occ_dep_female {
-bysort HHID2020: egen `x'_HH=sum(`x')
-}
-
-bysort HHID2020: egen nboccupation_HH=sum(nboccupation_indiv)
-
-keep HHID2020 occ_all_HH occ_female_HH occ_male_HH occ_agri_HH occ_nonagri_HH occ_female_agri_HH occ_female_nonagri_HH occ_male_agri_HH occ_male_nonagri_HH nbocc_agri_HH nbocc_nonagri_HH nbocc_all_HH nbocc_female_HH nbocc_male_HH nbocc_female_agri_HH nbocc_female_nonagri_HH nbocc_male_agri_HH nbocc_male_nonagri_HH nboccupation_HH nbocc_dep_HH nbocc_dep_male_HH nbocc_dep_female_HH occ_dep_HH occ_dep_male_HH occ_dep_female_HH
-duplicates drop
-
-
-*** Merge nbworkers
-merge 1:1 HHID2020 using "raw/NEEMSIS2-occup_HH", keepusing(nbworker_HH nbnonworker_HH)
-drop _merge
-
 
 *** Merge HHID_panel
-merge 1:m HHID2020 using "raw/ODRIIS-HH_wide", keepusing(HHID_panel)
+merge m:m HHID2020 using "raw/ODRIIS-HH_wide", keepusing(HHID_panel)
 keep if _merge==3
 drop _merge
 gen year=2020
@@ -536,51 +139,278 @@ save"NEEMSIS2-newoccvar", replace
 
 
 
+
+
 ****************************************
-* Append all and merge with pca and bla bla bla
+* Append all
 ****************************************
 use"RUME-newoccvar", clear
 
 append using "NEEMSIS1-newoccvar"
 append using "NEEMSIS2-newoccvar"
 
-order HHID_panel year
+order HHID_panel year INDID2010 INDID2016 INDID2020
 drop HHID2010 HHID2016 HHID2020
 sort HHID_panel year
 
+tostring INDID2016, replace
+tostring INDID2020, replace
 
-*** rename
-foreach x in occ_all_HH occ_female_HH occ_male_HH occ_agri_HH occ_nonagri_HH occ_female_agri_HH occ_female_nonagri_HH occ_male_agri_HH occ_male_nonagri_HH occ_dep_HH occ_dep_male_HH occ_dep_female_HH {
-local new=substr("`x'",4,strlen("`x'")-6)
-rename `x' nbindiv`new'
-}
+gen INDID=""
+replace INDID=INDID2010 if year==2010
+replace INDID=INDID2016 if year==2016
+replace INDID=INDID2020 if year==2020
+drop INDID2010 INDID2016 INDID2020
 
+order HHID_panel INDID year
 
-foreach x in nbocc_agri_HH nbocc_nonagri_HH nbocc_all_HH nbocc_female_HH nbocc_male_HH nbocc_female_agri_HH nbocc_female_nonagri_HH nbocc_male_agri_HH nbocc_male_nonagri_HH nbocc_dep_HH nbocc_dep_male_HH nbocc_dep_female_HH {
-local new=substr("`x'",1,strlen("`x'")-3)
-rename `x' `new'
-}
+* Merge INDID_panel
+tostring year, replace
+merge m:1 HHID_panel INDID year using "raw/ODRIIS-indiv_long", keepusing(INDID_panel)
+keep if _merge==3
+drop _merge
+destring year, replace
+order HHID_panel INDID_panel INDID year name sex age dep
+sort HHID_panel INDID_panel year
+drop INDID
 
-drop nboccupation_HH nbworker_HH nbnonworker_HH
-
-* Gen dummy for dependent
-gen dummy_dep=0
-replace dummy_dep=1 if nbindiv_dep>0
-
-gen dummy_dep_female=0
-replace dummy_dep_female=1 if nbindiv_dep_female>0
-
-gen dummy_dep_male=0
-replace dummy_dep_male=1 if nbindiv_dep_male>0
-
-ta dummy_dep year, col nofreq
-ta dummy_dep_female year, col nofreq
-ta dummy_dep_male year, col nofreq
 
 save"panel-newoccvar", replace
+****************************************
+* END
 
 
-********** Merge with the main database
+
+
+
+
+
+
+
+
+
+****************************************
+* Var
+****************************************
+use"panel-newoccvar", clear
+
+
+********** Occupations
+* Precise
+fre occupation
+
+* Agri vs non-agri
+gen occupation2=0
+replace occupation2=1 if occupation==1
+replace occupation2=1 if occupation==2
+replace occupation2=2 if occupation==3
+replace occupation2=2 if occupation==4
+replace occupation2=2 if occupation==5
+replace occupation2=2 if occupation==6
+replace occupation2=2 if occupation==7
+label define occupation2 1"Agri" 2"Non-agri"
+label values occupation2 occupation2
+ta occupation occupation2
+
+* Casual vs regular
+gen occupation3=0
+replace occupation3=1 if occupation==1
+replace occupation3=2 if occupation==2
+replace occupation3=2 if occupation==3
+replace occupation3=1 if occupation==4
+replace occupation3=1 if occupation==5
+replace occupation3=1 if occupation==6
+replace occupation3=2 if occupation==7
+label define occupation3 1"Regular" 2"Casual"
+label values occupation3 occupation3
+ta occupation occupation3
+
+* Casual vs regular
+gen occupation4=0
+replace occupation4=1 if occupation==1
+replace occupation4=2 if occupation==2
+replace occupation4=2 if occupation==3
+replace occupation4=2 if occupation==4
+replace occupation4=2 if occupation==5
+replace occupation4=1 if occupation==6
+replace occupation4=2 if occupation==7
+label define occupation4 1"Self-employed" 2"Other"
+label values occupation4 occupation4
+ta occupation occupation4
+
+
+********** Dummies
+ta occupation, gen(occ1_)
+rename occ1_1 occ_agriself
+rename occ1_2 occ_agricasual
+rename occ1_3 occ_casual
+rename occ1_4 occ_regnonquali
+rename occ1_5 occ_regquali
+rename occ1_6 occ_selfemp
+rename occ1_7 occ_nrega
+
+ta occupation2, gen(occ2_)
+rename occ2_1 occ_agri
+rename occ2_2 occ_nona
+
+ta occupation3, gen(occ3_)
+rename occ3_1 occ_regu
+rename occ3_2 occ_casu
+
+ta occupation4, gen(occ4_)
+rename occ4_1 occ_self
+rename occ4_2 occ_othe
+
+
+********** Occupation no at individual level
+global total occ_agriself occ_agricasual occ_casual occ_regnonquali occ_regquali occ_selfemp occ_nrega occ_agri occ_nona occ_regu occ_casu occ_self occ_othe
+
+foreach x in $total {
+bysort HHID_panel INDID_panel year: egen indiv_`x'=sum(`x')
+drop `x'
+rename indiv_`x' `x'
+}
+
+keep HHID_panel INDID_panel year name sex age dep $total
+duplicates drop
+duplicates report HHID_panel INDID_panel year
+
+
+********** Dummies by sex
+foreach x in $total {
+gen `x'_male=0
+gen `x'_female=0
+}
+
+foreach x in $total {
+replace `x'_male=`x' if sex==1
+replace `x'_female=`x' if sex==2
+}
+
+
+********** Dummies by dep
+foreach x in $total {
+gen `x'_dep=0
+}
+
+foreach x in $total {
+replace `x'_dep=`x' if dep==1
+}
+
+
+********* Dummies total
+gen occ_total=0
+replace occ_total=occ_agri+occ_nona
+
+gen occ_female=0
+replace occ_female=occ_agri+occ_nona if sex==2
+
+gen occ_male=0
+replace occ_male=occ_agri+occ_nona if sex==1
+
+gen occ_dep=0
+replace occ_dep=occ_agri+occ_nona if dep==1
+
+
+********** Order
+order HHID_panel INDID_panel year name sex age dep occ_total occ_female occ_male occ_dep
+
+
+********** Indiv level var
+global totalocc occ_total occ_female occ_male occ_dep occ_agriself occ_agricasual occ_casual occ_regnonquali occ_regquali occ_selfemp occ_nrega occ_agri occ_nona occ_regu occ_casu occ_self occ_othe occ_agriself_male occ_agriself_female occ_agricasual_male occ_agricasual_female occ_casual_male occ_casual_female occ_regnonquali_male occ_regnonquali_female occ_regquali_male occ_regquali_female occ_selfemp_male occ_selfemp_female occ_nrega_male occ_nrega_female occ_agri_male occ_agri_female occ_nona_male occ_nona_female occ_regu_male occ_regu_female occ_casu_male occ_casu_female occ_self_male occ_self_female occ_othe_male occ_othe_female occ_agriself_dep occ_agricasual_dep occ_casual_dep occ_regnonquali_dep occ_regquali_dep occ_selfemp_dep occ_nrega_dep occ_agri_dep occ_nona_dep occ_regu_dep occ_casu_dep occ_self_dep occ_othe_dep
+
+foreach x in $totalocc {
+gen `x'_indiv=0
+}
+
+
+foreach x in $totalocc {
+replace `x'_indiv=1 if `x'!=0
+}
+
+foreach x in $totalocc {
+local new=substr("`x'",5,32)
+rename `x'_indiv indiv_`new'
+}
+
+
+
+********** Household level for all
+
+global fulltotal occ_total occ_female occ_male occ_dep occ_agriself occ_agricasual occ_casual occ_regnonquali occ_regquali occ_selfemp occ_nrega occ_agri occ_nona occ_regu occ_casu occ_self occ_othe occ_agriself_male occ_agriself_female occ_agricasual_male occ_agricasual_female occ_casual_male occ_casual_female occ_regnonquali_male occ_regnonquali_female occ_regquali_male occ_regquali_female occ_selfemp_male occ_selfemp_female occ_nrega_male occ_nrega_female occ_agri_male occ_agri_female occ_nona_male occ_nona_female occ_regu_male occ_regu_female occ_casu_male occ_casu_female occ_self_male occ_self_female occ_othe_male occ_othe_female occ_agriself_dep occ_agricasual_dep occ_casual_dep occ_regnonquali_dep occ_regquali_dep occ_selfemp_dep occ_nrega_dep occ_agri_dep occ_nona_dep occ_regu_dep occ_casu_dep occ_self_dep occ_othe_dep indiv_total indiv_female indiv_male indiv_dep indiv_agriself indiv_agricasual indiv_casual indiv_regnonquali indiv_regquali indiv_selfemp indiv_nrega indiv_agri indiv_nona indiv_regu indiv_casu indiv_self indiv_othe indiv_agriself_male indiv_agriself_female indiv_agricasual_male indiv_agricasual_female indiv_casual_male indiv_casual_female indiv_regnonquali_male indiv_regnonquali_female indiv_regquali_male indiv_regquali_female indiv_selfemp_male indiv_selfemp_female indiv_nrega_male indiv_nrega_female indiv_agri_male indiv_agri_female indiv_nona_male indiv_nona_female indiv_regu_male indiv_regu_female indiv_casu_male indiv_casu_female indiv_self_male indiv_self_female indiv_othe_male indiv_othe_female indiv_agriself_dep indiv_agricasual_dep indiv_casual_dep indiv_regnonquali_dep indiv_regquali_dep indiv_selfemp_dep indiv_nrega_dep indiv_agri_dep indiv_nona_dep indiv_regu_dep indiv_casu_dep indiv_self_dep indiv_othe_dep
+
+foreach x in $fulltotal {
+bysort HHID_panel year: egen _`x'=sum(`x')
+drop `x'
+rename _`x' `x'
+}
+
+keep HHID_panel year $fulltotal
+duplicates drop
+duplicates report HHID_panel year
+ta year
+
+
+
+********** Merge others HH
+preserve
+use"raw/ODRIIS-HH_long", clear
+drop if HHID==""
+save"ODRIIS-HH_panel", replace
+restore
+
+tostring year, replace
+merge m:m HHID_panel year using "ODRIIS-HH_panel", keepusing(HHID_panel)
+foreach x in $fulltotal {
+replace `x'=0 if _merge==2
+}
+drop _merge
+destring year, replace
+
+sort HHID_panel year
+ta year
+
+
+********** Stat check
+global occ occ_total occ_female occ_male occ_dep occ_agriself occ_agricasual occ_casual occ_regnonquali occ_regquali occ_selfemp occ_nrega occ_agri occ_nona occ_regu occ_casu occ_self occ_othe occ_agriself_male occ_agriself_female occ_agricasual_male occ_agricasual_female occ_casual_male occ_casual_female occ_regnonquali_male occ_regnonquali_female occ_regquali_male occ_regquali_female occ_selfemp_male occ_selfemp_female occ_nrega_male occ_nrega_female occ_agri_male occ_agri_female occ_nona_male occ_nona_female occ_regu_male occ_regu_female occ_casu_male occ_casu_female occ_self_male occ_self_female occ_othe_male occ_othe_female occ_agriself_dep occ_agricasual_dep occ_casual_dep occ_regnonquali_dep occ_regquali_dep occ_selfemp_dep occ_nrega_dep occ_agri_dep occ_nona_dep occ_regu_dep occ_casu_dep occ_self_dep occ_othe_dep
+
+global indiv indiv_total indiv_female indiv_male indiv_dep indiv_agriself indiv_agricasual indiv_casual indiv_regnonquali indiv_regquali indiv_selfemp indiv_nrega indiv_agri indiv_nona indiv_regu indiv_casu indiv_self indiv_othe indiv_agriself_male indiv_agriself_female indiv_agricasual_male indiv_agricasual_female indiv_casual_male indiv_casual_female indiv_regnonquali_male indiv_regnonquali_female indiv_regquali_male indiv_regquali_female indiv_selfemp_male indiv_selfemp_female indiv_nrega_male indiv_nrega_female indiv_agri_male indiv_agri_female indiv_nona_male indiv_nona_female indiv_regu_male indiv_regu_female indiv_casu_male indiv_casu_female indiv_self_male indiv_self_female indiv_othe_male indiv_othe_female indiv_agriself_dep indiv_agricasual_dep indiv_casual_dep indiv_regnonquali_dep indiv_regquali_dep indiv_selfemp_dep indiv_nrega_dep indiv_agri_dep indiv_nona_dep indiv_regu_dep indiv_casu_dep indiv_self_dep indiv_othe_dep
+
+* Sum
+sum $occ if year==2010, sep(100)
+sum $occ if year==2016, sep(100)
+sum $occ if year==2020, sep(100)
+
+sum $indiv if year==2010, sep(100)
+sum $indiv if year==2016, sep(100)
+sum $indiv if year==2020, sep(100)
+
+* Nb
+cls
+foreach x in $indiv {
+ta `x' year
+}
+
+
+********** Save
+save"panel-newoccvar", replace
+
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Merge with main dataset
+****************************************
 use"panel_v8", clear
 
 merge 1:1 HHID_panel year using "panel-newoccvar"
