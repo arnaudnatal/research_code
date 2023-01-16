@@ -67,7 +67,7 @@ use"raw/NEEMSIS1-occupnew", clear
 
 fre kindofwork
 
-keep HHID2016 INDID2016 profession sector occupation nboccupation_indiv annualincome
+keep HHID2016 INDID2016 profession sector occupation nboccupation_indiv annualincome hoursayear
 fre occupation
 
 *** Merge charact
@@ -105,7 +105,7 @@ use"raw/NEEMSIS2-occupnew", clear
 
 fre kindofwork
 
-keep HHID2020 INDID2020 profession sector occupation nboccupation_indiv annualincome
+keep HHID2020 INDID2020 profession sector occupation nboccupation_indiv annualincome housayear
 fre occupation
 
 *** Merge charact

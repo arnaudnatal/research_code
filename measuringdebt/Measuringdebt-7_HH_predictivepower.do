@@ -67,14 +67,14 @@ gen share_children=HH_count_child/HHsize
 *** Y-var
 *global yvar ind_total ind_female ind_male ind_dep ind_agriself ind_agricasual ind_casual ind_regnonquali ind_regquali ind_selfemp ind_nrega ind_agri ind_nona ind_regu ind_casu ind_self ind_othe ind_agri_male ind_agri_female ind_nona_male ind_nona_female ind_regu_male ind_regu_female ind_casu_male ind_casu_female ind_self_male ind_self_female ind_othe_male ind_othe_female ind_agri_dep ind_nona_dep 
 
-global yvar share_ind_total share_ind_female share_ind_male share_ind_dep share_ind_agriself share_ind_agricasual share_ind_casual share_ind_regnonquali share_ind_regquali share_ind_selfemp share_ind_nrega share_ind_agri share_ind_nona share_ind_regu share_ind_casu share_ind_self share_ind_othe share_ind_agri_male share_ind_agri_female share_ind_nona_male share_ind_nona_female share_ind_regu_male share_ind_regu_female share_ind_casu_male share_ind_casu_female share_ind_self_male share_ind_self_female share_ind_othe_male share_ind_othe_female share_ind_agri_dep share_ind_nona_dep share_ind_regu_dep share_ind_casu_dep share_ind_self_dep share_ind_othe_dep
+global yvar share_ind_total share_ind_female share_ind_male share_ind_agri share_ind_nona share_ind_regu share_ind_casu share_ind_self share_ind_othe share_ind_agri_male share_ind_agri_female share_ind_nona_male share_ind_nona_female share_ind_regu_male share_ind_regu_female share_ind_casu_male share_ind_casu_female share_ind_self_male share_ind_self_female share_ind_othe_male share_ind_othe_female share_ind_dep
 
 *global yvar occ_total occ_female occ_male occ_dep occ_agriself occ_agricasual occ_casual occ_regnonquali occ_regquali occ_selfemp occ_nrega occ_agri occ_nona occ_regu occ_casu occ_self occ_othe occ_agri_male occ_agri_female occ_nona_male occ_nona_female occ_regu_male occ_regu_female occ_casu_male occ_casu_female occ_self_male occ_self_female occ_othe_male occ_othe_female occ_agri_dep occ_nona_dep 
 
 
 
 *** X-var
-global interestvar pca2index 
+global interestvar pca2index pcaindex 
 
 global xinvar dalit village_2 village_3 village_4 village_5 village_6 village_7 village_8 village_9 village_10
 
@@ -107,7 +107,7 @@ log close
 
 
 
-
+/*
 
 
 
