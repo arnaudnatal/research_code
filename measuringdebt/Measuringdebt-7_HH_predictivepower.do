@@ -35,7 +35,6 @@ If the contemporaneous effect in ML-SEM is negligible, this approach can also se
 
 
 
-
 ****************************************
 * Prediction power with ML-SEM
 ****************************************
@@ -47,64 +46,55 @@ use"panel_v9", clear
 xtset panelvar time
 set matsize 10000, perm
 
-*** Last minute var crea: educ
-fre head_edulevel
+
+*** Last minute var crea
 gen head_educ=head_edulevel
 recode head_educ (2=1)
-fre head_educ
+
+foreach x in remittnet_HH assets_total {
+drop `x'
+rename `x'_std `x'
+}
+
+ta villageid, gen(village_)
 
 
-*** Last minute var crea: child
-ta HHsize
-ta HH_count_child
-
-
-*** X-var
-global xvar pca2index
-/*
-pcaindex rfm dsr tdr lpc dar
-*/
+*** Fafchamps and Quisumbing, 1998
+gen log_HHsize=log(HHsize)
+gen share_children=HH_count_child/HHsize
 
 
 *** Y-var
-global yvar ind_total ind_female ind_male ind_dep ind_agriself ind_agricasual ind_casual ind_regnonquali ind_regquali ind_selfemp ind_nrega ind_agri ind_nona ind_regu ind_casu ind_self ind_othe ind_agri_male ind_agri_female ind_nona_male ind_nona_female ind_regu_male ind_regu_female ind_casu_male ind_casu_female ind_self_male ind_self_female ind_othe_male ind_othe_female ind_agri_dep ind_nona_dep ind_regu_dep ind_casu_dep ind_self_dep ind_othe_dep
+*global yvar ind_total ind_female ind_male ind_dep ind_agriself ind_agricasual ind_casual ind_regnonquali ind_regquali ind_selfemp ind_nrega ind_agri ind_nona ind_regu ind_casu ind_self ind_othe ind_agri_male ind_agri_female ind_nona_male ind_nona_female ind_regu_male ind_regu_female ind_casu_male ind_casu_female ind_self_male ind_self_female ind_othe_male ind_othe_female ind_agri_dep ind_nona_dep 
+
+global yvar share_ind_total share_ind_female share_ind_male share_ind_dep share_ind_agriself share_ind_agricasual share_ind_casual share_ind_regnonquali share_ind_regquali share_ind_selfemp share_ind_nrega share_ind_agri share_ind_nona share_ind_regu share_ind_casu share_ind_self share_ind_othe share_ind_agri_male share_ind_agri_female share_ind_nona_male share_ind_nona_female share_ind_regu_male share_ind_regu_female share_ind_casu_male share_ind_casu_female share_ind_self_male share_ind_self_female share_ind_othe_male share_ind_othe_female share_ind_agri_dep share_ind_nona_dep share_ind_regu_dep share_ind_casu_dep share_ind_self_dep share_ind_othe_dep
+
+*global yvar occ_total occ_female occ_male occ_dep occ_agriself occ_agricasual occ_casual occ_regnonquali occ_regquali occ_selfemp occ_nrega occ_agri occ_nona occ_regu occ_casu occ_self occ_othe occ_agri_male occ_agri_female occ_nona_male occ_nona_female occ_regu_male occ_regu_female occ_casu_male occ_casu_female occ_self_male occ_self_female occ_othe_male occ_othe_female occ_agri_dep occ_nona_dep 
 
 
-/*
-*** Without control variables
+
+*** X-var
+global interestvar pca2index 
+
+global xinvar dalit village_2 village_3 village_4 village_5 village_6 village_7 village_8 village_9 village_10
+
+global xvar1 log_HHsize share_children sexratio dependencyratio
+
+global xvar2 head_female head_age head_educ
+
+global xvar3 remittnet_HH assets_total
+
+
+*** ML-SEM
+log using "C:\Users\Arnaud\Downloads\MLSEM_spec2new.log", replace
+
 foreach y in $yvar {
-foreach x in $xvar {
-di in white "`y' = `x'"
-qui xtdpdml `y', predetermined(L.`x')
-est store `y'_`x'
+foreach x in $interestvar {
+xtdpdml `y' $xvar1 $xvar2 $xvar3, inv($xinvar) predetermined(L.`x')
+*est store `y'_`x'
 }
 }
-*/
-
-
-*** With control variables
-ta villageid, gen(village_)
-
-* Spec 1
-global tinvarying dalit village_2 village_3 village_4 village_5 village_6 village_7 village_8 village_9 village_10
-
-global tvarying stem HHsize assets_total remittnet_HH sexratio dependencyratio HH_count_child head_female head_age head_educ1 head_educ2 head_educ3
-
-* Spec 2
-global tinvarying2 dalit village_2 village_3 village_4 village_5 village_6 village_7 village_8 village_9 village_10
-global tvarying2 stem sexratio dependencyratio remittnet_HH head_female head_age head_educ
-
-foreach y in ind_female {
-foreach x in $xvar {
-di in white "`y' = `x'"
-qui xtdpdml `y' $tvarying2, inv($tinvarying2) predetermined(L.`x')
-est store `y'_`x'
-}
-}
-
-
-
-
+log close
 
 ****************************************
 * END
@@ -120,3 +110,66 @@ est store `y'_`x'
 
 
 
+
+
+****************************************
+* Prediction power with ML-SEM
+****************************************
+cls
+use"panel_v9", clear
+
+
+*** Panel declaration
+xtset panelvar time
+set matsize 10000, perm
+
+
+*** Last minute var crea
+gen head_educ=head_edulevel
+recode head_educ (2=1)
+
+foreach x in remittnet_HH assets_total {
+drop `x'
+rename `x'_std `x'
+}
+
+ta villageid, gen(village_)
+
+
+*** Fafchamps and Quisumbing, 1998
+gen log_HHsize=log(HHsize)
+gen share_children=HH_count_child/HHsize
+
+
+*** Y-var
+*global yvar ind_total ind_female ind_male ind_dep ind_agriself ind_agricasual ind_casual ind_regnonquali ind_regquali ind_selfemp ind_nrega ind_agri ind_nona ind_regu ind_casu ind_self ind_othe ind_agri_male ind_agri_female ind_nona_male ind_nona_female ind_regu_male ind_regu_female ind_casu_male ind_casu_female ind_self_male ind_self_female ind_othe_male ind_othe_female ind_agri_dep ind_nona_dep 
+
+global yvar occ_total occ_female occ_male occ_dep occ_agriself occ_agricasual occ_casual occ_regnonquali occ_regquali occ_selfemp occ_nrega occ_agri occ_nona occ_regu occ_casu occ_self occ_othe occ_agri_male occ_agri_female occ_nona_male occ_nona_female occ_regu_male occ_regu_female occ_casu_male occ_casu_female occ_self_male occ_self_female occ_othe_male occ_othe_female occ_agri_dep occ_nona_dep 
+
+
+
+*** X-var
+global interestvar pca2index 
+
+global xinvar dalit village_2 village_3 village_4 village_5 village_6 village_7 village_8 village_9 village_10
+
+global xvar1 log_HHsize share_children sexratio dependencyratio
+
+global xvar2 head_female head_age head_educ
+
+global xvar3 remittnet_HH assets_total
+
+
+*** ML-SEM
+log using "C:\Users\Arnaud\Downloads\MLSEM_spec2new.log", replace
+
+foreach y in $yvar {
+foreach x in $interestvar {
+xtdpdml `y' $xvar1 $xvar2 $xvar3, inv($xinvar) predetermined(L.`x')
+est store `y'_`x'
+}
+}
+log close
+
+****************************************
+* END

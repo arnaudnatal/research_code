@@ -150,7 +150,6 @@ append using "NEEMSIS1-newoccvar"
 append using "NEEMSIS2-newoccvar"
 
 order HHID_panel year INDID2010 INDID2016 INDID2020
-drop HHID2010 HHID2016 HHID2020
 sort HHID_panel year
 
 tostring INDID2016, replace
@@ -271,7 +270,7 @@ drop `x'
 rename indiv_`x' `x'
 }
 
-keep HHID_panel INDID_panel year name sex age dep $total
+keep HHID_panel HHID2010 HHID2016 HHID2020 INDID_panel year name sex age dep $total
 duplicates drop
 duplicates report HHID_panel INDID_panel year
 
@@ -334,7 +333,6 @@ rename `x'_indiv ind_`new'
 }
 
 
-
 ********** Household level for all
 global fulltotal occ_total occ_female occ_male occ_dep occ_agriself occ_agricasual occ_casual occ_regnonquali occ_regquali occ_selfemp occ_nrega occ_agri occ_nona occ_regu occ_casu occ_self occ_othe occ_agriself_male occ_agriself_female occ_agricasual_male occ_agricasual_female occ_casual_male occ_casual_female occ_regnonquali_male occ_regnonquali_female occ_regquali_male occ_regquali_female occ_selfemp_male occ_selfemp_female occ_nrega_male occ_nrega_female occ_agri_male occ_agri_female occ_nona_male occ_nona_female occ_regu_male occ_regu_female occ_casu_male occ_casu_female occ_self_male occ_self_female occ_othe_male occ_othe_female occ_agriself_dep occ_agricasual_dep occ_casual_dep occ_regnonquali_dep occ_regquali_dep occ_selfemp_dep occ_nrega_dep occ_agri_dep occ_nona_dep occ_regu_dep occ_casu_dep occ_self_dep occ_othe_dep ind_total ind_female ind_male ind_dep ind_agriself ind_agricasual ind_casual ind_regnonquali ind_regquali ind_selfemp ind_nrega ind_agri ind_nona ind_regu ind_casu ind_self ind_othe ind_agriself_male ind_agriself_female ind_agricasual_male ind_agricasual_female ind_casual_male ind_casual_female ind_regnonquali_male ind_regnonquali_female ind_regquali_male ind_regquali_female ind_selfemp_male ind_selfemp_female ind_nrega_male ind_nrega_female ind_agri_male ind_agri_female ind_nona_male ind_nona_female ind_regu_male ind_regu_female ind_casu_male ind_casu_female ind_self_male ind_self_female ind_othe_male ind_othe_female ind_agriself_dep ind_agricasual_dep ind_casual_dep ind_regnonquali_dep ind_regquali_dep ind_selfemp_dep ind_nrega_dep ind_agri_dep ind_nona_dep ind_regu_dep ind_casu_dep ind_self_dep ind_othe_dep
 
@@ -344,31 +342,10 @@ drop `x'
 rename _`x' `x'
 }
 
-keep HHID_panel year $fulltotal
+keep HHID_panel HHID2010 HHID2016 HHID2020 year $fulltotal
 duplicates drop
 duplicates report HHID_panel year
 ta year
-
-
-
-********** Merge others HH
-preserve
-use"raw/ODRIIS-HH_long", clear
-drop if HHID==""
-save"ODRIIS-HH_panel", replace
-restore
-
-tostring year, replace
-merge m:m HHID_panel year using "ODRIIS-HH_panel", keepusing(HHID_panel)
-foreach x in $fulltotal {
-replace `x'=0 if _merge==2
-}
-drop _merge
-destring year, replace
-
-sort HHID_panel year
-ta year
-
 
 
 ********** Save
@@ -394,6 +371,24 @@ use"panel_v8", clear
 
 merge 1:1 HHID_panel year using "panel-newoccvar"
 drop _merge
+
+
+
+
+********** Share
+global fulltotal occ_total occ_female occ_male occ_dep occ_agriself occ_agricasual occ_casual occ_regnonquali occ_regquali occ_selfemp occ_nrega occ_agri occ_nona occ_regu occ_casu occ_self occ_othe occ_agriself_male occ_agriself_female occ_agricasual_male occ_agricasual_female occ_casual_male occ_casual_female occ_regnonquali_male occ_regnonquali_female occ_regquali_male occ_regquali_female occ_selfemp_male occ_selfemp_female occ_nrega_male occ_nrega_female occ_agri_male occ_agri_female occ_nona_male occ_nona_female occ_regu_male occ_regu_female occ_casu_male occ_casu_female occ_self_male occ_self_female occ_othe_male occ_othe_female occ_agriself_dep occ_agricasual_dep occ_casual_dep occ_regnonquali_dep occ_regquali_dep occ_selfemp_dep occ_nrega_dep occ_agri_dep occ_nona_dep occ_regu_dep occ_casu_dep occ_self_dep occ_othe_dep ind_total ind_female ind_male ind_dep ind_agriself ind_agricasual ind_casual ind_regnonquali ind_regquali ind_selfemp ind_nrega ind_agri ind_nona ind_regu ind_casu ind_self ind_othe ind_agriself_male ind_agriself_female ind_agricasual_male ind_agricasual_female ind_casual_male ind_casual_female ind_regnonquali_male ind_regnonquali_female ind_regquali_male ind_regquali_female ind_selfemp_male ind_selfemp_female ind_nrega_male ind_nrega_female ind_agri_male ind_agri_female ind_nona_male ind_nona_female ind_regu_male ind_regu_female ind_casu_male ind_casu_female ind_self_male ind_self_female ind_othe_male ind_othe_female ind_agriself_dep ind_agricasual_dep ind_casual_dep ind_regnonquali_dep ind_regquali_dep ind_selfemp_dep ind_nrega_dep ind_agri_dep ind_nona_dep ind_regu_dep ind_casu_dep ind_self_dep ind_othe_dep
+
+foreach x in $fulltotal {
+replace `x'=0 if `x'==.
+}
+
+
+foreach x in $fulltotal {
+gen share_`x'=`x'/HHsize
+}
+
+drop share_occ_total share_occ_female share_occ_male share_occ_dep share_occ_agriself share_occ_agricasual share_occ_casual share_occ_regnonquali share_occ_regquali share_occ_selfemp share_occ_nrega share_occ_agri share_occ_nona share_occ_regu share_occ_casu share_occ_self share_occ_othe share_occ_agriself_male share_occ_agriself_female share_occ_agricasual_male share_occ_agricasual_female share_occ_casual_male share_occ_casual_female share_occ_regnonquali_male share_occ_regnonquali_female share_occ_regquali_male share_occ_regquali_female share_occ_selfemp_male share_occ_selfemp_female share_occ_nrega_male share_occ_nrega_female share_occ_agri_male share_occ_agri_female share_occ_nona_male share_occ_nona_female share_occ_regu_male share_occ_regu_female share_occ_casu_male share_occ_casu_female share_occ_self_male share_occ_self_female share_occ_othe_male share_occ_othe_female share_occ_agriself_dep share_occ_agricasual_dep share_occ_casual_dep share_occ_regnonquali_dep share_occ_regquali_dep share_occ_selfemp_dep share_occ_nrega_dep share_occ_agri_dep share_occ_nona_dep share_occ_regu_dep share_occ_casu_dep share_occ_self_dep share_occ_othe_dep
+
 
 save"panel_v9", replace
 ****************************************
