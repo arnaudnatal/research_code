@@ -291,6 +291,117 @@ save"panel_v5", replace
 
 
 
+
+
+****************************************
+* Finindex no. 6
+****************************************
+use"panel_v5", clear
+
+/*
+- Assets pc
+- Income per capita
+- Debt service
+- Debt to assets
+*/
+
+
+********** Global
+global varstd assets_pc_std dsr_std dar_std dailyincome_pc_std
+
+
+********** Desc
+tabstat $varstd, stat(n mean cv p50) by(year)
+
+corr $varstd
+
+factortest $varstd
+* Bartlett: 0.00
+* KMO: 0.628
+
+********* PCA
+pca $varstd
+* 2 compo --> 60.65%
+pca $varstd, comp(2)
+estat kmo
+*screeplot, ci mean
+rotate, quartimin
+
+*** Projection of individuals
+predict fact1 fact2
+*twoway (scatter fact2 fact1, xline(0) yline(0) mcolor(black%30) msymbol(oh))
+
+
+*** Corr between var and fact
+cpcorr $varstd \ fact1 fact2
+
+
+*** Std indiv score
+forvalues i=1/2 {
+qui sum fact`i'
+gen fact`i'_std = (fact`i'-r(min))/(r(max)-r(min))
+}
+
+
+*** Index construction
+gen PCA_finindexnew=((fact1_std*0.62)+(fact2_std*0.38))*100
+
+
+*** Index meaning
+cpcorr fact1 fact2 \ PCA_finindexnew
+cpcorr $varstd \ PCA_finindexnew
+cpcorr $var \ PCA_finindexnew
+
+
+
+*** Econo
+xtset panelvar year
+xtreg PCA_finindexnew i.caste i.stem c.HHsize c.HH_count_child i.head_sex head_age i.head_mocc_occupation i.head_edulevel i.vill, base
+
+
+
+
+********** Stability over time
+preserve
+keep HHID_panel year PCA_finindexnew caste
+reshape wide PCA_finindexnew, i(HHID_panel) j(year)
+cls
+corr PCA_finindexnew2010 PCA_finindexnew2016 PCA_finindexnew2020
+corr PCA_finindexnew2010 PCA_finindexnew2016 PCA_finindexnew2020 if caste==1
+corr PCA_finindexnew2010 PCA_finindexnew2016 PCA_finindexnew2020 if caste==2
+corr PCA_finindexnew2010 PCA_finindexnew2016 PCA_finindexnew2020 if caste==3
+restore
+
+
+
+********* Clean
+drop fact1 fact2 fact1_std fact2_std
+
+
+
+save"panel_v5", replace
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ****************************************
 * Finindex by simple calculation to compare
 ****************************************

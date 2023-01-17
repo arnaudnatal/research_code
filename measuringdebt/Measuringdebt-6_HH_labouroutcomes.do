@@ -105,7 +105,7 @@ use"raw/NEEMSIS2-occupnew", clear
 
 fre kindofwork
 
-keep HHID2020 INDID2020 profession sector occupation nboccupation_indiv annualincome housayear
+keep HHID2020 INDID2020 profession sector occupation nboccupation_indiv annualincome hoursayear
 fre occupation
 
 *** Merge charact
@@ -261,8 +261,48 @@ rename occ4_1 occ_self
 rename occ4_2 occ_othe
 
 
-********** Occupation no at individual level
+********** Macro
 global total occ_agriself occ_agricasual occ_casual occ_regnonquali occ_regquali occ_selfemp occ_nrega occ_agri occ_nona occ_regu occ_casu occ_self occ_othe
+
+
+
+********** Hours a year by occupation, at indiv level
+foreach x in $total {
+local name=substr("`x'",5,32)
+gen hoursayear_`name'=0
+}
+
+replace hoursayear_agriself=hoursayear if occupation==1
+replace hoursayear_agricasual=hoursayear if occupation==2
+replace hoursayear_casual=hoursayear if occupation==3
+replace hoursayear_regnonquali=hoursayear if occupation==4
+replace hoursayear_regquali=hoursayear if occupation==5
+replace hoursayear_selfemp=hoursayear if occupation==6
+replace hoursayear_nrega=hoursayear if occupation==7
+
+replace hoursayear_agri=hoursayear if occupation2==1
+replace hoursayear_nona=hoursayear if occupation2==2
+
+replace hoursayear_regu=hoursayear if occupation3==1
+replace hoursayear_casu=hoursayear if occupation3==2
+
+replace hoursayear_self=hoursayear if occupation4==1
+replace hoursayear_othe=hoursayear if occupation4==2
+
+global hay hoursayear_agriself hoursayear_agricasual hoursayear_casual hoursayear_regnonquali hoursayear_regquali hoursayear_selfemp hoursayear_nrega hoursayear_agri hoursayear_nona hoursayear_regu hoursayear_casu hoursayear_self hoursayear_othe hoursayear
+
+foreach x in $hay {
+recode `x' (.=0)
+}
+
+foreach x in $hay {
+bysort HHID_panel INDID_panel year: egen indiv_`x'=sum(`x')
+drop `x'
+rename indiv_`x' `x'
+}
+
+
+********** Occupation no at individual level
 
 foreach x in $total {
 bysort HHID_panel INDID_panel year: egen indiv_`x'=sum(`x')
@@ -270,7 +310,7 @@ drop `x'
 rename indiv_`x' `x'
 }
 
-keep HHID_panel HHID2010 HHID2016 HHID2020 INDID_panel year name sex age dep $total
+keep HHID_panel HHID2010 HHID2016 HHID2020 INDID_panel year name sex age dep $total $hay
 duplicates drop
 duplicates report HHID_panel INDID_panel year
 
