@@ -190,6 +190,8 @@ global xvar2 head_female head_age head_educ
 
 global xvar3 remittnet_HH assets_total
 
+global xtotal $xinvar $xvar1 $xvar2 $xvar3
+
 
 ********** Individual at work
 cls
@@ -197,7 +199,8 @@ log using "C:\Users\Arnaud\Downloads\poisson_indiv.log", replace
 set maxiter 50
 cls
 foreach y in $yvarind {
-capture noisily: xtpoisson `y' i.trendlong $xvar1 $xvar2 $xvar3 $xinvar, base
+capture noisily: xtpoisson `y' trendlong, fe base
+capture noisily: xtpoisson `y' trendlong $xtotal, fe base
 }
 log close
 
@@ -208,20 +211,86 @@ log using "C:\Users\Arnaud\Downloads\poisson_occ.log", replace
 set maxiter 50
 cls
 foreach y in $yvarocc {
-capture noisily: xtpoisson `y' i.trendlong $xvar1 $xvar2 $xvar3 $xinvar, base
+capture noisily: xtpoisson `y' trendlong, fe base
+capture noisily: xtpoisson `y' trendlong $xtotal, fe base
 }
 log close
 
 
-********** Number of occupations
+********** Labour supply
 cls
-log using "C:\Users\Arnaud\Downloads\poisson_hours.log", replace
+log using "C:\Users\Arnaud\Downloads\reg_hours.log", replace
 set maxiter 50
 cls
 foreach y in $yvarhours {
-capture noisily: xtreg `y' i.trendlong $xvar1 $xvar2 $xvar3 $xinvar, base
+capture noisily: xthybrid `y' trendlong $xtotal, cre clusterid(panelvar) full
+capture noisily: xthybrid `y' trendlong $xtotal if dalits==0, cre clusterid(panelvar) full
+capture noisily: xthybrid `y' trendlong $xtotal if dalits==1, cre clusterid(panelvar) full
 }
 log close
+
+
+
+
+keep if dalits==1
+mdesc hoursayear trendlong village_2 village_3 village_4 village_5 village_6 village_7 village_8 village_9 village_10 log_HHsize share_children sexratio dependencyratio head_female head_age head_educ remittnet_HH assets_total
+xthybrid hoursayear trendlong village_2 village_3 village_4 village_5 village_6 village_7 village_8 village_9 village_10 log_HHsize share_children sexratio dependencyratio head_female head_age head_educ remittnet_HH assets_total , clusterid(panelvar) full
+
+
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Diff in diff idea
+****************************************
+cls
+use"panel_v9", clear
+
+
+********** Clean
+drop if year==2010
+xtset panelvar year
+
+
+********** Variables
+global yvarind ind_total ind_female ind_male ind_dep ind_agriself ind_agricasual ind_casual ind_regnonquali ind_regquali ind_selfemp ind_nrega ind_agri_male ind_agri_female ind_nona_male ind_nona_female ind_regu_male ind_regu_female ind_casu_male ind_casu_female ind_self_male ind_self_female ind_othe_male ind_othe_female
+
+global yvarocc occ_total occ_female occ_male occ_dep occ_agriself occ_agricasual occ_casual occ_regnonquali occ_regquali occ_selfemp occ_nrega occ_agri_male occ_agri_female occ_nona_male occ_nona_female occ_regu_male occ_regu_female occ_casu_male occ_casu_female occ_self_male occ_self_female occ_othe_male occ_othe_female
+
+global yvarhours hoursayear hoursayear_male hoursayear_female hoursayear_dep hoursayear_agriself hoursayear_agricasual hoursayear_casual hoursayear_regnonquali hoursayear_regquali hoursayear_selfemp hoursayear_nrega hoursayear_agri_male hoursayear_agri_female hoursayear_nona_male hoursayear_nona_female hoursayear_regu_male hoursayear_regu_female hoursayear_casu_male hoursayear_casu_female hoursayear_self_male hoursayear_self_female hoursayear_othe_male hoursayear_othe_female
+
+global xinvar dalits village_2 village_3 village_4 village_5 village_6 village_7 village_8 village_9 village_10
+
+global xvar1 log_HHsize share_children sexratio dependencyratio
+
+global xvar2 head_female head_age head_educ
+
+global xvar3 remittnet_HH assets_total
+
+global xtotal $xinvar $xvar1 $xvar2 $xvar3
+
+*** Baseline
+foreach y in $yvarhours {
+reg `y' trendn2 $xtotal if year==2016
+}
+
+*** After
+foreach y in $yvarhours {
+reg `y' trendn2 $xtotal if year==2020
+}
 
 
 ****************************************
