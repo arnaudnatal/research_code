@@ -456,6 +456,37 @@ drop share_hoursayear_agriself share_hoursayear_agricasual share_hoursayear_casu
 drop hoursayear_HH hoursayearagri_HH hoursayearnonagri_HH
 
 
+
+********** Last minute var crea
+gen head_educ=head_edulevel
+recode head_educ (2=1)
+
+foreach x in remittnet_HH assets_total {
+drop `x'
+rename `x'_std `x'
+}
+
+ta villageid, gen(village_)
+
+
+*** Fafchamps and Quisumbing, 1998
+gen log_HHsize=log(HHsize)
+gen share_children=HH_count_child/HHsize
+
+*** trends
+label define trendn 0"Sta-Dec" 1"Increasing"
+clonevar trendn1=trend1
+recode trendn1 (1=0) (2=0) (3=1)
+label values trendn1 trendn
+clonevar trendn2=trend2
+recode trendn2 (1=0) (2=0) (3=1)
+label values trendn2 trendn
+gen trendlong=.
+replace trendlong=trendn1 if year==2016
+replace trendlong=trendn2 if year==2020
+label values trendlong trendn
+
+
 save"panel_v9", replace
 ****************************************
 * END
