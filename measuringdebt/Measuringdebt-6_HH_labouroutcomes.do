@@ -302,6 +302,51 @@ rename indiv_`x' `x'
 }
 
 
+
+
+
+********** Annual income by occupation, at indiv level
+foreach x in $total {
+local name=substr("`x'",5,32)
+gen annualincome_`name'=0
+}
+
+replace annualincome_agriself=annualincome if occupation==1
+replace annualincome_agricasual=annualincome if occupation==2
+replace annualincome_casual=annualincome if occupation==3
+replace annualincome_regnonquali=annualincome if occupation==4
+replace annualincome_regquali=annualincome if occupation==5
+replace annualincome_selfemp=annualincome if occupation==6
+replace annualincome_nrega=annualincome if occupation==7
+
+replace annualincome_agri=annualincome if occupation2==1
+replace annualincome_nona=annualincome if occupation2==2
+
+replace annualincome_regu=annualincome if occupation3==1
+replace annualincome_casu=annualincome if occupation3==2
+
+replace annualincome_self=annualincome if occupation4==1
+replace annualincome_othe=annualincome if occupation4==2
+
+global ai annualincome_agriself annualincome_agricasual annualincome_casual annualincome_regnonquali annualincome_regquali annualincome_selfemp annualincome_nrega annualincome_agri annualincome_nona annualincome_regu annualincome_casu annualincome_self annualincome_othe annualincome
+
+foreach x in $ai {
+recode `x' (.=0)
+}
+
+foreach x in $ai {
+bysort HHID_panel INDID_panel year: egen indiv_`x'=sum(`x')
+drop `x'
+rename indiv_`x' `x'
+}
+
+
+
+
+
+
+
+
 ********** Occupation no at individual level
 foreach x in $total {
 bysort HHID_panel INDID_panel year: egen indiv_`x'=sum(`x')
@@ -312,7 +357,7 @@ rename indiv_`x' `x'
 
 
 ********** Indiv level
-keep HHID_panel HHID2010 HHID2016 HHID2020 INDID_panel year name sex age dep $total $hay
+keep HHID_panel HHID2010 HHID2016 HHID2020 INDID_panel year name sex age dep $total $hay $ai
 duplicates drop
 duplicates report HHID_panel INDID_panel year
 
@@ -353,6 +398,10 @@ gen occ_dep=0
 replace occ_dep=occ_agri+occ_nona if dep==1
 
 
+
+
+
+
 ********** Hours by sex
 gen hoursayear_male=0
 replace hoursayear_male=hoursayear if sex==1
@@ -370,6 +419,29 @@ foreach x in agri nona regu casu self othe {
 replace hoursayear_`x'_male=hoursayear_`x' if sex==1
 replace hoursayear_`x'_female=hoursayear_`x' if sex==2
 }
+
+
+
+********** Income by sex
+gen annualincome_male=0
+replace annualincome_male=annualincome if sex==1
+gen annualincome_female=0
+replace annualincome_female=annualincome if sex==2
+gen annualincome_dep=0
+replace annualincome_dep=annualincome if dep==1
+
+foreach x in agri nona regu casu self othe {
+gen annualincome_`x'_male=0
+gen annualincome_`x'_female=0
+}
+
+foreach x in agri nona regu casu self othe {
+replace annualincome_`x'_male=annualincome_`x' if sex==1
+replace annualincome_`x'_female=annualincome_`x' if sex==2
+}
+
+
+
 
 
 
@@ -396,7 +468,7 @@ rename `x'_indiv ind_`new'
 
 
 ********** Household level for all
-global fulltotal occ_total occ_female occ_male occ_dep occ_agriself occ_agricasual occ_casual occ_regnonquali occ_regquali occ_selfemp occ_nrega occ_agri occ_nona occ_regu occ_casu occ_self occ_othe occ_agriself_male occ_agriself_female occ_agricasual_male occ_agricasual_female occ_casual_male occ_casual_female occ_regnonquali_male occ_regnonquali_female occ_regquali_male occ_regquali_female occ_selfemp_male occ_selfemp_female occ_nrega_male occ_nrega_female occ_agri_male occ_agri_female occ_nona_male occ_nona_female occ_regu_male occ_regu_female occ_casu_male occ_casu_female occ_self_male occ_self_female occ_othe_male occ_othe_female occ_agriself_dep occ_agricasual_dep occ_casual_dep occ_regnonquali_dep occ_regquali_dep occ_selfemp_dep occ_nrega_dep occ_agri_dep occ_nona_dep occ_regu_dep occ_casu_dep occ_self_dep occ_othe_dep ind_total ind_female ind_male ind_dep ind_agriself ind_agricasual ind_casual ind_regnonquali ind_regquali ind_selfemp ind_nrega ind_agri ind_nona ind_regu ind_casu ind_self ind_othe ind_agriself_male ind_agriself_female ind_agricasual_male ind_agricasual_female ind_casual_male ind_casual_female ind_regnonquali_male ind_regnonquali_female ind_regquali_male ind_regquali_female ind_selfemp_male ind_selfemp_female ind_nrega_male ind_nrega_female ind_agri_male ind_agri_female ind_nona_male ind_nona_female ind_regu_male ind_regu_female ind_casu_male ind_casu_female ind_self_male ind_self_female ind_othe_male ind_othe_female ind_agriself_dep ind_agricasual_dep ind_casual_dep ind_regnonquali_dep ind_regquali_dep ind_selfemp_dep ind_nrega_dep ind_agri_dep ind_nona_dep ind_regu_dep ind_casu_dep ind_self_dep ind_othe_dep hoursayear_agriself hoursayear_agricasual hoursayear_casual hoursayear_regnonquali hoursayear_regquali hoursayear_selfemp hoursayear_nrega hoursayear_agri hoursayear_nona hoursayear_regu hoursayear_casu hoursayear_self hoursayear_othe hoursayear hoursayear_male hoursayear_female hoursayear_dep hoursayear_agri_male hoursayear_agri_female hoursayear_nona_male hoursayear_nona_female hoursayear_regu_male hoursayear_regu_female hoursayear_casu_male hoursayear_casu_female hoursayear_self_male hoursayear_self_female hoursayear_othe_male hoursayear_othe_female
+global fulltotal occ_total occ_female occ_male occ_dep occ_agriself occ_agricasual occ_casual occ_regnonquali occ_regquali occ_selfemp occ_nrega occ_agri occ_nona occ_regu occ_casu occ_self occ_othe occ_agriself_male occ_agriself_female occ_agricasual_male occ_agricasual_female occ_casual_male occ_casual_female occ_regnonquali_male occ_regnonquali_female occ_regquali_male occ_regquali_female occ_selfemp_male occ_selfemp_female occ_nrega_male occ_nrega_female occ_agri_male occ_agri_female occ_nona_male occ_nona_female occ_regu_male occ_regu_female occ_casu_male occ_casu_female occ_self_male occ_self_female occ_othe_male occ_othe_female occ_agriself_dep occ_agricasual_dep occ_casual_dep occ_regnonquali_dep occ_regquali_dep occ_selfemp_dep occ_nrega_dep occ_agri_dep occ_nona_dep occ_regu_dep occ_casu_dep occ_self_dep occ_othe_dep ind_total ind_female ind_male ind_dep ind_agriself ind_agricasual ind_casual ind_regnonquali ind_regquali ind_selfemp ind_nrega ind_agri ind_nona ind_regu ind_casu ind_self ind_othe ind_agriself_male ind_agriself_female ind_agricasual_male ind_agricasual_female ind_casual_male ind_casual_female ind_regnonquali_male ind_regnonquali_female ind_regquali_male ind_regquali_female ind_selfemp_male ind_selfemp_female ind_nrega_male ind_nrega_female ind_agri_male ind_agri_female ind_nona_male ind_nona_female ind_regu_male ind_regu_female ind_casu_male ind_casu_female ind_self_male ind_self_female ind_othe_male ind_othe_female ind_agriself_dep ind_agricasual_dep ind_casual_dep ind_regnonquali_dep ind_regquali_dep ind_selfemp_dep ind_nrega_dep ind_agri_dep ind_nona_dep ind_regu_dep ind_casu_dep ind_self_dep ind_othe_dep hoursayear_agriself hoursayear_agricasual hoursayear_casual hoursayear_regnonquali hoursayear_regquali hoursayear_selfemp hoursayear_nrega hoursayear_agri hoursayear_nona hoursayear_regu hoursayear_casu hoursayear_self hoursayear_othe hoursayear hoursayear_male hoursayear_female hoursayear_dep hoursayear_agri_male hoursayear_agri_female hoursayear_nona_male hoursayear_nona_female hoursayear_regu_male hoursayear_regu_female hoursayear_casu_male hoursayear_casu_female hoursayear_self_male hoursayear_self_female hoursayear_othe_male hoursayear_othe_female annualincome_agriself annualincome_agricasual annualincome_casual annualincome_regnonquali annualincome_regquali annualincome_selfemp annualincome_nrega annualincome_agri annualincome_nona annualincome_regu annualincome_casu annualincome_self annualincome_othe annualincome annualincome_male annualincome_female annualincome_dep annualincome_agri_male annualincome_agri_female annualincome_nona_male annualincome_nona_female annualincome_regu_male annualincome_regu_female annualincome_casu_male annualincome_casu_female annualincome_self_male annualincome_self_female annualincome_othe_male annualincome_othe_female
 
 foreach x in $fulltotal {
 bysort HHID_panel year: egen _`x'=sum(`x')
@@ -435,10 +507,8 @@ merge 1:1 HHID_panel year using "panel-newoccvar"
 drop _merge
 
 
-
-
 ********** Share
-global fulltotal occ_total occ_female occ_male occ_dep occ_agriself occ_agricasual occ_casual occ_regnonquali occ_regquali occ_selfemp occ_nrega occ_agri occ_nona occ_regu occ_casu occ_self occ_othe occ_agriself_male occ_agriself_female occ_agricasual_male occ_agricasual_female occ_casual_male occ_casual_female occ_regnonquali_male occ_regnonquali_female occ_regquali_male occ_regquali_female occ_selfemp_male occ_selfemp_female occ_nrega_male occ_nrega_female occ_agri_male occ_agri_female occ_nona_male occ_nona_female occ_regu_male occ_regu_female occ_casu_male occ_casu_female occ_self_male occ_self_female occ_othe_male occ_othe_female occ_agriself_dep occ_agricasual_dep occ_casual_dep occ_regnonquali_dep occ_regquali_dep occ_selfemp_dep occ_nrega_dep occ_agri_dep occ_nona_dep occ_regu_dep occ_casu_dep occ_self_dep occ_othe_dep ind_total ind_female ind_male ind_dep ind_agriself ind_agricasual ind_casual ind_regnonquali ind_regquali ind_selfemp ind_nrega ind_agri ind_nona ind_regu ind_casu ind_self ind_othe ind_agriself_male ind_agriself_female ind_agricasual_male ind_agricasual_female ind_casual_male ind_casual_female ind_regnonquali_male ind_regnonquali_female ind_regquali_male ind_regquali_female ind_selfemp_male ind_selfemp_female ind_nrega_male ind_nrega_female ind_agri_male ind_agri_female ind_nona_male ind_nona_female ind_regu_male ind_regu_female ind_casu_male ind_casu_female ind_self_male ind_self_female ind_othe_male ind_othe_female ind_agriself_dep ind_agricasual_dep ind_casual_dep ind_regnonquali_dep ind_regquali_dep ind_selfemp_dep ind_nrega_dep ind_agri_dep ind_nona_dep ind_regu_dep ind_casu_dep ind_self_dep ind_othe_dep hoursayear_agriself hoursayear_agricasual hoursayear_casual hoursayear_regnonquali hoursayear_regquali hoursayear_selfemp hoursayear_nrega hoursayear_agri hoursayear_nona hoursayear_regu hoursayear_casu hoursayear_self hoursayear_othe hoursayear hoursayear_male hoursayear_female hoursayear_dep hoursayear_agri_male hoursayear_agri_female hoursayear_nona_male hoursayear_nona_female hoursayear_regu_male hoursayear_regu_female hoursayear_casu_male hoursayear_casu_female hoursayear_self_male hoursayear_self_female hoursayear_othe_male hoursayear_othe_female
+global fulltotal occ_total occ_female occ_male occ_dep occ_agriself occ_agricasual occ_casual occ_regnonquali occ_regquali occ_selfemp occ_nrega occ_agri occ_nona occ_regu occ_casu occ_self occ_othe occ_agriself_male occ_agriself_female occ_agricasual_male occ_agricasual_female occ_casual_male occ_casual_female occ_regnonquali_male occ_regnonquali_female occ_regquali_male occ_regquali_female occ_selfemp_male occ_selfemp_female occ_nrega_male occ_nrega_female occ_agri_male occ_agri_female occ_nona_male occ_nona_female occ_regu_male occ_regu_female occ_casu_male occ_casu_female occ_self_male occ_self_female occ_othe_male occ_othe_female occ_agriself_dep occ_agricasual_dep occ_casual_dep occ_regnonquali_dep occ_regquali_dep occ_selfemp_dep occ_nrega_dep occ_agri_dep occ_nona_dep occ_regu_dep occ_casu_dep occ_self_dep occ_othe_dep ind_total ind_female ind_male ind_dep ind_agriself ind_agricasual ind_casual ind_regnonquali ind_regquali ind_selfemp ind_nrega ind_agri ind_nona ind_regu ind_casu ind_self ind_othe ind_agriself_male ind_agriself_female ind_agricasual_male ind_agricasual_female ind_casual_male ind_casual_female ind_regnonquali_male ind_regnonquali_female ind_regquali_male ind_regquali_female ind_selfemp_male ind_selfemp_female ind_nrega_male ind_nrega_female ind_agri_male ind_agri_female ind_nona_male ind_nona_female ind_regu_male ind_regu_female ind_casu_male ind_casu_female ind_self_male ind_self_female ind_othe_male ind_othe_female ind_agriself_dep ind_agricasual_dep ind_casual_dep ind_regnonquali_dep ind_regquali_dep ind_selfemp_dep ind_nrega_dep ind_agri_dep ind_nona_dep ind_regu_dep ind_casu_dep ind_self_dep ind_othe_dep hoursayear_agriself hoursayear_agricasual hoursayear_casual hoursayear_regnonquali hoursayear_regquali hoursayear_selfemp hoursayear_nrega hoursayear_agri hoursayear_nona hoursayear_regu hoursayear_casu hoursayear_self hoursayear_othe hoursayear hoursayear_male hoursayear_female hoursayear_dep hoursayear_agri_male hoursayear_agri_female hoursayear_nona_male hoursayear_nona_female hoursayear_regu_male hoursayear_regu_female hoursayear_casu_male hoursayear_casu_female hoursayear_self_male hoursayear_self_female hoursayear_othe_male hoursayear_othe_female annualincome_agriself annualincome_agricasual annualincome_casual annualincome_regnonquali annualincome_regquali annualincome_selfemp annualincome_nrega annualincome_agri annualincome_nona annualincome_regu annualincome_casu annualincome_self annualincome_othe annualincome annualincome_male annualincome_female annualincome_dep annualincome_agri_male annualincome_agri_female annualincome_nona_male annualincome_nona_female annualincome_regu_male annualincome_regu_female annualincome_casu_male annualincome_casu_female annualincome_self_male annualincome_self_female annualincome_othe_male annualincome_othe_female
 
 foreach x in $fulltotal {
 replace `x'=0 if `x'==.
@@ -455,6 +525,7 @@ drop share_hoursayear_agriself share_hoursayear_agricasual share_hoursayear_casu
 
 drop hoursayear_HH hoursayearagri_HH hoursayearnonagri_HH
 
+drop share_annualincome_agriself share_annualincome_agricasual share_annualincome_casual share_annualincome_regnonquali share_annualincome_regquali share_annualincome_selfemp share_annualincome_nrega share_annualincome_agri share_annualincome_nona share_annualincome_regu share_annualincome_casu share_annualincome_self share_annualincome_othe share_annualincome share_annualincome_male share_annualincome_female share_annualincome_dep share_annualincome_agri_male share_annualincome_agri_female share_annualincome_nona_male share_annualincome_nona_female share_annualincome_regu_male share_annualincome_regu_female share_annualincome_casu_male share_annualincome_casu_female share_annualincome_self_male share_annualincome_self_female share_annualincome_othe_male share_annualincome_othe_female
 
 
 ********** Last minute var crea
