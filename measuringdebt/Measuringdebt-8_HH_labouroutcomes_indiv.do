@@ -68,7 +68,7 @@ save"RUME-newoccvar_indiv", replace
 use"raw/NEEMSIS1-occup_indiv", clear
 
 
-keep HHID2016 INDID2016 dummyworkedpastyear working_pop mainocc_profession_indiv mainocc_occupation_indiv mainocc_sector_indiv mainocc_annualincome_indiv mainocc_occupationname_indiv annualincome_indiv nboccupation_indiv incomeagri_indiv incomenonagri_indiv shareincomeagri_indiv shareincomenonagri_indiv incagrise_indiv incagricasual_indiv incnonagricasual_indiv incnonagriregnonquali_indiv incnonagriregquali_indiv incnonagrise_indiv incnrega_indiv shareincagrise_indiv shareincagricasual_indiv shareincnonagricasual_indiv shareincnonagriregnonquali_indiv shareincnonagriregquali_indiv shareincnonagrise_indiv shareincnrega_indiv
+keep HHID2016 INDID2016 dummyworkedpastyear working_pop mainocc_profession_indiv mainocc_occupation_indiv mainocc_sector_indiv mainocc_annualincome_indiv mainocc_occupationname_indiv annualincome_indiv nboccupation_indiv incomeagri_indiv incomenonagri_indiv shareincomeagri_indiv shareincomenonagri_indiv incagrise_indiv incagricasual_indiv incnonagricasual_indiv incnonagriregnonquali_indiv incnonagriregquali_indiv incnonagrise_indiv incnrega_indiv shareincagrise_indiv shareincagricasual_indiv shareincnonagricasual_indiv shareincnonagriregnonquali_indiv shareincnonagriregquali_indiv shareincnonagrise_indiv shareincnrega_indiv hoursayear_indiv mainocc_hoursayear_indiv
 
 *** Merge charact
 merge 1:1 HHID2016 INDID2016 using "raw/NEEMSIS1-HH", keepusing(name age sex livinghome)
@@ -109,7 +109,7 @@ save"NEEMSIS1-newoccvar_indiv", replace
 use"raw/NEEMSIS2-occup_indiv", clear
 
 
-keep HHID2020 INDID2020 dummyworkedpastyear working_pop mainocc_profession_indiv mainocc_occupation_indiv mainocc_sector_indiv mainocc_annualincome_indiv mainocc_occupationname_indiv annualincome_indiv nboccupation_indiv incomeagri_indiv incomenonagri_indiv shareincomeagri_indiv shareincomenonagri_indiv incagrise_indiv incagricasual_indiv incnonagricasual_indiv incnonagriregnonquali_indiv incnonagriregquali_indiv incnonagrise_indiv incnrega_indiv shareincagrise_indiv shareincagricasual_indiv shareincnonagricasual_indiv shareincnonagriregnonquali_indiv shareincnonagriregquali_indiv shareincnonagrise_indiv shareincnrega_indiv
+keep HHID2020 INDID2020 dummyworkedpastyear working_pop mainocc_profession_indiv mainocc_occupation_indiv mainocc_sector_indiv mainocc_annualincome_indiv mainocc_occupationname_indiv annualincome_indiv nboccupation_indiv incomeagri_indiv incomenonagri_indiv shareincomeagri_indiv shareincomenonagri_indiv incagrise_indiv incagricasual_indiv incnonagricasual_indiv incnonagriregnonquali_indiv incnonagriregquali_indiv incnonagrise_indiv incnrega_indiv shareincagrise_indiv shareincagricasual_indiv shareincnonagricasual_indiv shareincnonagriregnonquali_indiv shareincnonagriregquali_indiv shareincnonagrise_indiv shareincnrega_indiv hoursayear_indiv mainocc_hoursayear_indiv
 
 *** Merge charact
 merge m:1 HHID2020 INDID2020 using "raw/NEEMSIS2-HH", keepusing(name age sex dummylefthousehold livinghome)
@@ -158,6 +158,7 @@ use"RUME-newoccvar_indiv", clear
 append using "NEEMSIS1-newoccvar_indiv"
 append using "NEEMSIS2-newoccvar_indiv"
 
+
 order HHID_panel year INDID2010 INDID2016 INDID2020
 sort HHID_panel year
 
@@ -190,6 +191,42 @@ drop INDID2010 INDID2016 INDID2020
 
 order HHID_panel HHID INDID_panel INDID
 
+********** Livinghome
+fre livinghome*
+gen livinghome=.
+replace livinghome=livinghome2016 if year==2016
+replace livinghome=livinghome2020 if year==2020
+drop livinghome2016 livinghome2020
+rename dummylefthousehold2020 dummylefthousehold
+
+
+********** Clean
+drop if livinghome==3
+drop if livinghome==4
+drop if dummylefthousehold==1
+drop livinghome dummylefthousehold
+drop shareincagrise_indiv shareincagricasual_indiv shareincnonagricasual_indiv shareincnonagriregnonquali_indiv shareincnonagriregquali_indiv shareincnonagrise_indiv shareincnrega_indiv
+drop incagrise_indiv incagricasual_indiv incnonagricasual_indiv incnonagriregnonquali_indiv incnonagriregquali_indiv incnonagrise_indiv incnrega_indiv
+
+
+********** No occ
+fre mainocc_occupation_indiv working_pop
+ta mainocc_occupation_indiv working_pop, m
+clonevar occup=mainocc_occupation_indiv
+replace occup=0 if working_pop==2
+ta occup working_pop, m
+fre occup
+ta occup sex
+ta occup year
+
+
+
+********** Deflate
+foreach x in mainocc_annualincome_indiv annualincome_indiv incomeagri_indiv incomenonagri_indiv {
+replace `x'=`x'*(100/158) if year==2016
+replace `x'=`x'*(100/184) if year==2020
+}
+
 
 save"panel-newoccvar_indiv", replace
 ****************************************
@@ -211,45 +248,6 @@ save"panel-newoccvar_indiv", replace
 use"panel-newoccvar_indiv", clear
 
 
-********** Livinghome
-fre livinghome*
-gen livinghome=.
-replace livinghome=livinghome2016 if year==2016
-replace livinghome=livinghome2020 if year==2020
-drop livinghome2016 livinghome2020
-rename dummylefthousehold2020 dummylefthousehold
-
-
-********** No occ
-fre mainocc_occupation_indiv working_pop
-ta mainocc_occupation_indiv working_pop, m
-clonevar occup=mainocc_occupation_indiv
-replace occup=0 if working_pop==2
-ta occup working_pop, m
-fre occup
-ta occup sex
-ta occup year
-
-
-
-********** Deflate
-foreach x in mainocc_annualincome_indiv annualincome_indiv incomeagri_indiv incomenonagri_indiv incagrise_indiv incagricasual_indiv incnonagricasual_indiv incnonagriregnonquali_indiv incnonagriregquali_indiv incnonagrise_indiv incnrega_indiv {
-replace `x'=`x'*(100/158) if year==2016
-replace `x'=`x'*(100/184) if year==2020
-}
-
-
-********** Clean
-drop if livinghome==3
-drop if livinghome==4
-drop if dummylefthousehold==1
-drop livinghome dummylefthousehold
-drop shareincagrise_indiv shareincagricasual_indiv shareincnonagricasual_indiv shareincnonagriregnonquali_indiv shareincnonagriregquali_indiv shareincnonagrise_indiv shareincnrega_indiv
-drop incagrise_indiv incagricasual_indiv incnonagricasual_indiv incnonagriregnonquali_indiv incnonagriregquali_indiv incnonagrise_indiv incnrega_indiv
-
-
-
-
 ********** Panel nb
 bysort HHID_panel INDID_panel: gen n=_N
 ta n
@@ -260,7 +258,16 @@ save"panel-newoccvar_indiv_v2", replace
 
 
 ********** Reshape
-reshape wide HHID INDID name sex age dep edulevel dummyworkedpastyear working_pop mainocc_profession_indiv mainocc_occupation_indiv mainocc_sector_indiv mainocc_annualincome_indiv mainocc_occupationname_indiv annualincome_indiv nboccupation_indiv incomeagri_indiv incomenonagri_indiv shareincomeagri_indiv shareincomenonagri_indiv occup, i(HHID_panel INDID_panel) j(year)
+reshape wide HHID INDID name sex age dep edulevel dummyworkedpastyear working_pop mainocc_profession_indiv mainocc_occupation_indiv mainocc_sector_indiv mainocc_annualincome_indiv mainocc_occupationname_indiv annualincome_indiv nboccupation_indiv incomeagri_indiv incomenonagri_indiv shareincomeagri_indiv shareincomenonagri_indiv occup hoursayear_indiv mainocc_hoursayear_indiv, i(HHID_panel INDID_panel) j(year)
+
+
+********** New occ var
+fre occup2010 occup2016 occup2020
+recode occup2010 occup2016 occup2020 (5=4) (6=5) (7=6)
+label define occupnew 0"Occ: None" 1"Occ: Agri SE" 2"Occ: Agri casual" 3"Occ: Casual" 4"Occ: Regular" 5"Occ: SE" 6"Occ: NREGA"
+label values occup2010 occupnew
+label values occup2016 occupnew
+label values occup2020 occupnew
 
 
 ********** Abs diff income
@@ -280,24 +287,18 @@ ta relmobinc1
 ta relmobinc2
 
 
-********** Change in occupation
-fre occup2010 occup2016 occup2020
-recode occup2010 occup2016 occup2020 (5=4) (6=5) (7=6)
-label define occupnew 0"Occ: None" 1"Occ: Agri SE" 2"Occ: Agri casual" 3"Occ: Casual" 4"Occ: Regular" 5"Occ: SE" 6"Occ: NREGA"
-label values occup2010 occupnew
-label values occup2016 occupnew
-label values occup2020 occupnew
 
-fre occup2010 occup2016 occup2020
+******** Change 
+gen change1=0 if occup2010!=. & occup2016!=.
+replace change1=1 if occup2010!=occup2016 & change1==0
+ta change1
 
-ta occup2010 occup2016 if sex2010==1, row nofreq
-ta occup2010 occup2016 if sex2010==2, row nofreq
-
-ta occup2016 occup2020 if sex2016==1, row nofreq
-ta occup2016 occup2020 if sex2016==2, row nofreq
+gen change2=0 if occup2016!=. & occup2020!=.
+replace change2=1 if occup2016!=occup2020 & change2==0
+ta change2
 
 
-*** LFP
+********** LFP
 gen lfp2010=0
 replace lfp2010=1 if occup2010>0
 ta occup2010 lfp2010
@@ -311,29 +312,36 @@ replace lfp2020=1 if occup2020>0
 ta occup2020 lfp2020
 
 
-*** Dep
-gen dep_lfp2010=.
-replace dep_lfp2010=0 if dep2010==1
-replace dep_lfp2010=1 if dep2010==1 & occup2010>0 & occup2010!=.
-ta dep_lfp2010
 
-gen dep_lfp2016=.
-replace dep_lfp2016=0 if dep2016==1 & occup2016>0 & occup2016!=.
-ta dep_lfp2016
+********** New occupation
+gen diffnbocc1=nboccupation_indiv2016-nboccupation_indiv2010
+gen diffnbocc2=nboccupation_indiv2020-nboccupation_indiv2016
 
-gen dep_lfp2020=.
-replace dep_lfp2020=0 if dep2020==1 & occup2020>0 & occup2020!=.
-ta dep_lfp2020
+ta diffnbocc1
+ta diffnbocc2
+
+gen dummydiffnbocc1=0
+replace dummydiffnbocc1=1 if diffnbocc1>0 & diffnbocc1!=0
+ta diffnbocc1 dummydiffnbocc1
 
 
-******** Change 
-gen change1=0 if occup2010!=. & occup2016!=.
-replace change1=1 if occup2010!=occup2016 & change1==0
-ta change1
+gen dummydiffnbocc2=0
+replace dummydiffnbocc2=1 if diffnbocc2>0 & diffnbocc2!=0
+ta diffnbocc2 dummydiffnbocc2 
 
-gen change2=0 if occup2016!=. & occup2020!=.
-replace change2=1 if occup2016!=occup2020 & change2==0
-ta change2
+/*
+Variable qui concerne uniquement des actifs ET actifs
+Donc augmentation du nb d'activités
+*/
+
+
+
+********** More hours a year
+gen diffhours2=hoursayear_indiv2020-hoursayear_indiv2016
+
+gen dummydiffhours2=0
+replace dummydiffhours2=1 if diffhours2>0 & diffhours2!=.
+ta dummydiffhours2
 
 
 

@@ -63,7 +63,6 @@ log using "C:\Users\Arnaud\Downloads\poisson_indiv.log", replace
 set maxiter 50
 cls
 foreach y in $yvarind {
-capture noisily: xtpoisson `y' trendlong, fe base
 capture noisily: xtpoisson `y' trendlong $xtotal, fe base
 }
 log close
@@ -75,7 +74,6 @@ log using "C:\Users\Arnaud\Downloads\poisson_occ.log", replace
 set maxiter 50
 cls
 foreach y in $yvarocc {
-capture noisily: xtpoisson `y' trendlong, fe base
 capture noisily: xtpoisson `y' trendlong $xtotal, fe base
 }
 log close
@@ -87,9 +85,8 @@ log using "C:\Users\Arnaud\Downloads\reg_hours.log", replace
 set maxiter 50
 cls
 foreach y in $yvarhours {
-*capture noisily: reg `y' trendlong $xtotal
+capture noisily: xtreg `y' trendlong $xtotal, fe base
 *capture noisily: xthybrid `y' trendlong $xtotal, cre clusterid(panelvar) full
-capture noisily: xtnbreg `y' trendlong $xtotal, fe
 }
 log close
 

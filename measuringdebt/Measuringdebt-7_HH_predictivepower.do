@@ -55,7 +55,7 @@ replace loanamount_HH=loanamount_HH*(100/184) if year==2020
 
 
 *** X-var
-global interestvar loanamount_HH nbloans_HH pca2index
+global interestvar loanamount_HH
 
 global xinvar dalits village_2 village_3 village_4 village_5 village_6 village_7 village_8 village_9 village_10
 
@@ -67,24 +67,26 @@ global xvar3 remittnet_HH assets_total
 
 
 *** Y-var
-global yvar ind_total ind_female ind_male ind_dep ind_agri ind_nona ind_regu ind_casu ind_self ind_othe ind_agri_male ind_agri_female ind_nona_male ind_nona_female ind_regu_male ind_regu_female ind_casu_male ind_casu_female ind_self_male ind_self_female ind_othe_male ind_othe_female ind_agri_dep ind_nona_dep ind_regu_dep ind_casu_dep ind_self_dep ind_othe_dep ///
-occ_total occ_female occ_male occ_dep occ_agri occ_nona occ_regu occ_casu occ_self occ_othe occ_agri_male occ_agri_female occ_nona_male occ_nona_female occ_regu_male occ_regu_female occ_casu_male occ_casu_female occ_self_male occ_self_female occ_othe_male occ_othe_female occ_agri_dep occ_nona_dep occ_regu_dep occ_casu_dep occ_self_dep occ_othe_dep
+global yvar ind_total ind_female ind_male ind_dep ind_agri ind_nona ind_regu ind_casu ind_self ind_othe ind_agri_male ind_agri_female ind_nona_male ind_nona_female ind_regu_male ind_regu_female ind_casu_male ind_casu_female ind_self_male ind_self_female ind_othe_male ind_othe_female ind_agri_dep ind_nona_dep ind_regu_dep ind_casu_dep ind_self_dep ind_othe_dep 
+///
+*occ_total occ_female occ_male occ_dep occ_agri occ_nona occ_regu occ_casu occ_self occ_othe occ_agri_male occ_agri_female occ_nona_male occ_nona_female occ_regu_male occ_regu_female occ_casu_male occ_casu_female occ_self_male occ_self_female occ_othe_male occ_othe_female occ_agri_dep occ_nona_dep occ_regu_dep occ_casu_dep occ_self_dep occ_othe_dep
 
 
-*** ML-SEM
+*** Analysis
+/*
 log using "C:\Users\Arnaud\Downloads\MLSEM.log", replace
 
 foreach y in $yvar {
 foreach x in $interestvar {
-capture noisily reg `y' `x' $xvar1 $xvar2 $xvar3 $xinvar
-capture noisily xtreg `y' `x' $xvar1 $xvar2 $xvar3 $xinvar, fe
+* LEV
 capture noisily xtreg `y' L.`x' $xvar1 $xvar2 $xvar3 $xinvar, fe
+* ML-SEM
 capture noisily xtdpdml `y' $xvar1 $xvar2 $xvar3, inv($xinvar) predetermined(L.`x') fiml
 }
 }
 
 log close
-
+*/
 
 
 ****************************************
@@ -102,7 +104,7 @@ log close
 
 
 ****************************************
-* lagged explanatory variables (LEV)
+* Hours a year
 ****************************************
 cls
 use"panel_v9", clear
@@ -121,7 +123,7 @@ replace loanamount_HH=loanamount_HH*(100/184) if year==2020
 
 
 *** X-var
-global interestvar loanamount_HH nbloans_HH pca2index
+global interestvar loanamount_HH
 
 global xinvar dalits village_2 village_3 village_4 village_5 village_6 village_7 village_8 village_9 village_10
 
@@ -137,12 +139,12 @@ global yvar hoursayear hoursayear_female hoursayear_male hoursayear_dep hoursaye
 
 
 
-*** LEV
+*** Analysis
 log using "C:\Users\Arnaud\Downloads\LEV.log", replace
 
 foreach y in $yvar {
 foreach x in $interestvar {
-capture noisily reg `y' `x' $xvar1 $xvar2 $xvar3 $xinvar
+* LEV
 capture noisily xtreg `y' L.`x' $xvar1 $xvar2 $xvar3 $xinvar, fe
 }
 }
@@ -164,7 +166,7 @@ log close
 
 
 
-/*
+
 ****************************************
 * CPLM
 ****************************************
@@ -193,7 +195,7 @@ drop if hoursayear2020==.
 
 
 ********** CPLM
-
+/*
 log using "C:\Users\Arnaud\Downloads\CLPM.log", replace
 cls
 *** Cross lagged panel model
@@ -209,7 +211,7 @@ nocapslatent
 }
 }
 log close
-
+*/
 
 
 ****************************************

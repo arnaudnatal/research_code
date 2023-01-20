@@ -237,20 +237,20 @@ save"indextrend.dta", replace
 
 
 ********** Diff
-keep HHID_panel year pca2index m2index
-reshape wide pca2index m2index, i(HHID_panel) j(year)
+keep HHID_panel year loanamount_HH
+reshape wide loanamount_HH, i(HHID_panel) j(year)
 
 gen diff1=0
-replace diff1=pca2index2016-pca2index2010 if pca2index2010!=. & pca2index2016!=.
+replace diff1=loanamount_HH2016-loanamount_HH2010 if loanamount_HH2010!=. & loanamount_HH2016!=.
 replace diff1=0 if diff1>-5 & diff1<5 & diff1!=.
-replace diff1=. if pca2index2010==.
-replace diff1=. if pca2index2016==.
+replace diff1=. if loanamount_HH2010==.
+replace diff1=. if loanamount_HH2016==.
 
 gen diff2=0
-replace diff2=pca2index2020-pca2index2016 if pca2index2016!=. & pca2index2020!=.
+replace diff2=loanamount_HH2020-loanamount_HH2016 if loanamount_HH2016!=. & loanamount_HH2020!=.
 replace diff2=0 if diff2>-5 & diff2<5 & diff2!=.
-replace diff2=. if pca2index2016==.
-replace diff2=. if pca2index2020==.
+replace diff2=. if loanamount_HH2016==.
+replace diff2=. if loanamount_HH2020==.
 
 
 * Trends
