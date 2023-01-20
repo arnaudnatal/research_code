@@ -96,6 +96,12 @@ global varstd dailyincome_pc_std assets_pc_std rfm_std dsr_std tdr_std lpc_std d
 global var dailyincome_pc assets_pc rfm dsr tdr lpc dar
 
 
+********** Factoshiny
+preserve
+keep HHID_panel year $varstd
+export delimited "C:\Users\Arnaud\Documents\GitHub\research_code\measuringdebt\pca.csv", replace
+restore
+
 
 ********** Desc
 tabstat $var, stat(n mean cv p50) by(year)
@@ -118,6 +124,46 @@ rotate, quartimin
 predict fact1 fact2 fact3
 *twoway (scatter fact2 fact1, xline(0) yline(0) mcolor(black%30) msymbol(oh))
 
+
+*** Cluster
+cluster wardslinkage fact1 fact2 fact3, measure(L2)
+cluster dendrogram, cutnumber(100)
+cluster gen clust=groups(4)
+
+twoway ///
+(scatter fact2 fact1 if clust==1, mcolor(plb1%50) ms(oh) xline(0) yline(0)) ///
+(scatter fact2 fact1 if clust==2, mcolor(ply1%50) ms(oh)) ///
+(scatter fact2 fact1 if clust==3, mcolor(plr1%50) ms(oh)) ///
+(scatter fact2 fact1 if clust==4, mcolor(plg1%50) ms(oh)) ///
+, aspectratio(0.7)
+
+
+twoway ///
+(scatter fact3 fact1 if clust==1, mcolor(plb1%50) ms(oh) xline(0) yline(0)) ///
+(scatter fact3 fact1 if clust==2, mcolor(ply1%50) ms(oh)) ///
+(scatter fact3 fact1 if clust==3, mcolor(plr1%50) ms(oh)) ///
+(scatter fact3 fact1 if clust==4, mcolor(plg1%50) ms(oh)) ///
+, aspectratio(0.7)
+
+twoway ///
+(scatter fact3 fact2 if clust==1, mcolor(plb1%50) ms(oh) xline(0) yline(0)) ///
+(scatter fact3 fact2 if clust==2, mcolor(ply1%50) ms(oh)) ///
+(scatter fact3 fact2 if clust==3, mcolor(plr1%50) ms(oh)) ///
+(scatter fact3 fact2 if clust==4, mcolor(plg1%50) ms(oh)) ///
+, aspectratio(0.7)
+
+
+tabstat $var, stat(n mean cv p50) by(clust)
+
+ta clust year, col nofreq chi2
+
+ta clust caste if year==2010, col nofreq chi2
+ta clust caste if year==2016, col nofreq chi2
+ta clust caste if year==2020, col nofreq chi2
+
+ta clust stem if year==2010, col nofreq chi2
+ta clust stem if year==2016, col nofreq chi2
+ta clust stem if year==2020, col nofreq chi2
 
 *** Corr between var and fact
 cpcorr $varstd \ fact1 fact2 fact3
