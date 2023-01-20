@@ -496,8 +496,6 @@ save"panel-newoccvar", replace
 
 
 
-
-
 ****************************************
 * Merge with main dataset
 ****************************************
@@ -515,17 +513,13 @@ replace `x'=0 if `x'==.
 }
 
 
-foreach x in $fulltotal {
-gen share_`x'=`x'/HHsize
+foreach x in total female male dep agriself agricasual casual regnonquali regquali selfemp nrega agri nona regu casu self othe agriself_male agriself_female agricasual_male agricasual_female casual_male casual_female regnonquali_male regnonquali_female regquali_male regquali_female selfemp_male selfemp_female nrega_male nrega_female agri_male agri_female nona_male nona_female regu_male regu_female casu_male casu_female self_male self_female othe_male othe_female agriself_dep agricasual_dep casual_dep regnonquali_dep regquali_dep selfemp_dep nrega_dep agri_dep nona_dep regu_dep casu_dep self_dep othe_dep {
+gen share_`x'=ind_`x'/HHsize
+replace share_`x'=1 if share_`x'>1
 }
-
-drop share_occ_total share_occ_female share_occ_male share_occ_dep share_occ_agriself share_occ_agricasual share_occ_casual share_occ_regnonquali share_occ_regquali share_occ_selfemp share_occ_nrega share_occ_agri share_occ_nona share_occ_regu share_occ_casu share_occ_self share_occ_othe share_occ_agriself_male share_occ_agriself_female share_occ_agricasual_male share_occ_agricasual_female share_occ_casual_male share_occ_casual_female share_occ_regnonquali_male share_occ_regnonquali_female share_occ_regquali_male share_occ_regquali_female share_occ_selfemp_male share_occ_selfemp_female share_occ_nrega_male share_occ_nrega_female share_occ_agri_male share_occ_agri_female share_occ_nona_male share_occ_nona_female share_occ_regu_male share_occ_regu_female share_occ_casu_male share_occ_casu_female share_occ_self_male share_occ_self_female share_occ_othe_male share_occ_othe_female share_occ_agriself_dep share_occ_agricasual_dep share_occ_casual_dep share_occ_regnonquali_dep share_occ_regquali_dep share_occ_selfemp_dep share_occ_nrega_dep share_occ_agri_dep share_occ_nona_dep share_occ_regu_dep share_occ_casu_dep share_occ_self_dep share_occ_othe_dep
-
-drop share_hoursayear_agriself share_hoursayear_agricasual share_hoursayear_casual share_hoursayear_regnonquali share_hoursayear_regquali share_hoursayear_selfemp share_hoursayear_nrega share_hoursayear_agri share_hoursayear_nona share_hoursayear_regu share_hoursayear_casu share_hoursayear_self share_hoursayear_othe share_hoursayear share_hoursayear_male share_hoursayear_female share_hoursayear_dep share_hoursayear_agri_male share_hoursayear_agri_female share_hoursayear_nona_male share_hoursayear_nona_female share_hoursayear_regu_male share_hoursayear_regu_female share_hoursayear_casu_male share_hoursayear_casu_female share_hoursayear_self_male share_hoursayear_self_female share_hoursayear_othe_male share_hoursayear_othe_female sharehoursayearagri_HH sharehoursayearnonagri_HH
 
 drop hoursayear_HH hoursayearagri_HH hoursayearnonagri_HH
 
-drop share_annualincome_agriself share_annualincome_agricasual share_annualincome_casual share_annualincome_regnonquali share_annualincome_regquali share_annualincome_selfemp share_annualincome_nrega share_annualincome_agri share_annualincome_nona share_annualincome_regu share_annualincome_casu share_annualincome_self share_annualincome_othe share_annualincome share_annualincome_male share_annualincome_female share_annualincome_dep share_annualincome_agri_male share_annualincome_agri_female share_annualincome_nona_male share_annualincome_nona_female share_annualincome_regu_male share_annualincome_regu_female share_annualincome_casu_male share_annualincome_casu_female share_annualincome_self_male share_annualincome_self_female share_annualincome_othe_male share_annualincome_othe_female
 
 
 ********** Last minute var crea

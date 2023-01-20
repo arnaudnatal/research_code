@@ -347,11 +347,11 @@ ta dummydiffhours2
 
 ********** Save
 duplicates report HHID_panel INDID_panel
+
 save"panel-newoccvar_indiv_v3", replace
 
 ****************************************
 * END
-
 
 
 
@@ -369,12 +369,12 @@ use"panel-newoccvar_indiv_v2", clear
 
 
 ********** Merge new var
-merge m:1 HHID_panel INDID_panel using "panel-newoccvar_indiv_v3", keepusing(occup2010 occup2016 occup2020 lfp2010 lfp2016 lfp2020 absmobinc1 absmobinc2 relmobinc1 relmobinc2 change1 change2)
+merge m:1 HHID_panel INDID_panel using "panel-newoccvar_indiv_v3", keepusing(occup2010 occup2016 occup2020 absmobinc1 absmobinc2 percincome2010 percincome2016 percincome2020 relmobinc1 relmobinc2 change1 change2 lfp2010 lfp2016 lfp2020 diffnbocc1 diffnbocc2 dummydiffnbocc1 dummydiffnbocc2 diffhours2 dummydiffhours2)
 drop _merge
 
 
 ********** Merge debt
-merge m:1 HHID_panel year using "panel_v8", keepusing(village HHsize HH_count_child HH_count_adult squareroot_HHsize family typeoffamily nbgeneration waystem dummypolygamous sexratio dependencyratio nbloans_HH loanamount_HH trend1 trend2 trends pcaindex pca2index dalits pca2index2010 pca2index2016 pca2index2020)
+merge m:1 HHID_panel year using "panel_v8", keepusing(village HHsize HH_count_child HH_count_adult squareroot_HHsize family typeoffamily nbgeneration waystem dummypolygamous sexratio dependencyratio nbloans_HH loanamount_HH trend1 trend2 trends pcaindex pca2index dalits)
 keep if _merge==3
 drop _merge
 
@@ -389,10 +389,17 @@ encode HHINDID, gen(panelvar)
 order HHINDID panelvar HHID_panel INDID_panel year
 
 
+********** New var
+foreach x in absmobinc relmobinc dummydiffnbocc change {
+gen `x'=.
+replace `x'=`x'1 if year==2010
+replace `x'=`x'2 if year==2016
+}
+
+
 save"panel_indiv_v1", replace
 ****************************************
 * END
-
 
 
 
@@ -420,50 +427,27 @@ use"panel_indiv_v1", clear
 *** Panel declaration
 xtset panelvar year
 
-
-*** Test 2010-2016
-cls
 preserve
 keep if year==2010
-
-probit lfp2016 c.pca2index i.sex i.dalits age i.edulevel, base
-probit lfp2016 c.pca2index##c.pca2index i.sex i.dalits age i.edulevel, base
-probit lfp2016 c.pca2index##i.sex##i.dalits age i.edulevel, base
-
-probit lfp2016 i.trend1 i.sex i.dalits age i.edulevel, base
-probit lfp2016 i.trend1##i.sex##i.dalits age i.edulevel, base
-
-
-probit change1 c.pca2index i.sex i.dalits age i.edulevel, base
-probit change1 c.pca2index##c.pca2index i.sex i.dalits age i.edulevel, base
-probit change1 c.pca2index##i.sex##i.dalits age i.edulevel, base
-
-probit change1 i.trend1 i.sex i.dalits age i.edulevel, base
-probit change1 i.trend1##i.sex##i.dalits age i.edulevel, base
-
+foreach y in dummydiffnbocc1 absmobinc1 relmobinc1 {
+reg `y' c.pca2index##i.dalits##i.sex
+}
 restore
 
-
-*** Test 2016-2020
 cls
 preserve
 keep if year==2016
+foreach y in dummydiffnbocc2 dummydiffhours2 absmobinc2 relmobinc2 {
+reg `y' c.pca2index##i.dalits##i.sex
+}
+restore
 
-probit lfp2020 c.pca2index i.sex i.dalits age i.edulevel, base
-probit lfp2020 c.pca2index##c.pca2index i.sex i.dalits age i.edulevel, base
-probit lfp2020 c.pca2index##i.sex##i.dalits age i.edulevel, base
-
-probit lfp2020 i.trend1 i.sex i.dalits age i.edulevel, base
-probit lfp2020 i.trend1##i.sex##i.dalits age i.edulevel, base
-
-
-probit change2 c.pca2index i.sex i.dalits age i.edulevel, base
-probit change2 c.pca2index##c.pca2index i.sex i.dalits age i.edulevel, base
-probit change2 c.pca2index##i.sex##i.dalits age i.edulevel, base
-
-probit change2 i.trend1 i.sex i.dalits age i.edulevel, base
-probit change2 i.trend1##i.sex##i.dalits age i.edulevel, base
-
+cls
+preserve
+drop if year==2020
+foreach y in dummydiffnbocc absmobinc change relmobinc {
+xtreg `y' c.pca2index##i.dalits##i.sex, fe
+}
 restore
 
 ****************************************
@@ -471,4 +455,34 @@ restore
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Test
+****************************************
+cls
+use"panel_indiv_v1", clear
+
+
+*** Panel declaration
+xtset panelvar year
+
+ta occup, gen(occup_)
+
+xtprobit occup_2 L.pca2index
+
+
+****************************************
+* END
 
