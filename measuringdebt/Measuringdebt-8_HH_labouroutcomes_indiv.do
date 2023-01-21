@@ -49,6 +49,57 @@ drop _merge
 gen year=2010
 
 
+*** Other activities
+preserve
+use"raw/RUME-occupnew", clear
+
+* Clean
+fre occupation
+drop if occupation==0
+recode occupation (5=4)
+
+* Dummies
+ta occupation, gen(occup_)
+
+* Income
+forvalues i=1/6 {
+gen occup_inc_`i'=0
+}
+
+forvalues i=1/6 {
+replace occup_inc_`i'=annualincome if occup_`i'==1
+}
+
+* Indiv
+forvalues i=1/6 {
+bysort HHID2010 INDID2010: egen sum_occup_`i'=sum(occup_`i')
+bysort HHID2010 INDID2010: egen sum_occup_inc_`i'=sum(occup_inc_`i')
+}
+keep HHID2010 INDID2010 sum_occup_1 sum_occup_inc_1 sum_occup_2 sum_occup_inc_2 sum_occup_3 sum_occup_inc_3 sum_occup_4 sum_occup_inc_4 sum_occup_5 sum_occup_inc_5 sum_occup_6 sum_occup_inc_6
+duplicates drop
+
+forvalues i=1/6 {
+rename sum_occup_`i' occ_`i'
+rename sum_occup_inc_`i' occinc_`i'
+}
+
+* Dummies
+forvalues i=1/6 {
+gen dumocc_`i'=0
+}
+forvalues i=1/6 {
+replace dumocc_`i'=1 if occ_`i'>0
+}
+order HHID2010 INDID2010 dumocc_1 dumocc_2 dumocc_3 dumocc_4 dumocc_5 dumocc_6 occ_1 occ_2 occ_3 occ_4 occ_5 occ_6 occinc_1 occinc_2 occinc_3 occinc_4 occinc_5 occinc_6
+
+save "occtomerge2010", replace
+restore
+
+merge 1:1 HHID2010 INDID2010 using "occtomerge2010"
+drop if _merge==2
+drop _merge
+
+
 save"RUME-newoccvar_indiv", replace
 ****************************************
 * END
@@ -92,6 +143,69 @@ drop _merge
 gen year=2016
 
 
+*** Other activities
+preserve
+use"raw/NEEMSIS1-occupnew", clear
+
+* Clean
+fre occupation
+drop if occupation==0
+recode occupation (5=4)
+
+* Dummies
+ta occupation, gen(occup_)
+
+* Income
+forvalues i=1/6 {
+gen occup_inc_`i'=0
+}
+
+forvalues i=1/6 {
+replace occup_inc_`i'=annualincome if occup_`i'==1
+}
+
+* Hours
+forvalues i=1/6 {
+gen occup_hours_`i'=0
+}
+
+forvalues i=1/6 {
+replace occup_hours_`i'=hoursayear if occup_`i'==1
+}
+
+* Indiv
+forvalues i=1/6 {
+bysort HHID2016 INDID2016: egen sum_occup_`i'=sum(occup_`i')
+bysort HHID2016 INDID2016: egen sum_occup_inc_`i'=sum(occup_inc_`i')
+bysort HHID2016 INDID2016: egen sum_occup_hours_`i'=sum(occup_hours_`i')
+}
+keep HHID2016 INDID2016 sum_occup_1 sum_occup_inc_1 sum_occup_2 sum_occup_inc_2 sum_occup_3 sum_occup_inc_3 sum_occup_4 sum_occup_inc_4 sum_occup_5 sum_occup_inc_5 sum_occup_6 sum_occup_inc_6 sum_occup_hours_1 sum_occup_hours_2 sum_occup_hours_3 sum_occup_hours_4 sum_occup_hours_5 sum_occup_hours_6
+duplicates drop
+
+forvalues i=1/6 {
+rename sum_occup_`i' occ_`i'
+rename sum_occup_inc_`i' occinc_`i'
+rename sum_occup_hours_`i' occhours_`i'
+}
+
+* Dummies
+forvalues i=1/6 {
+gen dumocc_`i'=0
+}
+forvalues i=1/6 {
+replace dumocc_`i'=1 if occ_`i'>0
+}
+order HHID2016 INDID2016 dumocc_1 dumocc_2 dumocc_3 dumocc_4 dumocc_5 dumocc_6 occ_1 occ_2 occ_3 occ_4 occ_5 occ_6 occinc_1 occinc_2 occinc_3 occinc_4 occinc_5 occinc_6 occhours_1 occhours_2 occhours_3 occhours_4 occhours_5 occhours_6
+
+save "occtomerge2016", replace
+restore
+
+merge 1:1 HHID2016 INDID2016 using "occtomerge2016"
+drop if _merge==2
+drop _merge
+
+
+
 save"NEEMSIS1-newoccvar_indiv", replace
 ****************************************
 * END
@@ -132,6 +246,68 @@ merge m:m HHID2020 using "raw/ODRIIS-HH_wide", keepusing(HHID_panel)
 keep if _merge==3
 drop _merge
 gen year=2020
+
+
+*** Other activities
+preserve
+use"raw/NEEMSIS2-occupnew", clear
+
+* Clean
+fre occupation
+drop if occupation==0
+recode occupation (5=4)
+
+* Dummies
+ta occupation, gen(occup_)
+
+* Income
+forvalues i=1/6 {
+gen occup_inc_`i'=0
+}
+
+forvalues i=1/6 {
+replace occup_inc_`i'=annualincome if occup_`i'==1
+}
+
+* Hours
+forvalues i=1/6 {
+gen occup_hours_`i'=0
+}
+
+forvalues i=1/6 {
+replace occup_hours_`i'=hoursayear if occup_`i'==1
+}
+
+* Indiv
+forvalues i=1/6 {
+bysort HHID2020 INDID2020: egen sum_occup_`i'=sum(occup_`i')
+bysort HHID2020 INDID2020: egen sum_occup_inc_`i'=sum(occup_inc_`i')
+bysort HHID2020 INDID2020: egen sum_occup_hours_`i'=sum(occup_hours_`i')
+}
+keep HHID2020 INDID2020 sum_occup_1 sum_occup_inc_1 sum_occup_2 sum_occup_inc_2 sum_occup_3 sum_occup_inc_3 sum_occup_4 sum_occup_inc_4 sum_occup_5 sum_occup_inc_5 sum_occup_6 sum_occup_inc_6 sum_occup_hours_1 sum_occup_hours_2 sum_occup_hours_3 sum_occup_hours_4 sum_occup_hours_5 sum_occup_hours_6
+duplicates drop
+
+forvalues i=1/6 {
+rename sum_occup_`i' occ_`i'
+rename sum_occup_inc_`i' occinc_`i'
+rename sum_occup_hours_`i' occhours_`i'
+}
+
+* Dummies
+forvalues i=1/6 {
+gen dumocc_`i'=0
+}
+forvalues i=1/6 {
+replace dumocc_`i'=1 if occ_`i'>0
+}
+order HHID2020 INDID2020 dumocc_1 dumocc_2 dumocc_3 dumocc_4 dumocc_5 dumocc_6 occ_1 occ_2 occ_3 occ_4 occ_5 occ_6 occinc_1 occinc_2 occinc_3 occinc_4 occinc_5 occinc_6 occhours_1 occhours_2 occhours_3 occhours_4 occhours_5 occhours_6
+
+save "occtomerge2020", replace
+restore
+
+merge 1:1 HHID2020 INDID2020 using "occtomerge2020"
+drop if _merge==2
+drop _merge
 
 
 save"NEEMSIS2-newoccvar_indiv", replace
@@ -222,11 +398,22 @@ ta occup year
 
 
 ********** Deflate
-foreach x in mainocc_annualincome_indiv annualincome_indiv incomeagri_indiv incomenonagri_indiv {
+foreach x in mainocc_annualincome_indiv annualincome_indiv incomeagri_indiv incomenonagri_indiv occinc_1 occinc_2 occinc_3 occinc_4 occinc_5 occinc_6 {
 replace `x'=`x'*(100/158) if year==2016
 replace `x'=`x'*(100/184) if year==2020
 }
 
+
+
+********** Rename
+foreach x in dumocc occ occinc occhours {
+rename `x'_1 `x'_agrise
+rename `x'_2 `x'_agricasu
+rename `x'_3 `x'_casu
+rename `x'_4 `x'_regu
+rename `x'_5 `x'_se
+rename `x'_6 `x'_nrega
+}
 
 save"panel-newoccvar_indiv", replace
 ****************************************
@@ -250,15 +437,15 @@ use"panel-newoccvar_indiv", clear
 
 ********** Panel nb
 bysort HHID_panel INDID_panel: gen n=_N
-ta n
-drop if n==1
+*ta n
+*drop if n==1
 
 save"panel-newoccvar_indiv_v2", replace
 
 
 
 ********** Reshape
-reshape wide HHID INDID name sex age dep edulevel dummyworkedpastyear working_pop mainocc_profession_indiv mainocc_occupation_indiv mainocc_sector_indiv mainocc_annualincome_indiv mainocc_occupationname_indiv annualincome_indiv nboccupation_indiv incomeagri_indiv incomenonagri_indiv shareincomeagri_indiv shareincomenonagri_indiv occup hoursayear_indiv mainocc_hoursayear_indiv, i(HHID_panel INDID_panel) j(year)
+reshape wide HHID INDID name sex age dep edulevel dummyworkedpastyear working_pop mainocc_profession_indiv mainocc_occupation_indiv mainocc_sector_indiv mainocc_annualincome_indiv mainocc_occupationname_indiv annualincome_indiv nboccupation_indiv incomeagri_indiv incomenonagri_indiv shareincomeagri_indiv shareincomenonagri_indiv occup hoursayear_indiv mainocc_hoursayear_indiv dumocc_agrise dumocc_agricasu dumocc_casu dumocc_regu dumocc_se dumocc_nrega occ_agrise occ_agricasu occ_casu occ_regu occ_se occ_nrega occinc_agrise occinc_agricasu occinc_casu occinc_regu occinc_se occinc_nrega occhours_agrise occhours_agricasu occhours_casu occhours_regu occhours_se occhours_nrega, i(HHID_panel INDID_panel) j(year)
 
 
 ********** New occ var
@@ -397,6 +584,15 @@ replace `x'=`x'2 if year==2016
 }
 
 
+********** HH charact
+merge m:1 HHID_panel year using "panel_v8", keepusing(remittnet_HH assets_total villageid)
+drop _merge
+
+encode villageid, gen(vill)
+ta vill, gen(vill_)
+drop vill
+
+
 save"panel_indiv_v1", replace
 ****************************************
 * END
@@ -417,70 +613,45 @@ save"panel_indiv_v1", replace
 
 
 
-****************************************
-* Test
-****************************************
-cls
-use"panel_indiv_v1", clear
-
-
-*** Panel declaration
-xtset panelvar year
-
-preserve
-keep if year==2010
-foreach y in dummydiffnbocc1 absmobinc1 relmobinc1 {
-reg `y' c.pca2index##i.dalits##i.sex
-}
-restore
-
-cls
-preserve
-keep if year==2016
-foreach y in dummydiffnbocc2 dummydiffhours2 absmobinc2 relmobinc2 {
-reg `y' c.pca2index##i.dalits##i.sex
-}
-restore
-
-cls
-preserve
-drop if year==2020
-foreach y in dummydiffnbocc absmobinc change relmobinc {
-xtreg `y' c.pca2index##i.dalits##i.sex, fe
-}
-restore
 
 ****************************************
-* END
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-****************************************
-* Test
+* ML SEM and LEV at individual level
 ****************************************
 cls
 use"panel_indiv_v1", clear
 
 
+*** Seletion working age
+drop if age<15
+
+
 *** Panel declaration
-xtset panelvar year
+gen time=0
+replace time=1 if year==2010
+replace time=2 if year==2016
+replace time=3 if year==2020
+xtset panelvar time
+set maxiter 50
 
-ta occup, gen(occup_)
 
-xtprobit occup_2 L.pca2index
+*** Var crea
+
+
+*** Macro
+global xHH HHsize HH_count_child sexratio dependencyratio remittnet_HH assets_total vill_2 vill_3 vill_4 vill_5 vill_6 vill_7 vill_8 vill_9 vill_10
+
+
+*** LEV
+log using "C:\Users\Arnaud\Downloads\Indiv_LEV.log", replace
+
+foreach y in dumocc_agrise dumocc_agricasu dumocc_casu dumocc_regu dumocc_se dumocc_nrega {
+foreach x in pca2index pcaindex loanamount_HH {
+capture noisily xtlogit `y' L.`x' c.age##c.age i.sex i.dalits i.edulevel $xHH, fe
+}
+}
+
+log close
+
 
 
 ****************************************
