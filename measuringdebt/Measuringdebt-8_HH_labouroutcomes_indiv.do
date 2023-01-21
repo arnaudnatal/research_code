@@ -635,23 +635,109 @@ set maxiter 50
 
 
 *** Var crea
+gen occ2_agri=dumocc_agrise+dumocc_agricasu
+gen occ2_nona=dumocc_casu+dumocc_regu+dumocc_se+dumocc_nrega
+gen occ2_casu=dumocc_agricasu+dumocc_casu
+gen occ2_regu=dumocc_agrise+dumocc_regu+dumocc_se+dumocc_nrega
+gen occ2_self=dumocc_agrise+dumocc_se
+gen occ2_othe=dumocc_agricasu+dumocc_casu+dumocc_regu+dumocc_nrega
+
+foreach x in agri nona casu regu self othe {
+gen dummy_`x'=occ2_`x'
+}
+foreach x in agri nona casu regu self othe {
+replace dummy_`x'=1 if occ2_`x'>1 & occ2_`x'!=.
+}
+
+*
+fre working_pop
+gen working_pop2=working_pop
+recode working_pop2 (1=0) (2=0) (3=1)
+label define working_pop2 0"Unoccupied" 1"Occupied"
+label values working_pop2 working_pop2
+replace working_pop2=1 if working_pop2==0 & dumocc_agrise!=.
+ta working_pop2
+fre dumocc_agrise dumocc_agricasu dumocc_casu dumocc_regu dumocc_se dumocc_nrega
+
+*
+fre edulevel
+gen edulevel2=edulevel
+recode edulevel2 (.=0) (2=1) (3=1) (4=1) (5=1)
+fre edulevel2
+
+*
+fre sex
+gen female=.
+replace female=0 if sex==1
+replace female=1 if sex==2
 
 
 *** Macro
-global xHH HHsize HH_count_child sexratio dependencyratio remittnet_HH assets_total vill_2 vill_3 vill_4 vill_5 vill_6 vill_7 vill_8 vill_9 vill_10
+global xHH sexratio dependencyratio remittnet_HH assets_total vill_2 vill_3 vill_4 vill_5 vill_6 vill_7 vill_8 vill_9 vill_10
+*HHsize HH_count_child 
 
 
-*** LEV
-log using "C:\Users\Arnaud\Downloads\Indiv_LEV.log", replace
+*** LEV: LFP
+set maxiter 200
+log using "C:\Users\Arnaud\Downloads\Indiv_probit.log", replace
 
-foreach y in dumocc_agrise dumocc_agricasu dumocc_casu dumocc_regu dumocc_se dumocc_nrega {
-foreach x in pca2index pcaindex loanamount_HH {
-capture noisily xtlogit `y' L.`x' c.age##c.age i.sex i.dalits i.edulevel $xHH, fe
+foreach y in working_pop2 dummy_agri dummy_nona dummy_casu dummy_regu dummy_self dummy_othe {
+foreach x in pca2index {
+capture noisily xtlogit `y' c.L.`x' c.age i.dep i.female i.dalits i.edulevel2 $xHH, fe
+capture noisily xtlogit `y' c.L.`x'##i.female##i.dalits i.dep c.age i.edulevel2 $xHH, fe
 }
 }
 
 log close
 
+
+
+
+/*
+*** LEV: NLFP
+set maxiter 200
+log using "C:\Users\Arnaud\Downloads\Indiv_poisson.log", replace
+
+foreach y in occ2_agri occ2_nona occ2_casu occ2_regu occ2_self occ2_othe {
+foreach x in pca2index  {
+capture noisily xtpoisson `y' c.L.`x' c.age i.dep i.female i.dalits i.edulevel2 $xHH, fe
+capture noisily xtpoisson `y' c.L.`x'##i.female##i.dalits i.dep c.age i.edulevel2 $xHH, fe
+}
+}
+
+log close
+*/
+
+
+*** LEV: NLFP
+set maxiter 200
+log using "C:\Users\Arnaud\Downloads\indiv_OLS.log", replace
+
+foreach y in occinc_agrise occinc_agricasu occinc_casu occinc_regu occinc_se occinc_nrega occhours_agrise occhours_agricasu occhours_casu occhours_regu occhours_se occhours_nrega {
+foreach x in pca2index  {
+capture noisily xtreg `y' c.L.`x' c.age i.dep i.female i.dalits i.edulevel2 $xHH, fe
+capture noisily xtreg `y' c.L.`x'##i.female##i.dalits i.dep c.age i.edulevel2 $xHH, fe
+}
+}
+log close
+
+
+
+
+
+
+*** ML-SEM
+set maxiter 9999
+log using "C:\Users\Arnaud\Downloads\Indiv_mlsemdummy.log", replace
+
+foreach y in occinc_agrise occinc_agricasu occinc_casu occinc_regu occinc_se occinc_nrega occhours_agrise occhours_agricasu occhours_casu occhours_regu occhours_se occhours_nrega {
+foreach x in pca2index {
+capture noisily xtdpdml `y'  age female edulevel2 sexratio dependencyratio remittnet_HH assets_total, inv(dalits vill_2 vill_3 vill_4 vill_5 vill_6 vill_7 vill_8 vill_9 vill_10) predetermined(L.`x') fiml
+}
+}
+
+log close
+*capture noisily xtdpdml `y' $xvar1 $xvar2 $xvar3, inv($xinvar) predetermined(L.`x') fiml
 
 
 ****************************************
