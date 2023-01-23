@@ -30,9 +30,9 @@ use"panel_v3", clear
 
 
 *** Measures of financial distress
-global overlap dar_std dsr_std afm_std rfm_std isr_std dailyincome_pc_std assets_total_std
+global overlap dar_std dsr_std afm_std rfm_std isr_std dailyincome_pc_std assets_total_std lapc_std
 
-global overlap incomerev_std dar_std rfmrev_std dsr_std
+global overlap incomerev_std dar_std rfmrev_std dsr_std lapc_std
 
 
 corr $overlap
@@ -124,19 +124,18 @@ rotate, quartimin
 predict fact1 fact2 fact3
 *twoway (scatter fact2 fact1, xline(0) yline(0) mcolor(black%30) msymbol(oh))
 
-
 *** Cluster
 cluster wardslinkage fact1 fact2 fact3, measure(L2)
-cluster dendrogram, cutnumber(100)
+*cluster dendrogram, cutnumber(100)
 cluster gen clust=groups(4)
 
+/*
 twoway ///
 (scatter fact2 fact1 if clust==1, mcolor(plb1%50) ms(oh) xline(0) yline(0)) ///
 (scatter fact2 fact1 if clust==2, mcolor(ply1%50) ms(oh)) ///
 (scatter fact2 fact1 if clust==3, mcolor(plr1%50) ms(oh)) ///
 (scatter fact2 fact1 if clust==4, mcolor(plg1%50) ms(oh)) ///
 , aspectratio(0.7)
-
 
 twoway ///
 (scatter fact3 fact1 if clust==1, mcolor(plb1%50) ms(oh) xline(0) yline(0)) ///
@@ -151,9 +150,19 @@ twoway ///
 (scatter fact3 fact2 if clust==3, mcolor(plr1%50) ms(oh)) ///
 (scatter fact3 fact2 if clust==4, mcolor(plg1%50) ms(oh)) ///
 , aspectratio(0.7)
-
+*/
 
 tabstat $var, stat(n mean cv p50) by(clust)
+/*
+1. Vulnerable
+2. Middle trapped
+3. High debt but high incomes
+4. Highly vulnerable
+*/
+
+recode clust (3=1) (2=2) (1=3) (4=4)
+label define clust1 1"Rich" 2"Middle trapped" 3"Vulnerable" 4"Highly"
+label values clust clust1
 
 ta clust year, col nofreq chi2
 
@@ -164,6 +173,9 @@ ta clust caste if year==2020, col nofreq chi2
 ta clust stem if year==2010, col nofreq chi2
 ta clust stem if year==2016, col nofreq chi2
 ta clust stem if year==2020, col nofreq chi2
+
+drop _clus_1_id _clus_1_ord _clus_1_hgt 
+rename clust pcaindexclust
 
 *** Corr between var and fact
 cpcorr $varstd \ fact1 fact2 fact3
@@ -273,6 +285,43 @@ predict fact1 fact2
 *twoway (scatter fact2 fact1, xline(0) yline(0) mcolor(black%30) msymbol(oh))
 
 
+*** Cluster
+cluster wardslinkage fact1 fact2, measure(L2)
+*cluster dendrogram, cutnumber(100)
+cluster gen clust=groups(3)
+
+/*
+twoway ///
+(scatter fact2 fact1 if clust==1, mcolor(plb1%50) ms(oh) xline(0) yline(0)) ///
+(scatter fact2 fact1 if clust==2, mcolor(ply1%50) ms(oh)) ///
+(scatter fact2 fact1 if clust==3, mcolor(plr1%50) ms(oh)) ///
+, aspectratio(0.7)
+*/
+
+tabstat $var, stat(n mean cv p50) by(clust)
+/*
+1. Non-vuln
+2. Transition
+3. Highly
+*/
+
+recode clust (1=1) (2=2) (3=3)
+label define clust2 1"Non-vulnerable" 2"Transition" 3"Highly vulnerable"
+label values clust clust2
+
+ta clust year, col nofreq chi2
+
+ta clust caste if year==2010, col nofreq chi2
+ta clust caste if year==2016, col nofreq chi2
+ta clust caste if year==2020, col nofreq chi2
+
+ta clust stem if year==2010, col nofreq chi2
+ta clust stem if year==2016, col nofreq chi2
+ta clust stem if year==2020, col nofreq chi2
+
+drop _clus_2_id _clus_2_ord _clus_2_hgt 
+rename clust pca2indexclust
+
 *** Corr between var and fact
 cpcorr $varstd \ fact1 fact2
 
@@ -340,94 +389,42 @@ save"panel_v5", replace
 
 
 ****************************************
-* Finindex no. 6
+* Finindex no. 3
 ****************************************
 use"panel_v5", clear
 
-/*
-- Assets pc
-- Income per capita
-- Debt service
-- Debt to assets
-*/
-
 
 ********** Global
-global varstd assets_pc_std dsr_std dar_std dailyincome_pc_std
+replace assets_pc=assets_pc/1000
+replace lapc=lapc/10000
+global varstd dailyincome_pc_std dsr_std dar_std lapc_std afm_std
 
 
-********** Desc
-tabstat $varstd, stat(n mean cv p50) by(year)
+*** Cluster
+cluster wardslinkage $varstd, measure(L2)
+*cluster dendrogram, cutnumber(100)
+cluster gen clust=groups(3)
 
-corr $varstd
+tabstat $varstd, stat(p50) by(clust)
 
-factortest $varstd
-* Bartlett: 0.00
-* KMO: 0.628
+ta clust year, col nofreq chi2
 
-********* PCA
-pca $varstd
-* 2 compo --> 60.65%
-pca $varstd, comp(2)
-estat kmo
-*screeplot, ci mean
-rotate, quartimin
-
-*** Projection of individuals
-predict fact1 fact2
-*twoway (scatter fact2 fact1, xline(0) yline(0) mcolor(black%30) msymbol(oh))
-
-
-*** Corr between var and fact
-cpcorr $varstd \ fact1 fact2
-
-
-*** Std indiv score
-forvalues i=1/2 {
-qui sum fact`i'
-gen fact`i'_std = (fact`i'-r(min))/(r(max)-r(min))
-}
-
-
-*** Index construction
-gen PCA_finindexnew=((fact1_std*0.62)+(fact2_std*0.38))*100
-
-
-*** Index meaning
-cpcorr fact1 fact2 \ PCA_finindexnew
-cpcorr $varstd \ PCA_finindexnew
-cpcorr $var \ PCA_finindexnew
+ta clust caste if year==2010, exp cchi2 chi2
+ta clust caste if year==2016, exp cchi2 chi2
+ta clust caste if year==2020, exp cchi2 chi2
 
 
 
-*** Econo
-xtset panelvar year
-xtreg PCA_finindexnew i.caste i.stem c.HHsize c.HH_count_child i.head_sex head_age i.head_mocc_occupation i.head_edulevel i.vill, base
-
-
-
-
-********** Stability over time
-preserve
-keep HHID_panel year PCA_finindexnew caste
-reshape wide PCA_finindexnew, i(HHID_panel) j(year)
-cls
-corr PCA_finindexnew2010 PCA_finindexnew2016 PCA_finindexnew2020
-corr PCA_finindexnew2010 PCA_finindexnew2016 PCA_finindexnew2020 if caste==1
-corr PCA_finindexnew2010 PCA_finindexnew2016 PCA_finindexnew2020 if caste==2
-corr PCA_finindexnew2010 PCA_finindexnew2016 PCA_finindexnew2020 if caste==3
-restore
-
-
-
-********* Clean
-drop fact1 fact2 fact1_std fact2_std
 
 
 
 save"panel_v5", replace
 ****************************************
 * END
+
+
+
+
 
 
 

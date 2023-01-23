@@ -145,6 +145,11 @@ gen lpc=nbloans_HH/squareroot_HHsize
 ta lpc
 replace lpc=0 if lpc==.
 
+* LAPC - Loan amount per capita
+gen lapc=loanamount_HH/squareroot_HHsize
+ta lapc
+replace lapc=0 if lapc==.
+
 
 save"panel_v1", replace
 ****************************************
@@ -333,7 +338,7 @@ replace afm=-150000 if afm<-150000
 replace incpercpl=600 if incpercpl>600
 
 
-foreach x in loanamount_HH annualincome_HH assets_total imp1_ds_tot_HH imp1_is_tot_HH totHH_givenamt_repa dsr isr dar dir tdr tar afm rfm expenses_total remreceived_HH remsent_HH remittnet_HH dailyincome_pc assets_gold goldquantity_HH goldreadyamount nbloans_HH incpercpl assets_pc lpc {
+foreach x in loanamount_HH annualincome_HH assets_total imp1_ds_tot_HH imp1_is_tot_HH totHH_givenamt_repa dsr isr dar dir tdr tar afm rfm expenses_total remreceived_HH remsent_HH remittnet_HH dailyincome_pc assets_gold goldquantity_HH goldreadyamount nbloans_HH incpercpl assets_pc lpc lapc {
 egen `x'_std=std(`x')
 }
 
@@ -349,6 +354,7 @@ label var dailyincome_pc_std "Livelihood (std)"
 label var assets_total_std "Wealth (std)"
 label var nbloans_HH_std "Nb loans (std)"
 label var lpc_std "Loans pc (std)"
+label var lapc_std "Loan amount pc (std)"
 
 
 * Inc better to worse

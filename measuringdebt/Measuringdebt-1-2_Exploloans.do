@@ -14,6 +14,46 @@ do "https://raw.githubusercontent.com/arnaudnatal/folderanalysis/main/$link.do"
 
 
 
+
+
+****************************************
+* Just before work
+****************************************
+use"panel_loans", clear
+
+
+gen tokeep=1
+replace tokeep=0 if year==2020 & loandate>td(31dec2019)
+replace tokeep=0 if year==2016 & loandate>td(31dec2015)
+replace tokeep=0 if year==2010 & loandate>td(31dec2009)
+
+ta tokeep year
+keep if tokeep==1
+drop if loandate==.
+ta year
+
+bysort HHID_panel year: egen loanamount2_HH=sum(loanamount)
+
+keep HHID_panel year loanamount2_HH
+duplicates drop
+ta year
+
+bysort HHID_panel: gen panel=_N
+ta panel year
+
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
 ****************************************
 * CA with ALL loans
 ****************************************
