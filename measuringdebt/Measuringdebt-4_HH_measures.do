@@ -393,21 +393,25 @@ save"panel_v5", replace
 ****************************************
 use"panel_v5", clear
 
-
-********** Global
+********** Clean
 replace assets_pc=assets_pc/1000
 replace lapc=lapc/10000
-global varstd dailyincome_pc_std dsr_std dar_std lapc_std afm_std
+replace afm=afm/10000
+
+********** Global
+global varstd dailyincome_pc_std assets_pc_std dsr_std dar_std lapc_std afm_std
+global var dailyincome_pc assets_pc dsr dar lapc afm
 
 
 *** Cluster
 cluster wardslinkage $varstd, measure(L2)
-*cluster dendrogram, cutnumber(100)
+cluster dendrogram, cutnumber(100)
 cluster gen clust=groups(3)
 
-tabstat $varstd, stat(p50) by(clust)
+tabstat $var, stat(p50) by(clust)
 
-ta clust year, col nofreq chi2
+ta clust year
+ta clust year, col nofreq
 
 ta clust caste if year==2010, exp cchi2 chi2
 ta clust caste if year==2016, exp cchi2 chi2
