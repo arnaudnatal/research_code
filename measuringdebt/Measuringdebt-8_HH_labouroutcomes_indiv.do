@@ -546,7 +546,7 @@ drop _merge
 
 
 ********** Merge debt
-merge m:1 HHID_panel year using "panel_v8", keepusing(village HHsize HH_count_child HH_count_adult squareroot_HHsize family typeoffamily nbgeneration waystem dummypolygamous sexratio dependencyratio nbloans_HH loanamount_HH trend1 trend2 trends pcaindex pca2index dalits)
+merge m:1 HHID_panel year using "panel_v8", keepusing(village HHsize HH_count_child HH_count_adult squareroot_HHsize family typeoffamily nbgeneration waystem dummypolygamous sexratio dependencyratio nbloans_HH loanamount_HH trend1 trend2 trends pcaindex pca2index dalits dsr_std dar_std lpc_std tdr_std)
 keep if _merge==3
 drop _merge
 
@@ -686,7 +686,7 @@ global xHH sexratio dependencyratio remittnet_HH assets_total vill_2 vill_3 vill
 *** LEV -- LFP
 log using "C:\Users\Arnaud\Downloads\Indiv_probit.log", replace
 foreach y in working_pop2 dummy_agri dummy_nona dummy_casu dummy_regu dummy_self dummy_othe {
-foreach x in pca2index pcaindex loanamount_HH {
+foreach x in pca2index pcaindex loanamount_HH dsr_std dar_std lpc_std tdr_std {
 capture noisily xtlogit `y' L.`x' age dep female dalits edulevel2 $xHH, fe
 }
 }
@@ -698,8 +698,8 @@ log close
 
 log using "C:\Users\Arnaud\Downloads\Indiv_poisson.log", replace
 foreach y in occ2_agri occ2_nona occ2_casu occ2_regu occ2_self occ2_othe {
-foreach x in pca2index pcaindex loanamount_HH  {
-capture noisily xtpoisson `y' c.L.`x' c.age i.dep i.female i.dalits i.edulevel2 $xHH, fe
+foreach x in pca2index pcaindex loanamount_HH dsr_std dar_std lpc_std tdr_std {
+capture noisily xtreg `y' c.L.`x' c.age i.dep i.female i.dalits i.edulevel2 $xHH, fe
 }
 }
 log close
@@ -709,7 +709,7 @@ log close
 *** LEV -- inc and hours
 log using "C:\Users\Arnaud\Downloads\indiv_OLS.log", replace
 foreach y in occhours2_agri occhours2_nona occhours2_casu occhours2_regu occhours2_self occhours2_othe occinc2_agri occinc2_nona occinc2_casu occinc2_regu occinc2_self occinc2_othe {
-foreach x in pca2index pcaindex loanamount_HH {
+foreach x in pca2index pcaindex loanamount_HH dsr_std dar_std lpc_std tdr_std {
 capture noisily xtreg `y' c.L.`x' c.age i.dep i.female i.dalits i.edulevel2 $xHH, fe
 }
 }
@@ -762,15 +762,54 @@ global xHH sexratio dependencyratio remittnet_HH assets_total vill_2 vill_3 vill
 
 
 
-*** LEV -- LFP
+*** Logit
 log using "C:\Users\Arnaud\Downloads\Diff_probit.log", replace
-foreach y in change absmobinc relmobinc dummydiffnbocc diffnbocc {
-foreach x in pca2index pcaindex loanamount_HH {
+foreach y in change absmobinc relmobinc dummydiffnbocc {
+foreach x in pca2index pcaindex loanamount_HH dsr_std dar_std lpc_std tdr_std {
 capture noisily xtlogit `y' `x' age dep female dalits edulevel2 $xHH, fe
 }
 }
 log close
 
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Debt on change in hours
+****************************************
+cls
+use"panel_indiv_v1", clear
+
+
+*** Seletion
+drop if age<15
+keep if year==2016
+set maxiter 16000
+
+
+*** Macro
+global xHH sexratio dependencyratio remittnet_HH assets_total vill_2 vill_3 vill_4 vill_5 vill_6 vill_7 vill_8 vill_9 vill_10 HHsize HH_count_child 
+
+
+
+*** Logit
+log using "C:\Users\Arnaud\Downloads\Diff_probithours.log", replace
+foreach x in pca2index pcaindex loanamount_HH dsr_std dar_std lpc_std tdr_std {
+capture noisily probit dummydiffhours2 `x' age dep female dalits edulevel2 $xHH
+}
+log close
 
 
 

@@ -55,7 +55,7 @@ replace loanamount_HH=loanamount_HH*(100/184) if year==2020
 
 
 *** X-var
-global interestvar loanamount_HH
+global interestvar loanamount_HH pcaindex pca2index
 
 global xinvar dalits village_2 village_3 village_4 village_5 village_6 village_7 village_8 village_9 village_10
 
@@ -67,17 +67,15 @@ global xvar3 remittnet_HH assets_total
 
 
 *** Y-var
-*global yvar ind_total ind_female ind_male ind_dep ind_agri ind_nona ind_regu ind_casu ind_self ind_othe ind_agri_male ind_agri_female ind_nona_male ind_nona_female ind_regu_male ind_regu_female ind_casu_male ind_casu_female ind_self_male ind_self_female ind_othe_male ind_othe_female ind_agri_dep ind_nona_dep ind_regu_dep ind_casu_dep ind_self_dep ind_othe_dep 
-///
-*occ_total occ_female occ_male occ_dep occ_agri occ_nona occ_regu occ_casu occ_self occ_othe occ_agri_male occ_agri_female occ_nona_male occ_nona_female occ_regu_male occ_regu_female occ_casu_male occ_casu_female occ_self_male occ_self_female occ_othe_male occ_othe_female occ_agri_dep occ_nona_dep occ_regu_dep occ_casu_dep occ_self_dep occ_othe_dep
-
-global yvar share_total share_female share_male share_dep share_agri share_nona share_regu share_casu share_self share_othe share_agri_male share_agri_female share_nona_male share_nona_female share_regu_male share_regu_female share_casu_male share_casu_female share_self_male share_self_female share_othe_male share_othe_female share_agri_dep share_nona_dep share_regu_dep share_casu_dep share_self_dep share_othe_dep 
+global yvar ind_total ind_female ind_male ind_dep ind_agri ind_nona ind_regu ind_casu ind_self ind_othe ind_agri_male ind_agri_female ind_nona_male ind_nona_female ind_regu_male ind_regu_female ind_casu_male ind_casu_female ind_self_male ind_self_female ind_othe_male ind_othe_female ind_agri_dep ind_nona_dep ind_regu_dep ind_casu_dep ind_self_dep ind_othe_dep ///
+occ_total occ_female occ_male occ_dep occ_agri occ_nona occ_regu occ_casu occ_self occ_othe occ_agri_male occ_agri_female occ_nona_male occ_nona_female occ_regu_male occ_regu_female occ_casu_male occ_casu_female occ_self_male occ_self_female occ_othe_male occ_othe_female occ_agri_dep occ_nona_dep occ_regu_dep occ_casu_dep occ_self_dep occ_othe_dep ///
+share_total share_female share_male share_dep share_agri share_nona share_regu share_casu share_self share_othe share_agri_male share_agri_female share_nona_male share_nona_female share_regu_male share_regu_female share_casu_male share_casu_female share_self_male share_self_female share_othe_male share_othe_female share_agri_dep share_nona_dep share_regu_dep share_casu_dep share_self_dep share_othe_dep 
 
 
 
 *** Analysis
 
-log using "C:\Users\Arnaud\Downloads\LEV_share.log", replace
+log using "C:\Users\Arnaud\Downloads\LEV_HHlevel.log", replace
 
 foreach y in $yvar {
 foreach x in $interestvar {
