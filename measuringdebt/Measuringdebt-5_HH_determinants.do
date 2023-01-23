@@ -62,6 +62,10 @@ use"panel_v7", clear
 
 xtset panelvar time
 
+/*
+Share of formal
+*/
+
 
 ********** RE
 * BP LM test

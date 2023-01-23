@@ -485,21 +485,6 @@ replace change2=1 if occup2016!=occup2020 & change2==0
 ta change2
 
 
-********** LFP
-gen lfp2010=0
-replace lfp2010=1 if occup2010>0
-ta occup2010 lfp2010
-
-gen lfp2016=0
-replace lfp2016=1 if occup2016>0
-ta occup2016 lfp2016
-
-gen lfp2020=0
-replace lfp2020=1 if occup2020>0
-ta occup2020 lfp2020
-
-
-
 ********** New occupation
 gen diffnbocc1=nboccupation_indiv2016-nboccupation_indiv2010
 gen diffnbocc2=nboccupation_indiv2020-nboccupation_indiv2016
@@ -556,7 +541,7 @@ use"panel-newoccvar_indiv_v2", clear
 
 
 ********** Merge new var
-merge m:1 HHID_panel INDID_panel using "panel-newoccvar_indiv_v3", keepusing(occup2010 occup2016 occup2020 absmobinc1 absmobinc2 percincome2010 percincome2016 percincome2020 relmobinc1 relmobinc2 change1 change2 lfp2010 lfp2016 lfp2020 diffnbocc1 diffnbocc2 dummydiffnbocc1 dummydiffnbocc2 diffhours2 dummydiffhours2)
+merge m:1 HHID_panel INDID_panel using "panel-newoccvar_indiv_v3", keepusing(occup2010 occup2016 occup2020 absmobinc1 absmobinc2 percincome2010 percincome2016 percincome2020 relmobinc1 relmobinc2 change1 change2 diffnbocc1 diffnbocc2 dummydiffnbocc1 dummydiffnbocc2 diffhours2 dummydiffhours2)
 drop _merge
 
 
@@ -576,8 +561,8 @@ encode HHINDID, gen(panelvar)
 order HHINDID panelvar HHID_panel INDID_panel year
 
 
-********** New var
-foreach x in absmobinc relmobinc dummydiffnbocc change {
+********** New var 1
+foreach x in absmobinc relmobinc dummydiffnbocc change diffnbocc {
 gen `x'=.
 replace `x'=`x'1 if year==2010
 replace `x'=`x'2 if year==2016
@@ -591,6 +576,68 @@ drop _merge
 encode villageid, gen(vill)
 ta vill, gen(vill_)
 drop vill
+
+
+
+********** New var 2
+*
+gen occ2_agri=dumocc_agrise+dumocc_agricasu
+gen occ2_nona=dumocc_casu+dumocc_regu+dumocc_se+dumocc_nrega
+gen occ2_casu=dumocc_agricasu+dumocc_casu+dumocc_nrega
+gen occ2_regu=dumocc_agrise+dumocc_regu+dumocc_se
+gen occ2_self=dumocc_agrise+dumocc_se
+gen occ2_othe=dumocc_agricasu+dumocc_casu+dumocc_regu+dumocc_nrega
+
+foreach x in agri nona casu regu self othe {
+gen dummy_`x'=occ2_`x'
+}
+foreach x in agri nona casu regu self othe {
+replace dummy_`x'=1 if occ2_`x'>1 & occ2_`x'!=.
+}
+
+*
+gen occinc2_agri=occinc_agrise+occinc_agricasu
+gen occinc2_nona=occinc_casu+occinc_regu+occinc_se+occinc_nrega
+gen occinc2_casu=occinc_agricasu+occinc_casu+occinc_nrega
+gen occinc2_regu=occinc_agrise+occinc_regu+occinc_se
+gen occinc2_self=occinc_agrise+occinc_se
+gen occinc2_othe=occinc_agricasu+occinc_casu+occinc_regu+occinc_nrega	
+	
+*	
+gen occhours2_agri=occhours_agrise+occhours_agricasu
+gen occhours2_nona=occhours_casu+occhours_regu+occhours_se+occhours_nrega
+gen occhours2_casu=occhours_agricasu+occhours_casu+occhours_nrega
+gen occhours2_regu=occhours_agrise+occhours_regu+occhours_se
+gen occhours2_self=occhours_agrise+occhours_se
+gen occhours2_othe=occhours_agricasu+occhours_casu+occhours_regu+occhours_nrega
+
+*
+fre working_pop
+gen working_pop2=working_pop
+recode working_pop2 (1=0) (2=0) (3=1)
+label define working_pop2 0"Unoccupied" 1"Occupied"
+label values working_pop2 working_pop2
+replace working_pop2=1 if working_pop2==0 & dumocc_agrise!=.
+ta working_pop2
+fre dumocc_agrise dumocc_agricasu dumocc_casu dumocc_regu dumocc_se dumocc_nrega
+
+*
+fre edulevel
+gen edulevel2=edulevel
+recode edulevel2 (.=0) (2=1) (3=1) (4=1) (5=1)
+fre edulevel2
+
+*
+fre sex
+gen female=.
+replace female=0 if sex==1
+replace female=1 if sex==2
+
+*
+gen time=0
+replace time=1 if year==2010
+replace time=2 if year==2016
+replace time=3 if year==2020
 
 
 save"panel_indiv_v1", replace
@@ -626,120 +673,106 @@ drop if age<15
 
 
 *** Panel declaration
-gen time=0
-replace time=1 if year==2010
-replace time=2 if year==2016
-replace time=3 if year==2020
 xtset panelvar time
-set maxiter 50
+set maxiter 16000
 
-
-*** Var crea
-gen occ2_agri=dumocc_agrise+dumocc_agricasu
-gen occ2_nona=dumocc_casu+dumocc_regu+dumocc_se+dumocc_nrega
-gen occ2_casu=dumocc_agricasu+dumocc_casu
-gen occ2_regu=dumocc_agrise+dumocc_regu+dumocc_se+dumocc_nrega
-gen occ2_self=dumocc_agrise+dumocc_se
-gen occ2_othe=dumocc_agricasu+dumocc_casu+dumocc_regu+dumocc_nrega
-
-foreach x in agri nona casu regu self othe {
-gen dummy_`x'=occ2_`x'
-}
-foreach x in agri nona casu regu self othe {
-replace dummy_`x'=1 if occ2_`x'>1 & occ2_`x'!=.
-}
-
-*
-fre working_pop
-gen working_pop2=working_pop
-recode working_pop2 (1=0) (2=0) (3=1)
-label define working_pop2 0"Unoccupied" 1"Occupied"
-label values working_pop2 working_pop2
-replace working_pop2=1 if working_pop2==0 & dumocc_agrise!=.
-ta working_pop2
-fre dumocc_agrise dumocc_agricasu dumocc_casu dumocc_regu dumocc_se dumocc_nrega
-
-*
-fre edulevel
-gen edulevel2=edulevel
-recode edulevel2 (.=0) (2=1) (3=1) (4=1) (5=1)
-fre edulevel2
-
-*
-fre sex
-gen female=.
-replace female=0 if sex==1
-replace female=1 if sex==2
 
 
 *** Macro
-global xHH sexratio dependencyratio remittnet_HH assets_total vill_2 vill_3 vill_4 vill_5 vill_6 vill_7 vill_8 vill_9 vill_10
-*HHsize HH_count_child 
+global xHH sexratio dependencyratio remittnet_HH assets_total vill_2 vill_3 vill_4 vill_5 vill_6 vill_7 vill_8 vill_9 vill_10 HHsize HH_count_child 
 
 
-*** LEV: LFP
-set maxiter 200
+
+*** LEV -- LFP
 log using "C:\Users\Arnaud\Downloads\Indiv_probit.log", replace
-
 foreach y in working_pop2 dummy_agri dummy_nona dummy_casu dummy_regu dummy_self dummy_othe {
-foreach x in pca2index {
-capture noisily xtlogit `y' c.L.`x' c.age i.dep i.female i.dalits i.edulevel2 $xHH, fe
-capture noisily xtlogit `y' c.L.`x'##i.female##i.dalits i.dep c.age i.edulevel2 $xHH, fe
+foreach x in pca2index pcaindex loanamount_HH {
+capture noisily xtlogit `y' L.`x' age dep female dalits edulevel2 $xHH, fe
 }
 }
+log close
 
+
+
+*** LEV -- nb occ
+
+log using "C:\Users\Arnaud\Downloads\Indiv_poisson.log", replace
+foreach y in occ2_agri occ2_nona occ2_casu occ2_regu occ2_self occ2_othe {
+foreach x in pca2index pcaindex loanamount_HH  {
+capture noisily xtpoisson `y' c.L.`x' c.age i.dep i.female i.dalits i.edulevel2 $xHH, fe
+}
+}
+log close
+
+
+
+*** LEV -- inc and hours
+log using "C:\Users\Arnaud\Downloads\indiv_OLS.log", replace
+foreach y in occhours2_agri occhours2_nona occhours2_casu occhours2_regu occhours2_self occhours2_othe occinc2_agri occinc2_nona occinc2_casu occinc2_regu occinc2_self occinc2_othe {
+foreach x in pca2index pcaindex loanamount_HH {
+capture noisily xtreg `y' c.L.`x' c.age i.dep i.female i.dalits i.edulevel2 $xHH, fe
+}
+}
 log close
 
 
 
 
+*** ML-SEM -- inc and hours0
 /*
-*** LEV: NLFP
-set maxiter 200
-log using "C:\Users\Arnaud\Downloads\Indiv_poisson.log", replace
-
-foreach y in occ2_agri occ2_nona occ2_casu occ2_regu occ2_self occ2_othe {
-foreach x in pca2index  {
-capture noisily xtpoisson `y' c.L.`x' c.age i.dep i.female i.dalits i.edulevel2 $xHH, fe
-capture noisily xtpoisson `y' c.L.`x'##i.female##i.dalits i.dep c.age i.edulevel2 $xHH, fe
+log using "C:\Users\Arnaud\Downloads\Indiv_mlsemdummy.log", replace
+foreach y in occhours2_agri occhours2_nona occhours2_casu occhours2_regu occhours2_self occhours2_othe occinc2_agri occinc2_nona occinc2_casu occinc2_regu occinc2_self occinc2_othe {
+foreach x in pca2index pcaindex loanamount_HH {
+capture noisily xtdpdml `y'  age female edulevel2 sexratio dependencyratio remittnet_HH assets_total HHsize, inv(dalits vill_2 vill_3 vill_4 vill_5 vill_6 vill_7 vill_8 vill_9 vill_10) predetermined(L.`x') fiml showcmd
 }
 }
-
 log close
 */
-
-
-*** LEV: NLFP
-set maxiter 200
-log using "C:\Users\Arnaud\Downloads\indiv_OLS.log", replace
-
-foreach y in occinc_agrise occinc_agricasu occinc_casu occinc_regu occinc_se occinc_nrega occhours_agrise occhours_agricasu occhours_casu occhours_regu occhours_se occhours_nrega {
-foreach x in pca2index  {
-capture noisily xtreg `y' c.L.`x' c.age i.dep i.female i.dalits i.edulevel2 $xHH, fe
-capture noisily xtreg `y' c.L.`x'##i.female##i.dalits i.dep c.age i.edulevel2 $xHH, fe
-}
-}
-log close
-
-
-
-
-
-
-*** ML-SEM
-set maxiter 9999
-log using "C:\Users\Arnaud\Downloads\Indiv_mlsemdummy.log", replace
-
-foreach y in occinc_agrise occinc_agricasu occinc_casu occinc_regu occinc_se occinc_nrega occhours_agrise occhours_agricasu occhours_casu occhours_regu occhours_se occhours_nrega {
-foreach x in pca2index {
-capture noisily xtdpdml `y'  age female edulevel2 sexratio dependencyratio remittnet_HH assets_total, inv(dalits vill_2 vill_3 vill_4 vill_5 vill_6 vill_7 vill_8 vill_9 vill_10) predetermined(L.`x') fiml
-}
-}
-
-log close
-*capture noisily xtdpdml `y' $xvar1 $xvar2 $xvar3, inv($xinvar) predetermined(L.`x') fiml
-
 
 ****************************************
 * END
 
+
+
+
+
+
+
+
+
+****************************************
+* Debt on change in occup
+****************************************
+cls
+use"panel_indiv_v1", clear
+
+
+*** Seletion
+drop if age<15
+drop if year==2020
+
+*** Panel declaration
+xtset panelvar time
+set maxiter 16000
+
+
+
+*** Macro
+global xHH sexratio dependencyratio remittnet_HH assets_total vill_2 vill_3 vill_4 vill_5 vill_6 vill_7 vill_8 vill_9 vill_10 HHsize HH_count_child 
+
+
+
+*** LEV -- LFP
+log using "C:\Users\Arnaud\Downloads\Diff_probit.log", replace
+foreach y in change absmobinc relmobinc dummydiffnbocc diffnbocc {
+foreach x in pca2index pcaindex loanamount_HH {
+capture noisily xtlogit `y' `x' age dep female dalits edulevel2 $xHH, fe
+}
+}
+log close
+
+
+
+
+****************************************
+* END
