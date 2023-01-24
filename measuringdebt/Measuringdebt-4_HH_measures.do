@@ -398,8 +398,8 @@ replace lapc=lapc/10000
 replace afm=afm/10000
 
 ********** Global
-global varstd assets_pc_std dsr_std dar_std afm_std tdr_std
-global var assets_pc dsr dar afm tdr
+global varstd assets_pc_std dailyincome_pc_std dsr_std dar_std rfm_std tdr_std
+global var assets_pc dailyincome_pc dsr dar rfm tdr
 
 
 /*
@@ -416,19 +416,19 @@ factortest $varstd
 ********* PCA
 pca $varstd
 *screeplot, ci mean
-pca $varstd, comp(3)
+pca $varstd, comp(4)
 rotate, quartimin
 
 *** Projection of individuals
-predict fact1 fact2 fact3
+predict fact1 fact2 fact3 fact4
 
 
 *** Cluster
-cluster wardslinkage fact1 fact2 fact3, measure(L2squared)
+cluster wardslinkage fact1 fact2 fact3 fact4, measure(L2squared)
 
 cluster dendrogram, cutnumber(100)
 cluster stop
-cluster gen clust=groups(4)
+cluster gen clust=groups(5)
 ta clust year, col nofreq
 tabstat $var, stat(p50) by(clust)
 
