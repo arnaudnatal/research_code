@@ -13,12 +13,12 @@ setwd("C:/Users/Arnaud/Documents/GitHub/research_code/measuringdebt")
 
 #--- Install packages
 # install.packages("Factoshiny", dependencies = TRUE)
-
+# install.packages("clusterSim", dependencies = TRUE)
 
 #--- Open packages
 library(Factoshiny)
 library(tidyverse)
-
+library(clusterSim)
 
 #--- Open datasets
 data<-read.csv("pca.csv")
@@ -27,26 +27,19 @@ data<-read.csv("pca.csv")
 #--- Matrices creation
 attach(data)
 
-X<-as.matrix(cbind(dar_std, dsr_std, rfm_std, tdr_std, dailyincome_pc_std, assets_pc_std, lpc_std))
-#X<-as.matrix(cbind(dar_std, dsr_std, rfm_std, tdr_std, lpc_std))
+X<-as.matrix(cbind(dailyincome_pc_std, assets_pc_std, dsr_std, dar_std, afm_std, tdr_std, lapc_std))
 debt<-as.data.frame(X)
-
 
 detach(data)
 attach(debt)
 
-
-
 #--- Factoshiny
-PCAshiny(debt)
-
-
-#--- MCA
-res.MCA<-MCA(trend,ncp=4,graph=FALSE)
+#PCAshiny(debt)
 
 
 #--- HCPC
-res.HCPC<-HCPC(res.MCA,nb.clust=5,consol=TRUE,graph=FALSE)
+res.PCA<-PCA(debt,ncp=4,graph=FALSE)
+res.HCPC<-HCPC(res.PCA,nb.clust=4,consol=FALSE,graph=FALSE)
 
 
 inert<-res.HCPC[["call"]][["t"]][["inert.gain"]]

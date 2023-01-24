@@ -25,7 +25,7 @@ do"C:\Users\Arnaud\Documents\GitHub\folderanalysis\measuringdebt.do"
 use"panel_v7", clear
 
 
-tabstat pca2index m2index, stat(n mean cv p50) by(year) long
+tabstat pca2index, stat(n mean cv p50) by(year) long
 
 
 tabstat dsr_std dar_std lpc_std rfmrev_std tdr_std, stat(n mean cv p50) by(year) long
@@ -85,13 +85,6 @@ pvalue higher than .05, we do not reject H0
 -> No random effect
 */
 
-xtreg m2index dalits stem HHsize HH_count_child head_female head_age head_occ2 head_occ3 head_occ4 head_occ5 head_occ6 head_occ7 head_educ2 head_educ3 head_nonmarried dummymarriage assets_pc dailyincome_pc i.vill, base re
-est store m2RE
-xttest0
-/*
-pvalue higher than .05, we do not reject H0
--> No random effect
-*/
 
 
 
@@ -109,15 +102,6 @@ est store pca2FE
 pvalue lower than .05, we reject H0
 -> Fixed effect
 */
-
-xtreg m2index dalits stem HHsize HH_count_child head_female head_age head_occ2 head_occ3 head_occ4 head_occ5 head_occ6 head_occ7 head_educ2 head_educ3 head_nonmarried dummymarriage assets_pc dailyincome_pc i.vill, base fe
-est store m2FE
-/*
-pvalue lower than .05, we reject H0
--> Fixed effect
-*/
-
-
 
 
 
@@ -155,8 +139,6 @@ and the R2 overall is a weighted average of these two.
 xtreg pcaindex i.caste stem HHsize HH_count_child head_female head_age head_occ2 head_occ3 head_occ4 head_occ5 head_occ6 head_occ7 head_educ2 head_educ3 head_nonmarried dummymarriage assets_cat2 assets_cat3 dailyincome_pc i.vill $mean, base re
 
 xtreg pca2index i.caste stem HHsize HH_count_child head_female head_age head_occ2 head_occ3 head_occ4 head_occ5 head_occ6 head_occ7 head_educ2 head_educ3 head_nonmarried dummymarriage assets_cat2 assets_cat3 dailyincome_pc i.vill $mean, base re
-
-xtreg m2index i.caste stem HHsize HH_count_child head_female head_age head_occ2 head_occ3 head_occ4 head_occ5 head_occ6 head_occ7 head_educ2 head_educ3 head_nonmarried dummymarriage assets_cat2 assets_cat3 dailyincome_pc i.vill $mean, base re
 
 
 

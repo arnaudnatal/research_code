@@ -14,7 +14,11 @@ do"C:\Users\Arnaud\Documents\GitHub\folderanalysis\measuringdebt.do"
 
 
 
-
+/*
+FactomineR:
+Linkage: Ward
+Distance: L2squared  squared Euclidean distance 
+*/
 
 
 
@@ -116,63 +120,37 @@ factortest $varstd
 ********* PCA
 pca $varstd
 * 3 compo --> 62.05%
-pca $varstd, comp(3)
+pca $varstd, comp(4)
 *screeplot, ci mean
 rotate, quartimin
 
 *** Projection of individuals
-predict fact1 fact2 fact3
+predict fact1 fact2 fact3 fact4
 *twoway (scatter fact2 fact1, xline(0) yline(0) mcolor(black%30) msymbol(oh))
 
 *** Cluster
-cluster wardslinkage fact1 fact2 fact3, measure(L2)
+cluster wardslinkage fact1 fact2 fact3 fact4, measure(L2)
 *cluster dendrogram, cutnumber(100)
-cluster gen clust=groups(4)
+cluster stop
+cluster gen clust=groups(5)
 
+tabstat $var, stat(p50) by(clust)
 /*
-twoway ///
-(scatter fact2 fact1 if clust==1, mcolor(plb1%50) ms(oh) xline(0) yline(0)) ///
-(scatter fact2 fact1 if clust==2, mcolor(ply1%50) ms(oh)) ///
-(scatter fact2 fact1 if clust==3, mcolor(plr1%50) ms(oh)) ///
-(scatter fact2 fact1 if clust==4, mcolor(plg1%50) ms(oh)) ///
-, aspectratio(0.7)
-
-twoway ///
-(scatter fact3 fact1 if clust==1, mcolor(plb1%50) ms(oh) xline(0) yline(0)) ///
-(scatter fact3 fact1 if clust==2, mcolor(ply1%50) ms(oh)) ///
-(scatter fact3 fact1 if clust==3, mcolor(plr1%50) ms(oh)) ///
-(scatter fact3 fact1 if clust==4, mcolor(plg1%50) ms(oh)) ///
-, aspectratio(0.7)
-
-twoway ///
-(scatter fact3 fact2 if clust==1, mcolor(plb1%50) ms(oh) xline(0) yline(0)) ///
-(scatter fact3 fact2 if clust==2, mcolor(ply1%50) ms(oh)) ///
-(scatter fact3 fact2 if clust==3, mcolor(plr1%50) ms(oh)) ///
-(scatter fact3 fact2 if clust==4, mcolor(plg1%50) ms(oh)) ///
-, aspectratio(0.7)
+1. Non-vulnerable
+2. ++ Vulnerable
+3. +++ Vulnerable
+4. Rich trapped
+5. Sustainable
 */
 
-tabstat $var, stat(n mean cv p50) by(clust)
-/*
-1. Vulnerable
-2. Middle trapped
-3. High debt but high incomes
-4. Highly vulnerable
-*/
-
-recode clust (3=1) (2=2) (1=3) (4=4)
-label define clust1 1"Rich" 2"Middle trapped" 3"Vulnerable" 4"Highly"
+label define clust1 1"Non-vulnerable" 2"++ Vulnerable" 3"+++ Vulnerable" 4"Rich trapped" 5"Sustainble"
 label values clust clust1
 
-ta clust year, col nofreq chi2
+ta clust year
+ta clust caste
 
-ta clust caste if year==2010, col nofreq chi2
-ta clust caste if year==2016, col nofreq chi2
-ta clust caste if year==2020, col nofreq chi2
-
-ta clust stem if year==2010, col nofreq chi2
-ta clust stem if year==2016, col nofreq chi2
-ta clust stem if year==2020, col nofreq chi2
+ta clust year, col nofreq
+ta clust caste, col nofreq
 
 drop _clus_1_id _clus_1_ord _clus_1_hgt 
 rename clust pcaindexclust
@@ -222,7 +200,7 @@ restore
 
 
 ********* Clean
-drop fact1 fact2 fact3 fact1_std fact2_std fact3_std
+drop fact1 fact2 fact3 fact1_std fact2_std fact3_std fact4
 
 
 save"panel_v4", replace
@@ -275,49 +253,40 @@ factortest $varstd
 ********* PCA
 pca $varstd
 * 2 compo --> 60.65%
-pca $varstd, comp(2)
+pca $varstd, comp(3)
 estat kmo
 *screeplot, ci mean
 rotate, quartimin
 
 *** Projection of individuals
-predict fact1 fact2
+predict fact1 fact2 fact3
 *twoway (scatter fact2 fact1, xline(0) yline(0) mcolor(black%30) msymbol(oh))
 
 
 *** Cluster
-cluster wardslinkage fact1 fact2, measure(L2)
+cluster wardslinkage fact1 fact2 fact3, measure(L2)
 *cluster dendrogram, cutnumber(100)
-cluster gen clust=groups(3)
+cluster stop
+cluster gen clust=groups(5)
 
+
+tabstat $var, stat(p50) by(clust)
 /*
-twoway ///
-(scatter fact2 fact1 if clust==1, mcolor(plb1%50) ms(oh) xline(0) yline(0)) ///
-(scatter fact2 fact1 if clust==2, mcolor(ply1%50) ms(oh)) ///
-(scatter fact2 fact1 if clust==3, mcolor(plr1%50) ms(oh)) ///
-, aspectratio(0.7)
+1. Non-vulnerable
+2. Trapped
+3. Vulnerable
+4. +++ Vulnerable
+5. ++ Vulnerable
 */
 
-tabstat $var, stat(n mean cv p50) by(clust)
-/*
-1. Non-vuln
-2. Transition
-3. Highly
-*/
-
-recode clust (1=1) (2=2) (3=3)
-label define clust2 1"Non-vulnerable" 2"Transition" 3"Highly vulnerable"
+label define clust2 1"Non-vulnerable" 2"Trapped" 3"Vulnerable" 4"+++ Vulnerable" 5"++ Vulnerable"
 label values clust clust2
 
+ta clust year
+ta clust caste
+
 ta clust year, col nofreq chi2
-
-ta clust caste if year==2010, col nofreq chi2
-ta clust caste if year==2016, col nofreq chi2
-ta clust caste if year==2020, col nofreq chi2
-
-ta clust stem if year==2010, col nofreq chi2
-ta clust stem if year==2016, col nofreq chi2
-ta clust stem if year==2020, col nofreq chi2
+ta clust caste, col nofreq chi2
 
 drop _clus_2_id _clus_2_ord _clus_2_hgt 
 rename clust pca2indexclust
@@ -365,7 +334,7 @@ restore
 
 
 ********* Clean
-drop fact1 fact2 fact1_std fact2_std
+drop fact1 fact2 fact1_std fact2_std fact3
 
 
 
@@ -377,6 +346,35 @@ save"panel_v5", replace
 
 
 
+
+
+
+
+
+****************************************
+* Test
+****************************************
+use"panel_v5", clear
+
+merge 1:1 HHID_panel year using "panel_v9", keepusing(hoursayear_female hoursayear_dep hoursayear_agri hoursayear_nona hoursayear_regu hoursayear_casu hoursayear_casu_female)
+
+keep HHID_panel year hoursayear_female hoursayear_dep hoursayear_agri hoursayear_nona hoursayear_regu hoursayear_casu hoursayear_casu_female  assets_pc_std dsr_std dar_std afm_std tdr_std afm_std dailyincome_pc_std lapc_std lpc_std
+
+reshape wide dsr_std dar_std tdr_std afm_std assets_pc_std hoursayear_agri hoursayear_nona hoursayear_regu hoursayear_casu hoursayear_female hoursayear_dep hoursayear_casu_female dailyincome_pc_std lapc_std lpc_std, i(HHID_panel) j(year)
+
+
+cls
+cpcorr lapc_std2010 lpc_std2010 dailyincome_pc_std2010 dsr_std2010 dar_std2010 tdr_std2010 afm_std2010 assets_pc_std2010 \ hoursayear_casu2016
+cpcorr lapc_std2016 lpc_std2016  dailyincome_pc_std2016 dsr_std2016 dar_std2016 tdr_std2016 afm_std2016 assets_pc_std2016 \ hoursayear_casu2020
+
+
+cpcorr lapc_std2010 lpc_std2010 dailyincome_pc_std2010 dsr_std2010 dar_std2010 tdr_std2010 afm_std2010 assets_pc_std2010 \ hoursayear_female2016
+
+cpcorr lapc_std2016 lpc_std2016  dailyincome_pc_std2016 dsr_std2016 dar_std2016 tdr_std2016 afm_std2016 assets_pc_std2016 \ hoursayear_female2020
+
+
+****************************************
+* END
 
 
 
@@ -393,156 +391,65 @@ save"panel_v5", replace
 ****************************************
 use"panel_v5", clear
 
+
 ********** Clean
 replace assets_pc=assets_pc/1000
 replace lapc=lapc/10000
 replace afm=afm/10000
 
 ********** Global
-global varstd dailyincome_pc_std assets_pc_std dsr_std dar_std lapc_std afm_std
-global var dailyincome_pc assets_pc dsr dar lapc afm
+global varstd assets_pc_std dsr_std dar_std afm_std tdr_std
+global var assets_pc dsr dar afm tdr
+
+
+/*
+5 groupes pas mal, mais pas de casual:
+global varstd dailyincome_pc_std assets_pc_std dsr_std dar_std rfm_std tdr_std
+global var dailyincome_pc assets_pc dsr dar rfm tdr
+
+*/
+
+********** Pre tests
+factortest $varstd
+
+
+********* PCA
+pca $varstd
+*screeplot, ci mean
+pca $varstd, comp(3)
+rotate, quartimin
+
+*** Projection of individuals
+predict fact1 fact2 fact3
 
 
 *** Cluster
-cluster wardslinkage $varstd, measure(L2)
-cluster dendrogram, cutnumber(100)
-cluster gen clust=groups(3)
+cluster wardslinkage fact1 fact2 fact3, measure(L2squared)
 
+cluster dendrogram, cutnumber(100)
+cluster stop
+cluster gen clust=groups(4)
+ta clust year, col nofreq
 tabstat $var, stat(p50) by(clust)
 
-ta clust year
+label define clust99 1"Poor" 2"Vulnerable" 3"Vulnerable" 4"Highly vulnerable"
+label values clust clust99
+
 ta clust year, col nofreq
+ta clust caste, exp cchi2 chi2
 
-ta clust caste if year==2010, exp cchi2 chi2
-ta clust caste if year==2016, exp cchi2 chi2
-ta clust caste if year==2020, exp cchi2 chi2
-
-
-
-
-
-
-save"panel_v5", replace
-****************************************
-* END
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-****************************************
-* Finindex by simple calculation to compare
-****************************************
-use"panel_v5", clear
-
-/*
-- Relative financial margin
-- Debt service
-- Trap ratio
-- Loans per capita
-- Debt to assets
-*/
-global varnew rfmrev dsr tdr lpc dar
-tabstat $varnew, stat(n mean cv p50) long by(dalits)
-
-tabstat $varnew, stat(n mean cv q min max)
-tabstat $varnew, stat(cv min p1 p5 p10 q p90 p95 p99 max range iqr)
-
-
-* Step 1: Reduce
-*replace tdr=100 if tdr>0
-
-
-* Step 2: Rowmean of %
-*egen percmean=rowmean(rfmrev dsr tdr dar)
-*gen percmean=(rfmrev*(1/26))+(dsr*(4/26))+(tdr*(17/26))+(dar*(4/26))
-gen percmean=(rfmrev*(5/100))+(dsr*(10/100))+(tdr*(80/100))+(dar*(5/100))
-
-
-tabstat $varnew percmean, stat(n mean cv p50 min max)
-
-
-* Step 3: Nb of loan in % by divided by 100
-*ta lpc
-gen multinbl=1+(lpc/10)
-
-
-* Step 4: Final res
-gen M_finindexnew=percmean*multinbl
-cpcorr $varnew \ M_finindexnew
-
-
-* Comparison with PCA
-corr M_finindexnew PCA_finindexnew
-
-
-* Scatter
-/*
-twoway ///
-(scatter M_finindexnew PCA_finindexnew, mcolor(black%30)) ///
-(qfit M_finindexnew PCA_finindexnew)
-*/
-
-
-* Caste
-tabstat $varnew M_finindexnew, stat(n mean p50) by(dalits) long
-
-
-* Heatplot
-/*
-preserve
-xtile M_q=M_finindexnew, n(10)
-xtile PCA_q=PCA_finindexnew, n(10)
-
-rename PCA_q x
-rename M_q y
-qui ta x, gen(x_)
-qui ta y, gen(y_)
-forvalues i=1(1)10 {
-bysort x y: egen n_tot`i'=sum(x_`i')
-qui count if n_tot`i'!=0
-gen perc_`i'=n_tot`i'/r(N)
-}
-gen perc=.
-forvalues i=1(1)10{
-replace perc=perc_`i' if perc_`i'!=0
-}
-*
-heatplot perc x y, ///
-colors(HSV grays, reverse) ///
-statistic(mean) ///
-xscale(alt) xbwidth(1) xlab(0(1)10) xtitle("PCA") ///
-yscale(reverse) ybwidth(1) ylab(0(1)10) ytitle("Mean") ///
-legend(off) title("")
-restore
-*/
-
-
-********** Clean
-drop percmean multinbl
 
 save"panel_v6", replace
 ****************************************
 * END
+
+
+
+
+
+
+
+
 
 
 
@@ -563,7 +470,6 @@ use"panel_v6", clear
 *** Rename
 rename PCA_finindex pcaindex
 rename PCA_finindexnew pca2index
-rename M_finindexnew m2index
 
 
 ********** Overlap
@@ -583,6 +489,9 @@ save"panel_v7", replace
 * END
 
 
+
+do"C:\Users\Arnaud\Documents\GitHub\research_code\measuringdebt\Measuringdebt-5_HH_determinants"
+do"C:\Users\Arnaud\Documents\GitHub\research_code\measuringdebt\Measuringdebt-6_HH_labouroutcomes"
 
 
 

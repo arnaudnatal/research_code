@@ -52,14 +52,13 @@ sum loanamount_HH
 replace loanamount_HH=loanamount_HH/10000
 
 fre pcaindexclust
-recode pcaindexclust (4=3)
-ta pcaindexclust year, col nofreq
-
 fre pca2indexclust
-recode pca2indexclust () () ()
+fre clust
+
 
 *** X-var
-global interestvar
+global interestvar clust
+ta $interestvar
 *loanamount_HH dsr_std dar_std tdr_std rfm_std
 *pcaindex pca2index
 
@@ -73,8 +72,7 @@ global xvar3 remittnet_HH assets_total
 
 
 *** Y-var
-global yvar ind_total ind_female ind_male ind_dep ind_agri ind_nona ind_regu ind_casu ind_self ind_othe 
-*ind_agri_male ind_agri_female ind_nona_male ind_nona_female ind_regu_male ind_regu_female ind_casu_male ind_casu_female ind_self_male ind_self_female ind_othe_male ind_othe_female ind_agri_dep ind_nona_dep ind_regu_dep ind_casu_dep ind_self_dep ind_othe_dep 
+global yvar ind_total ind_female ind_male ind_dep ind_agri ind_nona ind_regu ind_casu ind_self ind_othe ind_agri_male ind_agri_female ind_nona_male ind_nona_female ind_regu_male ind_regu_female ind_casu_male ind_casu_female ind_self_male ind_self_female ind_othe_male ind_othe_female ind_agri_dep ind_nona_dep ind_regu_dep ind_casu_dep ind_self_dep ind_othe_dep 
 *///
 *occ_total occ_female occ_male occ_dep occ_agri occ_nona occ_regu occ_casu occ_self occ_othe occ_agri_male occ_agri_female occ_nona_male occ_nona_female occ_regu_male occ_regu_female occ_casu_male occ_casu_female occ_self_male occ_self_female occ_othe_male occ_othe_female occ_agri_dep occ_nona_dep occ_regu_dep occ_casu_dep occ_self_dep occ_othe_dep
 *///
@@ -84,18 +82,17 @@ global yvar ind_total ind_female ind_male ind_dep ind_agri ind_nona ind_regu ind
 
 *** Analysis
 
-log using "C:\Users\Arnaud\Downloads\LEV_HHlevel.log", replace
+log using "C:\Users\Arnaud\Downloads\LEV_mdo.log", replace
 
 foreach y in $yvar {
-foreach x in pcaindexclust {
-*foreach x in $interestvar {
+foreach x in $interestvar {
 capture noisily xtreg `y' L.i.`x' i.dalits $xvar1 $xvar2 $xvar3 $xinvar, fe base
 *capture noisily xtdpdml `y' $xvar1 $xvar2 $xvar3, inv($xinvar) predetermined(L.`x') fiml
 }
 }
 
 log close
-*/
+
 
 
 ****************************************
@@ -123,16 +120,13 @@ xtset panelvar time
 set matsize 10000, perm
 
 
-
 *** Last minute clean
 sum loanamount_HH
 replace loanamount_HH=loanamount_HH/10000
-replace loanamount_HH=loanamount_HH*(100/158) if year==2016
-replace loanamount_HH=loanamount_HH*(100/184) if year==2020
 
 
 *** X-var
-global interestvar loanamount_HH
+global interestvar clust
 
 global xinvar dalits village_2 village_3 village_4 village_5 village_6 village_7 village_8 village_9 village_10
 
@@ -144,17 +138,17 @@ global xvar3 remittnet_HH assets_total
 
 
 *** Y-var
-global yvar hoursayear hoursayear_female hoursayear_male hoursayear_dep hoursayear_agri hoursayear_nona hoursayear_regu hoursayear_casu hoursayear_self hoursayear_othe hoursayear_agri_male hoursayear_agri_female hoursayear_nona_male hoursayear_nona_female hoursayear_regu_male hoursayear_regu_female hoursayear_casu_male hoursayear_casu_female hoursayear_self_male hoursayear_self_female hoursayear_othe_male hoursayear_othe_female
-
+*global yvar hoursayear hoursayear_female hoursayear_male hoursayear_dep hoursayear_agri hoursayear_nona hoursayear_regu hoursayear_casu hoursayear_self hoursayear_othe hoursayear_agri_male hoursayear_agri_female hoursayear_nona_male hoursayear_nona_female hoursayear_regu_male hoursayear_regu_female hoursayear_casu_male hoursayear_casu_female hoursayear_self_male hoursayear_self_female hoursayear_othe_male hoursayear_othe_female
+global yvar hoursayear hoursayear_female hoursayear_male hoursayear_dep hoursayear_agri hoursayear_nona hoursayear_regu hoursayear_casu hoursayear_self hoursayear_othe hoursayear_casu_female
 
 
 *** Analysis
-log using "C:\Users\Arnaud\Downloads\LEV.log", replace
+log using "C:\Users\Arnaud\Downloads\LEV_hours.log", replace
 
 foreach y in $yvar {
 foreach x in $interestvar {
 * LEV
-capture noisily xtreg `y' L.`x' $xvar1 $xvar2 $xvar3 $xinvar, fe
+capture noisily xtreg `y' i.L.`x'##i.dalits $xvar1 $xvar2 $xvar3 $xinvar, fe base
 }
 }
 
@@ -163,71 +157,3 @@ log close
 
 ****************************************
 * END
-
-
-
-
-
-
-
-
-
-
-
-
-
-****************************************
-* Increase in debt
-****************************************
-cls
-use"panel_v9", clear
-
-*** Panel declaration
-xtset panelvar time
-set matsize 10000, perm
-drop if time==1
-
-*** Last minute clean
-sum loanamount_HH
-replace loanamount_HH=loanamount_HH/10000
-replace loanamount_HH=loanamount_HH*(100/158) if year==2016
-replace loanamount_HH=loanamount_HH*(100/184) if year==2020
-
-
-*** X-var
-global interestvar loanamount_HH
-
-global xinvar dalits village_2 village_3 village_4 village_5 village_6 village_7 village_8 village_9 village_10
-
-global xvar1 log_HHsize share_children sexratio dependencyratio
-
-global xvar2 head_female head_age head_educ
-
-global xvar3 remittnet_HH assets_total
-
-
-*** Y-var
-global yvar hoursayear hoursayear_female hoursayear_male hoursayear_dep hoursayear_agri hoursayear_nona hoursayear_regu hoursayear_casu hoursayear_self hoursayear_othe hoursayear_agri_male hoursayear_agri_female hoursayear_nona_male hoursayear_nona_female hoursayear_regu_male hoursayear_regu_female hoursayear_casu_male hoursayear_casu_female hoursayear_self_male hoursayear_self_female hoursayear_othe_male hoursayear_othe_female
-
-*** Analysis
-log using "C:\Users\Arnaud\Downloads\trend_alloc.log", replace
-
-foreach y in $yvar {
-xtreg `y' i.trendlong $xvar1 $xvar2 $xvar3 $xinvar, fe base
-}
-
-
-log close
-
-
-
-
-
-
-
-
-
-
-****************************************
-* END
-*/
