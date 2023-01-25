@@ -42,8 +42,6 @@ res.PCA<-PCA(debt,ncp=4,graph=FALSE)
 res.HCPC<-HCPC(res.PCA,nb.clust=4,consol=FALSE,graph=FALSE)
 
 
-inert<-res.HCPC[["call"]][["t"]][["inert.gain"]]
-
 
 #--- Datasets extraction
 vulnerable<-res.HCPC$data.clust

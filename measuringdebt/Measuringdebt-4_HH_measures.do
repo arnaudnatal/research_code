@@ -128,32 +128,6 @@ rotate, quartimin
 predict fact1 fact2 fact3 fact4
 *twoway (scatter fact2 fact1, xline(0) yline(0) mcolor(black%30) msymbol(oh))
 
-*** Cluster
-cluster wardslinkage fact1 fact2 fact3 fact4, measure(L2)
-*cluster dendrogram, cutnumber(100)
-cluster stop
-cluster gen clust=groups(5)
-
-tabstat $var, stat(p50) by(clust)
-/*
-1. Non-vulnerable
-2. ++ Vulnerable
-3. +++ Vulnerable
-4. Rich trapped
-5. Sustainable
-*/
-
-label define clust1 1"Non-vulnerable" 2"++ Vulnerable" 3"+++ Vulnerable" 4"Rich trapped" 5"Sustainble"
-label values clust clust1
-
-ta clust year
-ta clust caste
-
-ta clust year, col nofreq
-ta clust caste, col nofreq
-
-drop _clus_1_id _clus_1_ord _clus_1_hgt 
-rename clust pcaindexclust
 
 *** Corr between var and fact
 cpcorr $varstd \ fact1 fact2 fact3
@@ -263,34 +237,6 @@ predict fact1 fact2 fact3
 *twoway (scatter fact2 fact1, xline(0) yline(0) mcolor(black%30) msymbol(oh))
 
 
-*** Cluster
-cluster wardslinkage fact1 fact2 fact3, measure(L2)
-*cluster dendrogram, cutnumber(100)
-cluster stop
-cluster gen clust=groups(5)
-
-
-tabstat $var, stat(p50) by(clust)
-/*
-1. Non-vulnerable
-2. Trapped
-3. Vulnerable
-4. +++ Vulnerable
-5. ++ Vulnerable
-*/
-
-label define clust2 1"Non-vulnerable" 2"Trapped" 3"Vulnerable" 4"+++ Vulnerable" 5"++ Vulnerable"
-label values clust clust2
-
-ta clust year
-ta clust caste
-
-ta clust year, col nofreq chi2
-ta clust caste, col nofreq chi2
-
-drop _clus_2_id _clus_2_ord _clus_2_hgt 
-rename clust pca2indexclust
-
 *** Corr between var and fact
 cpcorr $varstd \ fact1 fact2
 
@@ -356,22 +302,28 @@ save"panel_v5", replace
 ****************************************
 use"panel_v5", clear
 
-merge 1:1 HHID_panel year using "panel_v9", keepusing(hoursayear_female hoursayear_dep hoursayear_agri hoursayear_nona hoursayear_regu hoursayear_casu hoursayear_casu_female)
+merge 1:1 HHID_panel year using "panel_v9", keepusing(hoursayear_female hoursayear_dep hoursayear_casu hoursayear_casu_female)
 
-keep HHID_panel year hoursayear_female hoursayear_dep hoursayear_agri hoursayear_nona hoursayear_regu hoursayear_casu hoursayear_casu_female  assets_pc_std dsr_std dar_std afm_std tdr_std afm_std dailyincome_pc_std lapc_std lpc_std
+keep HHID_panel year hoursayear_female hoursayear_dep hoursayear_casu hoursayear_casu_female assets_pc_std dsr_std dar_std afm_std tdr_std dailyincome_pc_std lapc_std lpc_std rfm_std tar_std isr_std dir_std loanamount_HH_std assets_total_std
 
-reshape wide dsr_std dar_std tdr_std afm_std assets_pc_std hoursayear_agri hoursayear_nona hoursayear_regu hoursayear_casu hoursayear_female hoursayear_dep hoursayear_casu_female dailyincome_pc_std lapc_std lpc_std, i(HHID_panel) j(year)
+reshape wide dsr_std dar_std tdr_std tar_std isr_std afm_std rfm_std dailyincome_pc_std assets_pc_std lpc_std lapc_std hoursayear_casu hoursayear_female hoursayear_dep hoursayear_casu_female dir_std loanamount_HH_std assets_total_std, i(HHID_panel) j(year)
 
+foreach x in hoursayear_female hoursayear_dep hoursayear_casu hoursayear_casu_female {
+drop `x'2010
+rename `x'2016 `x'1
+rename `x'2020 `x'2
+}
+
+foreach x in assets_pc_std dsr_std dar_std afm_std tdr_std dailyincome_pc_std lapc_std lpc_std rfm_std tar_std isr_std dir_std loanamount_HH_std assets_total_std {
+rename `x'2010 `x'1
+rename `x'2016 `x'2
+drop `x'2020
+}
+
+reshape long dsr_std dar_std tdr_std tar_std afm_std rfm_std dailyincome_pc_std assets_pc_std lpc_std lapc_std hoursayear_casu hoursayear_female hoursayear_dep hoursayear_casu_female isr_std dir_std loanamount_HH_std assets_total_std, i(HHID_panel) j(time)
 
 cls
-cpcorr lapc_std2010 lpc_std2010 dailyincome_pc_std2010 dsr_std2010 dar_std2010 tdr_std2010 afm_std2010 assets_pc_std2010 \ hoursayear_casu2016
-cpcorr lapc_std2016 lpc_std2016  dailyincome_pc_std2016 dsr_std2016 dar_std2016 tdr_std2016 afm_std2016 assets_pc_std2016 \ hoursayear_casu2020
-
-
-cpcorr lapc_std2010 lpc_std2010 dailyincome_pc_std2010 dsr_std2010 dar_std2010 tdr_std2010 afm_std2010 assets_pc_std2010 \ hoursayear_female2016
-
-cpcorr lapc_std2016 lpc_std2016  dailyincome_pc_std2016 dsr_std2016 dar_std2016 tdr_std2016 afm_std2016 assets_pc_std2016 \ hoursayear_female2020
-
+cpcorr dsr_std dar_std tdr_std tar_std isr_std afm_std rfm_std dailyincome_pc_std assets_pc_std lpc_std lapc_std dir_std loanamount_HH_std assets_total_std \ hoursayear_casu hoursayear_female hoursayear_dep hoursayear_casu_female
 
 ****************************************
 * END
@@ -394,22 +346,31 @@ use"panel_v5", clear
 
 ********** Clean
 replace assets_pc=assets_pc/1000
+replace assets_total=assets_total/1000
 replace lapc=lapc/10000
+replace loanamount_HH=loanamount_HH/1000
 replace afm=afm/10000
 
 ********** Global
-global varstd assets_pc_std dailyincome_pc_std dsr_std dar_std rfm_std tdr_std
-global var assets_pc dailyincome_pc dsr dar rfm tdr
-
+global varstd dailyincome_pc_std assets_pc_std dsr_std dar_std rfm_std tar_std lapc_std
+global var dailyincome_pc assets_pc dsr dar rfm tar lapc
 
 /*
-5 groupes pas mal, mais pas de casual:
-global varstd dailyincome_pc_std assets_pc_std dsr_std dar_std rfm_std tdr_std
-global var dailyincome_pc assets_pc dsr dar rfm tdr
-
+global varstd dailyincome_pc_std assets_total_std dsr_std dar_std rfm_std tar_std
+global var dailyincome_pc assets_total dsr dar rfm tar
+label define clust99 1"Middle" 2"Rich" 3"Highly vuln" 4"Highly indebt" 5""
+label values clust clust99
 */
 
+/*
+global varstd dailyincome_pc_std assets_pc_std dsr_std dar_std rfm_std
+global var dailyincome_pc assets_pc dsr dar rfm
+label define clust99 1"Vulnerable" 2"Poor low debt" 3"Heavy debt" 4"Rich indebted" 5"Highly vulnerable"
+*/
+
+
 ********** Pre tests
+pwcorr $varstd, star(.05)
 factortest $varstd
 
 
@@ -417,7 +378,8 @@ factortest $varstd
 pca $varstd
 *screeplot, ci mean
 pca $varstd, comp(4)
-rotate, quartimin
+rotate, quartimin 
+
 
 *** Projection of individuals
 predict fact1 fact2 fact3 fact4
@@ -426,18 +388,20 @@ predict fact1 fact2 fact3 fact4
 *** Cluster
 cluster wardslinkage fact1 fact2 fact3 fact4, measure(L2squared)
 
-cluster dendrogram, cutnumber(100)
+*cluster dendrogram, cutnumber(100)
 cluster stop
-cluster gen clust=groups(5)
+cluster gen clust=groups(2)
 ta clust year, col nofreq
 tabstat $var, stat(p50) by(clust)
 
-label define clust99 1"Poor" 2"Vulnerable" 3"Vulnerable" 4"Highly vulnerable"
+label define clust99 1"Poor" 2"Trapped" 3"Highly vuln" 4"Rich" 5"Middle" 6"Sustainable"
 label values clust clust99
 
+fre clust
 ta clust year, col nofreq
-ta clust caste, exp cchi2 chi2
+ta clust caste, col nofreq
 
+drop fact* _clus*
 
 save"panel_v6", replace
 ****************************************
@@ -449,6 +413,65 @@ save"panel_v6", replace
 
 
 
+
+
+
+
+
+****************************************
+* Finindex no. 4
+****************************************
+use"panel_v5", clear
+
+
+********** Clean
+replace assets_pc=assets_pc/1000
+replace assets_total=assets_total/1000
+replace lapc=lapc/10000
+replace afm=afm/10000
+
+********** Global
+global varstd dailyincome_pc_std assets_total_std dsr_std dar_std rfm_std tar_std loanamount_HH_std
+global var dailyincome_pc assets_total dsr dar rfm tar loanamount_HH
+
+/*
+Pas mal pour casu, mais rien pour female
+global varstd dailyincome_pc_std assets_pc_std dsr_std dar_std rfm_std tar_std lapc_std
+
+global varstd dailyincome_pc_std assets_pc_std dsr_std dar_std rfm_std tar_std loanamount_HH_std
+*/
+
+********** Pre tests
+pwcorr $varstd, star(.05)
+factortest $varstd
+
+
+********* PCA
+pca $varstd
+*screeplot, ci mean
+pca $varstd, comp(3)
+rotate, quartimin
+predict fact1 fact2 fact3
+
+*** Direction
+replace fact2=fact2*(-1)
+
+cpcorr $varstd \ fact1 fact2 fact3
+
+*** Std indiv score
+forvalues i=1/3 {
+qui sum fact`i'
+gen fact`i'_std = (fact`i'-r(min))/(r(max)-r(min))
+}
+
+*** Index construction
+gen newindex=((fact1_std*0.44)+(fact2_std*0.33)+(fact3_std*0.23))*100
+
+
+
+save"panel_v6", replace
+****************************************
+* END
 
 
 
@@ -492,6 +515,7 @@ save"panel_v7", replace
 
 do"C:\Users\Arnaud\Documents\GitHub\research_code\measuringdebt\Measuringdebt-5_HH_determinants"
 do"C:\Users\Arnaud\Documents\GitHub\research_code\measuringdebt\Measuringdebt-6_HH_labouroutcomes"
+do"C:\Users\Arnaud\Documents\GitHub\research_code\measuringdebt\Measuringdebt-7_HH_predictivepower"
 
 
 
