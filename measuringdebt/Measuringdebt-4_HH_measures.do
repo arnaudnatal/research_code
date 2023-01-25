@@ -302,111 +302,35 @@ save"panel_v5", replace
 ****************************************
 use"panel_v5", clear
 
-merge 1:1 HHID_panel year using "panel_v9", keepusing(hoursayear_female hoursayear_dep hoursayear_casu hoursayear_casu_female)
+global x dailyincome_pc_std assets_pc_std assets_total_std dsr_std isr_std dir_std dar_std afm_std rfm_std tdr_std tar_std loanamount_HH_std lapc_std nbloans_HH_std lpc_std
 
-keep HHID_panel year hoursayear_female hoursayear_dep hoursayear_casu hoursayear_casu_female assets_pc_std dsr_std dar_std afm_std tdr_std dailyincome_pc_std lapc_std lpc_std rfm_std tar_std isr_std dir_std loanamount_HH_std assets_total_std
+global y hoursayear_female hoursayear_dep hoursayear_casu hoursayear_casu_female ind_female ind_dep ind_casu ind_casu_female ind_total
 
-reshape wide dsr_std dar_std tdr_std tar_std isr_std afm_std rfm_std dailyincome_pc_std assets_pc_std lpc_std lapc_std hoursayear_casu hoursayear_female hoursayear_dep hoursayear_casu_female dir_std loanamount_HH_std assets_total_std, i(HHID_panel) j(year)
+merge 1:1 HHID_panel year using "panel_v9", keepusing($y)
 
-foreach x in hoursayear_female hoursayear_dep hoursayear_casu hoursayear_casu_female {
+keep HHID_panel year $y $x
+
+reshape wide $x $y, i(HHID_panel) j(year)
+
+foreach x in $y {
 drop `x'2010
 rename `x'2016 `x'1
 rename `x'2020 `x'2
 }
 
-foreach x in assets_pc_std dsr_std dar_std afm_std tdr_std dailyincome_pc_std lapc_std lpc_std rfm_std tar_std isr_std dir_std loanamount_HH_std assets_total_std {
+foreach x in $x {
 rename `x'2010 `x'1
 rename `x'2016 `x'2
 drop `x'2020
 }
 
-reshape long dsr_std dar_std tdr_std tar_std afm_std rfm_std dailyincome_pc_std assets_pc_std lpc_std lapc_std hoursayear_casu hoursayear_female hoursayear_dep hoursayear_casu_female isr_std dir_std loanamount_HH_std assets_total_std, i(HHID_panel) j(time)
+reshape long $x $y, i(HHID_panel) j(time)
 
 cls
-cpcorr dsr_std dar_std tdr_std tar_std isr_std afm_std rfm_std dailyincome_pc_std assets_pc_std lpc_std lapc_std dir_std loanamount_HH_std assets_total_std \ hoursayear_casu hoursayear_female hoursayear_dep hoursayear_casu_female
+cpcorr $x \ $y
 
 ****************************************
 * END
-
-
-
-
-
-
-
-
-
-
-
-****************************************
-* Finindex no. 3
-****************************************
-use"panel_v5", clear
-
-
-********** Clean
-replace assets_pc=assets_pc/1000
-replace assets_total=assets_total/1000
-replace lapc=lapc/10000
-replace loanamount_HH=loanamount_HH/1000
-replace afm=afm/10000
-
-********** Global
-global varstd dailyincome_pc_std assets_pc_std dsr_std dar_std rfm_std tar_std lapc_std
-global var dailyincome_pc assets_pc dsr dar rfm tar lapc
-
-/*
-global varstd dailyincome_pc_std assets_total_std dsr_std dar_std rfm_std tar_std
-global var dailyincome_pc assets_total dsr dar rfm tar
-label define clust99 1"Middle" 2"Rich" 3"Highly vuln" 4"Highly indebt" 5""
-label values clust clust99
-*/
-
-/*
-global varstd dailyincome_pc_std assets_pc_std dsr_std dar_std rfm_std
-global var dailyincome_pc assets_pc dsr dar rfm
-label define clust99 1"Vulnerable" 2"Poor low debt" 3"Heavy debt" 4"Rich indebted" 5"Highly vulnerable"
-*/
-
-
-********** Pre tests
-pwcorr $varstd, star(.05)
-factortest $varstd
-
-
-********* PCA
-pca $varstd
-*screeplot, ci mean
-pca $varstd, comp(4)
-rotate, quartimin 
-
-
-*** Projection of individuals
-predict fact1 fact2 fact3 fact4
-
-
-*** Cluster
-cluster wardslinkage fact1 fact2 fact3 fact4, measure(L2squared)
-
-*cluster dendrogram, cutnumber(100)
-cluster stop
-cluster gen clust=groups(2)
-ta clust year, col nofreq
-tabstat $var, stat(p50) by(clust)
-
-label define clust99 1"Poor" 2"Trapped" 3"Highly vuln" 4"Rich" 5"Middle" 6"Sustainable"
-label values clust clust99
-
-fre clust
-ta clust year, col nofreq
-ta clust caste, col nofreq
-
-drop fact* _clus*
-
-save"panel_v6", replace
-****************************************
-* END
-
 
 
 
@@ -423,7 +347,6 @@ save"panel_v6", replace
 ****************************************
 use"panel_v5", clear
 
-
 ********** Clean
 replace assets_pc=assets_pc/1000
 replace assets_total=assets_total/1000
@@ -431,15 +354,8 @@ replace lapc=lapc/10000
 replace afm=afm/10000
 
 ********** Global
-global varstd dailyincome_pc_std assets_total_std dsr_std dar_std rfm_std tar_std loanamount_HH_std
-global var dailyincome_pc assets_total dsr dar rfm tar loanamount_HH
+global varstd assets_pc_std dailyincome_pc_std dsr_std tdr_std dar_std afm_std
 
-/*
-Pas mal pour casu, mais rien pour female
-global varstd dailyincome_pc_std assets_pc_std dsr_std dar_std rfm_std tar_std lapc_std
-
-global varstd dailyincome_pc_std assets_pc_std dsr_std dar_std rfm_std tar_std loanamount_HH_std
-*/
 
 ********** Pre tests
 pwcorr $varstd, star(.05)
@@ -454,9 +370,10 @@ rotate, quartimin
 predict fact1 fact2 fact3
 
 *** Direction
+*replace fact1=fact1*(-1)
 replace fact2=fact2*(-1)
 
-cpcorr $varstd \ fact1 fact2 fact3
+cpcorr $varstd \ fact*
 
 *** Std indiv score
 forvalues i=1/3 {
@@ -465,9 +382,10 @@ gen fact`i'_std = (fact`i'-r(min))/(r(max)-r(min))
 }
 
 *** Index construction
-gen newindex=((fact1_std*0.44)+(fact2_std*0.33)+(fact3_std*0.23))*100
+gen newindex=((fact1_std*0.45)+(fact2_std*0.30)+(fact3_std*0.25))*100
 
-
+tabstat newindex, stat(n mean cv q) by(year) long
+tabstat newindex, stat(n mean cv q) by(caste) long
 
 save"panel_v6", replace
 ****************************************
@@ -513,9 +431,80 @@ save"panel_v7", replace
 
 
 
+
+
 do"C:\Users\Arnaud\Documents\GitHub\research_code\measuringdebt\Measuringdebt-5_HH_determinants"
 do"C:\Users\Arnaud\Documents\GitHub\research_code\measuringdebt\Measuringdebt-6_HH_labouroutcomes"
-do"C:\Users\Arnaud\Documents\GitHub\research_code\measuringdebt\Measuringdebt-7_HH_predictivepower"
+
+
+
+
+
+
+****************************************
+* Prediction power with ML-SEM
+****************************************
+cls
+use"panel_v9", clear
+
+
+********** Panel declaration
+xtset panelvar time
+set matsize 10000, perm
+
+
+********** X-var
+global interestvar newindex
+ta $interestvar
+
+global xinvar dalits village_2 village_3 village_4 village_5 village_6 village_7 village_8 village_9 village_10
+
+global xvar1 log_HHsize share_children sexratio dependencyratio
+
+global xvar2 head_female head_age head_educ
+
+global xvar3 remittnet_HH assets_total
+
+
+********** Ind occup
+global yvar ///
+ind_female ind_casu occ_female occ_casu
+
+log using "C:\Users\Arnaud\Downloads\MLSEM_mdo.log", replace
+
+foreach y in $yvar {
+foreach x in $interestvar {
+*capture noisily xtreg `y' L.`x' i.dalits $xvar1 $xvar2 $xvar3 $xinvar, fe base
+capture noisily xtdpdml `y' $xvar1 $xvar2 $xvar3, inv($xinvar) predetermined(L.`x') fiml
+}
+}
+
+log close
+
+
+
+********** Hours
+global yvar ///
+hoursayear_female hoursayear_casu
+
+log using "C:\Users\Arnaud\Downloads\LEV_hours.log", replace
+
+foreach y in $yvar {
+foreach x in $interestvar {
+capture noisily xtreg `y' L.`x' i.dalits $xvar1 $xvar2 $xvar3 $xinvar, fe base
+}
+}
+
+log close
+
+
+
+****************************************
+* END
+
+
+
+
 
 
 

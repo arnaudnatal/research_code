@@ -336,7 +336,7 @@ replace goldreadyamount=400000 if goldreadyamount>400000
 replace afm=570000 if afm>570000
 replace afm=-150000 if afm<-150000
 replace incpercpl=600 if incpercpl>600
-
+replace loanamount_HH=0 if loanamount_HH==.
 
 foreach x in loanamount_HH annualincome_HH assets_total imp1_ds_tot_HH imp1_is_tot_HH totHH_givenamt_repa dsr isr dar dir tdr tar afm rfm expenses_total remreceived_HH remsent_HH remittnet_HH dailyincome_pc assets_gold goldquantity_HH goldreadyamount nbloans_HH incpercpl assets_pc lpc lapc {
 egen `x'_std=std(`x')

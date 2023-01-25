@@ -546,7 +546,7 @@ drop _merge
 
 
 ********** Merge debt
-merge m:1 HHID_panel year using "panel_v8", keepusing(village HHsize HH_count_child HH_count_adult squareroot_HHsize family typeoffamily nbgeneration waystem dummypolygamous sexratio dependencyratio nbloans_HH loanamount_HH trend1 trend2 trends pcaindex pca2index pcaindexclust pca2indexclust dalits dsr_std dar_std lpc_std tdr_std)
+merge m:1 HHID_panel year using "panel_v8", keepusing(dalits village HHsize HH_count_child HH_count_adult squareroot_HHsize family typeoffamily nbgeneration waystem dummypolygamous sexratio dependencyratio nbloans_HH newindex)
 keep if _merge==3
 drop _merge
 
@@ -655,12 +655,6 @@ save"panel_indiv_v1", replace
 
 
 
-
-
-
-
-
-
 ****************************************
 * ML SEM and LEV at individual level
 ****************************************
@@ -676,26 +670,25 @@ drop if age<15
 
 *** Panel declaration
 xtset panelvar time
-set maxiter 16000
+
 
 
 
 *** Macro
 global xHH sexratio dependencyratio remittnet_HH assets_total vill_2 vill_3 vill_4 vill_5 vill_6 vill_7 vill_8 vill_9 vill_10 HHsize HH_count_child 
 
-global intx pca2index
+global intx newindex
 
 
 *** LEV -- LFP
-/*
 log using "C:\Users\Arnaud\Downloads\Indiv_probit.log", replace
 foreach y in working_pop2 dummy_agri dummy_nona dummy_casu dummy_regu dummy_self dummy_othe {
-foreach x in pca2indexclust pcaindexclust {
-capture noisily xtlogit `y' L.i.`x' i.female age dep dalits edulevel2 $xHH, fe vce(bootstrap)
+foreach x in newindex {
+capture noisily xtlogit `y' L.`x' i.female age dep dalits edulevel2 $xHH, fe
 }
 }
 log close
-*/
+
 
 
 
@@ -714,8 +707,8 @@ log close
 *** LEV -- inc and hours
 log using "C:\Users\Arnaud\Downloads\indiv_OLS.log", replace
 foreach y in occhours2_agri occhours2_nona occhours2_casu occhours2_regu occhours2_self occhours2_othe {
-foreach x in pca2indexclust pcaindexclust {
-capture noisily xtreg `y' L.I.`x' i.female c.age i.dep i.dalits i.edulevel2 $xHH, fe vce(rob) base
+foreach x in newindex {
+capture noisily xtreg `y' L.`x' i.female c.age i.dep i.dalits i.edulevel2 $xHH, fe vce(rob) base
 }
 }
 log close

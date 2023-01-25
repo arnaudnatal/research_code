@@ -63,7 +63,7 @@ global xvar3 remittnet_HH assets_total
 
 
 ********** Ind occup
-global yvar ind_total ind_female ind_male ind_dep ind_agri ind_nona ind_regu ind_casu ind_regu_male ind_regu_female ind_casu_male ind_casu_female
+global yvar occ_total occ_female occ_male occ_dep occ_agri occ_nona occ_casu occ_casu_male occ_casu_female
 
 *global yvar ind_total ind_female ind_male ind_dep ind_agri ind_nona ind_regu ind_casu ind_self ind_othe ind_agri_male ind_agri_female ind_nona_male ind_nona_female ind_regu_male ind_regu_female ind_casu_male ind_casu_female ind_self_male ind_self_female ind_othe_male ind_othe_female ind_agri_dep ind_nona_dep ind_regu_dep ind_casu_dep ind_self_dep ind_othe_dep 
 *///
@@ -76,7 +76,7 @@ log using "C:\Users\Arnaud\Downloads\MLSEM_mdo.log", replace
 foreach y in $yvar {
 foreach x in $interestvar {
 *capture noisily xtreg `y' L.`x' i.dalits $xvar1 $xvar2 $xvar3 $xinvar, fe base
-capture noisily xtdpdml `y' $xvar1 $xvar2 $xvar3, inv($xinvar) predetermined(L.`x') fiml
+*capture noisily xtdpdml `y' $xvar1 $xvar2 $xvar3, inv($xinvar) predetermined(L.`x') fiml
 }
 }
 
