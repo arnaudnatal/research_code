@@ -353,8 +353,9 @@ replace assets_total=assets_total/1000
 replace lapc=lapc/10000
 replace afm=afm/10000
 
+
 ********** Global
-global varstd assets_pc_std dailyincome_pc_std dsr_std tdr_std dar_std afm_std
+global varstd dailyincome_pc_std dsr_std dar_std rfm_std tar_std
 
 
 ********** Pre tests
@@ -364,16 +365,16 @@ factortest $varstd
 
 ********* PCA
 pca $varstd
-*screeplot, ci mean
 pca $varstd, comp(3)
 rotate, quartimin
 predict fact1 fact2 fact3
+corr fact*
+cpcorr $varstd \ fact*
 
 *** Direction
-*replace fact1=fact1*(-1)
 replace fact2=fact2*(-1)
 
-cpcorr $varstd \ fact*
+
 
 *** Std indiv score
 forvalues i=1/3 {
@@ -382,10 +383,75 @@ gen fact`i'_std = (fact`i'-r(min))/(r(max)-r(min))
 }
 
 *** Index construction
-gen newindex=((fact1_std*0.45)+(fact2_std*0.30)+(fact3_std*0.25))*100
+gen newindex=((fact1_std*0.43)+(fact2_std*0.31)+(fact3_std*0.26))*100
 
 tabstat newindex, stat(n mean cv q) by(year) long
 tabstat newindex, stat(n mean cv q) by(caste) long
+
+
+drop fact*
+
+/*
+*** Cluster
+pca $varstd, comp(3)
+rotate, quartimin
+predict fact1 fact2 fact3
+
+cluster wardslinkage fact1 fact2 fact3, measure(Lpower(2))
+cluster stop
+cluster dendrogram, cutnumbe(30)
+cluster gen clust=groups(4)
+
+ta clust
+ta clust year, col nofreq
+
+tabstat $var, stat(q) by(clust)
+
+label define clustname 1"Vulnerable" 2"Trapped" 3"Rich" 4"Highly vulnerable"
+label values clust clustname
+ta clust, gen(clust_)
+
+drop fact1 fact2 fact3 _clus_1_id _clus_1_ord _clus_1_hgt
+*/
+
+**********
+cpcorr assets_pc_std dailyincome_pc_std \ tar_std
+
+cpcorr dsr_std dir_std dar_std lapc_std afm_std rfm_std lpc_std loanamount_HH_std nbloans_HH_std \ tar_std
+
+corr tar_std tdr_std
+
+pwcorr tar_std dsr_std dir_std dar_std lapc_std afm_std rfm_std lpc_std loanamount_HH_std nbloans_HH_std
+
+
+tabstat tar, stat(n q) by(year)
+tabstat tar, stat(n q) by(caste)
+
+/*
+Si TAR=0 -FI--> (DSR*100)
+Si TAR>0 -FI --> (DSR*100)*(1+lambda)
+Lambda: 1+TAR
+Puis : FI^(1/3)
+*/
+
+ta tar
+replace tar=tar/100
+
+replace rfm=rfm*(-1)
+
+foreach var in rfm {
+gen _fi=`var'*(2+tar)
+replace _fi=`var' if tar==0
+egen newindex2=std(_fi)
+sum `var' newindex2
+}
+
+/*
+ISR: female
+RFM: dep
+DSR: rien
+DAR: rien
+*/
 
 save"panel_v6", replace
 ****************************************
@@ -454,8 +520,8 @@ set matsize 10000, perm
 
 
 ********** X-var
-global interestvar newindex
-ta $interestvar
+global interestvar newindex2
+*assets_pc_std dailyincome_pc_std dsr_std dir_std dar_std tdr_std tar_std lapc_std afm_std rfm_std lpc_std loanamount_HH_std nbloans_HH_std
 
 global xinvar dalits village_2 village_3 village_4 village_5 village_6 village_7 village_8 village_9 village_10
 
@@ -463,14 +529,13 @@ global xvar1 log_HHsize share_children sexratio dependencyratio
 
 global xvar2 head_female head_age head_educ
 
-global xvar3 remittnet_HH assets_total
+global xvar3 remittnet_HH assets_total annualincome_HH
 
 
 ********** Ind occup
-global yvar ///
-ind_female ind_casu occ_female occ_casu
+global yvar ind_total ind_female ind_dep ind_casu
 
-log using "C:\Users\Arnaud\Downloads\MLSEM_mdo.log", replace
+log using "C:\Users\Arnaud\Downloads\MLSEM_mdonew.log", replace
 
 foreach y in $yvar {
 foreach x in $interestvar {
@@ -485,7 +550,7 @@ log close
 
 ********** Hours
 global yvar ///
-hoursayear_female hoursayear_casu
+hoursayear_dep hoursayear_female hoursayear_casu
 
 log using "C:\Users\Arnaud\Downloads\LEV_hours.log", replace
 
