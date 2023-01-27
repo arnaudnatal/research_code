@@ -392,6 +392,13 @@ label values dalits dalits
 order HHID_panel year
 sort HHID_panel year
 
+
+*** Perc income
+gen dailyusdincome_pc_perc=((dailyusdincome_pc-1.9)/1.9)*(-1)*100
+ta dailyusdincome_pc_perc
+gen dailyusdincome_pc_perc2=dailyusdincome_pc_perc
+replace dailyusdincome_pc_perc2=0 if dailyusdincome_pc_perc<0
+
 save"panel_v3", replace
 ****************************************
 * END

@@ -414,7 +414,7 @@ ta clust, gen(clust_)
 drop fact1 fact2 fact3 _clus_1_id _clus_1_ord _clus_1_hgt
 */
 
-**********
+********** Test
 cpcorr assets_pc_std dailyincome_pc_std \ tar_std
 
 cpcorr dsr_std dir_std dar_std lapc_std afm_std rfm_std lpc_std loanamount_HH_std nbloans_HH_std \ tar_std
@@ -434,14 +434,11 @@ Lambda: 1+TAR
 Puis : FI^(1/3)
 */
 
-ta tar
-replace tar=tar/100
-
+gen tar2=tar/100
 replace rfm=rfm*(-1)
-
 foreach var in rfm {
-gen _fi=`var'*(2+tar)
-replace _fi=`var' if tar==0
+gen _fi=`var'*(2+tar2)
+replace _fi=`var' if tar2==0
 egen newindex2=std(_fi)
 sum `var' newindex2
 }
@@ -452,6 +449,50 @@ RFM: dep
 DSR: rien
 DAR: rien
 */
+
+
+
+
+
+
+
+********** Test
+*gen newindex3=(tar*2+isr)/3
+
+
+/*
+Sans pondération regu passe donc mieux vaut mettre avec pondération
+gen newindex3=(tar+isr+dailyusdincome_pc_perc2)/3
+*/
+
+*gen newindex3=(2*tar+isr+dailyusdincome_pc_perc2)/4
+*gen newindex3=(2*tar+2*isr+dailyusdincome_pc_perc2)/5
+
+/*
+Que ISR et TAR
+*/
+
+
+gen newindex3=(2*tar+isr)/3
+/*
+1 TAR + 1 ISR
+Total à 5%
+Male à 10%
+Dep à 10%
+Agri à 10%
+Self à 1%
+
+2 TAR + 1 ISR
+Total à 5%
+Male à 10%
+Dep à 10%
+Agri à 10%
+Self à 1%
+*/
+
+
+cpcorr dsr_std dir_std dar_std lapc_std afm_std rfm_std lpc_std loanamount_HH_std nbloans_HH_std tar_std \ newindex3 isr_std dailyusdincome_pc_perc2
+
 
 save"panel_v6", replace
 ****************************************
@@ -520,7 +561,7 @@ set matsize 10000, perm
 
 
 ********** X-var
-global interestvar newindex2
+global interestvar newindex3
 *assets_pc_std dailyincome_pc_std dsr_std dir_std dar_std tdr_std tar_std lapc_std afm_std rfm_std lpc_std loanamount_HH_std nbloans_HH_std
 
 global xinvar dalits village_2 village_3 village_4 village_5 village_6 village_7 village_8 village_9 village_10
@@ -533,7 +574,7 @@ global xvar3 remittnet_HH assets_total annualincome_HH
 
 
 ********** Ind occup
-global yvar ind_total ind_female ind_dep ind_casu
+global yvar ind_total ind_female ind_male ind_dep ind_agri ind_nona ind_regu ind_casu ind_self ind_othe
 
 log using "C:\Users\Arnaud\Downloads\MLSEM_mdonew.log", replace
 
@@ -549,6 +590,7 @@ log close
 
 
 ********** Hours
+/*
 global yvar ///
 hoursayear_dep hoursayear_female hoursayear_casu
 
@@ -561,7 +603,7 @@ capture noisily xtreg `y' L.`x' i.dalits $xvar1 $xvar2 $xvar3 $xinvar, fe base
 }
 
 log close
-
+*/
 
 
 ****************************************
