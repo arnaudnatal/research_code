@@ -546,7 +546,7 @@ drop _merge
 
 
 ********** Merge debt
-merge m:1 HHID_panel year using "panel_v8", keepusing(dalits village HHsize HH_count_child HH_count_adult squareroot_HHsize family typeoffamily nbgeneration waystem dummypolygamous sexratio dependencyratio nbloans_HH newindex)
+merge m:1 HHID_panel year using "panel_v8", keepusing(dalits village HHsize HH_count_child HH_count_adult squareroot_HHsize family typeoffamily nbgeneration waystem dummypolygamous sexratio dependencyratio nbloans_HH newindex3)
 keep if _merge==3
 drop _merge
 
@@ -677,13 +677,13 @@ xtset panelvar time
 *** Macro
 global xHH sexratio dependencyratio remittnet_HH assets_total vill_2 vill_3 vill_4 vill_5 vill_6 vill_7 vill_8 vill_9 vill_10 HHsize HH_count_child 
 
-global intx newindex
+global intx newindex3
 
 
 *** LEV -- LFP
 log using "C:\Users\Arnaud\Downloads\Indiv_probit.log", replace
 foreach y in working_pop2 dummy_agri dummy_nona dummy_casu dummy_regu dummy_self dummy_othe {
-foreach x in newindex {
+foreach x in $intx {
 capture noisily xtlogit `y' L.`x' i.female age dep dalits edulevel2 $xHH, fe
 }
 }
@@ -707,7 +707,7 @@ log close
 *** LEV -- inc and hours
 log using "C:\Users\Arnaud\Downloads\indiv_OLS.log", replace
 foreach y in occhours2_agri occhours2_nona occhours2_casu occhours2_regu occhours2_self occhours2_othe {
-foreach x in newindex {
+foreach x in $intx {
 capture noisily xtreg `y' L.`x' i.female c.age i.dep i.dalits i.edulevel2 $xHH, fe vce(rob) base
 }
 }
@@ -717,15 +717,17 @@ log close
 
 
 *** ML-SEM -- inc and hours0
-/*
+
 log using "C:\Users\Arnaud\Downloads\Indiv_mlsemdummy.log", replace
-foreach y in occhours2_agri occhours2_nona occhours2_casu occhours2_regu occhours2_self occhours2_othe occinc2_agri occinc2_nona occinc2_casu occinc2_regu occinc2_self occinc2_othe {
-foreach x in pca2index pcaindex loanamount_HH {
-capture noisily xtdpdml `y'  age female edulevel2 sexratio dependencyratio remittnet_HH assets_total HHsize, inv(dalits vill_2 vill_3 vill_4 vill_5 vill_6 vill_7 vill_8 vill_9 vill_10) predetermined(L.`x') fiml showcmd
+foreach y in working_pop2 {
+foreach x in $intx {
+capture noisily xtdpdml `y'  age female HHsize, inv(dalits) predetermined(L.`x') fiml showcmd
 }
 }
 log close
 */
+
+
 
 ****************************************
 * END

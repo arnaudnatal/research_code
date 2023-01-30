@@ -302,7 +302,7 @@ save"panel_v5", replace
 ****************************************
 use"panel_v5", clear
 
-global x dailyincome_pc_std assets_pc_std assets_total_std dsr_std isr_std dir_std dar_std afm_std rfm_std tdr_std tar_std loanamount_HH_std lapc_std nbloans_HH_std lpc_std
+global x dailyincome_pc_std assets_pc_std assets_total_std dsr_std isr_std dir_std dar_std afm_std rfm_std tdr_std tar_std loanamount_HH_std lapc_std nbloans_HH_std lpc_std dailyusdincome_pc_perc
 
 global y hoursayear_female hoursayear_dep hoursayear_casu hoursayear_casu_female ind_female ind_dep ind_casu ind_casu_female ind_total
 
@@ -347,151 +347,13 @@ cpcorr $x \ $y
 ****************************************
 use"panel_v5", clear
 
-********** Clean
-replace assets_pc=assets_pc/1000
-replace assets_total=assets_total/1000
-replace lapc=lapc/10000
-replace afm=afm/10000
+*** Replace
+replace assets_pc_std=assets_pc_std*(-1)
+replace dailyincome_pc_std=dailyincome_pc_std*(-1)
 
 
-********** Global
-global varstd dailyincome_pc_std dsr_std dar_std rfm_std tar_std
-
-
-********** Pre tests
-pwcorr $varstd, star(.05)
-factortest $varstd
-
-
-********* PCA
-pca $varstd
-pca $varstd, comp(3)
-rotate, quartimin
-predict fact1 fact2 fact3
-corr fact*
-cpcorr $varstd \ fact*
-
-*** Direction
-replace fact2=fact2*(-1)
-
-
-
-*** Std indiv score
-forvalues i=1/3 {
-qui sum fact`i'
-gen fact`i'_std = (fact`i'-r(min))/(r(max)-r(min))
-}
-
-*** Index construction
-gen newindex=((fact1_std*0.43)+(fact2_std*0.31)+(fact3_std*0.26))*100
-
-tabstat newindex, stat(n mean cv q) by(year) long
-tabstat newindex, stat(n mean cv q) by(caste) long
-
-
-drop fact*
-
-/*
-*** Cluster
-pca $varstd, comp(3)
-rotate, quartimin
-predict fact1 fact2 fact3
-
-cluster wardslinkage fact1 fact2 fact3, measure(Lpower(2))
-cluster stop
-cluster dendrogram, cutnumbe(30)
-cluster gen clust=groups(4)
-
-ta clust
-ta clust year, col nofreq
-
-tabstat $var, stat(q) by(clust)
-
-label define clustname 1"Vulnerable" 2"Trapped" 3"Rich" 4"Highly vulnerable"
-label values clust clustname
-ta clust, gen(clust_)
-
-drop fact1 fact2 fact3 _clus_1_id _clus_1_ord _clus_1_hgt
-*/
-
-********** Test
-cpcorr assets_pc_std dailyincome_pc_std \ tar_std
-
-cpcorr dsr_std dir_std dar_std lapc_std afm_std rfm_std lpc_std loanamount_HH_std nbloans_HH_std \ tar_std
-
-corr tar_std tdr_std
-
-pwcorr tar_std dsr_std dir_std dar_std lapc_std afm_std rfm_std lpc_std loanamount_HH_std nbloans_HH_std
-
-
-tabstat tar, stat(n q) by(year)
-tabstat tar, stat(n q) by(caste)
-
-/*
-Si TAR=0 -FI--> (DSR*100)
-Si TAR>0 -FI --> (DSR*100)*(1+lambda)
-Lambda: 1+TAR
-Puis : FI^(1/3)
-*/
-
-gen tar2=tar/100
-replace rfm=rfm*(-1)
-foreach var in rfm {
-gen _fi=`var'*(2+tar2)
-replace _fi=`var' if tar2==0
-egen newindex2=std(_fi)
-sum `var' newindex2
-}
-
-/*
-ISR: female
-RFM: dep
-DSR: rien
-DAR: rien
-*/
-
-
-
-
-
-
-
-********** Test
-*gen newindex3=(tar*2+isr)/3
-
-
-/*
-Sans pondération regu passe donc mieux vaut mettre avec pondération
-gen newindex3=(tar+isr+dailyusdincome_pc_perc2)/3
-*/
-
-*gen newindex3=(2*tar+isr+dailyusdincome_pc_perc2)/4
-*gen newindex3=(2*tar+2*isr+dailyusdincome_pc_perc2)/5
-
-/*
-Que ISR et TAR
-*/
-
-
-gen newindex3=(2*tar+isr)/3
-/*
-1 TAR + 1 ISR
-Total à 5%
-Male à 10%
-Dep à 10%
-Agri à 10%
-Self à 1%
-
-2 TAR + 1 ISR
-Total à 5%
-Male à 10%
-Dep à 10%
-Agri à 10%
-Self à 1%
-*/
-
-
-cpcorr dsr_std dir_std dar_std lapc_std afm_std rfm_std lpc_std loanamount_HH_std nbloans_HH_std tar_std \ newindex3 isr_std dailyusdincome_pc_perc2
+*** Calculation
+gen newindex=(1*tdr+1*isr+1*dar+1*dailyusdincome_pc_perc2)/6
 
 
 save"panel_v6", replace
@@ -561,7 +423,7 @@ set matsize 10000, perm
 
 
 ********** X-var
-global interestvar newindex3
+global interestvar newindex 
 *assets_pc_std dailyincome_pc_std dsr_std dir_std dar_std tdr_std tar_std lapc_std afm_std rfm_std lpc_std loanamount_HH_std nbloans_HH_std
 
 global xinvar dalits village_2 village_3 village_4 village_5 village_6 village_7 village_8 village_9 village_10
@@ -574,7 +436,7 @@ global xvar3 remittnet_HH assets_total annualincome_HH
 
 
 ********** Ind occup
-global yvar ind_total ind_female ind_male ind_dep ind_agri ind_nona ind_regu ind_casu ind_self ind_othe
+global yvar ind_total ind_female ind_male ind_dep ind_agri ind_nona ind_casu
 
 log using "C:\Users\Arnaud\Downloads\MLSEM_mdonew.log", replace
 
