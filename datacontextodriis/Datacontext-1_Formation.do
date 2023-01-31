@@ -335,6 +335,10 @@ restore
 merge 1:1 HHID_panel year using "castetemp"
 drop _merge
 
+*** Caste2 Caste
+gen caste2=caste
+recode caste2 (3=2)
+
 save"panel_v0", replace
 ****************************************
 * END
