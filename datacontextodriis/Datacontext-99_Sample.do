@@ -45,45 +45,45 @@ use"$datatracking1\NEEMSIS-tracking_v6.dta", clear
 save"$directory\NEEMSIS1-tracking.dta", replace
 
 ********** ODRIIS HH and indiv
-use"$datapanel\ODRIIS-HH_long.dta", clear
-save"$directory\ODRIIS-HH_long.dta", replace
-use"$datapanel\ODRIIS-HH_wide.dta", clear
-save"$directory\ODRIIS-HH_wide.dta", replace
-use"$datapanel\ODRIIS-indiv_long.dta", clear
-save"$directory\ODRIIS-indiv_long.dta", replace
+use"$datapanel\keypanel-HH_long.dta", clear
+save"$directory\keypanel-HH_long.dta", replace
+use"$datapanel\keypanel-HH_wide.dta", clear
+save"$directory\keypanel-HH_wide.dta", replace
+use"$datapanel\keypanel-indiv_long.dta", clear
+save"$directory\keypanel-indiv_long.dta", replace
 
 
 
 ********** Caste new var
-use"$directory\ODRIIS-HH_long.dta", clear
-use"$directory\ODRIIS-indiv_long.dta", clear
+use"$directory\keypanel-HH_long.dta", clear
+use"$directory\keypanel-indiv_long.dta", clear
 
 use"$directory\\$wave1", clear
-merge m:1 HHID_panel year using "$directory\ODRIIS-HH_long.dta", keepusing(castecorr)
+merge m:1 HHID_panel year using "$directory\keypanel-HH_long.dta", keepusing(castecorr)
 keep if _merge==3
 drop _merge
 rename castecorr castecorr_HH
-merge 1:1 HHID_panel INDID_panel year using "$directory\ODRIIS-indiv_long.dta", keepusing(castecorr jatiscorr agecorr)
+merge 1:1 HHID_panel INDID_panel year using "$directory\keypanel-indiv_long.dta", keepusing(castecorr jatiscorr agecorr)
 keep if _merge==3
 drop _merge
 save"$directory\\$wave1~v2", replace
 
 use"$directory\\$wave2", clear
-merge m:1 HHID_panel year using "$directory\ODRIIS-HH_long.dta", keepusing(castecorr)
+merge m:1 HHID_panel year using "$directory\keypanel-HH_long.dta", keepusing(castecorr)
 keep if _merge==3
 drop _merge
 rename castecorr castecorr_HH
-merge 1:1 HHID_panel INDID_panel year using "$directory\ODRIIS-indiv_long.dta", keepusing(castecorr jatiscorr agecorr)
+merge 1:1 HHID_panel INDID_panel year using "$directory\keypanel-indiv_long.dta", keepusing(castecorr jatiscorr agecorr)
 keep if _merge==3
 drop _merge
 save"$directory\\$wave2~v2", replace
 
 use"$directory\\$wave3", clear
-merge m:1 HHID_panel year using "$directory\ODRIIS-HH_long.dta", keepusing(castecorr)
+merge m:1 HHID_panel year using "$directory\keypanel-HH_long.dta", keepusing(castecorr)
 keep if _merge==3
 drop _merge
 rename castecorr castecorr_HH
-merge 1:1 HHID_panel INDID_panel year using "$directory\ODRIIS-indiv_long.dta", keepusing(castecorr jatiscorr agecorr)
+merge 1:1 HHID_panel INDID_panel year using "$directory\keypanel-indiv_long.dta", keepusing(castecorr jatiscorr agecorr)
 keep if _merge==3
 drop _merge
 save"$directory\\$wave3~v2", replace
