@@ -335,9 +335,15 @@ restore
 merge 1:1 HHID_panel year using "castetemp"
 drop _merge
 
+label define caste 1"Dalits" 2"Middle" 3"Upper"
+label values caste caste
+
 *** Caste2 Caste
 gen caste2=caste
 recode caste2 (3=2)
+
+label define caste2 1"Dalits" 2"Non-Dalits"
+label values caste2 caste2
 
 save"panel_v0", replace
 ****************************************
