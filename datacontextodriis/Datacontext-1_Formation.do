@@ -345,6 +345,10 @@ recode caste2 (3=2)
 label define caste2 1"Dalits" 2"Non-Dalits"
 label values caste2 caste2
 
+*** Year
+label define year 2010"2010" 2016"2016-17" 2020"2020-21"
+label values year year
+
 save"panel_v0", replace
 ****************************************
 * END
@@ -367,7 +371,7 @@ use"$directory\RUME_v0", clear
 keep HHID_panel INDID_panel sex age name ///
 edulevel ///
 working_pop ///
-mainocc_profession_indiv mainocc_occupation_indiv mainocc_sector_indiv mainocc_annualincome_indiv mainocc_occupationname_indiv
+mainocc_profession_indiv mainocc_occupation_indiv mainocc_sector_indiv mainocc_annualincome_indiv mainocc_occupationname_indiv annualincome_indiv
 
 gen year=2010
 
@@ -378,10 +382,13 @@ save "RUME_indiv_v0", replace
 ********** NEEMSIS1
 use"$directory\NEEMSIS1_v0", clear
 
+drop if livinghome==3
+drop if livinghome==4
+
 keep HHID_panel INDID_panel sex age name ///
 edulevel ///
 working_pop ///
-mainocc_profession_indiv mainocc_occupation_indiv mainocc_sector_indiv mainocc_annualincome_indiv mainocc_occupationname_indiv
+mainocc_profession_indiv mainocc_occupation_indiv mainocc_sector_indiv mainocc_annualincome_indiv mainocc_occupationname_indiv annualincome_indiv
 
 gen year=2016
 
@@ -393,10 +400,14 @@ save "NEEMSIS1_indiv_v0", replace
 ********** NEEMSIS2
 use"$directory\NEEMSIS2_v0", clear
 
+drop if dummylefthousehold==1
+drop if livinghome==3
+drop if livinghome==4
+
 keep HHID_panel INDID_panel sex age name ///
 edulevel ///
 working_pop ///
-mainocc_profession_indiv mainocc_occupation_indiv mainocc_sector_indiv mainocc_annualincome_indiv mainocc_occupationname_indiv
+mainocc_profession_indiv mainocc_occupation_indiv mainocc_sector_indiv mainocc_annualincome_indiv mainocc_occupationname_indiv annualincome_indiv
 
 gen year=2020
 
@@ -416,7 +427,7 @@ sort HHID_panel INDID_panel year
 
 
 *** Deflate
-foreach x in mainocc_annualincome_indiv {
+foreach x in mainocc_annualincome_indiv annualincome_indiv {
 replace `x'=`x'*(100/158) if year==2016
 replace `x'=`x'*(100/184) if year==2020
 }
