@@ -347,13 +347,72 @@ cpcorr $x \ $y
 ****************************************
 use"panel_v5", clear
 
-*** Replace
-replace assets_pc_std=assets_pc_std*(-1)
-replace dailyincome_pc_std=dailyincome_pc_std*(-1)
+***** Replace
+* Income
+replace dailyusdincome_pc_perc2=100 if dailyusdincome_pc_perc2>100
+replace dailyusdincome_pc_perc2=-100 if dailyusdincome_pc_perc2<-100
+corr annualincome_HH dailyusdincome_pc_perc2
+*the more is the poorer
+
+* RFM
+replace rfm=100 if rfm>100
+replace rfm=-100 if rfm<-100
+ta rfm
+corr rfm dsr
+replace rfm=rfm*(-1)
+*the more is the poorer
+
+* DAR
+replace dar=100 if dar>100
+ta dar
+
+* DIR
+replace dir=100 if dir>100
+ta dir
+
+* DSR
+replace dsr=100 if dsr>100
+ta dsr
+
+* ISR
+replace isr=100 if isr>100
+ta isr
 
 
-*** Calculation
-gen newindex=(1*tdr+1*isr+1*dar+1*dailyusdincome_pc_perc2)/6
+********** Trends
+preserve
+keep if dummypanel==1
+global var dar dsr isr tdr tar afm rfm dailyusdincome_pc_perc2 assets_total assets_totalnoland
+keep HHID_panel year $var
+
+reshape wide $var, i(HHID_panel) j(year)
+foreach x in $var {
+pwcorr `x'2010 `x'2016 `x'2020, star(.05)
+}
+restore
+
+
+
+gen newindex=(1*tar+1*isr+1*dailyusdincome_pc_perc2)/3
+
+gen newindex2=(1*tar+2*dsr+1*dailyusdincome_pc_perc2)/4
+
+gen newindex3=(1*tar+1*dar+1*dsr)/3
+/*
+gen newindex3=(1*tdr+1*isr+1*dar+1*dailyusdincome_pc_perc2)/4
+QUE DEP
+*/
+
+
+
+********** Trends
+preserve
+keep if dummypanel==1
+keep HHID_panel year newindex
+
+reshape wide newindex, i(HHID_panel) j(year)
+pwcorr newindex2010 newindex2016 newindex2020, star(.05)
+restore
 
 
 save"panel_v6", replace
@@ -423,7 +482,8 @@ set matsize 10000, perm
 
 
 ********** X-var
-global interestvar newindex 
+*newindex newindex2 
+global interestvar newindex newindex2 newindex3
 *assets_pc_std dailyincome_pc_std dsr_std dir_std dar_std tdr_std tar_std lapc_std afm_std rfm_std lpc_std loanamount_HH_std nbloans_HH_std
 
 global xinvar dalits village_2 village_3 village_4 village_5 village_6 village_7 village_8 village_9 village_10
@@ -436,7 +496,8 @@ global xvar3 remittnet_HH assets_total annualincome_HH
 
 
 ********** Ind occup
-global yvar ind_total ind_female ind_male ind_dep ind_agri ind_nona ind_casu
+global yvar ind_total ind_female ind_male 
+*ind_dep ind_agri ind_nona ind_casu
 
 log using "C:\Users\Arnaud\Downloads\MLSEM_mdonew.log", replace
 

@@ -28,12 +28,13 @@ use"panel_v7", clear
 ********** Time
 cls
 tabstat newindex, stat(n mean cv q) by(year) long
-
+tabstat newindex2, stat(n mean cv q) by(year) long
 
 
 ********** Caste
 cls
 tabstat newindex, stat(n mean cv q) by(caste) long
+tabstat newindex2, stat(n mean cv q) by(caste) long
 
 
 
@@ -43,11 +44,16 @@ tabstat newindex if year==2010, stat(n mean cv q) by(caste) long
 tabstat newindex if year==2016, stat(n mean cv q) by(caste) long
 tabstat newindex if year==2020, stat(n mean cv q) by(caste) long
 
+tabstat newindex2 if year==2010, stat(n mean cv q) by(caste) long
+tabstat newindex2 if year==2016, stat(n mean cv q) by(caste) long
+tabstat newindex2 if year==2020, stat(n mean cv q) by(caste) long
+
 
 
 ********** Graph
+ta newindex
 /*
-stripplot pca2index, over(time) vert ///
+stripplot newindex, over(time) vert ///
 stack width(0.2) jitter(1) ///
 box(barw(0.2)) boffset(-0.2) pctile(10) ///
 ms(oh oh oh) msize(small) mc(blue%30) ///
@@ -83,37 +89,37 @@ Share of formal
 
 ********** RE
 * BP LM test
-xtreg pcaindex dalits stem HHsize HH_count_child head_female head_age head_occ2 head_occ3 head_occ4 head_occ5 head_occ6 head_occ7 head_educ2 head_educ3 head_nonmarried dummymarriage assets_pc dailyincome_pc i.vill, base re
-xttest0
+*xtreg pcaindex dalits stem HHsize HH_count_child head_female head_age head_occ2 head_occ3 head_occ4 head_occ5 head_occ6 head_occ7 head_educ2 head_educ3 head_nonmarried dummymarriage assets_pc dailyincome_pc i.vill, base re
+*xttest0
 /*
 pvalue higher than .05, we do not reject H0
 -> No random effect
 */
 
-xtreg pca2index dalits stem HHsize HH_count_child head_female head_age head_occ2 head_occ3 head_occ4 head_occ5 head_occ6 head_occ7 head_educ2 head_educ3 head_nonmarried dummymarriage assets_pc dailyincome_pc i.vill, base re
-xttest0
+*xtreg pca2index dalits stem HHsize HH_count_child head_female head_age head_occ2 head_occ3 head_occ4 head_occ5 head_occ6 head_occ7 head_educ2 head_educ3 head_nonmarried dummymarriage assets_pc dailyincome_pc i.vill, base re
+*xttest0
 /*
 pvalue higher than .05, we do not reject H0
 -> No random effect
 */
 
-xtreg newindex dalits stem HHsize HH_count_child head_female head_age head_occ2 head_occ3 head_occ4 head_occ5 head_occ6 head_occ7 head_educ2 head_educ3 head_nonmarried dummymarriage assets_pc dailyincome_pc i.vill, base re
+xtreg newindex2 dalits stem HHsize HH_count_child head_female head_age head_occ2 head_occ3 head_occ4 head_occ5 head_occ6 head_occ7 head_educ2 head_educ3 head_nonmarried dummymarriage assets_pc dailyincome_pc i.vill, base re
 xttest0
 /*
-pvalue lower than .05, we reject H0
--> Random effect
+pvalue higher than .05, we do not reject H0
+-> No random effect
 */
 
 
 
 ********** FE
-xtreg pcaindex dalits stem HHsize HH_count_child head_female head_age head_occ2 head_occ3 head_occ4 head_occ5 head_occ6 head_occ7 head_educ2 head_educ3 head_nonmarried dummymarriage assets_pc dailyincome_pc i.vill, base fe
+*xtreg pcaindex dalits stem HHsize HH_count_child head_female head_age head_occ2 head_occ3 head_occ4 head_occ5 head_occ6 head_occ7 head_educ2 head_educ3 head_nonmarried dummymarriage assets_pc dailyincome_pc i.vill, base fe
 /*
 pvalue lower than .05, we reject H0
 -> Fixed effect
 */
 
-xtreg pca2index dalits stem HHsize HH_count_child head_female head_age head_occ2 head_occ3 head_occ4 head_occ5 head_occ6 head_occ7 head_educ2 head_educ3 head_nonmarried dummymarriage assets_pc dailyincome_pc i.vill, base fe
+*xtreg pca2index dalits stem HHsize HH_count_child head_female head_age head_occ2 head_occ3 head_occ4 head_occ5 head_occ6 head_occ7 head_educ2 head_educ3 head_nonmarried dummymarriage assets_pc dailyincome_pc i.vill, base fe
 /*
 pvalue lower than .05, we reject H0
 -> Fixed effect
@@ -121,20 +127,20 @@ pvalue lower than .05, we reject H0
 
 xtreg newindex dalits stem HHsize HH_count_child head_female head_age head_occ2 head_occ3 head_occ4 head_occ5 head_occ6 head_occ7 head_educ2 head_educ3 head_nonmarried dummymarriage assets_pc dailyincome_pc i.vill, base fe
 /*
-pvalue lower than .05, we reject H0
--> Fixed effect
+pvalue higher than .05, we do not reject H0
+-> No fixed effect
 */
 
 
 
 ********** FE vs RE for newindex
-xtreg newindex dalits stem HHsize HH_count_child head_female head_age head_occ2 head_occ3 head_occ4 head_occ5 head_occ6 head_occ7 head_educ2 head_educ3 head_nonmarried dummymarriage assets_pc dailyincome_pc i.vill, base re
-est store newRE
+*xtreg newindex dalits stem HHsize HH_count_child head_female head_age head_occ2 head_occ3 head_occ4 head_occ5 head_occ6 head_occ7 head_educ2 head_educ3 head_nonmarried dummymarriage assets_pc dailyincome_pc i.vill, base re
+*est store newRE
 
-xtreg newindex dalits stem HHsize HH_count_child head_female head_age head_occ2 head_occ3 head_occ4 head_occ5 head_occ6 head_occ7 head_educ2 head_educ3 head_nonmarried dummymarriage assets_pc dailyincome_pc i.vill, base fe
-est store newFE
+*xtreg newindex dalits stem HHsize HH_count_child head_female head_age head_occ2 head_occ3 head_occ4 head_occ5 head_occ6 head_occ7 head_educ2 head_educ3 head_nonmarried dummymarriage assets_pc dailyincome_pc i.vill, base fe
+*est store newFE
 
-hausman newFE newRE
+*hausman newFE newRE
 /*
 pvalue < .05 --> FE
 pvalue > .05 --> RE
@@ -172,52 +178,13 @@ and the R2 overall is a weighted average of these two.
 */
 
 
-xtreg pcaindex i.caste stem HHsize HH_count_child head_female head_age head_occ2 head_occ3 head_occ4 head_occ5 head_occ6 head_occ7 head_educ2 head_educ3 head_nonmarried dummymarriage assets_cat2 assets_cat3 dailyincome_pc i.vill $mean, base re
-
-xtreg pca2index i.caste stem HHsize HH_count_child head_female head_age head_occ2 head_occ3 head_occ4 head_occ5 head_occ6 head_occ7 head_educ2 head_educ3 head_nonmarried dummymarriage assets_cat2 assets_cat3 dailyincome_pc i.vill $mean, base re
-
-
-
-****************************************
-* END
-
-
-
-
-
-
-
-
-
-
-
-
-****************************************
-* Family composition effects
-****************************************
-cls
-use"panel_v7", clear
-
-xtset panelvar time
-
-xtreg pca2index i.caste i.stem c.HHsize##c.dependencyratio HH_count_child head_female head_age head_occ2 head_occ3 head_occ4 head_occ5 head_occ6 head_occ7 head_educ2 head_educ3 head_nonmarried dummymarriage assets_pc dailyincome_pc i.vill, base fe
+xtreg newindex i.caste stem HHsize HH_count_child head_female head_age head_occ2 head_occ3 head_occ4 head_occ5 head_occ6 head_occ7 head_educ2 head_educ3 head_nonmarried dummymarriage assets_cat2 assets_cat3 dailyincome_pc i.vill $mean, base re
 
 
 
 
 ****************************************
 * END
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -236,13 +203,14 @@ xtreg pca2index i.caste i.stem c.HHsize##c.dependencyratio HH_count_child head_f
 ****************************************
 use"panel_v7", clear
 
-/*
+
 ********** Trends
 preserve
 keep if dummypanel==1
-keep HHID_panel year pca2index m2index
+keep HHID_panel year newindex
 
-reshape wide pca2index m2index, i(HHID_panel) j(year)
+reshape wide newindex, i(HHID_panel) j(year)
+corr newindex2010 newindex2016 newindex2020
 export delimited "C:\Users\Arnaud\Documents\GitHub\research_code\measuringdebt\debtnew.csv", replace
 restore
 */

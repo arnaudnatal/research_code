@@ -172,7 +172,7 @@ save"panel_v1", replace
 
 
 ****************************************
-* Pverty and other
+* Poverty and other
 ****************************************
 use"panel_v1", clear
 
@@ -199,6 +199,14 @@ gen incpercpl=(dailyusdincome_pc-1.9)*100/1.9
 gen assets_pc=assets_total/squareroot_HHsize
 corr assets_total assets_pc
 plot assets_pc assets_total
+
+*** Rangarajan Committee
+* HH income per capita per month
+gen monthlyincome_pc=(annualincome_HH/12)/squareroot_HHsize
+gen monthlyincome_pc_rc=((monthlyincome_pc-1082)*(-1))/1082
+replace monthlyincome_pc_rc=0 if monthlyincome_pc_rc<0
+ta monthlyincome_pc_rc
+
 
 ********** Other var
 * HH
@@ -397,7 +405,7 @@ sort HHID_panel year
 gen dailyusdincome_pc_perc=((dailyusdincome_pc-1.9)/1.9)*(-1)*100
 ta dailyusdincome_pc_perc
 gen dailyusdincome_pc_perc2=dailyusdincome_pc_perc
-replace dailyusdincome_pc_perc2=0 if dailyusdincome_pc_perc<0
+*replace dailyusdincome_pc_perc2=0 if dailyusdincome_pc_perc<0
 
 save"panel_v3", replace
 ****************************************
