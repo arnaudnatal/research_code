@@ -347,14 +347,14 @@ cpcorr $x \ $y
 ****************************************
 use"panel_v5", clear
 
-***** Replace
-* Income
+********** Replace
+*** Income
 replace dailyusdincome_pc_perc2=100 if dailyusdincome_pc_perc2>100
 replace dailyusdincome_pc_perc2=-100 if dailyusdincome_pc_perc2<-100
 corr annualincome_HH dailyusdincome_pc_perc2
 *the more is the poorer
 
-* RFM
+*** RFM
 replace rfm=100 if rfm>100
 replace rfm=-100 if rfm<-100
 ta rfm
@@ -362,19 +362,19 @@ corr rfm dsr
 replace rfm=rfm*(-1)
 *the more is the poorer
 
-* DAR
+*** DAR
 replace dar=100 if dar>100
 ta dar
 
-* DIR
+*** DIR
 replace dir=100 if dir>100
 ta dir
 
-* DSR
+*** DSR
 replace dsr=100 if dsr>100
 ta dsr
 
-* ISR
+*** ISR
 replace isr=100 if isr>100
 ta isr
 
@@ -393,6 +393,7 @@ restore
 
 
 
+********** Index
 gen newindex=(1*tar+1*isr+1*dailyusdincome_pc_perc2)/3
 
 gen newindex2=(1*tar+2*dsr+1*dailyusdincome_pc_perc2)/4
