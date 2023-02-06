@@ -27,22 +27,24 @@ use"panel_v7", clear
 
 ********** Time
 cls
-tabstat newindex, stat(n mean cv q) by(year) long
-tabstat newindex2, stat(n mean cv q) by(year) long
+foreach i in 32 33 34 35 {
+*tabstat newindex`i', stat(n mean cv q) by(year)
+tabstat newindex`i', stat(n mean p50) by(caste)
+}
 
 
 ********** Caste
 cls
-tabstat newindex, stat(n mean cv q) by(caste) long
+tabstat newindex1, stat(n mean cv q) by(caste) long
 tabstat newindex2, stat(n mean cv q) by(caste) long
 
 
 
 ********** Time and caste
 cls
-tabstat newindex if year==2010, stat(n mean cv q) by(caste) long
-tabstat newindex if year==2016, stat(n mean cv q) by(caste) long
-tabstat newindex if year==2020, stat(n mean cv q) by(caste) long
+tabstat newindex1 if year==2010, stat(n mean cv q) by(caste) long
+tabstat newindex1 if year==2016, stat(n mean cv q) by(caste) long
+tabstat newindex1 if year==2020, stat(n mean cv q) by(caste) long
 
 tabstat newindex2 if year==2010, stat(n mean cv q) by(caste) long
 tabstat newindex2 if year==2016, stat(n mean cv q) by(caste) long
@@ -51,9 +53,8 @@ tabstat newindex2 if year==2020, stat(n mean cv q) by(caste) long
 
 
 ********** Graph
-ta newindex
 /*
-stripplot newindex, over(time) vert ///
+stripplot newindex1, over(time) vert ///
 stack width(0.2) jitter(1) ///
 box(barw(0.2)) boffset(-0.2) pctile(10) ///
 ms(oh oh oh) msize(small) mc(blue%30) ///
@@ -103,7 +104,7 @@ pvalue higher than .05, we do not reject H0
 -> No random effect
 */
 
-xtreg newindex2 dalits stem HHsize HH_count_child head_female head_age head_occ2 head_occ3 head_occ4 head_occ5 head_occ6 head_occ7 head_educ2 head_educ3 head_nonmarried dummymarriage assets_pc dailyincome_pc i.vill, base re
+xtreg newindex31 dalits stem HHsize HH_count_child head_female head_age head_occ2 head_occ3 head_occ4 head_occ5 head_occ6 head_occ7 head_educ2 head_educ3 head_nonmarried dummymarriage assets_pc dailyincome_pc i.vill, base re
 xttest0
 /*
 pvalue higher than .05, we do not reject H0
@@ -125,7 +126,12 @@ pvalue lower than .05, we reject H0
 -> Fixed effect
 */
 
-xtreg newindex dalits stem HHsize HH_count_child head_female head_age head_occ2 head_occ3 head_occ4 head_occ5 head_occ6 head_occ7 head_educ2 head_educ3 head_nonmarried dummymarriage assets_pc dailyincome_pc i.vill, base fe
+xtreg newindex32 dalits stem HHsize HH_count_child head_female head_age head_occ2 head_occ3 head_occ4 head_occ5 head_occ6 head_occ7 head_educ2 head_educ3 head_nonmarried dummymarriage assets_pc dailyincome_pc i.vill, base fe
+xtreg newindex33 dalits stem HHsize HH_count_child head_female head_age head_occ2 head_occ3 head_occ4 head_occ5 head_occ6 head_occ7 head_educ2 head_educ3 head_nonmarried dummymarriage assets_pc dailyincome_pc i.vill, base fe
+xtreg newindex34 dalits stem HHsize HH_count_child head_female head_age head_occ2 head_occ3 head_occ4 head_occ5 head_occ6 head_occ7 head_educ2 head_educ3 head_nonmarried dummymarriage assets_pc dailyincome_pc i.vill, base fe
+xtreg newindex35 dalits stem HHsize HH_count_child head_female head_age head_occ2 head_occ3 head_occ4 head_occ5 head_occ6 head_occ7 head_educ2 head_educ3 head_nonmarried dummymarriage assets_pc dailyincome_pc i.vill, base fe
+
+
 /*
 pvalue higher than .05, we do not reject H0
 -> No fixed effect
@@ -134,10 +140,10 @@ pvalue higher than .05, we do not reject H0
 
 
 ********** FE vs RE for newindex
-*xtreg newindex dalits stem HHsize HH_count_child head_female head_age head_occ2 head_occ3 head_occ4 head_occ5 head_occ6 head_occ7 head_educ2 head_educ3 head_nonmarried dummymarriage assets_pc dailyincome_pc i.vill, base re
+*xtreg newindex2 dalits stem HHsize HH_count_child head_female head_age head_occ2 head_occ3 head_occ4 head_occ5 head_occ6 head_occ7 head_educ2 head_educ3 head_nonmarried dummymarriage assets_pc dailyincome_pc i.vill, base re
 *est store newRE
 
-*xtreg newindex dalits stem HHsize HH_count_child head_female head_age head_occ2 head_occ3 head_occ4 head_occ5 head_occ6 head_occ7 head_educ2 head_educ3 head_nonmarried dummymarriage assets_pc dailyincome_pc i.vill, base fe
+*xtreg newindex2 dalits stem HHsize HH_count_child head_female head_age head_occ2 head_occ3 head_occ4 head_occ5 head_occ6 head_occ7 head_educ2 head_educ3 head_nonmarried dummymarriage assets_pc dailyincome_pc i.vill, base fe
 *est store newFE
 
 *hausman newFE newRE
@@ -178,7 +184,7 @@ and the R2 overall is a weighted average of these two.
 */
 
 
-xtreg newindex i.caste stem HHsize HH_count_child head_female head_age head_occ2 head_occ3 head_occ4 head_occ5 head_occ6 head_occ7 head_educ2 head_educ3 head_nonmarried dummymarriage assets_cat2 assets_cat3 dailyincome_pc i.vill $mean, base re
+xtreg newindex35 i.caste stem HHsize HH_count_child head_female head_age head_occ2 head_occ3 head_occ4 head_occ5 head_occ6 head_occ7 head_educ2 head_educ3 head_nonmarried dummymarriage assets_cat2 assets_cat3 dailyincome_pc i.vill $mean, base re
 
 
 
@@ -206,11 +212,13 @@ use"panel_v7", clear
 
 ********** Trends
 preserve
+rename newindex35 index
+tabstat index, stat(min max range)
 keep if dummypanel==1
-keep HHID_panel year newindex
+keep HHID_panel year index
 
-reshape wide newindex, i(HHID_panel) j(year)
-corr newindex2010 newindex2016 newindex2020
+reshape wide index, i(HHID_panel) j(year)
+corr index2010 index2016 index2020
 export delimited "C:\Users\Arnaud\Documents\GitHub\research_code\measuringdebt\debtnew.csv", replace
 restore
 */

@@ -36,7 +36,7 @@ attach(data)
 
 
 #--- Matrices creation
-index<-as.matrix(cbind(newindex2010, newindex2016, newindex2020))
+index<-as.matrix(cbind(index2010, index2016, index2020))
 
 
 
