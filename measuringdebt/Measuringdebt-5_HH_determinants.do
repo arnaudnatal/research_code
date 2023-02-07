@@ -104,7 +104,7 @@ pvalue higher than .05, we do not reject H0
 -> No random effect
 */
 
-xtreg newindex31 dalits stem HHsize HH_count_child head_female head_age head_occ2 head_occ3 head_occ4 head_occ5 head_occ6 head_occ7 head_educ2 head_educ3 head_nonmarried dummymarriage assets_pc dailyincome_pc i.vill, base re
+xtreg fvi dalits stem HHsize HH_count_child head_female head_age head_occ2 head_occ3 head_occ4 head_occ5 head_occ6 head_occ7 head_educ2 head_educ3 head_nonmarried dummymarriage assets_pc dailyincome_pc i.vill, base re
 xttest0
 /*
 pvalue higher than .05, we do not reject H0

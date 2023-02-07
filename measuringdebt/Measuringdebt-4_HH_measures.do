@@ -503,6 +503,9 @@ corr newindex35 newindex36
 corr newindex36 newindex37
 ta newindex36
 
+gen fvi=(2*tdr+2*isr+dailyusdincome_pc_perc2)/5
+tabstat fvi, stat(n mean cv q min max)
+
 
 ********** Trends
 cls
