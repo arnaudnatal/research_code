@@ -539,6 +539,7 @@ gen log_HHsize=log(HHsize)
 gen share_children=HH_count_child/HHsize
 
 *** trends
+/*
 label define trendn 0"Sta-Dec" 1"Increasing"
 clonevar trendn1=trend1
 recode trendn1 (1=0) (2=0) (3=1)
@@ -550,7 +551,7 @@ gen trendlong=.
 replace trendlong=trendn1 if year==2016
 replace trendlong=trendn2 if year==2020
 label values trendlong trendn
-
+*/
 
 save"panel_v9", replace
 ****************************************

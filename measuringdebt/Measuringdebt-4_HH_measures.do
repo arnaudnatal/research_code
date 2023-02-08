@@ -101,11 +101,12 @@ global var dailyincome_pc assets_pc rfm dsr tdr lpc dar
 
 
 ********** Factoshiny
+/*
 preserve
 keep HHID_panel year $varstd
 export delimited "C:\Users\Arnaud\Documents\GitHub\research_code\measuringdebt\pca.csv", replace
 restore
-
+*/
 
 ********** Desc
 tabstat $var, stat(n mean cv p50) by(year)
@@ -353,6 +354,8 @@ replace dailyusdincome_pc_perc2=100 if dailyusdincome_pc_perc2>100
 replace dailyusdincome_pc_perc2=-100 if dailyusdincome_pc_perc2<-100
 corr annualincome_HH dailyusdincome_pc_perc2
 *the more is the poorer
+replace dailyusdincome_pc_perc2=0 if dailyusdincome_pc_perc2<0
+
 
 *** RFM
 replace rfm=100 if rfm>100
@@ -395,134 +398,12 @@ ta relassets2
 
 
 
-********** Trends
-preserve
-keep if dummypanel==1
-global var dar dsr isr tdr tar afm rfm dailyusdincome_pc_perc2 assets_total assets_totalnoland relassets
-keep HHID_panel year $var
-
-reshape wide $var, i(HHID_panel) j(year)
-foreach x in $var {
-pwcorr `x'2010 `x'2016 `x'2020, star(.05)
-}
-restore
-
-
-
-
-********** Correlations
-preserve
-global x dailyusdincome_pc_perc2 dsr isr dir dar rfm tdr tar relassets
-global y ind_female ind_total ind_dep ind_casu ind_casu_female
-merge 1:1 HHID_panel year using "panel_v9", keepusing($y)
-keep HHID_panel year $y $x
-reshape wide $x $y, i(HHID_panel) j(year)
-foreach x in $y {
-drop `x'2010
-rename `x'2016 `x'1
-rename `x'2020 `x'2
-}
-foreach x in $x {
-rename `x'2010 `x'1
-rename `x'2016 `x'2
-drop `x'2020
-}
-reshape long $x $y, i(HHID_panel) j(time)
-cls
-cpcorr $x \ $y
-restore
-
-
-
-
 
 ********** Index
-gen newindex1=(tar+isr+dar)
-gen newindex2=(tdr+isr+dar)
-
-gen newindex3=(tar+isr+dar+rfm)
-gen newindex4=(tdr+isr+dar+rfm)
-
-gen newindex5=(tar+dar+isr+dailyusdincome_pc_perc2)
-gen newindex6=(tdr+dar+isr+dailyusdincome_pc_perc2)
-
-gen newindex7=(tar+isr+rfm)
-gen newindex8=(tdr+isr+dailyusdincome_pc_perc2)
-
-gen newindex9=(tdr+isr+rfm)
-gen newindex10=(tar+isr+dailyusdincome_pc_perc2)
-
-gen newindex11=(tar+isr)
-gen newindex12=(tdr+isr)
-
-gen newindex13=(tar+dsr)
-gen newindex14=(tdr+dsr)
-
-gen newindex15=(tdr+isr+dailyusdincome_pc_perc2+relassets)
-gen newindex16=(tar+isr+dailyusdincome_pc_perc2+relassets)
-
-gen newindex17=(1*tdr+2*isr)/3
-gen newindex18=(1*tar+2*isr)/3
-
-gen newindex19=dailyusdincome_pc_perc2
-gen newindex20=rfm
-gen newindex21=relassets
-
-gen newindex22=(2*tdr+2*isr+relassets)
-gen newindex23=(2*tar+2*isr+relassets)
-
-gen newindex24=(tdr+isr+relassets2)
-gen newindex25=(tar+isr+relassets2)
-
-gen newindex26=(2*tdr+2*isr+relassets2)
-gen newindex27=(2*tar+2*isr+relassets2)
-
-gen newindex28=(tdr+2*isr+relassets2)
-gen newindex29=(tar+2*isr+relassets2)
-
-replace dailyusdincome_pc_perc2=0 if dailyusdincome_pc_perc2<0
-ta dailyusdincome_pc_perc2
-
-gen newindex30=(tar+2*isr)/3
-
-gen newindex31=(2*tar+3*isr+dailyusdincome_pc_perc2+relassets2)/5
-
-gen newindex32=(tar+2*isr+dailyusdincome_pc_perc2)/4
-
-gen newindex33=(2*tar+2*isr+dailyusdincome_pc_perc2)/5
-
-gen newindex34=(tdr+2*isr+dailyusdincome_pc_perc2)/4
-
-gen newindex35=(2*tdr+2*isr+dailyusdincome_pc_perc2)/5
-
-gen newindex36=(2*tdr+2*isr+dailyusdincome_pc_perc2)*10
-
-gen newindex37=asinh(newindex36)
-
-corr newindex35 newindex36
-corr newindex36 newindex37
-ta newindex36
-
+gen newindex1=(2*tar+2*isr+dailyusdincome_pc_perc2)/5
+gen newindex2=(2*tdr+2*isr+dailyusdincome_pc_perc2)/5
 gen fvi=(2*tdr+2*isr+dailyusdincome_pc_perc2)/5
-tabstat fvi, stat(n mean cv q min max)
 
-
-********** Trends
-cls
-preserve
-rename newindex33 index
-*graph box index, over(year)
-*graph box index, over(caste)
-tabstat index, stat(n mean cv p50 min max) by(year)
-tabstat index if year==2010, stat(n mean cv p50 min max) by(caste)
-tabstat index if year==2016, stat(n mean cv p50 min max) by(caste)
-tabstat index if year==2020, stat(n mean cv p50 min max) by(caste)
-keep if dummypanel==1
-keep HHID_panel year isr index
-reshape wide index isr, i(HHID_panel) j(year)
-pwcorr index2010 index2016 index2020, star(.05)
-pwcorr isr2010 isr2016 isr2020, star(.05)
-restore
 
 
 save"panel_v6", replace
@@ -602,7 +483,7 @@ set matsize 10000, perm
 
 ********** X-var
 *newindex newindex2 
-global interestvar newindex35 newindex36
+global interestvar newindex1 newindex2
 *newindex1 newindex2 newindex3 newindex4 newindex5 newindex6 newindex7 newindex8
 *assets_pc_std dailyincome_pc_std dsr_std dir_std dar_std tdr_std tar_std lapc_std afm_std rfm_std lpc_std loanamount_HH_std nbloans_HH_std
 

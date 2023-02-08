@@ -26,11 +26,7 @@ use"panel_v7", clear
 
 
 ********** Time
-cls
-foreach i in 32 33 34 35 {
-*tabstat newindex`i', stat(n mean cv q) by(year)
-tabstat newindex`i', stat(n mean p50) by(caste)
-}
+tabstat newindex1, stat(n mean p50) by(caste)
 
 
 ********** Caste
@@ -90,21 +86,7 @@ Share of formal
 
 ********** RE
 * BP LM test
-*xtreg pcaindex dalits stem HHsize HH_count_child head_female head_age head_occ2 head_occ3 head_occ4 head_occ5 head_occ6 head_occ7 head_educ2 head_educ3 head_nonmarried dummymarriage assets_pc dailyincome_pc i.vill, base re
-*xttest0
-/*
-pvalue higher than .05, we do not reject H0
--> No random effect
-*/
-
-*xtreg pca2index dalits stem HHsize HH_count_child head_female head_age head_occ2 head_occ3 head_occ4 head_occ5 head_occ6 head_occ7 head_educ2 head_educ3 head_nonmarried dummymarriage assets_pc dailyincome_pc i.vill, base re
-*xttest0
-/*
-pvalue higher than .05, we do not reject H0
--> No random effect
-*/
-
-xtreg fvi dalits stem HHsize HH_count_child head_female head_age head_occ2 head_occ3 head_occ4 head_occ5 head_occ6 head_occ7 head_educ2 head_educ3 head_nonmarried dummymarriage assets_pc dailyincome_pc i.vill, base re
+xtreg newindex1 dalits stem HHsize HH_count_child head_female head_age head_occ2 head_occ3 head_occ4 head_occ5 head_occ6 head_occ7 head_educ2 head_educ3 head_nonmarried dummymarriage assets_pc dailyincome_pc i.vill, base re
 xttest0
 /*
 pvalue higher than .05, we do not reject H0
@@ -114,42 +96,10 @@ pvalue higher than .05, we do not reject H0
 
 
 ********** FE
-*xtreg pcaindex dalits stem HHsize HH_count_child head_female head_age head_occ2 head_occ3 head_occ4 head_occ5 head_occ6 head_occ7 head_educ2 head_educ3 head_nonmarried dummymarriage assets_pc dailyincome_pc i.vill, base fe
-/*
-pvalue lower than .05, we reject H0
--> Fixed effect
-*/
-
-*xtreg pca2index dalits stem HHsize HH_count_child head_female head_age head_occ2 head_occ3 head_occ4 head_occ5 head_occ6 head_occ7 head_educ2 head_educ3 head_nonmarried dummymarriage assets_pc dailyincome_pc i.vill, base fe
-/*
-pvalue lower than .05, we reject H0
--> Fixed effect
-*/
-
-xtreg newindex32 dalits stem HHsize HH_count_child head_female head_age head_occ2 head_occ3 head_occ4 head_occ5 head_occ6 head_occ7 head_educ2 head_educ3 head_nonmarried dummymarriage assets_pc dailyincome_pc i.vill, base fe
-xtreg newindex33 dalits stem HHsize HH_count_child head_female head_age head_occ2 head_occ3 head_occ4 head_occ5 head_occ6 head_occ7 head_educ2 head_educ3 head_nonmarried dummymarriage assets_pc dailyincome_pc i.vill, base fe
-xtreg newindex34 dalits stem HHsize HH_count_child head_female head_age head_occ2 head_occ3 head_occ4 head_occ5 head_occ6 head_occ7 head_educ2 head_educ3 head_nonmarried dummymarriage assets_pc dailyincome_pc i.vill, base fe
-xtreg newindex35 dalits stem HHsize HH_count_child head_female head_age head_occ2 head_occ3 head_occ4 head_occ5 head_occ6 head_occ7 head_educ2 head_educ3 head_nonmarried dummymarriage assets_pc dailyincome_pc i.vill, base fe
-
-
+xtreg newindex1 dalits stem HHsize HH_count_child head_female head_age head_occ2 head_occ3 head_occ4 head_occ5 head_occ6 head_occ7 head_educ2 head_educ3 head_nonmarried dummymarriage assets_pc dailyincome_pc i.vill, base fe
 /*
 pvalue higher than .05, we do not reject H0
 -> No fixed effect
-*/
-
-
-
-********** FE vs RE for newindex
-*xtreg newindex2 dalits stem HHsize HH_count_child head_female head_age head_occ2 head_occ3 head_occ4 head_occ5 head_occ6 head_occ7 head_educ2 head_educ3 head_nonmarried dummymarriage assets_pc dailyincome_pc i.vill, base re
-*est store newRE
-
-*xtreg newindex2 dalits stem HHsize HH_count_child head_female head_age head_occ2 head_occ3 head_occ4 head_occ5 head_occ6 head_occ7 head_educ2 head_educ3 head_nonmarried dummymarriage assets_pc dailyincome_pc i.vill, base fe
-*est store newFE
-
-*hausman newFE newRE
-/*
-pvalue < .05 --> FE
-pvalue > .05 --> RE
 */
 
 
@@ -184,9 +134,7 @@ and the R2 overall is a weighted average of these two.
 */
 
 
-xtreg newindex35 i.caste stem HHsize HH_count_child head_female head_age head_occ2 head_occ3 head_occ4 head_occ5 head_occ6 head_occ7 head_educ2 head_educ3 head_nonmarried dummymarriage assets_cat2 assets_cat3 dailyincome_pc i.vill $mean, base re
-
-
+xtreg newindex1 i.caste stem HHsize HH_count_child head_female head_age head_occ2 head_occ3 head_occ4 head_occ5 head_occ6 head_occ7 head_educ2 head_educ3 head_nonmarried dummymarriage assets_cat2 assets_cat3 dailyincome_pc i.vill $mean, base re
 
 
 ****************************************
@@ -212,7 +160,7 @@ use"panel_v7", clear
 
 ********** Trends
 preserve
-rename newindex35 index
+rename newindex1 index
 tabstat index, stat(min max range)
 keep if dummypanel==1
 keep HHID_panel year index
@@ -227,12 +175,79 @@ restore
 ********** Import
 import delimited "C:\Users\Arnaud\Documents\GitHub\research_code\measuringdebt\indextrend.csv", clear
 
-
-
 save"indextrend.dta", replace
 */
 
 
+save"panel_v8", replace
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+****************************************
+* Graph PCA
+****************************************
+use"panel_v3", clear
+/*
+graph matrix $varstd, half msize(vsmall) msymbol(oh)
+
+loadingplot , component(2) combined xline(0) yline(0) aspect(1)
+
+twoway (scatter fact2 fact1, xline(0) yline(0) mcolor(black%30)), name(rev, replace)
+
+twoway (scatter fact2 fact1 if year==2010, xline(0) yline(0) mcolor(black%30)), name(year2010, replace)
+twoway (scatter fact2 fact1 if year==2016, xline(0) yline(0) mcolor(black%30)), name(year2016, replace)
+twoway (scatter fact2 fact1 if year==2020, xline(0) yline(0) mcolor(black%30)), name(year2020, replace)
+
+combineplot fact1 ($varstd): scatter @y @x || lfit @y @x
+combineplot fact2 ($varstd): scatter @y @x || lfit @y @x
+
+
+stripplot `x', over(clust) vert ///
+stack width(0.2) jitter(1) ///
+box(barw(0.2)) boffset(-0.2) pctile(10) ///
+ms(oh oh oh) msize(small) mc(blue%30) ///
+yla(, ang(h)) xla(, noticks) name(sp`x', replace)
+
+
+program drop _all
+program define stripgraph
+stripplot `1' if `1'<`4', over(`2') by(`3', title("`1'")) vert ///
+stack width(1) jitter(0) ///
+box(barw(1)) boffset(-0.3) pctile(10) ///
+ms(oh oh oh) msize(small) mc(blue%30) ///
+yla(, ang(h)) xla(, noticks)
+end
+****************************************
+* END
+*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
 
 ********** Diff
 keep HHID_panel year loanamount_HH
@@ -312,60 +327,4 @@ ta trends3 caste if year==2010, chi2 exp
 
 
 probit trends3 i.caste stem HHsize HH_count_child head_female head_age head_occ2 head_occ3 head_occ4 head_occ5 head_occ6 head_occ7 head_educ2 head_educ3 head_nonmarried dummymarriage assets_pc dailyincome_pc i.vill if year==2010
-
-
-
-save"panel_v8", replace
-****************************************
-* END
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*
-****************************************
-* Graph PCA
-****************************************
-use"panel_v3", clear
-/*
-graph matrix $varstd, half msize(vsmall) msymbol(oh)
-
-loadingplot , component(2) combined xline(0) yline(0) aspect(1)
-
-twoway (scatter fact2 fact1, xline(0) yline(0) mcolor(black%30)), name(rev, replace)
-
-twoway (scatter fact2 fact1 if year==2010, xline(0) yline(0) mcolor(black%30)), name(year2010, replace)
-twoway (scatter fact2 fact1 if year==2016, xline(0) yline(0) mcolor(black%30)), name(year2016, replace)
-twoway (scatter fact2 fact1 if year==2020, xline(0) yline(0) mcolor(black%30)), name(year2020, replace)
-
-combineplot fact1 ($varstd): scatter @y @x || lfit @y @x
-combineplot fact2 ($varstd): scatter @y @x || lfit @y @x
-
-
-stripplot `x', over(clust) vert ///
-stack width(0.2) jitter(1) ///
-box(barw(0.2)) boffset(-0.2) pctile(10) ///
-ms(oh oh oh) msize(small) mc(blue%30) ///
-yla(, ang(h)) xla(, noticks) name(sp`x', replace)
-
-
-program drop _all
-program define stripgraph
-stripplot `1' if `1'<`4', over(`2') by(`3', title("`1'")) vert ///
-stack width(1) jitter(0) ///
-box(barw(1)) boffset(-0.3) pctile(10) ///
-ms(oh oh oh) msize(small) mc(blue%30) ///
-yla(, ang(h)) xla(, noticks)
-end
-****************************************
-* END
 */
