@@ -33,13 +33,6 @@ tabstat dsr, stat(n mean cv q p90 p95 p99 max) by(year)
 ta year if dsr>200
 ta year if dsr>300
 ta year if dsr>400
-/*
-stripplot dsr, over(year) vert refline ///
-stack width(5) jitter(1) ///
-box(barw(0.2)) boffset(-0.2) pctile(95) ///
-ms(oh) msize(small) mc(black%30)
-*/
-*replace dsr=400 if dsr>400
 
 
 * ISR
@@ -48,13 +41,6 @@ replace isr=0 if isr==.
 tabstat isr, stat(n mean cv q p90 p95 p99 max) by(year)
 ta year if isr>150
 ta year if isr>200
-/*
-stripplot isr, over(year) vert refline ///
-stack width(5) jitter(1) ///
-box(barw(0.2)) boffset(-0.2) pctile(95) ///
-ms(oh) msize(small) mc(black%30)
-*/
-*replace isr=200 if isr>200  // 0.2%, 1.2%, 2.4%
 
 
 * DAR
@@ -65,13 +51,6 @@ tabstat dar, stat(n mean cv q p90 p95 p99 max) by(year)
 ta year if dar>200
 ta year if dar>300
 ta year if dar>400
-/*
-stripplot dar, over(year) vert refline ///
-stack width(5) jitter(1) ///
-box(barw(0.2)) boffset(-0.2) pctile(95) ///
-ms(oh) msize(small) mc(black%30)
-*/
-*replace dar=300 if dar>300  // 0.2%, 3.5%, 0.3%
 
 
 * DIR
@@ -80,13 +59,6 @@ replace dir=0 if dir==.
 tabstat dir, stat(n mean cv q p90 p95 p99 max) by(year)
 ta year if dir>600
 ta year if dir>1400
-/*
-stripplot dir, over(year) vert refline ///
-stack width(5) jitter(1) ///
-box(barw(0.2)) boffset(-0.2) pctile(90) ///
-ms(oh) msize(small) mc(black%30)
-*/
-*replace dir=1400 if dir>1400  // 0.2%, 3.9%, 4.6%
 
 
 
@@ -95,29 +67,14 @@ gen tdr=totHH_givenamt_repa*100/loanamount_HH
 replace tdr=0 if tdr==.
 tabstat tdr, stat(n mean cv q p90 p95 p99 max) by(year)
 tabstat tdr if totHH_givenamt_repa!=0, stat(n mean cv q p90 p95 p99 max) by(year)
-/*
-stripplot tdr, over(year) vert refline ///
-stack width(1) jitter(1) ///
-box(barw(0.2)) boffset(-0.2) pctile(90) ///
-ms(oh) msize(small) mc(black%30)
 
-stripplot tdr if totHH_givenamt_repa!=0, over(year) vert refline ///
-stack width(1) jitter(1) ///
-box(barw(0.2)) boffset(-0.2) pctile(90) ///
-ms(oh) msize(small) mc(black%30)
-*/
 
 
 * TAR
 gen tar=totHH_givenamt_repa*100/assets_total
 replace tar=0 if tar==.
 tabstat tar, stat(n mean cv q p90 p95 p99 max) by(year)
-/*
-stripplot tar, over(year) vert refline ///
-stack width(5) jitter(1) ///
-box(barw(0.2)) boffset(-0.2) pctile(95) ///
-ms(oh) msize(small) mc(black%30)
-*/
+
 
 
 * AFM - Absolut Financial Margin
@@ -151,6 +108,13 @@ ta lapc
 replace lapc=0 if lapc==.
 
 
+* Poverty
+gen dailyincome_pc=(annualincome_HH/365)/squareroot_HHsize
+gen dailyusdincome_pc=dailyincome_pc/45.73
+gen dailyusdincome_pc_perc=((dailyusdincome_pc-1.9)/1.9)*(-1)*100
+ta dailyusdincome_pc_perc
+
+
 save"panel_v1", replace
 ****************************************
 * END
@@ -176,39 +140,6 @@ save"panel_v1", replace
 ****************************************
 use"panel_v1", clear
 
-********** Poverty
-* HH income per capita
-gen dailyincome_pc=(annualincome_HH/365)/squareroot_HHsize
-
-* USD in 2010: 1 USD = 45.73 INR
-gen dailyusdincome_pc=dailyincome_pc/45.73
-
-* PL net
-gen dailyplincome_pc=dailyusdincome_pc-1.9
-
-* PL dummy
-gen apl=0 if dailyplincome_pc<0
-
-recode apl (.=1)
-drop dailyplincome_pc
-
-* Incpercpl
-gen incpercpl=(dailyusdincome_pc-1.9)*100/1.9
-
-* Assets pc
-gen assets_pc=assets_total/squareroot_HHsize
-corr assets_total assets_pc
-plot assets_pc assets_total
-
-*** Rangarajan Committee
-* HH income per capita per month
-gen monthlyincome_pc=(annualincome_HH/12)/squareroot_HHsize
-gen monthlyincome_pc_rc=((monthlyincome_pc-1082)*(-1))/1082
-replace monthlyincome_pc_rc=0 if monthlyincome_pc_rc<0
-ta monthlyincome_pc_rc
-
-
-********** Other var
 * HH
 encode HHID_panel, gen(panelvar)
 
@@ -274,7 +205,6 @@ label values head_nonmarried head_nonmarried
 fre head_nonmarried
 
 * Class
-** Categorize assets 
 /*
 by year to take into account the
 increasing level of consumption
@@ -297,18 +227,14 @@ ta assets_cat caste, chi2 cchi2 exp
 ta assets_cat, gen(assets_cat)
 
 
-********** CRE
-global head head_female head_occ1 head_occ2 head_occ3 head_occ4 head_occ5 head_occ6 head_occ7 head_educ1 head_educ2 head_educ3 head_agesq head_agecat head_agecat1 head_agecat2 head_agecat3 head_agecat4 head_nonmarried head_age
-global income annualincome_HH dailyincome_pc shareincomeagri_HH incomeagri_HH incomenonagri_HH shareincomenonagri_HH
-global assets assets_total assets_pc assets_cat1 assets_cat2 assets_cat3
-global expenses expenses_total shareexpenses_food shareexpenses_educ shareexpenses_heal shareexpenses_cere
-global rest dummytrap dummymarriage stem HH_count_child HH_count_adult HHsize
+* Dalits
+gen dalits=.
+replace dalits=1 if caste==1
+replace dalits=0 if caste==2
+replace dalits=0 if caste==3
 
-global all $head $income $assets $expenses $rest
-
-foreach x in $all {
-bysort HHID_panel: egen `x'_mean=mean(`x')
-}
+label define dalits 0"Non-dalits" 1"Dalits"
+label values dalits dalits
 
 
 save"panel_v2", replace
@@ -327,26 +253,10 @@ save"panel_v2", replace
 ****************************************
 use"panel_v2", clear
 
-tabstat dsr isr dar dir tdr tar rfm dailyincome_pc assets_total goldreadyamount afm incpercpl assets_pc lpc , stat(n mean cv min p1 p5 p10 q p90 p95 p99 max)
 
-
-replace dsr=430 if dsr>430
-replace isr=190 if isr>190
-replace dar=420 if dar>420
-replace dir=2800 if dir>2800
-replace tar=39 if tar>39
-replace rfm=700 if rfm>700
-replace rfm=-1000 if rfm<-1000
-replace dailyincome_pc=600 if dailyincome_pc>600
-replace assets_total=6000000 if assets_total>6000000
-replace assets_pc=3000000 if assets_pc>3000000
-replace goldreadyamount=400000 if goldreadyamount>400000
-replace afm=570000 if afm>570000
-replace afm=-150000 if afm<-150000
-replace incpercpl=600 if incpercpl>600
 replace loanamount_HH=0 if loanamount_HH==.
 
-foreach x in loanamount_HH annualincome_HH assets_total imp1_ds_tot_HH imp1_is_tot_HH totHH_givenamt_repa dsr isr dar dir tdr tar afm rfm expenses_total remreceived_HH remsent_HH remittnet_HH dailyincome_pc assets_gold goldquantity_HH goldreadyamount nbloans_HH incpercpl assets_pc lpc lapc {
+foreach x in loanamount_HH annualincome_HH assets_total imp1_ds_tot_HH imp1_is_tot_HH totHH_givenamt_repa dsr isr dar dir tdr tar afm rfm expenses_total remreceived_HH remsent_HH remittnet_HH dailyincome_pc assets_gold goldquantity_HH goldreadyamount nbloans_HH lpc lapc {
 egen `x'_std=std(`x')
 }
 
@@ -365,35 +275,6 @@ label var lpc_std "Loans pc (std)"
 label var lapc_std "Loan amount pc (std)"
 
 
-* Inc better to worse
-gen incomerev=dailyincome_pc*(-1)
-tabstat dailyincome_pc incomerev, stat(n q)
-egen incomerev_std=std(incomerev)
-
-* RFM better to worse
-gen rfmrev=rfm*(-1)
-tabstat rfm rfmrev, stat(n q)
-egen rfmrev_std=std(rfmrev)
-label var rfmrev_std "RFM rev. (std)"
-
-* Assets better to worse
-gen assetsrev=assets_total*(-1)
-tabstat assets_total assetsrev, stat(n q)
-egen assetsrev_std=std(assetsrev)
-
-* AFM better to worse
-gen afmrev=afm*(-1)
-tabstat afm afmrev, stat(n q)
-egen afmrev_std=std(afmrev)
-
-* Dalits
-gen dalits=.
-replace dalits=1 if caste==1
-replace dalits=0 if caste==2
-replace dalits=0 if caste==3
-
-label define dalits 0"Non-dalits" 1"Dalits"
-label values dalits dalits
 
 
 *** Order
@@ -401,11 +282,7 @@ order HHID_panel year
 sort HHID_panel year
 
 
-*** Perc income
-gen dailyusdincome_pc_perc=((dailyusdincome_pc-1.9)/1.9)*(-1)*100
-ta dailyusdincome_pc_perc
-gen dailyusdincome_pc_perc2=dailyusdincome_pc_perc
-*replace dailyusdincome_pc_perc2=0 if dailyusdincome_pc_perc<0
+
 
 save"panel_v3", replace
 ****************************************

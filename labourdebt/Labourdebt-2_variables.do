@@ -19,53 +19,39 @@ do"C:\Users\Arnaud\Documents\GitHub\folderanalysis\measuringdebt.do"
 
 
 ****************************************
-* Finindex no. 4
+* Financial Vulnerability Index
 ****************************************
-use"panel_v5", clear
+use"panel_v0", clear
 
-********** Replace
-*** Income
+
+********** Income
 gen dailyincome_pc=(annualincome_HH/365)/squareroot_HHsize
 gen dailyusdincome_pc=dailyincome_pc/45.73
-gen dailyplincome_pc=dailyusdincome_pc-1.9
-
-
-replace dailyusdincome_pc_perc2=100 if dailyusdincome_pc_perc2>100
-replace dailyusdincome_pc_perc2=-100 if dailyusdincome_pc_perc2<-100
-corr annualincome_HH dailyusdincome_pc_perc2
-*the more is the poorer
-replace dailyusdincome_pc_perc2=0 if dailyusdincome_pc_perc2<0
-
-replace dailyincome_pc=600 if dailyincome_pc>600
-
-
 gen dailyusdincome_pc_perc=((dailyusdincome_pc-1.9)/1.9)*(-1)*100
 ta dailyusdincome_pc_perc
-gen dailyusdincome_pc_perc2=dailyusdincome_pc_perc
+replace dailyusdincome_pc_perc=100 if dailyusdincome_pc_perc>100
+replace dailyusdincome_pc_perc=-100 if dailyusdincome_pc_perc<-100
+*the more is the poorer
+replace dailyusdincome_pc_perc=0 if dailyusdincome_pc_perc<0
 
-
-
-
-
-*** ISR
+********** ISR
 gen isr=imp1_is_tot_HH*100/annualincome_HH
 replace isr=0 if isr==.
 replace isr=190 if isr>190
 replace isr=100 if isr>100
 
 
-*** TDR
+********** TDR
 gen tdr=totHH_givenamt_repa*100/loanamount_HH
 replace tdr=0 if tdr==.
 
 
 
-*** FVI
-gen fvi=(2*tdr+2*isr+dailyusdincome_pc_perc2)/5
+********* FVI
+gen fvi=(2*tdr+2*isr+dailyusdincome_pc_perc)/5
 
 
-
-save"panel_v6", replace
+save"panel_v1", replace 
 ****************************************
 * END
 
@@ -75,6 +61,112 @@ save"panel_v6", replace
 
 
 
+
+
+
+
+
+
+
+****************************************
+* Others variables
+****************************************
+use"panel_v1", clear
+
+
+********** Other var
+* HH
+encode HHID_panel, gen(panelvar)
+
+* Village
+encode villageid, gen(vill)
+
+*Stem
+gen stem=.
+replace stem=0 if typeoffamily=="nuclear"
+replace stem=1 if typeoffamily=="stem"
+replace stem=1 if typeoffamily=="joint-stem"
+label define stem 0"Nuclear" 1"Stem"
+label values stem stem
+ta stem typeoffamily
+
+* Trap
+gen dummytrap=0
+replace dummytrap=1 if tdr>0
+
+* Head sex
+fre head_sex
+gen head_female=.
+replace head_female=0 if head_sex==1
+replace head_female=1 if head_sex==2
+
+ta head_sex head_female
+label define head_female 0"Male" 1"Female"
+label values head_female head_female
+
+* Head occupation
+fre head_mocc_occupation
+recode head_mocc_occupation (5=4)
+ta head_mocc_occupation, gen(head_occ)
+
+
+* Head edulevel
+fre head_edulevel
+recode head_edulevel (3=2) (4=2) (5=2)
+ta head_edulevel, gen(head_educ)
+
+
+* Head age
+tabstat head_age, stat(n mean sd q)
+gen head_agesq=head_age*head_age
+
+gen head_agecat=0
+replace head_agecat=1 if head_age<40
+replace head_agecat=2 if head_age>=40 & head_age<50
+replace head_agecat=3 if head_age>=50 & head_age<60
+replace head_agecat=4 if head_age>=60
+
+label define head_agecat 1"Less 40" 2"40-50" 3"50-60" 4"60 or more"
+label values head_agecat head_agecat
+ta head_agecat, gen(head_agecat)
+
+
+* Head maritalstatus
+fre head_maritalstatus
+gen head_nonmarried=head_maritalstatus
+recode head_nonmarried (1=0) (2=1) (3=1) (4=1) (.=0)
+label define head_nonmarried 0"Married" 1"Non-married"
+label values head_nonmarried head_nonmarried
+fre head_nonmarried
+
+* Class
+** Categorize assets 
+/*
+by year to take into account the
+increasing level of consumption
+see ref on conspicuous consumption
+*/
+tabstat assets_total, stat(q) by(year)
+foreach i in 2010 2016 2020 {
+xtile assets_`i'=assets_total if year==`i', n(3) 
+}
+gen assets_cat=.
+replace assets_cat=assets_2010 if year==2010
+replace assets_cat=assets_2016 if year==2016
+replace assets_cat=assets_2020 if year==2020
+drop assets_2010 assets_2016 assets_2020
+ta assets_cat
+label define assets_cat 1"Wealth: Poor" 2"Wealth: Middle" 3"Wealth: Rich"
+label values assets_cat assets_cat
+fre assets_cat
+ta assets_cat caste, chi2 cchi2 exp
+ta assets_cat, gen(assets_cat)
+
+
+
+save"panel_v2", replace 
+****************************************
+* END
 
 
 
@@ -570,7 +662,7 @@ save"panel-newoccvar", replace
 ****************************************
 * Merge with main dataset
 ****************************************
-use"panel_v8", clear
+use"panel_v1", clear
 
 merge 1:1 HHID_panel year using "panel-newoccvar"
 drop _merge
@@ -624,7 +716,7 @@ replace trendlong=trendn2 if year==2020
 label values trendlong trendn
 */
 
-save"panel_v9", replace
+save"panel_v2", replace
 ****************************************
 * END
 

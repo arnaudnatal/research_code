@@ -39,7 +39,7 @@ If the contemporaneous effect in ML-SEM is negligible, this approach can also se
 * Prediction power with ML-SEM
 ****************************************
 cls
-use"panel_v9", clear
+use"panel_v2", clear
 
 
 ********** Panel declaration

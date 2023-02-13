@@ -25,8 +25,6 @@ Distance: L2squared  squared Euclidean distance
 
 
 
-
-
 ****************************************
 * Overlap between measures
 ****************************************
@@ -80,6 +78,147 @@ We will test the two
 
 
 
+
+
+
+
+
+
+
+
+
+****************************************
+* Test
+****************************************
+use"panel_v5", clear
+
+global x dailyincome_pc_std assets_pc_std assets_total_std dsr_std isr_std dir_std dar_std afm_std rfm_std tdr_std tar_std loanamount_HH_std lapc_std nbloans_HH_std lpc_std dailyusdincome_pc_perc
+
+global y hoursayear_female hoursayear_dep hoursayear_casu hoursayear_casu_female ind_female ind_dep ind_casu ind_casu_female ind_total
+
+merge 1:1 HHID_panel year using "panel_v9", keepusing($y)
+
+keep HHID_panel year $y $x
+
+reshape wide $x $y, i(HHID_panel) j(year)
+
+foreach x in $y {
+drop `x'2010
+rename `x'2016 `x'1
+rename `x'2020 `x'2
+}
+
+foreach x in $x {
+rename `x'2010 `x'1
+rename `x'2016 `x'2
+drop `x'2020
+}
+
+reshape long $x $y, i(HHID_panel) j(time)
+
+cls
+cpcorr $x \ $y
+
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* FVI
+****************************************
+use"panel_v5", clear
+
+
+*** Income
+replace dailyusdincome_pc_perc=100 if dailyusdincome_pc_perc>100
+replace dailyusdincome_pc_perc=-100 if dailyusdincome_pc_perc<-100
+*the more is the poorer
+replace dailyusdincome_pc_perc=0 if dailyusdincome_pc_perc<0
+
+*** ISR
+replace isr=100 if isr>100
+ta isr
+
+
+***
+ta tdr
+
+
+*** FVI
+gen newindex1=(2*tar+2*isr+dailyusdincome_pc_perc2)/5
+gen newindex2=(2*tdr+2*isr+dailyusdincome_pc_perc2)/5
+gen fvi=(2*tdr+2*isr+dailyusdincome_pc_perc2)/5
+
+
+save"panel_v6", replace
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+****************************************
+* Graph PCA
+****************************************
+use"panel_v3", clear
+
+graph matrix $varstd, half msize(vsmall) msymbol(oh)
+
+loadingplot , component(2) combined xline(0) yline(0) aspect(1)
+
+twoway (scatter fact2 fact1, xline(0) yline(0) mcolor(black%30)), name(rev, replace)
+
+twoway (scatter fact2 fact1 if year==2010, xline(0) yline(0) mcolor(black%30)), name(year2010, replace)
+twoway (scatter fact2 fact1 if year==2016, xline(0) yline(0) mcolor(black%30)), name(year2016, replace)
+twoway (scatter fact2 fact1 if year==2020, xline(0) yline(0) mcolor(black%30)), name(year2020, replace)
+
+combineplot fact1 ($varstd): scatter @y @x || lfit @y @x
+combineplot fact2 ($varstd): scatter @y @x || lfit @y @x
+
+
+stripplot `x', over(clust) vert ///
+stack width(0.2) jitter(1) ///
+box(barw(0.2)) boffset(-0.2) pctile(10) ///
+ms(oh oh oh) msize(small) mc(blue%30) ///
+yla(, ang(h)) xla(, noticks) name(sp`x', replace)
+
+
+program drop _all
+program define stripgraph
+stripplot `1' if `1'<`4', over(`2') by(`3', title("`1'")) vert ///
+stack width(1) jitter(0) ///
+box(barw(1)) boffset(-0.3) pctile(10) ///
+ms(oh oh oh) msize(small) mc(blue%30) ///
+yla(, ang(h)) xla(, noticks)
+end
+****************************************
+* END
+*/
+
+
+
+
+
+
+/*
 ****************************************
 * Finindex no. 1
 ****************************************
@@ -181,22 +320,12 @@ drop fact1 fact2 fact3 fact1_std fact2_std fact3_std fact4
 save"panel_v4", replace
 ****************************************
 * END
+*/
 
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
+/*
 ****************************************
 * Finindex no. 2
 ****************************************
@@ -286,296 +415,6 @@ drop fact1 fact2 fact1_std fact2_std fact3
 
 
 save"panel_v5", replace
-****************************************
-* END
-
-
-
-
-
-
-
-
-
-
-****************************************
-* Test
-****************************************
-use"panel_v5", clear
-
-global x dailyincome_pc_std assets_pc_std assets_total_std dsr_std isr_std dir_std dar_std afm_std rfm_std tdr_std tar_std loanamount_HH_std lapc_std nbloans_HH_std lpc_std dailyusdincome_pc_perc
-
-global y hoursayear_female hoursayear_dep hoursayear_casu hoursayear_casu_female ind_female ind_dep ind_casu ind_casu_female ind_total
-
-merge 1:1 HHID_panel year using "panel_v9", keepusing($y)
-
-keep HHID_panel year $y $x
-
-reshape wide $x $y, i(HHID_panel) j(year)
-
-foreach x in $y {
-drop `x'2010
-rename `x'2016 `x'1
-rename `x'2020 `x'2
-}
-
-foreach x in $x {
-rename `x'2010 `x'1
-rename `x'2016 `x'2
-drop `x'2020
-}
-
-reshape long $x $y, i(HHID_panel) j(time)
-
-cls
-cpcorr $x \ $y
-
-****************************************
-* END
-
-
-
-
-
-
-
-
-
-
-
-****************************************
-* Finindex no. 4
-****************************************
-use"panel_v5", clear
-
-********** Replace
-*** Income
-replace dailyusdincome_pc_perc2=100 if dailyusdincome_pc_perc2>100
-replace dailyusdincome_pc_perc2=-100 if dailyusdincome_pc_perc2<-100
-corr annualincome_HH dailyusdincome_pc_perc2
-*the more is the poorer
-replace dailyusdincome_pc_perc2=0 if dailyusdincome_pc_perc2<0
-
-
-*** RFM
-replace rfm=100 if rfm>100
-replace rfm=-100 if rfm<-100
-ta rfm
-corr rfm dsr
-replace rfm=rfm*(-1)
-*the more is the poorer
-
-*** DAR
-replace dar=100 if dar>100
-ta dar
-
-*** DIR
-replace dir=100 if dir>100
-ta dir
-
-*** DSR
-replace dsr=100 if dsr>100
-ta dsr
-
-*** ISR
-replace isr=100 if isr>100
-ta isr
-
-
-*** Relative assets
-replace assets_total=1 if assets_total==0
-gen relassets=(assets_total-loanamount_HH)*100/assets_total
-replace relassets=-100 if relassets<-100
-replace relassets=100 if relassets>100
-replace relassets=relassets*(-1)
-corr relassets assets_total
-* the more is poorer
-
-*** Relative on 100
-gen relassets2=(relassets+100)/2
-corr relassets relassets2
-ta relassets2
-
-
-
-
-********** Index
-gen newindex1=(2*tar+2*isr+dailyusdincome_pc_perc2)/5
-gen newindex2=(2*tdr+2*isr+dailyusdincome_pc_perc2)/5
-gen fvi=(2*tdr+2*isr+dailyusdincome_pc_perc2)/5
-
-
-
-save"panel_v6", replace
-****************************************
-* END
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-****************************************
-* Clean name and overlap
-****************************************
-use"panel_v6", clear
-
-*** Rename
-rename PCA_finindex pcaindex
-rename PCA_finindexnew pca2index
-
-
-********** Overlap
-*graph matrix pcaindex pca2index m2index, half msize(vsmall) msymbol(oh) mcolor(black%30)
-
-***
-gen time=0
-replace time=1 if year==2010
-replace time=2 if year==2016
-replace time=3 if year==2020
-
-label define time 1"2010" 2"2016-17" 3"2020-21"
-label values time time
-
-save"panel_v7", replace
-****************************************
-* END
-
-
-
-
-
-do"C:\Users\Arnaud\Documents\GitHub\research_code\measuringdebt\Measuringdebt-5_HH_determinants"
-do"C:\Users\Arnaud\Documents\GitHub\research_code\measuringdebt\Measuringdebt-6_HH_labouroutcomes"
-
-
-
-
-
-
-****************************************
-* Prediction power with ML-SEM
-****************************************
-cls
-use"panel_v9", clear
-
-
-********** Panel declaration
-xtset panelvar time
-set matsize 10000, perm
-
-
-********** X-var
-*newindex newindex2 
-global interestvar newindex1 newindex2
-*newindex1 newindex2 newindex3 newindex4 newindex5 newindex6 newindex7 newindex8
-*assets_pc_std dailyincome_pc_std dsr_std dir_std dar_std tdr_std tar_std lapc_std afm_std rfm_std lpc_std loanamount_HH_std nbloans_HH_std
-
-global xinvar dalits village_2 village_3 village_4 village_5 village_6 village_7 village_8 village_9 village_10
-
-global xvar1 log_HHsize share_children sexratio dependencyratio
-
-global xvar2 head_female head_age head_educ
-
-global xvar3 remittnet_HH assets_total annualincome_HH
-
-
-********** Ind occup
-global yvar ind_total ind_female ind_male ind_dep ind_casu
-*ind_dep ind_agri ind_nona ind_casu
-
-log using "C:\Users\Arnaud\Downloads\MLSEM_mdonew.log", replace
-
-foreach y in $yvar {
-foreach x in $interestvar {
-*capture noisily xtreg `y' L.`x' i.dalits $xvar1 $xvar2 $xvar3 $xinvar, fe base
-capture noisily xtdpdml `y' $xvar1 $xvar2 $xvar3, inv($xinvar) predetermined(L.`x') fiml
-}
-}
-
-log close
-
-
-
-********** Hours
-/*
-global yvar ///
-hoursayear_dep hoursayear_female hoursayear_casu
-
-log using "C:\Users\Arnaud\Downloads\LEV_hours.log", replace
-
-foreach y in $yvar {
-foreach x in $interestvar {
-capture noisily xtreg `y' L.`x' i.dalits $xvar1 $xvar2 $xvar3 $xinvar, fe base
-}
-}
-
-log close
-*/
-
-
-****************************************
-* END
-
-
-
-
-
-
-
-
-
-/*
-****************************************
-* Graph PCA
-****************************************
-use"panel_v3", clear
-/*
-graph matrix $varstd, half msize(vsmall) msymbol(oh)
-
-loadingplot , component(2) combined xline(0) yline(0) aspect(1)
-
-twoway (scatter fact2 fact1, xline(0) yline(0) mcolor(black%30)), name(rev, replace)
-
-twoway (scatter fact2 fact1 if year==2010, xline(0) yline(0) mcolor(black%30)), name(year2010, replace)
-twoway (scatter fact2 fact1 if year==2016, xline(0) yline(0) mcolor(black%30)), name(year2016, replace)
-twoway (scatter fact2 fact1 if year==2020, xline(0) yline(0) mcolor(black%30)), name(year2020, replace)
-
-combineplot fact1 ($varstd): scatter @y @x || lfit @y @x
-combineplot fact2 ($varstd): scatter @y @x || lfit @y @x
-
-
-stripplot `x', over(clust) vert ///
-stack width(0.2) jitter(1) ///
-box(barw(0.2)) boffset(-0.2) pctile(10) ///
-ms(oh oh oh) msize(small) mc(blue%30) ///
-yla(, ang(h)) xla(, noticks) name(sp`x', replace)
-
-
-program drop _all
-program define stripgraph
-stripplot `1' if `1'<`4', over(`2') by(`3', title("`1'")) vert ///
-stack width(1) jitter(0) ///
-box(barw(1)) boffset(-0.3) pctile(10) ///
-ms(oh oh oh) msize(small) mc(blue%30) ///
-yla(, ang(h)) xla(, noticks)
-end
 ****************************************
 * END
 */
