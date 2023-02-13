@@ -26,7 +26,7 @@ do"C:\Users\Arnaud\Documents\GitHub\folderanalysis\measuringdebt.do"
 ****************************************
 * FE vs RE?
 ****************************************
-use"panel_v7", clear
+use"panel_v5", clear
 
 xtset panelvar time
 
@@ -37,7 +37,7 @@ Share of formal
 
 ********** RE
 * BP LM test
-xtreg newindex1 dalits stem HHsize HH_count_child head_female head_age head_occ2 head_occ3 head_occ4 head_occ5 head_occ6 head_occ7 head_educ2 head_educ3 head_nonmarried dummymarriage assets_pc dailyincome_pc i.vill, base re
+xtreg fvi dalits stem HHsize HH_count_child head_female head_age head_occ2 head_occ3 head_occ4 head_occ5 head_occ6 head_occ7 head_educ2 head_educ3 head_nonmarried dummymarriage assets_pc dailyincome_pc i.vill, base re
 xttest0
 /*
 pvalue higher than .05, we do not reject H0
@@ -47,7 +47,7 @@ pvalue higher than .05, we do not reject H0
 
 
 ********** FE
-xtreg newindex1 dalits stem HHsize HH_count_child head_female head_age head_occ2 head_occ3 head_occ4 head_occ5 head_occ6 head_occ7 head_educ2 head_educ3 head_nonmarried dummymarriage assets_pc dailyincome_pc i.vill, base fe
+xtreg fvi dalits stem HHsize HH_count_child head_female head_age head_occ2 head_occ3 head_occ4 head_occ5 head_occ6 head_occ7 head_educ2 head_educ3 head_nonmarried dummymarriage assets_pc dailyincome_pc i.vill, base fe
 /*
 pvalue higher than .05, we do not reject H0
 -> No fixed effect
@@ -70,7 +70,7 @@ pvalue higher than .05, we do not reject H0
 ****************************************
 * FE vs CRE?
 ****************************************
-use"panel_v7", clear
+use"panel_v5", clear
 
 
 
@@ -85,7 +85,7 @@ and the R2 overall is a weighted average of these two.
 */
 
 
-xtreg newindex1 i.caste stem HHsize HH_count_child head_female head_age head_occ2 head_occ3 head_occ4 head_occ5 head_occ6 head_occ7 head_educ2 head_educ3 head_nonmarried dummymarriage assets_cat2 assets_cat3 dailyincome_pc i.vill $mean, base re
+xtreg fvi i.caste stem HHsize HH_count_child head_female head_age head_occ2 head_occ3 head_occ4 head_occ5 head_occ6 head_occ7 head_educ2 head_educ3 head_nonmarried dummymarriage assets_cat2 assets_cat3 dailyincome_pc i.vill $mean, base re
 
 
 ****************************************

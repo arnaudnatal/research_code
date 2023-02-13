@@ -36,22 +36,14 @@ Distance: L2squared  squared Euclidean distance
 ****************************************
 * Clean name and overlap
 ****************************************
-use"panel_v6", clear
+use"panel_v4", clear
 
 
 ********** Overlap
 *graph matrix pcaindex pca2index m2index, half msize(vsmall) msymbol(oh) mcolor(black%30)
 
-***
-gen time=0
-replace time=1 if year==2010
-replace time=2 if year==2016
-replace time=3 if year==2020
 
-label define time 1"2010" 2"2016-17" 3"2020-21"
-label values time time
 
-save"panel_v7", replace
 ****************************************
 * END
 
@@ -69,35 +61,31 @@ save"panel_v7", replace
 ****************************************
 * Over time, over caste
 ****************************************
-use"panel_v7", clear
+use"panel_v4", clear
 
 
 ********** Time
-tabstat newindex1, stat(n mean p50) by(caste)
+tabstat fvi, stat(n mean p50) by(caste)
 
 
 ********** Caste
 cls
-tabstat newindex1, stat(n mean cv q) by(caste) long
-tabstat newindex2, stat(n mean cv q) by(caste) long
+tabstat fvi, stat(n mean cv q) by(caste) long
 
 
 
 ********** Time and caste
 cls
-tabstat newindex1 if year==2010, stat(n mean cv q) by(caste) long
-tabstat newindex1 if year==2016, stat(n mean cv q) by(caste) long
-tabstat newindex1 if year==2020, stat(n mean cv q) by(caste) long
+tabstat fvi if year==2010, stat(n mean cv q) by(caste) long
+tabstat fvi if year==2016, stat(n mean cv q) by(caste) long
+tabstat fvi if year==2020, stat(n mean cv q) by(caste) long
 
-tabstat newindex2 if year==2010, stat(n mean cv q) by(caste) long
-tabstat newindex2 if year==2016, stat(n mean cv q) by(caste) long
-tabstat newindex2 if year==2020, stat(n mean cv q) by(caste) long
 
 
 
 ********** Graph
 /*
-stripplot newindex1, over(time) vert ///
+stripplot fvi, over(time) vert ///
 stack width(0.2) jitter(1) ///
 box(barw(0.2)) boffset(-0.2) pctile(10) ///
 ms(oh oh oh) msize(small) mc(blue%30) ///
@@ -132,12 +120,12 @@ yla(, ang(h)) xla(, noticks) name(sp`x', replace)
 ****************************************
 * Trends
 ****************************************
-use"panel_v7", clear
+use"panel_v4", clear
 
 
 ********** Trends
 preserve
-rename newindex1 index
+rename fvi index
 tabstat index, stat(min max range)
 keep if dummypanel==1
 keep HHID_panel year index
@@ -162,26 +150,23 @@ rename clusts7 cl3
 * Reshape
 reshape long index, i(HHID_panel) j(year)
 
-* Clean
-rename index finindex
-
 save"indextrend.dta", replace
 
 
 
 ********** Merge
-use"panel_v7", clear
+use"panel_v4", clear
 
 merge 1:1 HHID_panel year using "indextrend"
 drop _merge
 
-save"panel_v8", replace
+save"panel_v5", replace
 
 
 
 
 ********** Characteristics
-use"panel_v8", clear
+use"panel_v5", clear
 
 xtset panelvar year
 
@@ -191,7 +176,7 @@ forvalues i=1/3 {
 forvalues j=1/6 {
 set graph off
 sort HHID_panel year
-twoway (line finindex year if cl`i'==`j', c(L) lcolor(black%10)) ///
+twoway (line index year if cl`i'==`j', c(L) lcolor(black%10)) ///
 , xlabel(2010 2016 2020) xmtick(2010(1)2020) xtitle("Year") ///
 ylabel(0(20)100) ymtick(0(10)100) ytitle("FVI") ///
 title("Cluster `j'") ///

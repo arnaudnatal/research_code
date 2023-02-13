@@ -26,116 +26,9 @@ Distance: L2squared  squared Euclidean distance
 
 
 ****************************************
-* Overlap between measures
-****************************************
-use"panel_v3", clear
-
-
-*** Measures of financial distress
-global overlap dar_std dsr_std afm_std rfm_std isr_std dailyincome_pc_std assets_total_std lapc_std
-
-global overlap incomerev_std dar_std rfmrev_std dsr_std lapc_std
-
-
-corr $overlap
-*graph matrix $overlap, half msize(vsmall) msymbol(oh)
-
-
-/*
-Not really overlap
-Each measures seems to measure a precise aspect of indebtedness
-A household can have high value on one aspect, low in another one.
-*/
-
-
-/*
-This result reinforce the use of a multidimensional index to assesse financial vulnerability to take into account each dimensions
-
-Indeed, if many overlap, we can only use one aspect.
-*/
-
-/*
-We choose a compensatory approach: a debt that is costly can be compensated with a low level of debt, or a low level of impoverishing debt.
-
-2 strategies:
-- data dependend method (PCA)
-- simple method (mean)
-
-We will test the two
-*/
-
-
-****************************************
-* END
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-****************************************
-* Test
-****************************************
-use"panel_v5", clear
-
-global x dailyincome_pc_std assets_pc_std assets_total_std dsr_std isr_std dir_std dar_std afm_std rfm_std tdr_std tar_std loanamount_HH_std lapc_std nbloans_HH_std lpc_std dailyusdincome_pc_perc
-
-global y hoursayear_female hoursayear_dep hoursayear_casu hoursayear_casu_female ind_female ind_dep ind_casu ind_casu_female ind_total
-
-merge 1:1 HHID_panel year using "panel_v9", keepusing($y)
-
-keep HHID_panel year $y $x
-
-reshape wide $x $y, i(HHID_panel) j(year)
-
-foreach x in $y {
-drop `x'2010
-rename `x'2016 `x'1
-rename `x'2020 `x'2
-}
-
-foreach x in $x {
-rename `x'2010 `x'1
-rename `x'2016 `x'2
-drop `x'2020
-}
-
-reshape long $x $y, i(HHID_panel) j(time)
-
-cls
-cpcorr $x \ $y
-
-****************************************
-* END
-
-
-
-
-
-
-
-
-
-
-
-****************************************
 * FVI
 ****************************************
-use"panel_v5", clear
+use"panel_v3", clear
 
 
 *** Income
@@ -154,12 +47,12 @@ ta tdr
 
 
 *** FVI
-gen newindex1=(2*tar+2*isr+dailyusdincome_pc_perc2)/5
-gen newindex2=(2*tdr+2*isr+dailyusdincome_pc_perc2)/5
-gen fvi=(2*tdr+2*isr+dailyusdincome_pc_perc2)/5
+gen newindex1=(2*tar+2*isr+dailyusdincome_pc_perc)/5
+gen newindex2=(2*tdr+2*isr+dailyusdincome_pc_perc)/5
+gen fvi=(2*tdr+2*isr+dailyusdincome_pc_perc)/5
 
 
-save"panel_v6", replace
+save"panel_v4", replace
 ****************************************
 * END
 
