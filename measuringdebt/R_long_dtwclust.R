@@ -41,46 +41,59 @@ index<-as.matrix(cbind(index2010, index2016, index2020))
 
 
 #--- Trends analysis clustering
-interactive_clustering(index)
+#interactive_clustering(index)
 
 
 
 
 #--- Manually trends analysis
-pca_clust<-tsclust(
-  series=pcaindex,
+clustseed5<-tsclust(
+  series=index,
   type="partitional",
-  k=4,
-  distance="sbd",
-  centroid="pam",
-  seed=11,
-  trace=TRUE,
-  error.check=TRUE
-)
-
-m_clust<-tsclust(
-  series=mindex,
-  type="partitional",
-  k=4,
-  distance="sbd",
+  k=6,
+  distance="euclidean",
   centroid="pam",
   seed=5,
   trace=TRUE,
   error.check=TRUE
 )
 
+clustseed6<-tsclust(
+  series=index,
+  type="partitional",
+  k=6,
+  distance="euclidean",
+  centroid="pam",
+  seed=6,
+  trace=TRUE,
+  error.check=TRUE
+)
+
+clustseed7<-tsclust(
+  series=index,
+  type="partitional",
+  k=6,
+  distance="euclidean",
+  centroid="pam",
+  seed=7,
+  trace=TRUE,
+  error.check=TRUE
+)
+
+
 
 
 
 
 #--- Datasets extraction
-pca_cluster<-pca_clust@cluster
-m_cluster<-m_clust@cluster
+clusts5<-clustseed5@cluster
+clusts6<-clustseed6@cluster
+clusts7<-clustseed7@cluster
 
 
 
 
 #--- Step2
-data<-cbind(data, pca_cluster, m_cluster)
+data<-cbind(data, clusts5, clusts6, clusts7)
 
 write.csv(data,"indextrend.csv")
