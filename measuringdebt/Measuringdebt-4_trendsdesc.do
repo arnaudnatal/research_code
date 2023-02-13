@@ -54,7 +54,7 @@ use"panel_v4", clear
 
 
 ********** Time
-tabstat fvi, stat(n mean p50) by(caste)
+tabstat fvi, stat(n mean p50) by(time)
 
 
 ********** Caste
