@@ -41,27 +41,16 @@ index<-as.matrix(cbind(index2010, index2016, index2020))
 
 
 #--- Trends analysis clustering
-#interactive_clustering(index)
+interactive_clustering(index)
 
 
 
 
 #--- Manually trends analysis
-clustseed5<-tsclust(
+clustseed1<-tsclust(
   series=index,
   type="partitional",
-  k=6,
-  distance="euclidean",
-  centroid="pam",
-  seed=5,
-  trace=TRUE,
-  error.check=TRUE
-)
-
-clustseed6<-tsclust(
-  series=index,
-  type="partitional",
-  k=6,
+  k=4,
   distance="euclidean",
   centroid="pam",
   seed=6,
@@ -69,13 +58,35 @@ clustseed6<-tsclust(
   error.check=TRUE
 )
 
-clustseed7<-tsclust(
+clustseed2<-tsclust(
   series=index,
   type="partitional",
-  k=6,
+  k=4,
   distance="euclidean",
   centroid="pam",
-  seed=7,
+  seed=14,
+  trace=TRUE,
+  error.check=TRUE
+)
+
+clustseed3<-tsclust(
+  series=index,
+  type="partitional",
+  k=4,
+  distance="euclidean",
+  centroid="pam",
+  seed=15,
+  trace=TRUE,
+  error.check=TRUE
+)
+
+clustseed4<-tsclust(
+  series=index,
+  type="partitional",
+  k=4,
+  distance="euclidean",
+  centroid="pam",
+  seed=24,
   trace=TRUE,
   error.check=TRUE
 )
@@ -83,17 +94,16 @@ clustseed7<-tsclust(
 
 
 
-
-
 #--- Datasets extraction
-clusts5<-clustseed5@cluster
-clusts6<-clustseed6@cluster
-clusts7<-clustseed7@cluster
+cluster1<-clustseed1@cluster
+cluster2<-clustseed2@cluster
+cluster3<-clustseed3@cluster
+cluster4<-clustseed4@cluster
 
 
 
 
 #--- Step2
-data<-cbind(data, clusts5, clusts6, clusts7)
+data<-cbind(data, cluster1, cluster2, cluster3, cluster4)
 
 write.csv(data,"indextrend.csv")

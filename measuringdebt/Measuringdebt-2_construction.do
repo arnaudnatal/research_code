@@ -236,6 +236,14 @@ replace dalits=0 if caste==3
 label define dalits 0"Non-dalits" 1"Dalits"
 label values dalits dalits
 
+* Time
+gen time=0
+replace time=1 if year==2010
+replace time=2 if year==2016
+replace time=3 if year==2020
+
+label define time 1"2010" 2"2016-17" 3"2020-21"
+label values time time
 
 save"panel_v2", replace
 ****************************************

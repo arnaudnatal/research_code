@@ -19,10 +19,6 @@ do"C:\Users\Arnaud\Documents\GitHub\folderanalysis\measuringdebt.do"
 
 
 
-
-
-
-
 ****************************************
 * FE vs RE?
 ****************************************
