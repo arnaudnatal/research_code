@@ -18,6 +18,77 @@ do"C:\Users\Arnaud\Documents\GitHub\folderanalysis\measuringdebt.do"
 
 
 
+****************************************
+* Finindex no. 4
+****************************************
+use"panel_v5", clear
+
+********** Replace
+*** Income
+gen dailyincome_pc=(annualincome_HH/365)/squareroot_HHsize
+gen dailyusdincome_pc=dailyincome_pc/45.73
+gen dailyplincome_pc=dailyusdincome_pc-1.9
+
+
+replace dailyusdincome_pc_perc2=100 if dailyusdincome_pc_perc2>100
+replace dailyusdincome_pc_perc2=-100 if dailyusdincome_pc_perc2<-100
+corr annualincome_HH dailyusdincome_pc_perc2
+*the more is the poorer
+replace dailyusdincome_pc_perc2=0 if dailyusdincome_pc_perc2<0
+
+replace dailyincome_pc=600 if dailyincome_pc>600
+
+
+gen dailyusdincome_pc_perc=((dailyusdincome_pc-1.9)/1.9)*(-1)*100
+ta dailyusdincome_pc_perc
+gen dailyusdincome_pc_perc2=dailyusdincome_pc_perc
+
+
+
+
+
+*** ISR
+gen isr=imp1_is_tot_HH*100/annualincome_HH
+replace isr=0 if isr==.
+replace isr=190 if isr>190
+replace isr=100 if isr>100
+
+
+*** TDR
+gen tdr=totHH_givenamt_repa*100/loanamount_HH
+replace tdr=0 if tdr==.
+
+
+
+*** FVI
+gen fvi=(2*tdr+2*isr+dailyusdincome_pc_perc2)/5
+
+
+
+save"panel_v6", replace
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ****************************************
 * Labour var: 2010
@@ -556,3 +627,40 @@ label values trendlong trendn
 save"panel_v9", replace
 ****************************************
 * END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+stripplot `x', over(clust) vert ///
+stack width(0.2) jitter(1) ///
+box(barw(0.2)) boffset(-0.2) pctile(10) ///
+ms(oh oh oh) msize(small) mc(blue%30) ///
+yla(, ang(h)) xla(, noticks) name(sp`x', replace)
+
+
+program drop _all
+program define stripgraph
+stripplot `1' if `1'<`4', over(`2') by(`3', title("`1'")) vert ///
+stack width(1) jitter(0) ///
+box(barw(1)) boffset(-0.3) pctile(10) ///
+ms(oh oh oh) msize(small) mc(blue%30) ///
+yla(, ang(h)) xla(, noticks)
+end
+****************************************
+* END
+*/
