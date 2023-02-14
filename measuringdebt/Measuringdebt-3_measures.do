@@ -72,21 +72,23 @@ use"panel_v4", clear
 */
 
 
-********** Poverty line at US$2.2
+*** Poverty line at US$2.2
 *gen dailyincome_pc=(annualincome_HH/365)/squareroot_HHsize
 *gen dailyusdincome_pc=dailyincome_pc/45.73
-gen rrgpl2=((dailyusdincome_pc-2.2)/2.2)*(-1)*100
-
+gen rrgpl2=((dailyusdincome_pc-2.15)/2.15)*(-1)*100
+replace rrgpl2=100 if rrgpl2>100
+replace rrgpl2=0 if rrgpl2<0
 gen fvi2=(2*tdr+2*isr+rrgpl2)/5
 
 
 
-********** Equivalence scale
+*** Equivalence scale
 * None
 gen dailyincome_pc3=(annualincome_HH/365)/HHsize
 gen dailyusdincome_pc3=dailyincome_pc3/45.73
 gen rrgpl3=((dailyusdincome_pc3-1.9)/1.9)*(-1)*100
-
+replace rrgpl3=100 if rrgpl3>100
+replace rrgpl3=0 if rrgpl3<0
 gen fvi3=(2*tdr+2*isr+rrgpl3)/5
 
 
@@ -94,27 +96,90 @@ gen fvi3=(2*tdr+2*isr+rrgpl3)/5
 gen dailyincome_pc4=(annualincome_HH/365)/equiscale_HHsize
 gen dailyusdincome_pc4=dailyincome_pc4/45.73
 gen rrgpl4=((dailyusdincome_pc4-1.9)/1.9)*(-1)*100
-
+replace rrgpl4=100 if rrgpl4>100
+replace rrgpl4=0 if rrgpl4<0
 gen fvi4=(2*tdr+2*isr+rrgpl4)/5
 
 * Modified OECD
 gen dailyincome_pc5=(annualincome_HH/365)/equimodiscale_HHsize
 gen dailyusdincome_pc5=dailyincome_pc5/45.73
 gen rrgpl5=((dailyusdincome_pc5-1.9)/1.9)*(-1)*100
-
+replace rrgpl5=100 if rrgpl5>100
+replace rrgpl5=0 if rrgpl5<0
 gen fvi5=(2*tdr+2*isr+rrgpl5)/5
 
 
 
-********** Weight
-gen fvi7=(tdr+isr+rrgpl)/3
-gen fvi8=(3*tdr+3*isr+rrgpl)/7
+*** Weight
+gen fvi6=(tdr+isr+rrgpl)/3
+gen fvi7=(3*tdr+3*isr+rrgpl)/7
+
+
+
+********** Distrib
+*** Pos
+sort fvi
+gen pos_fvi=(_n/1529)*100
+
+forvalues i=2/7 {
+sort fvi`i'
+gen pos_fvi`i'=(_n/1529)*100
+}
+
+*** Diff
+forvalues i=2/7 {
+gen diff_fvi`i'=pos_fvi`i'-pos_fvi
+}
+
+
+*** Abs diff
+forvalues i=2/7 {
+gen absdiff_fvi`i'=abs(diff_fvi`i')
+ta absdiff_fvi`i'
+}
+
+*** 5% change threshold
+forvalues i=2/7 {
+gen threshold1_fvi`i'=0
+gen threshold5_fvi`i'=0
+gen threshold10_fvi`i'=0
+gen threshold20_fvi`i'=0
+}
+forvalues i=2/7 {
+replace threshold1_fvi`i'=1 if absdiff_fvi`i'>1
+replace threshold5_fvi`i'=1 if absdiff_fvi`i'>5
+replace threshold10_fvi`i'=1 if absdiff_fvi`i'>10
+replace threshold20_fvi`i'=1 if absdiff_fvi`i'>20
+}
+
+
+
+********* Graph
+forvalues i=2/7 {
+set graph off
+twoway ///
+(scatter fvi`i' fvi, ms(oh) mc(black%30)) ///
+(function y=x, range(0 100)) ///
+, ///
+xlabel(0(20)100) xmtick(0(10)100) xtitle("FVI") ///
+ylabel(0(20)100) ymtick(0(10)100) ytitle("FVI-`i'") ///
+legend(off) name(f`i', replace)
+set graph on
+}
+
+graph combine f2 f3 f4 f5 f6 f7, col(3) name(fcomb, replace)
+
+
+
+********** Desc share
+
+
 
 
 
 
 ********** Res
-sum fvi fvi2 fvi3 fvi4 fvi5 fvi6 fvi7 fvi8
+tabstat fvi fvi2 fvi3 fvi4 fvi5 fvi6 fvi7, stat(n mean cv)
 
 
 
