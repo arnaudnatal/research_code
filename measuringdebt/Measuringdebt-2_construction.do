@@ -29,52 +29,33 @@ use"panel_v0", clear
 tabstat imp1_ds_tot_HH annualincome_HH, stat(min p1 p5 p10 q p90 p95 p99 max)
 gen dsr=imp1_ds_tot_HH*100/annualincome_HH
 replace dsr=0 if dsr==.
-tabstat dsr, stat(n mean cv q p90 p95 p99 max) by(year)
-ta year if dsr>200
-ta year if dsr>300
-ta year if dsr>400
 
 
 * ISR
 gen isr=imp1_is_tot_HH*100/annualincome_HH
 replace isr=0 if isr==.
-tabstat isr, stat(n mean cv q p90 p95 p99 max) by(year)
-ta year if isr>150
-ta year if isr>200
 
 
 * DAR
 tabstat loanamount_HH assets_total assets_totalnoland assets_totalnoprop, stat(n mean cv p50) by(year)
 gen dar=loanamount_HH*100/assets_totalnoprop
 replace dar=0 if dar==.
-tabstat dar, stat(n mean cv q p90 p95 p99 max) by(year)
-ta year if dar>200
-ta year if dar>300
-ta year if dar>400
 
 
 * DIR
 gen dir=loanamount_HH*100/annualincome_HH
 replace dir=0 if dir==.
-tabstat dir, stat(n mean cv q p90 p95 p99 max) by(year)
-ta year if dir>600
-ta year if dir>1400
 
 
 
 * TDR
 gen tdr=totHH_givenamt_repa*100/loanamount_HH
 replace tdr=0 if tdr==.
-tabstat tdr, stat(n mean cv q p90 p95 p99 max) by(year)
-tabstat tdr if totHH_givenamt_repa!=0, stat(n mean cv q p90 p95 p99 max) by(year)
-
 
 
 * TAR
 gen tar=totHH_givenamt_repa*100/assets_total
 replace tar=0 if tar==.
-tabstat tar, stat(n mean cv q p90 p95 p99 max) by(year)
-
 
 
 * AFM - Absolut Financial Margin
@@ -84,35 +65,23 @@ gen afm=annualincome_HH+remittnet_HH+goldreadyamount-imp1_ds_tot_HH-expenses_tot
 replace imp1_ds_tot_HH=. if temp==1
 drop temp
 
-gen dummyafmpos=0
-replace dummyafmpos=1 if afm>0
-ta dummyafmpos year, col
-ta dummyafmpos caste if year==2010, row nofreq
-ta dummyafmpos caste if year==2016, row nofreq
-ta dummyafmpos caste if year==2020, row nofreq
-
 
 * RFM - Relative Financial Margin
 gen rfm=(afm*100)/annualincome_HH
-ta rfm
-
 
 * LPC - Loans per capita
 gen lpc=nbloans_HH/squareroot_HHsize
-ta lpc
 replace lpc=0 if lpc==.
 
 * LAPC - Loan amount per capita
 gen lapc=loanamount_HH/squareroot_HHsize
-ta lapc
 replace lapc=0 if lapc==.
 
 
 * Poverty
 gen dailyincome_pc=(annualincome_HH/365)/squareroot_HHsize
 gen dailyusdincome_pc=dailyincome_pc/45.73
-gen dailyusdincome_pc_perc=((dailyusdincome_pc-1.9)/1.9)*(-1)*100
-ta dailyusdincome_pc_perc
+gen rrgpl=((dailyusdincome_pc-1.9)/1.9)*(-1)*100
 
 
 save"panel_v1", replace

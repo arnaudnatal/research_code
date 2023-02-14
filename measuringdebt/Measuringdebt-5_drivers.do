@@ -28,6 +28,7 @@ xtset panelvar time
 
 /*
 Share of formal
+Land ownership
 */
 
 

@@ -32,24 +32,20 @@ use"panel_v3", clear
 
 
 *** Income
-replace dailyusdincome_pc_perc=100 if dailyusdincome_pc_perc>100
-replace dailyusdincome_pc_perc=-100 if dailyusdincome_pc_perc<-100
-*the more is the poorer
-replace dailyusdincome_pc_perc=0 if dailyusdincome_pc_perc<0
+replace rrgpl=100 if rrgpl>100
+replace rrgpl=0 if rrgpl<0
 
 *** ISR
 replace isr=100 if isr>100
 ta isr
 
 
-***
+*** TDR
 ta tdr
 
 
 *** FVI
-gen newindex1=(2*tar+2*isr+dailyusdincome_pc_perc)/5
-gen newindex2=(2*tdr+2*isr+dailyusdincome_pc_perc)/5
-gen fvi=(2*tdr+2*isr+dailyusdincome_pc_perc)/5
+gen fvi=(2*tdr+2*isr+rrgpl)/5
 
 
 save"panel_v4", replace
@@ -57,6 +53,75 @@ save"panel_v4", replace
 * END
 
 
+
+
+
+
+
+
+
+****************************************
+* Sensitivity tests
+****************************************
+use"panel_v4", clear
+
+/*
+- Poverty line
+- Equivalence scale
+- Weight in the average
+*/
+
+
+********** Poverty line at US$2.2
+*gen dailyincome_pc=(annualincome_HH/365)/squareroot_HHsize
+*gen dailyusdincome_pc=dailyincome_pc/45.73
+gen rrgpl2=((dailyusdincome_pc-2.2)/2.2)*(-1)*100
+
+gen fvi2=(2*tdr+2*isr+rrgpl2)/5
+
+
+
+********** Equivalence scale
+* None
+gen dailyincome_pc3=(annualincome_HH/365)/HHsize
+gen dailyusdincome_pc3=dailyincome_pc3/45.73
+gen rrgpl3=((dailyusdincome_pc3-1.9)/1.9)*(-1)*100
+
+gen fvi3=(2*tdr+2*isr+rrgpl3)/5
+
+
+* OECD
+gen dailyincome_pc4=(annualincome_HH/365)/equiscale_HHsize
+gen dailyusdincome_pc4=dailyincome_pc4/45.73
+gen rrgpl4=((dailyusdincome_pc4-1.9)/1.9)*(-1)*100
+
+gen fvi4=(2*tdr+2*isr+rrgpl4)/5
+
+* Modified OECD
+gen dailyincome_pc5=(annualincome_HH/365)/equimodiscale_HHsize
+gen dailyusdincome_pc5=dailyincome_pc5/45.73
+gen rrgpl5=((dailyusdincome_pc5-1.9)/1.9)*(-1)*100
+
+gen fvi5=(2*tdr+2*isr+rrgpl5)/5
+
+
+
+********** Weight
+gen fvi7=(tdr+isr+rrgpl)/3
+gen fvi8=(3*tdr+3*isr+rrgpl)/7
+
+
+
+
+********** Res
+sum fvi fvi2 fvi3 fvi4 fvi5 fvi6 fvi7 fvi8
+
+
+
+
+save"panel_v5", replace
+****************************************
+* END
 
 
 
