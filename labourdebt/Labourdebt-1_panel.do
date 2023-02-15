@@ -391,6 +391,8 @@ recode dummyexposure (.=0)
 recode head_mocc_occupation (.=0)
 recode head_nboccupation (.=0)
 
+
+
 save"panel_v0", replace
 ****************************************
 * END

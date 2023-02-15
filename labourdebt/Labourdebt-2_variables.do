@@ -24,31 +24,103 @@ do"C:\Users\Arnaud\Documents\GitHub\folderanalysis\measuringdebt.do"
 use"panel_v0", clear
 
 
-********** Income
+********** RRGPL
 gen dailyincome_pc=(annualincome_HH/365)/squareroot_HHsize
 gen dailyusdincome_pc=dailyincome_pc/45.73
-gen dailyusdincome_pc_perc=((dailyusdincome_pc-1.9)/1.9)*(-1)*100
-ta dailyusdincome_pc_perc
-replace dailyusdincome_pc_perc=100 if dailyusdincome_pc_perc>100
-replace dailyusdincome_pc_perc=-100 if dailyusdincome_pc_perc<-100
+gen rrgpl=((dailyusdincome_pc-1.9)/1.9)*(-1)*100
+ta rrgpl
+replace rrgpl=100 if rrgpl>100
+replace rrgpl=-100 if rrgpl<-100
 *the more is the poorer
-replace dailyusdincome_pc_perc=0 if dailyusdincome_pc_perc<0
+gen rrgpl2=rrgpl
+replace rrgpl2=0 if rrgpl2<0
+ta rrgpl2
 
 ********** ISR
 gen isr=imp1_is_tot_HH*100/annualincome_HH
 replace isr=0 if isr==.
-replace isr=190 if isr>190
 replace isr=100 if isr>100
-
+ta isr
 
 ********** TDR
 gen tdr=totHH_givenamt_repa*100/loanamount_HH
 replace tdr=0 if tdr==.
+ta tdr
 
 
+********** TAR
+gen tar=totHH_givenamt_repa*100/assets_total
+replace tar=0 if tar==.
+replace tar=100 if tar>100
+ta tar
 
 ********* FVI
-gen fvi=(2*tdr+2*isr+dailyusdincome_pc_perc)/5
+gen fvi=(2*tar+2*isr+rrgpl2)/3
+ta fvi
+
+
+
+
+
+
+********** AMPI
+*** Range 70-130
+* TDR
+ta tdr
+gen a_tdr=((tdr-0)/(100-0))*60+70
+sum a_tdr
+
+* ISR
+ta isr
+gen a_isr=((isr-0)/(100-0))*60+70
+sum a_isr
+
+* RRGPL
+ta rrgpl
+gen a_rrgpl=((rrgpl+100)/(100+100))*60+70
+sum a_rrgpl
+
+
+*** Mean, CV, and STD
+egen M=rowmean(a_tdr a_isr a_rrgpl)
+egen S=rowsd(a_tdr a_isr a_rrgpl)
+gen cv=S/M
+
+
+*** AMPI
+gen ampi=M+S*cv
+ta ampi
+
+*** Clean
+drop a_tdr a_isr a_rrgpl M S cv
+drop rrgpl
+rename rrgpl2 rrgpl
+
+
+*** Desc
+tabstat fvi ampi, stat(n mean cv) by(year)
+/*
+
+    year |       fvi      ampi
+---------+--------------------
+    2010 |       405       405
+         |  9.488783  85.40796
+         |  .9620034  .1004855
+---------+--------------------
+    2016 |       492       492
+         |  11.09747  85.37688
+         |  1.194643  .1411051
+---------+--------------------
+    2020 |       632       632
+         |  15.24777  87.07009
+         |  1.034624  .1521721
+---------+--------------------
+   Total |      1529      1529
+         |  12.38686  86.08499
+         |  1.105246  .1370989
+------------------------------
+*/
+
 
 
 save"panel_v1", replace 
@@ -77,6 +149,20 @@ use"panel_v1", clear
 ********** Other var
 * HH
 encode HHID_panel, gen(panelvar)
+
+* Time
+gen time=0
+replace time=1 if year==2010
+replace time=2 if year==2016
+replace time=3 if year==2020
+label define time 1"2010" 2"2016-17" 3"2020-21"
+label values time time
+
+* Dalits
+gen dalits=.
+replace dalits=1 if caste==1
+replace dalits=0 if caste==2
+replace dalits=0 if caste==3
 
 * Village
 encode villageid, gen(vill)
@@ -662,7 +748,7 @@ save"panel-newoccvar", replace
 ****************************************
 * Merge with main dataset
 ****************************************
-use"panel_v1", clear
+use"panel_v2", clear
 
 merge 1:1 HHID_panel year using "panel-newoccvar"
 drop _merge
@@ -689,7 +775,9 @@ drop hoursayear_HH hoursayearagri_HH hoursayearnonagri_HH
 gen head_educ=head_edulevel
 recode head_educ (2=1)
 
-foreach x in remittnet_HH assets_total {
+* Rem + Assets
+foreach x in assets_total remittnet_HH {
+egen `x'_std=std(`x')
 drop `x'
 rename `x'_std `x'
 }
@@ -716,7 +804,7 @@ replace trendlong=trendn2 if year==2020
 label values trendlong trendn
 */
 
-save"panel_v2", replace
+save"panel_v3", replace
 ****************************************
 * END
 
@@ -724,35 +812,4 @@ save"panel_v2", replace
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*
-stripplot `x', over(clust) vert ///
-stack width(0.2) jitter(1) ///
-box(barw(0.2)) boffset(-0.2) pctile(10) ///
-ms(oh oh oh) msize(small) mc(blue%30) ///
-yla(, ang(h)) xla(, noticks) name(sp`x', replace)
-
-
-program drop _all
-program define stripgraph
-stripplot `1' if `1'<`4', over(`2') by(`3', title("`1'")) vert ///
-stack width(1) jitter(0) ///
-box(barw(1)) boffset(-0.3) pctile(10) ///
-ms(oh oh oh) msize(small) mc(blue%30) ///
-yla(, ang(h)) xla(, noticks)
-end
-****************************************
-* END
-*/
+do"C:\Users\Arnaud\Documents\GitHub\research_code\labourdebt\Labourdebt-3_predictivepower.do"

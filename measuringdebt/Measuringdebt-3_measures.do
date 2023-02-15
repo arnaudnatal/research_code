@@ -33,7 +33,9 @@ use"panel_v3", clear
 
 *** Income
 replace rrgpl=100 if rrgpl>100
-replace rrgpl=0 if rrgpl<0
+replace rrgpl=-100 if rrgpl<-100
+gen rrgpl2=rrgpl
+replace rrgpl2=0 if rrgpl<0
 
 *** ISR
 replace isr=100 if isr>100
@@ -45,7 +47,68 @@ ta tdr
 
 
 *** FVI
-gen fvi=(2*tdr+2*isr+rrgpl)/5
+gen fvi=(2*tdr+2*isr+rrgpl2)/5
+
+
+
+********** AMPI
+
+*** Range 70-130
+* TDR
+ta tdr
+gen a_tdr=((tdr-0)/(100-0))*60+70
+sum a_tdr
+
+* ISR
+ta isr
+gen a_isr=((isr-0)/(100-0))*60+70
+sum a_isr
+
+* RRGPL
+ta rrgpl
+gen a_rrgpl=((rrgpl+100)/(100+100))*60+70
+sum a_rrgpl
+
+
+*** Mean, CV, and STD
+egen M=rowmean(a_tdr a_isr a_rrgpl)
+egen S=rowsd(a_tdr a_isr a_rrgpl)
+gen cv=S/M
+
+
+*** AMPI
+gen ampi=M+S*cv
+ta ampi
+
+*** Clean
+drop a_tdr a_isr a_rrgpl M S cv
+drop rrgpl
+rename rrgpl2 rrgpl
+
+
+********** Desc
+tabstat fvi ampi, stat(n mean cv) by(year)
+/*
+
+    year |       fvi      ampi
+---------+--------------------
+    2010 |       405       405
+         |  9.488783  85.40796
+         |  .9620034  .1004855
+---------+--------------------
+    2016 |       492       492
+         |  11.09747  85.37688
+         |  1.194643  .1411051
+---------+--------------------
+    2020 |       632       632
+         |  15.24777  87.07009
+         |  1.034624  .1521721
+---------+--------------------
+   Total |      1529      1529
+         |  12.38686  86.08499
+         |  1.105246  .1370989
+------------------------------
+*/
 
 
 save"panel_v4", replace
