@@ -27,6 +27,33 @@ Distance: L2squared  squared Euclidean distance
 
 
 ****************************************
+* Corr between measures
+****************************************
+use"panel_v4", clear
+
+* 
+sum isr tdr rrgpl
+pwcorr isr tdr rrgpl, star(.05)
+*graph matrix isr tdr rrgpl, half ms(oh) mc(black%30)
+
+
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
 * Clean name and overlap
 ****************************************
 use"panel_v4", clear

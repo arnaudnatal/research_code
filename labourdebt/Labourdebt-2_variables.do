@@ -4,11 +4,11 @@ cls
 *arnaud.natal@u-bordeaux.fr
 *November 19, 2022
 *-----
-gl link = "measuringdebt"
+gl link = "labourdebt"
 *Prepa database
 *-----
 *do "https://raw.githubusercontent.com/arnaudnatal/folderanalysis/main/$link.do"
-do"C:\Users\Arnaud\Documents\GitHub\folderanalysis\measuringdebt.do"
+do"C:\Users\Arnaud\Documents\GitHub\folderanalysis\labourdebt.do"
 *-------------------------
 
 
@@ -63,67 +63,17 @@ sum dar
 
 
 ********* FVI
-gen fvi=(2*tdr+2*isr+rrgpl2)/5
-ta fvi
-
-
-
-********** AMPI
-*** Range 70-130
-* TDR
-ta tdr
-gen a_tdr=((tdr-0)/(100-0))*60+70
-sum a_tdr
-
-* ISR
-ta isr
-gen a_isr=((isr-0)/(100-0))*60+70
-sum a_isr
-
-* RRGPL
-ta rrgpl
-gen a_rrgpl=((rrgpl+100)/(100+100))*60+70
-sum a_rrgpl
-
-
-*** Mean, CV, and STD
-egen M=rowmean(a_tdr a_isr a_rrgpl)
-egen S=rowsd(a_tdr a_isr a_rrgpl)
-gen cv=S/M
-
-
-*** AMPI
-gen ampi=M+S*cv
-ta ampi
-
-*** Clean
-drop a_tdr a_isr a_rrgpl M S cv
-drop rrgpl
-rename rrgpl2 rrgpl
-
-
-*** Desc
-tabstat fvi ampi, stat(n mean cv) by(year)
 /*
-
-    year |       fvi      ampi
----------+--------------------
-    2010 |       405       405
-         |  9.488783  85.40796
-         |  .9620034  .1004855
----------+--------------------
-    2016 |       492       492
-         |  11.09747  85.37688
-         |  1.194643  .1411051
----------+--------------------
-    2020 |       632       632
-         |  15.24777  87.07009
-         |  1.034624  .1521721
----------+--------------------
-   Total |      1529      1529
-         |  12.38686  86.08499
-         |  1.105246  .1370989
-------------------------------
+2*tdr+2*isr+rrgpl2
+tar+isr+rrgpl
+*/
+gen fvi=(tar+isr+rrgpl2)/3
+ta fvi
+sum fvi
+/*
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+         fvi |      1,529    12.26407    14.40752          0   72.46169
 */
 
 
@@ -813,10 +763,6 @@ label values trendlong trendn
 save"panel_v3", replace
 ****************************************
 * END
-
-
-
-
 
 
 do"C:\Users\Arnaud\Documents\GitHub\research_code\labourdebt\Labourdebt-3_predictivepower.do"

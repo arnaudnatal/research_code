@@ -45,9 +45,15 @@ ta isr
 *** TDR
 ta tdr
 
+*** TAR
+replace tar=100 if tar>100
 
 *** FVI
-gen fvi=(2*tdr+2*isr+rrgpl2)/5
+/*
+2*tdr+2*isr+rrgpl2
+tar+isr+rrgpl2
+*/
+gen fvi=(tar+isr+rrgpl2)/3
 
 
 

@@ -4,11 +4,11 @@ cls
 *arnaud.natal@u-bordeaux.fr
 *November 19, 2022
 *-----
-gl link = "measuringdebt"
+gl link = "labourdebt"
 *Prepa database
 *-----
 *do "https://raw.githubusercontent.com/arnaudnatal/folderanalysis/main/$link.do"
-do"C:\Users\Arnaud\Documents\GitHub\folderanalysis\measuringdebt.do"
+do"C:\Users\Arnaud\Documents\GitHub\folderanalysis\labourdebt.do"
 *-------------------------
 
 
