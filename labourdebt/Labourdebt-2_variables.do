@@ -68,9 +68,6 @@ ta fvi
 
 
 
-
-
-
 ********** AMPI
 *** Range 70-130
 * TDR
@@ -303,8 +300,20 @@ keep if _merge==3
 drop _merge
 gen year=2010
 
-
 save"RUME-newoccvar", replace
+
+
+
+********** Share formal
+use"raw/RUME-loans_HH", clear
+gen shareform=totHH_lendercatamt_form/loanamount_HH
+keep HHID2010 shareform
+merge m:m HHID2010 using "raw/ODRIIS-HH_wide", keepusing(HHID_panel)
+keep if _merge==3
+drop _merge
+gen year=2010
+keep HHID_panel year shareform
+save"RUME-form", replace
 ****************************************
 * END
 
@@ -345,6 +354,18 @@ gen year=2016
 
 
 save"NEEMSIS1-newoccvar", replace
+
+
+********** Share formal
+use"raw/NEEMSIS1-loans_HH", clear
+gen shareform=totHH_lendercatamt_form/loanamount_HH
+keep HHID2016 shareform
+merge m:m HHID2016 using "raw/ODRIIS-HH_wide", keepusing(HHID_panel)
+keep if _merge==3
+drop _merge
+gen year=2016
+keep HHID_panel year shareform
+save"NEEMSIS1-form", replace
 ****************************************
 * END
 
@@ -383,6 +404,19 @@ gen year=2020
 
 
 save"NEEMSIS2-newoccvar", replace
+
+
+
+********** Share formal
+use"raw/NEEMSIS2-loans_HH", clear
+gen shareform=totHH_lendercatamt_form/loanamount_HH
+keep HHID2020 shareform
+merge m:m HHID2020 using "raw/ODRIIS-HH_wide", keepusing(HHID_panel)
+keep if _merge==3
+drop _merge
+gen year=2020
+keep HHID_panel year shareform
+save"NEEMSIS2-form", replace
 ****************************************
 * END
 
@@ -432,6 +466,18 @@ drop INDID
 
 
 save"panel-newoccvar", replace
+
+
+********* Share form
+use"RUME-form", clear
+
+append using "NEEMSIS1-form"
+append using "NEEMSIS2-form"
+
+ta shareform
+replace shareform=shareform*100
+
+save"panel-form", replace
 ****************************************
 * END
 
@@ -761,6 +807,10 @@ use"panel_v2", clear
 merge 1:1 HHID_panel year using "panel-newoccvar"
 drop _merge
 
+** Form
+merge 1:1 HHID_panel year using "panel-form"
+drop _merge
+
 
 ********** Share
 global fulltotal occ_total occ_female occ_male occ_dep occ_agriself occ_agricasual occ_casual occ_regnonquali occ_regquali occ_selfemp occ_nrega occ_agri occ_nona occ_regu occ_casu occ_self occ_othe occ_agriself_male occ_agriself_female occ_agricasual_male occ_agricasual_female occ_casual_male occ_casual_female occ_regnonquali_male occ_regnonquali_female occ_regquali_male occ_regquali_female occ_selfemp_male occ_selfemp_female occ_nrega_male occ_nrega_female occ_agri_male occ_agri_female occ_nona_male occ_nona_female occ_regu_male occ_regu_female occ_casu_male occ_casu_female occ_self_male occ_self_female occ_othe_male occ_othe_female occ_agriself_dep occ_agricasual_dep occ_casual_dep occ_regnonquali_dep occ_regquali_dep occ_selfemp_dep occ_nrega_dep occ_agri_dep occ_nona_dep occ_regu_dep occ_casu_dep occ_self_dep occ_othe_dep ind_total ind_female ind_male ind_dep ind_agriself ind_agricasual ind_casual ind_regnonquali ind_regquali ind_selfemp ind_nrega ind_agri ind_nona ind_regu ind_casu ind_self ind_othe ind_agriself_male ind_agriself_female ind_agricasual_male ind_agricasual_female ind_casual_male ind_casual_female ind_regnonquali_male ind_regnonquali_female ind_regquali_male ind_regquali_female ind_selfemp_male ind_selfemp_female ind_nrega_male ind_nrega_female ind_agri_male ind_agri_female ind_nona_male ind_nona_female ind_regu_male ind_regu_female ind_casu_male ind_casu_female ind_self_male ind_self_female ind_othe_male ind_othe_female ind_agriself_dep ind_agricasual_dep ind_casual_dep ind_regnonquali_dep ind_regquali_dep ind_selfemp_dep ind_nrega_dep ind_agri_dep ind_nona_dep ind_regu_dep ind_casu_dep ind_self_dep ind_othe_dep hoursayear_agriself hoursayear_agricasual hoursayear_casual hoursayear_regnonquali hoursayear_regquali hoursayear_selfemp hoursayear_nrega hoursayear_agri hoursayear_nona hoursayear_regu hoursayear_casu hoursayear_self hoursayear_othe hoursayear hoursayear_male hoursayear_female hoursayear_dep hoursayear_agri_male hoursayear_agri_female hoursayear_nona_male hoursayear_nona_female hoursayear_regu_male hoursayear_regu_female hoursayear_casu_male hoursayear_casu_female hoursayear_self_male hoursayear_self_female hoursayear_othe_male hoursayear_othe_female annualincome_agriself annualincome_agricasual annualincome_casual annualincome_regnonquali annualincome_regquali annualincome_selfemp annualincome_nrega annualincome_agri annualincome_nona annualincome_regu annualincome_casu annualincome_self annualincome_othe annualincome annualincome_male annualincome_female annualincome_dep annualincome_agri_male annualincome_agri_female annualincome_nona_male annualincome_nona_female annualincome_regu_male annualincome_regu_female annualincome_casu_male annualincome_casu_female annualincome_self_male annualincome_self_female annualincome_othe_male annualincome_othe_female
@@ -797,6 +847,8 @@ ta villageid, gen(village_)
 gen log_HHsize=log(HHsize)
 gen share_children=HH_count_child/HHsize
 
+ta shareform
+
 *** trends
 /*
 label define trendn 0"Sta-Dec" 1"Increasing"
@@ -819,37 +871,6 @@ save"panel_v3", replace
 
 
 
-
-
-
-
-
-
-********** 
-use"panel_v3", clear
-
-keep HHID_panel year fvi ind_total ind_female ind_male tdr isr rrgpl
-
-foreach x in fvi ind_total ind_female ind_male tdr isr rrgpl {
-rename `x' `x'_new
-}
-
-merge 1:1 HHID_panel year using "test"
-drop _merge
-rename dailyusdincome_pc_perc2 rrgpl
-
-order HHID_panel year fvi fvi_new tdr tdr_new isr isr_new rrgpl rrgpl_new ind_total ind_total_new ind_female ind_female_new ind_male ind_male_new
-
-foreach x in fvi tdr isr rrgpl ind_total ind_female ind_male {
-gen diff_`x'=`x'-`x'_new
-}
-
-
-
-
-
-
-/*
 
 
 do"C:\Users\Arnaud\Documents\GitHub\research_code\labourdebt\Labourdebt-3_predictivepower.do"
