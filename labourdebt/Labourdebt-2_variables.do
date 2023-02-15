@@ -54,8 +54,16 @@ replace tar=0 if tar==.
 replace tar=100 if tar>100
 ta tar
 
+
+********** DAR
+gen dar=loanamount_HH*100/assets_total
+replace dar=0 if dar==.
+replace dar=500 if dar>500
+sum dar
+
+
 ********* FVI
-gen fvi=(2*tar+2*isr+rrgpl2)/3
+gen fvi=(2*tdr+2*isr+rrgpl2)/5
 ta fvi
 
 
@@ -776,7 +784,7 @@ gen head_educ=head_edulevel
 recode head_educ (2=1)
 
 * Rem + Assets
-foreach x in assets_total remittnet_HH {
+foreach x in assets_total remittnet_HH annualincome_HH {
 egen `x'_std=std(`x')
 drop `x'
 rename `x'_std `x'
@@ -810,6 +818,38 @@ save"panel_v3", replace
 
 
 
+
+
+
+
+
+
+
+********** 
+use"panel_v3", clear
+
+keep HHID_panel year fvi ind_total ind_female ind_male tdr isr rrgpl
+
+foreach x in fvi ind_total ind_female ind_male tdr isr rrgpl {
+rename `x' `x'_new
+}
+
+merge 1:1 HHID_panel year using "test"
+drop _merge
+rename dailyusdincome_pc_perc2 rrgpl
+
+order HHID_panel year fvi fvi_new tdr tdr_new isr isr_new rrgpl rrgpl_new ind_total ind_total_new ind_female ind_female_new ind_male ind_male_new
+
+foreach x in fvi tdr isr rrgpl ind_total ind_female ind_male {
+gen diff_`x'=`x'-`x'_new
+}
+
+
+
+
+
+
+/*
 
 
 do"C:\Users\Arnaud\Documents\GitHub\research_code\labourdebt\Labourdebt-3_predictivepower.do"

@@ -57,7 +57,9 @@ global xvar1 log_HHsize share_children sexratio dependencyratio
 
 global xvar2 head_female head_age head_educ
 
-global xvar3 remittnet_HH assets_total
+global xvar3 remittnet_HH assets_total annualincome_HH
+
+
 
 
 ********** Ind occup
