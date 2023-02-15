@@ -25,16 +25,40 @@ Distance: L2squared  squared Euclidean distance
 
 
 
-
 ****************************************
 * Corr between measures
 ****************************************
-use"panel_v4", clear
+use"panel_v5", clear
 
-* 
-sum isr tdr rrgpl
-pwcorr isr tdr rrgpl, star(.05)
-*graph matrix isr tdr rrgpl, half ms(oh) mc(black%30)
+* Spec 1
+pwcorr tdr isr rrgpl, star(.05)
+
+* Spec 2
+pwcorr tar isr rrgpl, star(.05)
+
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Evo time
+****************************************
+use"panel_v5", clear
+
+tabstat fvi fvib, stat(n mean cv q) by(time)
+tabstat fvi fvib, stat(n mean cv q) by(caste)
+
+*twoway (kdensity fvi) (kdensity fvib)
 
 
 ****************************************
@@ -52,11 +76,10 @@ pwcorr isr tdr rrgpl, star(.05)
 
 
 
-
 ****************************************
 * Clean name and overlap
 ****************************************
-use"panel_v4", clear
+use"panel_v5", clear
 
 
 ********** Overlap
@@ -65,7 +88,7 @@ set graph off
 *** DSR
 gen dsr2=dsr
 replace dsr2=500 if dsr2>500
-
+/*
 twoway ///
 (scatter fvi dsr2, mcolor(black%30)) ///
 (lfit fvi dsr2) ///
@@ -73,12 +96,13 @@ twoway ///
 ytitle("FVI") xtitle("DSR") ///
 aspectratio(1) ///
 leg(off) name(dsr, replace)
+*/
 
 
 *** DIR
 gen dir2=dir
 replace dir2=2000 if dir2>2000
-
+/*
 twoway ///
 (scatter fvi dir2, mcolor(black%30)) ///
 (lfit fvi dir2) ///
@@ -86,12 +110,13 @@ twoway ///
 ytitle("FVI") xtitle("DIR") ///
 aspectratio(1) ///
 leg(off) name(dir, replace)
+*/
 
 
 *** DAR
 gen dar2=dar
 replace dar2=500 if dar2>500
-
+/*
 twoway ///
 (scatter fvi dar2, mcolor(black%30)) ///
 (lfit fvi dar2) ///
@@ -99,14 +124,14 @@ twoway ///
 ytitle("FVI") xtitle("DAR") ///
 aspectratio(1) ///
 leg(off) name(dar, replace)
-
+*/
 
 
 *** Abs FM
 gen afm2=afm
 replace afm2=-140000 if afm2<-140000
 replace afm2=550000 if afm2>550000
-
+/*
 twoway ///
 (scatter fvi afm2, mcolor(black%30)) ///
 (lfit fvi afm2) ///
@@ -114,14 +139,14 @@ twoway ///
 ytitle("FVI") xtitle("Absolut FM") ///
 aspectratio(1) ///
 leg(off) name(afm, replace)
-
+*/
 
 
 *** Rel FM
 gen rfm2=rfm
 replace rfm2=-1000 if rfm2<-1000
 replace rfm2=650 if rfm2>650
-
+/*
 twoway ///
 (scatter fvi rfm2, mcolor(black%30)) ///
 (lfit fvi rfm2) ///
@@ -129,13 +154,14 @@ twoway ///
 ytitle("FVI") xtitle("Relative FM") ///
 aspectratio(1) ///
 leg(off) name(rfm, replace)
+*/
 
 
 *** DCR
 gen dcr=(loanamount_HH/expenses_total)*100
 gen dcr2=dcr
 replace dcr2=800 if dcr2>800
-
+/*
 twoway ///
 (scatter fvi dcr2, mcolor(black%30)) ///
 (lfit fvi dcr2) ///
@@ -143,15 +169,16 @@ twoway ///
 ytitle("FVI") xtitle("DCR") ///
 aspectratio(1) ///
 leg(off) name(dcr, replace)
+*/
 
 
 set graph on
 
 *** Combine
-graph combine dsr dir dar afm rfm dcr, col(3) name(comb, replace)
+*graph combine dsr dir dar afm rfm dcr, col(3) name(comb, replace)
 
 
-save"panel_v5", replace
+*save"panel_v5", replace
 ****************************************
 * END
 
@@ -173,6 +200,7 @@ use"panel_v5", clear
 
 
 *** Density
+/*
 twoway ///
 (kdensity fvi) ///
 , ///
@@ -188,9 +216,11 @@ twoway ///
 xlabel(0(20)100) xmtick(0(10)100) xtitle("FVI") ///
 ytitle("Density") ///
 legend(order(1 "2010" 2 "2016-17" 3 "2020-21") pos(6) col(3)) name(kd_fvi, replace)
+*/
 
 
 *** Stripplot
+/*
 stripplot fvi, over(time) vert ///
 stack width(0.5) jitter(1) ///
 box(barw(0.2)) boffset(-0.2) pctile(95) ///
@@ -199,8 +229,18 @@ yla(0(10)100, ang(h)) xla(, noticks) ///
 ytitle("FVI") xtitle("") name(sp_fvi, replace)
 
 
+stripplot ampi, over(time) vert ///
+stack width(0.5) jitter(1) ///
+box(barw(0.2)) boffset(-0.2) pctile(95) ///
+ms(oh oh oh) msize(small) mc(black%30) ///
+yla(70(10)130, ang(h)) xla(, noticks) ///
+ytitle("A-MPI") xtitle("") name(sp_ampi, replace)
+*/
+
+
 
 *** ISR
+/*
 twoway ///
 (kdensity isr if year==2010) ///
 (kdensity isr if year==2016) ///
@@ -209,10 +249,12 @@ twoway ///
 xlabel(0(20)100) xmtick(0(10)100) xtitle("ISR") ///
 ytitle("Density") ///
 legend(order(1 "2010" 2 "2016-17" 3 "2020-21") pos(6) col(3)) name(kd_isr, replace)
+*/
 
 
 
 *** TDR
+/*
 twoway ///
 (kdensity tdr if year==2010) ///
 (kdensity tdr if year==2016) ///
@@ -221,10 +263,12 @@ twoway ///
 xlabel(0(20)100) xmtick(0(10)100) xtitle("TDR") ///
 ytitle("Density") ///
 legend(order(1 "2010" 2 "2016-17" 3 "2020-21") pos(6) col(3)) name(kd_tdr, replace)
+*/
 
 
 
 *** RRGPL
+/*
 twoway ///
 (kdensity rrgpl if year==2010) ///
 (kdensity rrgpl if year==2016) ///
@@ -233,12 +277,17 @@ twoway ///
 xlabel(0(20)100) xmtick(0(10)100) xtitle("RRGPL") ///
 ytitle("Density") ///
 legend(order(1 "2010" 2 "2016-17" 3 "2020-21") pos(6) col(3)) name(kd_rrgpl, replace)
-
+*/
 
 
 
 ****************************************
 * END
+
+
+
+
+
 
 
 
@@ -253,6 +302,7 @@ legend(order(1 "2010" 2 "2016-17" 3 "2020-21") pos(6) col(3)) name(kd_rrgpl, rep
 use"panel_v5", clear
 
 *** DSR
+/*
 twoway ///
 (kdensity dsr2 if year==2010) ///
 (kdensity dsr2 if year==2016) ///
@@ -261,9 +311,11 @@ twoway ///
 xtitle("DSR") ///
 ytitle("Density") ///
 legend(order(1 "2010" 2 "2016-17" 3 "2020-21") pos(6) col(3)) name(kd_dsr, replace)
+*/
 
 
 *** DIR
+/*
 twoway ///
 (kdensity dir2 if year==2010) ///
 (kdensity dir2 if year==2016) ///
@@ -272,9 +324,11 @@ twoway ///
 xtitle("DIR") ///
 ytitle("Density") ///
 legend(order(1 "2010" 2 "2016-17" 3 "2020-21") pos(6) col(3)) name(kd_dir, replace)
+*/
 
 
 *** DAR
+/*
 twoway ///
 (kdensity dar2 if year==2010) ///
 (kdensity dar2 if year==2016) ///
@@ -283,9 +337,11 @@ twoway ///
 xtitle("DAR") ///
 ytitle("Density") ///
 legend(order(1 "2010" 2 "2016-17" 3 "2020-21") pos(6) col(3)) name(kd_dar, replace)
+*/
 
 
 *** DCR
+/*
 twoway ///
 (kdensity dcr2 if year==2010) ///
 (kdensity dcr2 if year==2016) ///
@@ -294,10 +350,11 @@ twoway ///
 xtitle("DCR") ///
 ytitle("Density") ///
 legend(order(1 "2010" 2 "2016-17" 3 "2020-21") pos(6) col(3)) name(kd_dcr, replace)
-
+*/
 
 
 *** Absolut FM
+/*
 twoway ///
 (kdensity afm2 if year==2010) ///
 (kdensity afm2 if year==2016) ///
@@ -306,10 +363,11 @@ twoway ///
 xtitle("Absolut FM") ///
 ytitle("Density") ///
 legend(order(1 "2010" 2 "2016-17" 3 "2020-21") pos(6) col(3)) name(kd_afm, replace)
-
+*/
 
 
 *** Relative FM
+/*
 twoway ///
 (kdensity rfm2 if year==2010) ///
 (kdensity rfm2 if year==2016) ///
@@ -318,7 +376,7 @@ twoway ///
 xtitle("Relative FM") ///
 ytitle("Density") ///
 legend(order(1 "2010" 2 "2016-17" 3 "2020-21") pos(6) col(3)) name(kd_rfm, replace)
-
+*/
 
 
 ****************************************
@@ -338,7 +396,7 @@ legend(order(1 "2010" 2 "2016-17" 3 "2020-21") pos(6) col(3)) name(kd_rfm, repla
 ****************************************
 * Trends
 ****************************************
-use"panel_v4", clear
+use"panel_v5", clear
 
 
 ********** Trends
@@ -374,13 +432,16 @@ save"indextrend.dta", replace
 
 
 ********** Merge
-use"panel_v4", clear
+use"panel_v5", clear
 
 merge 1:1 HHID_panel year using "indextrend"
 drop _merge
 
 
-save"panel_v5", replace
+*** Clean
+drop index
+
+save"panel_v6", replace
 ****************************************
 * END
 
@@ -388,7 +449,7 @@ save"panel_v5", replace
 
 
 
-
+/*
 
 
 

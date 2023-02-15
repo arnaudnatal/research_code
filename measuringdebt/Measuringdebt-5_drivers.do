@@ -46,8 +46,5 @@ pvalue higher than .05, we do not reject H0
 */
 
 
-
-
-
 ****************************************
 * END

@@ -48,12 +48,12 @@ set matsize 10000, perm
 
 
 ********** X-var
-global interestvar fvi
-*ampi
+global interestvar fvi ampi
 
 global xinvar dalits village_2 village_3 village_4 village_5 village_6 village_7 village_8 village_9 village_10
 
-global xvar1 log_HHsize share_children sexratio dependencyratio
+*global xvar1 log_HHsize share_children sexratio dependencyratio
+global xvar1 log_HHsize share_female share_children share_young share_old share_stock
 
 global xvar2 head_female head_age head_educ
 

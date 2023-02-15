@@ -78,6 +78,46 @@ sum fvi
 
 
 
+
+********** AMPI
+*** Range 70-130
+* TDR
+ta tar
+gen a_tar=((tar-0)/(100-0))*60+70
+sum a_tar
+
+* ISR
+ta isr
+gen a_isr=((isr-0)/(100-0))*60+70
+sum a_isr
+
+* RRGPL
+ta rrgpl
+gen a_rrgpl=((rrgpl+100)/(100+100))*60+70
+sum a_rrgpl
+
+
+*** Mean, CV, and STD
+egen M=rowmean(a_tar a_isr a_rrgpl)
+egen S=rowsd(a_tar a_isr a_rrgpl)
+gen cv=S/M
+
+
+*** AMPI
+gen ampi=M+S*cv
+ta ampi
+
+*** Clean
+drop a_tar a_isr a_rrgpl M S cv
+drop rrgpl
+rename rrgpl2 rrgpl
+
+
+
+sum fvi ampi
+
+
+
 save"panel_v1", replace 
 ****************************************
 * END
@@ -740,25 +780,26 @@ ta villageid, gen(village_)
 
 
 *** Fafchamps and Quisumbing, 1998
+
+* Log HH size
 gen log_HHsize=log(HHsize)
-gen share_children=HH_count_child/HHsize
 
-ta shareform
+* Share children
+gen share_children=agegrp_0_13/HHsize
 
-*** trends
-/*
-label define trendn 0"Sta-Dec" 1"Increasing"
-clonevar trendn1=trend1
-recode trendn1 (1=0) (2=0) (3=1)
-label values trendn1 trendn
-clonevar trendn2=trend2
-recode trendn2 (1=0) (2=0) (3=1)
-label values trendn2 trendn
-gen trendlong=.
-replace trendlong=trendn1 if year==2016
-replace trendlong=trendn2 if year==2020
-label values trendlong trendn
-*/
+* Share female
+*gen share_female=nbfemale/HHsize
+
+* Share old
+gen share_old=(agegrp_70_79+agegrp_80_100)/HHsize
+
+* Share young
+gen share_young=agegrp_14_17/HHsize
+
+
+* Stock mdo en age de travailler, qui ne travaille pas, en %
+gen share_stock=nbworker_HH/HHsize
+
 
 save"panel_v3", replace
 ****************************************
