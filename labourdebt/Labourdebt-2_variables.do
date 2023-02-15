@@ -301,19 +301,6 @@ drop _merge
 gen year=2010
 
 save"RUME-newoccvar", replace
-
-
-
-********** Share formal
-use"raw/RUME-loans_HH", clear
-gen shareform=totHH_lendercatamt_form/loanamount_HH
-keep HHID2010 shareform
-merge m:m HHID2010 using "raw/ODRIIS-HH_wide", keepusing(HHID_panel)
-keep if _merge==3
-drop _merge
-gen year=2010
-keep HHID_panel year shareform
-save"RUME-form", replace
 ****************************************
 * END
 
@@ -354,18 +341,6 @@ gen year=2016
 
 
 save"NEEMSIS1-newoccvar", replace
-
-
-********** Share formal
-use"raw/NEEMSIS1-loans_HH", clear
-gen shareform=totHH_lendercatamt_form/loanamount_HH
-keep HHID2016 shareform
-merge m:m HHID2016 using "raw/ODRIIS-HH_wide", keepusing(HHID_panel)
-keep if _merge==3
-drop _merge
-gen year=2016
-keep HHID_panel year shareform
-save"NEEMSIS1-form", replace
 ****************************************
 * END
 
@@ -404,19 +379,6 @@ gen year=2020
 
 
 save"NEEMSIS2-newoccvar", replace
-
-
-
-********** Share formal
-use"raw/NEEMSIS2-loans_HH", clear
-gen shareform=totHH_lendercatamt_form/loanamount_HH
-keep HHID2020 shareform
-merge m:m HHID2020 using "raw/ODRIIS-HH_wide", keepusing(HHID_panel)
-keep if _merge==3
-drop _merge
-gen year=2020
-keep HHID_panel year shareform
-save"NEEMSIS2-form", replace
 ****************************************
 * END
 
@@ -466,18 +428,6 @@ drop INDID
 
 
 save"panel-newoccvar", replace
-
-
-********* Share form
-use"RUME-form", clear
-
-append using "NEEMSIS1-form"
-append using "NEEMSIS2-form"
-
-ta shareform
-replace shareform=shareform*100
-
-save"panel-form", replace
 ****************************************
 * END
 
@@ -805,10 +755,6 @@ save"panel-newoccvar", replace
 use"panel_v2", clear
 
 merge 1:1 HHID_panel year using "panel-newoccvar"
-drop _merge
-
-** Form
-merge 1:1 HHID_panel year using "panel-form"
 drop _merge
 
 
