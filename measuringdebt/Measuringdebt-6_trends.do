@@ -19,12 +19,12 @@ do"C:\Users\Arnaud\Documents\GitHub\folderanalysis\measuringdebt.do"
 
 
 ****************************************
-* Trends
+* Trends with R
 ****************************************
 use"panel_v6", clear
 
 
-********** Trends
+********** Prepa database
 preserve
 rename fvi index
 tabstat index, stat(min max range)
@@ -38,7 +38,7 @@ restore
 
 
 
-********** Import
+********** Import R results
 import delimited "C:\Users\Arnaud\Documents\GitHub\research_code\measuringdebt\indextrend.csv", clear
 
 * Clean
@@ -67,26 +67,13 @@ drop _merge
 gen test=fvi-index
 ta test
 drop index
-
-save"panel_v7", replace
-****************************************
-* END
+drop test
 
 
 
-
-
-
-
-
-
-****************************************
-* Characteristics
-****************************************
-use"panel_v7", clear
+********** Draw lines
 
 xtset panelvar year
-
 
 *** Graph line
 forvalues i=1/4 {
@@ -148,42 +135,84 @@ label values cl3 cl3
 label values cl4 cl4
 
 
+
 ********** Which one to retain?
 /*
 Choose between 1 and 4
+Keep the first
 */
 
 *graph display cl1_gph
 *graph display cl2_gph
 *graph display cl3_gph
 *graph display cl4_gph
-drop cl2 cl3 
-
-
-********* Desc
-cls
-graph display cl1_gph
-ta cl1
-ta cl1 caste, exp cchi2 chi2
-ta cl1 caste, col nofreq
-
-cls
-graph display cl4_gph
-ta cl4
-ta cl4 caste, exp cchi2 chi2
-ta cl4 caste, col nofreq
-
-*** Mix
-ta cl1 cl4
+drop cl2 cl3 cl4
 
 
 
 ********** Clean
-drop cl4 test
-
 rename cl1 cluster_trend_fvi
 
 
-save"panel_v8", replace
+save"panel_v7", replace
 ****************************************
 * END
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Characteristics
+****************************************
+cls
+use"panel_v7", clear
+
+
+********** Display trends
+*graph display cl1_gph
+
+
+********** Clean
+keep HHID_panel dalits caste vill cluster_trend_fvi
+duplicates drop
+drop if cluster_trend_fvi==.
+
+
+********* Desc
+ta cluster_trend_fvi
+
+*** Dalits
+ta cluster_trend_fvi dalits, exp cchi2 chi2
+ta cluster_trend_fvi dalits, col nofreq
+
+*** Caste
+ta cluster_trend_fvi caste, exp cchi2 chi2
+ta cluster_trend_fvi caste, col nofreq
+
+*** Dalits
+ta cluster_trend_fvi vill, exp cchi2 chi2
+ta cluster_trend_fvi vill, col nofreq
+
+
+
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+

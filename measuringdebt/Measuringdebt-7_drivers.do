@@ -22,7 +22,7 @@ do"C:\Users\Arnaud\Documents\GitHub\folderanalysis\measuringdebt.do"
 ****************************************
 * Drivers
 ****************************************
-use"panel_v8", clear
+use"panel_v7", clear
 
 xtset panelvar time
 
