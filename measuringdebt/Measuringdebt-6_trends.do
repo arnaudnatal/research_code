@@ -151,7 +151,14 @@ drop cl2 cl3 cl4
 
 
 ********** Clean
-rename cl1 cluster_trend_fvi
+rename cl1 clt_fvi
+
+label define cl1 ///
+1"Trans. non-vuln." ///
+2"Vuln." ///
+3"Non-vuln." ///
+4"Trans. vuln.", modify
+
 
 
 save"panel_v7", replace
@@ -177,31 +184,114 @@ cls
 use"panel_v7", clear
 
 
+
+
 ********** Display trends
 *graph display cl1_gph
 
 
+
+
+
+********** Construction
+*** Social class of 2010
+gen w2010=.
+replace w2010=assets_total if year==2010
+xtile sc3_2010=w2010, n(3)
+xtile sc5_2010=w2010, n(5)
+
+bysort HHID_panel: egen sc3=max(sc3_2010)
+bysort HHID_panel: egen sc5=max(sc5_2010)
+
+
+*** Rich of 2010
+gen r2010=.
+replace r2010=annualincome_HH if year==2010
+xtile i3_2010=w2010, n(3)
+xtile i5_2010=w2010, n(5)
+
+bysort HHID_panel: egen i3=max(i3_2010)
+bysort HHID_panel: egen i5=max(i5_2010)
+
+*** Land
+gen l2010=.
+replace l2010=ownland if year==2010
+bysort HHID_panel: egen ol=max(l2010)
+
+
+
+
+
+
 ********** Clean
-keep HHID_panel dalits caste vill cluster_trend_fvi
+sort HHID_panel year
+keep HHID_panel clt_fvi caste vill sc3 sc5 i3 i5 ol
 duplicates drop
-drop if cluster_trend_fvi==.
+drop if clt_fvi==.
+
+label define sc3 1"Class: Low" 2"Class: Middle" 3"Class: High"
+label values sc3 sc3
+
+label define sc5 1"Class: Very low" 2"Class: Low" 3"Class: Middle" 4"Class: High" 5"Class: Very high"
+label values sc5 sc5
+
+label define i3 1"Income: Low" 2"Income: Middle" 3"Income: High"
+label values i3 i3
+
+label define i5 1"Income: Very low" 2"Income: Low" 3"Income: Middle" 4"Income: High" 5"Income: Very high"
+label values i5 i5
+
+label define ol 0"Land owner: No" 1"Land owner: Yes"
+label values ol ol
+
+label define caste 1"Caste: Dalits" 2"Caste: Middle" 3"Caste: Upper"
+label values caste caste
 
 
-********* Desc
-ta cluster_trend_fvi
 
-*** Dalits
-ta cluster_trend_fvi dalits, exp cchi2 chi2
-ta cluster_trend_fvi dalits, col nofreq
+********* Desc of trend
+ta clt_fvi
 
 *** Caste
-ta cluster_trend_fvi caste, exp cchi2 chi2
-ta cluster_trend_fvi caste, col nofreq
+ta caste clt_fvi, exp cchi2 chi2
+ta caste clt_fvi, col nofreq
+ta caste clt_fvi, row nofreq
 
-*** Dalits
-ta cluster_trend_fvi vill, exp cchi2 chi2
-ta cluster_trend_fvi vill, col nofreq
 
+*** Location
+ta vill clt_fvi, exp cchi2 chi2
+ta vill clt_fvi, col nofreq
+ta vill clt_fvi, row nofreq
+
+
+*** Social class (3)
+ta sc3 clt_fvi, exp cchi2 chi2
+ta sc3 clt_fvi, col nofreq
+ta sc3 clt_fvi, row nofreq
+
+
+*** Social class (5)
+ta sc5 clt_fvi, exp cchi2 chi2
+ta sc5 clt_fvi, col nofreq
+ta sc5 clt_fvi, row nofreq
+
+
+*** Income (3)
+ta i3 clt_fvi, exp cchi2 chi2
+ta i3 clt_fvi, col nofreq
+ta i3 clt_fvi, row nofreq
+
+
+*** Income (5)
+ta i5 clt_fvi, exp cchi2 chi2
+ta i5 clt_fvi, col nofreq
+ta i5 clt_fvi, row nofreq
+
+
+*** Land owner
+ta ol clt_fvi, exp cchi2 chi2
+ta ol clt_fvi, col nofreq
+ta ol clt_fvi, row nofreq
 
 
 ****************************************
