@@ -55,7 +55,7 @@ global econ remittnet_HH assets_total annualincome_HH shareform
 
 global compo1 stem log_HHsize share_female share_children share_young share_old share_stock
 
-global compo2 stem HHsize HH_count_child sexratio dependencyratio share_stock
+global compo2 stem log_HHsize share_children sexratio dependencyratio share_stock
 
 
 *** Y
@@ -79,6 +79,15 @@ est store re_`y'
 
 capture noisily xtdpdml `y' $compo1 $econ $head, inv($nonvar) predetermined(L.fvi) fiml
 est store mlsem_`y'
+
+esttab ols_`y' fe_`y' re_`y' mlsem_`y' using "reg_spec1_`y'.csv", replace ///
+	label b(3) p(3) eqlabels(none) alignment(S) ///
+	drop(_cons $var) ///
+	star(* 0.10 ** 0.05 *** 0.01) ///
+	cells("b(fmt(2)star)" "se(fmt(2)par)") ///
+	refcat(, nolabel) ///
+	stats(N r2 r2_a F p, fmt(0 2 2 2) ///
+	labels(`"Observations"' `"\(R^{2}\)"' `"Adjusted \(R^{2}\)"' `"F-stat"' `"p-value"'))
 }
 
 log close
@@ -102,6 +111,15 @@ est store re_`y'
 
 capture noisily xtdpdml `y' $compo2 $econ $head, inv($nonvar) predetermined(L.fvi) fiml
 est store mlsem_`y'
+
+esttab ols_`y' fe_`y' re_`y' mlsem_`y' using "reg_spec2_`y'.csv", replace ///
+	label b(3) p(3) eqlabels(none) alignment(S) ///
+	drop(_cons $var) ///
+	star(* 0.10 ** 0.05 *** 0.01) ///
+	cells("b(fmt(2)star)" "se(fmt(2)par)") ///
+	refcat(, nolabel) ///
+	stats(N r2 r2_a F p, fmt(0 2 2 2) ///
+	labels(`"Observations"' `"\(R^{2}\)"' `"Adjusted \(R^{2}\)"' `"F-stat"' `"p-value"'))
 }
 
 log close
