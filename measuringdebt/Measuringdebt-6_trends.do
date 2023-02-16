@@ -184,12 +184,9 @@ cls
 use"panel_v7", clear
 
 
-
-
-********** Display trends
-*graph display cl1_gph
-
-
+********** Graph line: name
+graph display cl1_gph
+graph export "Trends_cluster.pdf", as(pdf) replace
 
 
 
@@ -253,56 +250,46 @@ label values caste caste
 ta clt_fvi
 
 *** Caste
-ta caste clt_fvi, exp cchi2 chi2
+*ta caste clt_fvi, exp cchi2 chi2
 ta caste clt_fvi, col nofreq
-ta caste clt_fvi, row nofreq
+*ta caste clt_fvi, row nofreq
 
 
 *** Location
-ta vill clt_fvi, exp cchi2 chi2
+*ta vill clt_fvi, exp cchi2 chi2
 ta vill clt_fvi, col nofreq
-ta vill clt_fvi, row nofreq
+*ta vill clt_fvi, row nofreq
 
 
 *** Social class (3)
-ta sc3 clt_fvi, exp cchi2 chi2
-ta sc3 clt_fvi, col nofreq
-ta sc3 clt_fvi, row nofreq
+*ta sc3 clt_fvi, exp cchi2 chi2
+*ta sc3 clt_fvi, col nofreq
+*ta sc3 clt_fvi, row nofreq
 
 
 *** Social class (5)
-ta sc5 clt_fvi, exp cchi2 chi2
+*ta sc5 clt_fvi, exp cchi2 chi2
 ta sc5 clt_fvi, col nofreq
-ta sc5 clt_fvi, row nofreq
+*ta sc5 clt_fvi, row nofreq
 
 
 *** Income (3)
-ta i3 clt_fvi, exp cchi2 chi2
-ta i3 clt_fvi, col nofreq
-ta i3 clt_fvi, row nofreq
+*ta i3 clt_fvi, exp cchi2 chi2
+*ta i3 clt_fvi, col nofreq
+*ta i3 clt_fvi, row nofreq
 
 
 *** Income (5)
-ta i5 clt_fvi, exp cchi2 chi2
+*ta i5 clt_fvi, exp cchi2 chi2
 ta i5 clt_fvi, col nofreq
-ta i5 clt_fvi, row nofreq
+*ta i5 clt_fvi, row nofreq
 
 
 *** Land owner
-ta ol clt_fvi, exp cchi2 chi2
+*ta ol clt_fvi, exp cchi2 chi2
 ta ol clt_fvi, col nofreq
-ta ol clt_fvi, row nofreq
+*ta ol clt_fvi, row nofreq
 
 
 ****************************************
 * END
-
-
-
-
-
-
-
-
-
-

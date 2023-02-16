@@ -37,6 +37,8 @@ sum head_educ1 head_educ2 head_educ3
 
 
 *** Stat quali
+cls
+ta caste year, col nofreq
 ta dalits year, col nofreq
 ta stem year, col nofreq
 ta head_female year, col nofreq
@@ -50,7 +52,15 @@ ta vill year, col nofreq
 
 
 *** Stat quanti
-tabstat HHsize HH_count_child head_age assets_total_std annualincome_HH shareform, stat(n mean cv p50) by(year)
+replace assets_total=assets_total/1000
+replace annualincome_HH=annualincome_HH/1000
+
+tabstat HHsize HH_count_child head_age, stat(mean) long by(year)
+
+tabstat assets_total annualincome_HH shareform if year==2010, stat(mean cv p50) long
+tabstat assets_total annualincome_HH shareform if year==2016, stat(mean cv p50) long
+tabstat assets_total annualincome_HH shareform if year==2020, stat(mean cv p50) long
+
 
 
 ****************************************
@@ -75,14 +85,36 @@ use"panel_v7", clear
 xtset panelvar time
 
 
+********** Macro
+global family caste_2 caste_3 HHsize HH_count_child stem
+
+global wealth assets_total_std annualincome_HH_std ownland 
+
+global head head_female head_age head_occ2 head_occ3 head_occ4 head_occ5 head_occ6 head_occ7 head_educ2 head_educ3 head_nonmarried
+
+global debt shareform loanamount_HH_std
+
+global other dummymarriage dummydemonetisation village_2 village_3 village_4 village_5 village_6 village_7 village_8 village_9 village_10
+
+
+********** Miss?
+mdesc $family
+mdesc $wealth
+mdesc $head
+mdesc $debt
+mdesc $other
+
+
 
 ********** OLS
-reg fvi dalits stem HHsize HH_count_child head_female head_age head_occ2 head_occ3 head_occ4 head_occ5 head_occ6 head_occ7 head_educ2 head_educ3 head_nonmarried ownland assets_total_std annualincome_HH_std shareform dummymarriage dummydemonetisation village_2 village_3 village_4 village_5 village_6 village_7 village_8 village_9 village_10, base
+reg fvi $family $wealth $head $debt $other, base
+est store ols
 
 
 
 ********** At least, fixed effects model (Wooldridge, 2010)
-xtreg fvi dalits stem HHsize HH_count_child head_female head_age head_occ2 head_occ3 head_occ4 head_occ5 head_occ6 head_occ7 head_educ2 head_educ3 head_nonmarried ownland assets_total_std annualincome_HH_std shareform dummymarriage dummydemonetisation village_2 village_3 village_4 village_5 village_6 village_7 village_8 village_9 village_10, base fe
+xtreg fvi $family $wealth $head $debt $other, base fe
+est store fe
 /*
 pvalue higher than .05, we do not reject H0
 -> No fixed effect
@@ -91,7 +123,8 @@ pvalue higher than .05, we do not reject H0
 
 ********** Random effects?
 * BP LM test
-xtreg fvi dalits stem HHsize HH_count_child head_female head_age head_occ2 head_occ3 head_occ4 head_occ5 head_occ6 head_occ7 head_educ2 head_educ3 head_nonmarried ownland assets_total_std annualincome_HH_std shareform dummymarriage dummydemonetisation village_2 village_3 village_4 village_5 village_6 village_7 village_8 village_9 village_10, base re
+xtreg fvi $family $wealth $head $debt $other, base re
+est store re
 xttest0
 /*
 pvalue higher than .05, we do not reject H0
@@ -101,9 +134,32 @@ pvalue higher than .05, we do not reject H0
 
 
 ********** CRE to take into account time-invariant variables
-xthybrid fvi dalits stem HHsize HH_count_child head_female head_age head_occ2 head_occ3 head_occ4 head_occ5 head_occ6 head_occ7 head_educ2 head_educ3 head_nonmarried ownland assets_total_std annualincome_HH_std shareform dummymarriage dummydemonetisation village_2 village_3 village_4 village_5 village_6 village_7 village_8 village_9 village_10, clusterid(panelvar) cre
+xthybrid fvi $family $wealth $head $debt $other, clusterid(panelvar) cre
 
-xthybrid fvi dalits stem HHsize HH_count_child head_female head_age head_occ2 head_occ3 head_occ4 head_occ5 head_occ6 head_occ7 head_educ2 head_educ3 head_nonmarried ownland assets_total_std annualincome_HH_std shareform dummymarriage dummydemonetisation village_2 village_3 village_4 village_5 village_6 village_7 village_8 village_9 village_10,  clusterid(panelvar) cre test full
+xthybrid fvi $family $wealth $head $debt $other,  clusterid(panelvar) cre test full
+est store cre
+
+
+
+
+
+
+********** Table
+esttab ols fe re cre
+
+
+esttab ols fe re cre using "reg.csv", replace ///
+	label b(3) p(3) eqlabels(none) alignment(S) ///
+	drop(_cons $var) ///
+	star(* 0.10 ** 0.05 *** 0.01) ///
+	cells("b(fmt(2)star)" "se(fmt(2)par)") ///
+	refcat(, nolabel) ///
+	stats(N r2 r2_a F p, fmt(0 2 2 2) ///
+	labels(`"Observations"' `"\(R^{2}\)"' `"Adjusted \(R^{2}\)"' `"F-stat"' `"p-value"'))
+
+
+
+
 
 
 ****************************************

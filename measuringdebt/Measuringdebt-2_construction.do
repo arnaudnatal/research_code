@@ -227,6 +227,44 @@ fre village villageid vill
 ta vill, gen(village_)
 
 
+* Caste
+fre caste
+ta caste, gen(caste_)
+
+* Label
+label var caste_2 "Caste: Middle"
+label var caste_3 "Caste: Upper"
+label var HHsize "Household size"
+label var HH_count_child "Number of childrens"
+label var stem "Family: Stem"
+label var ownland "Land owner: Yes"
+label var head_age "Head: Age (years)"
+label var head_occ1 "Head occ: Unoccupied"
+label var head_occ2 "Head occ: Agri SE"
+label var head_occ3 "Head occ: Agri casual"
+label var head_occ4 "Head occ: Casual"
+label var head_occ5 "Head occ: Regular"
+label var head_occ6 "Head occ: SE"
+label var head_occ7 "Head occ: NREGA"
+label var head_educ1 "Head edu: Below primary"
+label var head_educ2 "Head edu: Primary completed"
+label var head_educ3 "Head edu: High school or more"
+label var head_nonmarried "Head married: No"
+label var shareform "Share formal debt"
+label var dummymarriage "Marriage: Yes"
+label var dummydemonetisation "Demonetisation: Yes"
+label var village_1 "Village: ELA"
+label var village_2 "Village: GOV" 
+label var village_3 "Village: KAR"
+label var village_4 "Village: KOR"
+label var village_5 "Village: KUV"
+label var village_6 "Village: MAN"
+label var village_7 "Village: MANAM"
+label var village_8 "Village: NAT"
+label var village_9 "Village: ORA"
+label var village_10 "Village: SEM"
+
+
 save"panel_v2", replace
 ****************************************
 * END
@@ -265,6 +303,8 @@ label var lpc_std "Loans pc (std)"
 label var lapc_std "Loan amount pc (std)"
 
 
+label var annualincome_HH_std "Annual income (std)"
+label var loanamount_HH_std "Loan amount (std)"
 
 
 *** Order

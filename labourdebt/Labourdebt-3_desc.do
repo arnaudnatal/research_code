@@ -25,7 +25,6 @@ If both effects are specified, by contrast, ML-SEM provides correct estimates of
 
 In short, ML-SEM including both a contemporaneous and a lagged effect of X on Y provides correct estimates of both effects, even in case of reverse causality. 
 If the contemporaneous effect in ML-SEM is negligible, this approach can also serve to justify the application of the LFD model or the AB estimator.
-
 */
 
 
@@ -47,36 +46,67 @@ xtset panelvar time
 set matsize 10000, perm
 
 
-********** X-var
-global interestvar fvi ampi
+********** Variables
 
-global xinvar dalits village_2 village_3 village_4 village_5 village_6 village_7 village_8 village_9 village_10
+*** X
+global nonvar dalits village_2 village_3 village_4 village_5 village_6 village_7 village_8 village_9 village_10
+global head head_female head_age head_educ
+global econ remittnet_HH assets_total annualincome_HH shareform
 
-*global xvar1 log_HHsize share_children sexratio dependencyratio
-global xvar1 log_HHsize share_female share_children share_young share_old share_stock
+global compo1 stem log_HHsize share_female share_children share_young share_old share_stock
 
-global xvar2 head_female head_age head_educ
-
-global xvar3 remittnet_HH assets_total annualincome_HH shareform
+global compo2 stem HHsize HH_count_child sexratio dependencyratio share_stock
 
 
-********** Ind occup
-global yvar ind_total ind_female ind_male occ_total occ_female occ_male
-
+*** Y
+global yvar ind_total ind_female ind_male ind_agri ind_nona occ_total occ_female occ_male occ_agri occ_nona
 
 
 
 
-********** ML-SEM with formal
-log using "C:\Users\Arnaud\Downloads\MLSEM_mdo2.log", replace
+********** Spec 1
+log using "Labourdebt_spec1.log", replace
 
 foreach y in $yvar {
-foreach x in $interestvar {
-capture noisily xtdpdml `y' $xvar1 $xvar2 $xvar3, inv($xinvar) predetermined(L.`x') fiml
-}
+capture noisily reg `y' fvi $compo1 $econ $head $nonvar
+est store ols_`y'
+
+capture noisily xtreg `y' fvi $compo1 $econ $head $nonvar, fe
+est store fe_`y'
+
+capture noisily xtreg `y' fvi $compo1 $econ $head $nonvar, re
+est store re_`y'
+
+capture noisily xtdpdml `y' $compo1 $econ $head, inv($nonvar) predetermined(L.fvi) fiml
+est store mlsem_`y'
 }
 
 log close
+
+
+
+
+
+********** Spec 2
+log using "Labourdebt_spec2.log", replace
+
+foreach y in $yvar {
+capture noisily reg `y' fvi $compo2 $econ $head $nonvar
+est store ols_`y'
+
+capture noisily xtreg `y' fvi $compo2 $econ $head $nonvar, fe
+est store fe_`y'
+
+capture noisily xtreg `y' fvi $compo2 $econ $head $nonvar, re
+est store re_`y'
+
+capture noisily xtdpdml `y' $compo2 $econ $head, inv($nonvar) predetermined(L.fvi) fiml
+est store mlsem_`y'
+}
+
+log close
+
+
 
 ****************************************
 * END

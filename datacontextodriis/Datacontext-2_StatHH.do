@@ -21,6 +21,13 @@ do "https://raw.githubusercontent.com/arnaudnatal/folderanalysis/main/$link.do"
 cls
 use"panel_v0", clear
 
+
+* Jatis caste Isabelle
+ta jatis caste if year==2010, col nofreq
+ta jatis caste if year==2016, col nofreq
+ta jatis caste if year==2020, col nofreq
+
+
 * Caste
 preserve
 keep HHID_panel year caste jatis

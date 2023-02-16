@@ -756,10 +756,6 @@ replace `x'=0 if `x'==.
 }
 
 
-foreach x in total female male dep agriself agricasual casual regnonquali regquali selfemp nrega agri nona regu casu self othe agriself_male agriself_female agricasual_male agricasual_female casual_male casual_female regnonquali_male regnonquali_female regquali_male regquali_female selfemp_male selfemp_female nrega_male nrega_female agri_male agri_female nona_male nona_female regu_male regu_female casu_male casu_female self_male self_female othe_male othe_female agriself_dep agricasual_dep casual_dep regnonquali_dep regquali_dep selfemp_dep nrega_dep agri_dep nona_dep regu_dep casu_dep self_dep othe_dep {
-gen share_`x'=ind_`x'/HHsize
-replace share_`x'=1 if share_`x'>1
-}
 
 drop hoursayear_HH hoursayearagri_HH hoursayearnonagri_HH
 
@@ -788,14 +784,13 @@ gen log_HHsize=log(HHsize)
 gen share_children=agegrp_0_13/HHsize
 
 * Share female
-*gen share_female=nbfemale/HHsize
+gen share_female2=nbfemale/HHsize
 
 * Share old
 gen share_old=(agegrp_70_79+agegrp_80_100)/HHsize
 
 * Share young
 gen share_young=agegrp_14_17/HHsize
-
 
 * Stock mdo en age de travailler, qui ne travaille pas, en %
 gen share_stock=nbworker_HH/HHsize
@@ -804,6 +799,3 @@ gen share_stock=nbworker_HH/HHsize
 save"panel_v3", replace
 ****************************************
 * END
-
-
-do"C:\Users\Arnaud\Documents\GitHub\research_code\labourdebt\Labourdebt-3_predictivepower.do"

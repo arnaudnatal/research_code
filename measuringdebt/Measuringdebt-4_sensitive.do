@@ -151,7 +151,7 @@ set graph on
 }
 
 graph combine thr_fvi2 thr_fvi3 thr_fvi4 thr_fvi5, col(2) name(thr_comb, replace)
-graph export "Sensi_threshold.pdf", as(pdf) replace
+graph export "graph/Sensi_threshold.pdf", as(pdf) replace
 
 
 ****************************************
@@ -188,7 +188,7 @@ set graph on
 graph dir
 
 grc1leg f2 f3 f4 f5, col(2) name(sensi_scatter, replace)
-graph export "Sensi_scatter.pdf", as(pdf) replace
+graph export "graph/Sensi_scatter.pdf", as(pdf) replace
 
 ****************************************
 * END
@@ -217,11 +217,53 @@ label var diff_fvi3 "FVI-3"
 label var diff_fvi4 "FVI-4"
 label var diff_fvi5 "FVI-5"
 
-vioplot diff_fvi2 diff_fvi3 diff_fvi4 diff_fvi5, horizontal xline(0) ///
-xlabel(-50(10)50) xtitle("(FVI-n - FVI)") ///
+* Horizontal
+vioplot diff_fvi2 diff_fvi3 diff_fvi4 diff_fvi5, horizontal xline(-5 0 5) ///
+xlabel(-50(10)50) xmtick(-50(5)50) xtitle("(FVI-n - FVI)") ///
 ylabel(,angle(0)) ytitle("FVI-n") ///
+name(sensi_vio_ho, replace)
+graph export "graph/Sensi_violin_horiz.pdf", as(pdf) replace
+
+
+* Vertical
+vioplot diff_fvi2 diff_fvi3 diff_fvi4 diff_fvi5, yline(-5 0 5) ///
+ylabel(-50(10)50) ymtick(-50(5)50) ytitle("(FVI-n - FVI)") ///
+xlabel(,angle(0))  xtitle("FVI-n") ///
 name(sensi_vio, replace)
-graph export "Sensi_violin.pdf", as(pdf) replace
+graph export "graph/Sensi_violin_vert.pdf", as(pdf) replace
+
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+****************************************
+* Graph 4
+****************************************
+use"panel_v6", clear
+
+keep HHID_panel year diff_fvi2 diff_fvi3 diff_fvi4 diff_fvi5
+reshape long diff_fvi, i(HHID_panel year) j(n)
+
+label define diff_fvi 2"FVI-2" 3"FVI-3" 4"FVI-4" 5"FVI-5" 
+label values diff_fvi diff_fvi
+
+stripplot diff_fvi, over(n) ///
+stack width(1) jitter(1) refline(lp(dash)) ///
+box(barw(0.1)) boffset(-0.15) pctile(5) ///
+ms(oh) msize(small) mc(black%30) ///
+xla(-50(10)50, ang(h)) yla(, noticks) ///
+legend(order(1 "Mean" 4 "Whisker from 5% to 95%") pos(6) col(2) on) ///
+ylabel(2 "FVI-2" 3 "FVI-3" 4 "FVI-4" 5 "FVI-5") ///
+xline(-5 0 5) ///
+xtitle("(FVI-n - FVI)") ytitle("FVI-n") name(diff_fvi_horiz, replace)
+graph export "graph/Sensi_stripplot_vert.pdf", as(pdf) replace
 
 ****************************************
 * END

@@ -29,8 +29,12 @@ pwcorr tar isr rrgpl, star(.05)
 
 
 *** Graph
-graph matrix tar isr rrgpl, half ms(oh) mc(black%30)
-graph export "matrix_corr.pdf", as(pdf) replace
+corr tar isr rrgpl
+graph matrix tar isr rrgpl, half ///
+ms(oh) mc(black%30) ///
+note("Correlation:" "TAR-ISR: 0.0243; TAR-RRGPL: -0.0179; ISR-RRGPL: 0.4515", size(vsmall))
+graph export "graph/matrix_corr.pdf", as(pdf) replace
+
 
 
 *** Alpha
@@ -43,7 +47,6 @@ factortest tar isr rrgpl
 
 ****************************************
 * END
-
 
 
 
@@ -75,7 +78,7 @@ twoway ///
 , ///
 ytitle("FVI") xtitle("DSR") ///
 aspectratio(1) ///
-leg(off) name(dsr, replace)
+leg(order(2 "Fitted values") pos(6) col(1)) name(dsr, replace)
 
 
 
@@ -155,7 +158,8 @@ leg(off) name(dcr, replace)
 set graph on
 
 *** Combine
-graph combine dsr dir dar afm rfm dcr, col(3) name(comb, replace)
+grc1leg dsr dir dar afm rfm dcr, col(3) name(comb, replace)
+graph export "graph/Corr_fvi_oth.pdf", as(pdf) replace
 
 ****************************************
 * END
@@ -191,7 +195,8 @@ tabstat fvi isr tar rrgpl, stat(min p1 p5 p10 q p90 p95 p99 max) by(time) long
 
 ********** Graph FVI
 
-*** Density
+*** Kernel density
+/*
 twoway ///
 (kdensity fvi if year==2010) ///
 (kdensity fvi if year==2016) ///
@@ -200,18 +205,28 @@ twoway ///
 xlabel(0(20)100) xmtick(0(10)100) xtitle("FVI") ///
 ytitle("Density") ///
 legend(order(1 "2010" 2 "2016-17" 3 "2020-21") pos(6) col(3)) name(kd_fvi, replace)
+*/
 
 
-
-*** Stripplot
+*** Stripplot vert
+/*
 stripplot fvi, over(time) vert ///
 stack width(0.5) jitter(1) ///
 box(barw(0.2)) boffset(-0.2) pctile(95) ///
 ms(oh oh oh) msize(small) mc(black%30) ///
 yla(0(10)100, ang(h)) xla(, noticks) ///
-ytitle("FVI") xtitle("") name(sp_fvi, replace)
+ytitle("FVI") xtitle("") name(sp_fvi_vert, replace)
+*/
 
-
+*** Stripplot horiz
+stripplot fvi, over(time) ///
+stack width(0.5) jitter(1) refline(lp(dash)) ///
+box(barw(0.1)) boffset(-0.15) pctile(5) ///
+ms(oh oh oh) msize(small) mc(black%30) ///
+xla(0(10)100, ang(h)) yla(, noticks) ///
+legend(order(1 "Mean" 4 "Whisker from 5% to 95%") pos(6) col(2) on) ///
+xtitle("FVI") ytitle("") name(sp_fvi_horiz, replace)
+graph export "graph/Distri_fvi.pdf", as(pdf) replace
 
 
 
@@ -244,6 +259,8 @@ legend(order(1 "2010" 2 "2016-17" 3 "2020-21") pos(6) col(3)) ///
 aspectratio(1) name(kd_tar, replace)
 
 
+
+
 *** RRGPL
 twoway ///
 (kdensity rrgpl if year==2010) ///
@@ -259,7 +276,7 @@ set graph on
 
 *** Combine
 grc1leg kd_isr kd_tar kd_rrgpl, col(3) name(kd_compo, replace)
-
+graph export "graph/FVI_compo.pdf", as(pdf) replace
 
 ****************************************
 * END

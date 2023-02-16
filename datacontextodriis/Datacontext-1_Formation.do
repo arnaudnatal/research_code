@@ -328,6 +328,7 @@ replace year=2020 if year==.
 encode jatiscorr, gen(jatis)
 drop jatiscorr
 collapse (mean) jatis caste, by(HHID_panel year)
+label values jatis jatis
 ta caste year
 save"castetemp", replace
 restore
@@ -348,6 +349,9 @@ label values caste2 caste2
 *** Year
 label define year 2010"2010" 2016"2016-17" 2020"2020-21"
 label values year year
+
+*
+label values jatis jatis
 
 save"panel_v0", replace
 ****************************************

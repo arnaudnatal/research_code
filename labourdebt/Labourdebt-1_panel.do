@@ -395,7 +395,7 @@ recode head_nboccupation (.=0)
 
 * Share form
 gen shareform=totHH_lendercatamt_form*100/loanamount_HH
-
+replace shareform=0 if shareform==.
 
 save"panel_v0", replace
 ****************************************
