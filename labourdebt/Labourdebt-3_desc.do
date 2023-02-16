@@ -15,27 +15,11 @@ do"C:\Users\Arnaud\Documents\GitHub\folderanalysis\labourdebt.do"
 
 
 
-/*
-Maximum Likelihood Structural Equation Model
-Same as cross-lagged panel model with fixed effect 
-
-Our simulation results also show that ML-SEM may help researchers to overcome the problem of misspecified temporal lags. 
-Whereas ML-SEM falls prey to precisely the same lag specification problem as other models, our simulations show that this problem only occurs if ML-SEM includes either a contemporaneous or a lagged effect of X on Y.
-If both effects are specified, by contrast, ML-SEM provides correct estimates of both effects in all scenarios.
-
-In short, ML-SEM including both a contemporaneous and a lagged effect of X on Y provides correct estimates of both effects, even in case of reverse causality. 
-If the contemporaneous effect in ML-SEM is negligible, this approach can also serve to justify the application of the LFD model or the AB estimator.
-*/
-
-
-
-
-
 
 
 
 ****************************************
-* Prediction power with ML-SEM
+* Stat desc: Y
 ****************************************
 cls
 use"panel_v3", clear
@@ -47,8 +31,95 @@ set matsize 10000, perm
 
 
 ********** Variables
+global yvar ind_total ind_female ind_male ind_agri ind_nona occ_total occ_female occ_male occ_agri occ_nona
 
-*** X
+
+
+********** Histogram Indiv
+
+*** Total
+twoway (histogram ind_total if year==2010, discrete percent), ///
+xtitle("Number of workers") xlabel(0(1)8) ///
+ylabel(0(20)100) ymtick(0(10)100) ytitle("Total") ///
+title("2010") name(ind_total_2010, replace)
+
+twoway (histogram ind_total if year==2016, discrete percent), ///
+xtitle("Number of workers") xlabel(0(1)8) ///
+ylabel(0(20)100) ymtick(0(10)100) ///
+title("2016-17") name(ind_total_2016, replace)
+
+twoway (histogram ind_total if year==2020, discrete percent), ///
+xtitle("Number of workers") xlabel(0(1)8) ///
+ylabel(0(20)100) ymtick(0(10)100) ///
+title("2020-21") name(ind_total_2020, replace)
+
+
+
+*** Male
+twoway (histogram ind_male if year==2010, discrete percent), ///
+xtitle("Number of workers") xlabel(0(1)8) ///
+ylabel(0(20)100) ymtick(0(10)100) ytitle("Male") ///
+name(ind_male_2010, replace)
+
+twoway (histogram ind_male if year==2016, discrete percent), ///
+xtitle("Number of workers") xlabel(0(1)8) ///
+ylabel(0(20)100) ymtick(0(10)100) ///
+name(ind_male_2016, replace)
+
+twoway (histogram ind_male if year==2020, discrete percent), ///
+xtitle("Number of workers") xlabel(0(1)8) ///
+ylabel(0(20)100) ymtick(0(10)100) ///
+name(ind_male_2020, replace)
+
+
+
+*** Female
+twoway (histogram ind_female if year==2010, discrete percent), ///
+xtitle("Number of workers") xlabel(0(1)8) ///
+ylabel(0(20)100) ymtick(0(10)100) ytitle("Female") ///
+name(ind_female_2010, replace)
+
+twoway (histogram ind_female if year==2016, discrete percent), ///
+xtitle("Number of workers") xlabel(0(1)8) ///
+ylabel(0(20)100) ymtick(0(10)100) ///
+name(ind_female_2016, replace)
+
+twoway (histogram ind_female if year==2020, discrete percent), ///
+xtitle("Number of workers") xlabel(0(1)8) ///
+ylabel(0(20)100) ymtick(0(10)100) ///
+name(ind_female_2020, replace)
+
+
+graph combine ind_total_2010 ind_total_2016 ind_total_2020 ind_male_2010 ind_male_2016 ind_male_2020 ind_female_2010 ind_female_2016 ind_female_2020, col(3) name(ind, replace)
+
+
+
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Stat desc: X
+****************************************
+cls
+use"panel_v3", clear
+
+
+********** Panel declaration
+xtset panelvar time
+set matsize 10000, perm
+
 global nonvar dalits village_2 village_3 village_4 village_5 village_6 village_7 village_8 village_9 village_10
 global head head_female head_age head_educ
 global econ remittnet_HH assets_total annualincome_HH shareform
@@ -58,53 +129,11 @@ global compo1 stem log_HHsize share_female share_children share_young share_old 
 global compo2 stem HHsize HH_count_child sexratio dependencyratio share_stock
 
 
-*** Y
-global yvar ind_total ind_female ind_male ind_agri ind_nona occ_total occ_female occ_male occ_agri occ_nona
 
 
 
+********** Histogram over time
 
-********** Spec 1
-log using "Labourdebt_spec1.log", replace
-
-foreach y in $yvar {
-capture noisily reg `y' fvi $compo1 $econ $head $nonvar
-est store ols_`y'
-
-capture noisily xtreg `y' fvi $compo1 $econ $head $nonvar, fe
-est store fe_`y'
-
-capture noisily xtreg `y' fvi $compo1 $econ $head $nonvar, re
-est store re_`y'
-
-capture noisily xtdpdml `y' $compo1 $econ $head, inv($nonvar) predetermined(L.fvi) fiml
-est store mlsem_`y'
-}
-
-log close
-
-
-
-
-
-********** Spec 2
-log using "Labourdebt_spec2.log", replace
-
-foreach y in $yvar {
-capture noisily reg `y' fvi $compo2 $econ $head $nonvar
-est store ols_`y'
-
-capture noisily xtreg `y' fvi $compo2 $econ $head $nonvar, fe
-est store fe_`y'
-
-capture noisily xtreg `y' fvi $compo2 $econ $head $nonvar, re
-est store re_`y'
-
-capture noisily xtdpdml `y' $compo2 $econ $head, inv($nonvar) predetermined(L.fvi) fiml
-est store mlsem_`y'
-}
-
-log close
 
 
 
