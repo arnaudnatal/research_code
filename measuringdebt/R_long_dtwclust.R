@@ -41,7 +41,7 @@ index<-as.matrix(cbind(index2010, index2016, index2020))
 
 
 #--- Trends analysis clustering
-interactive_clustering(index)
+#interactive_clustering(index)
 
 
 
@@ -53,7 +53,7 @@ clustseed1<-tsclust(
   k=4,
   distance="euclidean",
   centroid="pam",
-  seed=6,
+  seed=1,
   trace=TRUE,
   error.check=TRUE
 )
@@ -64,7 +64,7 @@ clustseed2<-tsclust(
   k=4,
   distance="euclidean",
   centroid="pam",
-  seed=14,
+  seed=2,
   trace=TRUE,
   error.check=TRUE
 )
@@ -75,7 +75,7 @@ clustseed3<-tsclust(
   k=4,
   distance="euclidean",
   centroid="pam",
-  seed=15,
+  seed=4,
   trace=TRUE,
   error.check=TRUE
 )
@@ -86,7 +86,7 @@ clustseed4<-tsclust(
   k=4,
   distance="euclidean",
   centroid="pam",
-  seed=24,
+  seed=9,
   trace=TRUE,
   error.check=TRUE
 )

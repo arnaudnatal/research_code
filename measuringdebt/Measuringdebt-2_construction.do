@@ -214,6 +214,19 @@ replace time=3 if year==2020
 label define time 1"2010" 2"2016-17" 3"2020-21"
 label values time time
 
+* Dummy ownland
+recode ownland (.=0)
+ta ownland year, col nofreq
+
+label define ownland 0"Own land: No" 1"Own land: Yes"
+label values ownland ownland
+
+
+* Village
+fre village villageid vill
+ta vill, gen(village_)
+
+
 save"panel_v2", replace
 ****************************************
 * END

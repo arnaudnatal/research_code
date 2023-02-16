@@ -1286,6 +1286,42 @@ graph export "Occ_comb.pdf", as(pdf) replace
 
 
 
+
+
+
+
+
+
+****************************************
+* Stat Isabelle sur emploi agri et non-agri
+****************************************
+cls
+use"panel_v0", clear
+
+
+*** Test
+gen test1=annualincome_HH-incomeagri_HH-incomenonagri_HH
+gen test2=1-shareincomeagri_HH-shareincomenonagri_HH
+
+tab1 test1 test2
+drop test1 test2
+
+*** Stat Isabelle
+replace annualincome_HH=annualincome_HH/1000
+replace incomenonagri_HH=incomenonagri_HH/1000
+replace incomeagri_HH=incomeagri_HH/1000
+
+fsum annualincome_HH incomeagri_HH incomenonagri_HH shareincomeagri_HH shareincomenonagri_HH if year==2010, stat(n mean sd p25 p50 p75)
+fsum annualincome_HH incomeagri_HH incomenonagri_HH shareincomeagri_HH shareincomenonagri_HH if year==2016, stat(n mean sd p25 p50 p75)
+fsum annualincome_HH incomeagri_HH incomenonagri_HH shareincomeagri_HH shareincomenonagri_HH if year==2020, stat(n mean sd p25 p50 p75)
+
+****************************************
+* END
+
+
+
+
+
 /*
 stripplot assets_totalnoland if assets_totalnoland<100, over(time) vert ///
 stack width(.5) jitter(0) ///
