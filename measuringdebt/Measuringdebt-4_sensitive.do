@@ -105,7 +105,7 @@ save"panel_v6", replace
 
 
 
-
+/*
 ****************************************
 * Graph 1
 ****************************************
@@ -156,7 +156,7 @@ graph export "graph/Sensi_threshold.pdf", as(pdf) replace
 
 ****************************************
 * END
-
+*/
 
 
 
@@ -203,7 +203,7 @@ graph export "graph/Sensi_scatter.pdf", as(pdf) replace
 
 
 
-
+/*
 ****************************************
 * Graph 3
 ****************************************
@@ -234,7 +234,7 @@ graph export "graph/Sensi_violin_vert.pdf", as(pdf) replace
 
 ****************************************
 * END
-
+*/
 
 
 
@@ -255,15 +255,36 @@ label define diff_fvi 2"FVI-2" 3"FVI-3" 4"FVI-4" 5"FVI-5"
 label values diff_fvi diff_fvi
 
 stripplot diff_fvi, over(n) ///
-stack width(1) jitter(1) refline(lp(dash)) ///
+stack width(1) jitter(1) refline(lp(shortdash)) ///
 box(barw(0.1)) boffset(-0.15) pctile(5) ///
 ms(oh) msize(small) mc(black%30) ///
 xla(-50(10)50, ang(h)) yla(, noticks) ///
-legend(order(1 "Mean" 4 "Whisker from 5% to 95%") pos(6) col(2) on) ///
+legend(order(1 "± 5% tolerance threshold" 4 "Whisker from 5% to 95%") pos(6) col(2) on) ///
 ylabel(2 "FVI-2" 3 "FVI-3" 4 "FVI-4" 5 "FVI-5") ///
-xline(-5 0 5) ///
+xline(-5 5) ///
 xtitle("(FVI-n - FVI)") ytitle("FVI-n") name(diff_fvi_horiz, replace)
 graph export "graph/Sensi_stripplot_vert.pdf", as(pdf) replace
 
 ****************************************
 * END
+
+
+
+
+
+
+
+
+
+****************************************
+* Try to combine
+****************************************
+use"panel_v6", clear
+
+
+graph combine sensi_scatter diff_fvi_horiz, col(2) name(sensi_comb, replace)
+graph export "graph/Sensi_comb.pdf", as(pdf) replace
+
+****************************************
+* END
+

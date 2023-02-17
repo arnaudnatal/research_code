@@ -49,7 +49,7 @@ set matsize 10000, perm
 ********** Variables
 
 *** X
-global nonvar dalits village_2 village_3 village_4 village_5 village_6 village_7 village_8 village_9 village_10
+global nonvar caste_2 caste_3 village_2 village_3 village_4 village_5 village_6 village_7 village_8 village_9 village_10
 global head head_female head_age head_educ
 global econ remittnet_HH assets_total annualincome_HH shareform
 

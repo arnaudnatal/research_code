@@ -796,6 +796,13 @@ gen share_young=agegrp_14_17/HHsize
 gen share_stock=nbworker_HH/HHsize
 
 
+* Caste
+ta caste, gen(caste_)
+label var caste_1 "Caste: Dalits"
+label var caste_2 "Caste: Middle"
+label var caste_3 "Caste: Upper"
+
+
 save"panel_v3", replace
 ****************************************
 * END

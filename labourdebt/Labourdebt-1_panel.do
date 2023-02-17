@@ -24,7 +24,7 @@ do"C:\Users\Arnaud\Documents\GitHub\folderanalysis\labourdebt.do"
 use"raw/RUME-HH", clear
 
 * To keep
-keep HHID2010 village villagearea
+keep HHID2010 village villagearea ownland
 gen livingarea=1
 
 * Clean
@@ -126,7 +126,7 @@ drop if livinghome==4
 
 
 * To keep
-keep HHID2016 villagearea villageid dummydemonetisation dummymarriage
+keep HHID2016 villagearea villageid dummydemonetisation dummymarriage ownland
 duplicates drop
 decode villagearea, gen(vi)
 drop villagearea
@@ -222,7 +222,8 @@ drop if dummylefthousehold==1
 
 
 * To keep
-keep HHID2020 villagearea villageid dummymarriage
+keep HHID2020 villagearea villageid dummymarriage ownland
+destring ownland, replace
 duplicates drop
 decode villagearea, gen(vi)
 drop villagearea
@@ -392,10 +393,12 @@ recode head_mocc_occupation (.=0)
 recode head_nboccupation (.=0)
 
 
-
 * Share form
 gen shareform=totHH_lendercatamt_form*100/loanamount_HH
 replace shareform=0 if shareform==.
+
+* Land
+recode ownland (.=0)
 
 save"panel_v0", replace
 ****************************************

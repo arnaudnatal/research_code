@@ -186,7 +186,7 @@ use"panel_v7", clear
 
 ********** Graph line: name
 graph display cl1_gph
-graph export "Trends_cluster.pdf", as(pdf) replace
+graph export "graph/Trends_cluster.pdf", as(pdf) replace
 
 
 
