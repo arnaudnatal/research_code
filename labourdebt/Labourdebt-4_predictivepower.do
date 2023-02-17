@@ -53,9 +53,9 @@ global nonvar caste_2 caste_3 village_2 village_3 village_4 village_5 village_6 
 global head head_female head_age head_educ
 global econ remittnet_HH assets_total annualincome_HH shareform
 
-global compo1 stem log_HHsize share_female share_children share_young share_old share_stock
+global compo1 stem log_HHsize share_female share_children share_young share_old
 
-global compo2 stem log_HHsize share_children sexratio dependencyratio share_stock
+global compo2 stem log_HHsize share_children sexratio dependencyratio
 
 
 *** Y
