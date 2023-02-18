@@ -68,19 +68,19 @@ global yvar ind_total ind_female ind_male ind_agri ind_nona occ_total occ_female
 log using "Labourdebt_spec1.log", replace
 
 foreach y in $yvar {
-capture noisily reg `y' fvi $compo1 $econ $head $nonvar
-est store ols_`y'
+*capture noisily reg `y' fvi $compo1 $econ $head $nonvar
+*est store ols_`y'
 
-capture noisily xtreg `y' fvi $compo1 $econ $head $nonvar, fe
-est store fe_`y'
+*capture noisily xtreg `y' fvi $compo1 $econ $head $nonvar, fe
+*est store fe_`y'
 
-capture noisily xtreg `y' fvi $compo1 $econ $head $nonvar, re
-est store re_`y'
+*capture noisily xtreg `y' fvi $compo1 $econ $head $nonvar, re
+*est store re_`y'
 
 capture noisily xtdpdml `y' $compo1 $econ $head, inv($nonvar) predetermined(L.fvi) fiml
 est store mlsem_`y'
 
-esttab ols_`y' fe_`y' re_`y' mlsem_`y' using "reg_spec1_`y'.csv", replace ///
+esttab mlsem_`y' using "reg_spec1_`y'.csv", replace ///
 	label b(3) p(3) eqlabels(none) alignment(S) ///
 	drop(_cons $var) ///
 	star(* 0.10 ** 0.05 *** 0.01) ///
@@ -89,7 +89,7 @@ esttab ols_`y' fe_`y' re_`y' mlsem_`y' using "reg_spec1_`y'.csv", replace ///
 	stats(N r2 r2_a F p, fmt(0 2 2 2) ///
 	labels(`"Observations"' `"\(R^{2}\)"' `"Adjusted \(R^{2}\)"' `"F-stat"' `"p-value"'))
 }
-
+*ols_`y' fe_`y' re_`y' 
 log close
 
 
@@ -100,19 +100,19 @@ log close
 log using "Labourdebt_spec2.log", replace
 
 foreach y in $yvar {
-capture noisily reg `y' fvi $compo2 $econ $head $nonvar
-est store ols_`y'
+*capture noisily reg `y' fvi $compo2 $econ $head $nonvar
+*est store ols_`y'
 
-capture noisily xtreg `y' fvi $compo2 $econ $head $nonvar, fe
-est store fe_`y'
+*capture noisily xtreg `y' fvi $compo2 $econ $head $nonvar, fe
+*est store fe_`y'
 
-capture noisily xtreg `y' fvi $compo2 $econ $head $nonvar, re
-est store re_`y'
+*capture noisily xtreg `y' fvi $compo2 $econ $head $nonvar, re
+*est store re_`y'
 
 capture noisily xtdpdml `y' $compo2 $econ $head, inv($nonvar) predetermined(L.fvi) fiml
 est store mlsem_`y'
 
-esttab ols_`y' fe_`y' re_`y' mlsem_`y' using "reg_spec2_`y'.csv", replace ///
+esttab mlsem_`y' using "reg_spec2_`y'.csv", replace ///
 	label b(3) p(3) eqlabels(none) alignment(S) ///
 	drop(_cons $var) ///
 	star(* 0.10 ** 0.05 *** 0.01) ///
@@ -121,7 +121,7 @@ esttab ols_`y' fe_`y' re_`y' mlsem_`y' using "reg_spec2_`y'.csv", replace ///
 	stats(N r2 r2_a F p, fmt(0 2 2 2) ///
 	labels(`"Observations"' `"\(R^{2}\)"' `"Adjusted \(R^{2}\)"' `"F-stat"' `"p-value"'))
 }
-
+*ols_`y' fe_`y' re_`y'
 log close
 
 

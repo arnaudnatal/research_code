@@ -18,6 +18,62 @@ do"C:\Users\Arnaud\Documents\GitHub\folderanalysis\measuringdebt.do"
 
 
 
+
+
+
+
+****************************************
+* Debt
+****************************************
+use"panel_loans", clear
+
+*** Number of loans
+ta loansettled year
+
+*** Clean
+drop if loansettled==1
+ta year
+
+*** Deflate and 1000
+foreach x in loanamount loanbalance interestpaid totalrepaid principalpaid {
+replace `x'=`x'*(100/158) if year==2016
+replace `x'=`x'*(100/184) if year==2020
+}
+
+*** Amount
+tabstat loanamount, stat(n mean cv q) by(year) long
+
+*** Reason
+ta loanreasongiven year, col nofreq
+ta reason_cat year, col nofreq
+
+*** Lender
+ta loanlender year, col nofreq
+ta lender4 year, col nofreq
+ta lender_cat year, col nofreq
+
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ****************************************
 * Redundancy between variables
 ****************************************
