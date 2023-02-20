@@ -80,6 +80,12 @@ ta lender_cat year, col nofreq
 use"panel_v6", clear
 
 
+*** Stat
+ta tar 
+ta isr
+ta rrgpl
+
+
 *** Corr
 pwcorr tar isr rrgpl, star(.05)
 

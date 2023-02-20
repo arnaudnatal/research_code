@@ -32,8 +32,6 @@ If the contemporaneous effect in ML-SEM is negligible, this approach can also se
 
 
 
-
-
 ****************************************
 * Prediction power with ML-SEM
 ****************************************
@@ -53,13 +51,20 @@ global nonvar caste_2 caste_3 village_2 village_3 village_4 village_5 village_6 
 global head head_female head_age head_educ
 global econ remittnet_HH assets_total annualincome_HH shareform
 
-global compo1 stem log_HHsize share_female share_children share_young share_old
 
-global compo2 stem log_HHsize share_children sexratio dependencyratio
+global compo1 stem log_HHsize share_female share_children share_young share_old share_stock
+global compo2 stem log_HHsize share_children sexratio dependencyratio share_stock
+global compo3 stem log_HHsize share_female share_children share_young share_old
+global compo4 stem log_HHsize share_children sexratio dependencyratio
+*global compo5 stem log_HHsize share_female share_children share_young share_old
+*global compo6 stem log_HHsize share_children sexratio dependencyratio
 
 
 *** Y
 global yvar ind_total ind_female ind_male ind_agri ind_nona occ_total occ_female occ_male occ_agri occ_nona
+
+
+
 
 
 
@@ -123,6 +128,73 @@ esttab mlsem_`y' using "reg_spec2_`y'.csv", replace ///
 }
 *ols_`y' fe_`y' re_`y'
 log close
+
+
+
+
+
+
+
+********** Spec 3
+log using "Labourdebt_spec3.log", replace
+
+foreach y in $yvar {
+*capture noisily reg `y' fvi $compo3 $econ $head $nonvar
+*est store ols_`y'
+
+*capture noisily xtreg `y' fvi $compo3 $econ $head $nonvar, fe
+*est store fe_`y'
+
+*capture noisily xtreg `y' fvi $compo3 $econ $head $nonvar, re
+*est store re_`y'
+
+capture noisily xtdpdml `y' $compo3 $econ $head, inv($nonvar) predetermined(L.fvi) fiml
+est store mlsem_`y'
+
+esttab mlsem_`y' using "reg_spec1_`y'.csv", replace ///
+	label b(3) p(3) eqlabels(none) alignment(S) ///
+	drop(_cons $var) ///
+	star(* 0.10 ** 0.05 *** 0.01) ///
+	cells("b(fmt(2)star)" "se(fmt(2)par)") ///
+	refcat(, nolabel) ///
+	stats(N r2 r2_a F p, fmt(0 2 2 2) ///
+	labels(`"Observations"' `"\(R^{2}\)"' `"Adjusted \(R^{2}\)"' `"F-stat"' `"p-value"'))
+}
+*ols_`y' fe_`y' re_`y' 
+log close
+
+
+
+
+
+********** Spec 4
+log using "Labourdebt_spec4.log", replace
+
+foreach y in $yvar {
+*capture noisily reg `y' fvi $compo4 $econ $head $nonvar
+*est store ols_`y'
+
+*capture noisily xtreg `y' fvi $compo4 $econ $head $nonvar, fe
+*est store fe_`y'
+
+*capture noisily xtreg `y' fvi $compo4 $econ $head $nonvar, re
+*est store re_`y'
+
+capture noisily xtdpdml `y' $compo4 $econ $head, inv($nonvar) predetermined(L.fvi) fiml
+est store mlsem_`y'
+
+esttab mlsem_`y' using "reg_spec2_`y'.csv", replace ///
+	label b(3) p(3) eqlabels(none) alignment(S) ///
+	drop(_cons $var) ///
+	star(* 0.10 ** 0.05 *** 0.01) ///
+	cells("b(fmt(2)star)" "se(fmt(2)par)") ///
+	refcat(, nolabel) ///
+	stats(N r2 r2_a F p, fmt(0 2 2 2) ///
+	labels(`"Observations"' `"\(R^{2}\)"' `"Adjusted \(R^{2}\)"' `"F-stat"' `"p-value"'))
+}
+*ols_`y' fe_`y' re_`y'
+log close
+
 
 
 

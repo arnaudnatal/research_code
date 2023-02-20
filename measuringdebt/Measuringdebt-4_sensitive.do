@@ -185,10 +185,24 @@ legend(order(2 "First bisector") pos(6) col(1)) name(f`i', replace)
 set graph on
 }
 
-graph dir
+
+forvalues i=2/5 {
+set graph off
+twoway ///
+(scatter pos_fvi`i' pos_fvi, ms(oh) mc(black%30)) ///
+(function y=x, range(0 100)) ///
+, ///
+xlabel(0(20)100) xmtick(0(10)100) xtitle("FVI") ///
+ylabel(0(20)100) ymtick(0(10)100) ytitle("FVI-`i'") ///
+legend(order(2 "First bisector") pos(6) col(1)) name(posf`i', replace)
+set graph on
+}
 
 grc1leg f2 f3 f4 f5, col(2) name(sensi_scatter, replace)
 graph export "graph/Sensi_scatter.pdf", as(pdf) replace
+
+grc1leg posf2 posf3 posf4 posf5, col(2) name(possensi_scatter, replace)
+graph export "graph/Sensi_posscatter.pdf", as(pdf) replace
 
 ****************************************
 * END
@@ -265,6 +279,7 @@ xline(-5 5) ///
 xtitle("(FVI-n - FVI)") ytitle("FVI-n") name(diff_fvi_horiz, replace)
 graph export "graph/Sensi_stripplot_vert.pdf", as(pdf) replace
 
+
 ****************************************
 * END
 
@@ -284,6 +299,10 @@ use"panel_v6", clear
 
 graph combine sensi_scatter diff_fvi_horiz, col(2) name(sensi_comb, replace)
 graph export "graph/Sensi_comb.pdf", as(pdf) replace
+
+
+graph combine possensi_scatter diff_fvi_horiz, col(2) name(sensi_poscomb, replace)
+graph export "graph/Sensi_poscomb.pdf", as(pdf) replace
 
 ****************************************
 * END
