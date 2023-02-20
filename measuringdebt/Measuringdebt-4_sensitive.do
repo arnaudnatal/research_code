@@ -24,6 +24,8 @@ do"C:\Users\Arnaud\Documents\GitHub\folderanalysis\measuringdebt.do"
 ****************************************
 use"panel_v5", clear
 
+ta fvi
+
 /*
 - Poverty line
 - Equivalence scale
