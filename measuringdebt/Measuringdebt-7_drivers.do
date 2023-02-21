@@ -86,34 +86,31 @@ xtset panelvar time
 
 
 ********** Macro
+global finance assets_total_std annualincome_HH_std ownland shareform loanamount_HH_std
+
 global family caste_2 caste_3 HHsize HH_count_child stem
 
-global wealth assets_total_std annualincome_HH_std ownland 
-
-global head head_female head_age head_occ2 head_occ3 head_occ4 head_occ5 head_occ6 head_occ7 head_educ2 head_educ3 head_nonmarried
-
-global debt shareform loanamount_HH_std
+global head head_female head_age head_occ1 head_occ2 head_occ4 head_occ5 head_occ6 head_occ7 head_educ2 head_educ3 head_nonmarried
 
 global other dummymarriage dummydemonetisation village_2 village_3 village_4 village_5 village_6 village_7 village_8 village_9 village_10
 
 
 ********** Miss?
 mdesc $family
-mdesc $wealth
+mdesc $finance
 mdesc $head
-mdesc $debt
 mdesc $other
 
 
 
 ********** OLS
-reg fvi $family $wealth $head $debt $other, base
+reg fvi $finance $family $head $other, base
 est store ols
 
 
 
 ********** At least, fixed effects model (Wooldridge, 2010)
-xtreg fvi $family $wealth $head $debt $other, base fe
+xtreg fvi $finance $family $head $other, base fe
 est store fe
 /*
 pvalue higher than .05, we do not reject H0
@@ -123,7 +120,7 @@ pvalue higher than .05, we do not reject H0
 
 ********** Random effects?
 * BP LM test
-xtreg fvi $family $wealth $head $debt $other, base re
+xtreg fvi $finance $family $head $other, base re
 est store re
 xttest0
 /*
@@ -134,21 +131,25 @@ pvalue higher than .05, we do not reject H0
 
 
 ********** CRE to take into account time-invariant variables
-xthybrid fvi $family $wealth $head $debt $other, clusterid(panelvar) cre
-
-xthybrid fvi $family $wealth $head $debt $other,  clusterid(panelvar) cre test full
+xthybrid fvi $finance $family $head $other,  clusterid(panelvar) cre test full
 est store cre
 
-
-
-
-
+/*
+preserve
+keep HHID_panel panelvar time year fvi $finance $family $head $other
+xtset panelvar time
+foreach x in ownland dummymarriage HHsize HH_count_child head_age dummydemonetisation shareform stem head_female head_occ1 head_occ2 head_occ4 head_occ5 head_occ6 head_occ7 head_educ2 head_educ3 head_nonmarried loanamount_HH_std annualincome_HH_std assets_total_std {
+bysort HHID_panel: egen mean_`x'=mean(`x')
+}
+xtreg fvi $finance $family $head $other mean_ownland mean_dummymarriage mean_HHsize mean_HH_count_child mean_head_age mean_dummydemonetisation mean_shareform mean_stem mean_head_female mean_head_occ1 mean_head_occ2 mean_head_occ4 mean_head_occ5 mean_head_occ6 mean_head_occ7 mean_head_educ2 mean_head_educ3 mean_head_nonmarried mean_loanamount_HH_std mean_annualincome_HH_std mean_assets_total_std, vce(robust) 
+restore
+*/
 
 ********** Table
 esttab ols fe re cre
 
 
-esttab ols fe re cre using "reg.csv", replace ///
+esttab fe re cre using "reg.csv", replace ///
 	label b(3) p(3) eqlabels(none) alignment(S) ///
 	drop(_cons $var) ///
 	star(* 0.10 ** 0.05 *** 0.01) ///
@@ -156,10 +157,6 @@ esttab ols fe re cre using "reg.csv", replace ///
 	refcat(, nolabel) ///
 	stats(N r2 r2_a F p, fmt(0 2 2 2) ///
 	labels(`"Observations"' `"\(R^{2}\)"' `"Adjusted \(R^{2}\)"' `"F-stat"' `"p-value"'))
-
-
-
-
 
 
 ****************************************
