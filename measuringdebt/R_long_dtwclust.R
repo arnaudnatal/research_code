@@ -41,7 +41,7 @@ index<-as.matrix(cbind(index2010, index2016, index2020))
 
 
 #--- Trends analysis clustering
-#interactive_clustering(index)
+interactive_clustering(index)
 
 
 

@@ -38,6 +38,23 @@ restore
 
 
 
+
+********** HAC graph
+rename fvi index
+tabstat index, stat(min max range)
+keep if dummypanel==1
+keep HHID_panel year index
+
+reshape wide index, i(HHID_panel) j(year)
+cluster wardslinkage index2010 index2016 index2020, measure(Euclidean)
+cluster dendrogram, cutnumber(50) xlab(,ang(90)) title("") ytitle("Height") yline(800) name(dendro, replace)
+graph export "graph/Cluster_dendro.pdf", as(pdf) replace
+cluster stop
+
+
+
+
+
 ********** Import R results
 import delimited "C:\Users\Arnaud\Documents\GitHub\research_code\measuringdebt\indextrend.csv", clear
 
@@ -160,7 +177,6 @@ label define cl1 ///
 4"Trans. vuln.", modify
 
 
-
 save"panel_v7", replace
 ****************************************
 * END
@@ -182,6 +198,34 @@ save"panel_v7", replace
 ****************************************
 cls
 use"panel_v7", clear
+
+
+********** Mean and Median each year for cluster
+preserve
+keep HHID_panel year time clt_fvi fvi
+drop if clt_fvi==.
+
+* Stat
+tabstat fvi if clt_fvi==1, stat(mean cv q) by(year)
+tabstat fvi if clt_fvi==2, stat(mean cv q) by(year)
+tabstat fvi if clt_fvi==3, stat(mean cv q) by(year)
+tabstat fvi if clt_fvi==4, stat(mean cv q) by(year)
+
+* Stripplot
+forvalues i=1/4 {
+stripplot fvi if clt_fvi==`i', over(time) ///
+stack width(0.5) jitter(1) refline(lp(dash)) ///
+box(barw(0.1)) boffset(-0.15) pctile(5) ///
+ms(oh oh oh) msize(small) mc(black%30) ///
+xla(0(10)100, ang(h)) yla(, noticks) ///
+title("Cluster `i'") ///
+legend(order(1 "Mean" 4 "Whisker from 5% to 95%") pos(6) col(2) on) ///
+xtitle("FVI") ytitle("") name(sp_cl`i', replace)
+}
+
+grc1leg sp_cl1 sp_cl2 sp_cl3 sp_cl4, col(2) name(splclus, replace)
+graph export "graph/Trends_strip.pdf", as(pdf) replace
+restore
 
 
 ********** Graph line: name
