@@ -25,6 +25,7 @@ do"C:\Users\Arnaud\Documents\GitHub\folderanalysis\measuringdebt.do"
 ****************************************
 * Debt
 ****************************************
+cls
 use"panel_loans", clear
 
 *** Number of loans
@@ -38,6 +39,7 @@ ta year
 foreach x in loanamount loanbalance interestpaid totalrepaid principalpaid {
 replace `x'=`x'*(100/158) if year==2016
 replace `x'=`x'*(100/184) if year==2020
+replace `x'=`x'/1000
 }
 
 *** Amount
@@ -77,13 +79,8 @@ ta lender_cat year, col nofreq
 ****************************************
 * Redundancy between variables
 ****************************************
+cls
 use"panel_v6", clear
-
-
-*** Stat
-ta tar 
-ta isr
-ta rrgpl
 
 
 *** Corr
@@ -92,11 +89,12 @@ pwcorr tar isr rrgpl, star(.05)
 
 *** Graph
 corr tar isr rrgpl
+set graph off
 graph matrix tar isr rrgpl, half ///
 ms(oh) mc(black%30) ///
-note("Correlation:" "TAR-ISR: 0.0243; TAR-RRGPL: -0.0179; ISR-RRGPL: 0.4515", size(vsmall))
+note("Correlation:" "TAR-ISR: 0.04; TAR-RRGPL: 0.00; ISR-RRGPL: 0.45", size(vsmall))
 graph export "graph/matrix_corr.pdf", as(pdf) replace
-
+set graph on
 
 
 *** Alpha
@@ -223,8 +221,10 @@ leg(off) name(dcr, replace)
 set graph on
 
 *** Combine
+set graph off
 grc1leg dsr dir dar afm rfm dcr, col(3) name(comb, replace)
 graph export "graph/Corr_fvi_oth.pdf", as(pdf) replace
+set graph on
 
 ****************************************
 * END
@@ -251,9 +251,7 @@ use"panel_v6", clear
 
 
 ********** Stat desc
-tabstat fvi isr tar rrgpl, stat(n mean cv p50) by(time) long
-
-tabstat fvi isr tar rrgpl, stat(min p1 p5 p10 q p90 p95 p99 max) by(time) long
+tabstat fvi isr tar rrgpl, stat(n mean cv min p1 p5 p10 q p90 p95 p99 max) by(time) long
 
 
 
@@ -284,6 +282,7 @@ ytitle("FVI") xtitle("") name(sp_fvi_vert, replace)
 */
 
 *** Stripplot horiz
+set graph off
 stripplot fvi, over(time) ///
 stack width(0.01) jitter(1) refline(lp(dash)) ///
 box(barw(0.1)) boffset(-0.15) pctile(5) ///
@@ -292,7 +291,7 @@ xla(0(.1)1, ang(h)) yla(, noticks) ///
 legend(order(1 "Mean" 4 "Whisker from 5% to 95%") pos(6) col(2) on) ///
 xtitle("FVI") ytitle("") name(sp_fvi_horiz, replace)
 graph export "graph/Distri_fvi.pdf", as(pdf) replace
-
+set graph on
 
 
 
@@ -340,8 +339,10 @@ aspectratio(1) name(kd_rrgpl, replace)
 set graph on
 
 *** Combine
+set graph off
 grc1leg kd_isr kd_tar kd_rrgpl, col(3) name(kd_compo, replace)
 graph export "graph/FVI_compo.pdf", as(pdf) replace
+set graph on
 
 ****************************************
 * END

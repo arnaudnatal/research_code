@@ -311,6 +311,10 @@ label var loanamount_HH_std "Loan amount (std)"
 order HHID_panel year
 sort HHID_panel year
 
+*** Label
+label var housetitle "House title: Yes"
+label var head_female "Head sex: Female"
+
 
 
 
@@ -356,6 +360,8 @@ save"RUME-loans.dta", replace
 *** NEEMSIS1
 use"raw/NEEMSIS1-loans_mainloans_new.dta", replace
 
+ta loan_database
+drop if loan_database=="MARRIAGE"
 keep HHID2016 loanreasongiven loanlender loansettled loanamount lender_cat reason_cat lender4 dummyml loanamount2 loanbalance2 interestpaid2 totalrepaid2 principalpaid2
 
 merge m:m HHID2016 using "raw/ODRIIS-HH_wide.dta", keepusing(HHID_panel)
@@ -400,6 +406,14 @@ drop HHID2010 HHID2016 HHID2020
 
 order HHID_panel year loanamount loansettled loanreasongiven loanlender 
 
+
+********** Selection of the 6 households
+drop if HHID_panel=="GOV66" & year==2020  
+drop if HHID_panel=="KUV66" & year==2020
+drop if HHID_panel=="GOV64" & year==2020
+drop if HHID_panel=="GOV67" & year==2020
+drop if HHID_panel=="KUV67" & year==2020
+drop if HHID_panel=="GOV65" & year==2020
 
 save"panel_loans", replace
 ****************************************

@@ -24,7 +24,8 @@ do"C:\Users\Arnaud\Documents\GitHub\folderanalysis\measuringdebt.do"
 use"raw/RUME-HH", clear
 
 * To keep
-keep HHID2010 village villagearea ownland
+keep HHID2010 village villagearea ownland house housetitle
+fre house housetitle
 gen livingarea=1
 
 * Clean
@@ -126,7 +127,8 @@ drop if livinghome==4
 
 
 * To keep
-keep HHID2016 villagearea villageid dummydemonetisation dummymarriage ownland
+keep HHID2016 villagearea villageid dummydemonetisation dummymarriage ownland house housetitle
+fre house housetitle
 duplicates drop
 decode villagearea, gen(vi)
 drop villagearea
@@ -219,10 +221,17 @@ fre livinghome
 drop if livinghome==3
 drop if livinghome==4
 drop if dummylefthousehold==1
-
+fre house
+preserve
+keep if house==""
+ta dummyeverland2010
+ta dummyeverhadland
+restore
 
 * To keep
-keep HHID2020 villagearea villageid dummymarriage ownland
+keep HHID2020 villagearea villageid dummymarriage ownland ownland house housetitle
+fre house housetitle
+destring house housetitle, replace
 destring ownland, replace
 duplicates drop
 decode villagearea, gen(vi)
@@ -328,6 +337,27 @@ use"temp_NEEMSIS2", clear
 append using "temp_NEEMSIS1"
 append using "temp_RUME"
 
+
+fre house
+label define house 1"Own house" 2"Joint house" 3"Family property" 4"Rental" 77"Others", modify
+label values house house
+ta house year, m
+*2020
+list HHID_panel year if house==., clean noobs
+
+drop if HHID_panel=="GOV66" & year==2020  
+drop if HHID_panel=="KUV66" & year==2020
+drop if HHID_panel=="GOV64" & year==2020
+drop if HHID_panel=="GOV67" & year==2020
+drop if HHID_panel=="KUV67" & year==2020
+drop if HHID_panel=="GOV65" & year==2020
+
+
+
+fre housetitle
+label values housetitle housetitle
+ta housetitle year, m
+
 fre typeoffamily
 
 ta livingarea year
@@ -396,6 +426,16 @@ recode head_nboccupation (.=0)
 * Share formal
 gen shareform=totHH_lendercatamt_form*100/loanamount_HH
 replace shareform=0 if shareform==.
+
+
+
+********** Selection
+drop if housetitle==.
+bysort HHID_panel: gen n=_N
+ta n
+dis 1146/3
+drop n
+
 
 save"panel_v0", replace
 ****************************************

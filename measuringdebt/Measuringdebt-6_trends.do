@@ -47,9 +47,10 @@ keep HHID_panel year index
 
 reshape wide index, i(HHID_panel) j(year)
 cluster wardslinkage index2010 index2016 index2020, measure(Euclidean)
-cluster dendrogram, cutnumber(50) xlab(,ang(90)) title("") ytitle("Height") yline(800) name(dendro, replace)
+set graph off
+cluster dendrogram, cutnumber(50) xlab(,ang(90)) title("") ytitle("Height") yline(8) name(dendro, replace)
 graph export "graph/Cluster_dendro.pdf", as(pdf) replace
-cluster stop
+set graph on
 
 
 
@@ -213,6 +214,7 @@ tabstat fvi if clt_fvi==4, stat(mean cv q) by(year)
 
 * Stripplot
 forvalues i=1/4 {
+set graph off
 stripplot fvi if clt_fvi==`i', over(time) ///
 stack width(0.01) jitter(1) refline(lp(dash)) ///
 box(barw(0.1)) boffset(-0.15) pctile(5) ///
@@ -221,43 +223,42 @@ xla(0(.1)1, ang(h)) yla(, noticks) ///
 title("Cluster `i'") ///
 legend(order(1 "Mean" 4 "Whisker from 5% to 95%") pos(6) col(2) on) ///
 xtitle("FVI") ytitle("") name(sp_cl`i', replace)
+set graph on
 }
 
+set graph off
 grc1leg sp_cl1 sp_cl2 sp_cl3 sp_cl4, col(2) name(splclus, replace)
 graph export "graph/Trends_strip.pdf", as(pdf) replace
+set graph on
 restore
 
 
 ********** Graph line: name
+set graph off
 graph display cl1_gph
 graph export "graph/Trends_cluster.pdf", as(pdf) replace
-
+set graph on
 
 
 ********** Construction
 *** Social class of 2010
-gen w2010=.
-replace w2010=assets_total if year==2010
-xtile sc3_2010=w2010, n(3)
-xtile sc5_2010=w2010, n(5)
-
-bysort HHID_panel: egen sc3=max(sc3_2010)
-bysort HHID_panel: egen sc5=max(sc5_2010)
+gen wealth2010=.
+replace wealth2010=assets_total if year==2010
+xtile wealthclass_2010=wealth2010, n(5)
+bysort HHID_panel: egen socialclass=max(wealthclass_2010)
 
 
 *** Rich of 2010
-gen r2010=.
-replace r2010=annualincome_HH if year==2010
-xtile i3_2010=w2010, n(3)
-xtile i5_2010=w2010, n(5)
-
-bysort HHID_panel: egen i3=max(i3_2010)
-bysort HHID_panel: egen i5=max(i5_2010)
+gen rich2010=.
+replace rich2010=annualincome_HH if year==2010
+xtile incomeclass_2010=rich2010, n(5)
+bysort HHID_panel: egen incomeclass=max(incomeclass_2010)
 
 *** Land
 gen l2010=.
 replace l2010=ownland if year==2010
-bysort HHID_panel: egen ol=max(l2010)
+drop ownland
+bysort HHID_panel: egen ownland=max(l2010)
 
 
 
@@ -266,24 +267,18 @@ bysort HHID_panel: egen ol=max(l2010)
 
 ********** Clean
 sort HHID_panel year
-keep HHID_panel clt_fvi caste vill sc3 sc5 i3 i5 ol
+keep HHID_panel clt_fvi caste vill socialclass incomeclass ownland
 duplicates drop
 drop if clt_fvi==.
 
-label define sc3 1"Class: Low" 2"Class: Middle" 3"Class: High"
-label values sc3 sc3
+label define socialclass 1"Wealth: Very low" 2"Wealth: Low" 3"Wealth: Middle" 4"Wealth: High" 5"Wealth: Very high"
+label values socialclass socialclass
 
-label define sc5 1"Class: Very low" 2"Class: Low" 3"Class: Middle" 4"Class: High" 5"Class: Very high"
-label values sc5 sc5
+label define incomeclass 1"Income: Very low" 2"Income: Low" 3"Income: Middle" 4"Income: High" 5"Income: Very high"
+label values incomeclass incomeclass
 
-label define i3 1"Income: Low" 2"Income: Middle" 3"Income: High"
-label values i3 i3
-
-label define i5 1"Income: Very low" 2"Income: Low" 3"Income: Middle" 4"Income: High" 5"Income: Very high"
-label values i5 i5
-
-label define ol 0"Land owner: No" 1"Land owner: Yes"
-label values ol ol
+label define ownland 0"Land owner: No" 1"Land owner: Yes", replace
+label values ownland ownland
 
 label define caste 1"Caste: Dalits" 2"Caste: Middle" 3"Caste: Upper"
 label values caste caste
@@ -294,45 +289,19 @@ label values caste caste
 ta clt_fvi
 
 *** Caste
-*ta caste clt_fvi, exp cchi2 chi2
-ta caste clt_fvi, col nofreq
-*ta caste clt_fvi, row nofreq
-
+ta caste clt_fvi, col nofreq chi2
 
 *** Location
-*ta vill clt_fvi, exp cchi2 chi2
-ta vill clt_fvi, col nofreq
-*ta vill clt_fvi, row nofreq
+ta vill clt_fvi, col nofreq chi2
 
+*** Social class
+ta socialclass clt_fvi, col nofreq chi2
 
-*** Social class (3)
-*ta sc3 clt_fvi, exp cchi2 chi2
-*ta sc3 clt_fvi, col nofreq
-*ta sc3 clt_fvi, row nofreq
-
-
-*** Social class (5)
-*ta sc5 clt_fvi, exp cchi2 chi2
-ta sc5 clt_fvi, col nofreq
-*ta sc5 clt_fvi, row nofreq
-
-
-*** Income (3)
-*ta i3 clt_fvi, exp cchi2 chi2
-*ta i3 clt_fvi, col nofreq
-*ta i3 clt_fvi, row nofreq
-
-
-*** Income (5)
-*ta i5 clt_fvi, exp cchi2 chi2
-ta i5 clt_fvi, col nofreq
-*ta i5 clt_fvi, row nofreq
-
+*** Income
+ta incomeclass clt_fvi, col nofreq chi2
 
 *** Land owner
-*ta ol clt_fvi, exp cchi2 chi2
-ta ol clt_fvi, col nofreq
-*ta ol clt_fvi, row nofreq
+ta ownland clt_fvi, col nofreq chi2
 
 
 ****************************************
