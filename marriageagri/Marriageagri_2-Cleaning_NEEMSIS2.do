@@ -539,7 +539,7 @@ gen BIR=netbenefitsmarriage1000*1000/annualincome_HH
 
 
 
-ta intercaste
+ta intercaste ownland
 
 
 
