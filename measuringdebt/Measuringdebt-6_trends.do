@@ -99,7 +99,7 @@ set graph off
 sort HHID_panel year
 twoway (line fvi year if cl`i'==`j', c(L) lcolor(black%10)) ///
 , xlabel(2010 2016 2020) xmtick(2010(1)2020) xtitle("Year") ///
-ylabel(0(20)100) ymtick(0(10)100) ytitle("FVI") ///
+ylabel(0(.2)1) ymtick(0(.1)1) ytitle("FVI") ///
 title("Cluster `j'") ///
 name(cl`i'_`j', replace)
 set graph on
@@ -214,10 +214,10 @@ tabstat fvi if clt_fvi==4, stat(mean cv q) by(year)
 * Stripplot
 forvalues i=1/4 {
 stripplot fvi if clt_fvi==`i', over(time) ///
-stack width(0.5) jitter(1) refline(lp(dash)) ///
+stack width(0.01) jitter(1) refline(lp(dash)) ///
 box(barw(0.1)) boffset(-0.15) pctile(5) ///
 ms(oh oh oh) msize(small) mc(black%30) ///
-xla(0(10)100, ang(h)) yla(, noticks) ///
+xla(0(.1)1, ang(h)) yla(, noticks) ///
 title("Cluster `i'") ///
 legend(order(1 "Mean" 4 "Whisker from 5% to 95%") pos(6) col(2) on) ///
 xtitle("FVI") ytitle("") name(sp_cl`i', replace)

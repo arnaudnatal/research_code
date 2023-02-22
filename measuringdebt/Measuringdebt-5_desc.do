@@ -131,8 +131,9 @@ use"panel_v6", clear
 set graph off
 
 *** DSR
+replace dsr=dsr/100
 gen dsr2=dsr
-replace dsr2=500 if dsr2>500
+replace dsr2=5 if dsr2>5
 
 twoway ///
 (scatter fvi dsr2, mcolor(black%30)) ///
@@ -145,8 +146,9 @@ leg(order(2 "Fitted values") pos(6) col(1)) name(dsr, replace)
 
 
 *** DIR
+replace dir=dir/100
 gen dir2=dir
-replace dir2=2000 if dir2>2000
+replace dir2=20 if dir2>20
 
 twoway ///
 (scatter fvi dir2, mcolor(black%30)) ///
@@ -159,8 +161,9 @@ leg(off) name(dir, replace)
 
 
 *** DAR
+replace dar=dar/100
 gen dar2=dar
-replace dar2=500 if dar2>500
+replace dar2=5 if dar2>5
 
 twoway ///
 (scatter fvi dar2, mcolor(black%30)) ///
@@ -203,9 +206,9 @@ leg(off) name(rfm, replace)
 
 
 *** DCR
-gen dcr=(loanamount_HH/expenses_total)*100
+gen dcr=loanamount_HH/expenses_total
 gen dcr2=dcr
-replace dcr2=800 if dcr2>800
+replace dcr2=8 if dcr2>8
 
 twoway ///
 (scatter fvi dcr2, mcolor(black%30)) ///
@@ -282,10 +285,10 @@ ytitle("FVI") xtitle("") name(sp_fvi_vert, replace)
 
 *** Stripplot horiz
 stripplot fvi, over(time) ///
-stack width(0.5) jitter(1) refline(lp(dash)) ///
+stack width(0.01) jitter(1) refline(lp(dash)) ///
 box(barw(0.1)) boffset(-0.15) pctile(5) ///
 ms(oh oh oh) msize(small) mc(black%30) ///
-xla(0(10)100, ang(h)) yla(, noticks) ///
+xla(0(.1)1, ang(h)) yla(, noticks) ///
 legend(order(1 "Mean" 4 "Whisker from 5% to 95%") pos(6) col(2) on) ///
 xtitle("FVI") ytitle("") name(sp_fvi_horiz, replace)
 graph export "graph/Distri_fvi.pdf", as(pdf) replace
@@ -303,7 +306,7 @@ twoway ///
 (kdensity isr if year==2016) ///
 (kdensity isr if year==2020) ///
 , ///
-xlabel(0(20)100) xmtick(0(10)100) xtitle("ISR") ///
+xlabel(0(.2)1) xmtick(0(.1)1) xtitle("ISR") ///
 ytitle("Density") ///
 legend(order(1 "2010" 2 "2016-17" 3 "2020-21") pos(6) col(3)) ///
 aspectratio(1) name(kd_isr, replace)
@@ -315,7 +318,7 @@ twoway ///
 (kdensity tar if year==2016) ///
 (kdensity tar if year==2020) ///
 , ///
-xlabel(0(20)100) xmtick(0(10)100) xtitle("TAR") ///
+xlabel(0(.2)1) xmtick(0(.1)1) xtitle("TAR") ///
 ytitle("Density") ///
 legend(order(1 "2010" 2 "2016-17" 3 "2020-21") pos(6) col(3)) ///
 aspectratio(1) name(kd_tar, replace)
@@ -329,7 +332,7 @@ twoway ///
 (kdensity rrgpl if year==2016) ///
 (kdensity rrgpl if year==2020) ///
 , ///
-xlabel(0(20)100) xmtick(0(10)100) xtitle("RRGPL") ///
+xlabel(0(.2)1) xmtick(0(.1)1) xtitle("RRGPL") ///
 ytitle("Density") ///
 legend(order(1 "2010" 2 "2016-17" 3 "2020-21") pos(6) col(3)) ///
 aspectratio(1) name(kd_rrgpl, replace)

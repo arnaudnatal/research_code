@@ -49,6 +49,9 @@ ta tdr
 replace tar=100 if tar>100
 
 *** FVI
+replace tar=tar/100
+replace isr=isr/100
+replace rrgpl2=rrgpl2/100
 /*
 2*tdr+2*isr+rrgpl2
 tar+isr+rrgpl2
@@ -56,6 +59,10 @@ tar+isr+rrgpl2
 gen fvi=(tar+isr+rrgpl2)/3
 *gen fvib=(2*tdr+2*isr+rrgpl2)/5
 *sum fvi fvib
+
+*replace tar=tar*100
+*replace isr=isr*100
+*replace rrgpl2=rrgpl2*100
 
 *** Label
 label var tar "TAR"
@@ -116,6 +123,7 @@ ta ampi
 drop a_tar a_isr a_rrgpl M S cv
 drop rrgpl
 rename rrgpl2 rrgpl
+drop ampi
 
 save"panel_v5", replace
 ****************************************
@@ -140,13 +148,12 @@ use"panel_v5", clear
 
 
 ********** Desc
-tabstat fvi ampi, stat(n mean cv) by(year)
+tabstat fvi, stat(n mean cv) by(year)
 
 * Corr for FE
-keep HHID_panel year fvi ampi
-reshape wide fvi ampi, i(HHID_panel) j(year)
+keep HHID_panel year fvi
+reshape wide fvi, i(HHID_panel) j(year)
 pwcorr fvi2010 fvi2016 fvi2020, star(.1)
-pwcorr ampi2010 ampi2016 ampi2020, star(.1)
 
 ****************************************
 * END
