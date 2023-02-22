@@ -1,25 +1,18 @@
+*-------------------------
 cls
-/*
--------------------------
-Arnaud Natal
-arnaud.natal@u-bordeaux.fr
-20 avril 2021
------
-TITLE: CLEANING MARRIAGE NEEMSIS2
+*Arnaud NATAL
+*arnaud.natal@u-bordeaux.fr
+*February 22, 2023
+*-----
+gl link = "marriageagri"
+*Analysis NEEMSIS-2 marriage
+*-----
+*do "https://raw.githubusercontent.com/arnaudnatal/folderanalysis/main/$link.do"
+do"C:\Users\Arnaud\Documents\GitHub\folderanalysis\marriageagri.do"
+*-------------------------
 
 
--------------------------
-*/
 
-clear all
-*global directory "D:\Documents\_Thesis\Research-Marriage\Data"
-global directory "C:\Users\anatal\Downloads\_Thesis\Research-Marriage\Data"
-
-*global git "D:\Documents\GitHub"
-global git "C:\Users\anatal\Downloads\GitHub"
-
-cd"$directory\NEEMSIS2"
-set scheme plottig
 
 
 
@@ -29,7 +22,70 @@ set scheme plottig
 ****************************************
 * Preliminary analysis
 ****************************************
-use"$directory\NEEMSIS2\NEEMSIS2-marriage_v6.dta", clear
+use"raw/NEEMSIS2-HH.dta", clear
+
+*** Merge income and assets
+merge m:1 HHID2020 using "raw/NEEMSIS2-assets", keepusing(assets*)
+keep if _merge==3
+drop _merge
+
+merge m:1 HHID2020 using "raw/NEEMSIS2-occup_HH", keepusing(annualincome_HH)
+keep if _merge==3
+drop _merge
+
+merge 1:1 HHID2020 INDID2020 using "raw/NEEMSIS2-caste", keepusing(jatiscorr caste)
+keep if _merge==3
+drop _merge
+
+
+
+*** Recode
+ta dummymarriage 
+destring ownland, replace
+recode ownland (.=0)
+
+ta ownland dummymarriage, col nofreq
+
+*** Stat
+*
+fre sex
+tabstat marriagedowry, stat(n mean cv p50) by(ownland)
+tabstat marriagedowry if sex==1, stat(n mean cv p50) by(ownland)  // Male
+tabstat marriagedowry if sex==2, stat(n mean cv p50) by(ownland)  // Female
+/*
+À confirmer, mais les hommes qui ont de la terre veulent une dot plus élevées
+les femmes avec de la terre sont prêtes à payer une dot plus élevées aussi
+*/
+
+tabstat marriageexpenses, stat(n mean cv p50) by(ownland)
+/*
+Ceux qui ont de la terre dépenses plus
+*/
+
+
+
+
+
+/*
+Ceux qui ont de la terre sont plus riches
+*/
+ta caste ownland, col nofreq
+tabstat assets_total annualincome_HH, stat(n mean cv p50) by(ownland)
+*surtout des middle
+
+
+****************************************
+* END
+
+
+
+
+
+
+****************************************
+* Preliminary analysis
+****************************************
+use"NEEMSIS2-marriage_v3.dta", clear
 
 
 ********** Identify respondent amount

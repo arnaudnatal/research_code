@@ -527,6 +527,28 @@ gen GAR=totalmarriagegiftamount/assets_total
 gen GIR=totalmarriagegiftamount/annualincome_HH
 
 
+********** Net benefits of marriage
+clonevar totalmarriagegiftamount_recode=totalmarriagegiftamount
+recode totalmarriagegiftamount_recode (.=0)
+gen netbenefitsmarriage1000=.
+replace netbenefitsmarriage1000=(marriagedowry+totalmarriagegiftamount_recode-marriagehusbandcost)/1000 if sex==1
+replace netbenefitsmarriage1000=(totalmarriagegiftamount_recode-marriagewifecost-marriagedowry)/1000 if sex==2
+*Benefits on assets and income
+gen BAR=netbenefitsmarriage1000*1000/assets_total
+gen BIR=netbenefitsmarriage1000*1000/annualincome_HH
+
+
+
+ta intercaste
+
+
+
+save"NEEMSIS2-marriage_v3.dta", replace
+****************************************
+* END
+
+
+
 
 
 
@@ -646,18 +668,3 @@ gen GIR=totalmarriagegiftamount/totalincome_HH
 
 
 */
-
-********** Net benefits of marriage
-clonevar totalmarriagegiftamount_recode=totalmarriagegiftamount
-recode totalmarriagegiftamount_recode (.=0)
-gen netbenefitsmarriage1000=.
-replace netbenefitsmarriage1000=(marriagedowry+totalmarriagegiftamount_recode-marriagehusbandcost)/1000 if sex==1
-replace netbenefitsmarriage1000=(totalmarriagegiftamount_recode-marriagewifecost-marriagedowry)/1000 if sex==2
-*Benefits on assets and income
-gen BAR=netbenefitsmarriage1000*1000/assets_total
-gen BIR=netbenefitsmarriage1000*1000/annualincome_HH
-
-
-save"NEEMSIS2-marriage_v3.dta", replace
-****************************************
-* END
