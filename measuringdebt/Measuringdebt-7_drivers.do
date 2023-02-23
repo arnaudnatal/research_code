@@ -465,5 +465,20 @@ stats(N N_clust aic bic, fmt(0 0 2 2))
 
 
 
+********** Overfitting
+*** Spec 5
+overfit: glm fvi ///
+$livelihood ///
+$family ///
+$head ///
+$shock ///
+$debt ///
+$invar ///
+$time ///
+, family(binomial) link(probit) cluster(panelvar)
+
+
+
+
 ****************************************
 * END
