@@ -20,11 +20,64 @@ do"C:\Users\Arnaud\Documents\GitHub\folderanalysis\marriageagri.do"
 
 
 ****************************************
-* Preliminary analysis
+* Preliminary analysis 2016
+****************************************
+use"raw/NEEMSIS1-HH.dta", clear
+
+********** Merge income and assets
+merge m:1 HHID2016 using "raw/NEEMSIS1-assets", keepusing(assets*)
+keep if _merge==3
+drop _merge
+
+merge m:1 HHID2016 using "raw/NEEMSIS1-occup_HH", keepusing(annualincome_HH)
+keep if _merge==3
+drop _merge
+
+merge 1:1 HHID2016 INDID2016 using "raw/NEEMSIS1-caste", keepusing(jatiscorr caste)
+keep if _merge==3
+drop _merge
+
+
+
+********** Recode
+destring ownland, replace
+recode ownland (.=0)
+gen dummy_marriedlist=0
+replace dummy_marriedlist=1 if husbandwifecaste!=.
+drop if livinghome==4
+keep if age>=16
+ta livinghome dummy_marriedlist, m
+
+
+********** Marital status by age and agri
+ta maritalstatus ownland
+ta maritalstatus ownland, col nofreq
+
+
+********** New married
+ta dummy_marriedlist ownland
+ta dummy_marriedlist ownland, col nofreq
+probit dummy_marriedlist ownland age
+
+
+
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+****************************************
+* Preliminary analysis 2020
 ****************************************
 use"raw/NEEMSIS2-HH.dta", clear
 
-*** Merge income and assets
+********** Merge income and assets
 merge m:1 HHID2020 using "raw/NEEMSIS2-assets", keepusing(assets*)
 keep if _merge==3
 drop _merge
@@ -39,39 +92,181 @@ drop _merge
 
 
 
+********** Recode
+destring ownland, replace
+recode ownland (.=0)
+recode dummy_marriedlist (.=0)
+drop if livinghome==4
+keep if age>=16
+ta livinghome dummy_marriedlist, m
+drop if dummylefthousehold==1
+
+
+********** Marital status by age and agri
+ta maritalstatus ownland
+ta maritalstatus ownland, col nofreq
+
+
+
+********** New married
+ta dummy_marriedlist ownland
+ta dummy_marriedlist ownland, col nofreq
+probit dummy_marriedlist ownland age
+
+
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+****************************************
+* Only marriage sample
+****************************************
+
+********** NEEMSIS-1
+use"NEEMSIS1-marriage_v2.dta", clear
+
 *** Recode
-ta dummymarriage 
 destring ownland, replace
 recode ownland (.=0)
 
-ta ownland dummymarriage, col nofreq
+*** To keep
+keep if marriagedowry!=.
+keep HHID2016 INDID2016 ownland caste age sex egoid name marriagedowry marriagetotalcost marriageexpenses MEAR DAAR MEIR DAIR DMC intercaste gifttoexpenses benefitsexpenses GAR GIR assets_total assets_totalnoland annualincome_HH
+gen year=2016
 
-*** Stat
-*
-fre sex
-tabstat marriagedowry, stat(n mean cv p50) by(ownland)
-tabstat marriagedowry if sex==1, stat(n mean cv p50) by(ownland)  // Male
-tabstat marriagedowry if sex==2, stat(n mean cv p50) by(ownland)  // Female
-/*
-À confirmer, mais les hommes qui ont de la terre veulent une dot plus élevées
-les femmes avec de la terre sont prêtes à payer une dot plus élevées aussi
-*/
+*** Panel
+merge m:m HHID2016 using "raw/ODRIIS-HH_wide", keepusing(HHID_panel)
+keep if _merge==3
+drop _merge
 
-tabstat marriageexpenses, stat(n mean cv p50) by(ownland)
-/*
-Ceux qui ont de la terre dépenses plus
-*/
+tostring INDID2016, replace
+merge m:m HHID_panel INDID2016 using "raw/ODRIIS-indiv_wide", keepusing(INDID_panel)
+keep if _merge==3
+drop _merge
+destring INDID2016, replace
 
-
+save "NEEMSIS1-marriage_tm.dta", replace
 
 
 
-/*
-Ceux qui ont de la terre sont plus riches
-*/
-ta caste ownland, col nofreq
-tabstat assets_total annualincome_HH, stat(n mean cv p50) by(ownland)
-*surtout des middle
+
+********** NEEMSIS-2
+use"NEEMSIS2-marriage_v3.dta", clear
+
+*** Recode
+destring ownland, replace
+recode ownland (.=0)
+
+
+*** To keep
+keep HHID2020 INDID2020 ownland caste age sex egoid name marriagedowry marriagetotalcost marriageexpenses MEAR DAAR MEIR DAIR DMC intercaste gifttoexpenses benefitsexpenses GAR GIR assets_total assets_totalnoland annualincome_HH
+gen year=2020
+
+*** Panel
+merge m:m HHID2020 using "raw/ODRIIS-HH_wide", keepusing(HHID_panel)
+keep if _merge==3
+drop _merge
+
+tostring INDID2020, replace
+merge m:m HHID_panel INDID2020 using "raw/ODRIIS-indiv_wide", keepusing(INDID_panel)
+keep if _merge==3
+drop _merge
+destring INDID2020, replace
+
+save "NEEMSIS2-marriage_tm.dta", replace
+
+
+
+********** Append 
+use"NEEMSIS1-marriage_tm.dta", clear
+
+append using "NEEMSIS2-marriage_tm.dta"
+order HHID_panel INDID_panel year name
+
+save"NEEMSIS-marriage", replace
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Stat marriage
+****************************************
+cls
+use"NEEMSIS-marriage", clear
+
+
+ta year
+global X i.ownland c.assets_totalnoland c.annualincome_HH i.caste i.year
+
+
+* OLS
+*DAAR DAIR
+foreach y in marriageexpenses MEAR MEIR marriagedowry DMC gifttoexpenses GAR GIR {
+* Total
+qui reg `y' $X
+est store sp_`y'_1
+* Male
+qui reg `y' $X if sex==1
+est store sp_`y'_2
+* Female
+qui reg `y' $X if sex==2
+est store sp_`y'_3
+
+esttab sp_`y'_1 sp_`y'_2 sp_`y'_3, ///
+label b(3) p(3) ///
+star(* 0.10 ** 0.05 *** 0.01) ///
+drop(_cons) ///
+stats(N r2, fmt(0 2))
+}
+
+
+
+
+
+* Dummies
+foreach y in intercaste benefitsexpenses {
+qui probit `y' $X
+est store sp_`y'_1
+qui probit `y' $X if sex==1  // Male
+est store sp_`y'_2
+qui probit `y' $X if sex==2  // Female
+est store sp_`y'_3
+
+esttab sp_`y'_1 sp_`y'_2 sp_`y'_3, ///
+b(3) p(3) ///
+star(* 0.10 ** 0.05 *** 0.01) ///
+drop(_cons) ///
+stats(N r2, fmt(0 2))
+}
+
+
+
+
+
+
 
 
 ****************************************

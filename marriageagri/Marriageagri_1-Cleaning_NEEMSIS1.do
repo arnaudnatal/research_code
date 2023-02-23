@@ -172,7 +172,7 @@ rename howpaymarriage_n howpaymarriage
 *Gen totalgiftamount
 egen totalmarriagegiftamount=rowtotal(marriagegiftamount_wellknown marriagegiftamount_shg marriagegiftamount_relatives marriagegiftamount_employer marriagegiftamount_maistry marriagegiftamount_colleagues marriagegiftamount_shopkeeper marriagegiftamount_friends)
 
-keep HHID2016 INDID2016 villageid villagearea jatis egoid name sex age  relationshiptohead submissiondate ///
+keep HHID2016 INDID2016 villageid villagearea jatis egoid name sex age  relationshiptohead submissiondate ownland ///
 married dummymarriagegift dummymarriage marriedlist husbandwifecaste marriagedowry marriagetotalcost howpaymarriage marriageexpenses dummymarriagegift totalmarriagegiftamount
 
  
