@@ -214,6 +214,7 @@ global invar ///
 caste_2 caste_3 ///
 village_2 village_3 village_4 village_5 village_6 village_7 village_8 village_9 village_10
 
+
 ********** Other var
 bysort HHID_panel: gen nobs=_N
 
@@ -229,14 +230,39 @@ foreach x in year2010 year2016 year2020 {
 bysort HHID_panel: egen mean_`x'=mean(`x')
 }
 
+*** Label
+label var nobs1 "Nb obs: 1"
+label var nobs2 "Nb obs: 2"
+label var nobs3 "Nb obs: 3"
+
+label var year2010 "Year: 2010"
+label var year2016 "Year: 2016-17"
+label var year2020 "Year: 2020-21"
+
+label var mean_year2010 "Within year: 2010"
+label var mean_year2016 "Within year: 2016-17"
+label var mean_year2020 "Within year: 2020-21"
+
+
+*** Macro
+global time ///
+year2016 mean_year2016 ///
+year2020 mean_year2020 ///
+nobs2 nobs3
+
+global time2 ///
+nobs2 nobs3
 
 
 
-********** CRE fractional probit
+
+
+********** CRE fractional probit with Wooldridge 2013
 *** Spec 1
 glm fvi ///
 $livelihood ///
 $invar ///
+$time ///
 , family(binomial) link(probit) cluster(panelvar)
 est store spec1
 
@@ -247,6 +273,7 @@ glm fvi ///
 $livelihood ///
 $family ///
 $invar ///
+$time ///
 , family(binomial) link(probit) cluster(panelvar)
 est store spec2
 
@@ -258,6 +285,7 @@ $livelihood ///
 $family ///
 $head ///
 $invar ///
+$time ///
 , family(binomial) link(probit) cluster(panelvar)
 est store spec3
 
@@ -270,6 +298,7 @@ $family ///
 $head ///
 $shock ///
 $invar ///
+$time ///
 , family(binomial) link(probit) cluster(panelvar)
 est store spec4
 
@@ -283,12 +312,85 @@ $head ///
 $shock ///
 $debt ///
 $invar ///
+$time ///
 , family(binomial) link(probit) cluster(panelvar)
 est store spec5
 
 
 
+	
+	
+	
+	
+	
+	
+********** CRE fractional probit with Bates 2022
+*** Spec 1
+glm fvi ///
+$livelihood ///
+$invar ///
+$time2 ///
+, family(binomial) link(probit) cluster(panelvar)
+est store spec11
+
+
+
+*** Spec 2
+glm fvi ///
+$livelihood ///
+$family ///
+$invar ///
+$time2 ///
+, family(binomial) link(probit) cluster(panelvar)
+est store spec12
+
+
+
+*** Spec 3
+glm fvi ///
+$livelihood ///
+$family ///
+$head ///
+$invar ///
+$time2 ///
+, family(binomial) link(probit) cluster(panelvar)
+est store spec13
+
+
+
+*** Spec 4
+glm fvi ///
+$livelihood ///
+$family ///
+$head ///
+$shock ///
+$invar ///
+$time2 ///
+, family(binomial) link(probit) cluster(panelvar)
+est store spec14
+
+
+
+*** Spec 5
+glm fvi ///
+$livelihood ///
+$family ///
+$head ///
+$shock ///
+$debt ///
+$invar ///
+$time2 ///
+, family(binomial) link(probit) cluster(panelvar)
+est store spec15
+
+
+
+
+
+
 ********** Table
+
+*** Wooldridge 2013
 esttab spec1 spec2 spec3 spec4 spec5, ///
 label b(3) p(3) ///
 star(* 0.10 ** 0.05 *** 0.01) ///
@@ -296,7 +398,6 @@ drop(_cons mean* village*) ///
 stats(N N_clust aic bic, fmt(0 0 2 2))
 
 
-/*
 esttab spec1 spec2 spec3 spec4 spec5 using "reg.csv", replace ///
 	label b(3) p(3) eqlabels(none) alignment(S) ///
 	drop(_cons $var) ///
@@ -304,6 +405,65 @@ esttab spec1 spec2 spec3 spec4 spec5 using "reg.csv", replace ///
 	cells("b(fmt(2)star)" "se(fmt(2)par)") ///
 	refcat(, nolabel) ///
 	stats(N N_clust aic bic, fmt(0 0 2 2)	labels(`"Observations"' `"Number of clust"' `"AIC"' `"BIC"'))
+
+
+
+
+*** Bates 2022
+esttab spec11 spec12 spec13 spec14 spec15, ///
+label b(3) p(3) ///
+star(* 0.10 ** 0.05 *** 0.01) ///
+drop(_cons mean* village*) ///
+stats(N N_clust aic bic, fmt(0 0 2 2))
+
+
+esttab spec11 spec12 spec13 spec14 spec15 using "reg1.csv", replace ///
+	label b(3) p(3) eqlabels(none) alignment(S) ///
+	drop(_cons $var) ///
+	star(* 0.10 ** 0.05 *** 0.01) ///
+	cells("b(fmt(2)star)" "se(fmt(2)par)") ///
+	refcat(, nolabel) ///
+	stats(N N_clust aic bic, fmt(0 0 2 2)	labels(`"Observations"' `"Number of clust"' `"AIC"' `"BIC"'))
+	
+
+
+*** Comparison
+esttab spec1 spec11, ///
+label b(3) p(3) ///
+star(* 0.10 ** 0.05 *** 0.01) ///
+drop(_cons mean* village*) ///
+stats(N N_clust aic bic, fmt(0 0 2 2))
+
+
+esttab spec2 spec12, ///
+label b(3) p(3) ///
+star(* 0.10 ** 0.05 *** 0.01) ///
+drop(_cons mean* village*) ///
+stats(N N_clust aic bic, fmt(0 0 2 2))
+
+
+esttab spec3 spec13, ///
+label b(3) p(3) ///
+star(* 0.10 ** 0.05 *** 0.01) ///
+drop(_cons mean* village*) ///
+stats(N N_clust aic bic, fmt(0 0 2 2))
+
+
+esttab spec4 spec14, ///
+label b(3) p(3) ///
+star(* 0.10 ** 0.05 *** 0.01) ///
+drop(_cons mean* village*) ///
+stats(N N_clust aic bic, fmt(0 0 2 2))
+
+
+esttab spec5 spec15, ///
+label b(3) p(3) ///
+star(* 0.10 ** 0.05 *** 0.01) ///
+drop(_cons mean* village*) ///
+stats(N N_clust aic bic, fmt(0 0 2 2))
+
+
+
 
 ****************************************
 * END
