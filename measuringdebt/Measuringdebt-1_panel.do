@@ -314,7 +314,6 @@ gen goldreadyamount=(goldquantity_HH-goldquantitypledge_HH)*2700
 tabstat assets_gold goldreadyamount, stat(n mean cv q)
 
 
-
 save"temp_NEEMSIS2", replace
 ****************************************
 * END
