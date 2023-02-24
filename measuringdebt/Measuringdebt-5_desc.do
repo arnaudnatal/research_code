@@ -125,11 +125,21 @@ factortest tar isr rrgpl
 use"panel_v6", clear
 
 
+
+********** Stat desc
+replace dsr=dsr/100
+replace dir=dir/100
+replace dar=dar/100
+replace rfm=rfm/100
+gen dcr=loanamount_HH/expenses_total
+
+tabstat dsr dir dar dcr afm rfm, stat(n mean cv min p1 p5 p10 q p90 p95 p99 max) by(time) long
+
+
 ********** Overlap
 set graph off
 
 *** DSR
-replace dsr=dsr/100
 gen dsr2=dsr
 replace dsr2=5 if dsr2>5
 
@@ -144,7 +154,6 @@ leg(order(2 "Fitted values") pos(6) col(1)) name(dsr, replace)
 
 
 *** DIR
-replace dir=dir/100
 gen dir2=dir
 replace dir2=20 if dir2>20
 
@@ -159,7 +168,6 @@ leg(off) name(dir, replace)
 
 
 *** DAR
-replace dar=dar/100
 gen dar2=dar
 replace dar2=5 if dar2>5
 
@@ -190,8 +198,8 @@ leg(off) name(afm, replace)
 
 *** Rel FM
 gen rfm2=rfm
-replace rfm2=-1000 if rfm2<-1000
-replace rfm2=650 if rfm2>650
+replace rfm2=-10 if rfm2<-10
+replace rfm2=6.5 if rfm2>6.5
 
 twoway ///
 (scatter fvi rfm2, mcolor(black%30)) ///
@@ -204,7 +212,6 @@ leg(off) name(rfm, replace)
 
 
 *** DCR
-gen dcr=loanamount_HH/expenses_total
 gen dcr2=dcr
 replace dcr2=8 if dcr2>8
 

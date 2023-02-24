@@ -376,19 +376,58 @@ esttab spec1 spec2 spec3 spec4 spec5 spec6 using "reg_full.csv", replace ///
 
 
 ********** Overfitting
-/*
-overfit: glm fvi $livelihood $invar $time, family(binomial) link(probit) cluster(panelvar)
 
-overfit: glm fvi $livelihood $family $invar $time, family(binomial) link(probit) cluster(panelvar)
+overfit: glm fvi ///
+$livelihood ///
+$invar ///
+$time ///
+, family(binomial) link(probit) cluster(panelvar)
 
-overfit: glm fvi $livelihood $family $head $invar $time, family(binomial) link(probit) cluster(panelvar)
+overfit: glm fvi ///
+$livelihood ///
+$family ///
+$invar ///
+$time ///
+, family(binomial) link(probit) cluster(panelvar)
 
-overfit: glm fvi $livelihood $family $head $shock $invar $time , family(binomial) link(probit) cluster(panelvar)
+overfit: glm fvi ///
+$livelihood ///
+$family ///
+$head ///
+$invar ///
+$time ///
+, family(binomial) link(probit) cluster(panelvar)
 
-overfit: glm fvi $livelihood $family $head $shock shareform mean_shareform $invar $time, family(binomial) link(probit) cluster(panelvar)
+overfit: glm fvi ///
+$livelihood ///
+$family ///
+$head ///
+$shock ///
+$invar ///
+$time ///
+, family(binomial) link(probit) cluster(panelvar)
 
-overfit: glm fvi $livelihood $family $head $shock shareform mean_shareform loanamount_HH_std mean_loanamount_HH_std $invar $time, family(binomial) link(probit) cluster(panelvar)
-*/
+overfit: glm fvi ///
+$livelihood ///
+$family ///
+$head ///
+$shock ///
+shareform mean_shareform ///
+$invar ///
+$time ///
+, family(binomial) link(probit) cluster(panelvar)
+
+overfit: glm fvi ///
+$livelihood ///
+$family ///
+$head ///
+$shock ///
+shareform mean_shareform ///
+loanamount_HH_std mean_loanamount_HH_std ///
+$invar ///
+$time ///
+, family(binomial) link(probit) cluster(panelvar)
+
 
 
 ****************************************
