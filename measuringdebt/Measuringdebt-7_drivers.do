@@ -202,13 +202,13 @@ head_nonmarried mean_head_nonmarried
 
 global shock ///
 dummymarriage mean_dummymarriage ///
-dummydemonetisation mean_dummydemonetisation ///
-lock_2 mean_lock_2 ///
-lock_3 mean_lock_3
+dummydemonetisation mean_dummydemonetisation 
+*lock_2 mean_lock_2 ///
+*lock_3 mean_lock_3
 
 global debt ///
-shareform mean_shareform ///
-loanamount_HH_std mean_loanamount_HH_std
+shareform mean_shareform
+*loanamount_HH_std mean_loanamount_HH_std
 
 global invar ///
 caste_2 caste_3 ///
@@ -250,14 +250,8 @@ year2016 mean_year2016 ///
 year2020 mean_year2020 ///
 nobs2 nobs3
 
-global time2 ///
-nobs2 nobs3
 
 
-
-
-
-********** CRE fractional probit with Wooldridge 2013
 *** Spec 1
 glm fvi ///
 $livelihood ///
@@ -265,7 +259,8 @@ $invar ///
 $time ///
 , family(binomial) link(probit) cluster(panelvar)
 est store spec1
-
+margins, dydx($livelihood $invar) post
+est store marg1
 
 
 *** Spec 2
@@ -276,8 +271,8 @@ $invar ///
 $time ///
 , family(binomial) link(probit) cluster(panelvar)
 est store spec2
-
-
+margins, dydx($livelihood $family $invar) post
+est store marg2
 
 *** Spec 3
 glm fvi ///
@@ -288,7 +283,8 @@ $invar ///
 $time ///
 , family(binomial) link(probit) cluster(panelvar)
 est store spec3
-
+margins, dydx($livelihood $family $head $invar) post
+est store marg3
 
 
 *** Spec 4
@@ -301,7 +297,8 @@ $invar ///
 $time ///
 , family(binomial) link(probit) cluster(panelvar)
 est store spec4
-
+margins, dydx($livelihood $family $head $shock $invar) post
+est store marg4
 
 
 *** Spec 5
@@ -310,174 +307,88 @@ $livelihood ///
 $family ///
 $head ///
 $shock ///
-$debt ///
+shareform mean_shareform ///
 $invar ///
 $time ///
 , family(binomial) link(probit) cluster(panelvar)
 est store spec5
+margins, dydx($livelihood $family $head $shock shareform mean_shareform $invar) post
+est store marg5
 
 
-
-	
-	
-	
-	
-	
-	
-********** CRE fractional probit with Bates 2022
-*** Spec 1
-glm fvi ///
-$livelihood ///
-$invar ///
-$time2 ///
-, family(binomial) link(probit) cluster(panelvar)
-est store spec11
-
-
-
-*** Spec 2
-glm fvi ///
-$livelihood ///
-$family ///
-$invar ///
-$time2 ///
-, family(binomial) link(probit) cluster(panelvar)
-est store spec12
-
-
-
-*** Spec 3
-glm fvi ///
-$livelihood ///
-$family ///
-$head ///
-$invar ///
-$time2 ///
-, family(binomial) link(probit) cluster(panelvar)
-est store spec13
-
-
-
-*** Spec 4
+*** Spec 6
 glm fvi ///
 $livelihood ///
 $family ///
 $head ///
 $shock ///
+shareform mean_shareform ///
+loanamount_HH_std mean_loanamount_HH_std ///
 $invar ///
-$time2 ///
+$time ///
 , family(binomial) link(probit) cluster(panelvar)
-est store spec14
-
-
-
-*** Spec 5
-glm fvi ///
-$livelihood ///
-$family ///
-$head ///
-$shock ///
-$debt ///
-$invar ///
-$time2 ///
-, family(binomial) link(probit) cluster(panelvar)
-est store spec15
+est store spec6
+margins, dydx($livelihood $family $head $shock shareform mean_shareform loanamount_HH_std mean_loanamount_HH_std $invar) post
+est store marg6
 
 
 
 
-
-
-********** Table
-
-*** Wooldridge 2013
-esttab spec1 spec2 spec3 spec4 spec5, ///
-label b(3) p(3) ///
-star(* 0.10 ** 0.05 *** 0.01) ///
-drop(_cons mean* village*) ///
-stats(N N_clust aic bic, fmt(0 0 2 2))
-
-
-esttab spec1 spec2 spec3 spec4 spec5 using "reg.csv", replace ///
+********** Margin
+esttab marg1 marg2 marg3 marg4 marg5 marg6, ///
 	label b(3) p(3) eqlabels(none) alignment(S) ///
-	drop(_cons $var) ///
+	drop(mean_* village_*) ///
 	star(* 0.10 ** 0.05 *** 0.01) ///
 	cells("b(fmt(2)star)" "se(fmt(2)par)") ///
-	refcat(, nolabel) ///
-	stats(N N_clust aic bic, fmt(0 0 2 2)	labels(`"Observations"' `"Number of clust"' `"AIC"' `"BIC"'))
+	refcat(, nolabel)
 
-
-
-
-*** Bates 2022
-esttab spec11 spec12 spec13 spec14 spec15, ///
-label b(3) p(3) ///
-star(* 0.10 ** 0.05 *** 0.01) ///
-drop(_cons mean* village*) ///
-stats(N N_clust aic bic, fmt(0 0 2 2))
-
-
-esttab spec11 spec12 spec13 spec14 spec15 using "reg1.csv", replace ///
+esttab marg1 marg2 marg3 marg4 marg5 marg6 using "margin.csv", replace ///
 	label b(3) p(3) eqlabels(none) alignment(S) ///
-	drop(_cons $var) ///
+	drop(mean_* village_*) ///
 	star(* 0.10 ** 0.05 *** 0.01) ///
 	cells("b(fmt(2)star)" "se(fmt(2)par)") ///
-	refcat(, nolabel) ///
-	stats(N N_clust aic bic, fmt(0 0 2 2)	labels(`"Observations"' `"Number of clust"' `"AIC"' `"BIC"'))
+	refcat(, nolabel)
+
+
 	
+********** Specifications
+esttab spec1 spec2 spec3 spec4 spec5 spec6, ///
+	label b(3) p(3) eqlabels(none) alignment(S) ///
+	drop(_cons mean_* village_* $time) ///
+	star(* 0.10 ** 0.05 *** 0.01)
 
+esttab spec1 spec2 spec3 spec4 spec5 spec6 using "reg.csv", replace ///
+	label b(3) p(3) eqlabels(none) alignment(S) ///
+	drop(_cons mean_* village_* $time) ///
+	star(* 0.10 ** 0.05 *** 0.01) ///
+	cells("b(fmt(2)star)" "se(fmt(2)par)") ///
+	refcat(, nolabel) ///
+	stats(N N_clust, fmt(0 0)	labels(`"Observations"' `"Number of clust"'))
 
-*** Comparison
-esttab spec1 spec11, ///
-label b(3) p(3) ///
-star(* 0.10 ** 0.05 *** 0.01) ///
-drop(_cons mean* village*) ///
-stats(N N_clust aic bic, fmt(0 0 2 2))
-
-
-esttab spec2 spec12, ///
-label b(3) p(3) ///
-star(* 0.10 ** 0.05 *** 0.01) ///
-drop(_cons mean* village*) ///
-stats(N N_clust aic bic, fmt(0 0 2 2))
-
-
-esttab spec3 spec13, ///
-label b(3) p(3) ///
-star(* 0.10 ** 0.05 *** 0.01) ///
-drop(_cons mean* village*) ///
-stats(N N_clust aic bic, fmt(0 0 2 2))
-
-
-esttab spec4 spec14, ///
-label b(3) p(3) ///
-star(* 0.10 ** 0.05 *** 0.01) ///
-drop(_cons mean* village*) ///
-stats(N N_clust aic bic, fmt(0 0 2 2))
-
-
-esttab spec5 spec15, ///
-label b(3) p(3) ///
-star(* 0.10 ** 0.05 *** 0.01) ///
-drop(_cons mean* village*) ///
-stats(N N_clust aic bic, fmt(0 0 2 2))
+esttab spec1 spec2 spec3 spec4 spec5 spec6 using "reg_full.csv", replace ///
+	label b(3) p(3) eqlabels(none) alignment(S) ///
+	star(* 0.10 ** 0.05 *** 0.01) ///
+	cells("b(fmt(2)star)" "se(fmt(2)par)") ///
+	refcat(, nolabel) ///
+	stats(N N_clust, fmt(0 0)	labels(`"Observations"' `"Number of clust"'))
 
 
 
 
 ********** Overfitting
-*** Spec 5
-overfit: glm fvi ///
-$livelihood ///
-$family ///
-$head ///
-$shock ///
-$debt ///
-$invar ///
-$time ///
-, family(binomial) link(probit) cluster(panelvar)
+/*
+overfit: glm fvi $livelihood $invar $time, family(binomial) link(probit) cluster(panelvar)
 
+overfit: glm fvi $livelihood $family $invar $time, family(binomial) link(probit) cluster(panelvar)
 
+overfit: glm fvi $livelihood $family $head $invar $time, family(binomial) link(probit) cluster(panelvar)
+
+overfit: glm fvi $livelihood $family $head $shock $invar $time , family(binomial) link(probit) cluster(panelvar)
+
+overfit: glm fvi $livelihood $family $head $shock shareform mean_shareform $invar $time, family(binomial) link(probit) cluster(panelvar)
+
+overfit: glm fvi $livelihood $family $head $shock shareform mean_shareform loanamount_HH_std mean_loanamount_HH_std $invar $time, family(binomial) link(probit) cluster(panelvar)
+*/
 
 
 ****************************************
