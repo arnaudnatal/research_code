@@ -251,7 +251,13 @@ year2020 mean_year2020 ///
 nobs2 nobs3
 
 
+********** Multicollinerarity
+corr $livelihood $family $head $shock shareform mean_shareform loanamount_HH_std mean_loanamount_HH_std $invar $time
 
+
+
+
+********** Reg
 *** Spec 1
 glm fvi ///
 $livelihood ///
