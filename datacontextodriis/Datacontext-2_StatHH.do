@@ -865,6 +865,7 @@ cls
 use"panel_v0", clear
 
 *** Rescale
+gen dir=loanamount_HH/annualincome_HH
 replace loanamount_HH=loanamount_HH/10000
 
 
@@ -1020,6 +1021,17 @@ restore
 * Combine
 grc1leg debt debt_c1 debt_c2, col(3) note("+ represent the mean.") name(debt_comb, replace)
 graph export "Debt_comb.pdf", as(pdf) replace
+
+
+
+
+
+
+
+*** Graph 2: DIR
+tabstat dir if year==2010, stat(n mean cv q) by(caste)
+tabstat dir if year==2016, stat(n mean cv q) by(caste)
+tabstat dir if year==2020, stat(n mean cv q) by(caste)
 
 
 ****************************************

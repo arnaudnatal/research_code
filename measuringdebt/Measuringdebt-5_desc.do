@@ -42,17 +42,177 @@ replace `x'=`x'*(100/184) if year==2020
 replace `x'=`x'/1000
 }
 
-*** Amount
-tabstat loanamount, stat(n mean cv q) by(year) long
 
-*** Reason
-ta loanreasongiven year, col nofreq
+*** %
+ta lender4 year, col nofreq
+
+ta lender_cat year, col nofreq
+
 ta reason_cat year, col nofreq
 
-*** Lender
-ta loanlender year, col nofreq
-ta lender4 year, col nofreq
-ta lender_cat year, col nofreq
+
+*** Amount
+tabstat loanamount if year==2010, stat(mean) by(lender4)
+tabstat loanamount if year==2016, stat(mean) by(lender4)
+tabstat loanamount if year==2020, stat(mean) by(lender4)
+
+tabstat loanamount if year==2010, stat(mean) by(lender_cat)
+tabstat loanamount if year==2016, stat(mean) by(lender_cat)
+tabstat loanamount if year==2020, stat(mean) by(lender_cat)
+
+tabstat loanamount if year==2010, stat(mean) by(reason_cat)
+tabstat loanamount if year==2016, stat(mean) by(reason_cat)
+tabstat loanamount if year==2020, stat(mean) by(reason_cat)
+
+
+*** % of HH using it: lender4
+fre lender4
+ta lender4, gen(len)
+
+*2010
+cls
+preserve 
+keep if year==2010
+forvalues i=1(1)10{
+bysort HHID_panel: egen lenHH_`i'=max(len`i')
+} 
+bysort HHID_panel: gen n=_n
+keep if n==1
+forvalues i=1(1)10{
+tab lenHH_`i', m
+}
+restore
+
+*2016-17
+cls
+preserve 
+keep if year==2016
+forvalues i=1(1)10{
+bysort HHID_panel: egen lenHH_`i'=max(len`i')
+} 
+bysort HHID_panel: gen n=_n
+keep if n==1
+forvalues i=1(1)10{
+tab lenHH_`i', m
+}
+restore
+
+*2020-21
+cls
+preserve 
+keep if year==2020
+forvalues i=1(1)10{
+bysort HHID_panel: egen lenHH_`i'=max(len`i')
+} 
+bysort HHID_panel: gen n=_n
+keep if n==1
+forvalues i=1(1)10{
+tab lenHH_`i', m
+}
+restore
+
+drop len1 len2 len3 len4 len5 len6 len7 len8 len9 len10
+
+
+
+*** % of HH using it: lender_cat
+fre lender_cat
+ta lender_cat, gen(len)
+
+*2010
+cls
+preserve 
+keep if year==2010
+forvalues i=1(1)3{
+bysort HHID_panel: egen lenHH_`i'=max(len`i')
+} 
+bysort HHID_panel: gen n=_n
+keep if n==1
+forvalues i=1(1)3{
+tab lenHH_`i', m
+}
+restore
+
+*2016-17
+cls
+preserve 
+keep if year==2016
+forvalues i=1(1)3{
+bysort HHID_panel: egen lenHH_`i'=max(len`i')
+} 
+bysort HHID_panel: gen n=_n
+keep if n==1
+forvalues i=1(1)3{
+tab lenHH_`i', m
+}
+restore
+
+
+*2020-21
+cls
+preserve 
+keep if year==2020
+forvalues i=1(1)3{
+bysort HHID_panel: egen lenHH_`i'=max(len`i')
+} 
+bysort HHID_panel: gen n=_n
+keep if n==1
+forvalues i=1(1)3{
+tab lenHH_`i', m
+}
+restore
+
+drop len1 len2 len3
+
+
+*** % of HH using it: reason_cat
+fre reason_cat
+recode reason_cat (77=7)
+ta reason_cat, gen(rea)
+
+*2010
+cls
+preserve 
+keep if year==2010
+forvalues i=1(1)7{
+bysort HHID_panel: egen reaHH_`i'=max(rea`i')
+} 
+bysort HHID_panel: gen n=_n
+keep if n==1
+forvalues i=1(1)7{
+tab reaHH_`i', m
+}
+restore
+
+*2016
+cls
+preserve 
+keep if year==2016
+forvalues i=1(1)7{
+bysort HHID_panel: egen reaHH_`i'=max(rea`i')
+} 
+bysort HHID_panel: gen n=_n
+keep if n==1
+forvalues i=1(1)7{
+tab reaHH_`i', m
+}
+restore
+
+*2016
+cls
+preserve 
+keep if year==2020
+forvalues i=1(1)7{
+bysort HHID_panel: egen reaHH_`i'=max(rea`i')
+} 
+bysort HHID_panel: gen n=_n
+keep if n==1
+forvalues i=1(1)7{
+tab reaHH_`i', m
+}
+restore
+
+
 
 ****************************************
 * END
