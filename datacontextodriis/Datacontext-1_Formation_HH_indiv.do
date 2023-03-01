@@ -390,7 +390,7 @@ drop if livinghome==3
 drop if livinghome==4
 
 keep HHID_panel INDID_panel sex age name ///
-edulevel ///
+edulevel maritalstatus ///
 working_pop ///
 mainocc_profession_indiv mainocc_occupation_indiv mainocc_sector_indiv mainocc_annualincome_indiv mainocc_occupationname_indiv annualincome_indiv
 
@@ -409,7 +409,7 @@ drop if livinghome==3
 drop if livinghome==4
 
 keep HHID_panel INDID_panel sex age name ///
-edulevel ///
+edulevel maritalstatus ///
 working_pop ///
 mainocc_profession_indiv mainocc_occupation_indiv mainocc_sector_indiv mainocc_annualincome_indiv mainocc_occupationname_indiv annualincome_indiv
 
