@@ -184,6 +184,14 @@ merge 1:m HHID_panel INDID2020 using "keypanel-Indiv_wide", keepusing(INDID_pane
 keep if _merge==3
 drop _merge
 
+*** Drop 6 without agri
+drop if HHID2020=="uuid:7373bf3a-f7a4-4d1a-8c12-ccb183b1f4db"
+drop if HHID2020=="uuid:d4b98efb-0cc6-4e82-996a-040ced0cbd52"
+drop if HHID2020=="uuid:1091f83c-d157-4891-b1ea-09338e91f3ef" 
+drop if HHID2020=="uuid:aea57b03-83a6-44f0-b59e-706b911484c4" 
+drop if HHID2020=="uuid:21f161fd-9a0c-4436-a416-7e75fad830d7" 
+drop if HHID2020=="uuid:b3e4fe70-f2aa-4e0f-bb6e-8fb57bb6f409" 
+
 *** Save
 save"NEEMSIS2_v0", replace
 
@@ -353,6 +361,9 @@ label values year year
 *
 label values jatis jatis
 
+* Select
+drop if time==.
+
 save"panel_v0", replace
 ****************************************
 * END
@@ -439,6 +450,16 @@ replace `x'=`x'*(100/184) if year==2020
 *** Caste
 merge m:1 HHID_panel year using "panel_v0", keepusing(caste jatis)
 drop _merge
+
+
+
+*** Selection
+drop if HHID_panel=="GOV64" & year==2020
+drop if HHID_panel=="GOV65" & year==2020
+drop if HHID_panel=="GOV66" & year==2020  
+drop if HHID_panel=="GOV67" & year==2020
+drop if HHID_panel=="KUV66" & year==2020
+drop if HHID_panel=="KUV67" & year==2020
 
 save"panel_indiv_v0", replace
 ****************************************
