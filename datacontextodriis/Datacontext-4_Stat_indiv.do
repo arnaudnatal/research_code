@@ -42,16 +42,16 @@ tabstat age if sex==1, stat(mean) by(year)
 tabstat age if sex==2, stat(mean) by(year)
 
 
-*** Education
-ta edulevel year, col nofreq
-ta edulevel year if sex==1, col nofreq
-ta edulevel year if sex==2, col nofreq
-
-
 *** Marital status
 ta maritalstatus year, col nofreq
 ta maritalstatus year if sex==1, col nofreq
 ta maritalstatus year if sex==2, col nofreq
+
+
+*** Education
+ta edulevel year, col nofreq
+ta edulevel year if sex==1, col nofreq
+ta edulevel year if sex==2, col nofreq
 
 
 *** Working pop
