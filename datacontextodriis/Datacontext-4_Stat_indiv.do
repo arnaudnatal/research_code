@@ -289,7 +289,7 @@ restore
 *** Combine
 grc1leg occ occ_c1 occ_c2, col(2) name(occ_comb, replace)
 
-grc1leg occ occ_c1 occ_c2, col(2) name(occ_comb, replace)
+grc1leg occ_dal occ_mid occ_up, col(2) name(occ_comb, replace)
 
 
 graph export "Occ_comb.pdf", as(pdf) replace
@@ -302,6 +302,38 @@ graph export "Occ_comb.pdf", as(pdf) replace
 
 
 
+
+
+
+
+
+
+
+****************************************
+* Graph occupations
+****************************************
+cls
+use"panel_indiv_v0", clear
+
+*** Initialization
+ta year
+keep if age>=15
+ta age working_pop
+ta sex year
+
+*** Rescale
+replace annualincome_indiv=annualincome_indiv/1000
+replace mainocc_annualincome_indiv=mainocc_annualincome_indiv/1000
+drop if mainocc_occupation_indiv==0
+
+
+tabstat mainocc_annualincome_indiv if year==2010, stat(n mean cv p50) by(mainocc_occupation_indiv)
+tabstat mainocc_annualincome_indiv if year==2016, stat(n mean cv p50) by(mainocc_occupation_indiv)
+tabstat mainocc_annualincome_indiv if year==2020, stat(n mean cv p50) by(mainocc_occupation_indiv)
+
+
+****************************************
+* END
 
 
 
