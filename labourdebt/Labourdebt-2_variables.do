@@ -25,98 +25,74 @@ use"panel_v0", clear
 
 
 ********** RRGPL
-gen dailyincome_pc=(annualincome_HH/365)/squareroot_HHsize
-gen dailyusdincome_pc=dailyincome_pc/45.73
-gen rrgpl=((dailyusdincome_pc-1.9)/1.9)*(-1)*100
-ta rrgpl
-replace rrgpl=100 if rrgpl>100
-replace rrgpl=-100 if rrgpl<-100
-*the more is the poorer
-gen rrgpl2=rrgpl
-replace rrgpl2=0 if rrgpl2<0
+*45.71 in 2010
+*65.10 in 2017
+
+/*
+All is expressed in 2010 PPP
+However, new PL with 2017
+annualincome_HH is expressed in 2010 rupees
+annualincome_HH2 is not deflated
+*/
+tabstat annualincome_HH annualincome_HH2, stat(n mean) by(year)
+
+* Deflate for 2017 PPP
+gen annualincome_HH_backup=annualincome_HH2
+replace annualincome_HH2=annualincome_HH2*(100/62.81) if year==2010
+replace annualincome_HH2=annualincome_HH2*(100/114.95) if year==2020
+replace annualincome_HH2=round(annualincome_HH2,1)
+
+* Test
+tabstat annualincome_HH_backup annualincome_HH annualincome_HH2, stat(n mean) by(year)
+/*
+Ok
+*/
+
+
+gen dailyincome_pc=(annualincome_HH2/365)/HHsize
+gen dailyusdincome_pc=dailyincome_pc/65.10
+gen rrgpl2=((dailyusdincome_pc-2.15)/2.15)*(-1)
 ta rrgpl2
+replace rrgpl2=1 if rrgpl2>1
+replace rrgpl2=0 if rrgpl2<0
+*the more is the poorer
+
 
 ********** ISR
-gen isr=imp1_is_tot_HH*100/annualincome_HH
+gen isr=imp1_is_tot_HH/annualincome_HH
 replace isr=0 if isr==.
-replace isr=100 if isr>100
+replace isr=1 if isr>1
 ta isr
 
 ********** TDR
-gen tdr=totHH_givenamt_repa*100/loanamount_HH
+gen tdr=totHH_givenamt_repa/loanamount_HH
 replace tdr=0 if tdr==.
 ta tdr
 
 
 ********** TAR
-gen tar=totHH_givenamt_repa*100/assets_total
+gen tar=totHH_givenamt_repa/assets_total
 replace tar=0 if tar==.
-replace tar=100 if tar>100
+replace tar=1 if tar>1
 ta tar
 
 
 ********** DAR
-gen dar=loanamount_HH*100/assets_total
+gen dar=loanamount_HH/assets_total
 replace dar=0 if dar==.
-replace dar=500 if dar>500
+replace dar=5 if dar>5
 sum dar
 
 
 ********* FVI
-/*
-2*tdr+2*isr+rrgpl2
-tar+isr+rrgpl
-*/
-gen fvi=(tar+isr+rrgpl2)/3
+* FVI
+gen fvi=(2*tdr+2*isr+rrgpl2)/5
+
+* FVI-2
+*gen fvi2=(tar+isr+rrgpl2)/3
+
 ta fvi
 sum fvi
-/*
-    Variable |        Obs        Mean    Std. Dev.       Min        Max
--------------+---------------------------------------------------------
-         fvi |      1,529    12.26407    14.40752          0   72.46169
-*/
-
-
-
-
-********** AMPI
-*** Range 70-130
-* TDR
-ta tar
-gen a_tar=((tar-0)/(100-0))*60+70
-sum a_tar
-
-* ISR
-ta isr
-gen a_isr=((isr-0)/(100-0))*60+70
-sum a_isr
-
-* RRGPL
-ta rrgpl
-gen a_rrgpl=((rrgpl+100)/(100+100))*60+70
-sum a_rrgpl
-
-
-*** Mean, CV, and STD
-egen M=rowmean(a_tar a_isr a_rrgpl)
-egen S=rowsd(a_tar a_isr a_rrgpl)
-gen cv=S/M
-
-
-*** AMPI
-gen ampi=M+S*cv
-ta ampi
-
-*** Clean
-drop a_tar a_isr a_rrgpl M S cv
-drop rrgpl
-rename rrgpl2 rrgpl
-
-
-
-sum fvi ampi
-
-
 
 save"panel_v1", replace 
 ****************************************
@@ -586,10 +562,6 @@ rename indiv_`x' `x'
 
 
 
-
-
-
-
 ********** Occupation no at individual level
 foreach x in $total {
 bysort HHID_panel INDID_panel year: egen indiv_`x'=sum(`x')
@@ -730,6 +702,9 @@ save"panel-newoccvar", replace
 
 ****************************************
 * END
+
+
+
 
 
 

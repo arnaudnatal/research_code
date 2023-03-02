@@ -21,248 +21,29 @@ do"C:\Users\Arnaud\Documents\GitHub\folderanalysis\measuringdebt.do"
 
 
 
-
-****************************************
-* Debt
-****************************************
-cls
-use"panel_loans", clear
-
-*** Number of loans
-ta loansettled year
-
-*** Clean
-drop if loansettled==1
-ta year
-
-*** Deflate and 1000
-foreach x in loanamount loanbalance interestpaid totalrepaid principalpaid {
-replace `x'=`x'*(100/158) if year==2016
-replace `x'=`x'*(100/184) if year==2020
-replace `x'=`x'/1000
-}
-
-
-*** %
-ta lender4 year, col nofreq
-
-ta lender_cat year, col nofreq
-
-ta reason_cat year, col nofreq
-
-
-*** Amount
-tabstat loanamount if year==2010, stat(mean) by(lender4)
-tabstat loanamount if year==2016, stat(mean) by(lender4)
-tabstat loanamount if year==2020, stat(mean) by(lender4)
-
-tabstat loanamount if year==2010, stat(mean) by(lender_cat)
-tabstat loanamount if year==2016, stat(mean) by(lender_cat)
-tabstat loanamount if year==2020, stat(mean) by(lender_cat)
-
-tabstat loanamount if year==2010, stat(mean) by(reason_cat)
-tabstat loanamount if year==2016, stat(mean) by(reason_cat)
-tabstat loanamount if year==2020, stat(mean) by(reason_cat)
-
-
-*** % of HH using it: lender4
-fre lender4
-ta lender4, gen(len)
-
-*2010
-cls
-preserve 
-keep if year==2010
-forvalues i=1(1)10{
-bysort HHID_panel: egen lenHH_`i'=max(len`i')
-} 
-bysort HHID_panel: gen n=_n
-keep if n==1
-forvalues i=1(1)10{
-tab lenHH_`i', m
-}
-restore
-
-*2016-17
-cls
-preserve 
-keep if year==2016
-forvalues i=1(1)10{
-bysort HHID_panel: egen lenHH_`i'=max(len`i')
-} 
-bysort HHID_panel: gen n=_n
-keep if n==1
-forvalues i=1(1)10{
-tab lenHH_`i', m
-}
-restore
-
-*2020-21
-cls
-preserve 
-keep if year==2020
-forvalues i=1(1)10{
-bysort HHID_panel: egen lenHH_`i'=max(len`i')
-} 
-bysort HHID_panel: gen n=_n
-keep if n==1
-forvalues i=1(1)10{
-tab lenHH_`i', m
-}
-restore
-
-drop len1 len2 len3 len4 len5 len6 len7 len8 len9 len10
-
-
-
-*** % of HH using it: lender_cat
-fre lender_cat
-ta lender_cat, gen(len)
-
-*2010
-cls
-preserve 
-keep if year==2010
-forvalues i=1(1)3{
-bysort HHID_panel: egen lenHH_`i'=max(len`i')
-} 
-bysort HHID_panel: gen n=_n
-keep if n==1
-forvalues i=1(1)3{
-tab lenHH_`i', m
-}
-restore
-
-*2016-17
-cls
-preserve 
-keep if year==2016
-forvalues i=1(1)3{
-bysort HHID_panel: egen lenHH_`i'=max(len`i')
-} 
-bysort HHID_panel: gen n=_n
-keep if n==1
-forvalues i=1(1)3{
-tab lenHH_`i', m
-}
-restore
-
-
-*2020-21
-cls
-preserve 
-keep if year==2020
-forvalues i=1(1)3{
-bysort HHID_panel: egen lenHH_`i'=max(len`i')
-} 
-bysort HHID_panel: gen n=_n
-keep if n==1
-forvalues i=1(1)3{
-tab lenHH_`i', m
-}
-restore
-
-drop len1 len2 len3
-
-
-*** % of HH using it: reason_cat
-fre reason_cat
-recode reason_cat (77=7)
-ta reason_cat, gen(rea)
-
-*2010
-cls
-preserve 
-keep if year==2010
-forvalues i=1(1)7{
-bysort HHID_panel: egen reaHH_`i'=max(rea`i')
-} 
-bysort HHID_panel: gen n=_n
-keep if n==1
-forvalues i=1(1)7{
-tab reaHH_`i', m
-}
-restore
-
-*2016
-cls
-preserve 
-keep if year==2016
-forvalues i=1(1)7{
-bysort HHID_panel: egen reaHH_`i'=max(rea`i')
-} 
-bysort HHID_panel: gen n=_n
-keep if n==1
-forvalues i=1(1)7{
-tab reaHH_`i', m
-}
-restore
-
-*2016
-cls
-preserve 
-keep if year==2020
-forvalues i=1(1)7{
-bysort HHID_panel: egen reaHH_`i'=max(rea`i')
-} 
-bysort HHID_panel: gen n=_n
-keep if n==1
-forvalues i=1(1)7{
-tab reaHH_`i', m
-}
-restore
-
-
-
-****************************************
-* END
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ****************************************
 * Redundancy between variables
 ****************************************
 cls
-use"panel_v6", clear
+use"panel_v5", clear
 
 
 *** Corr
-pwcorr tar isr rrgpl, star(.05)
+corr tdr isr rrgpl
 
 
 *** Graph
-corr tar isr rrgpl
 set graph off
-graph matrix tar isr rrgpl, half ///
+graph matrix tdr isr rrgpl, half ///
 ms(oh) mc(black%30) ///
-note("Correlation:" "TAR-ISR: 0.04; TAR-RRGPL: 0.00; ISR-RRGPL: 0.45", size(vsmall))
+note("Correlation:" "TDR-ISR: 0.00; TDR-RRGPL: 0.00; ISR-RRGPL: 0.35", size(vsmall))
 graph export "graph/matrix_corr.pdf", as(pdf) replace
 set graph on
 
 
-*** Alpha
-alpha tar isr rrgpl
-
 
 *** As for PCA
-factortest tar isr rrgpl
+factortest tdr isr rrgpl
 
 
 ****************************************
@@ -282,8 +63,7 @@ factortest tar isr rrgpl
 ****************************************
 * Correlation with classic ratios
 ****************************************
-use"panel_v6", clear
-
+use"panel_v5", clear
 
 
 ********** Stat desc
@@ -305,9 +85,9 @@ replace dsr2=5 if dsr2>5
 
 twoway ///
 (scatter fvi dsr2, mcolor(black%30)) ///
-(lfit fvi dsr2) ///
 , ///
 ytitle("FVI") xtitle("DSR") ///
+ylabel(0(.2)1) ymtick(0(.1)1) ///
 aspectratio(1) ///
 leg(order(2 "Fitted values") pos(6) col(1)) name(dsr, replace)
 
@@ -319,8 +99,8 @@ replace dir2=20 if dir2>20
 
 twoway ///
 (scatter fvi dir2, mcolor(black%30)) ///
-(lfit fvi dir2) ///
 , ///
+ylabel(0(.2)1) ymtick(0(.1)1) ///
 ytitle("FVI") xtitle("DIR") ///
 aspectratio(1) ///
 leg(off) name(dir, replace)
@@ -333,8 +113,8 @@ replace dar2=5 if dar2>5
 
 twoway ///
 (scatter fvi dar2, mcolor(black%30)) ///
-(lfit fvi dar2) ///
 , ///
+ylabel(0(.2)1) ymtick(0(.1)1) ///
 ytitle("FVI") xtitle("DAR") ///
 aspectratio(1) ///
 leg(off) name(dar, replace)
@@ -348,8 +128,8 @@ replace afm2=550000 if afm2>550000
 
 twoway ///
 (scatter fvi afm2, mcolor(black%30)) ///
-(lfit fvi afm2) ///
 , ///
+ylabel(0(.2)1) ymtick(0(.1)1) ///
 ytitle("FVI") xtitle("Absolut FM") ///
 aspectratio(1) ///
 leg(off) name(afm, replace)
@@ -358,13 +138,13 @@ leg(off) name(afm, replace)
 
 *** Rel FM
 gen rfm2=rfm
-replace rfm2=-10 if rfm2<-10
-replace rfm2=6.5 if rfm2>6.5
+replace rfm2=-0.1 if rfm2<-0.1
+replace rfm2=0.065 if rfm2>0.065
 
 twoway ///
 (scatter fvi rfm2, mcolor(black%30)) ///
-(lfit fvi rfm2) ///
 , ///
+ylabel(0(.2)1) ymtick(0(.1)1) ///
 ytitle("FVI") xtitle("Relative FM") ///
 aspectratio(1) ///
 leg(off) name(rfm, replace)
@@ -377,15 +157,14 @@ replace dcr2=8 if dcr2>8
 
 twoway ///
 (scatter fvi dcr2, mcolor(black%30)) ///
-(lfit fvi dcr2) ///
 , ///
+ylabel(0(.2)1) ymtick(0(.1)1) ///
 ytitle("FVI") xtitle("DCR") ///
 aspectratio(1) ///
 leg(off) name(dcr, replace)
 
-
-
 set graph on
+
 
 *** Combine
 set graph off
@@ -412,43 +191,17 @@ set graph on
 ****************************************
 * FVI
 ****************************************
-use"panel_v6", clear
-
-
+use"panel_v5", clear
 
 
 ********** Stat desc
-tabstat fvi isr tar rrgpl, stat(n mean cv min p1 p5 p10 q p90 p95 p99 max) by(time) long
+tabstat fvi isr tdr rrgpl, stat(n mean cv min p1 p5 p10 q p90 p95 p99 max) by(time) long
 
+tabstat tdr, stat(n mean cv min p1 p5 p10 q p90 p95 p99 max) by(time) long
 
 
 
 ********** Graph FVI
-
-*** Kernel density
-/*
-twoway ///
-(kdensity fvi if year==2010) ///
-(kdensity fvi if year==2016) ///
-(kdensity fvi if year==2020) ///
-, ///
-xlabel(0(20)100) xmtick(0(10)100) xtitle("FVI") ///
-ytitle("Density") ///
-legend(order(1 "2010" 2 "2016-17" 3 "2020-21") pos(6) col(3)) name(kd_fvi, replace)
-*/
-
-
-*** Stripplot vert
-/*
-stripplot fvi, over(time) vert ///
-stack width(0.5) jitter(1) ///
-box(barw(0.2)) boffset(-0.2) pctile(95) ///
-ms(oh oh oh) msize(small) mc(black%30) ///
-yla(0(10)100, ang(h)) xla(, noticks) ///
-ytitle("FVI") xtitle("") name(sp_fvi_vert, replace)
-*/
-
-*** Stripplot horiz
 set graph off
 stripplot fvi, over(time) ///
 stack width(0.01) jitter(1) refline(lp(dash)) ///
@@ -478,16 +231,16 @@ legend(order(1 "2010" 2 "2016-17" 3 "2020-21") pos(6) col(3)) ///
 aspectratio(1) name(kd_isr, replace)
 
 
-*** TAR
+*** TDR
 twoway ///
-(kdensity tar if year==2010) ///
-(kdensity tar if year==2016) ///
-(kdensity tar if year==2020) ///
+(kdensity tdr if year==2010) ///
+(kdensity tdr if year==2016) ///
+(kdensity tdr if year==2020) ///
 , ///
-xlabel(0(.2)1) xmtick(0(.1)1) xtitle("TAR") ///
+xlabel(0(.2)1) xmtick(0(.1)1) xtitle("TDR") ///
 ytitle("Density") ///
 legend(order(1 "2010" 2 "2016-17" 3 "2020-21") pos(6) col(3)) ///
-aspectratio(1) name(kd_tar, replace)
+aspectratio(1) name(kd_tdr, replace)
 
 
 
@@ -507,7 +260,7 @@ set graph on
 
 *** Combine
 set graph off
-grc1leg kd_isr kd_tar kd_rrgpl, col(3) name(kd_compo, replace)
+grc1leg kd_isr kd_tdr kd_rrgpl, col(3) name(kd_compo, replace)
 graph export "graph/FVI_compo.pdf", as(pdf) replace
 set graph on
 

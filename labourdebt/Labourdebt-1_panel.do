@@ -368,10 +368,12 @@ global quanti6 remreceived_HH remsent_HH remittnet_HH
 global quant7 goldreadyamount
 global quanti $quanti1 $quanti2 $quanti3 $quanti4 $quanti5 $quanti6 $quanti7
 
-
+gen annualincome_HH2=annualincome_HH
 
 *** Deflate and round
 foreach x in $quanti {
+*replace `x'=`x'*(100/62.81) if year==2010
+*replace `x'=`x'*(100/114.95) if year==2020
 replace `x'=`x'*(100/158) if year==2016
 replace `x'=`x'*(100/184) if year==2020
 replace `x'=round(`x',1)

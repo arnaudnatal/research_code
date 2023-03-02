@@ -27,34 +27,34 @@ use"panel_v0", clear
 
 * DSR
 tabstat imp1_ds_tot_HH annualincome_HH, stat(min p1 p5 p10 q p90 p95 p99 max)
-gen dsr=imp1_ds_tot_HH*100/annualincome_HH
+gen dsr=imp1_ds_tot_HH/annualincome_HH
 replace dsr=0 if dsr==.
 
 
 * ISR
-gen isr=imp1_is_tot_HH*100/annualincome_HH
+gen isr=imp1_is_tot_HH/annualincome_HH
 replace isr=0 if isr==.
 
 
 * DAR
 tabstat loanamount_HH assets_total assets_totalnoland assets_totalnoprop, stat(n mean cv p50) by(year)
-gen dar=loanamount_HH*100/assets_totalnoprop
+gen dar=loanamount_HH/assets_totalnoprop
 replace dar=0 if dar==.
 
 
 * DIR
-gen dir=loanamount_HH*100/annualincome_HH
+gen dir=loanamount_HH/annualincome_HH
 replace dir=0 if dir==.
 
 
 
 * TDR
-gen tdr=totHH_givenamt_repa*100/loanamount_HH
+gen tdr=totHH_givenamt_repa/loanamount_HH
 replace tdr=0 if tdr==.
 
 
 * TAR
-gen tar=totHH_givenamt_repa*100/assets_total
+gen tar=totHH_givenamt_repa/assets_total
 replace tar=0 if tar==.
 
 
@@ -67,7 +67,7 @@ drop temp
 
 
 * RFM - Relative Financial Margin
-gen rfm=(afm*100)/annualincome_HH
+gen rfm=afm/annualincome_HH
 
 * LPC - Loans per capita
 gen lpc=nbloans_HH/squareroot_HHsize
@@ -79,9 +79,24 @@ replace lapc=0 if lapc==.
 
 
 * Poverty
-gen dailyincome_pc=(annualincome_HH/365)/squareroot_HHsize
-gen dailyusdincome_pc=dailyincome_pc/45.73
-gen rrgpl=((dailyusdincome_pc-1.9)/1.9)*(-1)*100
+/*
+All is expressed in 2010 PPP
+However, new PL with 2017
+annualincome_HH is expressed in 2010 rupees
+annualincome_HH_backup is not deflated
+*/
+tabstat annualincome_HH annualincome_HH_backup, stat(n mean) by(year)
+* Deflate for 2017 PPP
+gen annualincome_HH2=annualincome_HH_backup
+replace annualincome_HH2=annualincome_HH2*(100/62.81) if year==2010
+replace annualincome_HH2=annualincome_HH2*(100/114.95) if year==2020
+replace annualincome_HH2=round(annualincome_HH2,1)
+* Test
+tabstat annualincome_HH_backup annualincome_HH annualincome_HH2, stat(n mean) by(year)
+
+gen dailyincome_pc=(annualincome_HH2/365)/HHsize
+gen dailyusdincome_pc=dailyincome_pc/65.10
+gen rrgpl=((dailyusdincome_pc-2.15)/2.15)*(-1)
 
 
 save"panel_v1", replace
@@ -314,7 +329,6 @@ sort HHID_panel year
 *** Label
 label var housetitle "House title: Yes"
 label var head_female "Head sex: Female"
-
 
 
 

@@ -398,6 +398,7 @@ global quant7 goldreadyamount
 global quanti $quanti1 $quanti2 $quanti3 $quanti4 $quanti5 $quanti6 $quanti7
 
 
+gen annualincome_HH_backup=annualincome_HH
 
 *** Deflate and round
 foreach x in $quanti {

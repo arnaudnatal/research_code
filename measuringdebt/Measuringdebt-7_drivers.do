@@ -24,7 +24,7 @@ do"C:\Users\Arnaud\Documents\GitHub\folderanalysis\measuringdebt.do"
 ****************************************
 * Stat desc
 ****************************************
-use"panel_v7", clear
+use"panel_v6", clear
 
 xtset panelvar time
 
@@ -86,7 +86,7 @@ tabstat assets_total annualincome_HH shareform loanamount_HH if year==2020, stat
 ****************************************
 * Drivers
 ****************************************
-use"panel_v7", clear
+use"panel_v6", clear
 
 
 *** Gen var
@@ -133,9 +133,16 @@ label var assets_cl4 "Assets: High"
 label var assets_cl5 "Assets: Very high"
 
 
+* Log
+foreach x in assets_total annualincome_HH loanamount_HH {
+replace `x'=1 if `x'<1
+gen log_`x'=log(`x')
+}
+
+
 
 ********** Macro
-global livelihood income_cl1 income_cl2 income_cl4 income_cl5 assets_cl1 assets_cl2 assets_cl4 assets_cl5
+global livelihood income_cl1 income_cl2 income_cl4 income_cl5 assets_cl1 assets_cl2 assets_cl4 assets_cl5 log_annualincome_HH log_assets_total
 
 global family HHsize HH_count_child stem housetitle ownland 
 
@@ -143,7 +150,7 @@ global head head_female head_age head_occ1 head_occ2 head_occ4 head_occ5 head_oc
 
 global shock dummymarriage dummydemonetisation lock_2 lock_3
 
-global debt shareform loanamount_HH_std
+global debt shareform loanamount_HH_std log_loanamount_HH
 
 global invar caste_2 caste_3 dalits village_2 village_3 village_4 village_5 village_6 village_7 village_8 village_9 village_10
 
@@ -171,6 +178,10 @@ bysort HHID_panel: egen mean_`x'=mean(`x')
 
 
 global livelihood ///
+log_annualincome_HH mean_log_annualincome_HH ///
+log_assets_total mean_log_assets_total
+
+/*
 income_cl1 mean_income_cl1 ///
 income_cl2 mean_income_cl2 ///
 income_cl4 mean_income_cl4 ///
@@ -179,6 +190,7 @@ assets_cl1 mean_assets_cl1 ///
 assets_cl2 mean_assets_cl2 ///
 assets_cl4 mean_assets_cl4 ///
 assets_cl5 mean_assets_cl5 
+*/
 
 global family ///
 HHsize mean_HHsize ///
@@ -208,7 +220,10 @@ dummydemonetisation mean_dummydemonetisation
 
 global debt ///
 shareform mean_shareform
-*loanamount_HH_std mean_loanamount_HH_std
+
+global debt2 ///
+log_loanamount_HH mean_log_loanamount_HH
+
 
 global invar ///
 caste_2 caste_3 ///
@@ -243,6 +258,9 @@ label var mean_year2010 "Within year: 2010"
 label var mean_year2016 "Within year: 2016-17"
 label var mean_year2020 "Within year: 2020-21"
 
+label var log_annualincome_HH "Annual income (log)"
+label var log_assets_total "Assets (log)"
+label var log_loanamount_HH "Loan amount (log)"
 
 *** Macro
 global time ///
@@ -313,12 +331,12 @@ $livelihood ///
 $family ///
 $head ///
 $shock ///
-shareform mean_shareform ///
+$debt ///
 $invar ///
 $time ///
 , family(binomial) link(probit) cluster(panelvar)
 est store spec5
-margins, dydx($livelihood $family $head $shock shareform mean_shareform $invar) post
+margins, dydx($livelihood $family $head $shock $debt $invar) post
 est store marg5
 
 
@@ -328,13 +346,13 @@ $livelihood ///
 $family ///
 $head ///
 $shock ///
-shareform mean_shareform ///
-loanamount_HH_std mean_loanamount_HH_std ///
+$debt ///
+$debt2 ///
 $invar ///
 $time ///
 , family(binomial) link(probit) cluster(panelvar)
 est store spec6
-margins, dydx($livelihood $family $head $shock shareform mean_shareform loanamount_HH_std mean_loanamount_HH_std $invar) post
+margins, dydx($livelihood $family $head $shock $debt $debt2 $invar) post
 est store marg6
 
 
@@ -358,19 +376,6 @@ esttab marg1 marg2 marg3 marg4 marg5 marg6 using "margin.csv", replace ///
 
 	
 ********** Specifications
-esttab spec1 spec2 spec3 spec4 spec5 spec6, ///
-	label b(3) p(3) eqlabels(none) alignment(S) ///
-	drop(_cons mean_* village_* $time) ///
-	star(* 0.10 ** 0.05 *** 0.01)
-
-esttab spec1 spec2 spec3 spec4 spec5 spec6 using "reg.csv", replace ///
-	label b(3) p(3) eqlabels(none) alignment(S) ///
-	drop(_cons mean_* village_* $time) ///
-	star(* 0.10 ** 0.05 *** 0.01) ///
-	cells("b(fmt(2)star)" "se(fmt(2)par)") ///
-	refcat(, nolabel) ///
-	stats(N N_clust, fmt(0 0)	labels(`"Observations"' `"Number of clust"'))
-
 esttab spec1 spec2 spec3 spec4 spec5 spec6 using "reg_full.csv", replace ///
 	label b(3) p(3) eqlabels(none) alignment(S) ///
 	star(* 0.10 ** 0.05 *** 0.01) ///
@@ -381,6 +386,7 @@ esttab spec1 spec2 spec3 spec4 spec5 spec6 using "reg_full.csv", replace ///
 
 
 
+/*
 ********** Overfitting
 
 overfit: glm fvi ///
@@ -418,22 +424,22 @@ $livelihood ///
 $family ///
 $head ///
 $shock ///
-shareform mean_shareform ///
+$debt ///
 $invar ///
 $time ///
 , family(binomial) link(probit) cluster(panelvar)
 
-overfit: glm fvi ///
+overfit: 
+glm fvi ///
 $livelihood ///
 $family ///
 $head ///
 $shock ///
-shareform mean_shareform ///
-loanamount_HH_std mean_loanamount_HH_std ///
+$debt ///
+$debt2 ///
 $invar ///
 $time ///
 , family(binomial) link(probit) cluster(panelvar)
-
 
 
 ****************************************
