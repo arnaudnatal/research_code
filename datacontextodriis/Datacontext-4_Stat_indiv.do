@@ -48,16 +48,38 @@ ta maritalstatus year if sex==1, col nofreq
 ta maritalstatus year if sex==2, col nofreq
 
 
+*** Working pop
+ta working_pop year, col nofreq
+ta working_pop year if sex==1, col nofreq
+ta working_pop year if sex==2, col nofreq
+
+
+
+********** 25 or more
+keep if age>=25
+ta age
+
 *** Education
 ta edulevel year, col nofreq
 ta edulevel year if sex==1, col nofreq
 ta edulevel year if sex==2, col nofreq
 
 
-*** Working pop
-ta working_pop year, col nofreq
-ta working_pop year if sex==1, col nofreq
-ta working_pop year if sex==2, col nofreq
+*** Comparison education - KILM
+ta edulevel educ_attainment2
+
+*** Education KILM
+ta educ_attainment2 year, col nofreq
+ta educ_attainment2 year if sex==1, col nofreq
+ta educ_attainment2 year if sex==2, col nofreq
+ta educ_attainment2 year if caste==1, col nofreq
+ta educ_attainment2 year if caste==2, col nofreq
+ta educ_attainment2 year if caste==3, col nofreq
+
+ta sex year
+ta caste year
+
+
 
 
 ****************************************
@@ -161,27 +183,27 @@ use"panel_indiv_v0", clear
 
 *** Initialization
 ta year
-drop if age<15
+keep if age>=15
 ta age working_pop
 ta sex year
 
 *** Rescale
 replace annualincome_indiv=annualincome_indiv/1000
 replace mainocc_annualincome_indiv=mainocc_annualincome_indiv/1000
-
+drop if mainocc_occupation_indiv==0
 
 *** Graph bar
 fre mainocc_occupation_indiv
-recode mainocc_occupation_indiv (5=4)
+*recode mainocc_occupation_indiv (5=4)
 ta mainocc_occupation_indiv, gen(perc)
 
 * Total
 preserve
 collapse (mean) perc*, by(year)
 reshape long perc, i(year) j(occ)
-label define occupcode 1"Agri SE" 2"Agri casual" 3"Casual" 4"Regular" 5"SE" 6"NREGA", modify
+label define occupcode 1"Agri SE" 2"Agri casual" 3"Casual" 4"Reg non-quali" 5"Reg quali" 6"SE" 7"NREGA", modify
 label values occ occupcode
-graph bar perc, over(year, lab(angle(90))) over(occ, lab(angle(45))) ///
+graph bar perc, horiz over(year, lab(angle())) over(occ, lab(angle())) ///
 asy ytitle("%") title("Total") legend(col(3) pos(6)) ///
 ylab(0(.1).6) ///
 bar(1, fcolor(gs14)) bar(2, fcolor(gs10)) bar(3, fcolor(gs5)) ///
@@ -193,11 +215,12 @@ preserve
 keep if sex==1
 collapse (mean) perc*, by(year)
 reshape long perc, i(year) j(occ)
-label define occupcode 1"Agri SE" 2"Agri casual" 3"Casual" 4"Regular" 5"SE" 6"NREGA", modify
+label define occupcode 1"Agri SE" 2"Agri casual" 3"Casual" 4"Reg non-quali" 5"Reg quali" 6"SE" 7"NREGA", modify
 label values occ occupcode
-graph bar perc, over(year, lab(angle(90))) over(occ, lab(angle(45))) ///
+graph bar perc, horiz over(year, lab(angle())) over(occ, lab(angle())) ///
 asy ytitle("%") title("Male") legend(col(3) pos(6)) ///
 ylab(0(.1).6) ///
+bar(1, fcolor(gs14)) bar(2, fcolor(gs10)) bar(3, fcolor(gs5)) ///
 name(occ_c1, replace)
 restore
 
@@ -206,16 +229,69 @@ preserve
 keep if sex==2
 collapse (mean) perc*, by(year)
 reshape long perc, i(year) j(occ)
-label define occupcode 1"Agri SE" 2"Agri casual" 3"Casual" 4"Regular" 5"SE" 6"NREGA", modify
+label define occupcode 1"Agri SE" 2"Agri casual" 3"Casual" 4"Reg non-quali" 5"Reg quali" 6"SE" 7"NREGA", modify
 label values occ occupcode
-graph bar perc, over(year, lab(angle(90))) over(occ, lab(angle(45))) ///
+graph bar perc, horiz over(year, lab(angle())) over(occ, lab(angle())) ///
 asy ytitle("%") title("Female") legend(col(3) pos(6)) ///
 ylab(0(.1).6) ///
+bar(1, fcolor(gs14)) bar(2, fcolor(gs10)) bar(3, fcolor(gs5)) ///
 name(occ_c2, replace)
 restore
 
+
+
+
+* Dalits
+preserve
+keep if caste==1
+collapse (mean) perc*, by(year)
+reshape long perc, i(year) j(occ)
+label define occupcode 1"Agri SE" 2"Agri casual" 3"Casual" 4"Reg non-quali" 5"Reg quali" 6"SE" 7"NREGA", modify
+label values occ occupcode
+graph bar perc, horiz over(year, lab(angle())) over(occ, lab(angle())) ///
+asy ytitle("%") title("Dalits") legend(col(3) pos(6)) ///
+ylab(0(.1).6) ///
+bar(1, fcolor(gs14)) bar(2, fcolor(gs10)) bar(3, fcolor(gs5)) ///
+name(occ_dal, replace)
+restore
+
+* Middle
+preserve
+keep if caste==2
+collapse (mean) perc*, by(year)
+reshape long perc, i(year) j(occ)
+label define occupcode 1"Agri SE" 2"Agri casual" 3"Casual" 4"Reg non-quali" 5"Reg quali" 6"SE" 7"NREGA", modify
+label values occ occupcode
+graph bar perc, horiz over(year, lab(angle())) over(occ, lab(angle())) ///
+asy ytitle("%") title("Middle") legend(col(3) pos(6)) ///
+ylab(0(.1).6) ///
+bar(1, fcolor(gs14)) bar(2, fcolor(gs10)) bar(3, fcolor(gs5)) ///
+name(occ_mid, replace)
+restore
+
+* Upper
+preserve
+keep if caste==3
+collapse (mean) perc*, by(year)
+reshape long perc, i(year) j(occ)
+label define occupcode 1"Agri SE" 2"Agri casual" 3"Casual" 4"Reg non-quali" 5"Reg quali" 6"SE" 7"NREGA", modify
+label values occ occupcode
+graph bar perc, horiz over(year, lab(angle())) over(occ, lab(angle())) ///
+asy ytitle("%") title("Upper") legend(col(3) pos(6)) ///
+ylab(0(.1).6) ///
+bar(1, fcolor(gs14)) bar(2, fcolor(gs10)) bar(3, fcolor(gs5)) ///
+name(occ_up, replace)
+restore
+
+
+
+
 *** Combine
-grc1leg occ occ_c1 occ_c2, col(3) name(occ_comb, replace)
+grc1leg occ occ_c1 occ_c2, col(2) name(occ_comb, replace)
+
+grc1leg occ occ_c1 occ_c2, col(2) name(occ_comb, replace)
+
+
 graph export "Occ_comb.pdf", as(pdf) replace
 
 

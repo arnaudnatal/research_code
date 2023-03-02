@@ -43,6 +43,10 @@ drop _merge
 merge 1:1 HHID2010 INDID2010 using "RUME-education"
 drop _merge
 
+*** Edu indiv
+merge 1:1 HHID2010 INDID2010 using "RUME-education_kilm"
+drop _merge
+
 *** Debt
 merge m:1 HHID2010 using "RUME-loans_HH"
 drop _merge
@@ -97,6 +101,10 @@ drop _merge
 
 *** Edu indiv
 merge 1:1 HHID2016 INDID2016 using "NEEMSIS1-education"
+drop _merge
+
+*** Edu indiv
+merge 1:1 HHID2016 INDID2016 using "NEEMSIS1-education_kilm"
 drop _merge
 
 *** Debt
@@ -159,6 +167,10 @@ drop _merge
 
 *** Edu indiv
 merge 1:1 HHID2020 INDID2020 using "NEEMSIS2-education"
+drop _merge
+
+*** Edu indiv
+merge 1:1 HHID2020 INDID2020 using "NEEMSIS2-education_kilm"
 drop _merge
 
 *** Debt
@@ -384,7 +396,7 @@ save"panel_v0", replace
 use"$directory\RUME_v0", clear
 
 keep HHID_panel INDID_panel sex age name ///
-edulevel ///
+edulevel educ_attainment educ_attainment2 ///
 working_pop ///
 mainocc_profession_indiv mainocc_occupation_indiv mainocc_sector_indiv mainocc_annualincome_indiv mainocc_occupationname_indiv annualincome_indiv
 
@@ -401,7 +413,7 @@ drop if livinghome==3
 drop if livinghome==4
 
 keep HHID_panel INDID_panel sex age name ///
-edulevel maritalstatus ///
+edulevel maritalstatus educ_attainment educ_attainment2 ///
 working_pop ///
 mainocc_profession_indiv mainocc_occupation_indiv mainocc_sector_indiv mainocc_annualincome_indiv mainocc_occupationname_indiv annualincome_indiv
 
@@ -420,7 +432,7 @@ drop if livinghome==3
 drop if livinghome==4
 
 keep HHID_panel INDID_panel sex age name ///
-edulevel maritalstatus ///
+edulevel maritalstatus educ_attainment educ_attainment2 ///
 working_pop ///
 mainocc_profession_indiv mainocc_occupation_indiv mainocc_sector_indiv mainocc_annualincome_indiv mainocc_occupationname_indiv annualincome_indiv
 

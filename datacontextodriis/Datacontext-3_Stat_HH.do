@@ -29,6 +29,7 @@ replace annualincome_HH=annualincome_HH/1000
 replace loanamount_HH=loanamount_HH/10000
 gen dummydebt=0
 replace dummydebt=1 if nbloans_HH>0 & nbloans_HH!=.
+replace sizeownland=sizeownland*0.404686
 
 
 *** Caste
@@ -128,6 +129,7 @@ replace annualincome_HH=annualincome_HH/1000
 replace loanamount_HH=loanamount_HH/10000
 gen dummydebt=0
 replace dummydebt=1 if nbloans_HH>0 & nbloans_HH!=.
+replace sizeownland=sizeownland*0.404686
 
 
 
@@ -337,23 +339,6 @@ restore
 *** Combine
 grc1leg debt debt_c1 debt_c2 debt_c3, col(2) name(debt_comb, replace)
 graph export "Debt_total.pdf", as(pdf) replace
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 ****************************************
 * END
