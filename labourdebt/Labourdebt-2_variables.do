@@ -88,8 +88,8 @@ sum dar
 * FVI
 gen fvi=(2*tdr+2*isr+rrgpl2)/5
 
-* FVI-2
-*gen fvi2=(tar+isr+rrgpl2)/3
+* FVI
+*gen fvi=(tar+isr+rrgpl2)/3
 
 ta fvi
 sum fvi
@@ -97,6 +97,12 @@ sum fvi
 save"panel_v1", replace 
 ****************************************
 * END
+
+
+
+
+
+
 
 
 
@@ -284,7 +290,11 @@ save"RUME-newoccvar", replace
 ****************************************
 use"raw/NEEMSIS1-occupnew", clear
 
-fre kindofwork
+fre kindofwork_new
+drop if kindofwork_new==5
+drop if kindofwork_new==6
+drop if kindofwork_new==7
+drop if kindofwork_new==8
 
 keep HHID2016 INDID2016 profession sector occupation nboccupation_indiv annualincome hoursayear
 fre occupation
@@ -322,9 +332,19 @@ save"NEEMSIS1-newoccvar", replace
 ****************************************
 use"raw/NEEMSIS2-occupnew", clear
 
+drop kindofwork
+rename kindofwork_new kindofwork
 fre kindofwork
+*drop if kindofwork==1
+*drop if kindofwork==2
+*drop if kindofwork==3
+*drop if kindofwork==4
+*drop if kindofwork==5
+*drop if kindofwork==6
+*drop if kindofwork==7
+*drop if kindofwork==8
 
-keep HHID2020 INDID2020 profession sector occupation nboccupation_indiv annualincome hoursayear
+keep HHID2020 INDID2020 profession sector occupation nboccupation_indiv annualincome hoursayear kindofwork
 fre occupation
 
 *** Merge charact
@@ -335,6 +355,84 @@ drop _merge
 gen dep=0
 replace dep=1 if age<15
 replace dep=1 if age>64
+
+
+*** Kindofwork par sexe
+ta kindofwork sex, col
+
+/*
+********** Emploi total
+                      |      Male     Female |     Total
+----------------------+----------------------+----------
+Agricultural activity |       191         61 |       252 
+                      |     14.17       4.78 |      9.60 
+----------------------+----------------------+----------
+Self-employed, own ac |       142         37 |       179 
+                      |     10.53       2.90 |      6.82 
+----------------------+----------------------+----------
+Salaried job (agri in |       357        451 |       808 
+                      |     26.48      35.34 |     30.79 
+----------------------+----------------------+----------
+Salaried job (non-agr |       597        610 |     1,207 
+                      |     44.29      47.81 |     46.00 
+----------------------+----------------------+----------
+Unpaid worker in hous |         3          7 |        10 
+                      |      0.22       0.55 |      0.38 
+----------------------+----------------------+----------
+Unpaid worker in othe |         3          6 |         9 
+                      |      0.22       0.47 |      0.34 
+----------------------+----------------------+----------
+Unpaid worker in own  |        50        103 |       153 
+                      |      3.71       8.07 |      5.83 
+----------------------+----------------------+----------
+Unpaid worker in anot |         5          1 |         6 
+                      |      0.37       0.08 |      0.23 
+----------------------+----------------------+----------
+                Total |     1,348      1,276 |     2,624 
+                      |    100.00     100.00 |    100.00 
+
+
+
+********** Emploi rémunéré
+                      |      Male     Female |     Total
+----------------------+----------------------+----------
+Agricultural activity |       191         61 |       252 
+                      |     14.84       5.26 |     10.30 
+----------------------+----------------------+----------
+Self-employed, own ac |       142         37 |       179 
+                      |     11.03       3.19 |      7.32 
+----------------------+----------------------+----------
+Salaried job (agri in |       357        451 |       808 
+                      |     27.74      38.91 |     33.03 
+----------------------+----------------------+----------
+Salaried job (non-agr |       597        610 |     1,207 
+                      |     46.39      52.63 |     49.35 
+----------------------+----------------------+----------
+                Total |     1,287      1,159 |     2,446 
+                      |    100.00     100.00 |    100.00 
+
+
+********** Emploi non-rémunéré
+
+                 is ? |      Male     Female |     Total
+----------------------+----------------------+----------
+Unpaid worker in hous |         3          7 |        10 
+                      |      4.92       5.98 |      5.62 
+----------------------+----------------------+----------
+Unpaid worker in othe |         3          6 |         9 
+                      |      4.92       5.13 |      5.06 
+----------------------+----------------------+----------
+Unpaid worker in own  |        50        103 |       153 
+                      |     81.97      88.03 |     85.96 
+----------------------+----------------------+----------
+Unpaid worker in anot |         5          1 |         6 
+                      |      8.20       0.85 |      3.37 
+----------------------+----------------------+----------
+                Total |        61        117 |       178 
+                      |    100.00     100.00 |    100.00 
+
+
+*/
 
 
 *** Merge HHID_panel

@@ -86,7 +86,7 @@ foreach y in $yvar {
 capture noisily xtdpdml `y' $compo1 $econ $head, inv($nonvar) predetermined(L.fvi) fiml
 est store mlsem_`y'
 
-esttab mlsem_`y' using "new_reg_spec1_`y'.csv", replace ///
+esttab mlsem_`y' using "new2_reg_spec1_`y'.csv", replace ///
 	label b(3) p(3) eqlabels(none) alignment(S) ///
 	drop(_cons $var) ///
 	star(* 0.10 ** 0.05 *** 0.01) ///
@@ -100,7 +100,7 @@ log close
 
 
 
-
+/*
 
 ********** Spec 2
 log using "Labourdebt_spec2.log", replace

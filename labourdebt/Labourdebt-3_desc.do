@@ -35,7 +35,7 @@ ta `y', gen(`y'_)
 }
 
 drop $yvar
-collapse (mean) ind_total_1 ind_total_2 ind_total_3 ind_total_4 ind_total_5 ind_total_6 ind_total_7 ind_total_8 ind_total_9 ind_female_1 ind_female_2 ind_female_3 ind_female_4 ind_female_5 ind_male_1 ind_male_2 ind_male_3 ind_male_4 ind_male_5 ind_agri_1 ind_agri_2 ind_agri_3 ind_agri_4 ind_agri_5 ind_agri_6 ind_nona_1 ind_nona_2 ind_nona_3 ind_nona_4 ind_nona_5 ind_nona_6 ind_nona_7 ind_nona_8 ind_nona_9, by(year)
+collapse (mean) ind_total_1 ind_total_2 ind_total_3 ind_total_4 ind_total_5 ind_total_6 ind_total_7 ind_total_8 ind_total_9 ind_female_1 ind_female_2 ind_female_3 ind_female_4 ind_female_5 ind_male_1 ind_male_2 ind_male_3 ind_male_4 ind_male_5 ind_agri_1 ind_agri_2 ind_agri_3 ind_agri_4 ind_agri_5 ind_agri_6 ind_nona_1 ind_nona_2 ind_nona_3 ind_nona_4 ind_nona_5 ind_nona_6 ind_nona_7 ind_nona_8, by(year)
 
 
 reshape long ind_total_ ind_female_ ind_male_ ind_agri_ ind_nona_, i(year) j(n)
@@ -116,9 +116,9 @@ name(ind_nona, replace) graphregion(margin(zero))
 *** Combine
 grc1leg ind_male ind_female ind_agri ind_nona, col(2) name(comb_ind_sub, replace) graphregion(margin(zero))
 
-set graph on
 grc1leg ind_total comb_ind_sub, col(2) graphregion(margin(zero)) name(ind_comb, replace)
 graph export "graph/yvar_ind.pdf", as(pdf) replace
+set graph on
 
 ****************************************
 * END
@@ -154,7 +154,7 @@ ta `y', gen(`y'_)
 }
 
 drop $yvar
-collapse (mean) occ_total_1 occ_total_2 occ_total_3 occ_total_4 occ_total_5 occ_total_6 occ_total_7 occ_total_8 occ_total_9 occ_total_10 occ_total_11 occ_total_12 occ_total_13 occ_total_14 occ_female_1 occ_female_2 occ_female_3 occ_female_4 occ_female_5 occ_female_6 occ_female_7 occ_female_8 occ_female_9 occ_male_1 occ_male_2 occ_male_3 occ_male_4 occ_male_5 occ_male_6 occ_male_7 occ_male_8 occ_agri_1 occ_agri_2 occ_agri_3 occ_agri_4 occ_agri_5 occ_agri_6 occ_agri_7 occ_agri_8 occ_agri_9 occ_agri_10 occ_nona_1 occ_nona_2 occ_nona_3 occ_nona_4 occ_nona_5 occ_nona_6 occ_nona_7 occ_nona_8 occ_nona_9 occ_nona_10, by(year)
+collapse (mean) occ_total_1 occ_total_2 occ_total_3 occ_total_4 occ_total_5 occ_total_6 occ_total_7 occ_total_8 occ_total_9 occ_total_10 occ_total_11 occ_total_12 occ_female_1 occ_female_2 occ_female_3 occ_female_4 occ_female_5 occ_female_6 occ_female_7 occ_female_8 occ_female_9 occ_male_1 occ_male_2 occ_male_3 occ_male_4 occ_male_5 occ_male_6 occ_male_7 occ_male_8 occ_agri_1 occ_agri_2 occ_agri_3 occ_agri_4 occ_agri_5 occ_agri_6 occ_agri_7 occ_agri_8 occ_nona_1 occ_nona_2 occ_nona_3 occ_nona_4 occ_nona_5 occ_nona_6 occ_nona_7 occ_nona_8 occ_nona_9, by(year)
 
 
 reshape long occ_total_ occ_female_ occ_male_ occ_agri_ occ_nona_, i(year) j(n)
@@ -236,9 +236,10 @@ name(occ_nona, replace)
 *** Combine
 grc1leg occ_male occ_female occ_agri occ_nona, col(2) name(comb_occ_sub, replace) graphregion(margin(zero))
 
-set graph on
 grc1leg occ_total comb_occ_sub, col(2) graphregion(margin(zero)) name(occ_comb, replace)
 graph export "graph/yvar_occ.pdf", as(pdf) replace
+set graph on
+
 
 ****************************************
 * END
@@ -267,6 +268,7 @@ use"panel_v3", clear
 
 
 ********** FVI
+set graph off
 stripplot fvi, over(time) ///
 stack width(0.01) jitter(1) refline(lp(dash)) ///
 box(barw(0.1)) boffset(-0.15) pctile(5) ///
@@ -275,7 +277,7 @@ xla(0(.1)1, ang(h)) yla(, noticks) ///
 legend(order(1 "Mean" 4 "Whisker from 5% to 95%") pos(6) col(2) on) ///
 xtitle("FVI") ytitle("") name(sp_fvi_horiz, replace)
 graph export "graph/Distri_fvi.pdf", as(pdf) replace
-
+set graph on
 
 ********** Other X
 
