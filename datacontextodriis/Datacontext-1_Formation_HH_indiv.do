@@ -225,6 +225,9 @@ save"NEEMSIS2_v0", replace
 ********** RUME
 use"$directory\RUME_v0", clear
 
+* Migration at HH level
+bysort HHID2010: egen sum_dummymigration=sum(dummymigration)
+
 * Keep
 keep HHID_panel village villagearea ///
 house housetitle ///
@@ -233,7 +236,7 @@ assets_sizeownland assets_housevalue assets_livestock assets_goods assets_ownlan
 incomeagri_HH incomenonagri_HH annualincome_HH shareincomeagri_HH shareincomenonagri_HH ///
 ownland sizeownland ///
 loanamount_HH nbloans_HH totHH_lendercatamt_info totHH_lendercatamt_semi totHH_lendercatamt_form totHH_givencatamt_econ totHH_givencatamt_curr totHH_givencatamt_huma totHH_givencatamt_soci totHH_givencatamt_hous ///
-remittnet_HH nonworkersratio
+remittnet_HH nonworkersratio sum_dummymigration
 
 * Level
 gen year=2010
@@ -249,6 +252,9 @@ save"RUME_v1", replace
 ********** NEEMSIS-1
 use"$directory\NEEMSIS1_v0", clear
 
+* Migration at HH level
+bysort HHID2016: egen sum_dummymigration=sum(dummymigration)
+
 * Keep
 keep HHID_panel villageid villagearea ///
 house housetitle ///
@@ -257,7 +263,7 @@ assets_sizeownland assets_housevalue assets_livestock assets_goods assets_ownlan
 incomeagri_HH incomenonagri_HH annualincome_HH shareincomeagri_HH shareincomenonagri_HH ///
 ownland sizeownland ///
 loanamount_HH nbloans_HH totHH_lendercatamt_info totHH_lendercatamt_semi totHH_lendercatamt_form totHH_givencatamt_econ totHH_givencatamt_curr totHH_givencatamt_huma totHH_givencatamt_soci totHH_givencatamt_hous ///
-remittnet_HH nonworkersratio
+remittnet_HH nonworkersratio sum_dummymigration
 
 * Level
 gen year=2016
@@ -274,6 +280,9 @@ save"NEEMSIS1_v1", replace
 ********** NEEMSIS-2
 use"$directory\NEEMSIS2_v0", clear
 
+* Migration at HH level
+bysort HHID2020: egen sum_dummymigration=sum(dummymigration)
+
 * Keep
 keep HHID_panel villageid villagearea ///
 house housetitle ///
@@ -282,7 +291,7 @@ assets_sizeownland assets_housevalue assets_livestock assets_goods assets_ownlan
 incomeagri_HH incomenonagri_HH annualincome_HH shareincomeagri_HH shareincomenonagri_HH ///
 ownland sizeownland ///
 loanamount_HH nbloans_HH totHH_lendercatamt_info totHH_lendercatamt_semi totHH_lendercatamt_form totHH_givencatamt_econ totHH_givencatamt_curr totHH_givencatamt_huma totHH_givencatamt_soci totHH_givencatamt_hous ///
-remittnet_HH nonworkersratio
+remittnet_HH nonworkersratio sum_dummymigration
 
 * Level
 gen year=2020
@@ -302,6 +311,12 @@ use"RUME_v1", clear
 
 append using "NEEMSIS1_v1"
 append using "NEEMSIS2_v1"
+
+
+*** Migration
+ta sum_dummymigration
+replace sum_dummymigration=1 if sum_dummymigration>1
+rename sum_dummymigration dummymigration
 
 *** Villages
 

@@ -52,17 +52,6 @@ tabstat HHsize sexratio dependencyratio nonworkersratio if caste==1, stat(mean) 
 tabstat HHsize sexratio dependencyratio nonworkersratio if caste==2, stat(mean) by(year) long
 tabstat HHsize sexratio dependencyratio nonworkersratio if caste==3, stat(mean) by(year) long
 
-
-*** % of land owner?
-ta ownland year, col nofreq
-ta ownland year if caste2==1, col nofreq
-ta ownland year if caste2==2, col nofreq
-
-*** Size of land
-tabstat sizeownland, stat(n mean p50) by(year)
-tabstat sizeownland if caste2==1, stat(n mean p50) by(year)
-tabstat sizeownland if caste2==2, stat(n mean p50) by(year)
-
 *** Income
 tabstat annualincome_HH, stat(mean cv q) by(year)
 tabstat annualincome_HH if caste==1, stat(mean cv q) by(year)
@@ -86,6 +75,25 @@ tabstat assets_totalnoland, stat(mean cv q) by(year)
 tabstat assets_totalnoland if caste==1, stat(mean cv q) by(year)
 tabstat assets_totalnoland if caste==2, stat(mean cv q) by(year)
 tabstat assets_totalnoland if caste==3, stat(mean cv q) by(year)
+
+*** Migraiton
+ta dummymigration year, col nofreq
+ta dummymigration year if caste==1, col nofreq
+ta dummymigration year if caste==2, col nofreq
+ta dummymigration year if caste==3, col nofreq
+
+
+*** % of land owner?
+ta ownland year, col nofreq
+ta ownland year if caste==1, col nofreq
+ta ownland year if caste==2, col nofreq
+ta ownland year if caste==3, col nofreq
+
+*** Size of land
+tabstat sizeownland, stat(mean cv q) by(year)
+tabstat sizeownland if caste==1, stat(mean cv q) by(year)
+tabstat sizeownland if caste==2, stat(mean cv q) by(year)
+tabstat sizeownland if caste==3, stat(mean cv q) by(year)
 
 *** Incidence of debt
 ta dummydebt year, col nofreq
@@ -114,9 +122,59 @@ tabstat loanamount_HH if caste==3, stat(mean cv q) by(year)
 
 
 
+****************************************
+* At least one source of agricultural income
+****************************************
+cls
+use"panel_v0", clear
+
+*** Rescale
+replace assets_total=assets_total/10000
+replace assets_totalnoland=assets_totalnoland/10000
+replace annualincome_HH=annualincome_HH/1000
+replace loanamount_HH=loanamount_HH/10000
+gen dummydebt=0
+replace dummydebt=1 if nbloans_HH>0 & nbloans_HH!=.
+replace sizeownland=sizeownland*0.404686
+
+*** Construction
+ta shareincomeagri_HH, m
+
+gen agri_HH=shareincomeagri_HH
+replace agri_HH=1 if shareincomeagri_HH>0
+
+* Recode à la main pour ceux qui ont un revenu annuel de 0
+sort HHID_panel year
+list HHID_panel year ownland annualincome_HH if shareincomeagri_HH==., clean noobs
+
+replace agri_HH=0 if HHID_panel=="KAR41" & year==2020
+replace agri_HH=0 if HHID_panel=="MANAM14" & year==2020
+replace agri_HH=1 if HHID_panel=="MANAM31" & year==2020
+replace agri_HH=1 if HHID_panel=="NAT35" & year==2016
+
+*** Stat
+ta agri_HH year, col nofreq
+ta agri_HH year if caste==1, col nofreq
+ta agri_HH year if caste==2, col nofreq
+ta agri_HH year if caste==3, col nofreq
 
 ****************************************
-* Graph land
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Land
 ****************************************
 cls
 use"panel_v0", clear
@@ -132,7 +190,6 @@ replace dummydebt=1 if nbloans_HH>0 & nbloans_HH!=.
 replace sizeownland=sizeownland*0.404686
 
 
-
 *** Total
 preserve
 collapse (mean) ownland sizeownland, by(time)
@@ -141,8 +198,8 @@ twoway ///
 (connected sizeownland time, yaxis(2)) ///
 , ///
 ylabel(0(.1).7, axis(1)) ///
-ylabel(1(.5)5, axis(2)) ///
-ymtick(1(.25)5, axis(2)) ///
+ylabel(0(.5)2, axis(2)) ///
+ymtick(0(.25)2, axis(2)) ///
 ytitle("Share of land owner", axis(1)) ///
 ytitle("Average land size (ha)", axis(2)) ///
 xlabel(1 "2010" 2 "2016-17" 3 "2020-21") ///
@@ -164,8 +221,8 @@ twoway ///
 (connected sizeownland time if caste==1, yaxis(2)) ///
 , ///
 ylabel(0(.1).7, axis(1)) ///
-ylabel(1(.5)5, axis(2)) ///
-ymtick(1(.25)5, axis(2)) ///
+ylabel(0(.5)2, axis(2)) ///
+ymtick(0(.25)2, axis(2)) ///
 ytitle("Share of land owner", axis(1)) ///
 ytitle("Average land size (ha)", axis(2)) ///
 xlabel(1 "2010" 2 "2016-17" 3 "2020-21") ///
@@ -181,8 +238,8 @@ twoway ///
 (connected sizeownland time if caste==2, yaxis(2)) ///
 , ///
 ylabel(0(.1).7, axis(1)) ///
-ylabel(1(.5)5, axis(2)) ///
-ymtick(1(.25)5, axis(2)) ///
+ylabel(0(.5)2, axis(2)) ///
+ymtick(0(.25)2, axis(2)) ///
 ytitle("Share of land owner", axis(1)) ///
 ytitle("Average land size (ha)", axis(2)) ///
 xlabel(1 "2010" 2 "2016-17" 3 "2020-21") ///
@@ -198,8 +255,8 @@ twoway ///
 (connected sizeownland time if caste==3, yaxis(2)) ///
 , ///
 ylabel(0(.1).7, axis(1)) ///
-ylabel(1(.5)5, axis(2)) ///
-ymtick(1(.25)5, axis(2)) ///
+ylabel(0(.5)2, axis(2)) ///
+ymtick(0(.25)2, axis(2)) ///
 ytitle("Share of land owner", axis(1)) ///
 ytitle("Average land size (ha)", axis(2)) ///
 xlabel(1 "2010" 2 "2016-17" 3 "2020-21") ///
@@ -216,12 +273,6 @@ graph export "Agri_total.pdf", as(pdf) replace
 
 ****************************************
 * END
-
-
-
-
-
-
 
 
 
