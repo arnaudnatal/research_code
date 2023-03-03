@@ -76,7 +76,7 @@ tabstat assets_totalnoland if caste==1, stat(mean cv q) by(year)
 tabstat assets_totalnoland if caste==2, stat(mean cv q) by(year)
 tabstat assets_totalnoland if caste==3, stat(mean cv q) by(year)
 
-*** Migraiton
+*** Migration
 ta dummymigration year, col nofreq
 ta dummymigration year if caste==1, col nofreq
 ta dummymigration year if caste==2, col nofreq
@@ -110,6 +110,8 @@ tabstat loanamount_HH if caste==3, stat(mean cv q) by(year)
 
 ****************************************
 * END
+
+
 
 
 

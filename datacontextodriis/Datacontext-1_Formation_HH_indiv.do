@@ -39,12 +39,12 @@ drop _merge
 merge 1:1 HHID2010 INDID2010 using "RUME-occup_indiv"
 drop _merge
 
-*** Edu indiv
-merge 1:1 HHID2010 INDID2010 using "RUME-education"
+*** KILM
+merge 1:1 HHID2010 INDID2010 using "RUME-kilm"
 drop _merge
 
 *** Edu indiv
-merge 1:1 HHID2010 INDID2010 using "RUME-education_kilm"
+merge 1:1 HHID2010 INDID2010 using "RUME-education"
 drop _merge
 
 *** Debt
@@ -99,12 +99,12 @@ drop _merge
 merge 1:1 HHID2016 INDID2016 using "NEEMSIS1-occup_indiv"
 drop _merge
 
-*** Edu indiv
-merge 1:1 HHID2016 INDID2016 using "NEEMSIS1-education"
+*** KILM
+merge 1:1 HHID2016 INDID2016 using "NEEMSIS1-kilm"
 drop _merge
 
 *** Edu indiv
-merge 1:1 HHID2016 INDID2016 using "NEEMSIS1-education_kilm"
+merge 1:1 HHID2016 INDID2016 using "NEEMSIS1-education"
 drop _merge
 
 *** Debt
@@ -165,12 +165,12 @@ drop _merge
 merge 1:1 HHID2020 INDID2020 using "NEEMSIS2-occup_indiv"
 drop _merge
 
-*** Edu indiv
-merge 1:1 HHID2020 INDID2020 using "NEEMSIS2-education"
+*** KILM
+merge 1:1 HHID2020 INDID2020 using "NEEMSIS2-kilm"
 drop _merge
 
 *** Edu indiv
-merge 1:1 HHID2020 INDID2020 using "NEEMSIS2-education_kilm"
+merge 1:1 HHID2020 INDID2020 using "NEEMSIS2-education"
 drop _merge
 
 *** Debt
@@ -413,7 +413,8 @@ use"$directory\RUME_v0", clear
 keep HHID_panel INDID_panel sex age name ///
 edulevel educ_attainment educ_attainment2 ///
 working_pop ///
-mainocc_profession_indiv mainocc_occupation_indiv mainocc_sector_indiv mainocc_annualincome_indiv mainocc_occupationname_indiv annualincome_indiv
+mainocc_profession_indiv mainocc_occupation_indiv mainocc_sector_indiv mainocc_annualincome_indiv mainocc_occupationname_indiv annualincome_indiv ///
+occupationname_mainoccup profession_mainoccup sector_mainoccup educ_attainment educ_attainment2 agecat workingage youth employed str_kindofwork employee selfemployed sector_kilm4 agri industry services sector_kilm4_V2 kilm5 elementaryoccup
 
 gen year=2010
 
@@ -430,7 +431,8 @@ drop if livinghome==4
 keep HHID_panel INDID_panel sex age name ///
 edulevel maritalstatus educ_attainment educ_attainment2 ///
 working_pop ///
-mainocc_profession_indiv mainocc_occupation_indiv mainocc_sector_indiv mainocc_annualincome_indiv mainocc_occupationname_indiv annualincome_indiv
+mainocc_profession_indiv mainocc_occupation_indiv mainocc_sector_indiv mainocc_annualincome_indiv mainocc_occupationname_indiv annualincome_indiv hoursayear_indiv ///
+occupationname_mainoccup profession_mainoccup sector_mainoccup educ_attainment educ_attainment2 agecat workingage youth employed str_kindofwork employee selfemployed sector_kilm4 agri industry services sector_kilm4_V2 kilm5 elementaryoccup
 
 gen year=2016
 
@@ -449,7 +451,8 @@ drop if livinghome==4
 keep HHID_panel INDID_panel sex age name ///
 edulevel maritalstatus educ_attainment educ_attainment2 ///
 working_pop ///
-mainocc_profession_indiv mainocc_occupation_indiv mainocc_sector_indiv mainocc_annualincome_indiv mainocc_occupationname_indiv annualincome_indiv
+mainocc_profession_indiv mainocc_occupation_indiv mainocc_sector_indiv mainocc_annualincome_indiv mainocc_occupationname_indiv annualincome_indiv hoursayear_indiv ///
+occupationname_mainoccup profession_mainoccup sector_mainoccup educ_attainment educ_attainment2 agecat workingage youth employed str_kindofwork employee selfemployed sector_kilm4 agri industry services sector_kilm4_V2 kilm5 elementaryoccup
 
 gen year=2020
 

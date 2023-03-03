@@ -82,122 +82,6 @@ ta edulevel educ_attainment2
 
 
 
-****************************************
-* Avec la base de Cécile
-****************************************
-cls
-use"KILM_Ind_VF2.dta", clear
-
-keep HHID_panel INDID_panel year
-gen base_cecile=1
-
-save"Size_cecile.dta", replace
-
-***
-use"panel_indiv_v0", clear
-
-merge 1:1 HHID_panel INDID_panel year using "Size_cecile.dta"
-drop _merge
-
-list HHID_panel INDID_panel year age sex name caste if base_cecile==., clean noobs
-
-gen keep=0
-replace keep=1 if base_cecile==.
-
-bysort HHID_panel: egen max_c=max(keep)
-keep if max_c==1
-
-order HHID_panel INDID_panel year name sex age working_pop mainocc_occupation_indiv keep
-
-
-********** Comparison
-cls
-*** Cécile
-use"KILM_Ind_VF2.dta", clear
-
-keep if age>=15
-ta year
-ta occupation_mainoccup, m
-
-ta occupation_mainoccup employed, m
-ta occupation_mainoccup employed if year==2010, m
-ta occupation_mainoccup employed if year==2016, m
-ta occupation_mainoccup employed if year==2020, m
-
-
-*** Arnaud
-use"panel_indiv_v0", clear
-
-keep if age>=15
-ta year
-ta mainocc_occupation_indiv, m
-
-
-ta year
-keep if age>=15
-drop if mainocc_occupation_indiv==0
-drop if mainocc_occupation_indiv==.
-replace annualincome_indiv=annualincome_indiv/1000
-replace mainocc_annualincome_indiv=mainocc_annualincome_indiv/1000
-ta sex year
-
-
-
-
-
-
-********** Stat Cécile
-cls
-use"KILM_Ind_VF2.dta", clear
-
-*** Check the construction
-keep if age>=15
-
-ta occupation_mainoccup employed if year==2010, m
-ta occupation_mainoccup employed if year==2016, m
-ta occupation_mainoccup employed if year==2020, m
-
-drop if occupation_mainoccup==0
-drop if occupation_mainoccup==.
-
-ta elementaryoccup, m
-ta occupation_mainoccup elementaryoccup, m
-
-ta employed
-ta employed year, col nofreq
-ta employed year if sex==1, col nofreq
-ta employed year if sex==2, col nofreq
-
-
-*** Original
-bysort survey : tab elementaryoccup groupcaste, col
-
-by survey : tab kilm1
-by survey : tab kilm1 sex, col
-by survey : tab kilm1 groupcaste, col
-
-bysort survey : tab occupation_mainoccup if employed==1
-bysort survey occupation_mainoccup: sum annualincome_mainoccup_real if employed==1
-bysort survey sex : sum annualincome_mainoccup_real if employed==1
-bysort survey groupcaste : sum annualincome_mainoccup_real if employed==1
-
-bysort survey : tab sector_kilm4 if employed==1
-bysort survey : tab sector_kilm4 sex if employed==1, col
-bysort survey : tab sector_kilm4 groupcaste if employed==1, col
-
-
-
-****************************************
-* END
-
-
-
-
-
-
-
-
-
 
 
 
@@ -208,38 +92,24 @@ bysort survey : tab sector_kilm4 groupcaste if employed==1, col
 * Employment rate
 ****************************************
 cls
-use"panel_indiv_v0", clear
+use"panel_indiv_v0.dta", clear
 
-*** Initialization
-keep if age>=15
-ta sex year
+*** Selection
+ta employed
+drop if employed==.
 
-*** Creation
-ta age mainocc_occupation_indiv, m
-fre mainocc_occupation_indiv
+ta employed year, col nofreq
+ta employed year if sex==1, col nofreq
+ta employed year if sex==2, col nofreq
+ta employed year if caste==1, col nofreq
+ta employed year if caste==2, col nofreq
+ta employed year if caste==3, col nofreq
 
-gen occup1=.
-replace occup1=0 if mainocc_occupation_indiv==.
-replace occup1=0 if mainocc_occupation_indiv==0
-replace occup1=1 if mainocc_occupation_indiv>0 & occup1==.
-ta mainocc_occupation_indiv occup1, m
+keep HHID_panel INDID_panel year employed caste sex
 
+rename employed occup1
 gen occup2=occup1
 recode occup2 (1=0) (0=1)
-
-ta occup1 occup2, m
-
-*** Stat
-ta sex year
-ta caste year
-
-ta occup1 year, col nofreq
-ta occup1 year if sex==1, col nofreq
-ta occup1 year if sex==2, col nofreq
-ta occup1 year if caste==1, col nofreq
-ta occup1 year if caste==2, col nofreq
-ta occup1 year if caste==3, col nofreq
-
 
 ********** Graph
 set graph off
@@ -354,23 +224,100 @@ graph export "Emp_share.pdf", as(pdf) replace
 
 
 ****************************************
-* Graph occupations
+* Employment only for employed=1
 ****************************************
 cls
-use"panel_indiv_v0", clear
+use"panel_indiv_v0.dta", clear
 
-*** Initialization
+*** Selection
+drop if employed==.
+drop if employed==0
 ta year
-keep if age>=15
-drop if mainocc_occupation_indiv==0
-drop if mainocc_occupation_indiv==.
+* 3668
+
+
+*** Elementary only for employed individuals
+cls
+ta elementaryoccup year, col nofreq
+ta elementaryoccup year if sex==1, col nofreq
+ta elementaryoccup year if sex==2, col nofreq
+ta elementaryoccup year if caste==1, col nofreq
+ta elementaryoccup year if caste==2, col nofreq
+ta elementaryoccup year if caste==3, col nofreq
+
+
+*** Sector
+cls
+tab sector_kilm4_V2 year, col nofreq
+tab sector_kilm4_V2 year if sex==1, col nofreq
+tab sector_kilm4_V2 year if sex==2, col nofreq
+tab sector_kilm4_V2 year if caste==1, col nofreq
+tab sector_kilm4_V2 year if caste==2, col nofreq
+tab sector_kilm4_V2 year if caste==3, col nofreq
+
+
+*** Total hours a year
+cls
+tabstat hoursayear_indiv, stat(mean) by(year)
+tabstat hoursayear_indiv if sex==1, stat(mean) by(year)
+tabstat hoursayear_indiv if sex==2, stat(mean) by(year)
+tabstat hoursayear_indiv if caste==1, stat(mean) by(year)
+tabstat hoursayear_indiv if caste==2, stat(mean) by(year)
+tabstat hoursayear_indiv if caste==3, stat(mean) by(year)
+
+
+*** Total annual income
+cls
 replace annualincome_indiv=annualincome_indiv/1000
-replace mainocc_annualincome_indiv=mainocc_annualincome_indiv/1000
-ta sex year
+tabstat annualincome_indiv, stat(mean) by(year)
+tabstat annualincome_indiv if sex==1, stat(mean) by(year)
+tabstat annualincome_indiv if sex==2, stat(mean) by(year)
+tabstat annualincome_indiv if caste==1, stat(mean) by(year)
+tabstat annualincome_indiv if caste==2, stat(mean) by(year)
+tabstat annualincome_indiv if caste==3, stat(mean) by(year)
+
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Employment only for employed=1
+****************************************
+cls
+use"panel_indiv_v0.dta", clear
+
+*** Selection
+drop if employed==.
+drop if employed==0
+ta year
+* 3668
+
+
 
 *** Graph bar
 fre mainocc_occupation_indiv
-*recode mainocc_occupation_indiv (5=4)
 ta mainocc_occupation_indiv, gen(perc)
 
 * Total
