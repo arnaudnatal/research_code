@@ -14,6 +14,44 @@ do "https://raw.githubusercontent.com/arnaudnatal/folderanalysis/main/$link.do"
 
 
 ****************************************
+* Sample size
+****************************************
+cls
+use"panel_indiv_v0", clear
+
+
+********** Total
+ta year
+
+
+********** 15 or more 
+ta year if age>=15
+
+
+********** 25 more more
+ta year if age>=25
+
+
+********* Working age
+ta workingage year
+
+
+********** Employed
+ta employed year
+
+
+
+****************************************
+* END
+
+
+
+
+
+
+
+
+****************************************
 * Age and marital status
 ****************************************
 cls
@@ -320,6 +358,8 @@ ta year
 fre mainocc_occupation_indiv
 ta mainocc_occupation_indiv, gen(perc)
 
+set graph off
+
 * Total
 preserve
 collapse (mean) perc*, by(year)
@@ -330,7 +370,8 @@ graph bar perc, horiz over(year, lab(angle())) over(occ, lab(angle())) ///
 asy ytitle("%") title("Total") legend(col(3) pos(6)) ///
 ylab(0(.1).6) ///
 bar(1, fcolor(gs14)) bar(2, fcolor(gs10)) bar(3, fcolor(gs5)) ///
-name(occ, replace)
+name(occ, replace) ///
+ blabel(total, format(%4.2f) size(tiny))
 restore
 
 * Male
@@ -344,7 +385,8 @@ graph bar perc, horiz over(year, lab(angle())) over(occ, lab(angle())) ///
 asy ytitle("%") title("Male") legend(col(3) pos(6)) ///
 ylab(0(.1).6) ///
 bar(1, fcolor(gs14)) bar(2, fcolor(gs10)) bar(3, fcolor(gs5)) ///
-name(occ_c1, replace)
+name(occ_c1, replace) ///
+ blabel(total, format(%4.2f) size(tiny))
 restore
 
 * Female
@@ -358,7 +400,8 @@ graph bar perc, horiz over(year, lab(angle())) over(occ, lab(angle())) ///
 asy ytitle("%") title("Female") legend(col(3) pos(6)) ///
 ylab(0(.1).6) ///
 bar(1, fcolor(gs14)) bar(2, fcolor(gs10)) bar(3, fcolor(gs5)) ///
-name(occ_c2, replace)
+name(occ_c2, replace) ///
+ blabel(total, format(%4.2f) size(tiny))
 restore
 
 
@@ -375,7 +418,8 @@ graph bar perc, horiz over(year, lab(angle())) over(occ, lab(angle())) ///
 asy ytitle("%") title("Dalits") legend(col(3) pos(6)) ///
 ylab(0(.1).6) ///
 bar(1, fcolor(gs14)) bar(2, fcolor(gs10)) bar(3, fcolor(gs5)) ///
-name(occ_dal, replace)
+name(occ_dal, replace) ///
+ blabel(total, format(%4.2f) size(tiny))
 restore
 
 * Middle
@@ -389,7 +433,8 @@ graph bar perc, horiz over(year, lab(angle())) over(occ, lab(angle())) ///
 asy ytitle("%") title("Middle") legend(col(3) pos(6)) ///
 ylab(0(.1).6) ///
 bar(1, fcolor(gs14)) bar(2, fcolor(gs10)) bar(3, fcolor(gs5)) ///
-name(occ_mid, replace)
+name(occ_mid, replace) ///
+ blabel(total, format(%4.2f) size(tiny))
 restore
 
 * Upper
@@ -403,19 +448,16 @@ graph bar perc, horiz over(year, lab(angle())) over(occ, lab(angle())) ///
 asy ytitle("%") title("Upper") legend(col(3) pos(6)) ///
 ylab(0(.1).6) ///
 bar(1, fcolor(gs14)) bar(2, fcolor(gs10)) bar(3, fcolor(gs5)) ///
-name(occ_up, replace)
+name(occ_up, replace) ///
+ blabel(total, format(%4.2f) size(tiny))
 restore
 
-
+set graph on
 
 
 *** Combine
-grc1leg occ occ_c1 occ_c2, col(2) name(occ_comb, replace)
-
-grc1leg occ_dal occ_mid occ_up, col(2) name(occ_comb, replace)
-
-
-graph export "Occ_comb.pdf", as(pdf) replace
+grc1leg occ occ_c1 occ_c2 occ_dal occ_mid occ_up, col(3) name(occ_comb, replace)
+graph export "Occ_total.pdf", as(pdf) replace
 
 
 ****************************************
