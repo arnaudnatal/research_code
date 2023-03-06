@@ -13,6 +13,11 @@ do "https://raw.githubusercontent.com/arnaudnatal/folderanalysis/main/$link.do"
 
 
 
+
+
+
+
+
 ****************************************
 * Sample size
 ****************************************
@@ -73,6 +78,11 @@ ta maritalstatus year if sex==2, col nofreq
 
 ****************************************
 * END
+
+
+
+
+
 
 
 
@@ -330,16 +340,6 @@ tabstat annualincome_indiv if caste==3, stat(mean) by(year)
 
 
 
-
-
-
-
-
-
-
-
-
-
 ****************************************
 * Employment only for employed=1
 ****************************************
@@ -474,31 +474,142 @@ graph export "Occ_total.pdf", as(pdf) replace
 
 
 
+
+
+
 ****************************************
-* Graph occupations
+* Employment only for employed=1
 ****************************************
 cls
-use"panel_indiv_v0", clear
+use"panel_indiv_v0.dta", clear
 
-*** Initialization
+*** Selection
+drop if employed==.
+drop if employed==0
 ta year
-keep if age>=15
-ta age working_pop
-ta sex year
-
-*** Rescale
-replace annualincome_indiv=annualincome_indiv/1000
+* 3668
 replace mainocc_annualincome_indiv=mainocc_annualincome_indiv/1000
-drop if mainocc_occupation_indiv==0
 
 
-tabstat mainocc_annualincome_indiv if year==2010, stat(n mean cv p50) by(mainocc_occupation_indiv)
-tabstat mainocc_annualincome_indiv if year==2016, stat(n mean cv p50) by(mainocc_occupation_indiv)
-tabstat mainocc_annualincome_indiv if year==2020, stat(n mean cv p50) by(mainocc_occupation_indiv)
+*** Income by occupation
+tabstat mainocc_annualincome_indiv if year==2010, stat(n mean) by(mainocc_occupation_indiv)
+tabstat mainocc_annualincome_indiv if year==2016, stat(n mean) by(mainocc_occupation_indiv)
+tabstat mainocc_annualincome_indiv if year==2020, stat(n mean) by(mainocc_occupation_indiv)
+
+/*
+      Agri self-employed |       128  39.08125
+     Agri casual workers |       320  14.50367
+ Non-agri casual workers |       199  32.02854
+Non-agri regular non-qua |        76  53.26447
+Non-agri regular qualifi |        52     64.25
+  Non-agri self-employed |        30      26.3
+Public employment scheme |        70  4.257143
+*/
+
+set graph off
+
+* Total
+preserve
+collapse (mean) mainocc_annualincome_indiv, by(mainocc_occupation_indiv year)
+label define mainocc_occupation_indiv 1"Agri SE" 2"Agri casual" 3"Casual" 4"Reg non-quali" 5"Reg quali" 6"SE" 7"NREGA", modify
+label value mainocc_occupation_indiv mainocc_occupation_indiv
+graph bar mainocc_annualincome_indiv, horiz over(year, lab(angle())) over(mainocc_occupation_indiv, lab(angle())) ///
+asy ytitle("Annual income (INR 1k)") title("Total") legend(col(3) pos(6)) ///
+ylab(0(20)100) ymtick(0(10)110) ///
+bar(1, fcolor(gs14)) bar(2, fcolor(gs10)) bar(3, fcolor(gs5)) ///
+name(occ, replace) ///
+blabel(total, format(%4.2f) size(tiny))
+restore
+
+
+* Male
+preserve
+keep if sex==1
+collapse (mean) mainocc_annualincome_indiv, by(mainocc_occupation_indiv year)
+label define mainocc_occupation_indiv 1"Agri SE" 2"Agri casual" 3"Casual" 4"Reg non-quali" 5"Reg quali" 6"SE" 7"NREGA", modify
+label value mainocc_occupation_indiv mainocc_occupation_indiv
+graph bar mainocc_annualincome_indiv, horiz over(year, lab(angle())) over(mainocc_occupation_indiv, lab(angle())) ///
+asy ytitle("Annual income (INR 1k)") title("Male") legend(col(3) pos(6)) ///
+ylab(0(20)100) ymtick(0(10)110) ///
+bar(1, fcolor(gs14)) bar(2, fcolor(gs10)) bar(3, fcolor(gs5)) ///
+name(occ_male, replace) ///
+blabel(total, format(%4.2f) size(tiny))
+restore
+
+
+* Female
+preserve
+keep if sex==2
+collapse (mean) mainocc_annualincome_indiv, by(mainocc_occupation_indiv year)
+label define mainocc_occupation_indiv 1"Agri SE" 2"Agri casual" 3"Casual" 4"Reg non-quali" 5"Reg quali" 6"SE" 7"NREGA", modify
+label value mainocc_occupation_indiv mainocc_occupation_indiv
+graph bar mainocc_annualincome_indiv, horiz over(year, lab(angle())) over(mainocc_occupation_indiv, lab(angle())) ///
+asy ytitle("Annual income (INR 1k)") title("Female") legend(col(3) pos(6)) ///
+ylab(0(20)100) ymtick(0(10)110) ///
+bar(1, fcolor(gs14)) bar(2, fcolor(gs10)) bar(3, fcolor(gs5)) ///
+name(occ_female, replace) ///
+blabel(total, format(%4.2f) size(tiny))
+restore
+
+
+* Dalits
+preserve
+keep if caste==1
+collapse (mean) mainocc_annualincome_indiv, by(mainocc_occupation_indiv year)
+label define mainocc_occupation_indiv 1"Agri SE" 2"Agri casual" 3"Casual" 4"Reg non-quali" 5"Reg quali" 6"SE" 7"NREGA", modify
+label value mainocc_occupation_indiv mainocc_occupation_indiv
+graph bar mainocc_annualincome_indiv, horiz over(year, lab(angle())) over(mainocc_occupation_indiv, lab(angle())) ///
+asy ytitle("Annual income (INR 1k)") title("Dalits") legend(col(3) pos(6)) ///
+ylab(0(20)100) ymtick(0(10)110) ///
+bar(1, fcolor(gs14)) bar(2, fcolor(gs10)) bar(3, fcolor(gs5)) ///
+name(occ_dalits, replace) ///
+blabel(total, format(%4.2f) size(tiny))
+restore
+
+
+* Middle
+preserve
+keep if caste==2
+collapse (mean) mainocc_annualincome_indiv, by(mainocc_occupation_indiv year)
+label define mainocc_occupation_indiv 1"Agri SE" 2"Agri casual" 3"Casual" 4"Reg non-quali" 5"Reg quali" 6"SE" 7"NREGA", modify
+label value mainocc_occupation_indiv mainocc_occupation_indiv
+graph bar mainocc_annualincome_indiv, horiz over(year, lab(angle())) over(mainocc_occupation_indiv, lab(angle())) ///
+asy ytitle("Annual income (INR 1k)") title("Middle") legend(col(3) pos(6)) ///
+ylab(0(20)100) ymtick(0(10)110) ///
+bar(1, fcolor(gs14)) bar(2, fcolor(gs10)) bar(3, fcolor(gs5)) ///
+name(occ_middle, replace) ///
+blabel(total, format(%4.2f) size(tiny))
+restore
+
+
+
+* Upper
+preserve
+keep if caste==3
+collapse (mean) mainocc_annualincome_indiv, by(mainocc_occupation_indiv year)
+label define mainocc_occupation_indiv 1"Agri SE" 2"Agri casual" 3"Casual" 4"Reg non-quali" 5"Reg quali" 6"SE" 7"NREGA", modify
+label value mainocc_occupation_indiv mainocc_occupation_indiv
+graph bar mainocc_annualincome_indiv, horiz over(year, lab(angle())) over(mainocc_occupation_indiv, lab(angle())) ///
+asy ytitle("Annual income (INR 1k)") title("Upper") legend(col(3) pos(6)) ///
+ylab(0(20)100) ymtick(0(10)110) ///
+bar(1, fcolor(gs14)) bar(2, fcolor(gs10)) bar(3, fcolor(gs5)) ///
+name(occ_upper, replace) ///
+blabel(total, format(%4.2f) size(tiny))
+restore
+
+set graph on
+
+
+*** Combine
+grc1leg occ occ_male occ_female occ_dalits occ_middle occ_upper, col(3) name(occ_comb, replace)
+graph export "Occ_inc_total.pdf", as(pdf) replace
 
 
 ****************************************
 * END
+
+
+
 
 
 

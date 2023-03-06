@@ -32,6 +32,10 @@ replace dummydebt=1 if nbloans_HH>0 & nbloans_HH!=.
 replace sizeownland=sizeownland*0.404686
 
 
+*** Share of gold
+gen sharegold=assets_gold/(assets_totalnoland*10000)
+
+
 *** Caste
 ta caste year
 preserve
@@ -75,6 +79,24 @@ tabstat assets_totalnoland, stat(mean cv q) by(year)
 tabstat assets_totalnoland if caste==1, stat(mean cv q) by(year)
 tabstat assets_totalnoland if caste==2, stat(mean cv q) by(year)
 tabstat assets_totalnoland if caste==3, stat(mean cv q) by(year)
+
+*** Gold
+tabstat goldquantity_HH, stat(mean cv q) by(year)
+tabstat goldquantity_HH if caste==1, stat(mean cv q) by(year)
+tabstat goldquantity_HH if caste==2, stat(mean cv q) by(year)
+tabstat goldquantity_HH if caste==3, stat(mean cv q) by(year)
+
+*** Share gols
+tabstat sharegold, stat(mean cv q) by(year)
+tabstat sharegold if caste==1, stat(mean cv q) by(year)
+tabstat sharegold if caste==2, stat(mean cv q) by(year)
+tabstat sharegold if caste==3, stat(mean cv q) by(year)
+
+*** House
+tabstat assets_housevalue, stat(mean cv q) by(year)
+tabstat assets_housevalue if caste==1, stat(mean cv q) by(year)
+tabstat assets_housevalue if caste==2, stat(mean cv q) by(year)
+tabstat assets_housevalue if caste==3, stat(mean cv q) by(year)
 
 *** Migration
 ta dummymigration year, col nofreq

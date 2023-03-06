@@ -55,6 +55,10 @@ drop _merge
 merge m:1 HHID2010 using "RUME-transferts_HH"
 drop _merge
 
+*** Gold
+merge m:1 HHID2010 using"RUME-gold_HH"
+drop _merge
+
 *** keypanel HH
 merge m:m HHID2010 using "keypanel-HH_wide", keepusing(HHID_panel)
 keep if _merge==3
@@ -117,6 +121,10 @@ drop _merge
 
 *** Village
 merge m:1 HHID2016 using "NEEMSIS1-villages"
+drop _merge
+
+*** Gold
+merge m:1 HHID2016 using"NEEMSIS1-gold_HH"
 drop _merge
 
 *** keypanel HH
@@ -185,6 +193,10 @@ drop _merge
 merge m:1 HHID2020 using "NEEMSIS2-villages"
 drop _merge
 
+*** Gold
+merge m:1 HHID2020 using"NEEMSIS2-gold_HH"
+drop _merge
+
 *** keypanel HH
 merge m:m HHID2020 using "keypanel-HH_wide", keepusing(HHID_panel)
 keep if _merge==3
@@ -236,7 +248,7 @@ assets_sizeownland assets_housevalue assets_livestock assets_goods assets_ownlan
 incomeagri_HH incomenonagri_HH annualincome_HH shareincomeagri_HH shareincomenonagri_HH ///
 ownland sizeownland ///
 loanamount_HH nbloans_HH totHH_lendercatamt_info totHH_lendercatamt_semi totHH_lendercatamt_form totHH_givencatamt_econ totHH_givencatamt_curr totHH_givencatamt_huma totHH_givencatamt_soci totHH_givencatamt_hous ///
-remittnet_HH nonworkersratio sum_dummymigration
+remittnet_HH nonworkersratio sum_dummymigration goldquantity_HH
 
 * Level
 gen year=2010
@@ -252,6 +264,8 @@ save"RUME_v1", replace
 ********** NEEMSIS-1
 use"$directory\NEEMSIS1_v0", clear
 
+* Gold at HH level
+
 * Migration at HH level
 bysort HHID2016: egen sum_dummymigration=sum(dummymigration)
 
@@ -263,7 +277,7 @@ assets_sizeownland assets_housevalue assets_livestock assets_goods assets_ownlan
 incomeagri_HH incomenonagri_HH annualincome_HH shareincomeagri_HH shareincomenonagri_HH ///
 ownland sizeownland ///
 loanamount_HH nbloans_HH totHH_lendercatamt_info totHH_lendercatamt_semi totHH_lendercatamt_form totHH_givencatamt_econ totHH_givencatamt_curr totHH_givencatamt_huma totHH_givencatamt_soci totHH_givencatamt_hous ///
-remittnet_HH nonworkersratio sum_dummymigration
+remittnet_HH nonworkersratio sum_dummymigration goldquantity_HH
 
 * Level
 gen year=2016
@@ -291,7 +305,7 @@ assets_sizeownland assets_housevalue assets_livestock assets_goods assets_ownlan
 incomeagri_HH incomenonagri_HH annualincome_HH shareincomeagri_HH shareincomenonagri_HH ///
 ownland sizeownland ///
 loanamount_HH nbloans_HH totHH_lendercatamt_info totHH_lendercatamt_semi totHH_lendercatamt_form totHH_givencatamt_econ totHH_givencatamt_curr totHH_givencatamt_huma totHH_givencatamt_soci totHH_givencatamt_hous ///
-remittnet_HH nonworkersratio sum_dummymigration
+remittnet_HH nonworkersratio sum_dummymigration goldquantity_HH
 
 * Level
 gen year=2020
