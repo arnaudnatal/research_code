@@ -41,7 +41,6 @@ graph export "graph/matrix_corr.pdf", as(pdf) replace
 set graph on
 
 
-
 *** As for PCA
 factortest tdr isr rrgpl
 
@@ -67,12 +66,6 @@ use"panel_v5", clear
 
 
 ********** Stat desc
-replace dsr=dsr/100
-replace dir=dir/100
-replace dar=dar/100
-replace rfm=rfm/100
-gen dcr=loanamount_HH/expenses_total
-
 tabstat dsr dir dar dcr afm rfm, stat(n mean cv min p1 p5 p10 q p90 p95 p99 max) by(time) long
 
 
@@ -89,7 +82,7 @@ twoway ///
 ytitle("FVI") xtitle("DSR") ///
 ylabel(0(.2)1) ymtick(0(.1)1) ///
 aspectratio(1) ///
-leg(order(2 "Fitted values") pos(6) col(1)) name(dsr, replace)
+leg(off) name(dsr, replace)
 
 
 
@@ -138,8 +131,9 @@ leg(off) name(afm, replace)
 
 *** Rel FM
 gen rfm2=rfm
-replace rfm2=-0.1 if rfm2<-0.1
-replace rfm2=0.065 if rfm2>0.065
+tabstat rfm2, stat(min p1 p5 p10 p90 p95 p99 max)
+replace rfm2=-10 if rfm2<-10
+replace rfm2=6.5 if rfm2>6.5
 
 twoway ///
 (scatter fvi rfm2, mcolor(black%30)) ///
@@ -168,9 +162,12 @@ set graph on
 
 *** Combine
 set graph off
-grc1leg dsr dir dar afm rfm dcr, col(3) name(comb, replace)
+graph combine dsr dir dar afm rfm dcr, col(3) name(comb, replace)
 graph export "graph/Corr_fvi_oth.pdf", as(pdf) replace
 set graph on
+
+***
+graph display comb
 
 ****************************************
 * END
@@ -195,10 +192,7 @@ use"panel_v5", clear
 
 
 ********** Stat desc
-tabstat fvi isr tdr rrgpl, stat(n mean cv min p1 p5 p10 q p90 p95 p99 max) by(time) long
-
-tabstat tdr, stat(n mean cv min p1 p5 p10 q p90 p95 p99 max) by(time) long
-
+tabstat isr tdr rrgpl fvi, stat(n mean cv min p1 p5 p10 q p90 p95 p99 max) by(time) long
 
 
 ********** Graph FVI
@@ -213,12 +207,14 @@ xtitle("FVI") ytitle("") name(sp_fvi_horiz, replace)
 graph export "graph/Distri_fvi.pdf", as(pdf) replace
 set graph on
 
+***
+graph display sp_fvi_horiz
+
 
 
 ********** Graph components
 
 set graph off
-
 *** ISR
 twoway ///
 (kdensity isr if year==2010) ///
@@ -230,7 +226,6 @@ ytitle("Density") ///
 legend(order(1 "2010" 2 "2016-17" 3 "2020-21") pos(6) col(3)) ///
 aspectratio(1) name(kd_isr, replace)
 
-
 *** TDR
 twoway ///
 (kdensity tdr if year==2010) ///
@@ -241,8 +236,6 @@ xlabel(0(.2)1) xmtick(0(.1)1) xtitle("TDR") ///
 ytitle("Density") ///
 legend(order(1 "2010" 2 "2016-17" 3 "2020-21") pos(6) col(3)) ///
 aspectratio(1) name(kd_tdr, replace)
-
-
 
 
 *** RRGPL
@@ -260,9 +253,12 @@ set graph on
 
 *** Combine
 set graph off
-grc1leg kd_isr kd_tdr kd_rrgpl, col(3) name(kd_compo, replace)
+grc1leg kd_isr kd_tdr kd_rrgpl, col(2) name(kd_compo, replace)
 graph export "graph/FVI_compo.pdf", as(pdf) replace
 set graph on
 
+
+***
+graph display kd_compo
 ****************************************
 * END

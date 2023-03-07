@@ -46,7 +46,9 @@ replace dar=0 if dar==.
 gen dir=loanamount_HH/annualincome_HH
 replace dir=0 if dir==.
 
-
+* DCR
+gen dcr=loanamount_HH/expenses_total
+replace dcr=0 if dcr==.
 
 * TDR
 gen tdr=totHH_givenamt_repa/loanamount_HH

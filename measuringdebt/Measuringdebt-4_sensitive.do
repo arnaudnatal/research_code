@@ -25,9 +25,20 @@ do"C:\Users\Arnaud\Documents\GitHub\folderanalysis\measuringdebt.do"
 use"panel_v4", clear
 
 /*
-- Equivalence scale
-- Poverty line
+1. Changement des poids
+	2.5/2.5/1
+	1.5/1.5/1
+	1  /  1/1
+
+2. Tester square root pour suivre Joliffe ?
 */
+
+
+*** Change weight
+gen fvi2=(2.5*tdr+2.5*isr+rrgpl)/6
+gen fvi3=(1.5*tdr+1.5*isr+rrgpl)/4
+gen fvi4=(1*tdr+1*isr+rrgpl)/3
+
 
 
 *** Equivalence scale square root following Joliffe
@@ -36,20 +47,10 @@ gen dailyusdincome_pc2=dailyincome_pc2/65.10
 gen rrgpl2=((dailyusdincome_pc2-2.15)/2.15)*(-1)
 replace rrgpl2=1 if rrgpl2>1
 replace rrgpl2=0 if rrgpl2<0
-gen fvi2=(2*tdr+2*isr+rrgpl2)/5
+gen fvi5=(2*tdr+2*isr+rrgpl2)/5
+drop dailyincome_pc2 dailyusdincome_pc2 rrgpl2
 
 
-*** Previous PL
-*gen dailyincome_pc2=(annualincome_HH2/365)/squareroot_HHsize
-*gen dailyusdincome_pc2=dailyincome_pc2/65.10
-gen rrgpl3=((dailyusdincome_pc-1.90)/1.90)*(-1)
-replace rrgpl3=1 if rrgpl3>1
-replace rrgpl3=0 if rrgpl3<0
-gen fvi3=(2*tdr+2*isr+rrgpl3)/5
-
-
-*** Change weight
-gen fvi4=(1.5*tdr+1.5*isr+rrgpl)/4
 
 
 ********** Distrib
@@ -57,19 +58,19 @@ gen fvi4=(1.5*tdr+1.5*isr+rrgpl)/4
 sort fvi
 gen pos_fvi=(_n/1529)*100
 
-forvalues i=2/4 {
+forvalues i=2/5 {
 sort fvi`i'
 gen pos_fvi`i'=(_n/1529)*100
 }
 
 *** Diff
-forvalues i=2/4 {
+forvalues i=2/5 {
 gen diff_fvi`i'=pos_fvi`i'-pos_fvi
 }
 
 
 *** Abs diff
-forvalues i=2/4 {
+forvalues i=2/5 {
 gen absdiff_fvi`i'=abs(diff_fvi`i')
 ta absdiff_fvi`i'
 }
@@ -101,9 +102,7 @@ use"panel_v5", clear
 
 graph drop _all
 
-
-
-forvalues i=2/4 {
+forvalues i=2/5 {
 set graph off
 twoway ///
 (scatter pos_fvi`i' pos_fvi, ms(oh) mc(black%30)) ///
@@ -115,6 +114,12 @@ legend(order(2 "First bisector") pos(6) col(1)) name(posf`i', replace)
 set graph on
 }
 
+
+*** Display
+graph display posf2
+graph display posf3
+graph display posf4
+graph display posf5
 
 set graph off
 grc1leg posf2 posf3 posf4, col(2) name(possensi_scatter, replace)
@@ -163,6 +168,10 @@ xtitle("% in the distribution of FVI-n minus" "the % in the distribution of FVI"
 graph export "graph/Sensi_stripplot_vert.pdf", as(pdf) replace
 set graph on
 
+
+***
+graph display diff_fvi_horiz
+
 ****************************************
 * END
 
@@ -184,6 +193,9 @@ set graph off
 graph combine possensi_scatter diff_fvi_horiz, col(2) name(sensi_poscomb, replace)
 graph export "graph/Sensi_poscomb.pdf", as(pdf) replace
 set graph on 
+
+***
+graph display sensi_poscomb
 
 ****************************************
 * END
