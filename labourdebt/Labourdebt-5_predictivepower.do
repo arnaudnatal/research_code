@@ -51,14 +51,16 @@ global nonvar caste_2 caste_3 village_2 village_3 village_4 village_5 village_6 
 global head head_female head_age head_educ
 global econ remittnet_HH assets_total annualincome_HH shareform
 
-global compo1 stem log_HHsize share_female share_children share_young share_old share_stock
-global compo2 stem log_HHsize share_children sexratio dependencyratio share_stock
-global compo3 stem log_HHsize share_female share_children share_young share_old
-global compo4 stem log_HHsize share_children sexratio dependencyratio
+global compo1 log_HHsize share_female share_children share_young share_old share_stock
+global compo2 log_HHsize share_children sexratio dependencyratio share_stock
+global compo3 log_HHsize share_female share_children share_young share_old
+global compo4 log_HHsize share_children sexratio dependencyratio
 
 
 *** Y
-global yvar ind_total ind_female ind_male occ_total occ_female occ_male 
+global yvar ///
+snbo snbo_female snbo_male snbo_young snbo_middle snbo_old ///
+sind sind_female sind_male sind_young sind_middle sind_old
 
 *ind_agri ind_nona occ_agri occ_nona
 
@@ -94,13 +96,13 @@ esttab mlsem_`y' using "new2_reg_spec1_`y'.csv", replace ///
 	refcat(, nolabel) ///
 	stats(N r2 r2_a F p, fmt(0 2 2 2) ///
 	labels(`"Observations"' `"\(R^{2}\)"' `"Adjusted \(R^{2}\)"' `"F-stat"' `"p-value"'))
+
 }
 
 log close
 
 
 
-/*
 
 ********** Spec 2
 log using "Labourdebt_spec2.log", replace

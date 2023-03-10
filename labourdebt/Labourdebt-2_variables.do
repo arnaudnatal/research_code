@@ -86,10 +86,10 @@ sum dar
 
 ********* FVI
 * FVI
-*gen fvi=(2*tdr+2*isr+rrgpl2)/5
+gen fvi=(2*tdr+2*isr+1*rrgpl2)/5
 
 * FVI
-gen fvi=(tar+isr+rrgpl2)/3
+*gen fvi=(tar+isr+rrgpl2)/3
 
 ta fvi
 sum fvi

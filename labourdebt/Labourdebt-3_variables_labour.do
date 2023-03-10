@@ -204,6 +204,172 @@ save"panel-newoccvar", replace
 
 
 
+****************************************
+* New var
+****************************************
+
+********** RUME
+use"raw/RUME-occup_indiv", clear
+
+keep HHID2010 INDID2010 nboccupation_indiv
+
+*** Merge charact
+merge 1:1 HHID2010 INDID2010 using "raw/RUME-kilm", keepusing(workingage employed)
+keep if _merge==3
+drop _merge
+
+merge 1:1 HHID2010 INDID2010 using "raw/RUME-HH", keepusing(name age sex)
+keep if _merge==3
+drop _merge
+
+*** Merge HHID_panel
+merge m:m HHID2010 using "raw/ODRIIS-HH_wide", keepusing(HHID_panel)
+keep if _merge==3
+drop _merge
+gen year=2010
+
+save"RUME-occindivvar", replace
+
+
+
+
+********** NEEMSIS-1
+use"raw/NEEMSIS1-occup_indiv", clear
+
+keep HHID2016 INDID2016 nboccupation_indiv
+
+*** Merge charact
+merge 1:1 HHID2016 INDID2016 using "raw/NEEMSIS1-kilm", keepusing(workingage employed)
+keep if _merge==3
+drop _merge
+
+merge 1:1 HHID2016 INDID2016 using "raw/NEEMSIS1-HH", keepusing(name age sex)
+keep if _merge==3
+drop _merge
+
+*** Merge HHID_panel
+merge m:m HHID2016 using "raw/ODRIIS-HH_wide", keepusing(HHID_panel)
+keep if _merge==3
+drop _merge
+gen year=2016
+
+save"NEEMSIS1-occindivvar", replace
+
+
+
+
+********** NEEMSIS-2
+use"raw/NEEMSIS2-occup_indiv", clear
+
+keep HHID2020 INDID2020 nboccupation_indiv
+
+*** Merge charact
+merge 1:1 HHID2020 INDID2020 using "raw/NEEMSIS2-kilm", keepusing(workingage employed)
+keep if _merge==3
+drop _merge
+
+merge 1:1 HHID2020 INDID2020 using "raw/NEEMSIS2-HH", keepusing(name age sex)
+keep if _merge==3
+drop _merge
+
+*** Merge HHID_panel
+merge m:m HHID2020 using "raw/ODRIIS-HH_wide", keepusing(HHID_panel)
+keep if _merge==3
+drop _merge
+gen year=2020
+
+save"NEEMSIS2-occindivvar", replace
+
+
+
+
+********** Append
+use"RUME-occindivvar"
+
+append using "NEEMSIS1-occindivvar"
+append using "NEEMSIS2-occindivvar"
+
+order HHID_panel year name age sex nboccupation_indiv workingage employed 
+fre workingage
+
+save"panel-occindivvar", replace
+
+********** Var crea
+use"panel-occindivvar", clear
+
+drop if workingage==0
+recode nboccupation_indiv (.=0)
+rename nboccupation_indiv nbo
+
+* Sub
+gen nbo_male=.
+gen nbo_female=.
+gen nbo_young=.
+gen nbo_middle=.
+gen nbo_old=.
+
+* Sex
+fre sex
+replace nbo_male=nbo if sex==1
+replace nbo_female=nbo if sex==2
+
+* Age
+replace nbo_young=nbo if age<=29
+replace nbo_middle=nbo if age>=30 & age<60
+replace nbo_old=nbo if age>=60
+
+* Recode
+foreach x in nbo nbo_male nbo_female nbo_young nbo_middle nbo_old {
+recode `x' (.=0)
+}
+
+* Indiv level
+gen ind=nbo
+recode ind (.=0)
+foreach x in male female young middle old {
+gen ind_`x'=nbo_`x'
+recode ind_`x' (.=0)
+}
+replace ind=1 if ind>1
+foreach x in male female young middle old {
+replace ind_`x'=1 if ind_`x'>1
+}
+
+
+* HH level
+foreach x in nbo nbo_male nbo_female nbo_young nbo_middle nbo_old ind ind_male ind_female ind_young ind_middle ind_old {
+bysort HHID_panel year: egen s`x'=sum(`x')
+}
+
+
+keep HHID_panel year snbo* sind*
+duplicates drop
+
+tab1 snbo snbo_male snbo_female snbo_young snbo_middle snbo_old
+tab1 sind sind_male sind_female sind_young sind_middle sind_old
+
+
+save"panel-occindivvar_v2", replace
+
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 ****************************************
@@ -242,7 +408,7 @@ label define occupation3 1"Regular" 2"Casual"
 label values occupation3 occupation3
 ta occupation occupation3
 
-* Casual vs regular
+* SE vs other
 gen occupation4=0
 replace occupation4=1 if occupation==1
 replace occupation4=2 if occupation==2
@@ -254,6 +420,8 @@ replace occupation4=2 if occupation==7
 label define occupation4 1"Self-employed" 2"Other"
 label values occupation4 occupation4
 ta occupation occupation4
+
+
 
 
 ********** Dummies
@@ -277,6 +445,7 @@ rename occ3_2 occ_casu
 ta occupation4, gen(occ4_)
 rename occ4_1 occ_self
 rename occ4_2 occ_othe
+
 
 
 ********** Macro
@@ -523,6 +692,22 @@ replace `x'=0 if `x'==.
 }
 
 drop hoursayear_HH hoursayearagri_HH hoursayearnonagri_HH
+
+
+
+********** Clean
+drop annualincome_agriself annualincome_agricasual annualincome_casual annualincome_regnonquali annualincome_regquali annualincome_selfemp annualincome_nrega annualincome_agri annualincome_nona annualincome_regu annualincome_casu annualincome_self annualincome_othe annualincome annualincome_male annualincome_female annualincome_dep annualincome_agri_male annualincome_agri_female annualincome_nona_male annualincome_nona_female annualincome_regu_male annualincome_regu_female annualincome_casu_male annualincome_casu_female annualincome_self_male annualincome_self_female annualincome_othe_male annualincome_othe_female
+
+
+drop occ_total occ_female occ_male occ_dep occ_agriself occ_agricasual occ_casual occ_regnonquali occ_regquali occ_selfemp occ_nrega occ_agri occ_nona occ_regu occ_casu occ_self occ_othe occ_agriself_male occ_agriself_female occ_agricasual_male occ_agricasual_female occ_casual_male occ_casual_female occ_regnonquali_male occ_regnonquali_female occ_regquali_male occ_regquali_female occ_selfemp_male occ_selfemp_female occ_nrega_male occ_nrega_female occ_agri_male occ_agri_female occ_nona_male occ_nona_female occ_regu_male occ_regu_female occ_casu_male occ_casu_female occ_self_male occ_self_female occ_othe_male occ_othe_female occ_agriself_dep occ_agricasual_dep occ_casual_dep occ_regnonquali_dep occ_regquali_dep occ_selfemp_dep occ_nrega_dep occ_agri_dep occ_nona_dep occ_regu_dep occ_casu_dep occ_self_dep occ_othe_dep ind_total ind_female ind_male ind_dep ind_agriself ind_agricasual ind_casual ind_regnonquali ind_regquali ind_selfemp ind_nrega ind_agri ind_nona ind_regu ind_casu ind_self ind_othe ind_agriself_male ind_agriself_female ind_agricasual_male ind_agricasual_female ind_casual_male ind_casual_female ind_regnonquali_male ind_regnonquali_female ind_regquali_male ind_regquali_female ind_selfemp_male ind_selfemp_female ind_nrega_male ind_nrega_female ind_agri_male ind_agri_female ind_nona_male ind_nona_female ind_regu_male ind_regu_female ind_casu_male ind_casu_female ind_self_male ind_self_female ind_othe_male ind_othe_female ind_agriself_dep ind_agricasual_dep ind_casual_dep ind_regnonquali_dep ind_regquali_dep ind_selfemp_dep ind_nrega_dep ind_agri_dep ind_nona_dep ind_regu_dep ind_casu_dep ind_self_dep ind_othe_dep hoursayear_agriself hoursayear_agricasual hoursayear_casual hoursayear_regnonquali hoursayear_regquali hoursayear_selfemp hoursayear_nrega hoursayear_agri hoursayear_nona hoursayear_regu hoursayear_casu hoursayear_self hoursayear_othe hoursayear hoursayear_male hoursayear_female hoursayear_dep hoursayear_agri_male hoursayear_agri_female hoursayear_nona_male hoursayear_nona_female hoursayear_regu_male hoursayear_regu_female hoursayear_casu_male hoursayear_casu_female hoursayear_self_male hoursayear_self_female hoursayear_othe_male hoursayear_othe_female
+
+
+*** Merge new
+merge 1:1 HHID_panel year using "panel-occindivvar_v2"
+drop _merge
+
+
+*** Drop 
 
 
 save"panel_v3", replace

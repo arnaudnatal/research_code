@@ -28,36 +28,43 @@ use"panel_indiv_v3", clear
 xtset panelvar time
 
 
+
 ********** Variables
 
 *** X
 global nonvar caste_2 caste_3 village_2 village_3 village_4 village_5 village_6 village_7 village_8 village_9 village_10
 
-global econ remittnet_HH assets_total annualincome_HH shareform
+global econ remittnet_HH assets_total annualincome_HH
 
-global compo1 stem log_HHsize share_female share_children share_young share_old share_stock
+global compo1 log_HHsize share_female share_children share_young share_old share_stock
+
+global compo2 log_HHsize share_children sexratio dependencyratio share_stock
 
 global indiv age edu_2 edu_3 edu_4
 
 
 *** Y
-global yvar lfp lfp_male lfp_female lfp_young lfp_middle lfp_old
-*igap igap_male igap_female
+global yvar lfp lfp_male lfp_female nbo nbo_male nbo_female
+
+*lfp lfp_male lfp_female
+tab1 $yvar
 
 
+********** 
+mdesc $nonvar $econ $compo1 $compo2 $indiv $yvar
+ 
 
 
 ********** Spec 1
-log using "Labourdebt_indiv_spec1.log", replace
+cls
+log using "Indiv_MLSEM.log", replace
 
 foreach y in $yvar {
 
-capture noisily xtdpdml `y' $compo1 $econ $indiv, inv($nonvar) predetermined(L.fvi) fiml
-*capture noisily xtdpdml `y' $compo1 $econ $indiv, inv($nonvar) predetermined(L.fvi) fiml
+capture noisily xtdpdml `y' $compo2 $indiv $econ, inv($nonvar) predetermined(L.fvi) fiml
 est store mlsem_`y'
 }
 log close
-
 
 
 
