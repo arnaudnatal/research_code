@@ -44,8 +44,7 @@ global indiv age edu_2 edu_3 edu_4
 
 
 *** Y
-global yvar lfp lfp_male lfp_female nbo nbo_male nbo_female
-
+global yvar nbo nbo_male nbo_female
 *lfp lfp_male lfp_female
 tab1 $yvar
 
@@ -61,12 +60,12 @@ log using "Indiv_MLSEM.log", replace
 
 foreach y in $yvar {
 
-capture noisily xtdpdml `y' $compo2 $indiv $econ, inv($nonvar) predetermined(L.fvi) fiml
+capture noisily xtdpdml `y' $econ $compo2 , inv($nonvar) predetermined(L.fvi) fiml
 est store mlsem_`y'
 }
 log close
 
-
+*$indiv $econ
 
 
 ****************************************
