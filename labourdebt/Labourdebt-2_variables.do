@@ -87,6 +87,11 @@ sum dar
 ********* FVI
 * FVI
 gen fvi=(2*tdr+2*isr+1*rrgpl2)/5
+gen fvi2=(1*tdr+1*isr+1*rrgpl2)/3
+gen fvi3=(2*tar+2*isr+1*rrgpl2)/5
+gen fvi4=(1*tar+1*isr+1*rrgpl2)/5
+
+
 
 * FVI
 *gen fvi=(tar+isr+rrgpl2)/3
@@ -280,7 +285,7 @@ save"panel_v2", replace
 
 
 do"C:\Users\Arnaud\Documents\GitHub\research_code\labourdebt\Labourdebt-3_variables_labour.do"
-do"C:\Users\Arnaud\Documents\GitHub\research_code\labourdebt\Labourdebt-4_desc.do"
+*do"C:\Users\Arnaud\Documents\GitHub\research_code\labourdebt\Labourdebt-4_desc.do"
 do"C:\Users\Arnaud\Documents\GitHub\research_code\labourdebt\Labourdebt-6_indivdatabase.do"
 do"C:\Users\Arnaud\Documents\GitHub\research_code\labourdebt\Labourdebt-7_predictivepower_indiv.do"
 

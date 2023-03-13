@@ -53,24 +53,23 @@ global econ remittnet_HH assets_total annualincome_HH shareform
 
 global compo1 log_HHsize share_female share_children share_young share_old share_stock
 global compo2 log_HHsize share_children sexratio dependencyratio share_stock
-global compo3 log_HHsize share_female share_children share_young share_old
-global compo4 log_HHsize share_children sexratio dependencyratio
 
 
 *** Y
 global yvar ///
 snbo snbo_female snbo_male snbo_young snbo_middle snbo_old ///
-sind sind_female sind_male sind_young sind_middle sind_old
+sind sind_female sind_male sind_young sind_middle sind_old ///
+snbo2 snbo2_female snbo2_male snbo2_young snbo2_middle snbo2_old ///
+sind2 sind2_female sind2_male sind2_young sind2_middle sind2_old
 
-*ind_agri ind_nona occ_agri occ_nona
+
+*global yvar snbo_female
 
 
 *** Rob test
 /*
-tabstat occ_total occ_female occ_male, stat(n mean p90 p95 p99 max)
-drop if occ_total>9
-drop if occ_female>4
-drop if occ_male>5
+tabstat snbo snbo_female snbo_male, stat(n mean p90 p95 p99 max)
+drop if snbo_female>4
 */
 
 
@@ -110,54 +109,6 @@ log using "Labourdebt_spec2.log", replace
 foreach y in $yvar {
 
 capture noisily xtdpdml `y' $compo2 $econ $head, inv($nonvar) predetermined(L.fvi) fiml
-est store mlsem_`y'
-
-esttab mlsem_`y' using "reg_spec2_`y'.csv", replace ///
-	label b(3) p(3) eqlabels(none) alignment(S) ///
-	drop(_cons $var) ///
-	star(* 0.10 ** 0.05 *** 0.01) ///
-	cells("b(fmt(2)star)" "se(fmt(2)par)") ///
-	refcat(, nolabel) ///
-	stats(N r2 r2_a F p, fmt(0 2 2 2) ///
-	labels(`"Observations"' `"\(R^{2}\)"' `"Adjusted \(R^{2}\)"' `"F-stat"' `"p-value"'))
-}
-log close
-
-
-
-
-
-
-
-********** Spec 3
-log using "Labourdebt_spec3.log", replace
-
-foreach y in $yvar {
-
-capture noisily xtdpdml `y' $compo3 $econ $head, inv($nonvar) predetermined(L.fvi) fiml
-est store mlsem_`y'
-
-esttab mlsem_`y' using "reg_spec1_`y'.csv", replace ///
-	label b(3) p(3) eqlabels(none) alignment(S) ///
-	drop(_cons $var) ///
-	star(* 0.10 ** 0.05 *** 0.01) ///
-	cells("b(fmt(2)star)" "se(fmt(2)par)") ///
-	refcat(, nolabel) ///
-	stats(N r2 r2_a F p, fmt(0 2 2 2) ///
-	labels(`"Observations"' `"\(R^{2}\)"' `"Adjusted \(R^{2}\)"' `"F-stat"' `"p-value"'))
-}
-log close
-
-
-
-
-
-********** Spec 4
-log using "Labourdebt_spec4.log", replace
-
-foreach y in $yvar {
-
-capture noisily xtdpdml `y' $compo4 $econ $head, inv($nonvar) predetermined(L.fvi) fiml
 est store mlsem_`y'
 
 esttab mlsem_`y' using "reg_spec2_`y'.csv", replace ///

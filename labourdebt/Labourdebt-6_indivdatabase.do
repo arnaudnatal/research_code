@@ -177,7 +177,7 @@ save"panel_indiv_temp", replace
 ********** HH
 use"panel_v3", clear
 
-keep HHID_panel year fvi caste_1 caste_2 caste_3 village_1 village_2 village_3 village_4 village_5 village_6 village_7 village_8 village_9 village_10 head_female head_age head_educ remittnet_HH assets_total annualincome_HH shareform stem log_HHsize share_female share_children share_young share_old share_stock sexratio dependencyratio
+keep HHID_panel year fvi fvi2 fvi3 fvi4 caste_1 caste_2 caste_3 village_1 village_2 village_3 village_4 village_5 village_6 village_7 village_8 village_9 village_10 head_female head_age head_educ remittnet_HH assets_total annualincome_HH shareform stem log_HHsize share_female share_children share_young share_old share_stock sexratio dependencyratio
 
 save"panel_hh_temp", replace
 
