@@ -49,7 +49,7 @@ set matsize 10000, perm
 *** X
 global nonvar caste_2 caste_3 village_2 village_3 village_4 village_5 village_6 village_7 village_8 village_9 village_10
 global head head_female head_age head_educ
-global econ remittnet_HH assets_total annualincome_HH shareform
+global econ remittnet_HH assets_total annualincome_HH
 
 global compo1 log_HHsize share_female share_children share_young share_old share_stock
 global compo2 log_HHsize share_children sexratio dependencyratio share_stock
@@ -58,22 +58,7 @@ global compo2 log_HHsize share_children sexratio dependencyratio share_stock
 *** Y
 global yvar ///
 snbo snbo_female snbo_male snbo_young snbo_middle snbo_old ///
-sind sind_female sind_male sind_young sind_middle sind_old ///
-snbo2 snbo2_female snbo2_male snbo2_young snbo2_middle snbo2_old ///
-sind2 sind2_female sind2_male sind2_young sind2_middle sind2_old
-
-
-*global yvar snbo_female
-
-
-*** Rob test
-/*
-tabstat snbo snbo_female snbo_male, stat(n mean p90 p95 p99 max)
-drop if snbo_female>4
-*/
-
-
-
+sind sind_female sind_male sind_young sind_middle sind_old 
 
 
 
@@ -81,49 +66,221 @@ drop if snbo_female>4
 
 ********** Spec 1
 log using "Labourdebt_spec1.log", replace
-
 foreach y in $yvar {
-
 capture noisily xtdpdml `y' $compo1 $econ $head, inv($nonvar) predetermined(L.fvi) fiml
 est store mlsem_`y'
+}
+log close
 
-esttab mlsem_`y' using "new2_reg_spec1_`y'.csv", replace ///
+
+esttab mlsem_sind mlsem_sind_male mlsem_sind_female mlsem_sind_young mlsem_sind_middle mlsem_sind_old  using "spec1_sind.csv", replace ///
 	label b(3) p(3) eqlabels(none) alignment(S) ///
 	drop(_cons $var) ///
 	star(* 0.10 ** 0.05 *** 0.01) ///
 	cells("b(fmt(2)star)" "se(fmt(2)par)") ///
 	refcat(, nolabel) ///
-	stats(N r2 r2_a F p, fmt(0 2 2 2) ///
-	labels(`"Observations"' `"\(R^{2}\)"' `"Adjusted \(R^{2}\)"' `"F-stat"' `"p-value"'))
-
-}
-
-log close
+	stats(N, fmt(0) ///
+	labels(`"Observations"'))
 
 
+esttab mlsem_snbo mlsem_snbo_male mlsem_snbo_female mlsem_snbo_young mlsem_snbo_middle mlsem_snbo_old  using "spec1_snbo.csv", replace ///
+	label b(3) p(3) eqlabels(none) alignment(S) ///
+	drop(_cons $var) ///
+	star(* 0.10 ** 0.05 *** 0.01) ///
+	cells("b(fmt(2)star)" "se(fmt(2)par)") ///
+	refcat(, nolabel) ///
+	stats(N, fmt(0) ///
+	labels(`"Observations"'))
 
 
-********** Spec 2
+
+
+
+
+
+********** Rob: Spec 2
 log using "Labourdebt_spec2.log", replace
-
 foreach y in $yvar {
-
 capture noisily xtdpdml `y' $compo2 $econ $head, inv($nonvar) predetermined(L.fvi) fiml
 est store mlsem_`y'
+}
+log close
 
-esttab mlsem_`y' using "reg_spec2_`y'.csv", replace ///
+
+esttab mlsem_sind mlsem_sind_male mlsem_sind_female mlsem_sind_young mlsem_sind_middle mlsem_sind_old  using "spec2_sind.csv", replace ///
 	label b(3) p(3) eqlabels(none) alignment(S) ///
 	drop(_cons $var) ///
 	star(* 0.10 ** 0.05 *** 0.01) ///
 	cells("b(fmt(2)star)" "se(fmt(2)par)") ///
 	refcat(, nolabel) ///
-	stats(N r2 r2_a F p, fmt(0 2 2 2) ///
-	labels(`"Observations"' `"\(R^{2}\)"' `"Adjusted \(R^{2}\)"' `"F-stat"' `"p-value"'))
+	stats(N, fmt(0) ///
+	labels(`"Observations"'))
+
+
+esttab mlsem_snbo mlsem_snbo_male mlsem_snbo_female mlsem_snbo_young mlsem_snbo_middle mlsem_snbo_old  using "spec2_snbo.csv", replace ///
+	label b(3) p(3) eqlabels(none) alignment(S) ///
+	drop(_cons $var) ///
+	star(* 0.10 ** 0.05 *** 0.01) ///
+	cells("b(fmt(2)star)" "se(fmt(2)par)") ///
+	refcat(, nolabel) ///
+	stats(N, fmt(0) ///
+	labels(`"Observations"'))
+
+
+
+	
+	
+********** Rob: Outliers
+tabstat snbo_female, stat(n mean p90 p95 p99 max)
+drop if snbo_female>4
+
+
+foreach y in $yvar {
+capture noisily xtdpdml `y' $compo1 $econ $head, inv($nonvar) predetermined(L.fvi) fiml
+est store mlsem_`y'
 }
-log close
 
 
+esttab mlsem_snbo_female using "robout_snbo.csv", replace ///
+	label b(3) p(3) eqlabels(none) alignment(S) ///
+	drop(_cons $var) ///
+	star(* 0.10 ** 0.05 *** 0.01) ///
+	cells("b(fmt(2)star)" "se(fmt(2)par)") ///
+	refcat(, nolabel) ///
+	stats(N, fmt(0) ///
+	labels(`"Observations"'))
+
+	
+	
+	
+	
+	
+********** Rob: vce
+foreach y in $yvar {
+capture noisily xtdpdml `y' $compo1 $econ $head, inv($nonvar) predetermined(L.fvi) fiml vce(rob)
+est store mlsem_`y'
+}
 
 
+esttab mlsem_sind mlsem_sind_male mlsem_sind_female mlsem_sind_young mlsem_sind_middle mlsem_sind_old  using "robvce_sind.csv", replace ///
+	label b(3) p(3) eqlabels(none) alignment(S) ///
+	drop(_cons $var) ///
+	star(* 0.10 ** 0.05 *** 0.01) ///
+	cells("b(fmt(2)star)" "se(fmt(2)par)") ///
+	refcat(, nolabel) ///
+	stats(N, fmt(0) ///
+	labels(`"Observations"'))
+
+
+esttab mlsem_snbo mlsem_snbo_male mlsem_snbo_female mlsem_snbo_young mlsem_snbo_middle mlsem_snbo_old  using "robvce_snbo.csv", replace ///
+	label b(3) p(3) eqlabels(none) alignment(S) ///
+	drop(_cons $var) ///
+	star(* 0.10 ** 0.05 *** 0.01) ///
+	cells("b(fmt(2)star)" "se(fmt(2)par)") ///
+	refcat(, nolabel) ///
+	stats(N, fmt(0) ///
+	labels(`"Observations"'))
+
+	
+
+	
+
+********** Rob: no domestic work
+global yvar2 ///
+snbo2 snbo2_female snbo2_male snbo2_young snbo2_middle snbo2_old ///
+sind2 sind2_female sind2_male sind2_young sind2_middle sind2_old 
+
+	
+foreach y in $yvar2 {
+capture noisily xtdpdml `y' $compo1 $econ $head, inv($nonvar) predetermined(L.fvi) fiml
+est store mlsem_`y'
+}
+
+
+esttab mlsem_sind mlsem_sind_male mlsem_sind_female mlsem_sind_young mlsem_sind_middle mlsem_sind_old  using "nodom_sind.csv", replace ///
+	label b(3) p(3) eqlabels(none) alignment(S) ///
+	drop(_cons $var) ///
+	star(* 0.10 ** 0.05 *** 0.01) ///
+	cells("b(fmt(2)star)" "se(fmt(2)par)") ///
+	refcat(, nolabel) ///
+	stats(N, fmt(0) ///
+	labels(`"Observations"'))
+
+
+esttab mlsem_snbo mlsem_snbo_male mlsem_snbo_female mlsem_snbo_young mlsem_snbo_middle mlsem_snbo_old  using "nodom_snbo.csv", replace ///
+	label b(3) p(3) eqlabels(none) alignment(S) ///
+	drop(_cons $var) ///
+	star(* 0.10 ** 0.05 *** 0.01) ///
+	cells("b(fmt(2)star)" "se(fmt(2)par)") ///
+	refcat(, nolabel) ///
+	stats(N, fmt(0) ///
+	labels(`"Observations"'))
+	
+	
+	
+	
+********** Rob: only income gen work
+global yvar3 ///
+snbo3 snbo3_female snbo3_male snbo3_young snbo3_middle snbo3_old ///
+sind3 sind3_female sind3_male sind3_young sind3_middle sind3_old 
+
+	
+foreach y in $yvar3 {
+capture noisily xtdpdml `y' $compo1 $econ $head, inv($nonvar) predetermined(L.fvi) fiml
+est store mlsem_`y'
+}
+
+
+esttab mlsem_sind mlsem_sind_male mlsem_sind_female mlsem_sind_young mlsem_sind_middle mlsem_sind_old  using "oincogen_sind.csv", replace ///
+	label b(3) p(3) eqlabels(none) alignment(S) ///
+	drop(_cons $var) ///
+	star(* 0.10 ** 0.05 *** 0.01) ///
+	cells("b(fmt(2)star)" "se(fmt(2)par)") ///
+	refcat(, nolabel) ///
+	stats(N, fmt(0) ///
+	labels(`"Observations"'))
+
+
+esttab mlsem_snbo mlsem_snbo_male mlsem_snbo_female mlsem_snbo_young mlsem_snbo_middle mlsem_snbo_old  using "oincogen_snbo.csv", replace ///
+	label b(3) p(3) eqlabels(none) alignment(S) ///
+	drop(_cons $var) ///
+	star(* 0.10 ** 0.05 *** 0.01) ///
+	cells("b(fmt(2)star)" "se(fmt(2)par)") ///
+	refcat(, nolabel) ///
+	stats(N, fmt(0) ///
+	labels(`"Observations"'))
+	
+	
+
+	
+	
+********** Rob: balanced panel
+foreach y in $yvar {
+capture noisily xtdpdml `y' $compo1 $econ $head, inv($nonvar) predetermined(L.fvi) vce(sbenster)
+est store mlsem_`y'
+}
+
+
+esttab mlsem_sind mlsem_sind_male mlsem_sind_female mlsem_sind_young mlsem_sind_middle mlsem_sind_old  using "robben_sind.csv", replace ///
+	label b(3) p(3) eqlabels(none) alignment(S) ///
+	drop(_cons $var) ///
+	star(* 0.10 ** 0.05 *** 0.01) ///
+	cells("b(fmt(2)star)" "se(fmt(2)par)") ///
+	refcat(, nolabel) ///
+	stats(N, fmt(0) ///
+	labels(`"Observations"'))
+
+
+esttab mlsem_snbo mlsem_snbo_male mlsem_snbo_female mlsem_snbo_young mlsem_snbo_middle mlsem_snbo_old  using "robben_snbo.csv", replace ///
+	label b(3) p(3) eqlabels(none) alignment(S) ///
+	drop(_cons $var) ///
+	star(* 0.10 ** 0.05 *** 0.01) ///
+	cells("b(fmt(2)star)" "se(fmt(2)par)") ///
+	refcat(, nolabel) ///
+	stats(N, fmt(0) ///
+	labels(`"Observations"'))
+
+	
+	
 ****************************************
 * END

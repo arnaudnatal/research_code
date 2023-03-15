@@ -54,7 +54,7 @@ global cont2 age primary log_HHsize assets_total sexratio dependencyratio annual
 *replace `x'=2 if `x'>2 & `x'!=. & `x'!=0
 *recode `x' (1=0) (2=1)
 *} 
-global yvar nbo nbo_male nbo_female
+global yvar lfp lfp_male lfp_female nbo nbo_male nbo_female igap igap_male igap_female
 *
 
 tab1 $yvar
@@ -66,9 +66,9 @@ sum fvi fvi2 fvi3 fvi4
 
 ********** Spec 
 cls
-log using "Nouveauxtests.log", replace
+log using "Indivlevel.log", replace
 
-foreach x in fvi fvi2 fvi3 fvi4 {
+foreach x in fvi {
 foreach y in $yvar {
 capture noisily xtdpdml `y' $cont2, inv($nonvar) predetermined(L.`x') fiml
 *est store m2_`y'

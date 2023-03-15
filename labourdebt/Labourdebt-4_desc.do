@@ -349,10 +349,22 @@ tabstat dalits caste_1 caste_2 caste_3 stem HHsize HH_count_child sexratio depen
 cls
 use"panel_v3", clear
 
+xtset panelvar time
 
-foreach y in snbo snbo_male snbo_female snbo_young snbo_middle snbo_old {
-reg `y' fvi
-}
+*** Corr
+pwcorr fvi ///
+sind sind_female sind_male sind_young sind_middle sind_old ///
+snbo snbo_male snbo_female snbo_young snbo_middle snbo_old, sig
+
+pwcorr L.fvi ///
+sind sind_female sind_male sind_young sind_middle sind_old ///
+snbo snbo_male snbo_female snbo_young snbo_middle snbo_old, sig
+
+
+****************************************
+* END
+
+
 
 
 
@@ -367,12 +379,51 @@ reg `y' fvi
 
 
 ****************************************
+* Stat desc: Correlation
+****************************************
+cls
+use"panel_v3", clear
+
+
+*** Panel
+xtset panelvar time
+
+
+*** OLS by caste
+global nonvar caste_2 caste_3 village_2 village_3 village_4 village_5 village_6 village_7 village_8 village_9 village_10
+global head head_female head_age head_educ
+global econ remittnet_HH assets_total annualincome_HH shareform
+global compo1 log_HHsize share_female share_children share_young share_old share_stock
+global yvar sind sind_female sind_male sind_young sind_middle sind_old snbo snbo_male snbo_female snbo_young snbo_middle snbo_old
+
+* FE instead of ML-SEM
+foreach y in snbo_female {
+xtreg `y' L.fvi $compo1 $econ $head $nonvar, fe
+}
+
+* Interaction
+foreach y in snbo_female {
+xtreg `y' L.c.fvi##i.caste $compo1 $econ $head $nonvar, fe
+}
+
+* Dalits
+foreach y in snbo_female {
+xtreg `y' L.fvi $compo1 $econ $head $nonvar if caste==1, fe
+}
+
+* Middle
+foreach y in snbo_female {
+xtreg `y' L.fvi $compo1 $econ $head $nonvar if caste==2, fe
+}
+
+* Upper
+foreach y in snbo_female {
+xtreg `y' L.fvi $compo1 $econ $head $nonvar if caste==3, fe
+}
+
+
+****************************************
 * END
-
-
-
-
-
 
 
 

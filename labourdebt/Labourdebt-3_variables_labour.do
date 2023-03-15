@@ -50,7 +50,7 @@ save"RUME-occindivvar", replace
 ********** NEEMSIS-1
 use"raw/NEEMSIS1-occup_indiv", clear
 
-keep HHID2016 INDID2016 nboccupation_indiv
+keep HHID2016 INDID2016 nboccupation_indiv hoursayear_indiv
 
 *** Merge charact
 merge 1:1 HHID2016 INDID2016 using "raw/NEEMSIS1-kilm", keepusing(workingage employed)
@@ -75,7 +75,7 @@ save"NEEMSIS1-occindivvar", replace
 ********** NEEMSIS-2
 use"raw/NEEMSIS2-occup_indiv", clear
 
-keep HHID2020 INDID2020 nboccupation_indiv
+keep HHID2020 INDID2020 nboccupation_indiv hoursayear_indiv
 
 *** Merge charact
 merge 1:1 HHID2020 INDID2020 using "raw/NEEMSIS2-kilm", keepusing(workingage employed)
@@ -121,19 +121,32 @@ gen nbo_female=.
 gen nbo_young=.
 gen nbo_middle=.
 gen nbo_old=.
+gen hay_male=.
+gen hay_female=.
+gen hay_young=.
+gen hay_middle=.
+gen hay_old=.
 
 * Sex
 fre sex
 replace nbo_male=nbo if sex==1
 replace nbo_female=nbo if sex==2
+replace hay_male=hoursayear_indiv if sex==1
+replace hay_female=hoursayear_indiv if sex==2
 
 * Age
 replace nbo_young=nbo if age<=29
 replace nbo_middle=nbo if age>=30 & age<60
 replace nbo_old=nbo if age>=60
+replace hay_young=hoursayear_indiv if age<=29
+replace hay_middle=hoursayear_indiv if age>=30 & age<60
+replace hay_old=hoursayear_indiv if age>=60
+
+*
+rename hoursayear_indiv hay
 
 * Recode
-foreach x in nbo nbo_male nbo_female nbo_young nbo_middle nbo_old {
+foreach x in nbo nbo_male nbo_female nbo_young nbo_middle nbo_old hay hay_female hay_male hay_middle hay_old hay_young {
 recode `x' (.=0)
 }
 
@@ -151,12 +164,12 @@ replace ind_`x'=1 if ind_`x'>1
 
 
 * HH level
-foreach x in nbo nbo_male nbo_female nbo_young nbo_middle nbo_old ind ind_male ind_female ind_young ind_middle ind_old {
+foreach x in nbo nbo_male nbo_female nbo_young nbo_middle nbo_old ind ind_male ind_female ind_young ind_middle ind_old hay hay_female hay_male hay_middle hay_old hay_young {
 bysort HHID_panel year: egen s`x'=sum(`x')
 }
 
 
-keep HHID_panel year snbo* sind*
+keep HHID_panel year snbo* sind* shay*
 duplicates drop
 
 tab1 snbo snbo_male snbo_female snbo_young snbo_middle snbo_old
@@ -176,6 +189,23 @@ save"panel-occindivvar_v2", replace
 
 
 
+
+
+****************************************
+* Corr hours a year number of occupations
+****************************************
+cls
+use"panel-occindivvar_v2", clear
+
+
+***
+pwcorr snbo shay, sig
+foreach x in male female young middle old {
+pwcorr snbo_`x' shay_`x', sig
+}
+
+****************************************
+* END
 
 
 
@@ -322,9 +352,9 @@ drop if workingage==0
 fre kindofwork
 fre kindofwork2010
 
-* Non-HH employment
-*drop if kindofwork==5
-*drop if kindofwork==7
+* Drop domestic work
+drop if kindofwork==5
+drop if kindofwork==7
 
 * Non-income gen work
 *drop if kindofwork==6
