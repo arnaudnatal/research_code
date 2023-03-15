@@ -356,10 +356,6 @@ fre kindofwork2010
 drop if kindofwork==5
 drop if kindofwork==7
 
-* Non-income gen work
-*drop if kindofwork==6
-*drop if kindofwork==8
-
 
 *
 gen male=1 if sex==1
@@ -407,6 +403,75 @@ merge 1:1 HHID_panel year using "_temp_HHoccnoHH.dta"
 drop _merge
 
 save"panel-occoccvar_v2", replace
+
+
+
+
+
+
+********** Only income gen employment
+use"panel-occoccvar", clear
+
+drop if workingage==0
+
+*
+fre kindofwork
+fre kindofwork2010
+
+* Drop domestic work
+drop if kindofwork==5
+drop if kindofwork==7
+drop if kindofwork==6
+drop if kindofwork==8
+
+
+*
+gen male=1 if sex==1
+gen female=1 if sex==2
+gen young=1 if age<=29
+gen middle=1 if age>=30 & age<60
+gen old=1 if age>=60
+
+* Occ level
+bysort HHID_panel year: egen snbo3=sum(1)
+foreach x in male female young middle old {
+bysort HHID_panel year: egen snbo3_`x'=sum(`x')
+}
+
+* Indiv level
+bysort HHID_panel INDID_panel year: egen ind3=sum(1)
+foreach x in male female young middle old {
+bysort HHID_panel INDID_panel year: egen ind3_`x'=sum(`x')
+}
+foreach x in ind3 ind3_male ind3_female ind3_young ind3_middle ind3_old {
+replace `x'=1 if `x'>0
+}
+preserve
+keep HHID_panel INDID_panel year ind3 ind3_male ind3_female ind3_young ind3_middle ind3_old
+duplicates drop
+ta year
+bysort HHID_panel year: egen sind3=sum(ind3)
+foreach x in male female young middle old {
+bysort HHID_panel year: egen sind3_`x'=sum(ind3_`x')
+}
+drop ind3 ind3_male ind3_female ind3_young ind3_middle ind3_old
+drop INDID_panel
+duplicates drop
+ta year
+save"_temp_HHoccnoHH.dta", replace
+restore
+
+
+keep HHID_panel year snbo3 snbo3_male snbo3_female snbo3_young snbo3_middle snbo3_old
+duplicates drop
+ta year
+
+merge 1:1 HHID_panel year using "_temp_HHoccnoHH.dta"
+
+drop _merge
+
+save"panel-occoccvar_v3", replace
+
 ****************************************
 * END
 
@@ -433,10 +498,9 @@ drop _merge
 merge 1:1 HHID_panel year using "panel-occoccvar_v2"
 drop _merge
 
-
-*** Drop
-ta sind sind2
-ta snbo snbo2
+*** Merge with only income gen
+merge 1:1 HHID_panel year using "panel-occoccvar_v3"
+drop _merge
 
 
 save"panel_v3", replace
