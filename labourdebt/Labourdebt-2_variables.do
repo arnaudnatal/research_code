@@ -242,7 +242,7 @@ recode head_educ (2=1)
 * Rem + Assets
 foreach x in assets_total remittnet_HH annualincome_HH {
 egen `x'_std=std(`x')
-drop `x'
+rename `x' `x'_r
 rename `x'_std `x'
 }
 
@@ -284,10 +284,10 @@ save"panel_v2", replace
 
 
 
-do"C:\Users\Arnaud\Documents\GitHub\research_code\labourdebt\Labourdebt-3_variables_labour.do"
+*do"C:\Users\Arnaud\Documents\GitHub\research_code\labourdebt\Labourdebt-3_variables_labour.do"
 *do"C:\Users\Arnaud\Documents\GitHub\research_code\labourdebt\Labourdebt-4_desc.do"
-do"C:\Users\Arnaud\Documents\GitHub\research_code\labourdebt\Labourdebt-6_indivdatabase.do"
-do"C:\Users\Arnaud\Documents\GitHub\research_code\labourdebt\Labourdebt-7_predictivepower_indiv.do"
+*do"C:\Users\Arnaud\Documents\GitHub\research_code\labourdebt\Labourdebt-6_indivdatabase.do"
+*do"C:\Users\Arnaud\Documents\GitHub\research_code\labourdebt\Labourdebt-7_predictivepower_indiv.do"
 
 
 

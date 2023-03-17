@@ -16,7 +16,7 @@ do"C:\Users\Arnaud\Documents\GitHub\folderanalysis\labourdebt.do"
 
 
 
-
+/*
 ****************************************
 * Stat desc: Y ind
 ****************************************
@@ -135,7 +135,7 @@ graph export "graph/yvar_sind.pdf", as(pdf) replace
 
 ****************************************
 * END
-
+*/
 
 
 
@@ -274,16 +274,8 @@ graph export "graph/yvar_snbo.pdf", as(pdf) replace
 
 
 
-
-
-
-
-
-
-
-
 ****************************************
-* Stat desc: X
+* Stat desc: main X
 ****************************************
 cls
 use"panel_v3", clear
@@ -301,25 +293,55 @@ xtitle("FVI") ytitle("") name(sp_fvi_horiz, replace)
 graph export "graph/Distri_fvi.pdf", as(pdf) replace
 set graph on
 
-********** Other X
+
+
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Stat desc: X
+****************************************
+cls
+use"panel_v3", clear
+
+replace annualincome_HH_r=annualincome_HH_r/10000
+replace remittnet_HH_r=remittnet_HH_r/1000
+replace assets_total_r=assets_total_r/10000
 
 *** Economics
-tabstat remittnet_HH assets_total annualincome_HH shareform, stat(n mean cv p50) by(year)
+tabstat remittnet_HH_r assets_total_r annualincome_HH_r, stat(n mean cv p50) by(year) long
 
 
 *** Head
-ta head_female 
-tabstat head_age, stat(n mean cv p50)
-ta head_educ
+ta head_female year, col nofreq
+tabstat head_age, stat(mean) by(year)
+ta head_educ year, col nofreq
 
 
 *** Family
-* Compo no. 1
-tabstat dalits caste_1 caste_2 caste_3 stem log_HHsize share_female share_children share_young share_old share_stock, stat(n mean cv p50) by(time)
+tabstat HHsize share_female share_children share_young share_old share_stock, stat(mean) by(year)
 
 
-* Compo no. 2
-tabstat dalits caste_1 caste_2 caste_3 stem HHsize HH_count_child sexratio dependencyratio share_stock, stat(n mean cv p50) by(time)
+
+*** Caste
+ta caste year, col nofreq
+
 
 ****************************************
 * END

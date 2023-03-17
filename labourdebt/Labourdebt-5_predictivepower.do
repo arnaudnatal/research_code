@@ -44,6 +44,17 @@ xtset panelvar time
 set matsize 10000, perm
 
 
+*** Diff
+gen test1=snbo-snbo2
+ta test1
+
+gen test2=snbo2-snbo3
+ta test2
+
+drop test1 test2
+
+
+
 ********** Variables
 
 *** X
@@ -58,9 +69,60 @@ global compo2 log_HHsize share_children sexratio dependencyratio share_stock
 *** Y
 global yvar ///
 snbo snbo_female snbo_male snbo_young snbo_middle snbo_old 
-*sind sind_female sind_male sind_young sind_middle sind_old 
 
 
+
+
+
+
+
+	
+********** Dalits / Others 
+cls
+preserve
+foreach y in $yvar {
+xtreg `y' L.`y' L.fvi $compo1 $econ $head $nonvar, fe
+est store mlsem_`y'
+
+xtreg `y' L.`y' L.c.fvi##ib(1).caste $compo1 $econ $head $nonvar, fe
+est store mlsemcaste_`y'
+}
+esttab mlsem_snbo mlsem_snbo_male mlsem_snbo_female mlsem_snbo_young mlsem_snbo_middle mlsem_snbo_old  using "fem.csv", replace ///
+	label b(3) p(3) eqlabels(none) alignment(S) ///
+	drop(_cons $var) ///
+	star(* 0.10 ** 0.05 *** 0.01) ///
+	cells("b(fmt(2)star)" "se(fmt(2)par)") ///
+	refcat(, nolabel) ///
+	stats(N, fmt(0) ///
+	labels(`"Observations"'))
+
+esttab mlsemcaste_snbo mlsemcaste_snbo_male mlsemcaste_snbo_female mlsemcaste_snbo_young mlsemcaste_snbo_middle mlsemcaste_snbo_old  using "femcaste.csv", replace ///
+	label b(3) p(3) eqlabels(none) alignment(S) ///
+	drop(_cons $var) ///
+	star(* 0.10 ** 0.05 *** 0.01) ///
+	cells("b(fmt(2)star)" "se(fmt(2)par)") ///
+	refcat(, nolabel) ///
+	stats(N, fmt(0) ///
+	labels(`"Observations"'))
+
+
+restore	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+log using "Tout.log", replace
+ta year
 
 
 ********** Spec 1
@@ -77,9 +139,6 @@ esttab mlsem_snbo mlsem_snbo_male mlsem_snbo_female mlsem_snbo_young mlsem_snbo_
 	refcat(, nolabel) ///
 	stats(N, fmt(0) ///
 	labels(`"Observations"'))
-
-
-
 
 
 
@@ -152,9 +211,7 @@ esttab mlsem_snbo mlsem_snbo_male mlsem_snbo_female mlsem_snbo_young mlsem_snbo_
 
 ********** Rob: no domestic work
 global yvar2 ///
-snbo2 snbo2_female snbo2_male snbo2_young snbo2_middle snbo2_old ///
-sind2 sind2_female sind2_male sind2_young sind2_middle sind2_old 
-
+snbo2 snbo2_female snbo2_male snbo2_young snbo2_middle snbo2_old 
 	
 foreach y in $yvar2 {
 capture noisily xtdpdml `y' $compo1 $econ $head, inv($nonvar) predetermined(L.fvi) fiml
@@ -177,9 +234,7 @@ esttab mlsem_snbo mlsem_snbo_male mlsem_snbo_female mlsem_snbo_young mlsem_snbo_
 	
 ********** Rob: only income gen work
 global yvar3 ///
-snbo3 snbo3_female snbo3_male snbo3_young snbo3_middle snbo3_old ///
-sind3 sind3_female sind3_male sind3_young sind3_middle sind3_old 
-
+snbo3 snbo3_female snbo3_male snbo3_young snbo3_middle snbo3_old 
 	
 foreach y in $yvar3 {
 capture noisily xtdpdml `y' $compo1 $econ $head, inv($nonvar) predetermined(L.fvi) fiml
@@ -216,5 +271,7 @@ esttab mlsem_snbo mlsem_snbo_male mlsem_snbo_female mlsem_snbo_young mlsem_snbo_
 	stats(N, fmt(0) ///
 	labels(`"Observations"'))
 
+	
+log close
 ****************************************
 * END

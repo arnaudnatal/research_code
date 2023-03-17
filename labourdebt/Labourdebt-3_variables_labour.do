@@ -503,6 +503,26 @@ merge 1:1 HHID_panel year using "panel-occoccvar_v3"
 drop _merge
 
 
+*** Diff
+gen test1=snbo-snbo2
+ta test1
+
+gen test2=snbo2-snbo3
+ta test2
+
+drop test1 test2
+
+
+*** Clean
+drop if HHID_panel=="GOV64" & year==2020
+drop if HHID_panel=="GOV65" & year==2020
+drop if HHID_panel=="GOV66" & year==2020  
+drop if HHID_panel=="GOV67" & year==2020
+drop if HHID_panel=="KUV66" & year==2020
+drop if HHID_panel=="KUV67" & year==2020
+
+
+
 save"panel_v3", replace
 ****************************************
 * END
