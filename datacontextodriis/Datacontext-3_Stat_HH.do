@@ -232,6 +232,7 @@ legend(order(1 "Share of land owner" 2 "Average land size (ha)") pos(6) col(2)) 
 title("Total") ///
 aspectratio() name(agri, replace)
 graph export "Agri_total.pdf", as(pdf) replace
+graph export "Agri_total.png", as(png) replace
 restore
 
 
@@ -414,6 +415,125 @@ restore
 *** Combine
 grc1leg debt debt_c1 debt_c2 debt_c3, col(2) name(debt_comb, replace)
 graph export "Debt_total.pdf", as(pdf) replace
+
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Graph poster
+****************************************
+cls
+use"panel_v0", clear
+
+*** Rescale
+replace assets_total=assets_total/10000
+replace assets_totalnoland=assets_totalnoland/10000
+replace annualincome_HH=annualincome_HH/10000
+replace loanamount_HH=loanamount_HH/10000
+gen dummydebt=0
+replace dummydebt=1 if nbloans_HH>0 & nbloans_HH!=.
+
+
+
+
+********** Amount
+preserve
+*keep if caste==1
+*drop if caste==1
+collapse (median) assets_totalnoland annualincome_HH loanamount_HH, by(time)
+twoway ///
+(connected assets_totalnoland time) ///
+(connected annualincome_HH time) ///
+(connected loanamount_HH time) ///
+, ///
+ylabel(0(5)30, axis(1)) ///
+ytitle("INR 10k") ///
+xlabel(1 "2010" 2 "2016-17" 3 "2020-21") ///
+xtitle("") ///
+legend(order(1 "Assets without land" 2 "Annual income" 3 "Total indebtedness") pos(6) col(3)) ///
+title("Median amount") ///
+aspectratio() name(debt, replace)
+graph export "Rupees.png", as(png) replace
+restore
+
+
+
+
+********** Inequalities
+preserve
+*keep if caste==1
+*drop if caste==1
+foreach i in 2010 2016 2020{
+pctile income_pctile`i'=annualincome_HH if year==`i', n(100)
+pctile assets_pctile`i'=assets_totalnoland if year==`i', n(100)
+pctile loanam_pctile`i'=loanamount_HH if year==`i', n(100)
+}
+keep income_pctile2010 assets_pctile2010 loanam_pctile2010 income_pctile2016 assets_pctile2016 loanam_pctile2016 income_pctile2020 assets_pctile2020 loanam_pctile2020
+gen n=_n
+keep if n<=99
+
+* Income
+twoway ///
+(line income_pctile2010 n) ///
+(line income_pctile2016 n) ///
+(line income_pctile2020 n) ///
+, ///
+ylabel(0(5)30, axis(1)) ///
+ytitle("INR 10k") ///
+xtitle("") ///
+legend(order(1 "2010" 2 "2016-17" 3 "2020-21") pos(6) col(3)) ///
+title("Annual income") ///
+aspectratio() name(income, replace)
+
+* Debt
+twoway ///
+(line loanam_pctile2010 n) ///
+(line loanam_pctile2016 n) ///
+(line loanam_pctile2020 n) ///
+, ///
+ylabel(0(5)30, axis(1)) ///
+ytitle("INR 10k") ///
+xtitle("") ///
+legend(order(1 "2010" 2 "2016-17" 3 "2020-21") pos(6) col(3)) ///
+title("Loan amount") ///
+aspectratio() name(debt, replace)
+
+
+* Assets
+twoway ///
+(line assets_pctile2010 n) ///
+(line assets_pctile2016 n) ///
+(line assets_pctile2020 n) ///
+, ///
+ylabel(0(5)30, axis(1)) ///
+ytitle("INR 10k") ///
+xtitle("") ///
+legend(order(1 "2010" 2 "2016-17" 3 "2020-21") pos(6) col(3)) ///
+title("Assets amount") ///
+aspectratio() name(assets, replace)
+
+
+
+graph export "Rupees.png", as(png) replace
+restore
+
+
 
 ****************************************
 * END

@@ -459,6 +459,58 @@ set graph on
 grc1leg occ occ_c1 occ_c2 occ_dal occ_mid occ_up, col(3) name(occ_comb, replace)
 graph export "Occ_total.pdf", as(pdf) replace
 
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Employment only for employed=1
+****************************************
+cls
+use"panel_indiv_v0.dta", clear
+
+
+*** Selection Cécile
+drop if employed==.
+drop if employed==0
+ta year
+
+*** Selection Arnaud
+*drop if workingage==0
+*drop if mainocc_occupation_indiv==0
+ta year
+
+
+*** Graph bar
+fre mainocc_occupation_indiv
+ta mainocc_occupation_indiv, gen(perc)
+
+
+*** For poster
+preserve
+collapse (mean) perc*, by(year)
+reshape long perc, i(year) j(occ)
+replace perc=perc*100
+label define occupcode 1"Agri SE" 2"Agri casual" 3"Casual" 4"Reg non-quali" 5"Reg quali" 6"SE" 7"NREGA", modify
+label values occ occupcode
+graph bar perc, over(year, lab(angle())) over(occ, lab(angle())) ///
+asy ytitle("% for each year") title("Total") legend(col(3) pos(6)) ///
+ylab(0(10)60) ///
+bar(1, fcolor(gs14)) bar(2, fcolor(gs10)) bar(3, fcolor(gs5)) ///
+name(occ, replace) ///
+ blabel(total, format(%4.1f) size(vsmall))
+graph export "Occ_post.png", as(png) replace
+restore
+
 
 ****************************************
 * END
