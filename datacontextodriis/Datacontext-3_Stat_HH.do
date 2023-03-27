@@ -15,6 +15,10 @@ do "https://raw.githubusercontent.com/arnaudnatal/folderanalysis/main/$link.do"
 
 
 
+
+
+
+
 ****************************************
 * Socio demo charact
 ****************************************
@@ -229,10 +233,33 @@ ytitle("Average land size (ha)", axis(2)) ///
 xlabel(1 "2010" 2 "2016-17" 3 "2020-21") ///
 xtitle("") ///
 legend(order(1 "Share of land owner" 2 "Average land size (ha)") pos(6) col(2)) ///
+title("Land ownership and size") ///
+aspectratio() name(agri, replace)
+graph export "Agri_total.png", as(png) replace
+restore
+
+
+
+
+
+*** Total
+preserve
+collapse (mean) ownland sizeownland, by(time)
+twoway ///
+(bar ownland time, yaxis(1) barwidth(.5)) ///
+(connected sizeownland time, yaxis(2)) ///
+, ///
+ylabel(0(.1).7, axis(1)) ///
+ylabel(0(.5)2, axis(2)) ///
+ymtick(0(.25)2, axis(2)) ///
+ytitle("Share of land owner", axis(1)) ///
+ytitle("Average land size (ha)", axis(2)) ///
+xlabel(1 "2010" 2 "2016-17" 3 "2020-21") ///
+xtitle("") ///
+legend(order(1 "Share of land owner" 2 "Average land size (ha)") pos(6) col(2)) ///
 title("Total") ///
 aspectratio() name(agri, replace)
 graph export "Agri_total.pdf", as(pdf) replace
-graph export "Agri_total.png", as(png) replace
 restore
 
 
@@ -458,79 +485,55 @@ preserve
 *drop if caste==1
 collapse (median) assets_totalnoland annualincome_HH loanamount_HH, by(time)
 twoway ///
-(connected assets_totalnoland time) ///
-(connected annualincome_HH time) ///
-(connected loanamount_HH time) ///
+(connected assets_totalnoland time, lcolor(gs8)) ///
+(connected annualincome_HH time, lcolor(gs5) lpattern(dash)) ///
+(connected loanamount_HH time, lcolor(gs0)) ///
 , ///
 ylabel(0(5)30, axis(1)) ///
 ytitle("INR 10k") ///
 xlabel(1 "2010" 2 "2016-17" 3 "2020-21") ///
 xtitle("") ///
 legend(order(1 "Assets without land" 2 "Annual income" 3 "Total indebtedness") pos(6) col(3)) ///
-title("Median amount") ///
-aspectratio() name(debt, replace)
-graph export "Rupees.png", as(png) replace
+title("Median amount of assets, income and debt") ///
+subtitle(".", color(white)) ///
+note("." ".", size(vsmall) color(white)) ///
+aspectratio() name(amount, replace)
+graph export "Amount.png", as(png) replace
 restore
 
 
 
 
-********** Inequalities
+********** IQR
 preserve
-*keep if caste==1
-*drop if caste==1
-foreach i in 2010 2016 2020{
-pctile income_pctile`i'=annualincome_HH if year==`i', n(100)
-pctile assets_pctile`i'=assets_totalnoland if year==`i', n(100)
-pctile loanam_pctile`i'=loanamount_HH if year==`i', n(100)
+foreach x in assets_totalnoland annualincome_HH loanamount_HH {
+egen iqr_`x'_2010=iqr(`x') if year==2010
+egen iqr_`x'_2016=iqr(`x') if year==2016
+egen iqr_`x'_2020=iqr(`x') if year==2020
+gen iqr_`x'=.
+replace iqr_`x'=iqr_`x'_2010 if year==2010
+replace iqr_`x'=iqr_`x'_2016 if year==2016
+replace iqr_`x'=iqr_`x'_2020 if year==2020
+drop iqr_`x'_2010 iqr_`x'_2016 iqr_`x'_2020
 }
-keep income_pctile2010 assets_pctile2010 loanam_pctile2010 income_pctile2016 assets_pctile2016 loanam_pctile2016 income_pctile2020 assets_pctile2020 loanam_pctile2020
-gen n=_n
-keep if n<=99
-
-* Income
+tabstat assets_totalnoland annualincome_HH loanamount_HH, stat(iqr) by(year)
+keep year time iqr_assets_totalnoland iqr_annualincome_HH iqr_loanamount_HH
+sort time
 twoway ///
-(line income_pctile2010 n) ///
-(line income_pctile2016 n) ///
-(line income_pctile2020 n) ///
+(connected iqr_assets_totalnoland time, lcolor(gs8)) ///
+(connected iqr_annualincome_HH time, lcolor(gs5) lpattern(dash)) ///
+(connected iqr_loanamount_HH time, color(gs0)) ///
 , ///
 ylabel(0(5)30, axis(1)) ///
 ytitle("INR 10k") ///
+xlabel(1 "2010" 2 "2016-17" 3 "2020-21") ///
 xtitle("") ///
-legend(order(1 "2010" 2 "2016-17" 3 "2020-21") pos(6) col(3)) ///
-title("Annual income") ///
-aspectratio() name(income, replace)
-
-* Debt
-twoway ///
-(line loanam_pctile2010 n) ///
-(line loanam_pctile2016 n) ///
-(line loanam_pctile2020 n) ///
-, ///
-ylabel(0(5)30, axis(1)) ///
-ytitle("INR 10k") ///
-xtitle("") ///
-legend(order(1 "2010" 2 "2016-17" 3 "2020-21") pos(6) col(3)) ///
-title("Loan amount") ///
-aspectratio() name(debt, replace)
-
-
-* Assets
-twoway ///
-(line assets_pctile2010 n) ///
-(line assets_pctile2016 n) ///
-(line assets_pctile2020 n) ///
-, ///
-ylabel(0(5)30, axis(1)) ///
-ytitle("INR 10k") ///
-xtitle("") ///
-legend(order(1 "2010" 2 "2016-17" 3 "2020-21") pos(6) col(3)) ///
-title("Assets amount") ///
-aspectratio() name(assets, replace)
-
-
-
-graph export "Rupees.png", as(png) replace
+legend(order(1 "Assets without land" 2 "Annual income" 3 "Total indebtedness") pos(6) col(3)) ///
+title("Inequalities of assets, income and debt measured with the interquartile range:") ///
+subtitle("difference between the third (Q3) and first (Q1) quartile") ///
+note("Q1: splits off the lowest 25% of data from the highest 75%." "Q3: splits off the highest 25% of data from the lowest 75%.", size(vsmall)) ///
+aspectratio() name(ineq, replace)
+graph export "Inequalities.png", as(png) replace
 restore
 
 

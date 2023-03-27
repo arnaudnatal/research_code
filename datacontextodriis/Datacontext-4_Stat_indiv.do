@@ -503,11 +503,12 @@ replace perc=perc*100
 label define occupcode 1"Agri SE" 2"Agri casual" 3"Casual" 4"Reg non-quali" 5"Reg quali" 6"SE" 7"NREGA", modify
 label values occ occupcode
 graph bar perc, over(year, lab(angle())) over(occ, lab(angle())) ///
-asy ytitle("% for each year") title("Total") legend(col(3) pos(6)) ///
+asy ytitle("% for each year") title("Distribution of main occupations") legend(col(3) pos(6)) ///
 ylab(0(10)60) ///
 bar(1, fcolor(gs14)) bar(2, fcolor(gs10)) bar(3, fcolor(gs5)) ///
 name(occ, replace) ///
- blabel(total, format(%4.1f) size(vsmall))
+blabel(total, format(%4.1f) size(vsmall)) ///
+legend(order(1 "2010" 2 "2016-17" 3 "2020-21"))
 graph export "Occ_post.png", as(png) replace
 restore
 
