@@ -2,10 +2,10 @@
 cls
 *Arnaud NATAL
 *arnaud.natal@u-bordeaux.fr
-*May 13, 2021
+*March 29, 2023
 *-----
 gl link = "psychodebt"
-*New var
+*Rob 1
 *-----
 do "https://raw.githubusercontent.com/arnaudnatal/folderanalysis/main/$link.do"
 *-------------------------
@@ -75,7 +75,7 @@ est store pr4
 margins, dydx($PTCSma) at(dalits=(0 1) female=(0 1)) atmeans post
 est store marg4
 
-esttab pr0 pr1 pr2 pr3 pr4 using "Reco.csv", ///
+esttab pr0 pr1 pr2 pr3 pr4 using "Reco_rob1.csv", ///
 	cells("b(fmt(2) star)" se(par fmt(2))) ///
 	drop($Xrest _cons) ///
 	legend label varlabels(_cons constant) ///
@@ -83,7 +83,7 @@ esttab pr0 pr1 pr2 pr3 pr4 using "Reco.csv", ///
 	starlevels(* 0.10 ** 0.05 *** 0.01) ///
 	replace	
 	
-esttab marg1 marg2 marg3 marg4 using "Reco_margin.csv", ///
+esttab marg1 marg2 marg3 marg4 using "Reco_margin_rob1.csv", ///
 	cells("b(fmt(2) star)" se(par fmt(2))) ///
 	legend label varlabels(_cons constant) ///
 	starlevels(* 0.10 ** 0.05 *** 0.01) ///
@@ -160,7 +160,7 @@ est store pr4
 qui margins, dydx($PTCSma) at(dalits=(0 1) female=(0 1)) atmeans post
 est store marg4
 
-esttab pr0 pr1 pr2 pr3 pr4 using "Nego.csv", ///
+esttab pr0 pr1 pr2 pr3 pr4 using "Nego_rob1.csv", ///
 	cells("b(fmt(2) star)" se(par fmt(2))) ///
 	drop($Xrest sharesex sharecaste _cons) ///
 	legend label varlabels(_cons constant) ///
@@ -168,7 +168,7 @@ esttab pr0 pr1 pr2 pr3 pr4 using "Nego.csv", ///
 	starlevels(* 0.10 ** 0.05 *** 0.01) ///
 	replace	
 	
-esttab marg1 marg2 marg3 marg4 using "Nego_margin.csv", ///
+esttab marg1 marg2 marg3 marg4 using "Nego_margin_rob1.csv", ///
 	cells("b(fmt(2) star)" se(par fmt(2))) ///
 	legend label varlabels(_cons constant) ///
 	starlevels(* 0.10 ** 0.05 *** 0.01) ///
@@ -241,7 +241,7 @@ est store pr4
 qui margins, dydx($PTCSma) at(dalits=(0 1) female=(0 1)) atmeans post
 est store marg4
 
-esttab pr0 pr1 pr2 pr3 pr4 using "Mana.csv", ///
+esttab pr0 pr1 pr2 pr3 pr4 using "Mana_rob1.csv", ///
 	cells("b(fmt(2) star)" se(par fmt(2))) ///
 	drop($Xrest s_loanamount _cons) ///
 	legend label varlabels(_cons constant) ///
@@ -249,7 +249,7 @@ esttab pr0 pr1 pr2 pr3 pr4 using "Mana.csv", ///
 	starlevels(* 0.10 ** 0.05 *** 0.01) ///
 	replace	
 
-esttab marg1 marg2 marg3 marg4 using "Mana_margin.csv", ///
+esttab marg1 marg2 marg3 marg4 using "Mana_margin_rob1.csv", ///
 	cells("b(fmt(2) star)" se(par fmt(2))) ///
 	legend label varlabels(_cons constant) ///
 	starlevels(* 0.10 ** 0.05 *** 0.01) ///
