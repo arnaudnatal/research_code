@@ -353,6 +353,38 @@ tabstat loanamount_indiv, stat(n mean sd p50) by(dummyML_2)
 
 
 
+****************************************
+* Trust and Big-5
+****************************************
+use "panel_wide_v4.dta", clear
+
+ta trustneighborhood_1
+ta trustemployees_1
+
+tabstat base_f1_std base_f2_std base_f3_std base_f5_std base_raven_tt_std base_num_tt_std base_lit_tt_std, stat(n mean cv q) by(trustneighborhood_1)
+
+tabstat base_f1_std base_f2_std base_f3_std base_f5_std base_raven_tt_std base_num_tt_std base_lit_tt_std, stat(n mean cv q) by(trustemployees_1)
+
+cpcorr base_f1_std base_f2_std base_f3_std base_f5_std base_raven_tt_std base_num_tt_std base_lit_tt_std \ trustneighborhood_1 trustemployees_1
+
+
+
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 /*
