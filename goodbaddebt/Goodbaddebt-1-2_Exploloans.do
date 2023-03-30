@@ -15,7 +15,7 @@ do "https://raw.githubusercontent.com/arnaudnatal/folderanalysis/main/$link.do"
 
 
 
-
+/*
 ****************************************
 * Just before work
 ****************************************
@@ -43,7 +43,7 @@ ta panel year
 
 ****************************************
 * END
-
+*/
 
 
 
@@ -75,33 +75,33 @@ ta lender4 loanreasongiven
 
 
 
+
+
+
+
 ****************************************
-* ML for non-settled loans
+* MCA with ML
 ****************************************
 use"panel_loans_nonsettled", clear
 
 fre loanreasongiven
 drop if loanreasongiven==12
 drop if loanreasongiven==77
+keep if dummyml==1
+drop if dummyhelptosettleloan==.
 
+ta year
 
-********** CA with R
-ta lender4 loanreasongiven
-/*
-Almost good:
-With 2 dim = 80%
+mca reason_cat lender_cat otherlenderservices_poli otherlenderservices_fina otherlenderservices_guar otherlenderservices_gene otherlenderservices_none otherlenderservices_othe borrowerservices_free borrowerservices_less borrowerservices_supp borrowerservices_none borrowerservices_othe dummyinterest, meth(ind) normal(princ) comp
+mcaplot, overlay legend(off) xline(0) yline(0) scale(.8)
 
-Dim1: non-ptive debt -----> ptive debt
-Dim2: bad debt       -----> good debt
+predict a1 a2
 
-Three clusters:
-1 - Bad debt, non-ptive
-2 - Good debt, ptive
-3 - Formal agri debt 
-*/
+scatter a2 a1, xline(0) yline(0)
 
 ****************************************
 * END
+
 
 
 
