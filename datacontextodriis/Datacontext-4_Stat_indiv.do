@@ -131,6 +131,177 @@ ta edulevel educ_attainment2
 
 
 
+****************************************
+* PTCS
+****************************************
+cls
+use"panel_indiv_v0", clear
+
+replace num_tt=num_tt/1.5 if year==2020
+
+tabstat num_tt lit_tt raven_tt cr_OP cr_CO cr_EX cr_AG cr_ES cr_Grit locus if year==2016, stat(n mean cv) by(sex)
+tabstat num_tt lit_tt raven_tt cr_OP cr_CO cr_EX cr_AG cr_ES cr_Grit locus if year==2020, stat(n mean cv) by(sex)
+
+tabstat num_tt lit_tt raven_tt cr_OP cr_CO cr_EX cr_AG cr_ES cr_Grit locus if year==2016, stat(n mean cv) by(caste)
+tabstat num_tt lit_tt raven_tt cr_OP cr_CO cr_EX cr_AG cr_ES cr_Grit locus if year==2020, stat(n mean cv) by(caste)
+
+
+* OP
+preserve
+keep if year==2016
+twoway ///
+(kdensity cr_OP if sex==1) ///
+(kdensity cr_OP if sex==2) ///
+, xtitle("Score in 2016-17") ytitle("Density") ///
+title("Openness to experience") ///
+legend(order(1 "Male" 2 "Female") pos(6) col(2)) ///
+name(op, replace)
+restore 
+
+
+* CO
+preserve
+keep if year==2016
+twoway ///
+(kdensity cr_CO if sex==1, bwidth(0.3)) ///
+(kdensity cr_CO if sex==2, bwidth(0.3)) ///
+, xtitle("Score in 2016-17") ytitle("Density") ///
+title("Conscientiousness") ///
+legend(order(1 "Male" 2 "Female") pos(6) col(2)) ///
+name(co, replace)
+restore 
+
+
+
+* EX
+preserve
+keep if year==2016
+twoway ///
+(kdensity cr_EX if sex==1) ///
+(kdensity cr_EX if sex==2) ///
+, xtitle("Score in 2016-17") ytitle("Density") ///
+title("Extraversion") ///
+legend(order(1 "Male" 2 "Female") pos(6) col(2)) ///
+name(ex, replace)
+restore 
+
+
+
+* AG
+preserve
+keep if year==2016
+twoway ///
+(kdensity cr_AG if sex==1, bwidth(0.15)) ///
+(kdensity cr_AG if sex==2, bwidth(0.15)) ///
+, xtitle("Score in 2016-17") ytitle("Density") ///
+title("Agreeableness") ///
+legend(order(1 "Male" 2 "Female") pos(6) col(2)) ///
+name(ag, replace)
+restore 
+
+
+
+* ES
+preserve
+keep if year==2016
+twoway ///
+(kdensity cr_ES if sex==1, bwidth(0.2)) ///
+(kdensity cr_ES if sex==2, bwidth(0.2)) ///
+, xtitle("Score in 2016-17") ytitle("Density") ///
+title("Emotional stability") ///
+legend(order(1 "Male" 2 "Female") pos(6) col(2)) ///
+name(es, replace)
+restore 
+
+
+
+* Grit
+preserve
+keep if year==2016
+twoway ///
+(kdensity cr_Grit if sex==1) ///
+(kdensity cr_Grit if sex==2) ///
+, xtitle("Score in 2016-17") ytitle("Density") ///
+title("Grit") ///
+legend(order(1 "Male" 2 "Female") pos(6) col(2)) ///
+name(grit, replace)
+restore 
+
+
+
+* LOC
+preserve
+keep if year==2020
+twoway ///
+(kdensity locus if sex==1, bwidth(0.2)) ///
+(kdensity locus if sex==2, bwidth(0.2)) ///
+, xtitle("Score in 2020-21") ytitle("Density") ///
+title("Locus of control") ///
+legend(order(1 "Male" 2 "Female") pos(6) col(2)) ///
+name(locus, replace)
+restore 
+
+
+
+* Numeracy
+preserve
+keep if year==2016
+twoway ///
+(kdensity num_tt if sex==1, bwidth(1.2)) ///
+(kdensity num_tt if sex==2, bwidth(1.2)) ///
+, xtitle("Score in 2016-17") ytitle("Density") ///
+title("Numeracy") ///
+legend(order(1 "Male" 2 "Female") pos(6) col(2)) ///
+name(num, replace)
+restore 
+
+
+
+* Literacy
+preserve
+keep if year==2016
+twoway ///
+(kdensity lit_tt if sex==1, bwidth(1.6)) ///
+(kdensity lit_tt if sex==2, bwidth(1.6)) ///
+, xtitle("Score in 2016-17") ytitle("Density") ///
+title("Literacy") ///
+legend(order(1 "Male" 2 "Female") pos(6) col(2)) ///
+name(lit, replace)
+restore 
+
+
+
+* Raven
+preserve
+keep if year==2016
+twoway ///
+(kdensity raven_tt if sex==1, bwidth(5)) ///
+(kdensity raven_tt if sex==2, bwidth(5)) ///
+, xtitle("Score in 2016-17") ytitle("Density") ///
+title("Raven") ///
+legend(order(1 "Male" 2 "Female") pos(6) col(2)) ///
+name(raven, replace)
+restore 
+
+
+********** Same graph
+grc1leg co op ex ag es grit locus num lit raven, col(5) name(ptcscomb, replace)
+graph export "ptcs.pdf", replace as(pdf)
+graph export "ptcs.png", replace as(png)
+
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -23,6 +23,12 @@ do "https://raw.githubusercontent.com/arnaudnatal/folderanalysis/main/$link.do"
 ****************************************
 use"$directory\RUME-HH", clear
 
+*** Expenses
+sum foodexpenses educationexpenses healthexpenses
+preserve
+order HHID2010 INDID2010 foodexpenses educationexpenses healthexpenses
+restore
+
 *** Family
 merge m:1 HHID2010 using "RUME-family"
 drop _merge
@@ -86,6 +92,16 @@ save"RUME_v0", replace
 * NEEMSIS-1
 ****************************************
 use"$directory\NEEMSIS1-HH", clear
+
+*** Expenses
+sum foodexpenses educationexpenses healthexpenses
+bysort HHID2016: egen ed=sum(educationexpenses)
+drop educationexpenses
+rename ed educationexpenses
+
+*** PTCS
+merge 1:1 HHID2016 INDID2016 using "NEEMSIS1-ptcs", keepusing(raven_tt num_tt lit_tt cr_OP cr_CO cr_EX cr_AG cr_ES cr_Grit)
+drop _merge
 
 *** Family
 merge m:1 HHID2016 using "NEEMSIS1-family"
@@ -156,6 +172,20 @@ save"NEEMSIS1_v0", replace
 * NEEMSIS-2
 ****************************************
 use"$directory\NEEMSIS2-HH", clear
+
+*** Expenses
+sum foodexpenses educationexpenses healthexpenses
+bysort HHID2020: egen ed=sum(educationexpenses)
+drop educationexpenses
+rename ed educationexpenses
+
+*** PTCS
+merge 1:1 HHID2020 INDID2020 using "NEEMSIS2-ptcs", keepusing(raven_tt num_tt lit_tt cr_OP cr_CO cr_EX cr_AG cr_ES cr_Grit locus)
+drop _merge
+
+*** Working conditions
+merge 1:1 HHID2020 INDID2020 using "NEEMSIS2-ego", keepusing(respect workmate useknowledgeatwork satisfyingpurpose schedule takeholiday agreementatwork1 agreementatwork2 agreementatwork3 agreementatwork4 changework happywork satisfactionsalary executionwork1 executionwork2 executionwork3 executionwork4 executionwork5 executionwork6 executionwork7 executionwork8 executionwork9 accidentalinjury losswork lossworknumber mostseriousincident mostseriousinjury seriousinjuryother physicalharm problemwork1 problemwork2 problemwork4 problemwork5 problemwork6 problemwork7 problemwork8 problemwork9 problemwork10 workexposure1 workexposure2 workexposure3 workexposure4 workexposure5 professionalequipment break retirementwork verbalaggression physicalagression sexualharassment sexualaggression discrimination1 discrimination2 discrimination3 discrimination4 discrimination5 discrimination6 discrimination7 discrimination8 discrimination9 resdiscrimination1 resdiscrimination2 resdiscrimination3 resdiscrimination4 resdiscrimination5 rurallocation lackskill)
+drop _merge
 
 *** Family
 merge m:1 HHID2020 using "NEEMSIS2-family"
@@ -248,7 +278,8 @@ assets_sizeownland assets_housevalue assets_livestock assets_goods assets_ownlan
 incomeagri_HH incomenonagri_HH annualincome_HH shareincomeagri_HH shareincomenonagri_HH ///
 ownland sizeownland ///
 loanamount_HH nbloans_HH totHH_lendercatamt_info totHH_lendercatamt_semi totHH_lendercatamt_form totHH_givencatamt_econ totHH_givencatamt_curr totHH_givencatamt_huma totHH_givencatamt_soci totHH_givencatamt_hous ///
-remittnet_HH nonworkersratio sum_dummymigration goldquantity_HH
+remittnet_HH nonworkersratio sum_dummymigration goldquantity_HH ///
+foodexpenses educationexpenses healthexpenses
 
 * Level
 gen year=2010
@@ -277,7 +308,8 @@ assets_sizeownland assets_housevalue assets_livestock assets_goods assets_ownlan
 incomeagri_HH incomenonagri_HH annualincome_HH shareincomeagri_HH shareincomenonagri_HH ///
 ownland sizeownland ///
 loanamount_HH nbloans_HH totHH_lendercatamt_info totHH_lendercatamt_semi totHH_lendercatamt_form totHH_givencatamt_econ totHH_givencatamt_curr totHH_givencatamt_huma totHH_givencatamt_soci totHH_givencatamt_hous ///
-remittnet_HH nonworkersratio sum_dummymigration goldquantity_HH
+remittnet_HH nonworkersratio sum_dummymigration goldquantity_HH ///
+foodexpenses educationexpenses healthexpenses
 
 * Level
 gen year=2016
@@ -305,7 +337,8 @@ assets_sizeownland assets_housevalue assets_livestock assets_goods assets_ownlan
 incomeagri_HH incomenonagri_HH annualincome_HH shareincomeagri_HH shareincomenonagri_HH ///
 ownland sizeownland ///
 loanamount_HH nbloans_HH totHH_lendercatamt_info totHH_lendercatamt_semi totHH_lendercatamt_form totHH_givencatamt_econ totHH_givencatamt_curr totHH_givencatamt_huma totHH_givencatamt_soci totHH_givencatamt_hous ///
-remittnet_HH nonworkersratio sum_dummymigration goldquantity_HH
+remittnet_HH nonworkersratio sum_dummymigration goldquantity_HH ///
+foodexpenses educationexpenses healthexpenses
 
 * Level
 gen year=2020
@@ -349,7 +382,7 @@ label values time time
 order HHID_panel panelvar year time
 
 *** Deflate
-foreach x in assets_housevalue assets_livestock assets_goods assets_ownland assets_gold assets_total incomeagri_HH incomenonagri_HH annualincome_HH loanamount_HH totHH_lendercatamt_info totHH_lendercatamt_semi totHH_lendercatamt_form totHH_givencatamt_econ totHH_givencatamt_curr totHH_givencatamt_huma totHH_givencatamt_soci totHH_givencatamt_hous remittnet_HH assets_totalnoland {
+foreach x in assets_housevalue assets_livestock assets_goods assets_ownland assets_gold assets_total incomeagri_HH incomenonagri_HH annualincome_HH loanamount_HH totHH_lendercatamt_info totHH_lendercatamt_semi totHH_lendercatamt_form totHH_givencatamt_econ totHH_givencatamt_curr totHH_givencatamt_huma totHH_givencatamt_soci totHH_givencatamt_hous remittnet_HH assets_totalnoland foodexpenses educationexpenses healthexpenses {
 replace `x'=`x'*(100/158) if year==2016
 replace `x'=`x'*(100/184) if year==2020
 }
@@ -446,7 +479,8 @@ keep HHID_panel INDID_panel sex age name ///
 edulevel maritalstatus educ_attainment educ_attainment2 ///
 working_pop ///
 mainocc_profession_indiv mainocc_occupation_indiv mainocc_sector_indiv mainocc_annualincome_indiv mainocc_occupationname_indiv annualincome_indiv hoursayear_indiv ///
-occupationname_mainoccup profession_mainoccup sector_mainoccup educ_attainment educ_attainment2 agecat workingage youth employed str_kindofwork employee selfemployed sector_kilm4 agri industry services sector_kilm4_V2 kilm5 elementaryoccup
+occupationname_mainoccup profession_mainoccup sector_mainoccup educ_attainment educ_attainment2 agecat workingage youth employed str_kindofwork employee selfemployed sector_kilm4 agri industry services sector_kilm4_V2 kilm5 elementaryoccup ///
+egoid raven_tt num_tt lit_tt cr_OP cr_CO cr_EX cr_AG cr_ES cr_Grit
 
 gen year=2016
 
@@ -466,7 +500,9 @@ keep HHID_panel INDID_panel sex age name ///
 edulevel maritalstatus educ_attainment educ_attainment2 ///
 working_pop ///
 mainocc_profession_indiv mainocc_occupation_indiv mainocc_sector_indiv mainocc_annualincome_indiv mainocc_occupationname_indiv annualincome_indiv hoursayear_indiv ///
-occupationname_mainoccup profession_mainoccup sector_mainoccup educ_attainment educ_attainment2 agecat workingage youth employed str_kindofwork employee selfemployed sector_kilm4 agri industry services sector_kilm4_V2 kilm5 elementaryoccup
+occupationname_mainoccup profession_mainoccup sector_mainoccup educ_attainment educ_attainment2 agecat workingage youth employed str_kindofwork employee selfemployed sector_kilm4 agri industry services sector_kilm4_V2 kilm5 elementaryoccup ///
+egoid raven_tt num_tt lit_tt cr_OP cr_CO cr_EX cr_AG cr_ES cr_Grit locus ///
+respect workmate useknowledgeatwork satisfyingpurpose schedule takeholiday agreementatwork1 agreementatwork2 agreementatwork3 agreementatwork4 changework happywork satisfactionsalary executionwork1 executionwork2 executionwork3 executionwork4 executionwork5 executionwork6 executionwork7 executionwork8 executionwork9 accidentalinjury losswork lossworknumber mostseriousincident mostseriousinjury seriousinjuryother physicalharm problemwork1 problemwork2 problemwork4 problemwork5 problemwork6 problemwork7 problemwork8 problemwork9 problemwork10 workexposure1 workexposure2 workexposure3 workexposure4 workexposure5 professionalequipment break retirementwork verbalaggression physicalagression sexualharassment sexualaggression discrimination1 discrimination2 discrimination3 discrimination4 discrimination5 discrimination6 discrimination7 discrimination8 discrimination9 resdiscrimination1 resdiscrimination2 resdiscrimination3 resdiscrimination4 resdiscrimination5 rurallocation lackskill
 
 gen year=2020
 
@@ -508,3 +544,5 @@ drop if HHID_panel=="KUV67" & year==2020
 save"panel_indiv_v0", replace
 ****************************************
 * END
+
+

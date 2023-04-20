@@ -34,6 +34,8 @@ replace loanamount_HH=loanamount_HH/10000
 gen dummydebt=0
 replace dummydebt=1 if nbloans_HH>0 & nbloans_HH!=.
 replace sizeownland=sizeownland*0.404686
+replace healthexpenses=healthexpenses/1000
+replace educationexpenses=educationexpenses/1000
 
 
 *** Share of gold
@@ -132,6 +134,26 @@ tabstat loanamount_HH, stat(mean cv q) by(year)
 tabstat loanamount_HH if caste==1, stat(mean cv q) by(year)
 tabstat loanamount_HH if caste==2, stat(mean cv q) by(year)
 tabstat loanamount_HH if caste==3, stat(mean cv q) by(year)
+
+
+*** Expenses
+* Food
+tabstat foodexpenses, stat(n mean cv q) by(year)
+tabstat foodexpenses if caste==1, stat(mean cv q) by(year)
+tabstat foodexpenses if caste==2, stat(mean cv q) by(year)
+tabstat foodexpenses if caste==3, stat(mean cv q) by(year)
+
+* Health
+tabstat healthexpenses, stat(n mean cv q) by(year)
+tabstat healthexpenses if caste==1, stat(mean cv q) by(year)
+tabstat healthexpenses if caste==2, stat(mean cv q) by(year)
+tabstat healthexpenses if caste==3, stat(mean cv q) by(year)
+
+* Education
+tabstat educationexpenses, stat(n mean cv q) by(year)
+tabstat educationexpenses if caste==1, stat(mean cv q) by(year)
+tabstat educationexpenses if caste==2, stat(mean cv q) by(year)
+tabstat educationexpenses if caste==3, stat(mean cv q) by(year)
 
 
 ****************************************
