@@ -546,3 +546,109 @@ save"panel_indiv_v0", replace
 * END
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* NEEMSIS-1 migrant tracking
+****************************************
+use"$directory\NEEMSIS1-tracking", clear
+
+rename rationhelptrue migrationhelptrue
+
+keep HHID2019 householdvillageoriginal migrationplace migrationareatype migration1type2 satisfaction migration1type migrationhelptrue migration1decision migration1cost
+drop if migration1type2==.
+
+ta migrationareatype
+ta migration1type2
+ta satisfaction
+ta migration1type
+ta migrationhelptrue
+ta migration1decision
+tabstat migration1cost, stat(mean cv p50)
+
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* NEEMSIS-2 migrant tracking
+****************************************
+
+*** Only work reasons
+use"$directory\NEEMSIS2-tracking_migpath", clear
+
+preserve
+keep HHID2022 migrationstepid migrationdeparture migrationarrival
+drop if migrationstepid==.
+reshape wide migrationdeparture migrationarrival, i(HHID2022) j(migrationstepid)
+save"_tempsel", replace
+restore
+
+
+use"$directory\NEEMSIS2-tracking", clear
+
+preserve
+keep HHID2022 householdvillageoriginal householdidoriginal migrationplacename migrationareatype migstepmigration migstepmigrationdetails householdmigrantslist rankingmigrant
+duplicates drop
+merge 1:1 HHID2022 using "_tempsel"
+sort _merge
+restore
+
+
+
+
+keep HHID2022 migration1type2 migsatisfaction migration1type migrationhelptrue migsndecimig migration1cost
+
+ta migration1type2
+ta migsatisfaction
+ta migration1type
+ta migrationhelptrue
+ta migsndecimig
+tabstat migration1cost, stat(mean cv p50)
+
+
+
+*** Selection
+
+keep HHID2022 migstepmigration migstepmigrationdetails householdvillageoriginal migrationplacename migrationareatype 
+duplicates drop
+
+preserve
+keep 
+
+ta migstepmigration
+ta migrationareatype
+
+
+
+
+
+
+****************************************
+* END
+
+
+

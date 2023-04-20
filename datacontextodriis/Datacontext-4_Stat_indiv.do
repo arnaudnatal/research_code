@@ -843,6 +843,105 @@ graph export "Occ_inc_total.pdf", as(pdf) replace
 
 
 
+
+
+
+****************************************
+* Working conditions
+****************************************
+cls
+use"panel_indiv_v0.dta", clear
+
+* Selection
+keep if year==2020
+keep if executionwork1!=.
+
+* Execution work
+global exe executionwork1 executionwork2 executionwork3 executionwork4 executionwork5 executionwork6 executionwork7 executionwork8 executionwork9
+fre $exe
+egen executionwork=rowtotal($exe)
+replace executionwork=executionwork/9
+ta executionwork
+
+
+* Problem at work
+global pb problemwork1 problemwork2 problemwork4 problemwork5 problemwork6 problemwork7 problemwork8 problemwork9 problemwork10
+fre $pb
+* The more is worst
+foreach x in $pb {
+replace `x'=. if `x'==66
+replace `x'=. if `x'==99
+recode `x' (1=3) (3=1)
+}
+egen problemwork=rowtotal($pb)
+replace problemwork=problemwork/30
+ta problemwork
+
+
+* Work exposure
+global expo workexposure1 workexposure2 workexposure3 workexposure4 workexposure5
+fre $expo
+* The more is worst
+foreach x in $expo {
+replace `x'=. if `x'==66
+replace `x'=. if `x'==99
+recode `x' (1=3) (3=1)
+}
+egen workexposure=rowtotal($expo)
+replace workexposure=workexposure/15
+fre workexposure
+
+
+
+********* Graph bar
+tabstat executionwork problemwork workexposure, stat(mean) by(mainocc_occupation_indiv)
+
+collapse (mean) executionwork problemwork workexposure, by(mainocc_occupation_indiv)
+drop if mainocc_occupation_indiv==.
+drop if mainocc_occupation_indiv==0
+
+set graph off
+* Execution
+twoway ///
+(bar executionwork mainocc_occupation_indiv, barwidth(.5)) ///
+, ///
+xlab(1 "Agri SE" 2 "Agri casual" 3 "Casual" 4 "Reg non-quali" 5 "Reg quali" 6 "SE" 7 "NREGA", angle(45)) xtitle("") ///
+ylab(.3(.1)1) ytitle("Mean") ///
+title("Execution score") name(exe, replace)
+
+* Problem
+twoway ///
+(bar problemwork mainocc_occupation_indiv, barwidth(.5)) ///
+, ///
+xlab(1 "Agri SE" 2 "Agri casual" 3 "Casual" 4 "Reg non-quali" 5 "Reg quali" 6 "SE" 7 "NREGA", angle(45)) xtitle("") ///
+ylab(.3(.1)1) ytitle("Mean") ///
+title("Problem score") name(pb, replace)
+
+* Work exposure
+twoway ///
+(bar workexposure mainocc_occupation_indiv, barwidth(.5)) ///
+, ///
+xlab(1 "Agri SE" 2 "Agri casual" 3 "Casual" 4 "Reg non-quali" 5 "Reg quali" 6 "SE" 7 "NREGA", angle(45)) xtitle("") ///
+ylab(.3(.1)1) ytitle("Mean") ///
+title("Exposition score") name(work, replace)
+set graph on
+
+
+graph combine exe pb work, col(3) name(comb, replace)
+graph export "Workingcond.pdf", as(pdf) replace
+
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
 /*
 stripplot assets_totalnoland if assets_totalnoland<100, over(time) vert ///
 stack width(.5) jitter(0) ///
