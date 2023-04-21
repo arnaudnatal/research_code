@@ -166,6 +166,152 @@ tabstat educationexpenses if caste==3, stat(mean cv q) by(year)
 
 
 
+****************************************
+* Income inequalities
+****************************************
+cls
+use"panel_v0", clear
+
+*** Selection
+keep HHID_panel year annualincome_HH caste
+reshape wide annualincome_HH caste, i(HHID_panel) j(year)
+gen caste=.
+replace caste=caste2010 if caste2010!=.
+replace caste=caste2016 if caste2016!=.
+replace caste=caste2020 if caste2020!=.
+drop caste2010 caste2016 caste2020
+label values caste caste
+order HHID_panel caste
+
+
+********** Income
+set graph off
+* Income total
+lorenz annualincome_HH2010 annualincome_HH2016 annualincome_HH2020, gini
+lorenz graph, overlay noci legend(order(2 "2010" 3 "2016-17" 4 "2020-21") pos(6) col(3)) title("Total") name(total,replace) diagonal(lpattern(dot)) xtitle("Population share") ytitle("Share of cumulative income")
+
+
+* Income Dalits
+preserve
+keep if caste==1
+lorenz annualincome_HH2010 annualincome_HH2016 annualincome_HH2020, gini
+lorenz graph, overlay noci legend(order(2 "2010" 3 "2016-17" 4 "2020-21") pos(6) col(3)) title("Dalits") name(dalits,replace) diagonal(lpattern(dot)) xtitle("Population share") ytitle("Share of cumulative income")
+restore
+
+* Income middle
+preserve
+keep if caste==2
+lorenz annualincome_HH2010 annualincome_HH2016 annualincome_HH2020, gini
+lorenz graph, overlay noci legend(order(2 "2010" 3 "2016-17" 4 "2020-21") pos(6) col(3)) title("Middle castes") name(mid,replace) diagonal(lpattern(dot)) xtitle("Population share") ytitle("Share of cumulative income")
+restore
+
+
+* Income upper
+preserve
+keep if caste==3
+lorenz annualincome_HH2010 annualincome_HH2016 annualincome_HH2020, gini
+lorenz graph, overlay noci legend(order(2 "2010" 3 "2016-17" 4 "2020-21") pos(6) col(3)) title("Upper castes") name(upp,replace) diagonal(lpattern(dot)) xtitle("Population share") ytitle("Share of cumulative income")
+restore
+set graph on
+
+*** Combine
+grc1leg total dalits mid upp, col(2) name(income_comb, replace)
+graph export "Lorenz_income.pdf", replace as(pdf)
+
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Assets inequalities
+****************************************
+cls
+use"panel_v0", clear
+
+*** Selection
+keep HHID_panel year assets_totalnoland caste
+reshape wide assets_totalnoland caste, i(HHID_panel) j(year)
+gen caste=.
+replace caste=caste2010 if caste2010!=.
+replace caste=caste2016 if caste2016!=.
+replace caste=caste2020 if caste2020!=.
+drop caste2010 caste2016 caste2020
+label values caste caste
+order HHID_panel caste
+
+
+********** Income
+set graph off
+* Income total
+lorenz assets_totalnoland2010 assets_totalnoland2016 assets_totalnoland2020, gini
+lorenz graph, overlay noci legend(order(2 "2010" 3 "2016-17" 4 "2020-21") pos(6) col(3)) title("Total") name(total2,replace) diagonal(lpattern(dot)) xtitle("Population share") ytitle("Share of cumulative assets")
+
+
+* Income Dalits
+preserve
+keep if caste==1
+lorenz assets_totalnoland2010 assets_totalnoland2016 assets_totalnoland2020, gini
+lorenz graph, overlay noci legend(order(2 "2010" 3 "2016-17" 4 "2020-21") pos(6) col(3)) title("Dalits") name(dalits2,replace) diagonal(lpattern(dot)) xtitle("Population share") ytitle("Share of cumulative assets")
+restore
+
+* Income middle
+preserve
+keep if caste==2
+lorenz assets_totalnoland2010 assets_totalnoland2016 assets_totalnoland2020, gini
+lorenz graph, overlay noci legend(order(2 "2010" 3 "2016-17" 4 "2020-21") pos(6) col(3)) title("Middle castes") name(mid2,replace) diagonal(lpattern(dot)) xtitle("Population share") ytitle("Share of cumulative assets")
+restore
+
+
+* Income upper
+preserve
+keep if caste==3
+lorenz assets_totalnoland2010 assets_totalnoland2016 assets_totalnoland2020, gini
+lorenz graph, overlay noci legend(order(2 "2010" 3 "2016-17" 4 "2020-21") pos(6) col(3)) title("Upper castes") name(upp2,replace) diagonal(lpattern(dot)) xtitle("Population share") ytitle("Share of cumulative assets")
+restore
+set graph on
+
+*** Combine
+grc1leg total2 dalits2 mid2 upp2, col(2) name(assets_comb, replace)
+graph export "Lorenz_assets.pdf", replace as(pdf)
+
+
+*** Combine assets and income
+grc1leg total total2, name(comb_incass, replace)
+graph export "Lorenz_incass.pdf", replace as(pdf)
+
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
