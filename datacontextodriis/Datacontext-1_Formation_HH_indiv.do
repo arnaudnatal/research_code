@@ -741,6 +741,8 @@ keep if _merge==3
 drop _merge
 
 ta migrationplace kindofwork 
+fre kindofwork
+ta occupationname if kindofwork==4
 
 
 
