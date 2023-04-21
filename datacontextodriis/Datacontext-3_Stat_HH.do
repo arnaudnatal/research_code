@@ -357,6 +357,61 @@ graph export "Agri_total.pdf", as(pdf) replace
 
 
 
+
+
+
+****************************************
+* Share income agri
+****************************************
+cls
+use"panel_v0", clear
+
+* Test
+gen test=annualincome_HH-incomeagri_HH-incomenonagri_HH
+ta test
+drop test
+
+gen test=1-shareincomeagri_HH-shareincomenonagri_HH
+ta test
+drop test
+
+
+* Stat
+tabstat shareincomeagri_HH shareincomenonagri_HH, stat(n mean cv p50) by(year)
+tabstat shareincomeagri_HH shareincomenonagri_HH if caste==1, stat(n mean cv p50) by(year)
+tabstat shareincomeagri_HH shareincomenonagri_HH if caste==2, stat(n mean cv p50) by(year)
+tabstat shareincomeagri_HH shareincomenonagri_HH if caste==3, stat(n mean cv p50) by(year)
+
+tabstat shareincomeagri_HH shareincomenonagri_HH, stat(mean) by(year)
+tabstat shareincomeagri_HH shareincomenonagri_HH if caste==1, stat(mean) by(year)
+tabstat shareincomeagri_HH shareincomenonagri_HH if caste==2, stat(mean) by(year)
+tabstat shareincomeagri_HH shareincomenonagri_HH if caste==3, stat(mean) by(year)
+
+
+* Graph
+label define caste 1"Dalits" 2"Middle castes" 3"Upper castes", modify
+collapse (mean) shareincomeagri_HH shareincomenonagri_HH, by(caste year)
+
+graph bar shareincomeagri_HH shareincomenonagri_HH, over(year, label(angle(45))) over(caste) stack ytitle("Share") legend(order(1 "Agricultural income" 2 "Non-agricultural income") pos(6) col(2))
+graph export "Shareincome.pdf", replace as(pdf)
+
+
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ****************************************
 * Graph debt
 ****************************************
