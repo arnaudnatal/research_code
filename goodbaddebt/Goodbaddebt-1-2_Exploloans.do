@@ -63,6 +63,10 @@ fre loanreasongiven
 drop if loanreasongiven==12
 drop if loanreasongiven==77
 
+cls
+ta loanlender year, col nofreq
+ta lender4 year, col nofreq
+
 ta loanlender loanreasongiven
 ta lender4 loanreasongiven
 
