@@ -513,6 +513,13 @@ ta test2
 drop test1 test2
 
 
+*** Relative nb of occupations
+foreach x in snbo snbo_female snbo_male snbo_young snbo_middle snbo_old snbo2 snbo2_female snbo2_male snbo2_young snbo2_middle snbo2_old snbo3 snbo3_female snbo3_male snbo3_young snbo3_middle snbo3_old {
+gen rel_`x'=`x'/HHsize
+}
+
+
+
 *** Clean
 drop if HHID_panel=="GOV64" & year==2020
 drop if HHID_panel=="GOV65" & year==2020

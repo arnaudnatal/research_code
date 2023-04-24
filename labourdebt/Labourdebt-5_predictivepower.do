@@ -68,15 +68,14 @@ global compo2 log_HHsize share_children sexratio dependencyratio share_stock
 
 *** Y
 global yvar ///
-snbo snbo_female snbo_male snbo_young snbo_middle snbo_old 
+snbo snbo_female snbo_male snbo_young snbo_middle snbo_old ///
+rel_snbo rel_snbo_female rel_snbo_male rel_snbo_young rel_snbo_middle rel_snbo_old 
 
 
 
 
 
-
-
-	
+/*	
 ********** Dalits / Others 
 cls
 preserve
@@ -105,17 +104,8 @@ esttab mlsemcaste_snbo mlsemcaste_snbo_male mlsemcaste_snbo_female mlsemcaste_sn
 	stats(N, fmt(0) ///
 	labels(`"Observations"'))
 
-
 restore	
-
-
-
-
-
-
-
-
-
+*/
 
 
 
@@ -140,6 +130,20 @@ esttab mlsem_snbo mlsem_snbo_male mlsem_snbo_female mlsem_snbo_young mlsem_snbo_
 	stats(N, fmt(0) ///
 	labels(`"Observations"'))
 
+esttab mlsem_rel_snbo mlsem_rel_snbo_male mlsem_rel_snbo_female mlsem_rel_snbo_young mlsem_rel_snbo_middle mlsem_rel_snbo_old using "spec1_snbo.csv", replace ///
+	label b(3) p(3) eqlabels(none) alignment(S) ///
+	drop(_cons $var) ///
+	star(* 0.10 ** 0.05 *** 0.01) ///
+	cells("b(fmt(2)star)" "se(fmt(2)par)") ///
+	refcat(, nolabel) ///
+	stats(N, fmt(0) ///
+	labels(`"Observations"'))
+	
+	
+	
+	
+	
+	
 
 
 
