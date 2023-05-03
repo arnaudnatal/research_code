@@ -198,11 +198,35 @@ cls
 use"panel-occindivvar_v2", clear
 
 
-***
+*** Total 
 pwcorr snbo shay, sig
 foreach x in male female young middle old {
 pwcorr snbo_`x' shay_`x', sig
 }
+
+
+*** 2016-17
+cls
+preserve
+keep if year==2016
+pwcorr snbo shay, sig
+foreach x in male female young middle old {
+pwcorr snbo_`x' shay_`x', sig
+}
+restore
+
+
+*** 2020-21
+cls
+preserve
+keep if year==2020 
+pwcorr snbo shay, sig
+foreach x in male female young middle old {
+pwcorr snbo_`x' shay_`x', sig
+}
+restore
+
+
 
 ****************************************
 * END

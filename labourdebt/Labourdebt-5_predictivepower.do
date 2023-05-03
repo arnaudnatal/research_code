@@ -142,7 +142,7 @@ esttab mlsem_rel_snbo mlsem_rel_snbo_male mlsem_rel_snbo_female mlsem_rel_snbo_y
 	
 	
 	
-	
+log close
 	
 
 
