@@ -47,6 +47,10 @@ save"RUME-occindivvar", replace
 
 
 
+
+
+
+
 ********** NEEMSIS-1
 use"raw/NEEMSIS1-occup_indiv", clear
 
@@ -508,6 +512,262 @@ save"panel-occoccvar_v3", replace
 
 
 
+
+
+
+
+
+
+
+
+****************************************
+* New vars
+****************************************
+
+
+********** RUME
+use"raw/RUME-occupnew", clear
+
+fre occupation
+drop if occupation==0
+
+gen occ_agri=0
+replace occ_agri=1 if occupation==1
+replace occ_agri=1 if occupation==2
+gen occ_nagr=0
+replace occ_nagr=1 if occupation==3
+replace occ_nagr=1 if occupation==4
+replace occ_nagr=1 if occupation==5
+replace occ_nagr=1 if occupation==6
+replace occ_nagr=1 if occupation==7
+
+gen occ_casu=0
+replace occ_casu=1 if occupation==2
+replace occ_casu=1 if occupation==3
+replace occ_casu=1 if occupation==7
+gen occ_ncas=0
+replace occ_ncas=1 if occupation==1
+replace occ_ncas=1 if occupation==4
+replace occ_ncas=1 if occupation==5
+replace occ_ncas=1 if occupation==6
+
+gen occ_self=0
+replace occ_self=1 if occupation==1
+replace occ_self=1 if occupation==6
+gen occ_nsel=0
+replace occ_nsel=1 if occupation==2
+replace occ_nsel=1 if occupation==3
+replace occ_nsel=1 if occupation==4
+replace occ_nsel=1 if occupation==5
+replace occ_nsel=1 if occupation==7
+
+gen occ_agse=0
+replace occ_agse=1 if occupation==1
+gen occ_agca=0
+replace occ_agca=1 if occupation==2
+gen occ_naca=0
+replace occ_naca=1 if occupation==3
+gen occ_nare=0
+replace occ_nare=1 if occupation==4
+replace occ_nare=1 if occupation==5
+gen occ_nase=0
+replace occ_nase=1 if occupation==6
+gen occ_nreg=0
+replace occ_nreg=1 if occupation==7
+
+
+foreach x in occ_agri occ_nagr occ_casu occ_ncas occ_self occ_nsel occ_agse occ_agca occ_naca occ_nare occ_nase occ_nreg {
+bysort HHID2010: egen s`x'=sum(`x')
+}
+
+keep HHID2010 socc_agri socc_nagr socc_casu socc_ncas socc_self socc_nsel socc_agse socc_agca socc_naca socc_nare socc_nase socc_nreg
+duplicates drop
+
+merge 1:m HHID2010 using "raw/ODRIIS-HH_wide", keepusing(HHID_panel)
+keep if _merge==3
+drop _merge HHID2010
+gen year=2010
+order HHID_panel year
+
+save"RUME_newdbnewvar", replace
+
+
+
+
+
+
+********** NEEMSIS-1
+use"raw/NEEMSIS1-occupnew", clear
+
+fre occupation
+drop if occupation==0
+
+gen occ_agri=0
+replace occ_agri=1 if occupation==1
+replace occ_agri=1 if occupation==2
+gen occ_nagr=0
+replace occ_nagr=1 if occupation==3
+replace occ_nagr=1 if occupation==4
+replace occ_nagr=1 if occupation==5
+replace occ_nagr=1 if occupation==6
+replace occ_nagr=1 if occupation==7
+
+gen occ_casu=0
+replace occ_casu=1 if occupation==2
+replace occ_casu=1 if occupation==3
+replace occ_casu=1 if occupation==7
+gen occ_ncas=0
+replace occ_ncas=1 if occupation==1
+replace occ_ncas=1 if occupation==4
+replace occ_ncas=1 if occupation==5
+replace occ_ncas=1 if occupation==6
+
+gen occ_self=0
+replace occ_self=1 if occupation==1
+replace occ_self=1 if occupation==6
+gen occ_nsel=0
+replace occ_nsel=1 if occupation==2
+replace occ_nsel=1 if occupation==3
+replace occ_nsel=1 if occupation==4
+replace occ_nsel=1 if occupation==5
+replace occ_nsel=1 if occupation==7
+
+gen occ_agse=0
+replace occ_agse=1 if occupation==1
+gen occ_agca=0
+replace occ_agca=1 if occupation==2
+gen occ_naca=0
+replace occ_naca=1 if occupation==3
+gen occ_nare=0
+replace occ_nare=1 if occupation==4
+replace occ_nare=1 if occupation==5
+gen occ_nase=0
+replace occ_nase=1 if occupation==6
+gen occ_nreg=0
+replace occ_nreg=1 if occupation==7
+
+
+foreach x in occ_agri occ_nagr occ_casu occ_ncas occ_self occ_nsel occ_agse occ_agca occ_naca occ_nare occ_nase occ_nreg {
+bysort HHID2016: egen s`x'=sum(`x')
+}
+
+keep HHID2016 socc_agri socc_nagr socc_casu socc_ncas socc_self socc_nsel socc_agse socc_agca socc_naca socc_nare socc_nase socc_nreg
+duplicates drop
+
+merge 1:m HHID2016 using "raw/ODRIIS-HH_wide", keepusing(HHID_panel)
+keep if _merge==3
+drop _merge HHID2016
+gen year=2016
+order HHID_panel year
+
+save"NEEMSIS1_newdbnewvar", replace
+
+
+
+
+
+
+********** NEEMSIS-2
+use"raw/NEEMSIS2-occupnew", clear
+
+fre occupation
+drop if occupation==0
+
+gen occ_agri=0
+replace occ_agri=1 if occupation==1
+replace occ_agri=1 if occupation==2
+gen occ_nagr=0
+replace occ_nagr=1 if occupation==3
+replace occ_nagr=1 if occupation==4
+replace occ_nagr=1 if occupation==5
+replace occ_nagr=1 if occupation==6
+replace occ_nagr=1 if occupation==7
+
+gen occ_casu=0
+replace occ_casu=1 if occupation==2
+replace occ_casu=1 if occupation==3
+replace occ_casu=1 if occupation==7
+gen occ_ncas=0
+replace occ_ncas=1 if occupation==1
+replace occ_ncas=1 if occupation==4
+replace occ_ncas=1 if occupation==5
+replace occ_ncas=1 if occupation==6
+
+gen occ_self=0
+replace occ_self=1 if occupation==1
+replace occ_self=1 if occupation==6
+gen occ_nsel=0
+replace occ_nsel=1 if occupation==2
+replace occ_nsel=1 if occupation==3
+replace occ_nsel=1 if occupation==4
+replace occ_nsel=1 if occupation==5
+replace occ_nsel=1 if occupation==7
+
+gen occ_agse=0
+replace occ_agse=1 if occupation==1
+gen occ_agca=0
+replace occ_agca=1 if occupation==2
+gen occ_naca=0
+replace occ_naca=1 if occupation==3
+gen occ_nare=0
+replace occ_nare=1 if occupation==4
+replace occ_nare=1 if occupation==5
+gen occ_nase=0
+replace occ_nase=1 if occupation==6
+gen occ_nreg=0
+replace occ_nreg=1 if occupation==7
+
+
+foreach x in occ_agri occ_nagr occ_casu occ_ncas occ_self occ_nsel occ_agse occ_agca occ_naca occ_nare occ_nase occ_nreg {
+bysort HHID2020: egen s`x'=sum(`x')
+}
+
+keep HHID2020 socc_agri socc_nagr socc_casu socc_ncas socc_self socc_nsel socc_agse socc_agca socc_naca socc_nare socc_nase socc_nreg
+duplicates drop
+
+merge 1:m HHID2020 using "raw/ODRIIS-HH_wide", keepusing(HHID_panel)
+keep if _merge==3
+drop _merge HHID2020
+gen year=2020
+order HHID_panel year
+
+save"NEEMSIS2_newdbnewvar", replace
+
+
+
+********** Append all
+use"RUME_newdbnewvar", clear
+
+append using "NEEMSIS1_newdbnewvar"
+append using "NEEMSIS2_newdbnewvar"
+
+save"panel_newdbnewvar", replace
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ****************************************
 * Merge with main dataset
 ****************************************
@@ -526,6 +786,11 @@ drop _merge
 merge 1:1 HHID_panel year using "panel-occoccvar_v3"
 drop _merge
 
+*** Merge with all new
+merge 1:1 HHID_panel year using "panel_newdbnewvar"
+drop _merge
+recode socc_agri socc_nagr socc_casu socc_ncas socc_self socc_nsel socc_agse socc_agca socc_naca socc_nare socc_nase socc_nreg (.=0)
+
 
 *** Diff
 gen test1=snbo-snbo2
@@ -538,7 +803,7 @@ drop test1 test2
 
 
 *** Relative nb of occupations
-foreach x in snbo snbo_female snbo_male snbo_young snbo_middle snbo_old snbo2 snbo2_female snbo2_male snbo2_young snbo2_middle snbo2_old snbo3 snbo3_female snbo3_male snbo3_young snbo3_middle snbo3_old {
+foreach x in snbo snbo_female snbo_male snbo_young snbo_middle snbo_old snbo2 snbo2_female snbo2_male snbo2_young snbo2_middle snbo2_old snbo3 snbo3_female snbo3_male snbo3_young snbo3_middle snbo3_old socc_agri socc_nagr socc_casu socc_ncas socc_self socc_nsel socc_agse socc_agca socc_naca socc_nare socc_nase socc_nreg {
 gen rel_`x'=`x'/HHsize
 }
 
