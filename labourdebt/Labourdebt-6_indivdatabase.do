@@ -186,7 +186,7 @@ save"panel_hh_temp", replace
 use"panel_indiv_temp", clear
 
 merge m:1 HHID_panel year using "panel_hh_temp"
-
+drop _merge
 
 ********* Panel
 * Panel var
@@ -227,6 +227,221 @@ save"panel_indiv_v2", replace
 * END
 
 
+
+
+
+
+
+
+
+
+
+****************************************
+* New var
+****************************************
+
+********** RUME
+use"raw/RUME-occupnew", clear
+
+fre occupation
+drop if occupation==0
+recode occupation (5=4)
+
+ta occupation, gen(occ_)
+rename occ_1 occ_agse
+rename occ_2 occ_agca
+rename occ_3 occ_naca
+rename occ_4 occ_nare
+rename occ_5 occ_nase
+rename occ_6 occ_nreg
+
+global var occ_agse occ_agca occ_naca occ_nare occ_nase occ_nreg
+
+keep HHID2010 INDID2010 occupationid $var
+
+reshape wide $var, i(HHID2010 INDID2010) j(occupationid)
+
+egen occ_agse=rowtotal(occ_agse1 occ_agse2 occ_agse3 occ_agse4 occ_agse5)
+egen occ_agca=rowtotal(occ_agca1 occ_agca2 occ_agca3 occ_agca4 occ_agca5)
+egen occ_naca=rowtotal(occ_naca1 occ_naca2 occ_naca3 occ_naca4 occ_naca5)
+egen occ_nare=rowtotal(occ_nare1 occ_nare2 occ_nare3 occ_nare4 occ_nare5)
+egen occ_nase=rowtotal(occ_nase1 occ_nase2 occ_nase3 occ_nase4 occ_nase5)
+egen occ_nreg=rowtotal(occ_nreg1 occ_nreg2 occ_nreg3 occ_nreg4 occ_nreg5)
+
+keep HHID2010 INDID2010 $var
+
+foreach x in $var {
+replace `x'=1 if `x'>1 & `x'!=0 & `x'!=.
+}
+
+merge m:m HHID2010 using "raw/ODRIIS-HH_wide", keepusing(HHID_panel)
+keep if _merge==3
+drop _merge
+
+merge m:m HHID_panel INDID2010 using "raw/ODRIIS-indiv_wide", keepusing(INDID_panel)
+keep if _merge==3
+drop _merge
+
+drop HHID2010 INDID2010
+gen year=2010
+order HHID_panel INDID_panel year
+
+save"RUME_indndb", replace
+
+
+
+********** NEEMSIS-1
+use"raw/NEEMSIS1-occupnew", clear
+
+fre occupation
+drop if occupation==0
+recode occupation (5=4)
+
+ta occupation, gen(occ_)
+rename occ_1 occ_agse
+rename occ_2 occ_agca
+rename occ_3 occ_naca
+rename occ_4 occ_nare
+rename occ_5 occ_nase
+rename occ_6 occ_nreg
+
+global var occ_agse occ_agca occ_naca occ_nare occ_nase occ_nreg
+
+keep HHID2016 INDID2016 occupationid $var
+
+reshape wide $var, i(HHID2016 INDID2016) j(occupationid)
+
+egen occ_agse=rowtotal(occ_agse1 occ_agse2 occ_agse3 occ_agse4)
+egen occ_agca=rowtotal(occ_agca1 occ_agca2 occ_agca3 occ_agca4)
+egen occ_naca=rowtotal(occ_naca1 occ_naca2 occ_naca3 occ_naca4)
+egen occ_nare=rowtotal(occ_nare1 occ_nare2 occ_nare3 occ_nare4)
+egen occ_nase=rowtotal(occ_nase1 occ_nase2 occ_nase3 occ_nase4)
+egen occ_nreg=rowtotal(occ_nreg1 occ_nreg2 occ_nreg3 occ_nreg4)
+
+keep HHID2016 INDID2016 $var
+
+foreach x in $var {
+replace `x'=1 if `x'>1 & `x'!=0 & `x'!=.
+}
+
+merge m:m HHID2016 using "raw/ODRIIS-HH_wide", keepusing(HHID_panel)
+keep if _merge==3
+drop _merge
+
+tostring INDID2016, replace
+merge m:m HHID_panel INDID2016 using "raw/ODRIIS-indiv_wide", keepusing(INDID_panel)
+keep if _merge==3
+drop _merge
+
+drop HHID2016 INDID2016
+gen year=2016
+order HHID_panel INDID_panel year
+
+save"NEEMSIS1_indndb", replace
+
+
+
+
+
+********** NEEMSIS-2
+use"raw/NEEMSIS2-occupnew", clear
+
+fre occupation
+drop if occupation==0
+recode occupation (5=4)
+
+ta occupation, gen(occ_)
+rename occ_1 occ_agse
+rename occ_2 occ_agca
+rename occ_3 occ_naca
+rename occ_4 occ_nare
+rename occ_5 occ_nase
+rename occ_6 occ_nreg
+
+global var occ_agse occ_agca occ_naca occ_nare occ_nase occ_nreg
+
+keep HHID2020 INDID2020 occupationid $var
+
+reshape wide $var, i(HHID2020 INDID2020) j(occupationid)
+
+egen occ_agse=rowtotal(occ_agse1 occ_agse2 occ_agse3 occ_agse4 occ_agse5 occ_agse6)
+egen occ_agca=rowtotal(occ_agca1 occ_agca2 occ_agca3 occ_agca4 occ_agca5 occ_agca6)
+egen occ_naca=rowtotal(occ_naca1 occ_naca2 occ_naca3 occ_naca4 occ_naca5 occ_naca6)
+egen occ_nare=rowtotal(occ_nare1 occ_nare2 occ_nare3 occ_nare4 occ_nare5 occ_nare6)
+egen occ_nase=rowtotal(occ_nase1 occ_nase2 occ_nase3 occ_nase4 occ_nase5 occ_nase6)
+egen occ_nreg=rowtotal(occ_nreg1 occ_nreg2 occ_nreg3 occ_nreg4 occ_nreg5 occ_nreg6)
+
+keep HHID2020 INDID2020 $var
+
+foreach x in $var {
+replace `x'=1 if `x'>1 & `x'!=0 & `x'!=.
+}
+
+merge m:m HHID2020 using "raw/ODRIIS-HH_wide", keepusing(HHID_panel)
+keep if _merge==3
+drop _merge
+
+tostring INDID2020, replace
+merge m:m HHID_panel INDID2020 using "raw/ODRIIS-indiv_wide", keepusing(INDID_panel)
+keep if _merge==3
+drop _merge
+
+drop HHID2020 INDID2020
+gen year=2020
+order HHID_panel INDID_panel year
+
+save"NEEMSIS2_indndb", replace
+
+
+
+
+********** Append
+use"RUME_indndb", clear
+
+append using "NEEMSIS1_indndb"
+append using "NEEMSIS2_indndb"
+
+
+********** Agri vs non agri
+gen occ_agri=0
+replace occ_agri=1 if occ_agse==1
+replace occ_agri=1 if occ_agca==1
+
+gen occ_nagr=0
+replace occ_nagr=1 if occ_naca==1
+replace occ_nagr=1 if occ_nare==1
+replace occ_nagr=1 if occ_nase==1
+replace occ_nagr=1 if occ_nreg==1
+
+
+
+********** Casu vs non-casu
+gen occ_casu=0
+replace occ_casu=1 if occ_agca==1
+replace occ_casu=1 if occ_naca==1
+replace occ_casu=1 if occ_nreg==1
+
+gen occ_ncas=0
+replace occ_casu=1 if occ_agse==1
+replace occ_casu=1 if occ_nare==1
+replace occ_casu=1 if occ_nase==1
+
+
+********** SE vs non SE
+gen occ_self=0
+replace occ_self=1 if occ_agse==1
+replace occ_self=1 if occ_nase==1
+
+gen occ_nsel=0
+replace occ_self=1 if occ_agca==1
+replace occ_self=1 if occ_naca==1
+replace occ_self=1 if occ_nare==1
+replace occ_self=1 if occ_nreg==1
+
+
+save "panel_indndb", replace
+****************************************
+* END
 
 
 
@@ -291,69 +506,22 @@ replace lfp_youngold=0 if dummyworkedpastyear==. & (age<=29 | age>=60)
 ta lfp_youngold
 
 
+********** Merge new var
+merge 1:1 HHID_panel INDID_panel year using "panel_indndb"
+drop _merge
 
 
-
-
-*** IGAP tot
-*Income generating activity participation
-gen igap=.
-replace igap=1 if lfp==1 & employed==1
-replace igap=0 if lfp==1 & employed==0
-replace igap=0 if lfp==1 & employed==.
-
-
-*** IGAP male
-gen igap_male=.
-replace igap_male=1 if lfp==1 & employed==1 & sex==1
-replace igap_male=0 if lfp==1 & employed==0 & sex==1
-replace igap_male=0 if lfp==1 & employed==. & sex==1
-
-
-*** IGAP female
-gen igap_female=.
-replace igap_female=1 if lfp==1 & employed==1 & sex==2
-replace igap_female=0 if lfp==1 & employed==0 & sex==2
-replace igap_female=0 if lfp==1 & employed==. & sex==2
-
-
-*** IGAP young + old
-gen igap_youngold=.
-replace igap_youngold=1 if lfp==1 & employed==1 & (age<=29 | age>=60)
-replace igap_youngold=0 if lfp==1 & employed==0 & (age<=29 | age>=60)
-replace igap_youngold=0 if lfp==1 & employed==. & (age<=29 | age>=60)
-
-ta igap_youngold
-
-
-
-
-
-*** Nb occupations
-ta nboccupation_indiv lfp, m
-
-gen nbo=.
-replace nbo=nboccupation_indiv if lfp==1
-
-gen nbo_male=.
-replace nbo_male=nboccupation_indiv if lfp_male==1
-
-gen nbo_female=.
-replace nbo_female=nboccupation_indiv if lfp_female==1
-
-
-
-
-
-********** Desc
-tab1 lfp*
-tab1 igap*
-tab1 nbo*
+********** Clean
+drop if HHID_panel=="GOV64" & year==2020
+drop if HHID_panel=="GOV65" & year==2020
+drop if HHID_panel=="GOV66" & year==2020  
+drop if HHID_panel=="GOV67" & year==2020
+drop if HHID_panel=="KUV66" & year==2020
+drop if HHID_panel=="KUV67" & year==2020
 
 
 
 save"panel_indiv_v3", replace
-
 ****************************************
 * END
 

@@ -50,16 +50,18 @@ global contindiv age primary female
 global contHH log_HHsize assets_total sexratio dependencyratio annualincome_HH remittnet_HH
 
 
-
+drop if occ_agse==.
+drop if panelvar==.
  
 
 
 ********** Spec 
 cls
-log using "Indivlevel.log", replace
+log using "Indivlevel_new.log", replace
 
-
-capture noisily xtdpdml lfp $contindiv $contHH, inv($nonvar) predetermined(fvi L.fvi)
+foreach y in occ_agse occ_agca occ_naca occ_nare occ_nase occ_nreg occ_agri occ_nagr occ_casu occ_ncas occ_self occ_nsel {
+capture noisily xtdpdml `y' $contindiv $contHH, inv($nonvar) predetermined(fvi L.fvi)
+}
 
 log close
 

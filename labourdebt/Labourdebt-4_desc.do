@@ -155,10 +155,18 @@ cls
 use"panel_v3", clear
 
 
-********** Macro
+
+********** Rename
 rename snbo snbo_total
 
+
+********** Classic stats
+tabstat snbo_total snbo_female snbo_male snbo_young snbo_middle snbo_old, stat(mean cv p50) by(year) long
+
+
+********** Macro
 global yvar snbo_total snbo_female snbo_male snbo_young snbo_middle snbo_old
+
 
 ********** Orga
 keep year $yvar

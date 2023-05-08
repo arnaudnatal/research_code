@@ -61,20 +61,20 @@ global yvar ///
 snbo snbo_female snbo_male snbo_young snbo_middle snbo_old socc_agri socc_nagr socc_casu socc_ncas socc_self socc_nsel socc_agse socc_agca socc_naca socc_nare socc_nase socc_nreg
 
 
+*** X
+global xvar fvi 
 
-
-log using "Toutwithnew.log", replace
-ta year
-
-
-********** Spec 1
-foreach y in $yvar {
-capture noisily xtdpdml `y' $compo1 $econ $head, inv($nonvar) predetermined(fvi L.fvi) fiml
-capture noisily xtdpdml `y' $compo1 $econ $head, inv($nonvar) predetermined(fvi L.fvi)
-est store mlsem_`y'
-}
 
 /*
+********** Spec 1
+foreach x in $xvar {
+foreach y in $yvar {
+capture noisily xtdpdml `y' $compo1 $econ $head, inv($nonvar) predetermined(`x' L.`x') fiml
+est store mlsem_`y'
+}
+}
+
+
 esttab mlsem_snbo mlsem_snbo_male mlsem_snbo_female mlsem_snbo_young mlsem_snbo_middle mlsem_snbo_old  using "spec1_snbo.csv", replace ///
 	label b(3) p(3) eqlabels(none) alignment(S) ///
 	drop(_cons $var) ///
@@ -90,15 +90,18 @@ esttab mlsem_snbo mlsem_snbo_male mlsem_snbo_female mlsem_snbo_young mlsem_snbo_
 	
 
 
+log using "allyxy_v2.log", replace
 
 ********** Rob: Spec 2
+foreach x in $xvar {
 foreach y in $yvar {
-capture noisily xtdpdml `y' $compo2 $econ $head, inv($nonvar) predetermined(fvi L.fvi) fiml
-capture noisily xtdpdml `y' $compo2 $econ $head, inv($nonvar) predetermined(fvi L.fvi)
+capture noisily xtdpdml `y' $compo2 $econ $head, inv($nonvar) predetermined(`x' L.`x') fiml
 est store mlsem_`y'
+}
 }
 
 log close
+
 /*
 esttab mlsem_snbo mlsem_snbo_male mlsem_snbo_female mlsem_snbo_young mlsem_snbo_middle mlsem_snbo_old  using "spec2_snbo.csv", replace ///
 	label b(3) p(3) eqlabels(none) alignment(S) ///
@@ -111,19 +114,24 @@ esttab mlsem_snbo mlsem_snbo_male mlsem_snbo_female mlsem_snbo_young mlsem_snbo_
 */
 
 
+
+
+
 	
+
 	
+/*
 ********** Rob: Outliers
 preserve
 tabstat snbo_female, stat(n mean p90 p95 p99 max)
 drop if snbo_female>4
 
-
+foreach x in $xvar {
 foreach y in $yvar {
-capture noisily xtdpdml `y' $compo1 $econ $head, inv($nonvar) predetermined(L.fvi) fiml
+capture noisily xtdpdml `y' $compo1 $econ $head, inv($nonvar) predetermined(`x' L.`x') fiml
 est store mlsem_`y'
 }
-
+}
 
 esttab mlsem_snbo_female using "robout_snbo.csv", replace ///
 	label b(3) p(3) eqlabels(none) alignment(S) ///
@@ -135,13 +143,15 @@ esttab mlsem_snbo_female using "robout_snbo.csv", replace ///
 	labels(`"Observations"'))
 
 restore
+*/	
 	
 	
-	
-	
+
+/*
 ********** Rob: vce
+foreach x in $xvar {
 foreach y in $yvar {
-capture noisily xtdpdml `y' $compo1 $econ $head, inv($nonvar) predetermined(L.fvi) fiml vce(rob)
+capture noisily xtdpdml `y' $compo1 $econ $head, inv($nonvar) predetermined(`x' L.`x') fiml vce(rob)
 est store mlsem_`y'
 }
 
@@ -155,18 +165,22 @@ esttab mlsem_snbo mlsem_snbo_male mlsem_snbo_female mlsem_snbo_young mlsem_snbo_
 	refcat(, nolabel) ///
 	stats(N, fmt(0) ///
 	labels(`"Observations"'))
-
+*/
 	
 
 	
 
+	
+/*
 ********** Rob: no domestic work
 global yvar2 ///
 snbo2 snbo2_female snbo2_male snbo2_young snbo2_middle snbo2_old 
-	
+
+foreach x in $xvar {
 foreach y in $yvar2 {
-capture noisily xtdpdml `y' $compo1 $econ $head, inv($nonvar) predetermined(L.fvi) fiml
+capture noisily xtdpdml `y' $compo1 $econ $head, inv($nonvar) predetermined(`x' L.`x') fiml
 est store mlsem_`y'
+}
 }
 
 
@@ -178,21 +192,30 @@ esttab mlsem_snbo mlsem_snbo_male mlsem_snbo_female mlsem_snbo_young mlsem_snbo_
 	refcat(, nolabel) ///
 	stats(N, fmt(0) ///
 	labels(`"Observations"'))
+*/
+	
 
 	
 	
 	
 	
+
 ********** Rob: only income gen work
+log using "Toutwithnew_onlyincome.log", replace
+
 global yvar3 ///
 snbo3 snbo3_female snbo3_male snbo3_young snbo3_middle snbo3_old 
 	
+foreach x in $xvar {
 foreach y in $yvar3 {
-capture noisily xtdpdml `y' $compo1 $econ $head, inv($nonvar) predetermined(L.fvi) fiml
+capture noisily xtdpdml `y' $compo1 $econ $head, inv($nonvar) predetermined(`x' L.`x') fiml
 est store mlsem_`y'
 }
+}
 
+log close
 
+/*
 esttab mlsem_snbo mlsem_snbo_male mlsem_snbo_female mlsem_snbo_young mlsem_snbo_middle mlsem_snbo_old  using "oincogen_snbo.csv", replace ///
 	label b(3) p(3) eqlabels(none) alignment(S) ///
 	drop(_cons $var) ///
@@ -201,15 +224,20 @@ esttab mlsem_snbo mlsem_snbo_male mlsem_snbo_female mlsem_snbo_young mlsem_snbo_
 	refcat(, nolabel) ///
 	stats(N, fmt(0) ///
 	labels(`"Observations"'))
-
+*/
 	
 
+
 	
 	
+	
+/*
 ********** Rob: balanced panel
+foreach x in $xvar {
 foreach y in $yvar {
 capture noisily xtdpdml `y' $compo1 $econ $head, inv($nonvar) predetermined(L.fvi) vce(sbentler)
 est store mlsem_`y'
+}
 }
 
 
@@ -221,8 +249,6 @@ esttab mlsem_snbo mlsem_snbo_male mlsem_snbo_female mlsem_snbo_young mlsem_snbo_
 	refcat(, nolabel) ///
 	stats(N, fmt(0) ///
 	labels(`"Observations"'))
-
-	
-log close
+*/
 ****************************************
 * END
