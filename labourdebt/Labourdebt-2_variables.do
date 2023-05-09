@@ -277,6 +277,20 @@ label var caste_2 "Caste: Middle"
 label var caste_3 "Caste: Upper"
 
 
+*** Lockdown
+rename secondlockdownexposure lockdown
+fre lockdown
+recode lockdown (1=0) (.=0) (2=1) (3=2)
+label define exposure 0"No" 1"During" 2"After", modify
+ta lockdown, gen(lockdown)
+
+
+
+*** Demonetisation
+fre dummydemonetisation
+label values dummydemonetisation yesno
+fre dummydemonetisation
+
 
 save"panel_v2", replace 
 ****************************************

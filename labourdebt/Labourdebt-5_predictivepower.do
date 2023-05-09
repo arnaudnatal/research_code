@@ -50,7 +50,8 @@ set matsize 10000, perm
 *** X
 global nonvar caste_2 caste_3 village_2 village_3 village_4 village_5 village_6 village_7 village_8 village_9 village_10
 global head head_female head_age head_educ
-global econ remittnet_HH assets_total annualincome_HH
+global econ remittnet_HH assets_total annualincome_HH dummydemonetisation
+*  lockdown2 lockdown3
 
 global compo1 log_HHsize share_female share_children share_young share_old share_stock
 global compo2 log_HHsize share_children sexratio dependencyratio share_stock
@@ -58,18 +59,19 @@ global compo2 log_HHsize share_children sexratio dependencyratio share_stock
 
 *** Y
 global yvar ///
-snbo snbo_female snbo_male snbo_young snbo_middle snbo_old socc_agri socc_nagr socc_casu socc_ncas socc_self socc_nsel socc_agse socc_agca socc_naca socc_nare socc_nase socc_nreg
+snbo snbo_female snbo_male snbo_young snbo_middle snbo_old 
+*socc_agri socc_nagr socc_casu socc_ncas socc_self socc_nsel socc_agse socc_agca socc_naca socc_nare socc_nase socc_nreg
 
 
 *** X
 global xvar fvi 
 
 
-/*
+log using "withshocks_rotated.log", replace
 ********** Spec 1
 foreach x in $xvar {
 foreach y in $yvar {
-capture noisily xtdpdml `y' $compo1 $econ $head, inv($nonvar) predetermined(`x' L.`x') fiml
+capture noisily xtdpdml `y' $compo1 $econ $head, inv($nonvar) predetermined(L.`x')
 est store mlsem_`y'
 }
 }
@@ -83,26 +85,22 @@ esttab mlsem_snbo mlsem_snbo_male mlsem_snbo_female mlsem_snbo_young mlsem_snbo_
 	refcat(, nolabel) ///
 	stats(N, fmt(0) ///
 	labels(`"Observations"'))
-*/
-	
+log close	
 	
 	
 	
 
 
-log using "allyxy_v2.log", replace
-
+/*
 ********** Rob: Spec 2
 foreach x in $xvar {
 foreach y in $yvar {
-capture noisily xtdpdml `y' $compo2 $econ $head, inv($nonvar) predetermined(`x' L.`x') fiml
+capture noisily xtdpdml `y' $compo2 $econ $head, inv($nonvar) predetermined(L.`x') fiml
 est store mlsem_`y'
 }
 }
 
-log close
 
-/*
 esttab mlsem_snbo mlsem_snbo_male mlsem_snbo_female mlsem_snbo_young mlsem_snbo_middle mlsem_snbo_old  using "spec2_snbo.csv", replace ///
 	label b(3) p(3) eqlabels(none) alignment(S) ///
 	drop(_cons $var) ///
@@ -128,7 +126,7 @@ drop if snbo_female>4
 
 foreach x in $xvar {
 foreach y in $yvar {
-capture noisily xtdpdml `y' $compo1 $econ $head, inv($nonvar) predetermined(`x' L.`x') fiml
+capture noisily xtdpdml `y' $compo1 $econ $head, inv($nonvar) predetermined(L.`x') fiml
 est store mlsem_`y'
 }
 }
@@ -151,7 +149,7 @@ restore
 ********** Rob: vce
 foreach x in $xvar {
 foreach y in $yvar {
-capture noisily xtdpdml `y' $compo1 $econ $head, inv($nonvar) predetermined(`x' L.`x') fiml vce(rob)
+capture noisily xtdpdml `y' $compo1 $econ $head, inv($nonvar) predetermined(L.`x') fiml vce(rob)
 est store mlsem_`y'
 }
 
@@ -178,7 +176,7 @@ snbo2 snbo2_female snbo2_male snbo2_young snbo2_middle snbo2_old
 
 foreach x in $xvar {
 foreach y in $yvar2 {
-capture noisily xtdpdml `y' $compo1 $econ $head, inv($nonvar) predetermined(`x' L.`x') fiml
+capture noisily xtdpdml `y' $compo1 $econ $head, inv($nonvar) predetermined(L.`x') fiml
 est store mlsem_`y'
 }
 }
@@ -208,7 +206,7 @@ snbo3 snbo3_female snbo3_male snbo3_young snbo3_middle snbo3_old
 	
 foreach x in $xvar {
 foreach y in $yvar3 {
-capture noisily xtdpdml `y' $compo1 $econ $head, inv($nonvar) predetermined(`x' L.`x') fiml
+capture noisily xtdpdml `y' $compo1 $econ $head, inv($nonvar) predetermined(L.`x') fiml
 est store mlsem_`y'
 }
 }
