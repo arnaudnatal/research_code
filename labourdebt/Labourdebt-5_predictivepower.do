@@ -45,13 +45,21 @@ set matsize 10000, perm
 
 
 
+********** Interaction
+fre dalits
+gen dal_fvi=caste_1*fvi
+gen mid_fvi=caste_2*fvi
+gen upp_fvi=caste_3*fvi
+
+
+
 ********** Variables
 
 *** X
-global nonvar caste_2 caste_3 village_2 village_3 village_4 village_5 village_6 village_7 village_8 village_9 village_10
+global nonvar caste_1 caste_3 village_2 village_3 village_4 village_5 village_6 village_7 village_8 village_9 village_10
 global head head_female head_age head_educ
-global econ remittnet_HH assets_total annualincome_HH dummydemonetisation
-*  lockdown2 lockdown3
+global econ remittnet_HH assets_total annualincome_HH 
+*dummydemonetisation lockdown2 lockdown3
 
 global compo1 log_HHsize share_female share_children share_young share_old share_stock
 global compo2 log_HHsize share_children sexratio dependencyratio share_stock
@@ -67,11 +75,11 @@ snbo snbo_female snbo_male snbo_young snbo_middle snbo_old
 global xvar fvi 
 
 
-log using "withshocks_rotated.log", replace
+log using "Classic.log", replace
 ********** Spec 1
 foreach x in $xvar {
 foreach y in $yvar {
-capture noisily xtdpdml `y' $compo1 $econ $head, inv($nonvar) predetermined(L.`x')
+capture noisily xtdpdml `y' $compo1 $econ $head, inv($nonvar) predetermined(L.`x') fiml
 est store mlsem_`y'
 }
 }
