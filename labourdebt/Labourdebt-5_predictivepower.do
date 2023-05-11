@@ -33,7 +33,7 @@ If the contemporaneous effect in ML-SEM is negligible, this approach can also se
 
 
 ****************************************
-* Prediction power with ML-SEM
+* Prepa
 ****************************************
 cls
 use"panel_v3", clear
@@ -74,9 +74,27 @@ snbo snbo_female snbo_male snbo_young snbo_middle snbo_old
 *** X
 global xvar fvi 
 
+****************************************
+* END
 
-log using "Classic.log", replace
-********** Spec 1
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Specification 1
+****************************************
+
 foreach x in $xvar {
 foreach y in $yvar {
 capture noisily xtdpdml `y' $compo1 $econ $head, inv($nonvar) predetermined(L.`x') fiml
@@ -93,14 +111,25 @@ esttab mlsem_snbo mlsem_snbo_male mlsem_snbo_female mlsem_snbo_young mlsem_snbo_
 	refcat(, nolabel) ///
 	stats(N, fmt(0) ///
 	labels(`"Observations"'))
-log close	
-	
-	
+
+
+****************************************
+* END
+
 	
 
 
-/*
-********** Rob: Spec 2
+
+
+
+
+
+
+
+****************************************
+* Specification 2
+****************************************
+
 foreach x in $xvar {
 foreach y in $yvar {
 capture noisily xtdpdml `y' $compo2 $econ $head, inv($nonvar) predetermined(L.`x') fiml
@@ -117,144 +146,7 @@ esttab mlsem_snbo mlsem_snbo_male mlsem_snbo_female mlsem_snbo_young mlsem_snbo_
 	refcat(, nolabel) ///
 	stats(N, fmt(0) ///
 	labels(`"Observations"'))
-*/
 
 
-
-
-
-	
-
-	
-/*
-********** Rob: Outliers
-preserve
-tabstat snbo_female, stat(n mean p90 p95 p99 max)
-drop if snbo_female>4
-
-foreach x in $xvar {
-foreach y in $yvar {
-capture noisily xtdpdml `y' $compo1 $econ $head, inv($nonvar) predetermined(L.`x') fiml
-est store mlsem_`y'
-}
-}
-
-esttab mlsem_snbo_female using "robout_snbo.csv", replace ///
-	label b(3) p(3) eqlabels(none) alignment(S) ///
-	drop(_cons $var) ///
-	star(* 0.10 ** 0.05 *** 0.01) ///
-	cells("b(fmt(2)star)" "se(fmt(2)par)") ///
-	refcat(, nolabel) ///
-	stats(N, fmt(0) ///
-	labels(`"Observations"'))
-
-restore
-*/	
-	
-	
-
-/*
-********** Rob: vce
-foreach x in $xvar {
-foreach y in $yvar {
-capture noisily xtdpdml `y' $compo1 $econ $head, inv($nonvar) predetermined(L.`x') fiml vce(rob)
-est store mlsem_`y'
-}
-
-
-
-esttab mlsem_snbo mlsem_snbo_male mlsem_snbo_female mlsem_snbo_young mlsem_snbo_middle mlsem_snbo_old  using "robvce_snbo.csv", replace ///
-	label b(3) p(3) eqlabels(none) alignment(S) ///
-	drop(_cons $var) ///
-	star(* 0.10 ** 0.05 *** 0.01) ///
-	cells("b(fmt(2)star)" "se(fmt(2)par)") ///
-	refcat(, nolabel) ///
-	stats(N, fmt(0) ///
-	labels(`"Observations"'))
-*/
-	
-
-	
-
-	
-/*
-********** Rob: no domestic work
-global yvar2 ///
-snbo2 snbo2_female snbo2_male snbo2_young snbo2_middle snbo2_old 
-
-foreach x in $xvar {
-foreach y in $yvar2 {
-capture noisily xtdpdml `y' $compo1 $econ $head, inv($nonvar) predetermined(L.`x') fiml
-est store mlsem_`y'
-}
-}
-
-
-esttab mlsem_snbo mlsem_snbo_male mlsem_snbo_female mlsem_snbo_young mlsem_snbo_middle mlsem_snbo_old  using "nodom_snbo.csv", replace ///
-	label b(3) p(3) eqlabels(none) alignment(S) ///
-	drop(_cons $var) ///
-	star(* 0.10 ** 0.05 *** 0.01) ///
-	cells("b(fmt(2)star)" "se(fmt(2)par)") ///
-	refcat(, nolabel) ///
-	stats(N, fmt(0) ///
-	labels(`"Observations"'))
-*/
-	
-
-	
-	
-	
-	
-
-********** Rob: only income gen work
-log using "Toutwithnew_onlyincome.log", replace
-
-global yvar3 ///
-snbo3 snbo3_female snbo3_male snbo3_young snbo3_middle snbo3_old 
-	
-foreach x in $xvar {
-foreach y in $yvar3 {
-capture noisily xtdpdml `y' $compo1 $econ $head, inv($nonvar) predetermined(L.`x') fiml
-est store mlsem_`y'
-}
-}
-
-log close
-
-/*
-esttab mlsem_snbo mlsem_snbo_male mlsem_snbo_female mlsem_snbo_young mlsem_snbo_middle mlsem_snbo_old  using "oincogen_snbo.csv", replace ///
-	label b(3) p(3) eqlabels(none) alignment(S) ///
-	drop(_cons $var) ///
-	star(* 0.10 ** 0.05 *** 0.01) ///
-	cells("b(fmt(2)star)" "se(fmt(2)par)") ///
-	refcat(, nolabel) ///
-	stats(N, fmt(0) ///
-	labels(`"Observations"'))
-*/
-	
-
-
-	
-	
-	
-/*
-********** Rob: balanced panel
-foreach x in $xvar {
-foreach y in $yvar {
-capture noisily xtdpdml `y' $compo1 $econ $head, inv($nonvar) predetermined(L.fvi) vce(sbentler)
-est store mlsem_`y'
-}
-}
-
-
-esttab mlsem_snbo mlsem_snbo_male mlsem_snbo_female mlsem_snbo_young mlsem_snbo_middle mlsem_snbo_old  using "robben_snbo.csv", replace ///
-	label b(3) p(3) eqlabels(none) alignment(S) ///
-	drop(_cons $var) ///
-	star(* 0.10 ** 0.05 *** 0.01) ///
-	cells("b(fmt(2)star)" "se(fmt(2)par)") ///
-	refcat(, nolabel) ///
-	stats(N, fmt(0) ///
-	labels(`"Observations"'))
-*/
 ****************************************
 * END
