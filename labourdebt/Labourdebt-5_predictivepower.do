@@ -89,7 +89,7 @@ global xvar fvi
 
 
 
-
+log using "C_Main.log", replace
 
 ****************************************
 * Specification 1
@@ -97,12 +97,12 @@ global xvar fvi
 
 foreach x in $xvar {
 foreach y in $yvar {
-capture noisily xtdpdml `y' $compo1 $econ $head, inv($nonvar) predetermined(L.`x') fiml
+capture noisily xtdpdml `y' $compo1 $econ $head, inv($nonvar) predetermined(L.`x' L.dal_fvi L.upp_fvi) fiml
 est store mlsem_`y'
 }
 }
 
-
+/*
 esttab mlsem_snbo mlsem_snbo_male mlsem_snbo_female mlsem_snbo_young mlsem_snbo_middle mlsem_snbo_old  using "spec1_snbo.csv", replace ///
 	label b(3) p(3) eqlabels(none) alignment(S) ///
 	drop(_cons $var) ///
@@ -111,42 +111,13 @@ esttab mlsem_snbo mlsem_snbo_male mlsem_snbo_female mlsem_snbo_young mlsem_snbo_
 	refcat(, nolabel) ///
 	stats(N, fmt(0) ///
 	labels(`"Observations"'))
-
-
-****************************************
-* END
-
-	
-
-
-
-
-
-
-
-
-
-****************************************
-* Specification 2
-****************************************
-
-foreach x in $xvar {
-foreach y in $yvar {
-capture noisily xtdpdml `y' $compo2 $econ $head, inv($nonvar) predetermined(L.`x') fiml
-est store mlsem_`y'
-}
-}
-
-
-esttab mlsem_snbo mlsem_snbo_male mlsem_snbo_female mlsem_snbo_young mlsem_snbo_middle mlsem_snbo_old  using "spec2_snbo.csv", replace ///
-	label b(3) p(3) eqlabels(none) alignment(S) ///
-	drop(_cons $var) ///
-	star(* 0.10 ** 0.05 *** 0.01) ///
-	cells("b(fmt(2)star)" "se(fmt(2)par)") ///
-	refcat(, nolabel) ///
-	stats(N, fmt(0) ///
-	labels(`"Observations"'))
-
+*/
 
 ****************************************
 * END
+
+log close
+
+
+
+

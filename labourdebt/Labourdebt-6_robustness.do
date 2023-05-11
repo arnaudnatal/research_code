@@ -15,22 +15,6 @@ do"C:\Users\Arnaud\Documents\GitHub\folderanalysis\labourdebt.do"
 
 
 
-/*
-Maximum Likelihood Structural Equation Model
-Same as cross-lagged panel model with fixed effect 
-
-Our simulation results also show that ML-SEM may help researchers to overcome the problem of misspecified temporal lags. 
-Whereas ML-SEM falls prey to precisely the same lag specification problem as other models, our simulations show that this problem only occurs if ML-SEM includes either a contemporaneous or a lagged effect of X on Y.
-If both effects are specified, by contrast, ML-SEM provides correct estimates of both effects in all scenarios.
-
-In short, ML-SEM including both a contemporaneous and a lagged effect of X on Y provides correct estimates of both effects, even in case of reverse causality. 
-If the contemporaneous effect in ML-SEM is negligible, this approach can also serve to justify the application of the LFD model or the AB estimator.
-*/
-
-
-
-
-
 
 ****************************************
 * Prepa
@@ -88,6 +72,53 @@ global xvar fvi
 
 
 
+
+
+log using "C_Rob_spec2.log", replace
+
+****************************************
+* Rob: Specification 2
+****************************************
+
+foreach x in $xvar {
+foreach y in $yvar {
+capture noisily xtdpdml `y' $compo2 $econ $head, inv($nonvar) predetermined(L.`x' L.dal_fvi L.upp_fvi) fiml
+est store mlsem_`y'
+}
+}
+
+/*
+esttab mlsem_snbo mlsem_snbo_male mlsem_snbo_female mlsem_snbo_young mlsem_snbo_middle mlsem_snbo_old  using "spec2_snbo.csv", replace ///
+	label b(3) p(3) eqlabels(none) alignment(S) ///
+	drop(_cons $var) ///
+	star(* 0.10 ** 0.05 *** 0.01) ///
+	cells("b(fmt(2)star)" "se(fmt(2)par)") ///
+	refcat(, nolabel) ///
+	stats(N, fmt(0) ///
+	labels(`"Observations"'))
+*/
+
+****************************************
+* END
+
+log close
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+log using "Rob_outliers.log", replace
+
 ****************************************
 * Rob: outliers
 ****************************************
@@ -97,49 +128,25 @@ tabstat snbo snbo_female snbo_middle, stat(n mean p90 p95 p99 max)
 
 ********** Total
 preserve
-tabstat snbo_female, stat(n mean p90 p95 p99 max)
-drop if snbo_female>4
+drop if snbo>7
 
 foreach x in $xvar {
-foreach y in $yvar {
-capture noisily xtdpdml `y' $compo1 $econ $head, inv($nonvar) predetermined(L.`x') fiml
-est store mlsem_`y'
+capture noisily xtdpdml snbo $compo1 $econ $head, inv($nonvar) predetermined(L.`x') fiml
+est store mlsem_snbo
 }
-}
-
-esttab mlsem_snbo_female using "robout_snbo.csv", replace ///
-	label b(3) p(3) eqlabels(none) alignment(S) ///
-	drop(_cons $var) ///
-	star(* 0.10 ** 0.05 *** 0.01) ///
-	cells("b(fmt(2)star)" "se(fmt(2)par)") ///
-	refcat(, nolabel) ///
-	stats(N, fmt(0) ///
-	labels(`"Observations"'))
-
 restore
 
 
 
 ********** Females
 preserve
-tabstat snbo_female, stat(n mean p90 p95 p99 max)
 drop if snbo_female>4
 
 foreach x in $xvar {
-foreach y in $yvar {
-capture noisily xtdpdml `y' $compo1 $econ $head, inv($nonvar) predetermined(L.`x') fiml
-est store mlsem_`y'
-}
+capture noisily xtdpdml snbo_female $compo1 $econ $head, inv($nonvar) predetermined(L.`x') fiml
+est store mlsem_snbo_female
 }
 
-esttab mlsem_snbo_female using "robout_snbo.csv", replace ///
-	label b(3) p(3) eqlabels(none) alignment(S) ///
-	drop(_cons $var) ///
-	star(* 0.10 ** 0.05 *** 0.01) ///
-	cells("b(fmt(2)star)" "se(fmt(2)par)") ///
-	refcat(, nolabel) ///
-	stats(N, fmt(0) ///
-	labels(`"Observations"'))
 
 restore
 
@@ -148,17 +155,22 @@ restore
 
 ********** Middle
 preserve
-tabstat snbo_female, stat(n mean p90 p95 p99 max)
-drop if snbo_female>4
+drop if snbo_middle>6
 
 foreach x in $xvar {
-foreach y in $yvar {
-capture noisily xtdpdml `y' $compo1 $econ $head, inv($nonvar) predetermined(L.`x') fiml
-est store mlsem_`y'
-}
+capture noisily xtdpdml snbo_middle $compo1 $econ $head, inv($nonvar) predetermined(L.`x') fiml
+est store mlsem_snbo_middle
 }
 
-esttab mlsem_snbo_female using "robout_snbo.csv", replace ///
+restore
+
+
+
+
+********** Table
+
+/*
+esttab mlsem_snbo mlsem_snbo_female mlsem_snbo_middle using "robout_snbo.csv", replace ///
 	label b(3) p(3) eqlabels(none) alignment(S) ///
 	drop(_cons $var) ///
 	star(* 0.10 ** 0.05 *** 0.01) ///
@@ -166,13 +178,12 @@ esttab mlsem_snbo_female using "robout_snbo.csv", replace ///
 	refcat(, nolabel) ///
 	stats(N, fmt(0) ///
 	labels(`"Observations"'))
-
-restore
-
+*/
 
 ****************************************
 * END
 	
+log close
 	
 	
 	
@@ -184,9 +195,7 @@ restore
 	
 	
 	
-	
-	
-	
+log using "C_Rob_VCE.log", replace
 
 ****************************************
 * Rob: VCE
@@ -194,12 +203,12 @@ restore
 
 foreach x in $xvar {
 foreach y in $yvar {
-capture noisily xtdpdml `y' $compo1 $econ $head, inv($nonvar) predetermined(L.`x') fiml vce(rob)
+capture noisily xtdpdml `y' $compo1 $econ $head, inv($nonvar) predetermined(L.`x' L.dal_fvi L.upp_fvi) fiml vce(rob)
 est store mlsem_`y'
 }
+}
 
-
-
+/*
 esttab mlsem_snbo mlsem_snbo_male mlsem_snbo_female mlsem_snbo_young mlsem_snbo_middle mlsem_snbo_old  using "robvce_snbo.csv", replace ///
 	label b(3) p(3) eqlabels(none) alignment(S) ///
 	drop(_cons $var) ///
@@ -208,17 +217,24 @@ esttab mlsem_snbo mlsem_snbo_male mlsem_snbo_female mlsem_snbo_young mlsem_snbo_
 	refcat(, nolabel) ///
 	stats(N, fmt(0) ///
 	labels(`"Observations"'))
+*/
 
 ****************************************
 * END
 	
-	
-	
+log close
+
+
+
+
 
 
 	
 
+
 	
+
+log using "C_Rob_nodomwork.log", replace
 
 ****************************************
 * Rob: no dom work
@@ -229,12 +245,12 @@ snbo2 snbo2_female snbo2_male snbo2_young snbo2_middle snbo2_old
 
 foreach x in $xvar {
 foreach y in $yvar2 {
-capture noisily xtdpdml `y' $compo1 $econ $head, inv($nonvar) predetermined(L.`x') fiml
+capture noisily xtdpdml `y' $compo1 $econ $head, inv($nonvar) predetermined(L.`x' L.dal_fvi L.upp_fvi) fiml
 est store mlsem_`y'
 }
 }
 
-
+/*
 esttab mlsem_snbo mlsem_snbo_male mlsem_snbo_female mlsem_snbo_young mlsem_snbo_middle mlsem_snbo_old  using "nodom_snbo.csv", replace ///
 	label b(3) p(3) eqlabels(none) alignment(S) ///
 	drop(_cons $var) ///
@@ -243,11 +259,12 @@ esttab mlsem_snbo mlsem_snbo_male mlsem_snbo_female mlsem_snbo_young mlsem_snbo_
 	refcat(, nolabel) ///
 	stats(N, fmt(0) ///
 	labels(`"Observations"'))
+*/
 	
 ****************************************
 * END
 
-
+log close
 
 
 
@@ -257,7 +274,7 @@ esttab mlsem_snbo mlsem_snbo_male mlsem_snbo_female mlsem_snbo_young mlsem_snbo_
 
 	
 	
-	
+log using "C_Rob_onlyincomegen.log", replace
 
 ****************************************
 * Rob: only income gen
@@ -268,13 +285,13 @@ snbo3 snbo3_female snbo3_male snbo3_young snbo3_middle snbo3_old
 	
 foreach x in $xvar {
 foreach y in $yvar3 {
-capture noisily xtdpdml `y' $compo1 $econ $head, inv($nonvar) predetermined(L.`x') fiml
+capture noisily xtdpdml `y' $compo1 $econ $head, inv($nonvar) predetermined(L.`x' L.dal_fvi L.upp_fvi) fiml
 est store mlsem_`y'
 }
 }
 
 
-
+/*
 esttab mlsem_snbo mlsem_snbo_male mlsem_snbo_female mlsem_snbo_young mlsem_snbo_middle mlsem_snbo_old  using "oincogen_snbo.csv", replace ///
 	label b(3) p(3) eqlabels(none) alignment(S) ///
 	drop(_cons $var) ///
@@ -283,6 +300,9 @@ esttab mlsem_snbo mlsem_snbo_male mlsem_snbo_female mlsem_snbo_young mlsem_snbo_
 	refcat(, nolabel) ///
 	stats(N, fmt(0) ///
 	labels(`"Observations"'))
+*/
 	
 ****************************************
 * END
+
+log close
