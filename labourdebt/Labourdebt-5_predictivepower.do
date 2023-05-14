@@ -67,8 +67,8 @@ global compo2 log_HHsize share_children sexratio dependencyratio share_stock
 
 *** Y
 global yvar ///
-snbo snbo_female snbo_male snbo_young snbo_middle snbo_old 
-*socc_agri socc_nagr socc_casu socc_ncas socc_self socc_nsel socc_agse socc_agca socc_naca socc_nare socc_nase socc_nreg
+socc_agri socc_nagr 
+*socc_casu socc_ncas socc_self socc_nsel socc_agse socc_agca socc_naca socc_nare socc_nase socc_nreg
 
 
 *** X
@@ -89,7 +89,7 @@ global xvar fvi
 
 
 
-log using "C_Main.log", replace
+log using "C_Main_2.log", replace
 
 ****************************************
 * Specification 1
