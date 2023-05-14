@@ -21,7 +21,7 @@ do "https://raw.githubusercontent.com/arnaudnatal/folderanalysis/main/$link.do"
 ****************************************
 use"raw/RUME-loans_mainloans_new", clear
 
-merge m:m HHID2010 using "raw/ODRIIS-HH_wide", keepusing(HHID_panel)
+merge m:m HHID2010 using "raw/keypanel-HH_wide", keepusing(HHID_panel)
 drop if _merge==2
 drop _merge
 
@@ -61,7 +61,11 @@ replace otherlenderservices_guar=1 if otherlenderservices==3
 replace otherlenderservices_gene=1 if otherlenderservices==4
 replace otherlenderservices_none=1 if otherlenderservices==5
 replace otherlenderservices_othe=1 if otherlenderservices==77
-drop otherlenderservices
+*drop otherlenderservices
+
+label val otherlenderservices
+ta otherlenderservices
+tostring otherlenderservices, replace 
 
 * Borrowerservices
 fre borrowerservices
@@ -75,7 +79,11 @@ replace borrowerservices_less=1 if borrowerservices==2
 replace borrowerservices_supp=1 if borrowerservices==3
 replace borrowerservices_none=1 if borrowerservices==99
 replace borrowerservices_othe=1 if borrowerservices==77
-drop borrowerservices
+*drop borrowerservices
+
+label val borrowerservices
+ta borrowerservices
+tostring borrowerservices, replace 
 
 order HHID_panel loanid loanamount2 loansettled
 sort HHID_pane loanid
@@ -93,8 +101,7 @@ save"temp_RUMEloanpanel", replace
 
 
 
-
-
+ 
 
 
 
@@ -103,12 +110,12 @@ save"temp_RUMEloanpanel", replace
 ****************************************
 use"raw/NEEMSIS1-loans_mainloans_new", clear
 
-merge m:m HHID2016 using "raw/ODRIIS-HH_wide", keepusing(HHID_panel)
+merge m:m HHID2016 using "raw/keypanel-HH_wide", keepusing(HHID_panel)
 drop if _merge==2
 drop _merge
 
 tostring INDID2016, replace
-merge m:m HHID_panel INDID2016 using "raw/ODRIIS-indiv_wide", keepusing(INDID_panel)
+merge m:m HHID_panel INDID2016 using "raw/keypanel-indiv_wide", keepusing(INDID_panel)
 drop if _merge==2
 drop _merge
 
@@ -144,7 +151,7 @@ replace otherlenderservices_guar=1 if strpos(otherlenderservices,"3")
 replace otherlenderservices_gene=1 if strpos(otherlenderservices,"4")
 replace otherlenderservices_none=1 if strpos(otherlenderservices,"5")
 replace otherlenderservices_othe=1 if strpos(otherlenderservices,"77")
-drop otherlenderservices
+*drop otherlenderservices
 
 * Borrowerservices
 fre borrowerservices
@@ -158,7 +165,7 @@ replace borrowerservices_less=1 if strpos(borrowerservices,"2")
 replace borrowerservices_supp=1 if strpos(borrowerservices,"3")
 replace borrowerservices_none=1 if strpos(borrowerservices,"4")
 replace borrowerservices_othe=1 if strpos(borrowerservices,"77")
-drop borrowerservices
+*drop borrowerservices
 
 
 order HHID_panel INDID_panel loanid loanamount2 loansettled
@@ -190,12 +197,25 @@ save"temp_NEEMSIS1loanpanel", replace
 ****************************************
 use"raw/NEEMSIS2-loans_mainloans_new", clear
 
-merge m:m HHID2020 using "raw/ODRIIS-HH_wide", keepusing(HHID_panel)
+ta dummyml
+drop dummyml
+gen dummyml=dummyhelptosettleloan
+recode dummyml (1=1) (0=1) (.=0)
+ta dummyml
+order dummyml, after(loanid)
+
+recode dummyml (.=0) if dummyhelptosettleloan==.
+ta dummyml
+ta dummyhelptosettleloan
+
+ta borrowerservices dummyml, m
+
+merge m:m HHID2020 using "raw/keypanel-HH_wide", keepusing(HHID_panel)
 drop if _merge==2
 drop _merge
 
 tostring INDID2020, replace
-merge m:m HHID_panel INDID2020 using "raw/ODRIIS-indiv_wide", keepusing(INDID_panel)
+merge m:m HHID_panel INDID2020 using "raw/keypanel-indiv_wide", keepusing(INDID_panel)
 drop if _merge==2
 drop _merge
 
@@ -231,7 +251,7 @@ replace otherlenderservices_guar=1 if strpos(otherlenderservices,"3")
 replace otherlenderservices_gene=1 if strpos(otherlenderservices,"4")
 replace otherlenderservices_none=1 if strpos(otherlenderservices,"5")
 replace otherlenderservices_othe=1 if strpos(otherlenderservices,"77")
-drop otherlenderservices
+*drop otherlenderservices
 
 * Borrowerservices
 fre borrowerservices
@@ -245,7 +265,7 @@ replace borrowerservices_less=1 if strpos(borrowerservices,"2")
 replace borrowerservices_supp=1 if strpos(borrowerservices,"3")
 replace borrowerservices_none=1 if strpos(borrowerservices,"4")
 replace borrowerservices_othe=1 if strpos(borrowerservices,"77")
-drop borrowerservices
+*drop borrowerservices
 
 order HHID_panel INDID_panel loanid loanamount2 loansettled
 sort HHID_panel INDID_panel loanid
@@ -294,6 +314,77 @@ label define lender3 1"wkp" 2"rela" 3"labo" 4"pawn" 5"shop" 6"mone" 7"frie" 8"mi
 fre lender_cat
 codebook lender_cat
 label define lender_cat 1"info" 2"semi" 3"form", modify
+
+
+********** Label
+label define otherlenderservices_poli 0"Poli_No" 1"Poli_Yes"
+label values otherlenderservices_poli otherlenderservices_poli
+
+label define otherlenderservices_fina 0"Fina_No" 1"Fina_Yes"
+label values otherlenderservices_fina otherlenderservices_fina
+
+label define otherlenderservices_guar 0"Guar_No" 1"Guar_Yes"
+label values otherlenderservices_guar otherlenderservices_guar
+
+label define otherlenderservices_gene 0"Gene_No" 1"Gene_Yes"
+label values otherlenderservices_gene otherlenderservices_gene
+
+label define otherlenderservices_none 0"None_No" 1"None_Yes"
+label values otherlenderservices_none otherlenderservices_none
+
+label define otherlenderservices_othe 0"Othe_No" 1"Othe_Yes"
+label values otherlenderservices_othe otherlenderservices_othe
+
+
+
+********** Recoder pour MCA
+fre otherlenderservices  // 82.5
+replace otherlenderservices="2 4" if otherlenderservices=="1 2 4"
+replace otherlenderservices="2 4" if otherlenderservices=="2 3 4"
+replace otherlenderservices="2 4" if otherlenderservices=="2 4 5"
+replace otherlenderservices="2 4" if otherlenderservices=="2 4 77"
+replace otherlenderservices="5" if otherlenderservices=="2 5"
+replace otherlenderservices="5" if otherlenderservices=="2 5 4"
+replace otherlenderservices="1" if otherlenderservices=="1 77"
+replace otherlenderservices="2" if otherlenderservices=="2 77"
+replace otherlenderservices="5" if otherlenderservices=="4 5"
+replace otherlenderservices="4" if otherlenderservices=="4 77"
+replace otherlenderservices="2 4" if otherlenderservices=="1 2 3 4"
+replace otherlenderservices="1" if otherlenderservices=="1 2 3"
+replace otherlenderservices="1" if otherlenderservices=="1 3"
+replace otherlenderservices="3" if otherlenderservices=="1 3 4"
+replace otherlenderservices="1" if otherlenderservices=="1 4"
+replace otherlenderservices="3" if otherlenderservices=="2 3"
+replace otherlenderservices="3" if otherlenderservices=="3 4"
+replace otherlenderservices="6" if otherlenderservices=="2 4"
+replace otherlenderservices="6" if otherlenderservices=="1 2 3 5 4"
+replace otherlenderservices="1" if otherlenderservices=="1 2"
+replace otherlenderservices="5" if otherlenderservices=="2 3 5"
+destring otherlenderservices, replace
+label define otherlenderservices 1"Polit" 2"Finan" 3"Guaranto" 4"General" 5"None" 6"Fin+Gen" 77"Other" 99"No_resp"
+label values otherlenderservices otherlenderservices
+
+
+
+fre borrowerservices  // 96.7
+replace borrowerservices="4" if strpos(borrowerservices,"4")
+replace borrowerservices="3" if borrowerservices=="3 77"
+replace borrowerservices="3" if borrowerservices=="1 2 3"
+replace borrowerservices="3" if borrowerservices=="1 3"
+replace borrowerservices="3" if borrowerservices=="2 3"
+replace borrowerservices="2" if borrowerservices=="1 2"
+destring borrowerservices, replace
+label define borrowerservices 1"Free_serv" 2"Less_wage" 3"Support" 4"None" 77"Other" 99"No_resp"
+label values borrowerservices borrowerservices
+
+
+
+
+     
+
+********** Amount
+tabstat loanamount2, stat(min p1 p5 p10 q p90 p95 p99 max) 
+	 
 
 
 ********** Order
