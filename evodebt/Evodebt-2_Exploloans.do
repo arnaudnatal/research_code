@@ -21,7 +21,7 @@ do "https://raw.githubusercontent.com/arnaudnatal/folderanalysis/main/$link.do"
 
 
 ****************************************
-* L vs ML
+* Diff loans and main loans
 ****************************************
 cls
 use"panel_loans_nonsettled", clear
@@ -64,8 +64,17 @@ ta year
 
 
 ********** MCA
+*** How many axes to interpret?
 mca reason_cat lender4 otherlenderservices, meth(ind) normal(princ) comp
-mca reason_cat lender4 otherlenderservices, meth(ind) normal(princ) comp dim(11)
+
+*** Ok, what is the interpretation?
+qui mca reason_cat lender4 otherlenderservices, meth(ind) normal(princ) comp dim(3)
+mcaplot, dim(2 1) overlay legend(off) xline(0) yline(0)
+mcaplot, dim(3 1) overlay legend(off) xline(0) yline(0)
+
+
+*** Retains for the HAC
+qui mca reason_cat lender4 otherlenderservices, meth(ind) normal(princ) comp dim(11)
 predict d1 d2 d3 d4 d5 d6 d7 d8 d9 d10 d11
 
 ********** HAC
