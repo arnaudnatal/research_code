@@ -61,8 +61,6 @@ ta dummyml
 ta year
 
 
-
-
 ********** MCA
 *** How many axes to interpret?
 mca reason_cat lender4 otherlenderservices, meth(ind) normal(princ) comp
@@ -76,6 +74,10 @@ mcaplot, dim(3 1) overlay legend(off) xline(0) yline(0)
 *** Retains for the HAC
 qui mca reason_cat lender4 otherlenderservices, meth(ind) normal(princ) comp dim(11)
 predict d1 d2 d3 d4 d5 d6 d7 d8 d9 d10 d11
+
+
+
+
 
 ********** HAC
 cluster wardslinkage d1 d2 d3 d4 d5 d6 d7 d8 d9 d10 d11
@@ -105,7 +107,7 @@ ta lender4 clust
 
 
 ****************************************
-* MCA + HAC
+* MCA + HAC for main loans
 ****************************************
 use"panel_loans_nonsettled", clear
 
@@ -115,23 +117,29 @@ drop if loanreasongiven==12
 drop if loanreasongiven==77
 ta dummyml
 keep if dummyml==1
-
 ta year
 
 
-fre dummyguarantor
-
-
 ********** MCA
-mca reason_cat lender4 dummyinterest dummyhelptosettleloan termsofrepayment, meth(ind) normal(princ) comp dim(9)
-mcaplot, overlay legend(off) xline(0) yline(0) scale(.8)
-predict d1 d2 d3 d4 d5 d6 d7 d8
-scatter a2 a1, xline(0) yline(0)
+*** How many axes to interpret?
+mca reason_cat lender4 otherlenderservices borrowerservices dummyinterest dummyhelptosettleloan plantorepay, meth(ind) normal(princ) comp
+
+*** Ok, what is the interpretation?
+qui mca reason_cat lender4 otherlenderservices, meth(ind) normal(princ) comp dim(3)
+mcaplot, dim(2 1) overlay legend(off) xline(0) yline(0)
+mcaplot, dim(3 1) overlay legend(off) xline(0) yline(0)
+
+
+*** Retains for the HAC
+qui mca reason_cat lender4 otherlenderservices, meth(ind) normal(princ) comp dim(11)
+predict d1 d2 d3 d4 d5 d6 d7 d8 d9 d10 d11
+
+
 
 
 
 ********** HAC
-cluster wardslinkage d1 d2 d3 d4 d5 d6 d7 d8
+cluster wardslinkage d1 d2 d3 d4 d5 d6 d7 d8 d9 d10 d11
 cluster dendrogram, cutnumber(48)
 cluster gen clust=groups(6)
 
@@ -142,6 +150,5 @@ ta lender4 clust
 
 ****************************************
 * END
-
 
 
