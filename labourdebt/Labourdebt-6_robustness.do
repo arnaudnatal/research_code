@@ -50,9 +50,7 @@ global compo2 log_HHsize share_children sexratio dependencyratio share_stock
 
 
 *** Y
-global yvar ///
-snbo snbo_female snbo_male snbo_young snbo_middle snbo_old 
-*socc_agri socc_nagr socc_casu socc_ncas socc_self socc_nsel socc_agse socc_agca socc_naca socc_nare socc_nase socc_nreg
+global yvar snbo snbo_male snbo_female
 
 
 *** X
@@ -87,8 +85,8 @@ est store mlsem_`y'
 }
 }
 
-/*
-esttab mlsem_snbo mlsem_snbo_male mlsem_snbo_female mlsem_snbo_young mlsem_snbo_middle mlsem_snbo_old  using "spec2_snbo.csv", replace ///
+
+esttab mlsem_snbo mlsem_snbo_male mlsem_snbo_female using "spec2_snbo.csv", replace ///
 	label b(3) p(3) eqlabels(none) alignment(S) ///
 	drop(_cons $var) ///
 	star(* 0.10 ** 0.05 *** 0.01) ///
@@ -96,7 +94,7 @@ esttab mlsem_snbo mlsem_snbo_male mlsem_snbo_female mlsem_snbo_young mlsem_snbo_
 	refcat(, nolabel) ///
 	stats(N, fmt(0) ///
 	labels(`"Observations"'))
-*/
+
 
 ****************************************
 * END
@@ -152,7 +150,7 @@ restore
 
 
 
-
+/*
 ********** Middle
 preserve
 drop if snbo_middle>6
@@ -163,14 +161,14 @@ est store mlsem_snbo_middle
 }
 
 restore
-
+*/
 
 
 
 ********** Table
 
-/*
-esttab mlsem_snbo mlsem_snbo_female mlsem_snbo_middle using "robout_snbo.csv", replace ///
+
+esttab mlsem_snbo mlsem_snbo_female using "robout_snbo.csv", replace ///
 	label b(3) p(3) eqlabels(none) alignment(S) ///
 	drop(_cons $var) ///
 	star(* 0.10 ** 0.05 *** 0.01) ///
@@ -178,7 +176,7 @@ esttab mlsem_snbo mlsem_snbo_female mlsem_snbo_middle using "robout_snbo.csv", r
 	refcat(, nolabel) ///
 	stats(N, fmt(0) ///
 	labels(`"Observations"'))
-*/
+
 
 ****************************************
 * END
@@ -208,8 +206,8 @@ est store mlsem_`y'
 }
 }
 
-/*
-esttab mlsem_snbo mlsem_snbo_male mlsem_snbo_female mlsem_snbo_young mlsem_snbo_middle mlsem_snbo_old  using "robvce_snbo.csv", replace ///
+
+esttab mlsem_snbo mlsem_snbo_male mlsem_snbo_female using "robvce_snbo.csv", replace ///
 	label b(3) p(3) eqlabels(none) alignment(S) ///
 	drop(_cons $var) ///
 	star(* 0.10 ** 0.05 *** 0.01) ///
@@ -217,7 +215,7 @@ esttab mlsem_snbo mlsem_snbo_male mlsem_snbo_female mlsem_snbo_young mlsem_snbo_
 	refcat(, nolabel) ///
 	stats(N, fmt(0) ///
 	labels(`"Observations"'))
-*/
+
 
 ****************************************
 * END
@@ -240,8 +238,7 @@ log using "Rob_nodomwork.log", replace
 * Rob: no dom work
 ****************************************
 
-global yvar2 ///
-snbo2 snbo2_female snbo2_male snbo2_young snbo2_middle snbo2_old 
+global yvar2 snbo2 snbo2_female snbo2_male  
 
 foreach x in $xvar {
 foreach y in $yvar2 {
@@ -250,8 +247,8 @@ est store mlsem_`y'
 }
 }
 
-/*
-esttab mlsem_snbo mlsem_snbo_male mlsem_snbo_female mlsem_snbo_young mlsem_snbo_middle mlsem_snbo_old  using "nodom_snbo.csv", replace ///
+
+esttab mlsem_snbo2 mlsem_snbo2_male mlsem_snbo2_female using "nodom_snbo.csv", replace ///
 	label b(3) p(3) eqlabels(none) alignment(S) ///
 	drop(_cons $var) ///
 	star(* 0.10 ** 0.05 *** 0.01) ///
@@ -259,7 +256,7 @@ esttab mlsem_snbo mlsem_snbo_male mlsem_snbo_female mlsem_snbo_young mlsem_snbo_
 	refcat(, nolabel) ///
 	stats(N, fmt(0) ///
 	labels(`"Observations"'))
-*/
+
 	
 ****************************************
 * END
@@ -280,8 +277,7 @@ log using "Rob_onlyincomegen.log", replace
 * Rob: only income gen
 ****************************************
 
-global yvar3 ///
-snbo3 snbo3_female snbo3_male snbo3_young snbo3_middle snbo3_old 
+global yvar3 snbo3 snbo3_female snbo3_male
 	
 foreach x in $xvar {
 foreach y in $yvar3 {
@@ -291,8 +287,8 @@ est store mlsem_`y'
 }
 
 
-/*
-esttab mlsem_snbo mlsem_snbo_male mlsem_snbo_female mlsem_snbo_young mlsem_snbo_middle mlsem_snbo_old  using "oincogen_snbo.csv", replace ///
+
+esttab mlsem_snbo3 mlsem_snbo3_male mlsem_snbo3_female using "oincogen_snbo.csv", replace ///
 	label b(3) p(3) eqlabels(none) alignment(S) ///
 	drop(_cons $var) ///
 	star(* 0.10 ** 0.05 *** 0.01) ///
@@ -300,7 +296,7 @@ esttab mlsem_snbo mlsem_snbo_male mlsem_snbo_female mlsem_snbo_young mlsem_snbo_
 	refcat(, nolabel) ///
 	stats(N, fmt(0) ///
 	labels(`"Observations"'))
-*/
+
 	
 ****************************************
 * END

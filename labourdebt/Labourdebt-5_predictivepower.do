@@ -66,10 +66,7 @@ global compo2 log_HHsize share_children sexratio dependencyratio share_stock
 
 
 *** Y
-global yvar snbo ///
-socc_agri socc_nagr 
-*socc_casu socc_ncas socc_self socc_nsel socc_agse socc_agca socc_naca socc_nare socc_nase socc_nreg
-
+global yvar snbo snbo_male snbo_female
 
 *** X
 global xvar fvi 
@@ -102,8 +99,8 @@ est store mlsem_`y'
 }
 }
 
-/*
-esttab mlsem_snbo mlsem_snbo_male mlsem_snbo_female mlsem_snbo_young mlsem_snbo_middle mlsem_snbo_old  using "spec1_snbo.csv", replace ///
+
+esttab mlsem_snbo mlsem_snbo_male mlsem_snbo_female using "spec1_snbo.csv", replace ///
 	label b(3) p(3) eqlabels(none) alignment(S) ///
 	drop(_cons $var) ///
 	star(* 0.10 ** 0.05 *** 0.01) ///
@@ -111,7 +108,7 @@ esttab mlsem_snbo mlsem_snbo_male mlsem_snbo_female mlsem_snbo_young mlsem_snbo_
 	refcat(, nolabel) ///
 	stats(N, fmt(0) ///
 	labels(`"Observations"'))
-*/
+
 
 ****************************************
 * END
