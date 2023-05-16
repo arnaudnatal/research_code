@@ -74,7 +74,7 @@ global xvar fvi
 
 
 
-log using "C_Rob_spec2.log", replace
+log using "Rob_spec2.log", replace
 
 ****************************************
 * Rob: Specification 2
@@ -82,7 +82,7 @@ log using "C_Rob_spec2.log", replace
 
 foreach x in $xvar {
 foreach y in $yvar {
-capture noisily xtdpdml `y' $compo2 $econ $head, inv($nonvar) predetermined(L.`x' L.dal_fvi L.upp_fvi) fiml
+capture noisily xtdpdml `y' $compo2 $econ $head, inv($nonvar) predetermined(L.`x') fiml
 est store mlsem_`y'
 }
 }
@@ -195,7 +195,7 @@ log close
 	
 	
 	
-log using "C_Rob_VCE.log", replace
+log using "Rob_VCE.log", replace
 
 ****************************************
 * Rob: VCE
@@ -203,7 +203,7 @@ log using "C_Rob_VCE.log", replace
 
 foreach x in $xvar {
 foreach y in $yvar {
-capture noisily xtdpdml `y' $compo1 $econ $head, inv($nonvar) predetermined(L.`x' L.dal_fvi L.upp_fvi) fiml vce(rob)
+capture noisily xtdpdml `y' $compo1 $econ $head, inv($nonvar) predetermined(L.`x') fiml vce(rob)
 est store mlsem_`y'
 }
 }
@@ -234,7 +234,7 @@ log close
 
 	
 
-log using "C_Rob_nodomwork.log", replace
+log using "Rob_nodomwork.log", replace
 
 ****************************************
 * Rob: no dom work
@@ -245,7 +245,7 @@ snbo2 snbo2_female snbo2_male snbo2_young snbo2_middle snbo2_old
 
 foreach x in $xvar {
 foreach y in $yvar2 {
-capture noisily xtdpdml `y' $compo1 $econ $head, inv($nonvar) predetermined(L.`x' L.dal_fvi L.upp_fvi) fiml
+capture noisily xtdpdml `y' $compo1 $econ $head, inv($nonvar) predetermined(L.`x') fiml
 est store mlsem_`y'
 }
 }
@@ -274,7 +274,7 @@ log close
 
 	
 	
-log using "C_Rob_onlyincomegen.log", replace
+log using "Rob_onlyincomegen.log", replace
 
 ****************************************
 * Rob: only income gen
@@ -285,7 +285,7 @@ snbo3 snbo3_female snbo3_male snbo3_young snbo3_middle snbo3_old
 	
 foreach x in $xvar {
 foreach y in $yvar3 {
-capture noisily xtdpdml `y' $compo1 $econ $head, inv($nonvar) predetermined(L.`x' L.dal_fvi L.upp_fvi) fiml
+capture noisily xtdpdml `y' $compo1 $econ $head, inv($nonvar) predetermined(L.`x') fiml
 est store mlsem_`y'
 }
 }

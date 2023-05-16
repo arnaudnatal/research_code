@@ -66,7 +66,7 @@ global compo2 log_HHsize share_children sexratio dependencyratio share_stock
 
 
 *** Y
-global yvar snbo ///
+global yvar ///
 socc_agri socc_nagr 
 *socc_casu socc_ncas socc_self socc_nsel socc_agse socc_agca socc_naca socc_nare socc_nase socc_nreg
 
@@ -89,7 +89,7 @@ global xvar fvi
 
 
 
-log using "Main.log", replace
+log using "C_Main.log", replace
 
 ****************************************
 * Specification 1
@@ -97,12 +97,12 @@ log using "Main.log", replace
 
 foreach x in $xvar {
 foreach y in $yvar {
-capture noisily xtdpdml `y' $compo1 $econ $head, inv($nonvar) predetermined(L.`x') fiml
+capture noisily xtdpdml `y' $compo1 $econ $head, inv($nonvar) predetermined(L.`x' L.dal_fvi L.upp_fvi) fiml
 est store mlsem_`y'
 }
 }
 
-/*
+
 esttab mlsem_snbo mlsem_snbo_male mlsem_snbo_female mlsem_snbo_young mlsem_snbo_middle mlsem_snbo_old  using "spec1_snbo.csv", replace ///
 	label b(3) p(3) eqlabels(none) alignment(S) ///
 	drop(_cons $var) ///
@@ -111,7 +111,7 @@ esttab mlsem_snbo mlsem_snbo_male mlsem_snbo_female mlsem_snbo_young mlsem_snbo_
 	refcat(, nolabel) ///
 	stats(N, fmt(0) ///
 	labels(`"Observations"'))
-*/
+
 
 ****************************************
 * END
