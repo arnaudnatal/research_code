@@ -210,13 +210,13 @@ glm, log-gamma: 	AIC=2.907795 BIC=-3066.106
 
 
 ********** Format
-esttab all inc dec using "reg.tex", replace f ///
-	label booktabs b(3) p(3) eqlabels(none) alignment(S S) collabels("\multicolumn{1}{c}{$\beta$}" "\multicolumn{1}{c}{Std. Err.}") ///
+esttab all inc dec using "reg.csv", replace ///
+	label b(3) p(3) eqlabels(none) alignment(S) ///
 	drop(_cons) ///
 	star(* 0.10 ** 0.05 *** 0.01) ///
-	cells("b(fmt(2)star) se(fmt(2)par)") ///
+	cells("b(fmt(2)star)" "se(fmt(2)par)") ///
 	refcat(, nolabel) ///
-	stats(N dispers_p dispers dispers_p bic ll, fmt(0 2 2 2 2 2) layout("\multicolumn{1}{c}{@}" "\multicolumn{1}{S}{@}" "\multicolumn{1}{S}{@}" "\multicolumn{1}{S}{@}" "\multicolumn{1}{S}{@}" "\multicolumn{1}{S}{@}") labels(`"Observations"' `"Scale"' `"(1/df) Deviance"' `"(1/df) Pearson"' `"BIC"'  `"Log-pseudo likelihood"'))
+	stats(N dispers_p dispers dispers_p bic ll, fmt(0 2 2 2 2 2) layout("\multicolumn{1}{c}{@}" "\multicolumn{1}{S}{@}" "\multicolumn{1}{S}{@}" "\multicolumn{1}{S}{@}" "\multicolumn{1}{S}{@}" "\multicolumn{1}{S}{@}") labels(`"Observations"' `"Scale"' `"(1/df) Deviance"' `"(1/df) Pearson"' `"BIC"'  `"Log-pseudo likelihood"'))	
 
 ****************************************
 * END
