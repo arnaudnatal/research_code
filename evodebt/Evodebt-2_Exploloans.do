@@ -99,7 +99,7 @@ label values catamount catamount
 
 
 ********** MCA
-global var reason_cat lender4 lenderservices
+global var reason_cat lender4 lenderservices catamount
 fre $var
 *** How many axes to interpret?
 mca $var, meth(ind) normal(princ) comp
@@ -111,8 +111,8 @@ mca $var, meth(ind) normal(princ) comp dim(3)
 
 
 *** Retains for the HAC
-qui mca $var, meth(ind) normal(princ) comp dim(8)
-predict d1 d2 d3 d4 d5 d6 d7 d8
+qui mca $var, meth(ind) normal(princ) comp dim(10)
+predict d1 d2 d3 d4 d5 d6 d7 d8 d9 d10
 
 
 
@@ -173,11 +173,14 @@ graph display gph_1024
 
 
 ********** Cluster
-cluster kmeans $var, k(3) start(random(2)) name(clust)
+cluster kmeans $var, k(2) start(random) name(clust)
 ta clust
 ta clust year, col nofreq
 foreach x in $var{
 ta `x' clust, col nofreq
+}
+foreach x in $var{
+ta `x' clust, row nofreq
 }
 drop clust
  
