@@ -93,12 +93,19 @@ gen annualincome_HH2=annualincome_HH_backup
 replace annualincome_HH2=annualincome_HH2*(100/62.81) if year==2010
 replace annualincome_HH2=annualincome_HH2*(100/114.95) if year==2020
 replace annualincome_HH2=round(annualincome_HH2,1)
+ 
+
 * Test
 tabstat annualincome_HH_backup annualincome_HH annualincome_HH2, stat(n mean) by(year)
 
 gen dailyincome_pc=(annualincome_HH2/365)/HHsize
 gen dailyusdincome_pc=dailyincome_pc/65.10
+gen dailyuspppdincome_pc=dailyincome_pc/20.65
 gen rrgpl=((dailyusdincome_pc-2.15)/2.15)*(-1)
+gen rrgpl_ppp=((dailyuspppdincome_pc-2.15)/2.15)*(-1)
+
+rename rrgpl rrgpl_tauxdechange
+rename rrgpl_ppp rrgpl
 
 
 save"panel_v1", replace

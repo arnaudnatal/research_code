@@ -48,20 +48,44 @@ tabstat loanamount, stat(mean q) by(dummyml)
 
 
 
+
+
+
+
+
+
+
 ****************************************
 * MCA + HAC for all loans
 ****************************************
 use"panel_loans_nonsettled", clear
 
-********** Selection
+********** Prepa
+*** Selection
 fre loanreasongiven
 drop if loanreasongiven==12
 drop if loanreasongiven==77
+drop if otherlenderservices==.
+drop if otherlenderservices==77
+drop if otherlenderservices==99
 ta dummyml
 ta year
 
+*** Dummy
+fre otherlenderservices
+gen lenderservices=.
+replace lenderservices=1 if otherlenderservices==1
+replace lenderservices=1 if otherlenderservices==2
+replace lenderservices=1 if otherlenderservices==3
+replace lenderservices=1 if otherlenderservices==4
+replace lenderservices=0 if otherlenderservices==5
+replace lenderservices=1 if otherlenderservices==6
+label define lenderservices 0"No_serv" 1"Serv"
+label values lenderservices lenderservices
+ta otherlenderservices lenderservices
+fre lenderservices
 
-********** Cleaning var
+
 *** Amount
 gen catamount=.
 replace catamount=1 if loanamount<5000
@@ -72,26 +96,24 @@ replace catamount=5 if loanamount>=100000
 label define catamount 1"Low" 2"Average" 3"Quite high" 4"High" 5"Very high"
 label values catamount catamount
 
-*** Services
-drop if otherlenderservices==.
-drop if otherlenderservices==77
-drop if otherlenderservices==99
+
 
 ********** MCA
-global var reason_cat lender4 otherlenderservices catamount
+global var reason_cat lender4 lenderservices
+fre $var
 *** How many axes to interpret?
 mca $var, meth(ind) normal(princ) comp
 
 *** Ok, what is the interpretation?
-/*
-mca $var, meth(ind) normal(princ) comp dim(5)
-mcaplot, dim(2 1) overlay legend(off) xline(0) yline(0)
-mcaplot, dim(3 1) overlay legend(off) xline(0) yline(0)
-*/
+mca $var, meth(ind) normal(princ) comp dim(3)
+*mcaplot, dim(2 1) overlay legend(off) xline(0) yline(0)
+*mcaplot, dim(3 1) overlay legend(off) xline(0) yline(0)
+
 
 *** Retains for the HAC
-qui mca $var, meth(ind) normal(princ) comp dim(13)
-predict d1 d2 d3 d4 d5 d6 d7 d8 d9 d10 d11 d12 d13
+qui mca $var, meth(ind) normal(princ) comp dim(8)
+predict d1 d2 d3 d4 d5 d6 d7 d8
+
 
 
 ********** Kmeans
@@ -133,6 +155,8 @@ set graph off
 graph combine plot1`sp' plot2`sp' plot3`sp' plot4`sp', name(gph_`sp', replace)
 }
 
+drop cs1* cs2* cs3* cs4* cs5* cs6* cs7* cs8* cs9*
+
 set graph on
 graph display gph_1
 graph display gph_2
@@ -147,14 +171,15 @@ graph display gph_512
 graph display gph_1024
 
 
-********** 4 groups
-cluster kmeans $var, k(5) start(random(2)) name(clust)
-ta clust
-ta lender4 clust, col nofreq
-ta reason_cat clust, col nofreq
-ta catamount clust, col nofreq
-ta otherlenderservices clust, col nofreq
 
+********** Cluster
+cluster kmeans $var, k(3) start(random(2)) name(clust)
+ta clust
+ta clust year, col nofreq
+foreach x in $var{
+ta `x' clust, col nofreq
+}
+drop clust
  
 
 ****************************************
@@ -183,12 +208,21 @@ use"panel_loans_nonsettled", clear
 fre loanreasongiven
 drop if loanreasongiven==12
 drop if loanreasongiven==77
+drop if borrowerservices==77
+drop if borrowerservices==99
+drop if termsofrepayment==.
+drop if otherlenderservices==.
+drop if otherlenderservices==77
+drop if otherlenderservices==99
+drop if lender4==4
+drop if lender4==5
 ta dummyml
 keep if dummyml==1
 ta year
 
 
 ********** Var
+fre otherlenderservices
 fre borrowerservices
 fre dummyinterest
 fre dummyguarantor
@@ -198,32 +232,34 @@ fre dummyhelptosettleloan
 
 
 ********** MCA
-global var reason_cat lender4 otherlenderservices borrowerservices dummyinterest dummyhelptosettleloan termsofrepayment
+global var reason_cat lender4 otherlenderservices borrowerservices
 *** How many axes to interpret?
 mca $var, meth(ind) normal(princ) comp
 
 *** Ok, what is the interpretation?
 qui mca $var, meth(ind) normal(princ) comp dim(4)
-mcaplot, dim(2 1) overlay legend(off) xline(0) yline(0)
-mcaplot, dim(3 1) overlay legend(off) xline(0) yline(0)
-mcaplot, dim(4 1) overlay legend(off) xline(0) yline(0)
+*mcaplot, dim(2 1) overlay legend(off) xline(0) yline(0)
+*mcaplot, dim(3 1) overlay legend(off) xline(0) yline(0)
+*mcaplot, dim(4 1) overlay legend(off) xline(0) yline(0)
 
 
 *** Retains for the HAC
-qui mca $var, meth(ind) normal(princ) comp dim(15)
-predict d1 d2 d3 d4 d5 d6 d7 d8 d9 d10 d11 d12 d13 d14 d15
-
+qui mca $var, meth(ind) normal(princ) comp dim(11)
+predict d1 d2 d3 d4 d5 d6 d7 d8 d9 d10 d11
 
 
 
 
 ********** HAC
-cluster wardslinkage d1 d2 d3 d4 d5 d6 d7 d8 d9 d10 d11 d12 d13 d14 d15
+cluster wardslinkage d1 d2 d3 d4 d5 d6 d7 d8 d9 d10 d11
 cluster dendrogram, cutnumber(100)
-cluster gen clust=groups(2)
+cluster gen clust=groups(11)
 
-ta reason_cat clust, col nofreq
-ta lender4 clust, col nofreq
+ta clust
+ta clust year, col nofreq
+foreach x in $var{
+ta `x' clust, col nofreq
+}
 
 ****************************************
 * END

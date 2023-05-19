@@ -65,7 +65,9 @@ rename hhid_panel HHID_panel
 rename cluster1 cl1
 rename cluster2 cl2
 rename cluster3 cl3
-
+rename cluster4 cl4
+rename cluster5 cl5
+rename cluster6 cl6
 
 * Reshape
 reshape long index, i(HHID_panel) j(year)
@@ -95,7 +97,7 @@ xtset panelvar year
 
 *** Graph line
 forvalues i=1/3 {
-forvalues j=1/3 {
+forvalues j=1/6 {
 set graph off
 sort HHID_panel year
 twoway (line fvi year if cl`j'==`i', c(L) lcolor(black%10)) ///
@@ -107,61 +109,73 @@ set graph on
 }
 }
 
+/*
 * Combine
 set graph off
 graph combine cl1_1 cl1_2 cl1_3, col(2) name(cl1_gph, replace)
 graph combine cl2_1 cl2_2 cl2_3, col(2) name(cl2_gph, replace)
 graph combine cl3_1 cl3_2 cl3_3, col(2) name(cl3_gph, replace)
+graph combine cl4_1 cl4_2 cl4_3, col(2) name(cl4_gph, replace)
+graph combine cl5_1 cl5_2 cl5_3, col(2) name(cl5_gph, replace)
+graph combine cl6_1 cl6_2 cl6_3, col(2) name(cl6_gph, replace)
 set graph on
+*/
 
-
-* Display
 /*
+* Display
 graph display cl1_gph
 graph display cl2_gph
 graph display cl3_gph
+graph display cl4_gph
+graph display cl5_gph
+graph display cl6_gph
 */
+
+/*
+Je n'aime pas cl2
+cl4 et cl6 sont identiques
+cl3 et cl4 sont identiques
+cl5 et cl3 sont mieux que cl1
+5 parait mieux que 3
+*/
+
+ta cl3
+ta cl5
+
 
 * Label 
-label define cl1 ///
-1"Vulnerable" ///
-2"Non-vulnerable" ///
-3"Transitory vulnerable" 
-
-label define cl2 ///
-1"Transitory vulnerable" ///
-2"Non-vulnerable" ///
-3"Vulnerable"
-
 label define cl3 ///
-1"Transitory vulnerable" ///
-2"Vulnerable" ///
-3"Non-vulnerable" 
-
-label values cl1 cl1
-label values cl2 cl2
-label values cl3 cl3
+1"Non-vuln." ///
+2"Vuln." ///
+3"Trans. vuln."
 
 
-
-********** Which one to retain?
-/*
-Choose between 1 and 4
-Keep the first
-*/
-tab1 cl1 cl2 cl3
-ta cl1 cl2
-ta cl1 cl3
-ta cl2 cl3
-
-
-********** Clean
-rename cl1 clt_fvi
-
-label define cl1 ///
+label define cl5 ///
 1"Vuln." ///
-2"Non-vuln." ///
-3"Trans. vuln.", modify
+2"Trans. vuln." ///
+3"Non-vuln." 
+
+label values cl3 cl3
+label values cl5 cl5
+
+
+
+*** Stat
+tabstat fvi if year==2010, stat(n mean cv p50) by(cl3)
+tabstat fvi if year==2016, stat(n mean cv p50) by(cl3)
+tabstat fvi if year==2020, stat(n mean cv p50) by(cl3)
+
+tabstat fvi if year==2010, stat(n mean cv p50) by(cl5)
+tabstat fvi if year==2016, stat(n mean cv p50) by(cl5)
+tabstat fvi if year==2020, stat(n mean cv p50) by(cl5)
+
+
+/*
+Je garde le 5
+*/
+
+drop cl1 cl2 cl3 cl4 cl6
+rename cl5 clt_fvi
 
 
 save"panel_v6", replace
@@ -191,8 +205,8 @@ use"panel_v6", clear
 fre clt_fvi
 /*
 1 Vuln
-2 Non-vuln
-3 Trans vuln
+2 Trans vuln
+3 Non-vuln
 */
 
 
@@ -210,7 +224,7 @@ sort HHID_panel year
 twoway (line fvi year if clt_fvi==2, c(L) lcolor(black%10)) ///
 , xlabel(2010 2016 2020) xmtick(2010(1)2020) xtitle("Year") ///
 ylabel(0(.2)1) ymtick(0(.1)1) ytitle("FVI") ///
-title("Cluster 2: Non-vulnerable") aspectratio() ///
+title("Cluster 2: Transitory vulnerable") aspectratio() ///
 name(cl_2, replace)
 
 *** Cl 3
@@ -218,7 +232,7 @@ sort HHID_panel year
 twoway (line fvi year if clt_fvi==3, c(L) lcolor(black%10)) ///
 , xlabel(2010 2016 2020) xmtick(2010(1)2020) xtitle("Year") ///
 ylabel(0(.2)1) ymtick(0(.1)1) ytitle("FVI") ///
-title("Cluster 1: Transitory vulnerable") aspectratio() ///
+title("Cluster 1: Non-vulnerable") aspectratio() ///
 name(cl_3, replace)
 
 *** Combine
@@ -251,7 +265,7 @@ stack width(0.01) jitter(1) refline(lp(dash)) ///
 box(barw(0.1)) boffset(-0.15) pctile(5) ///
 ms(oh oh oh) msize(small) mc(black%30) ///
 xla(0(.1)1, ang(h)) yla(, noticks) ///
-title("Cluster 2: Non-vulnerable") ///
+title("Cluster 2: Transitory vulnerable") ///
 legend(order(1 "Mean" 4 "Whisker from 5% to 95%") pos(6) col(2) on) ///
 xtitle("FVI") ytitle("") name(sp_cl2, replace)
 
@@ -261,7 +275,7 @@ stack width(0.01) jitter(1) refline(lp(dash)) ///
 box(barw(0.1)) boffset(-0.15) pctile(5) ///
 ms(oh oh oh) msize(small) mc(black%30) ///
 xla(0(.1)1, ang(h)) yla(, noticks) ///
-title("Cluster 3: Transitory vulnerable") ///
+title("Cluster 3: Non-vulnerable") ///
 legend(order(1 "Mean" 4 "Whisker from 5% to 95%") pos(6) col(2) on) ///
 xtitle("FVI") ytitle("") name(sp_cl3, replace)
 

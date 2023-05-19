@@ -50,7 +50,8 @@ Ok
 
 
 gen dailyincome_pc=(annualincome_HH2/365)/HHsize
-gen dailyusdincome_pc=dailyincome_pc/65.10
+*gen dailyusdincome_pc=dailyincome_pc/65.10
+gen dailyusdincome_pc=dailyincome_pc/20.647793
 gen rrgpl2=((dailyusdincome_pc-2.15)/2.15)*(-1)
 ta rrgpl2
 replace rrgpl2=1 if rrgpl2>1
