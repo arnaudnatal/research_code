@@ -45,9 +45,8 @@ global head head_female head_age head_educ
 global econ remittnet_HH assets_total annualincome_HH 
 *dummydemonetisation lockdown2 lockdown3
 
-global compo1 log_HHsize share_female share_children share_young share_old share_stock
-global compo2 log_HHsize share_children sexratio dependencyratio share_stock
-
+global compo1 log_HHsize share_children sexratio dependencyratio share_stock
+global compo2 log_HHsize share_female share_children share_young share_old share_stock
 
 *** Y
 global yvar snbo snbo_male snbo_female
@@ -80,7 +79,7 @@ log using "Rob_spec2.log", replace
 
 foreach x in $xvar {
 foreach y in $yvar {
-capture noisily xtdpdml `y' $compo1 $econ $head, inv($nonvar) predetermined(L.`x') fiml
+capture noisily xtdpdml `y' $compo2 $econ $head, inv($nonvar) predetermined(L.`x') fiml
 est store mlsem_`y'
 }
 }
@@ -129,7 +128,7 @@ preserve
 drop if snbo>7
 
 foreach x in $xvar {
-capture noisily xtdpdml snbo $compo2 $econ $head, inv($nonvar) predetermined(L.`x') fiml
+capture noisily xtdpdml snbo $compo1 $econ $head, inv($nonvar) predetermined(L.`x') fiml
 est store mlsem_snbo
 }
 restore
@@ -141,27 +140,12 @@ preserve
 drop if snbo_female>4
 
 foreach x in $xvar {
-capture noisily xtdpdml snbo_female $compo2 $econ $head, inv($nonvar) predetermined(L.`x') fiml
+capture noisily xtdpdml snbo_female $compo1 $econ $head, inv($nonvar) predetermined(L.`x') fiml
 est store mlsem_snbo_female
 }
 
 
 restore
-
-
-
-/*
-********** Middle
-preserve
-drop if snbo_middle>6
-
-foreach x in $xvar {
-capture noisily xtdpdml snbo_middle $compo1 $econ $head, inv($nonvar) predetermined(L.`x') fiml
-est store mlsem_snbo_middle
-}
-
-restore
-*/
 
 
 
@@ -201,7 +185,7 @@ log using "Rob_VCE.log", replace
 
 foreach x in $xvar {
 foreach y in $yvar {
-capture noisily xtdpdml `y' $compo2 $econ $head, inv($nonvar) predetermined(L.`x') fiml vce(rob)
+capture noisily xtdpdml `y' $compo1 $econ $head, inv($nonvar) predetermined(L.`x') fiml vce(rob)
 est store mlsem_`y'
 }
 }
@@ -242,7 +226,7 @@ global yvar2 snbo2 snbo2_female snbo2_male
 
 foreach x in $xvar {
 foreach y in $yvar2 {
-capture noisily xtdpdml `y' $compo2 $econ $head, inv($nonvar) predetermined(L.`x') fiml
+capture noisily xtdpdml `y' $compo1 $econ $head, inv($nonvar) predetermined(L.`x') fiml
 est store mlsem_`y'
 }
 }
@@ -281,7 +265,7 @@ global yvar3 snbo3 snbo3_female snbo3_male
 	
 foreach x in $xvar {
 foreach y in $yvar3 {
-capture noisily xtdpdml `y' $compo2 $econ $head, inv($nonvar) predetermined(L.`x') fiml
+capture noisily xtdpdml `y' $compo1 $econ $head, inv($nonvar) predetermined(L.`x') fiml
 est store mlsem_`y'
 }
 }

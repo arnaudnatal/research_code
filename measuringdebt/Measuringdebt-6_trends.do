@@ -48,7 +48,7 @@ keep HHID_panel year index
 reshape wide index, i(HHID_panel) j(year)
 cluster wardslinkage index2010 index2016 index2020, measure(Euclidean)
 set graph off
-cluster dendrogram, cutnumber(50) xlab(,ang(90)) title("") ytitle("Height") yline(8) name(dendro, replace)
+cluster dendrogram, cutnumber(50) xlab(,ang(90)) title("") ytitle("Height") yline(10) name(dendro, replace)
 graph export "graph/Cluster_dendro.pdf", as(pdf) replace
 set graph on
 
@@ -202,12 +202,18 @@ use"panel_v6", clear
 
 
 **********
+preserve
+keep HHID_panel clt_fvi
+duplicates drop
 fre clt_fvi
+restore
+
 /*
 1 Vuln
 2 Trans vuln
 3 Non-vuln
 */
+
 
 
 ********** Graph line

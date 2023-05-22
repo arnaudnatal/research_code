@@ -343,7 +343,7 @@ ta head_educ year, col nofreq
 
 
 *** Family
-tabstat HHsize share_female share_children share_young share_old share_stock, stat(mean) by(year)
+tabstat HHsize share_female share_children share_young share_old share_stock sexratio dependencyratio, stat(mean) by(year)
 
 
 
@@ -382,84 +382,10 @@ use"panel_v3", clear
 xtset panelvar time
 
 *** Corr
-pwcorr fvi ///
-sind sind_female sind_male sind_young sind_middle sind_old ///
-snbo snbo_male snbo_female snbo_young snbo_middle snbo_old, sig
-
-pwcorr L.fvi ///
-sind sind_female sind_male sind_young sind_middle sind_old ///
-snbo snbo_male snbo_female snbo_young snbo_middle snbo_old, sig
+pwcorr L.fvi snbo snbo_male snbo_female, sig
 
 
 ****************************************
 * END
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-****************************************
-* Stat desc: Correlation
-****************************************
-cls
-use"panel_v3", clear
-
-
-*** Panel
-xtset panelvar time
-
-
-*** OLS by caste
-global nonvar caste_2 caste_3 village_2 village_3 village_4 village_5 village_6 village_7 village_8 village_9 village_10
-global head head_female head_age head_educ
-global econ remittnet_HH assets_total annualincome_HH shareform
-global compo1 log_HHsize share_female share_children share_young share_old share_stock
-global yvar sind sind_female sind_male sind_young sind_middle sind_old snbo snbo_male snbo_female snbo_young snbo_middle snbo_old
-
-* FE instead of ML-SEM
-foreach y in snbo_female {
-xtreg `y' L.fvi $compo1 $econ $head $nonvar, fe
-}
-
-* Interaction
-foreach y in snbo_female {
-xtreg `y' L.c.fvi##i.caste $compo1 $econ $head $nonvar, fe
-}
-
-* Dalits
-foreach y in snbo_female {
-xtreg `y' L.fvi $compo1 $econ $head $nonvar if caste==1, fe
-}
-
-* Middle
-foreach y in snbo_female {
-xtreg `y' L.fvi $compo1 $econ $head $nonvar if caste==2, fe
-}
-
-* Upper
-foreach y in snbo_female {
-xtreg `y' L.fvi $compo1 $econ $head $nonvar if caste==3, fe
-}
-
-
-****************************************
-* END
-
-
-
-
-
-
-
 
 

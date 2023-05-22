@@ -61,9 +61,8 @@ global head head_female head_age head_educ
 global econ remittnet_HH assets_total annualincome_HH 
 *dummydemonetisation lockdown2 lockdown3
 
-global compo1 log_HHsize share_female share_children share_young share_old share_stock
-global compo2 log_HHsize share_children sexratio dependencyratio share_stock
-
+global compo1 log_HHsize share_children sexratio dependencyratio share_stock
+global compo2 log_HHsize share_female share_children share_young share_old share_stock
 
 *** Y
 global yvar snbo snbo_male snbo_female
@@ -83,9 +82,6 @@ global xvar fvi
 
 
 
-
-
-
 log using "Main.log", replace
 
 ****************************************
@@ -94,7 +90,7 @@ log using "Main.log", replace
 
 foreach x in $xvar {
 foreach y in $yvar {
-capture noisily xtdpdml `y' $compo2 $econ $head, inv($nonvar) predetermined(L.`x') fiml
+capture noisily xtdpdml `y' $compo1 $econ $head, inv($nonvar) predetermined(L.`x') fiml gof
 est store mlsem_`y'
 }
 }

@@ -15,22 +15,6 @@ do"C:\Users\Arnaud\Documents\GitHub\folderanalysis\labourdebt.do"
 
 
 
-/*
-Maximum Likelihood Structural Equation Model
-Same as cross-lagged panel model with fixed effect 
-
-Our simulation results also show that ML-SEM may help researchers to overcome the problem of misspecified temporal lags. 
-Whereas ML-SEM falls prey to precisely the same lag specification problem as other models, our simulations show that this problem only occurs if ML-SEM includes either a contemporaneous or a lagged effect of X on Y.
-If both effects are specified, by contrast, ML-SEM provides correct estimates of both effects in all scenarios.
-
-In short, ML-SEM including both a contemporaneous and a lagged effect of X on Y provides correct estimates of both effects, even in case of reverse causality. 
-If the contemporaneous effect in ML-SEM is negligible, this approach can also serve to justify the application of the LFD model or the AB estimator.
-*/
-
-
-
-
-
 
 ****************************************
 * Prepa
@@ -61,8 +45,8 @@ global head head_female head_age head_educ
 global econ remittnet_HH assets_total annualincome_HH 
 *dummydemonetisation lockdown2 lockdown3
 
-global compo1 log_HHsize share_female share_children share_young share_old share_stock
-global compo2 log_HHsize share_children sexratio dependencyratio share_stock
+global compo1 log_HHsize share_children sexratio dependencyratio share_stock
+global compo2 log_HHsize share_female share_children share_young share_old share_stock
 
 
 *** Y

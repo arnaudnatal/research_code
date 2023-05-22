@@ -386,7 +386,7 @@ esttab spec1 spec2 spec3 spec4 spec5 spec6 using "reg_full.csv", replace ///
 
 
 
-/*
+
 ********** Overfitting
 
 overfit: glm fvi ///
@@ -429,8 +429,7 @@ $invar ///
 $time ///
 , family(binomial) link(probit) cluster(panelvar)
 
-overfit: 
-glm fvi ///
+overfit: glm fvi ///
 $livelihood ///
 $family ///
 $head ///
