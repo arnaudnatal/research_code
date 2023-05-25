@@ -210,6 +210,17 @@ set graph on
 ***
 graph display sp_fvi_horiz
 
+/*
+*** Test addplot
+stripplot fvi, over(time) ///
+stack width(0.01) jitter(1) refline(lp(dash)) ///
+box(barw(0.1)) boffset(-0.15) pctile(5) ///
+ms(oh oh oh) msize(small) mc(black%30) ///
+xla(0(.1)1, ang(h)) yla(, noticks) ///
+legend(order(1 "Mean" 4 "Whisker from 5% to 95%") pos(6) col(2) on) ///
+xtitle("FVI") ytitle("") name(sp_fvi_horiz, replace) addplot(scatteri 3 0.5  2 0.25, mcolor(red))
+*/
+
 
 
 ********** Graph components
