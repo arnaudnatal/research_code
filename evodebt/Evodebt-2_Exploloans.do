@@ -97,22 +97,29 @@ label define catamount 1"Low" 2"Average" 3"Quite high" 4"High" 5"Very high"
 label values catamount catamount
 
 
+*** Lender5
+gen lender5=lender4
+recode lender5 (4=11) (5=11)
+fre lender5
+label values lender5 lender3
+label define lender3 11"Other", modify
+
 
 ********** MCA
-global var reason_cat lender4 lenderservices catamount
+global var reason_cat lender5 otherlenderservices
 fre $var
 *** How many axes to interpret?
 mca $var, meth(ind) normal(princ) comp
 
 *** Ok, what is the interpretation?
 mca $var, meth(ind) normal(princ) comp dim(3)
-*mcaplot, dim(2 1) overlay legend(off) xline(0) yline(0)
+mcaplot, dim(2 1) overlay legend(off) xline(0) yline(0)
 *mcaplot, dim(3 1) overlay legend(off) xline(0) yline(0)
 
 
 *** Retains for the HAC
-qui mca $var, meth(ind) normal(princ) comp dim(10)
-predict d1 d2 d3 d4 d5 d6 d7 d8 d9 d10
+qui mca $var, meth(ind) normal(princ) comp dim(9)
+predict d1 d2 d3 d4 d5 d6 d7 d8 d9
 
 
 
@@ -173,7 +180,7 @@ graph display gph_1024
 
 
 ********** Cluster
-cluster kmeans $var, k(2) start(random) name(clust)
+cluster kmeans $var, k(5) start(random) name(clust)
 ta clust
 ta clust year, col nofreq
 foreach x in $var{
