@@ -135,7 +135,7 @@ fre dummyrecommendation
 fre dummyguarantor
 fre loanproductpledge
 
-keep HHID_panel INDID_panel loanid loansettled loanreasongiven loanlender lender4 lender_cat loanreasongiven reason_cat loanamount2 otherlenderservices borrowerservices dummyinterest monthlyinterestrate dummyhelptosettleloan dummyrecommendation dummyguarantor plantorep_chit plantorep_work plantorep_migr plantorep_asse plantorep_inco plantorep_borr plantorep_othe termsofrepayment dummyml
+keep HHID_panel INDID_panel loanid loansettled loanreasongiven loanlender lender4 lender_cat loanreasongiven reason_cat loanamount2 otherlenderservices borrowerservices dummyinterest monthlyinterestrate dummyhelptosettleloan dummyrecommendation dummyguarantor plantorep_chit plantorep_work plantorep_migr plantorep_asse plantorep_inco plantorep_borr plantorep_othe termsofrepayment dummyml loan_database
 
 * Otherlenderservices
 fre otherlenderservices
@@ -235,7 +235,7 @@ fre dummyrecommendation
 fre dummyguarantor
 fre loanproductpledge
 
-keep HHID_panel INDID_panel loanid loansettled loanreasongiven loanlender lender4 lender_cat loanreasongiven reason_cat loanamount2 otherlenderservices borrowerservices dummyinterest monthlyinterestrate dummyhelptosettleloan dummyrecommendation dummyguarantor plantorep_chit plantorep_work plantorep_migr plantorep_asse plantorep_inco plantorep_borr plantorep_othe termsofrepayment dummyml
+keep HHID_panel INDID_panel loanid loansettled loanreasongiven loanlender lender4 lender_cat loanreasongiven reason_cat loanamount2 otherlenderservices borrowerservices dummyinterest monthlyinterestrate dummyhelptosettleloan dummyrecommendation dummyguarantor plantorep_chit plantorep_work plantorep_migr plantorep_asse plantorep_inco plantorep_borr plantorep_othe termsofrepayment dummyml loan_database
 
 * Otherlenderservices
 fre otherlenderservices
@@ -363,6 +363,7 @@ replace otherlenderservices="5" if otherlenderservices=="2 3 5"
 destring otherlenderservices, replace
 label define otherlenderservices 1"Polit" 2"Finan" 3"Guaranto" 4"General" 5"None" 6"Fin+Gen" 77"Other" 99"No_resp"
 label values otherlenderservices otherlenderservices
+replace otherlenderservices=5 if loan_database=="GOLD"
 
 
 
@@ -385,20 +386,20 @@ label values borrowerservices borrowerservices
 ********** Amount
 tabstat loanamount2, stat(min p1 p5 p10 q p90 p95 p99 max) 
 	 
-
+fre loanlender
 
 ********** Order
 compress
-drop if loanid=="."
+*drop if loanid=="."
 
 order HHID_panel INDID_panel loanid year loanamount2 loansettled dummyml loanreasongiven reason_cat loanlender lender4 lender_cat otherlenderservices_poli otherlenderservices_fina otherlenderservices_guar otherlenderservices_gene otherlenderservices_none otherlenderservices_othe borrowerservices_free borrowerservices_less borrowerservices_supp borrowerservices_none borrowerservices_othe
 
 
+drop otherlenderservices_poli otherlenderservices_fina otherlenderservices_guar otherlenderservices_gene otherlenderservices_none otherlenderservices_othe borrowerservices_free borrowerservices_less borrowerservices_supp borrowerservices_none borrowerservices_othe plantorep_chit plantorep_work plantorep_migr plantorep_asse plantorep_inco plantorep_borr plantorep_othe plantorep_noth plantorep_nrep
+
+ta otherlenderservices loan_database,m
+
+
 save"panel_loans", replace
-
-
-drop if loansettled==1
-drop if loansettled==.
-save"panel_loans_nonsettled", replace
 ****************************************
 * END
