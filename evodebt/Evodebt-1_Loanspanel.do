@@ -400,6 +400,14 @@ drop otherlenderservices_poli otherlenderservices_fina otherlenderservices_guar 
 ta otherlenderservices loan_database,m
 
 
+*** deflate
+replace loanamount2=loanamount2*(100/158) if year==2016
+replace loanamount2=loanamount2*(100/184) if year==2020
+*drop loanamount
+rename loanamount2 loanamount
+
+
+
 save"panel_loans", replace
 ****************************************
 * END
