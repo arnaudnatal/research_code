@@ -109,15 +109,15 @@ fre cat_amount
 
 
 ********** MCA
-global var reason_cat lender_cat cat_amount
+global var reason_cat lender_cat lenderservices
 fre $var
 
 *** How many axes to interpret?
 mca $var, meth(ind) normal(princ) comp
 
 *** Axis HAC
-qui mca $var, meth(ind) normal(princ) comp dim(6)
-global var2 d1 d2 d3 d4 d5 d6
+qui mca $var, meth(ind) normal(princ) comp dim(4)
+global var2 d1 d2 d3 d4
 predict $var2
 
 
@@ -125,7 +125,7 @@ predict $var2
 ********** HAC
 cluster wardslinkage $var2
 cluster dendrogram, cutnumber(30)
-cluster gen clust=groups(7)
+cluster gen clust=groups(5)
 
 ta clust
 ta clust year, col nofreq
@@ -133,6 +133,8 @@ foreach x in $var{
 ta `x' clust, col nofreq
 }
 
+
+save"cluster_allloans", replace
 ****************************************
 * END
 
@@ -172,7 +174,7 @@ drop if borrowerservices==77
 drop if borrowerservices==99
 
 fre termsofrepayment
-drop if termsofrepayment==.
+*drop if termsofrepayment==.
 
 
 *** dummyborrowerservices
@@ -185,12 +187,26 @@ ta borrowerservices dummyborrowerservices, m
 label values dummyborrowerservices yesno
 
 
+*** Label correction
+fre reason_cat lender_cat dummyinterest dummyhelptosettleloan dummyborrowerservices
+codebook lender_cat
+label define reason_cat 1"Econ" 2"Curr" 3"Huma" 4"Soci" 5"Hous", modify
+label define lender_cat 1"Info" 2"Semi" 3"Form", modify
+
+
 ********** MCA
 global var reason_cat lender_cat dummyinterest dummyhelptosettleloan dummyborrowerservices
 fre $var
 
 *** How many axes to interpret?
 mca $var, meth(ind) normal(princ) comp
+
+*** Donner du sens aux axes
+mca $var, meth(ind) normal(princ) comp dim(2)
+mcaplot, overlay legend(off) xline(0) yline(0) legend(on pos(6) col(3) order(1 "Reason" 2 "Lender" 3 "Interest?" 4 "Help to settle?" 5 "Borr. services?")) xtitle("Dim. 1 (64%)*") ytitle("Dim. 2 (9%)*") title("") note("*Percentage corrected using the Greenacre correction", size(vsmall)) 
+*aspectratio(0.14)
+
+
 
 *** Axis for HCA
 qui mca $var, meth(ind) normal(princ) comp dim(5)
