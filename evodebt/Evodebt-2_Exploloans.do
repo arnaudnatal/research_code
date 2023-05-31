@@ -21,126 +21,32 @@ do "https://raw.githubusercontent.com/arnaudnatal/folderanalysis/main/$link.do"
 
 
 ****************************************
-* CA for all loans
+* Overlap?
 ****************************************
 use"panel_loans", clear
 
-fre lender4 reason_cat
-
-ca lender4 reason_cat
-*cabiplot, origin
-
-ta lender4 reason_cat, chi2
-
-****************************************
-* END
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-****************************************
-* MCA for all loans
-****************************************
-use"panel_loans", clear
-
-fre lender4 reason_cat
-
-********** Selection
-drop if loan_database=="MARRIAGE"
+********** Prepa
+*** Simple selection
+keep if dummyml==1
 drop if loansettled==1
 
-fre otherlenderservices
-drop if otherlenderservices==99
-drop if otherlenderservices==77
 
-fre reason_cat
-drop if reason_cat==6  // no reason
-drop if reason_cat==77
+********** Overlap
+gen overlap=0
+replace overlap=1 if loandate<td(31dec2010) & year==2016
+replace overlap=1 if loandate<td(31dec2010) & year==2020
+replace overlap=1 if loandate<td(31dec2017) & year==2020
 
+bysort HHID_panel: egen maxoverlap=max(overlap)
+drop if maxoverlap==0
 
+keep HHID_panel INDID_panel loanid year loanamount loanlender loanreasongiven overlap loandate maxoverlap
 
-
-********** New variables
-*** Lender5
-fre lender4
-gen lender5=lender4
-recode lender5 (5=1)
-fre lender5
-label values lender5 lender3
-fre lender5
-
-*** Services
-fre otherlenderservices
-gen lenderservices=.
-replace lenderservices=1 if otherlenderservices==1
-replace lenderservices=1 if otherlenderservices==2
-replace lenderservices=1 if otherlenderservices==3
-replace lenderservices=1 if otherlenderservices==4
-replace lenderservices=0 if otherlenderservices==5
-replace lenderservices=1 if otherlenderservices==6
-label define lenderservices 0"No_serv" 1"Serv"
-label values lenderservices lenderservices
-ta otherlenderservices lenderservices
+sort HHID_panel INDID_panel loanid year
 
 
-*** Amount
-tabstat loanamount, stat(min p1 p5 p10 q p90 p95 p99 max)
-gen cat_amount=.
-replace cat_amount=1 if loanamount<2000
-replace cat_amount=2 if loanamount>=2000 & loanamount<5000
-replace cat_amount=3 if loanamount>=5000 & loanamount<10000
-replace cat_amount=4 if loanamount>=10000 & loanamount<20000
-replace cat_amount=5 if loanamount>=20000 & loanamount<40000
-replace cat_amount=6 if loanamount>=40000
-
-label define cat_amount 1"V. small" 2"Small" 3"L. Medium" 4"H. Medium" 5"High" 6"V. High"
-label values cat_amount cat_amount
-fre cat_amount
-
-
-********** MCA
-global var reason_cat lender_cat lenderservices
-fre $var
-
-*** How many axes to interpret?
-mca $var, meth(ind) normal(princ) comp
-
-*** Axis HAC
-qui mca $var, meth(ind) normal(princ) comp dim(4)
-global var2 d1 d2 d3 d4
-predict $var2
-
-
-
-********** HAC
-cluster wardslinkage $var2
-cluster dendrogram, cutnumber(30)
-cluster gen clust=groups(5)
-
-ta clust
-ta clust year, col nofreq
-foreach x in $var{
-ta `x' clust, col nofreq
-}
-
-
-save"cluster_allloans", replace
 ****************************************
 * END
-
-
-
-
 
 
 
@@ -161,23 +67,21 @@ save"cluster_allloans", replace
 use"panel_loans", clear
 
 ********** Prepa
-*** Selection
+*** Simple selection
 keep if dummyml==1
 drop if loansettled==1
 
+
+*** Selection on missing
 fre reason_cat
 drop if reason_cat==6  // no reason
 drop if reason_cat==77
-
 fre borrowerservices
 drop if borrowerservices==77
 drop if borrowerservices==99
 
-fre termsofrepayment
-*drop if termsofrepayment==.
 
-
-*** dummyborrowerservices
+*** New var
 gen dummyborrowerservices=.
 replace dummyborrowerservices=0 if borrowerservices==4
 replace dummyborrowerservices=1 if borrowerservices==1
@@ -185,7 +89,6 @@ replace dummyborrowerservices=1 if borrowerservices==2
 replace dummyborrowerservices=1 if borrowerservices==3
 ta borrowerservices dummyborrowerservices, m
 label values dummyborrowerservices yesno
-
 
 *** Label correction
 fre reason_cat lender_cat dummyinterest dummyhelptosettleloan dummyborrowerservices
@@ -197,18 +100,17 @@ label define lender_cat 1"Info" 2"Semi" 3"Form", modify
 ********** MCA
 global var reason_cat lender_cat dummyinterest dummyhelptosettleloan dummyborrowerservices
 fre $var
-
+*dummyborrowerservices
 *** How many axes to interpret?
-mca $var, meth(ind) normal(princ) comp
+mca $var, meth(ind) normal(princ)
 
 *** Donner du sens aux axes
 mca $var, meth(ind) normal(princ) comp dim(2)
-mcaplot, overlay legend(off) xline(0) yline(0) legend(on pos(6) col(3) order(1 "Reason" 2 "Lender" 3 "Interest?" 4 "Help to settle?" 5 "Borr. services?")) xtitle("Dim. 1 (64%)*") ytitle("Dim. 2 (9%)*") title("") note("*Percentage corrected using the Greenacre correction", size(vsmall)) 
-*aspectratio(0.14)
+mcaplot, overlay legend(off) xline(0) yline(0) legend(on pos(6) col(3) order(1 "Purpose" 2 "Lender" 3 "Interest?" 4 "Help to settle?" 5 "Borr. services?")) xtitle("Dim. 1 (64%)*") ytitle("Dim. 2 (9%)*") title("") note("*Percentage corrected using the Greenacre correction", size(vsmall))
 
 
 
-*** Axis for HCA
+*** Axis for HAC
 qui mca $var, meth(ind) normal(princ) comp dim(5)
 global var2 d1 d2 d3 d4 d5
 predict $var2
@@ -218,19 +120,143 @@ predict $var2
 
 ********** HAC
 cluster wardslinkage $var2
-cluster dendrogram, cutnumber(89)
+/*
+cluster dendrogram, cutnumber(60) title("") ytitle("Squared Euclidean distance") yline(600) xlabel(,angle(90) labsize(vsmall)) name(tree, replace)
+graph export "hac.pdf", as(pdf) replace
+graph export "hac.png", as(png) replace
+graph save "hac.gph", replace
+*/
 cluster gen clust=groups(6)
 
+
+
+********** Caractérisation HAC
 ta clust
-ta clust year, col nofreq
 foreach x in $var{
 ta `x' clust, col nofreq
 }
 
+
+
+********** Light db
+keep HHID_panel INDID_panel loanid year loanamount loanreasongiven reason_cat loanlender lender_cat loandate dummyinterest dummyhelptosettleloan dummyborrowerservices clust assets_total1000 assets_totalnoland1000 assets_totalnoprop1000 shareassets_housevalue shareassets_livestock shareassets_goods shareassets_ownland shareassets_gold nbmale nbfemale HHsize typeoffamily nbgeneration head_sex head_age head_mocc_occupation head_annualincome head_nboccupation head_edulevel dependencyratio sexratio annualincome_HH shareincomeagri_HH shareincomenonagri_HH dummyworkedpastyear working_pop mainocc_occupation_indiv nboccupation_indiv villageid villagearea sex age caste
+
+
+*** Label clust
+gen clust_lab=clust
+label define clust_lab 1"Form" 2"Semi" 3"Smoothing" 4"Oppressive" 5"Human" 6"Housing"
+label values clust_lab clust_lab
+
+ta clust_lab
+
+
+
+save "clusters", replace
 ****************************************
 * END
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Stats
+****************************************
+use"clusters", clear
+
+
+
+********** Evolution over time
+/*
+tabplot clust year, percent(year) showval frame(100) xlabel(1"2010" 2"2016-17" 3"2020-21") xtitle("") ytitle("Cluster") subtitle("") aspectratio(1.5) name(clustyear, replace)  note("Percentage by year", size(vsmall))
+graph save "clustyear.gph", replace
+graph export "clustyear.pdf", as(pdf) replace
+graph export "clustyear.png", as(png) replace
+*/
+
+
+********** Amount per year per type
+gen loanamountlog=log(loanamount)
+
+egen clustyear=group(clust year), label
+fre clustyear
+recode clustyear (4=5) (5=6) (6=7) (7=9) (8=10) (9=11) (10=13) (11=14) (12=15) (13=17) (14=18) (15=19) (16=21) (17=22) (18=23)
+label define clustyear ///
+1"2010" 2"Clust. 1   2016-17" 3"2020-21" 4"" ///
+5"2010" 6"Clust. 2   2016-17" 7"2020-21" 8"" ///
+9"2010" 10"Clust. 3   2016-17" 11"2020-21" 12"" ///
+13"2010" 14"Clust. 4   2016-17" 15"2020-21" 16"" ///
+17"2010" 18"Clust. 5   2016-17" 19"2020-21" 20"" ///
+21"2010" 22"Clust. 6   2016-17" 23"2020-21", modify
+
+/*
+stripplot loanamountlog, over(clustyear) ///
+stack width(0.01) ///
+box(barw(0.5)) boffset(-0.15) pctile(5) ///
+mc(black%0) ///
+yline(4 8 12 16 20, lpattern(shortdash) lcolor(black%15)) ///
+xla(5(1)13, ang(h)) xmtick(4.5(.5)13.5) yla(, noticks) ymtick(4(4)20) ///
+legend(order(4 "Whisker from 5% to 95%") pos(6) col(2) on) ///
+xtitle("Loan amount (log INR)") ytitle("") name(amount, replace)
+graph export "loanamount.pdf", as(pdf) replace
+graph export "loanamount.png", as(png) replace
+graph save "loanamount.gph", replace
+*/
+drop loanamountlog
+
+
+*********** Household characteristics
+*** Caste
+ta clust_lab caste, chi2 cchi2 exp
+
+*** Head
+ta clust_lab head_sex, chi2 cchi2 exp
+
+*** Family
+ta clust_lab typeoffamily, chi2 cchi2 exp
+
+
+
+
+
+********** Multilogit pour y voir plus clair?
+* Encode
+encode HHID_panel, gen(hhclust)
+encode typeoffamily, gen(family)
+
+mlogit clust i.caste i.year i.family i.villageid c.assets_total1000 c.annualincome_HH i.head_sex c.head_age i.head_edulevel c.HHsize c.dependencyratio c.sexratio c.shareincomeagri_HH, vce(cluster hhclust) base
+est store spec1
+
+
+esttab spec1 using "mlogit_res.csv", replace ///
+	label b(3) p(3) eqlabels(none) alignment(S) ///
+	star(* 0.10 ** 0.05 *** 0.01) ///
+	cells("b(fmt(2)star)" "se(fmt(2)par)") ///
+	refcat(, nolabel) ///
+	stats(N N_clust, fmt(0 0)	labels(`"Observations"' `"Number of clust"'))
+
+
+
+
+
+
+
+
+
+****************************************
+* END
 
 
 

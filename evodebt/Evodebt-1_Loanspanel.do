@@ -45,7 +45,7 @@ replace dummyhelptosettleloan=0 if helptosettleloan==14 & helptosettleloan!=.
 replace dummyhelptosettleloan=1 if helptosettleloan!=14 & helptosettleloan!=. 
 ta dummyhelptosettleloan
 
-keep HHID_panel loanid loansettled loanreasongiven loanlender lender4 lender_cat loanreasongiven reason_cat loanamount2 otherlenderservices borrowerservices dummyinterest monthlyinterestrate dummyhelptosettleloan dummyrecommendation dummyguarantor plantorep_chit plantorep_work plantorep_migr plantorep_asse plantorep_inco plantorep_borr plantorep_noth plantorep_othe plantorep_nrep termsofrepayment dummyml
+keep HHID2010 HHID_panel loanid loansettled loanreasongiven loanlender lender4 lender_cat loanreasongiven reason_cat loanamount2 otherlenderservices borrowerservices dummyinterest monthlyinterestrate dummyhelptosettleloan dummyrecommendation dummyguarantor plantorep_chit plantorep_work plantorep_migr plantorep_asse plantorep_inco plantorep_borr plantorep_noth plantorep_othe plantorep_nrep termsofrepayment dummyml loandate
 
 * Otherlenderservices
 fre otherlenderservices
@@ -88,6 +88,48 @@ tostring borrowerservices, replace
 order HHID_panel loanid loanamount2 loansettled
 sort HHID_pane loanid
 gen year=2010
+
+
+********** Supp infos
+*** Assets
+merge m:1 HHID2010 using "raw/RUME-assets", keepusing(assets_total1000 assets_totalnoland1000 assets_totalnoprop1000 shareassets_housevalue shareassets_livestock shareassets_goods shareassets_ownland shareassets_gold)
+keep if _merge==3
+drop _merge
+
+*** Family
+merge m:1 HHID2010 using "raw/RUME-family", keepusing(nbfemale nbmale HHsize typeoffamily nbgeneration head_sex head_age head_mocc_occupation head_annualincome head_nboccupation head_edulevel dependencyratio sexratio)
+keep if _merge==3
+drop _merge
+
+*** Occupation HH
+merge m:1 HHID2010 using "raw/RUME-occup_HH", keepusing(annualincome_HH shareincomeagri_HH shareincomenonagri_HH) 
+keep if _merge==3
+drop _merge
+
+*** Details HH
+preserve
+use"raw/RUME-HH", clear
+keep HHID2010 village villagearea
+duplicates drop
+save"Rume_vill", replace
+restore
+
+merge m:1 HHID2010 using "Rume_vill", keepusing(village villagearea)
+keep if _merge==3
+drop _merge
+rename village villageid
+
+*** Caste
+preserve
+use"raw/RUME-caste", clear
+keep HHID2010 caste
+duplicates drop
+save"Rume_caste", replace
+restore
+merge m:1 HHID2010 using "Rume_caste", keepusing(caste)
+keep if _merge==3
+drop _merge
+
 
 save"temp_RUMEloanpanel", replace
 ****************************************
@@ -135,7 +177,7 @@ fre dummyrecommendation
 fre dummyguarantor
 fre loanproductpledge
 
-keep HHID_panel INDID_panel loanid loansettled loanreasongiven loanlender lender4 lender_cat loanreasongiven reason_cat loanamount2 otherlenderservices borrowerservices dummyinterest monthlyinterestrate dummyhelptosettleloan dummyrecommendation dummyguarantor plantorep_chit plantorep_work plantorep_migr plantorep_asse plantorep_inco plantorep_borr plantorep_othe termsofrepayment dummyml loan_database
+keep HHID2016 INDID2016 HHID_panel INDID_panel loanid loansettled loanreasongiven loanlender lender4 lender_cat loanreasongiven reason_cat loanamount2 otherlenderservices borrowerservices dummyinterest monthlyinterestrate dummyhelptosettleloan dummyrecommendation dummyguarantor plantorep_chit plantorep_work plantorep_migr plantorep_asse plantorep_inco plantorep_borr plantorep_othe termsofrepayment dummyml loan_database loandate
 
 * Otherlenderservices
 fre otherlenderservices
@@ -172,6 +214,50 @@ order HHID_panel INDID_panel loanid loanamount2 loansettled
 sort HHID_panel INDID_panel loanid
 gen year=2016
 tostring loanid, replace
+
+
+
+
+********** Supp infos
+*** Assets
+merge m:1 HHID2016 using "raw/NEEMSIS1-assets", keepusing(assets_total1000 assets_totalnoland1000 assets_totalnoprop1000 shareassets_housevalue shareassets_livestock shareassets_goods shareassets_ownland shareassets_gold)
+keep if _merge==3
+drop _merge
+
+*** Family
+merge m:1 HHID2016 using "raw/NEEMSIS1-family", keepusing(nbfemale nbmale HHsize typeoffamily nbgeneration head_sex head_age head_mocc_occupation head_annualincome head_nboccupation head_edulevel dependencyratio sexratio)
+keep if _merge==3
+drop _merge
+
+*** Occupation HH
+merge m:1 HHID2016 using "raw/NEEMSIS1-occup_HH", keepusing(annualincome_HH shareincomeagri_HH shareincomenonagri_HH) 
+keep if _merge==3
+drop _merge
+
+*** Occupation indiv
+destring INDID2016, replace
+merge m:1 HHID2016 INDID2016 using "raw/NEEMSIS1-occup_indiv", keepusing(dummyworkedpastyear working_pop mainocc_occupation_indiv nboccupation_indiv)
+keep if _merge==3
+drop _merge
+
+*** Details indiv + HH
+merge m:1 HHID2016 INDID2016 using "raw/NEEMSIS1-HH", keepusing(sex age villageid villagearea villageid_new)
+keep if _merge==3
+drop _merge
+drop villageid_new
+
+*** Caste
+preserve
+use"raw/NEEMSIS1-caste", clear
+keep HHID2016 caste
+duplicates drop
+save"Neemsis1_caste", replace
+restore
+merge m:1 HHID2016 using "Neemsis1_caste", keepusing(caste)
+keep if _merge==3
+drop _merge
+
+
 
 save"temp_NEEMSIS1loanpanel", replace
 ****************************************
@@ -235,7 +321,7 @@ fre dummyrecommendation
 fre dummyguarantor
 fre loanproductpledge
 
-keep HHID_panel INDID_panel loanid loansettled loanreasongiven loanlender lender4 lender_cat loanreasongiven reason_cat loanamount2 otherlenderservices borrowerservices dummyinterest monthlyinterestrate dummyhelptosettleloan dummyrecommendation dummyguarantor plantorep_chit plantorep_work plantorep_migr plantorep_asse plantorep_inco plantorep_borr plantorep_othe termsofrepayment dummyml loan_database
+keep HHID2020 INDID2020 HHID_panel INDID_panel loanid loansettled loanreasongiven loanlender lender4 lender_cat loanreasongiven reason_cat loanamount2 otherlenderservices borrowerservices dummyinterest monthlyinterestrate dummyhelptosettleloan dummyrecommendation dummyguarantor plantorep_chit plantorep_work plantorep_migr plantorep_asse plantorep_inco plantorep_borr plantorep_othe termsofrepayment dummyml loan_database loandate
 
 * Otherlenderservices
 fre otherlenderservices
@@ -272,6 +358,48 @@ sort HHID_panel INDID_panel loanid
 gen year=2020
 tostring loanid, replace
 
+
+********** Supp infos
+*** Assets
+merge m:1 HHID2020 using "raw/NEEMSIS2-assets", keepusing(assets_total1000 assets_totalnoland1000 assets_totalnoprop1000 shareassets_housevalue shareassets_livestock shareassets_goods shareassets_ownland shareassets_gold)
+keep if _merge==3
+drop _merge
+
+*** Family
+merge m:1 HHID2020 using "raw/NEEMSIS2-family", keepusing(nbfemale nbmale HHsize typeoffamily nbgeneration head_sex head_age head_mocc_occupation head_annualincome head_nboccupation head_edulevel dependencyratio sexratio)
+keep if _merge==3
+drop _merge
+
+*** Occupation HH
+merge m:1 HHID2020 using "raw/NEEMSIS2-occup_HH", keepusing(annualincome_HH shareincomeagri_HH shareincomenonagri_HH) 
+keep if _merge==3
+drop _merge
+
+*** Occupation indiv
+destring INDID2020, replace
+merge m:1 HHID2020 INDID2020 using "raw/NEEMSIS2-occup_indiv", keepusing(dummyworkedpastyear working_pop mainocc_occupation_indiv nboccupation_indiv)
+keep if _merge==3
+drop _merge
+
+*** Details indiv + HH
+merge m:1 HHID2020 INDID2020 using "raw/NEEMSIS2-HH", keepusing(sex age villageid village_new villagearea)
+keep if _merge==3
+drop _merge
+drop village_new
+
+*** Caste
+preserve
+use"raw/NEEMSIS2-caste", clear
+keep HHID2020 caste
+duplicates drop
+save"Neemsis2_caste", replace
+restore
+merge m:1 HHID2020 using "Neemsis2_caste", keepusing(caste)
+keep if _merge==3
+drop _merge
+
+
+
 save"temp_NEEMSIS2loanpanel", replace
 ****************************************
 * END
@@ -292,6 +420,8 @@ save"temp_NEEMSIS2loanpanel", replace
 use "temp_NEEMSIS2loanpanel", clear
 append using "temp_NEEMSIS1loanpanel"
 append using "temp_RUMEloanpanel"
+
+drop HHID2010 HHID2016 HHID2020 INDID2016 INDID2020
 
 
 fre loanreasongiven
@@ -400,12 +530,13 @@ drop otherlenderservices_poli otherlenderservices_fina otherlenderservices_guar 
 ta otherlenderservices loan_database,m
 
 
-*** deflate
-replace loanamount2=loanamount2*(100/158) if year==2016
-replace loanamount2=loanamount2*(100/184) if year==2020
-*drop loanamount
+********** Deflate
 rename loanamount2 loanamount
 
+foreach x in loanamount assets_total1000 assets_totalnoland1000 assets_totalnoprop1000 head_annualincome annualincome_HH {
+replace `x'=`x'*(100/158) if year==2016
+replace `x'=`x'*(100/184) if year==2020
+}
 
 
 save"panel_loans", replace
