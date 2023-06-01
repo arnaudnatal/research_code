@@ -26,15 +26,15 @@ use"panel_indiv_v0", clear
 
 
 ********** Total
-ta year
+ta sex year
 
 
 ********** 15 or more 
-ta year if age>=15
+ta sex year if age>=15
 
 
 ********** 25 more more
-ta year if age>=25
+ta sex year if age>=25
 
 
 ********* Working age
@@ -110,32 +110,44 @@ ta edulevel year if sex==2, col nofreq
 
 
 ****************************************
-* Employment rate
+* Employment
 ****************************************
 cls
 use"panel_indiv_v0.dta", clear
 
 *** Selection
 drop if age<15
+ta sex year
 
+*** Who?
+ta mainocc_occupation_indiv working_pop, m
+fre working_pop
 fre mainocc_occupation_indiv
+ta occupied working_pop, m
+ta occupied employed, m
+recode mainocc_occupation_indiv (5=4)
 
-ta employed
-
-ta employed year, col nofreq
-ta employed year if sex==1, col nofreq
-ta employed year if sex==2, col nofreq
-ta employed year if caste==1, col nofreq
-ta employed year if caste==2, col nofreq
-ta employed year if caste==3, col nofreq
-
-keep HHID_panel INDID_panel year employed caste sex
-
-rename employed occup1
-gen occup2=occup1
-recode occup2 (1=0) (0=1)
+*** Occupied?
+cls
+ta occupied year, col nofreq
+ta occupied year if sex==1, col nofreq
+ta occupied year if sex==2, col nofreq
 
 
+*** For those who are occupied
+cls
+drop if occupied==0
+ta sex year
+ta mainocc_occupation_indiv year
+ta mainocc_occupation_indiv year, col nofreq
+ta mainocc_occupation_indiv year if sex==1, col nofreq
+ta mainocc_occupation_indiv year if sex==2, col nofreq
+
+*** Number of occupation
+cls
+tabstat nboccupation_indiv, stat(n mean) by(year)
+tabstat nboccupation_indiv if sex==1, stat(mean) by(year)
+tabstat nboccupation_indiv if sex==2, stat(mean) by(year)
 
 ****************************************
 * END
@@ -147,34 +159,78 @@ recode occup2 (1=0) (0=1)
 
 
 
-
-
-
-
 ****************************************
-* Employment only for employed=1
+* Employment
 ****************************************
 cls
+use"paneloccup.dta", clear
+
+preserve
 use"panel_indiv_v0.dta", clear
+drop if age<15
+drop if occupied==0
+keep HHID_panel INDID_panel year
+gen tokeep=1
+save"panelindivocc", replace
+restore
 
-*** Selection
-drop if employed==.
-drop if employed==0
-ta year
-* 3668
+merge m:1 HHID_panel INDID_panel year using "panelindivocc"
+ta _merge year
+keep if _merge==3
+drop _merge
+drop if occupation==0
+
+gen monthlyincome=annualincome/12
+gen monthlyincome2=monthlyincome
+replace monthlyincome2=monthlyincome2+1 if monthlyincome==0
+gen logmonthlyincome=log(monthlyincome2)
+recode occupation (5=4)
+fre occupation
+recode occupation (6=5) (7=6)
+label define occupcode 1"Agri SE" 2"Agri casual" 3"Casual" 4"Regular" 5"SE" 6"MNREGA", modify
 
 
+*** Stat
+tabstat monthlyincome monthlyincome2, stat(min p1 p5 p10 q p90 p95 p99 max)
+tabstat monthlyincome, stat(n mean cv p50) by(occupation)
+tabstat monthlyincome if year==2010, stat(n mean cv p50) by(occupation)
+tabstat monthlyincome if year==2016, stat(n mean cv p50) by(occupation)
+tabstat monthlyincome if year==2020, stat(n mean cv p50) by(occupation)
 
 
-*** Total annual income
-cls
-replace annualincome_indiv=annualincome_indiv/1000
-tabstat annualincome_indiv, stat(mean) by(year)
-tabstat annualincome_indiv if sex==1, stat(mean) by(year)
-tabstat annualincome_indiv if sex==2, stat(mean) by(year)
-tabstat annualincome_indiv if caste==1, stat(mean) by(year)
-tabstat annualincome_indiv if caste==2, stat(mean) by(year)
-tabstat annualincome_indiv if caste==3, stat(mean) by(year)
+*** Graph
+egen occupyear=group(occupation year), label
+fre occupyear
+recode occupyear (4=5) (5=6) (6=7) (7=9) (8=10) (9=11) (10=13) (11=14) (12=15) (13=17) (14=18) (15=19) (16=21) (17=22) (18=23)
+label define occupyear ///
+1"2010" 2"Agri SE   2016-17" 3"2020-21" 4"" ///
+5"2010" 6"Agri casual   2016-17" 7"2020-21" 8"" ///
+9"2010" 10"Casual   2016-17" 11"2020-21" 12"" ///
+13"2010" 14"Regular   2016-17" 15"2020-21" 16"" ///
+17"2010" 18"SE   2016-17" 19"2020-21" 20"" ///
+21"2010" 22"MNREGA   2016-17" 23"2020-21", modify
+
+*** Log
+stripplot logmonthlyincome, over(occupyear) ///
+stack width(0.01) ///
+box(barw(0.5)) boffset(-0.15) pctile(5) ///
+mc(black%0) ///
+yline(4 8 12 16 20, lpattern(shortdash) lcolor(black%15)) ///
+xla(, ang(h)) xmtick() yla(, noticks) ymtick(4(4)20) ///
+legend(order(4 "Whisker from 5% to 95%") pos(6) col(2) on) ///
+xtitle("Monthly income log(INR 1k)") ytitle("") name(logmonthlyincome, replace)
+
+*** Pas log
+stripplot monthlyincome, over(occupyear) ///
+stack width(0.01) ///
+box(barw(0.5)) boffset(-0.15) pctile(5) ///
+mc(black%0) ///
+yline(4 8 12 16 20, lpattern(shortdash) lcolor(black%15)) ///
+xla(, ang(h)) xmtick() yla(, noticks) ymtick(4(4)20) ///
+legend(order(4 "Whisker from 5% to 95%") pos(6) col(2) on) ///
+xtitle("Monthly income (INR 1k)") ytitle("") name(monthlyincome, replace)
+
+
 
 ****************************************
 * END
@@ -185,276 +241,3 @@ tabstat annualincome_indiv if caste==3, stat(mean) by(year)
 
 
 
-
-
-
-
-
-
-
-****************************************
-* Employment only for employed=1
-****************************************
-cls
-use"panel_indiv_v0.dta", clear
-
-*** Selection
-drop if employed==.
-drop if employed==0
-ta year
-* 3668
-
-
-
-*** Graph bar
-fre mainocc_occupation_indiv
-ta mainocc_occupation_indiv, gen(perc)
-
-set graph off
-
-* Total
-preserve
-collapse (mean) perc*, by(year)
-reshape long perc, i(year) j(occ)
-label define occupcode 1"Agri SE" 2"Agri casual" 3"Casual" 4"Reg non-quali" 5"Reg quali" 6"SE" 7"NREGA", modify
-label values occ occupcode
-graph bar perc, horiz over(year, lab(angle())) over(occ, lab(angle())) ///
-asy ytitle("%") title("Total") legend(col(3) pos(6)) ///
-ylab(0(.1).6) ///
-bar(1, fcolor(gs14)) bar(2, fcolor(gs10)) bar(3, fcolor(gs5)) ///
-name(occ, replace) ///
- blabel(total, format(%4.2f) size(tiny))
-restore
-
-* Male
-preserve
-keep if sex==1
-collapse (mean) perc*, by(year)
-reshape long perc, i(year) j(occ)
-label define occupcode 1"Agri SE" 2"Agri casual" 3"Casual" 4"Reg non-quali" 5"Reg quali" 6"SE" 7"NREGA", modify
-label values occ occupcode
-graph bar perc, horiz over(year, lab(angle())) over(occ, lab(angle())) ///
-asy ytitle("%") title("Male") legend(col(3) pos(6)) ///
-ylab(0(.1).6) ///
-bar(1, fcolor(gs14)) bar(2, fcolor(gs10)) bar(3, fcolor(gs5)) ///
-name(occ_c1, replace) ///
- blabel(total, format(%4.2f) size(tiny))
-restore
-
-* Female
-preserve
-keep if sex==2
-collapse (mean) perc*, by(year)
-reshape long perc, i(year) j(occ)
-label define occupcode 1"Agri SE" 2"Agri casual" 3"Casual" 4"Reg non-quali" 5"Reg quali" 6"SE" 7"NREGA", modify
-label values occ occupcode
-graph bar perc, horiz over(year, lab(angle())) over(occ, lab(angle())) ///
-asy ytitle("%") title("Female") legend(col(3) pos(6)) ///
-ylab(0(.1).6) ///
-bar(1, fcolor(gs14)) bar(2, fcolor(gs10)) bar(3, fcolor(gs5)) ///
-name(occ_c2, replace) ///
- blabel(total, format(%4.2f) size(tiny))
-restore
-
-
-
-
-* Dalits
-preserve
-keep if caste==1
-collapse (mean) perc*, by(year)
-reshape long perc, i(year) j(occ)
-label define occupcode 1"Agri SE" 2"Agri casual" 3"Casual" 4"Reg non-quali" 5"Reg quali" 6"SE" 7"NREGA", modify
-label values occ occupcode
-graph bar perc, horiz over(year, lab(angle())) over(occ, lab(angle())) ///
-asy ytitle("%") title("Dalits") legend(col(3) pos(6)) ///
-ylab(0(.1).6) ///
-bar(1, fcolor(gs14)) bar(2, fcolor(gs10)) bar(3, fcolor(gs5)) ///
-name(occ_dal, replace) ///
- blabel(total, format(%4.2f) size(tiny))
-restore
-
-* Middle
-preserve
-keep if caste==2
-collapse (mean) perc*, by(year)
-reshape long perc, i(year) j(occ)
-label define occupcode 1"Agri SE" 2"Agri casual" 3"Casual" 4"Reg non-quali" 5"Reg quali" 6"SE" 7"NREGA", modify
-label values occ occupcode
-graph bar perc, horiz over(year, lab(angle())) over(occ, lab(angle())) ///
-asy ytitle("%") title("Middle") legend(col(3) pos(6)) ///
-ylab(0(.1).6) ///
-bar(1, fcolor(gs14)) bar(2, fcolor(gs10)) bar(3, fcolor(gs5)) ///
-name(occ_mid, replace) ///
- blabel(total, format(%4.2f) size(tiny))
-restore
-
-* Upper
-preserve
-keep if caste==3
-collapse (mean) perc*, by(year)
-reshape long perc, i(year) j(occ)
-label define occupcode 1"Agri SE" 2"Agri casual" 3"Casual" 4"Reg non-quali" 5"Reg quali" 6"SE" 7"NREGA", modify
-label values occ occupcode
-graph bar perc, horiz over(year, lab(angle())) over(occ, lab(angle())) ///
-asy ytitle("%") title("Upper") legend(col(3) pos(6)) ///
-ylab(0(.1).6) ///
-bar(1, fcolor(gs14)) bar(2, fcolor(gs10)) bar(3, fcolor(gs5)) ///
-name(occ_up, replace) ///
- blabel(total, format(%4.2f) size(tiny))
-restore
-
-set graph on
-
-
-*** Combine
-grc1leg occ occ_c1 occ_c2 occ_dal occ_mid occ_up, col(3) name(occ_comb, replace)
-graph export "Occ_total.pdf", as(pdf) replace
-
-****************************************
-* END
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-****************************************
-* Employment only for employed=1
-****************************************
-cls
-use"panel_indiv_v0.dta", clear
-
-*** Selection
-drop if employed==.
-drop if employed==0
-ta year
-* 3668
-replace mainocc_annualincome_indiv=mainocc_annualincome_indiv/1000
-
-
-*** Income by occupation
-tabstat mainocc_annualincome_indiv if year==2010, stat(n mean) by(mainocc_occupation_indiv)
-tabstat mainocc_annualincome_indiv if year==2016, stat(n mean) by(mainocc_occupation_indiv)
-tabstat mainocc_annualincome_indiv if year==2020, stat(n mean) by(mainocc_occupation_indiv)
-
-/*
-      Agri self-employed |       128  39.08125
-     Agri casual workers |       320  14.50367
- Non-agri casual workers |       199  32.02854
-Non-agri regular non-qua |        76  53.26447
-Non-agri regular qualifi |        52     64.25
-  Non-agri self-employed |        30      26.3
-Public employment scheme |        70  4.257143
-*/
-
-set graph off
-
-* Total
-preserve
-collapse (mean) mainocc_annualincome_indiv, by(mainocc_occupation_indiv year)
-label define mainocc_occupation_indiv 1"Agri SE" 2"Agri casual" 3"Casual" 4"Reg non-quali" 5"Reg quali" 6"SE" 7"NREGA", modify
-label value mainocc_occupation_indiv mainocc_occupation_indiv
-graph bar mainocc_annualincome_indiv, horiz over(year, lab(angle())) over(mainocc_occupation_indiv, lab(angle())) ///
-asy ytitle("Annual income (INR 1k)") title("Total") legend(col(3) pos(6)) ///
-ylab(0(20)100) ymtick(0(10)110) ///
-bar(1, fcolor(gs14)) bar(2, fcolor(gs10)) bar(3, fcolor(gs5)) ///
-name(occ, replace) ///
-blabel(total, format(%4.2f) size(tiny))
-restore
-
-
-* Male
-preserve
-keep if sex==1
-collapse (mean) mainocc_annualincome_indiv, by(mainocc_occupation_indiv year)
-label define mainocc_occupation_indiv 1"Agri SE" 2"Agri casual" 3"Casual" 4"Reg non-quali" 5"Reg quali" 6"SE" 7"NREGA", modify
-label value mainocc_occupation_indiv mainocc_occupation_indiv
-graph bar mainocc_annualincome_indiv, horiz over(year, lab(angle())) over(mainocc_occupation_indiv, lab(angle())) ///
-asy ytitle("Annual income (INR 1k)") title("Male") legend(col(3) pos(6)) ///
-ylab(0(20)100) ymtick(0(10)110) ///
-bar(1, fcolor(gs14)) bar(2, fcolor(gs10)) bar(3, fcolor(gs5)) ///
-name(occ_male, replace) ///
-blabel(total, format(%4.2f) size(tiny))
-restore
-
-
-* Female
-preserve
-keep if sex==2
-collapse (mean) mainocc_annualincome_indiv, by(mainocc_occupation_indiv year)
-label define mainocc_occupation_indiv 1"Agri SE" 2"Agri casual" 3"Casual" 4"Reg non-quali" 5"Reg quali" 6"SE" 7"NREGA", modify
-label value mainocc_occupation_indiv mainocc_occupation_indiv
-graph bar mainocc_annualincome_indiv, horiz over(year, lab(angle())) over(mainocc_occupation_indiv, lab(angle())) ///
-asy ytitle("Annual income (INR 1k)") title("Female") legend(col(3) pos(6)) ///
-ylab(0(20)100) ymtick(0(10)110) ///
-bar(1, fcolor(gs14)) bar(2, fcolor(gs10)) bar(3, fcolor(gs5)) ///
-name(occ_female, replace) ///
-blabel(total, format(%4.2f) size(tiny))
-restore
-
-
-* Dalits
-preserve
-keep if caste==1
-collapse (mean) mainocc_annualincome_indiv, by(mainocc_occupation_indiv year)
-label define mainocc_occupation_indiv 1"Agri SE" 2"Agri casual" 3"Casual" 4"Reg non-quali" 5"Reg quali" 6"SE" 7"NREGA", modify
-label value mainocc_occupation_indiv mainocc_occupation_indiv
-graph bar mainocc_annualincome_indiv, horiz over(year, lab(angle())) over(mainocc_occupation_indiv, lab(angle())) ///
-asy ytitle("Annual income (INR 1k)") title("Dalits") legend(col(3) pos(6)) ///
-ylab(0(20)100) ymtick(0(10)110) ///
-bar(1, fcolor(gs14)) bar(2, fcolor(gs10)) bar(3, fcolor(gs5)) ///
-name(occ_dalits, replace) ///
-blabel(total, format(%4.2f) size(tiny))
-restore
-
-
-* Middle
-preserve
-keep if caste==2
-collapse (mean) mainocc_annualincome_indiv, by(mainocc_occupation_indiv year)
-label define mainocc_occupation_indiv 1"Agri SE" 2"Agri casual" 3"Casual" 4"Reg non-quali" 5"Reg quali" 6"SE" 7"NREGA", modify
-label value mainocc_occupation_indiv mainocc_occupation_indiv
-graph bar mainocc_annualincome_indiv, horiz over(year, lab(angle())) over(mainocc_occupation_indiv, lab(angle())) ///
-asy ytitle("Annual income (INR 1k)") title("Middle") legend(col(3) pos(6)) ///
-ylab(0(20)100) ymtick(0(10)110) ///
-bar(1, fcolor(gs14)) bar(2, fcolor(gs10)) bar(3, fcolor(gs5)) ///
-name(occ_middle, replace) ///
-blabel(total, format(%4.2f) size(tiny))
-restore
-
-
-
-* Upper
-preserve
-keep if caste==3
-collapse (mean) mainocc_annualincome_indiv, by(mainocc_occupation_indiv year)
-label define mainocc_occupation_indiv 1"Agri SE" 2"Agri casual" 3"Casual" 4"Reg non-quali" 5"Reg quali" 6"SE" 7"NREGA", modify
-label value mainocc_occupation_indiv mainocc_occupation_indiv
-graph bar mainocc_annualincome_indiv, horiz over(year, lab(angle())) over(mainocc_occupation_indiv, lab(angle())) ///
-asy ytitle("Annual income (INR 1k)") title("Upper") legend(col(3) pos(6)) ///
-ylab(0(20)100) ymtick(0(10)110) ///
-bar(1, fcolor(gs14)) bar(2, fcolor(gs10)) bar(3, fcolor(gs5)) ///
-name(occ_upper, replace) ///
-blabel(total, format(%4.2f) size(tiny))
-restore
-
-set graph on
-
-
-*** Combine
-grc1leg occ occ_male occ_female occ_dalits occ_middle occ_upper, col(3) name(occ_comb, replace)
-graph export "Occ_inc_total.pdf", as(pdf) replace
-
-
-****************************************
-* END

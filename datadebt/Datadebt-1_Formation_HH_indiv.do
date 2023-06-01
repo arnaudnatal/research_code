@@ -438,9 +438,31 @@ label values jatis jatis
 * Select
 drop if time==.
 
+********** Per head
+gen monthlyincomeperhead=(annualincome_HH/12)/HHsize
+
+
+
 save"panel_v0", replace
 ****************************************
 * END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -461,7 +483,7 @@ keep HHID_panel INDID_panel sex age name ///
 edulevel educ_attainment educ_attainment2 ///
 working_pop ///
 mainocc_profession_indiv mainocc_occupation_indiv mainocc_sector_indiv mainocc_annualincome_indiv mainocc_occupationname_indiv annualincome_indiv ///
-occupationname_mainoccup profession_mainoccup sector_mainoccup educ_attainment educ_attainment2 agecat workingage youth employed str_kindofwork employee selfemployed sector_kilm4 agri industry services sector_kilm4_V2 kilm5 elementaryoccup
+occupationname_mainoccup profession_mainoccup sector_mainoccup educ_attainment educ_attainment2 agecat workingage youth employed str_kindofwork employee selfemployed sector_kilm4 agri industry services sector_kilm4_V2 kilm5 elementaryoccup nboccupation_indiv
 
 gen year=2010
 
@@ -479,8 +501,7 @@ keep HHID_panel INDID_panel sex age name ///
 edulevel maritalstatus educ_attainment educ_attainment2 ///
 working_pop ///
 mainocc_profession_indiv mainocc_occupation_indiv mainocc_sector_indiv mainocc_annualincome_indiv mainocc_occupationname_indiv annualincome_indiv hoursayear_indiv ///
-occupationname_mainoccup profession_mainoccup sector_mainoccup educ_attainment educ_attainment2 agecat workingage youth employed str_kindofwork employee selfemployed sector_kilm4 agri industry services sector_kilm4_V2 kilm5 elementaryoccup ///
-egoid raven_tt num_tt lit_tt cr_OP cr_CO cr_EX cr_AG cr_ES cr_Grit
+occupationname_mainoccup profession_mainoccup sector_mainoccup educ_attainment educ_attainment2 agecat workingage youth employed str_kindofwork employee selfemployed sector_kilm4 agri industry services sector_kilm4_V2 kilm5 elementaryoccup nboccupation_indiv
 
 gen year=2016
 
@@ -500,9 +521,7 @@ keep HHID_panel INDID_panel sex age name ///
 edulevel maritalstatus educ_attainment educ_attainment2 ///
 working_pop ///
 mainocc_profession_indiv mainocc_occupation_indiv mainocc_sector_indiv mainocc_annualincome_indiv mainocc_occupationname_indiv annualincome_indiv hoursayear_indiv ///
-occupationname_mainoccup profession_mainoccup sector_mainoccup educ_attainment educ_attainment2 agecat workingage youth employed str_kindofwork employee selfemployed sector_kilm4 agri industry services sector_kilm4_V2 kilm5 elementaryoccup ///
-egoid raven_tt num_tt lit_tt cr_OP cr_CO cr_EX cr_AG cr_ES cr_Grit locus ///
-respect workmate useknowledgeatwork satisfyingpurpose schedule takeholiday agreementatwork1 agreementatwork2 agreementatwork3 agreementatwork4 changework happywork satisfactionsalary executionwork1 executionwork2 executionwork3 executionwork4 executionwork5 executionwork6 executionwork7 executionwork8 executionwork9 accidentalinjury losswork lossworknumber mostseriousincident mostseriousinjury seriousinjuryother physicalharm problemwork1 problemwork2 problemwork4 problemwork5 problemwork6 problemwork7 problemwork8 problemwork9 problemwork10 workexposure1 workexposure2 workexposure3 workexposure4 workexposure5 professionalequipment break retirementwork verbalaggression physicalagression sexualharassment sexualaggression discrimination1 discrimination2 discrimination3 discrimination4 discrimination5 discrimination6 discrimination7 discrimination8 discrimination9 resdiscrimination1 resdiscrimination2 resdiscrimination3 resdiscrimination4 resdiscrimination5 rurallocation lackskill
+occupationname_mainoccup profession_mainoccup sector_mainoccup educ_attainment educ_attainment2 agecat workingage youth employed str_kindofwork employee selfemployed sector_kilm4 agri industry services sector_kilm4_V2 kilm5 elementaryoccup nboccupation_indiv
 
 gen year=2020
 
@@ -532,6 +551,21 @@ merge m:1 HHID_panel year using "panel_v0", keepusing(caste jatis)
 drop _merge
 
 
+*** Occupied
+gen occupied=.
+replace occupied=0 if mainocc_occupation_indiv==.
+replace occupied=0 if mainocc_occupation_indiv==0
+replace occupied=1 if mainocc_occupation_indiv==1
+replace occupied=1 if mainocc_occupation_indiv==2
+replace occupied=1 if mainocc_occupation_indiv==3
+replace occupied=1 if mainocc_occupation_indiv==4
+replace occupied=1 if mainocc_occupation_indiv==5
+replace occupied=1 if mainocc_occupation_indiv==6
+replace occupied=1 if mainocc_occupation_indiv==7
+label values occupied yesno
+
+
+
 
 *** Selection
 drop if HHID_panel=="GOV64" & year==2020
@@ -542,6 +576,105 @@ drop if HHID_panel=="KUV66" & year==2020
 drop if HHID_panel=="KUV67" & year==2020
 
 save"panel_indiv_v0", replace
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Panel occupations for income
+****************************************
+
+********** RUME
+use"raw/RUME-occupnew", clear
+
+merge m:m HHID2010 using "raw\keypanel-HH_wide", keepusing(HHID_panel)
+keep if _merge==3
+drop _merge
+
+tostring INDID2010, replace
+merge m:m HHID_panel INDID2010 using "raw\keypanel-Indiv_wide", keepusing(INDID_panel)
+keep if _merge==3
+drop _merge
+
+keep HHID_panel INDID_panel occupationid year occupation annualincome
+
+save"Rumeoccup", replace
+
+
+********** NEEMSIS-1
+use"raw/NEEMSIS1-occupnew", clear
+
+merge m:m HHID2016 using "raw\keypanel-HH_wide", keepusing(HHID_panel)
+keep if _merge==3
+drop _merge
+
+tostring INDID2016, replace
+merge m:m HHID_panel INDID2016 using "raw\keypanel-Indiv_wide", keepusing(INDID_panel)
+keep if _merge==3
+drop _merge
+
+keep HHID_panel INDID_panel occupationid year occupation annualincome
+
+save"Neemsis1occup", replace
+
+
+********** NEEMSIS-2
+use"raw/NEEMSIS2-occupnew", clear
+
+merge m:m HHID2020 using "raw\keypanel-HH_wide", keepusing(HHID_panel)
+keep if _merge==3
+drop _merge
+
+tostring INDID2020, replace
+merge m:m HHID_panel INDID2020 using "raw\keypanel-Indiv_wide", keepusing(INDID_panel)
+keep if _merge==3
+drop _merge
+
+keep HHID_panel INDID_panel occupationid year occupation annualincome
+
+save"Neemsis2occup", replace
+
+
+
+
+********** Panel
+use"Rumeoccup", clear
+
+append using "Neemsis1occup"
+append using "Neemsis2occup"
+
+order HHID_panel INDID_panel occupationid year occupation annualincome
+
+replace annualincome=annualincome*(100/158) if year==2016
+replace annualincome=annualincome*(100/184) if year==2020
+
+drop if HHID_panel=="GOV64" & year==2020
+drop if HHID_panel=="GOV65" & year==2020
+drop if HHID_panel=="GOV66" & year==2020  
+drop if HHID_panel=="GOV67" & year==2020
+drop if HHID_panel=="KUV66" & year==2020
+drop if HHID_panel=="KUV67" & year==2020
+
+save"paneloccup", replace
+
 ****************************************
 * END
 
