@@ -92,7 +92,7 @@ tabstat goldquantity_HH if caste==1, stat(mean cv q) by(year)
 tabstat goldquantity_HH if caste==2, stat(mean cv q) by(year)
 tabstat goldquantity_HH if caste==3, stat(mean cv q) by(year)
 
-*** Share gols
+*** Share gold
 tabstat sharegold, stat(mean cv q) by(year)
 tabstat sharegold if caste==1, stat(mean cv q) by(year)
 tabstat sharegold if caste==2, stat(mean cv q) by(year)
@@ -134,27 +134,6 @@ tabstat loanamount_HH, stat(mean cv q) by(year)
 tabstat loanamount_HH if caste==1, stat(mean cv q) by(year)
 tabstat loanamount_HH if caste==2, stat(mean cv q) by(year)
 tabstat loanamount_HH if caste==3, stat(mean cv q) by(year)
-
-
-*** Expenses
-* Food
-tabstat foodexpenses, stat(n mean cv q) by(year)
-tabstat foodexpenses if caste==1, stat(mean cv q) by(year)
-tabstat foodexpenses if caste==2, stat(mean cv q) by(year)
-tabstat foodexpenses if caste==3, stat(mean cv q) by(year)
-
-* Health
-tabstat healthexpenses, stat(n mean cv q) by(year)
-tabstat healthexpenses if caste==1, stat(mean cv q) by(year)
-tabstat healthexpenses if caste==2, stat(mean cv q) by(year)
-tabstat healthexpenses if caste==3, stat(mean cv q) by(year)
-
-* Education
-tabstat educationexpenses, stat(n mean cv q) by(year)
-tabstat educationexpenses if caste==1, stat(mean cv q) by(year)
-tabstat educationexpenses if caste==2, stat(mean cv q) by(year)
-tabstat educationexpenses if caste==3, stat(mean cv q) by(year)
-
 
 ****************************************
 * END
@@ -665,101 +644,6 @@ restore
 *** Combine
 grc1leg debt debt_c1 debt_c2 debt_c3, col(2) name(debt_comb, replace)
 graph export "Debt_total.pdf", as(pdf) replace
-
-****************************************
-* END
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-****************************************
-* Graph poster
-****************************************
-cls
-use"panel_v0", clear
-
-*** Rescale
-replace assets_total=assets_total/10000
-replace assets_totalnoland=assets_totalnoland/10000
-replace annualincome_HH=annualincome_HH/10000
-replace loanamount_HH=loanamount_HH/10000
-gen dummydebt=0
-replace dummydebt=1 if nbloans_HH>0 & nbloans_HH!=.
-
-
-
-
-********** Amount
-preserve
-*keep if caste==1
-*drop if caste==1
-collapse (median) assets_totalnoland annualincome_HH loanamount_HH, by(time)
-twoway ///
-(connected assets_totalnoland time, lcolor(gs8)) ///
-(connected annualincome_HH time, lcolor(gs5) lpattern(dash)) ///
-(connected loanamount_HH time, lcolor(gs0)) ///
-, ///
-ylabel(0(5)30, axis(1)) ///
-ytitle("INR 10k") ///
-xlabel(1 "2010" 2 "2016-17" 3 "2020-21") ///
-xtitle("") ///
-legend(order(1 "Assets without land" 2 "Annual income" 3 "Total indebtedness") pos(6) col(3)) ///
-title("Median amount of assets, income and debt") ///
-subtitle(".", color(white)) ///
-note("." ".", size(vsmall) color(white)) ///
-aspectratio() name(amount, replace)
-graph export "Amount.png", as(png) replace
-restore
-
-
-
-
-********** IQR
-preserve
-foreach x in assets_totalnoland annualincome_HH loanamount_HH {
-egen iqr_`x'_2010=iqr(`x') if year==2010
-egen iqr_`x'_2016=iqr(`x') if year==2016
-egen iqr_`x'_2020=iqr(`x') if year==2020
-gen iqr_`x'=.
-replace iqr_`x'=iqr_`x'_2010 if year==2010
-replace iqr_`x'=iqr_`x'_2016 if year==2016
-replace iqr_`x'=iqr_`x'_2020 if year==2020
-drop iqr_`x'_2010 iqr_`x'_2016 iqr_`x'_2020
-}
-tabstat assets_totalnoland annualincome_HH loanamount_HH, stat(iqr) by(year)
-keep year time iqr_assets_totalnoland iqr_annualincome_HH iqr_loanamount_HH
-sort time
-twoway ///
-(connected iqr_assets_totalnoland time, lcolor(gs8)) ///
-(connected iqr_annualincome_HH time, lcolor(gs5) lpattern(dash)) ///
-(connected iqr_loanamount_HH time, color(gs0)) ///
-, ///
-ylabel(0(5)30, axis(1)) ///
-ytitle("INR 10k") ///
-xlabel(1 "2010" 2 "2016-17" 3 "2020-21") ///
-xtitle("") ///
-legend(order(1 "Assets without land" 2 "Annual income" 3 "Total indebtedness") pos(6) col(3)) ///
-title("Inequalities of assets, income and debt measured with the interquartile range:") ///
-subtitle("difference between the third (Q3) and first (Q1) quartile") ///
-note("Q1: splits off the lowest 25% of data from the highest 75%." "Q3: splits off the highest 25% of data from the lowest 75%.", size(vsmall)) ///
-aspectratio() name(ineq, replace)
-graph export "Inequalities.png", as(png) replace
-restore
-
-
 
 ****************************************
 * END
