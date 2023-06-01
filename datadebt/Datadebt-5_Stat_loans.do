@@ -2,10 +2,10 @@
 cls
 *Arnaud NATAL
 *arnaud.natal@u-bordeaux.fr
-*May 14, 2023
+*June 1, 2023
 *-----
-gl link = "evodebt"
-*Prepa database
+gl link = "datadebt"
+*Stat loan
 *-----
 do "https://raw.githubusercontent.com/arnaudnatal/folderanalysis/main/$link.do"
 *-------------------------
@@ -162,19 +162,20 @@ save "clusters", replace
 
 
 
-
-
-
-
-
-
-
-
-
 ****************************************
 * Stats
 ****************************************
 use"clusters", clear
+
+
+
+********** Classification
+foreach x in reason_cat lender_cat dummyinterest dummyhelptosettleloan dummyborrowerservices{
+ta `x' clust, col nofreq chi2
+}
+
+
+
 
 
 
@@ -219,38 +220,23 @@ drop loanamountlog
 
 *********** Household characteristics
 *** Caste
-ta clust_lab caste, chi2 cchi2 exp
+ta caste clust_lab, chi2 col nofreq
 
 *** Head
-ta clust_lab head_sex, chi2 cchi2 exp
+ta head_sex clust_lab, chi2 col nofreq
 
 *** Family
-ta clust_lab typeoffamily, chi2 cchi2 exp
+ta typeoffamily clust_lab, chi2 col nofreq
+tabstat HHsize head_age dependencyratio sexratio, stat(mean cv p50) by(clust)
+ta head_edulevel clust_lab, chi2 col nofreq
 
-
-
-
-
-********** Multilogit pour y voir plus clair?
-* Encode
-encode HHID_panel, gen(hhclust)
-encode typeoffamily, gen(family)
-
-mlogit clust i.caste i.year i.family i.villageid c.assets_total1000 c.annualincome_HH i.head_sex c.head_age i.head_edulevel c.HHsize c.dependencyratio c.sexratio c.shareincomeagri_HH, vce(cluster hhclust) base
-est store spec1
-
-
-esttab spec1 using "mlogit_res.csv", replace ///
-	label b(3) p(3) eqlabels(none) alignment(S) ///
-	star(* 0.10 ** 0.05 *** 0.01) ///
-	cells("b(fmt(2)star)" "se(fmt(2)par)") ///
-	refcat(, nolabel) ///
-	stats(N N_clust, fmt(0 0)	labels(`"Observations"' `"Number of clust"'))
-
-
-
-
-
+*** Wealth
+tabstat annualincome_HH assets_total1000 shareincomeagri_HH, stat(mean cv p50) by(clust)
+cls
+forvalues i=1/6{
+reg annualincome_HH ib(`i').clust, base
+}
+oneway annualincome_HH clust, bonferroni
 
 
 

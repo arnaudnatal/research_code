@@ -2,9 +2,9 @@
 cls
 *Arnaud NATAL
 *arnaud.natal@u-bordeaux.fr
-*May 14, 2023
+*June 1, 2023
 *-----
-gl link = "evodebt"
+gl link = "datadebt"
 *Prepa database
 *-----
 do "https://raw.githubusercontent.com/arnaudnatal/folderanalysis/main/$link.do"
