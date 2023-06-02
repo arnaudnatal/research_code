@@ -179,23 +179,25 @@ ta _merge year
 keep if _merge==3
 drop _merge
 drop if occupation==0
+drop if annualincome==0
 
 gen monthlyincome=annualincome/12
 gen monthlyincome2=monthlyincome
-replace monthlyincome2=monthlyincome2+1 if monthlyincome==0
+replace monthlyincome2=. if monthlyincome2<1
+tabstat monthlyincome monthlyincome2, stat(min p1 p5 p10 q p90 p95 p99 max)
+
 gen logmonthlyincome=log(monthlyincome2)
 recode occupation (5=4)
 fre occupation
 recode occupation (6=5) (7=6)
 label define occupcode 1"Agri SE" 2"Agri casual" 3"Casual" 4"Regular" 5"SE" 6"MNREGA", modify
 
-
 *** Stat
-tabstat monthlyincome monthlyincome2, stat(min p1 p5 p10 q p90 p95 p99 max)
-tabstat monthlyincome, stat(n mean cv p50) by(occupation)
-tabstat monthlyincome if year==2010, stat(n mean cv p50) by(occupation)
-tabstat monthlyincome if year==2016, stat(n mean cv p50) by(occupation)
-tabstat monthlyincome if year==2020, stat(n mean cv p50) by(occupation)
+tabstat monthlyincome2, stat(min p1 p5 p10 q p90 p95 p99 max)
+tabstat monthlyincome2, stat(n mean cv p50) by(occupation)
+tabstat monthlyincome2 if year==2010, stat(n mean cv p50) by(occupation)
+tabstat monthlyincome2 if year==2016, stat(n mean cv p50) by(occupation)
+tabstat monthlyincome2 if year==2020, stat(n mean cv p50) by(occupation)
 
 
 *** Graph
@@ -216,21 +218,12 @@ stack width(0.01) ///
 box(barw(0.5)) boffset(-0.15) pctile(5) ///
 mc(black%0) ///
 yline(4 8 12 16 20, lpattern(shortdash) lcolor(black%15)) ///
-xla(, ang(h)) xmtick() yla(, noticks) ymtick(4(4)20) ///
+xla(0(2)14, ang(h)) xmtick(0(0.5)15) yla(, noticks) ymtick(4(4)20) ///
 legend(order(4 "Whisker from 5% to 95%") pos(6) col(2) on) ///
-xtitle("Monthly income log(INR 1k)") ytitle("") name(logmonthlyincome, replace)
-
-*** Pas log
-stripplot monthlyincome, over(occupyear) ///
-stack width(0.01) ///
-box(barw(0.5)) boffset(-0.15) pctile(5) ///
-mc(black%0) ///
-yline(4 8 12 16 20, lpattern(shortdash) lcolor(black%15)) ///
-xla(, ang(h)) xmtick() yla(, noticks) ymtick(4(4)20) ///
-legend(order(4 "Whisker from 5% to 95%") pos(6) col(2) on) ///
-xtitle("Monthly income (INR 1k)") ytitle("") name(monthlyincome, replace)
-
-
+xtitle("Monthly income* (log INR)") ytitle("") note("*of one occupation", size(vsmall)) name(logmonthlyincome, replace)
+graph save "monthlyincome.gph", replace
+graph export "monthlyincome.pdf", as(pdf) replace
+graph export "monthlyincome.png", as(png) replace
 
 ****************************************
 * END
