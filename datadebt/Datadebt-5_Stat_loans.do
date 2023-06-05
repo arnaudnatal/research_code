@@ -17,6 +17,47 @@ do "https://raw.githubusercontent.com/arnaudnatal/folderanalysis/main/$link.do"
 
 
 
+****************************************
+* Formal/informal
+****************************************
+use"panel_loans", clear
+
+ta lender_cat lender4_cat
+
+ta lender_cat year, col nofreq
+
+ta lender4_cat year, col nofreq
+
+clonevar lender5=lender4
+fre lender5
+recode lender5 (2=1) (3=1) (5=1) (6=1) (7=1) (10=1)
+
+ta lender5 lender4_cat
+
+ta lender5 year, col nofreq
+
+ta lender_cat year, col nofreq
+
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ****************************************
 * Desc
@@ -382,9 +423,9 @@ drop if HHID_panel=="KUV67" & year==2020
 
 
 
-
 ********** By lenders
 cls
+drop if dummyml==0
 foreach x in otherlenderservices_poli otherlenderservices_fina otherlenderservices_guar otherlenderservices_gene otherlenderservices_none otherlenderservices_othe {
 ta `x' year, col nofreq
 ta `x' year if caste==1, col nofreq
