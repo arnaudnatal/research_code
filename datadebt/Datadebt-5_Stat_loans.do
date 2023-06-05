@@ -41,13 +41,21 @@ gen loanamount_bc=loanamount
 replace loanamount=loanamount/1000
 
 
+
+*** Stat amount
+cls
+tabstat loanamount, stat(n mean cv q p90 p95) by(year)
+tabstat loanamount if caste==1, stat(n mean cv q p90 p95) by(year)
+tabstat loanamount if caste==2, stat(n mean cv q p90 p95) by(year)
+tabstat loanamount if caste==3, stat(n mean cv q p90 p95) by(year)
+
+
+
+
 *** %
 ta year
 ta lender_cat year, col nofreq
 ta reason_cat year, col nofreq
-
-
-
 
 
 *** Amount
@@ -58,6 +66,7 @@ tabstat loanamount if year==2020, stat(mean) by(lender_cat)
 tabstat loanamount if year==2010, stat(mean) by(reason_cat)
 tabstat loanamount if year==2016, stat(mean) by(reason_cat)
 tabstat loanamount if year==2020, stat(mean) by(reason_cat)
+
 
 
 *** % of HH using it: lender_cat
@@ -334,3 +343,94 @@ graph combine howmuch comb, col(2) name(diffcomb, replace)
 
 ****************************************
 * END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Services
+****************************************
+use"panel_loans", clear
+
+********** Prepa
+drop if loansettled==1
+ta year
+ta loan_database year
+drop if loan_database=="MARRIAGE"
+ta year
+drop if HHID_panel=="GOV64" & year==2020
+drop if HHID_panel=="GOV65" & year==2020
+drop if HHID_panel=="GOV66" & year==2020  
+drop if HHID_panel=="GOV67" & year==2020
+drop if HHID_panel=="KUV66" & year==2020
+drop if HHID_panel=="KUV67" & year==2020
+
+
+
+
+
+********** By lenders
+cls
+foreach x in otherlenderservices_poli otherlenderservices_fina otherlenderservices_guar otherlenderservices_gene otherlenderservices_none otherlenderservices_othe {
+ta `x' year, col nofreq
+ta `x' year if caste==1, col nofreq
+ta `x' year if caste==2, col nofreq
+ta `x' year if caste==3, col nofreq
+}
+
+
+
+
+********** By borrowers
+cls
+keep if dummyml==1
+foreach x in borrowerservices_free borrowerservices_less borrowerservices_supp borrowerservices_none borrowerservices_othe {
+ta `x' year, col nofreq
+ta `x' year if caste==1, col nofreq
+ta `x' year if caste==2, col nofreq
+ta `x' year if caste==3, col nofreq
+}
+
+
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
