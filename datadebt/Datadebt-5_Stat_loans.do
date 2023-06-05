@@ -22,30 +22,22 @@ do "https://raw.githubusercontent.com/arnaudnatal/folderanalysis/main/$link.do"
 ****************************************
 use"panel_loans", clear
 
+*** loanlender
+ta loanlender lender_cat
+
+*** lender4
+ta lender4 lender4_cat
+
+*** Cat and cat
 ta lender_cat lender4_cat
 
-ta lender_cat year, col nofreq
 
+*** Over year
+ta lender_cat year, col nofreq
 ta lender4_cat year, col nofreq
-
-clonevar lender5=lender4
-fre lender5
-recode lender5 (2=1) (3=1) (5=1) (6=1) (7=1) (10=1)
-
-ta lender5 lender4_cat
-
-ta lender5 year, col nofreq
-
-ta lender_cat year, col nofreq
 
 ****************************************
 * END
-
-
-
-
-
-
 
 
 
@@ -82,7 +74,6 @@ gen loanamount_bc=loanamount
 replace loanamount=loanamount/1000
 
 
-
 *** Stat amount
 cls
 tabstat loanamount, stat(n mean cv q p90 p95) by(year)
@@ -91,18 +82,16 @@ tabstat loanamount if caste==2, stat(n mean cv q p90 p95) by(year)
 tabstat loanamount if caste==3, stat(n mean cv q p90 p95) by(year)
 
 
-
-
 *** %
 ta year
-ta lender_cat year, col nofreq
+ta lender4_cat year, col nofreq
 ta reason_cat year, col nofreq
 
 
 *** Amount
-tabstat loanamount if year==2010, stat(mean) by(lender_cat)
-tabstat loanamount if year==2016, stat(mean) by(lender_cat)
-tabstat loanamount if year==2020, stat(mean) by(lender_cat)
+tabstat loanamount if year==2010, stat(mean) by(lender4_cat)
+tabstat loanamount if year==2016, stat(mean) by(lender4_cat)
+tabstat loanamount if year==2020, stat(mean) by(lender4_cat)
 
 tabstat loanamount if year==2010, stat(mean) by(reason_cat)
 tabstat loanamount if year==2016, stat(mean) by(reason_cat)
@@ -110,9 +99,9 @@ tabstat loanamount if year==2020, stat(mean) by(reason_cat)
 
 
 
-*** % of HH using it: lender_cat
-fre lender_cat
-ta lender_cat, gen(len)
+*** % of HH using it: lender4_cat
+fre lender4_cat
+ta lender4_cat, gen(len)
 
 *2010
 cls
@@ -207,8 +196,6 @@ tab reaHH_`i', m
 }
 restore
 
-
-
 ****************************************
 * END
 
@@ -249,12 +236,11 @@ drop if HHID_panel=="KUV67" & year==2020
 
 
 *** Chi2
-ta loanreasongiven reason_cat
-ta loanlender lender_cat
-ta reason_cat lender_cat, chi2 exp cchi2
-ta reason_cat lender_cat
-ta reason_cat lender_cat, exp nofreq
-ta reason_cat lender_cat, cchi2 nofreq
+ta lender4 lender4_cat
+ta reason_cat lender4_cat, chi2 exp cchi2
+ta reason_cat lender4_cat
+ta reason_cat lender4_cat, exp nofreq
+ta reason_cat lender4_cat, cchi2 nofreq
 
 ****************************************
 * END
@@ -291,9 +277,9 @@ drop if HHID_panel=="KUV66" & year==2020
 drop if HHID_panel=="KUV67" & year==2020
 
 
-keep HHID_panel year reason_cat lender_cat
+keep HHID_panel year reason_cat lender4_cat
 
-egen grp=group(lender_cat reason_cat), label
+egen grp=group(lender4_cat reason_cat), label
 ta grp year, col nofreq
 
 gen grp2=grp
@@ -336,52 +322,6 @@ graph export "howmuch.pdf", as(pdf) replace
 graph export "howmuch.png", as(png) replace
 
 
-
-
-
-***
-import excel "C:\Users\Arnaud\Documents\MEGA\Thesis\Thesis_2-Context_debt\Analysis\Stat.xlsx", sheet("graphtest2") firstrow clear
-
-gen var2=var
-recode var2 (8=9) (9=10) (10=11) (11=12) (12=13) (13=14) (14=15) (15=17) (16=18) (17=19) (18=20) (19=21) (20=22) (21=23)
-
-label define var ///
-1"Inf Econ" 2"Inf Curr" 3"Inf Huma" 4"Inf Soci" 5"Inf Hous" 6"Inf No r" 7"Inf Othe" ///
-8"Semi Econ" 9"Semi Curr" 10"Semi Huma" 11"Semi Soci" 12"Semi Hous" 13"Semi No r" 14"Semi Othe" ///
-15"Form Econ" 16"Form Curr" 17"Form Huma" 18"Form Soci" 19"Form Hous" 20"Form No r" 21"Form Othe" 
-label values var var
-
-label define var2 ///
-1"Inf Econ" 2"Inf Curr" 3"Inf Huma" 4"Inf Soci" 5"Inf Hous" 6"Inf No r" 7"Inf Othe" 8" " ///
-9"Semi Econ" 10"Semi Curr" 11"Semi Huma" 12"Semi Soci" 13"Semi Hous" 14"Semi No r" 15"Semi Othe" 16" " ///
-17"Form Econ" 18"Form Curr" 19"Form Huma" 20"Form Soci" 21"Form Hous" 22"Form No r" 23"Form Othe" 
-label values var2 var2
-
-label define diff 1"(2016-2010)" 2"(2020-2016)" 3"(2020-2010)"
-label values diff diff
-
-/*
-twoway (bar val var2 if diff==1, horiz barw(0.9)) ///
-, xline(0) yline(8 16) ///
-ylabel(1(1)23, valuelabel) ///
-ytitle("") xtitle("(2) - (1)") name(gph1, replace)
-
-twoway (bar val var2 if diff==2, horiz barw(0.9)) ///
-, xline(0) yline(8 16) ///
-ylabel(1(1)23, valuelabel) ///
-ytitle("") xtitle("(3) - (2)") name(gph2, replace)
-
-twoway (bar val var2 if diff==3, horiz barw(0.9)) ///
-, xline(0) yline(8 16) ///
-ylabel(1(1)23, valuelabel) ///
-ytitle("") xtitle("(3) - (1)") name(gph3, replace)
-
-gen x=1
-twby x diff: twoway (bar val var2, horiz barw(0.9)), xline(0) yline(8 16) ylabel(1(1)23, valuelabel) name(comb, replace)
-
-graph combine howmuch comb, col(2) name(diffcomb, replace)
-*/
-
 ****************************************
 * END
 
@@ -412,6 +352,7 @@ drop if loansettled==1
 ta year
 ta loan_database year
 drop if loan_database=="MARRIAGE"
+drop if loan_database=="GOLD"
 ta year
 drop if HHID_panel=="GOV64" & year==2020
 drop if HHID_panel=="GOV65" & year==2020
@@ -425,12 +366,11 @@ drop if HHID_panel=="KUV67" & year==2020
 
 ********** By lenders
 cls
-drop if dummyml==0
 foreach x in otherlenderservices_poli otherlenderservices_fina otherlenderservices_guar otherlenderservices_gene otherlenderservices_none otherlenderservices_othe {
 ta `x' year, col nofreq
-ta `x' year if caste==1, col nofreq
-ta `x' year if caste==2, col nofreq
-ta `x' year if caste==3, col nofreq
+*ta `x' year if caste==1, col nofreq
+*ta `x' year if caste==2, col nofreq
+*ta `x' year if caste==3, col nofreq
 }
 
 
@@ -441,9 +381,9 @@ cls
 keep if dummyml==1
 foreach x in borrowerservices_free borrowerservices_less borrowerservices_supp borrowerservices_none borrowerservices_othe {
 ta `x' year, col nofreq
-ta `x' year if caste==1, col nofreq
-ta `x' year if caste==2, col nofreq
-ta `x' year if caste==3, col nofreq
+*ta `x' year if caste==1, col nofreq
+*ta `x' year if caste==2, col nofreq
+*ta `x' year if caste==3, col nofreq
 }
 
 
