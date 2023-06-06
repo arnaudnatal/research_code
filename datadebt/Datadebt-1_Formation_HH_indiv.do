@@ -382,6 +382,7 @@ label values time time
 order HHID_panel panelvar year time
 
 *** Deflate
+gen annualincome_HH_backup=annualincome_HH
 foreach x in assets_housevalue assets_livestock assets_goods assets_ownland assets_gold assets_total incomeagri_HH incomenonagri_HH annualincome_HH loanamount_HH totHH_lendercatamt_info totHH_lendercatamt_semi totHH_lendercatamt_form totHH_givencatamt_econ totHH_givencatamt_curr totHH_givencatamt_huma totHH_givencatamt_soci totHH_givencatamt_hous remittnet_HH assets_totalnoland foodexpenses educationexpenses healthexpenses {
 replace `x'=`x'*(100/158) if year==2016
 replace `x'=`x'*(100/184) if year==2020
@@ -440,6 +441,25 @@ drop if time==.
 
 ********** Per head
 gen monthlyincomeperhead=(annualincome_HH/12)/HHsize
+
+
+********** PL
+gen annualincome_HH2=annualincome_HH_backup
+replace annualincome_HH2=annualincome_HH2*(100/62.81) if year==2010
+replace annualincome_HH2=annualincome_HH2*(100/114.95) if year==2020
+replace annualincome_HH2=round(annualincome_HH2,1)
+gen dailyincome_pc=(annualincome_HH2/365)/HHsize
+gen dailyuspppdincome_pc=dailyincome_pc/20.65
+gen poor=.
+replace poor=0 if dailyuspppdincome_pc>=2.15
+replace poor=1 if dailyuspppdincome_pc<2.15
+label define poor 0"Not poor" 1"Poor"
+label values poor poor
+label var poor "USD 2.15 ppp per capita threshold"
+drop annualincome_HH2 dailyincome_pc dailyuspppdincome_pc
+
+ta poor year, col nofreq
+ta poor caste, col nofreq
 
 
 

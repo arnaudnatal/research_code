@@ -98,6 +98,17 @@ tabstat sizeownland if caste==1, stat(mean cv p50) by(year)
 tabstat sizeownland if caste==2, stat(mean cv p50) by(year)
 tabstat sizeownland if caste==3, stat(mean cv p50) by(year)
 
+
+*** PL
+cls
+ta poor year, col nofreq
+ta poor year if caste==1, col nofreq
+ta poor year if caste==2, col nofreq
+ta poor year if caste==3, col nofreq
+
+
+
+
 ****************************************
 * END
 
@@ -112,13 +123,87 @@ tabstat sizeownland if caste==3, stat(mean cv p50) by(year)
 
 
 
+****************************************
+* Graph debt: nb of loans
+****************************************
+cls
+use"panel_v0", clear
+
+*** Nb of loans
+tabstat nbloans_HH, stat(n mean cv p50) by(year)
+tabstat nbloans_HH if caste==1, stat(n mean cv p50) by(year)
+tabstat nbloans_HH if caste==2, stat(n mean cv p50) by(year)
+tabstat nbloans_HH if caste==3, stat(n mean cv p50) by(year)
+
+
+*** Graph
+* Total
+stripplot nbloans_HH, over(time) ///
+stack width(0.01) jitter(1) refline(lp(dash)) ///
+box(barw(0.1)) boffset(-0.15) pctile(5) ///
+ms(oh oh oh) msize(small) mc(black%30) ///
+xla(0(2)20, ang(h)) yla(, noticks) ///
+xmtick(0(1)20) ///
+legend(order(1 "Mean" 4 "Whisker from 5% to 95%") pos(6) col(2) on) ///
+xtitle("Number of loans per household") ytitle("") ///
+title("Total") name(c0, replace)
+
+* Dalits
+stripplot nbloans_HH if caste==1, over(time) ///
+stack width(0.01) jitter(1) refline(lp(dash)) ///
+box(barw(0.1)) boffset(-0.15) pctile(5) ///
+ms(oh oh oh) msize(small) mc(black%30) ///
+xla(0(2)20, ang(h)) yla(, noticks) ///
+xmtick(0(1)20) ///
+legend(order(1 "Mean" 4 "Whisker from 5% to 95%") pos(6) col(2) on) ///
+xtitle("Number of loans per household") ytitle("") ///
+title("Dalits") name(c1, replace)
+
+* Middle
+stripplot nbloans_HH if caste==2, over(time) ///
+stack width(0.01) jitter(1) refline(lp(dash)) ///
+box(barw(0.1)) boffset(-0.15) pctile(5) ///
+ms(oh oh oh) msize(small) mc(black%30) ///
+xla(0(2)20, ang(h)) yla(, noticks) ///
+xmtick(0(1)20) ///
+legend(order(1 "Mean" 4 "Whisker from 5% to 95%") pos(6) col(2) on) ///
+xtitle("Number of loans per household") ytitle("") ///
+title("Middle castes") name(c2, replace)
+
+* Upper
+stripplot nbloans_HH if caste==3, over(time) ///
+stack width(0.01) jitter(1) refline(lp(dash)) ///
+box(barw(0.1)) boffset(-0.15) pctile(5) ///
+ms(oh oh oh) msize(small) mc(black%30) ///
+xla(0(2)20, ang(h)) yla(, noticks) ///
+xmtick(0(1)20) ///
+legend(order(1 "Mean" 4 "Whisker from 5% to 95%") pos(6) col(2) on) ///
+xtitle("Number of loans per household") ytitle("") ///
+title("Upper castes") name(c3, replace)
+
+
+
+* Combine
+grc1leg c0 c1 c2 c3, col(2) name(comb, replace)
+graph save "nbloans.gph", replace
+graph export "nbloans.pdf", as(pdf) replace
+graph export "nbloans.png", as(png) replace
+
+****************************************
+* END
+
+
+
+
+
+
 
 
 
 
 
 ****************************************
-* Graph debt
+* Graph debt: amount and incidence
 ****************************************
 cls
 use"panel_v0", clear
