@@ -389,3 +389,50 @@ pwcorr L.fvi snbo snbo_male snbo_female, sig
 * END
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Domestic work? No, UW in HH
+****************************************
+
+********** RUME
+cls
+use"raw/RUME-occupnew", clear
+
+fre kindofwork
+
+
+
+********** NEEMSIS-1
+cls
+use"raw/NEEMSIS1-occupnew", clear
+
+fre kindofwork
+ta occupationname if kindofwork==5 | kindofwork==7
+
+
+
+********** NEEMSIS-2
+cls
+use"raw/NEEMSIS2-occupnew", clear
+
+fre kindofwork
+ta occupationname if kindofwork==5 | kindofwork==7
+
+
+
+****************************************
+* END
+
+
