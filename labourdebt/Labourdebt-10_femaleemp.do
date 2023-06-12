@@ -60,7 +60,7 @@ label define occupcode 1"Agri SE" 2"Agri casual" 3"Casual" 4"Reg non-quali" 5"Re
 
 
 set graph off
-
+ta mainocc_occupation_indiv year, col nofreq
 
 *** 2010
 preserve
