@@ -28,15 +28,17 @@ use"panel_stab_v2", clear
 fre panel
 ********** Graph
 *** General
+codebook time
+label define time 1"2016-17" 2"2020-21", modify
 
 
 stripplot ars3 if panel==1, over(time) ///
 stack width(0.01) jitter(1) /// //refline(lp(dash)) ///
 box(barw(0.1)) boffset(-0.15) pctile(5) ///
 ms(oh oh oh) msize(small) mc(black%30) ///
-xla(0(.2)1.6, ang(h)) yla(, noticks) ///
+xla(0(.2)1.6, ang(h)) yla(, valuelabel noticks) ///
 xmtick(0(.1)1.7) ymtick(0.9(0)2.5) ///
-legend(order(1 "Mean" 4 "Whisker from 5% to 95%" 6 "Individual") pos(6) col(3) on) ///
+legend(order(1 "Mean" 4 "Whisker from 5% to 95%" 5 "Individual") pos(6) col(3) on) ///
 note("2016: n=835" "2020: n=835", size(vsmall)) ///
 xtitle("") ytitle("") name(biaspanel, replace)
 graph export bias_panel.pdf, replace

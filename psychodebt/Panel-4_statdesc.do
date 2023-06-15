@@ -50,37 +50,37 @@ set graph off
 twoway ///
 (kdensity base_f1_std if female==0, lp(solid) lcolor(black)) ///
 (kdensity base_f1_std if female==1, lp(dash) lcolor(black)) ///
-, ytitle("Density") xtitle("Emotional stability (std)") legend(order(1 "Male" 2 "Female") pos(6) col(2) off) name(gph1, replace)
+, ytitle("Density") xtitle("ES (std)") legend(order(1 "Male" 2 "Female") pos(6) col(2) off) name(gph1, replace)
 
 twoway ///
 (kdensity base_f2_std if female==0, lp(solid) lcolor(black)) ///
 (kdensity base_f2_std if female==1, lp(dash) lcolor(black)) ///
-, ytitle("Density") xtitle("Conscientiousness (std)") name(gph2, replace)
+, ytitle("Density") xtitle("CO (std)") name(gph2, replace)
 
 twoway ///
 (kdensity base_f3_std if female==0, lp(solid) lcolor(black)) ///
 (kdensity base_f3_std if female==1, lp(dash) lcolor(black)) ///
-, ytitle("Density") xtitle("Openness-extraversion (std)") name(gph3, replace)
+, ytitle("Density") xtitle("OP-EX (std)") name(gph3, replace)
 
 twoway ///
 (kdensity base_f5_std if female==0, lp(solid) lcolor(black)) ///
 (kdensity base_f5_std if female==1, lp(dash) lcolor(black)) ///
-, ytitle("Density") xtitle("Agreeableness (std)") name(gph4, replace)
+, ytitle("Density") xtitle("AG (std)") name(gph4, replace)
 
 twoway ///
 (kdensity base_raven_tt_std if female==0, lp(solid) lcolor(black)) ///
 (kdensity base_raven_tt_std if female==1, lp(dash) lcolor(black)) ///
-, ytitle("Density") xtitle("Raven (std)") name(gph5, replace)
+, ytitle("Density") xtitle("Rav (std)") name(gph5, replace)
 
 twoway ///
 (kdensity base_num_tt_std if female==0, lp(solid) lcolor(black)) ///
 (kdensity base_num_tt_std if female==1, lp(dash) lcolor(black)) ///
-, ytitle("Density") xtitle("Numeracy (std)") name(gph6, replace)
+, ytitle("Density") xtitle("Num (std)") name(gph6, replace)
 
 twoway ///
 (kdensity base_lit_tt_std if female==0, lp(solid) lcolor(black)) ///
 (kdensity base_lit_tt_std if female==1, lp(dash) lcolor(black)) ///
-, ytitle("Density") xtitle("Literacy (std)") name(gph7, replace)
+, ytitle("Density") xtitle("Lit (std)") name(gph7, replace)
 
 grc1leg gph1 gph2 gph3 gph4 gph5 gph6 gph7, col(4) name(ptcs, replace)
 set graph on

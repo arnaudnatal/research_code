@@ -115,15 +115,15 @@ leg(off) name(dar, replace)
 
 
 *** Abs FM
-gen afm2=afm
-replace afm2=-140000 if afm2<-140000
-replace afm2=550000 if afm2>550000
+gen afm2=afm/1000
+replace afm2=-140 if afm2<-140
+replace afm2=550 if afm2>550
 
 twoway ///
 (scatter fvi afm2, mcolor(black%30)) ///
 , ///
 ylabel(0(.2)1) ymtick(0(.1)1) ///
-ytitle("FVI") xtitle("Absolut FM") ///
+ytitle("FVI") xtitle("Absolut FM (INR 1k)") ///
 aspectratio(1) ///
 leg(off) name(afm, replace)
 

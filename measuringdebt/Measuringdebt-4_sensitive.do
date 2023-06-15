@@ -164,7 +164,7 @@ xla(-50(10)50, ang(h)) yla(, noticks) ///
 legend(order(1 "± 5% tolerance threshold" 4 "Whisker from 5% to 95%") pos(6) col(2) on) ///
 ylabel(2 "FVI-2" 3 "FVI-3" 4 "FVI-4") ///
 xline(-5 5) ///
-xtitle("% in the distribution of FVI-n minus" "the % in the distribution of FVI") ytitle("FVI-n") name(diff_fvi_horiz, replace)
+xtitle("(% in the distribution of FVI-n) - (% in the distribution of FVI)") ytitle("FVI-n") name(diff_fvi_horiz, replace)
 graph export "graph/Sensi_stripplot_vert.pdf", as(pdf) replace
 set graph on
 

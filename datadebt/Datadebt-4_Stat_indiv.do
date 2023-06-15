@@ -190,7 +190,7 @@ gen logmonthlyincome=log(monthlyincome2)
 recode occupation (5=4)
 fre occupation
 recode occupation (6=5) (7=6)
-label define occupcode 1"Agri SE" 2"Agri casual" 3"Casual" 4"Regular" 5"SE" 6"MNREGA", modify
+label define occupcode 1"Agri self-emp" 2"Agri casual" 3"Casual" 4"Regular" 5"Self-emp" 6"MGNREGA", modify
 
 *** Stat
 tabstat monthlyincome2, stat(min p1 p5 p10 q p90 p95 p99 max)
@@ -205,12 +205,12 @@ egen occupyear=group(occupation year), label
 fre occupyear
 recode occupyear (4=5) (5=6) (6=7) (7=9) (8=10) (9=11) (10=13) (11=14) (12=15) (13=17) (14=18) (15=19) (16=21) (17=22) (18=23)
 label define occupyear ///
-1"2010" 2"Agri SE   2016-17" 3"2020-21" 4"" ///
+1"2010" 2"Agri self-emp   2016-17" 3"2020-21" 4"" ///
 5"2010" 6"Agri casual   2016-17" 7"2020-21" 8"" ///
 9"2010" 10"Casual   2016-17" 11"2020-21" 12"" ///
 13"2010" 14"Regular   2016-17" 15"2020-21" 16"" ///
-17"2010" 18"SE   2016-17" 19"2020-21" 20"" ///
-21"2010" 22"MNREGA   2016-17" 23"2020-21", modify
+17"2010" 18"Self-emp   2016-17" 19"2020-21" 20"" ///
+21"2010" 22"MGNREGA   2016-17" 23"2020-21", modify
 
 *** Log
 stripplot logmonthlyincome, over(occupyear) ///

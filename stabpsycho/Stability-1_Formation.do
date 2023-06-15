@@ -134,8 +134,35 @@ rename submissiondate submissiondate2020
 gen year=2020
 
 * COVID
-merge m:1 HHID2020 using "raw\NEEMSIS2-covid.dta", keepusing(dummyexposure dummysell)
+merge m:1 HHID2020 using "raw\NEEMSIS2-covid.dta", keepusing(dummyexposure dummysell secondlockdownexposure)
 drop _merge
+/*
+ERREUR
+. ta dummyexposure
+
+dummyexposu |
+         re |      Freq.     Percent        Cum.
+------------+-----------------------------------
+         No |      2,328       79.95       79.95
+        Yes |        584       20.05      100.00
+------------+-----------------------------------
+      Total |      2,912      100.00
+
+
+
+GOOD
+. ta dummyexposure
+
+dummyexposu |
+         re |      Freq.     Percent        Cum.
+------------+-----------------------------------
+         No |      2,328       76.00       76.00
+        Yes |        735       24.00      100.00
+------------+-----------------------------------
+      Total |      3,063      100.00
+  
+*/
+
 
 * Caste
 merge 1:1 HHID2020 INDID2020 using "raw\NEEMSIS2-caste.dta", keepusing(jatiscorr caste)

@@ -145,7 +145,7 @@ ms(oh oh oh) msize(small) mc(black%30) ///
 xla(0(2)20, ang(h)) yla(, noticks) ///
 xmtick(0(1)20) ///
 legend(order(1 "Mean" 4 "Whisker from 5% to 95%") pos(6) col(2) on) ///
-xtitle("Number of loans per household") ytitle("") ///
+xtitle("No. of loans per household") ytitle("") ///
 title("Total") name(c0, replace)
 
 * Dalits
@@ -156,7 +156,7 @@ ms(oh oh oh) msize(small) mc(black%30) ///
 xla(0(2)20, ang(h)) yla(, noticks) ///
 xmtick(0(1)20) ///
 legend(order(1 "Mean" 4 "Whisker from 5% to 95%") pos(6) col(2) on) ///
-xtitle("Number of loans per household") ytitle("") ///
+xtitle("No. of loans per household") ytitle("") ///
 title("Dalits") name(c1, replace)
 
 * Middle
@@ -167,7 +167,7 @@ ms(oh oh oh) msize(small) mc(black%30) ///
 xla(0(2)20, ang(h)) yla(, noticks) ///
 xmtick(0(1)20) ///
 legend(order(1 "Mean" 4 "Whisker from 5% to 95%") pos(6) col(2) on) ///
-xtitle("Number of loans per household") ytitle("") ///
+xtitle("No. of loans per household") ytitle("") ///
 title("Middle castes") name(c2, replace)
 
 * Upper
@@ -178,7 +178,7 @@ ms(oh oh oh) msize(small) mc(black%30) ///
 xla(0(2)20, ang(h)) yla(, noticks) ///
 xmtick(0(1)20) ///
 legend(order(1 "Mean" 4 "Whisker from 5% to 95%") pos(6) col(2) on) ///
-xtitle("Number of loans per household") ytitle("") ///
+xtitle("No. of loans per household") ytitle("") ///
 title("Upper castes") name(c3, replace)
 
 
@@ -239,10 +239,10 @@ ylabel(0(.1)1, axis(1)) ///
 ylabel(0(5)20, axis(2)) ///
 ymtick(0(2.5)20, axis(2)) ///
 ytitle("Share of indebted households", axis(1)) ///
-ytitle("Average loanamount (INR 10k)", axis(2)) ///
+ytitle("Average loan amount (INR 10k)", axis(2)) ///
 xlabel(1 "2010" 2 "2016-17" 3 "2020-21") ///
 xtitle("") ///
-legend(order(1 "Share of indebted households" 2 "Average loanamount (INR 10k)") pos(6) col(2)) ///
+legend(order(1 "Share of indebted households" 2 "Average loan amount (INR 10k)") pos(6) col(2)) ///
 title("Total") ///
 aspectratio() name(debt, replace)
 graph export "Debt_total.pdf", as(pdf) replace
@@ -262,10 +262,10 @@ ylabel(0(.1)1, axis(1)) ///
 ylabel(0(5)20, axis(2)) ///
 ymtick(0(2.5)20, axis(2)) ///
 ytitle("Share of indebted households", axis(1)) ///
-ytitle("Average loanamount (INR 10k)", axis(2)) ///
+ytitle("Average loan amount (INR 10k)", axis(2)) ///
 xlabel(1 "2010" 2 "2016-17" 3 "2020-21") ///
 xtitle("") ///
-legend(order(1 "Share of indebted households" 2 "Average loanamount (INR 10k)") pos(6) col(2)) ///
+legend(order(1 "Share of indebted households" 2 "Average loan amount (INR 10k)") pos(6) col(2)) ///
 title("Dalits") ///
 aspectratio() name(debt_c1, replace)
 
@@ -279,11 +279,11 @@ ylabel(0(.1)1, axis(1)) ///
 ylabel(0(5)20, axis(2)) ///
 ymtick(0(2.5)20, axis(2)) ///
 ytitle("Share of indebted households", axis(1)) ///
-ytitle("Average loanamount (INR 10k)", axis(2)) ///
+ytitle("Average loan amount (INR 10k)", axis(2)) ///
 xlabel(1 "2010" 2 "2016-17" 3 "2020-21") ///
 xtitle("") ///
-legend(order(1 "Share of indebted households" 2 "Average loanamount (INR 10k)") pos(6) col(2)) ///
-title("Middle") ///
+legend(order(1 "Share of indebted households" 2 "Average loan amount (INR 10k)") pos(6) col(2)) ///
+title("Middle castes") ///
 aspectratio() name(debt_c2, replace)
 
 
@@ -296,11 +296,11 @@ ylabel(0(.1)1, axis(1)) ///
 ylabel(0(5)20, axis(2)) ///
 ymtick(0(2.5)20, axis(2)) ///
 ytitle("Share of indebted households", axis(1)) ///
-ytitle("Average loanamount (INR 10k)", axis(2)) ///
+ytitle("Average loan amount (INR 10k)", axis(2)) ///
 xlabel(1 "2010" 2 "2016-17" 3 "2020-21") ///
 xtitle("") ///
-legend(order(1 "Share of indebted households" 2 "Average loanamount (INR 10k)") pos(6) col(2)) ///
-title("Upper") ///
+legend(order(1 "Share of indebted households" 2 "Average loan amount (INR 10k)") pos(6) col(2)) ///
+title("Upper castes") ///
 aspectratio() name(debt_c3, replace)
 restore
 

@@ -38,9 +38,9 @@ twoway ///
 (bar h x if x<-.5, color() barwidth(0.1)) ///
 (bar h x if x>=-.5 & x<=.5, color() barwidth(0.1)) ///
 (bar h x if x>.5, color() barwidth(0.1)) ///
-(kdensity diff_fa_ES, yaxis(2) lpattern(solid) bwidth(0.2)ytitle("Kernel density", axis(2))) ///
+(kdensity diff_fa_ES, yaxis(2) lpattern(solid) bwidth(0.2)ytitle("Density", axis(2))) ///
 , ///
-xtitle("Percent") ytitle("ΔES - Factor app.") ///
+xtitle("Percent") ytitle("ΔES") ///
 ylabel(, grid gmax gmin) xlabel(, nogrid gmax gmin) ///
 plotregion(margin(none)) legend(order(1 "Decreasing" 2 "Stable" 3 "Increasing") pos(6) col(3)) note("Kernel: epanechnikov" "Bandwidth=0.2", size(vsmall))
 graph save "histo_ES.gph", replace
@@ -129,22 +129,23 @@ ta abs_diff_fa_ES_cat10_cont
 ********** ALL
 glm abs_diff_fa_ES_cat10_cont ///
 i.female ///
-ib(1).caste ///
 i.educode ///
 i.age_cat ///
 ib(2).moc_indiv ///
 i.marital ///
 ib(2).annualincome_indiv2016_q ///
-i.dummydemonetisation2016 ///
-i.dummysell2020 ///
 ib(2).assets2016_q ///
+ib(1).caste ///
 ib(1).diff_ars3_cat5 ///
 i.username_neemsis2 ///
 i.villageid2016 ///
+i.dummydemonetisation2016 ///
+i.dummysell2020 ///
 , link(log) family(igaussian) cluster(cluster) allbase
 est store all
 return list
 ereturn list
+
 
 /*
 ols: 				AIC=1273.521 BIC=1456.313
@@ -158,20 +159,21 @@ glm, log-gamma: 	AIC=2.79641  BIC=-3733.987
 ********** INC
 glm abs_diff_fa_ES_cat10_cont_inc ///
 i.female ///
-ib(1).caste ///
 i.educode ///
 i.age_cat ///
 ib(2).moc_indiv ///
 i.marital ///
 ib(2).annualincome_indiv2016_q ///
-i.dummydemonetisation2016 ///
-i.dummysell2020 ///
 ib(2).assets2016_q ///
+ib(1).caste ///
 ib(1).diff_ars3_cat5 ///
 i.username_neemsis2 ///
 i.villageid2016 ///
+i.dummydemonetisation2016 ///
+i.dummysell2020 ///
 , link(log) family(igaussian) cluster(cluster) allbase
 est store inc
+
 
 /*
 ols: 				AIC=202.0701 BIC=304.2251
@@ -186,20 +188,22 @@ glm, log-gamma: 	AIC=2.864126 BIC=-236.9501
 ********** DEC
 glm abs_diff_fa_ES_cat10_cont_dec ///
 i.female ///
-ib(1).caste ///
 i.educode ///
 i.age_cat ///
 ib(2).moc_indiv ///
 i.marital ///
 ib(2).annualincome_indiv2016_q ///
-i.dummydemonetisation2016 ///
-i.dummysell2020 ///
 ib(2).assets2016_q ///
+ib(1).caste ///
 ib(1).diff_ars3_cat5 ///
 i.username_neemsis2 ///
 i.villageid2016 ///
+i.dummydemonetisation2016 ///
+i.dummysell2020 ///
 , link(log) family(igaussian) cluster(cluster) allbase
 est store dec
+
+
 
 /*
 ols: 				AIC=1086.89  BIC=1263.072
@@ -212,11 +216,10 @@ glm, log-gamma: 	AIC=2.907795 BIC=-3066.106
 ********** Format
 esttab all inc dec using "reg.csv", replace ///
 	label b(3) p(3) eqlabels(none) alignment(S) ///
-	drop(_cons) ///
 	star(* 0.10 ** 0.05 *** 0.01) ///
 	cells("b(fmt(2)star)" "se(fmt(2)par)") ///
 	refcat(, nolabel) ///
-	stats(N dispers_p dispers dispers_p bic ll, fmt(0 2 2 2 2 2) layout("\multicolumn{1}{c}{@}" "\multicolumn{1}{S}{@}" "\multicolumn{1}{S}{@}" "\multicolumn{1}{S}{@}" "\multicolumn{1}{S}{@}" "\multicolumn{1}{S}{@}") labels(`"Observations"' `"Scale"' `"(1/df) Deviance"' `"(1/df) Pearson"' `"BIC"'  `"Log-pseudo likelihood"'))	
+	stats(N ll, fmt(0 2) layout("\multicolumn{1}{c}{@}" "\multicolumn{1}{S}{@}") labels(`"Observations"' `"Log-pseudo likelihood"'))	
 
 ****************************************
 * END

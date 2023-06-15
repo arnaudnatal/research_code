@@ -56,11 +56,12 @@ ta mainocc_occupation_indiv sex if year==2020, col nofreq
 
 codebook mainocc_occupation_indiv
 fre mainocc_occupation_indiv
-label define occupcode 1"Agri SE" 2"Agri casual" 3"Casual" 4"Reg non-quali" 5"Reg quali" 6"SE" 7"NREGA", modify
+label define occupcode 1"Agri self-emp" 2"Agri casual" 3"Casual" 4"Reg non-quali" 5"Reg quali" 6"Self-emp" 7"MGNREGA", modify
 
 
 set graph off
 ta mainocc_occupation_indiv year, col nofreq
+ta mainocc_occupation_indiv year
 
 *** 2010
 preserve
@@ -303,7 +304,7 @@ reg `y' ib(3).mainocc_occupation_indiv, base
 
 
 ********* Graph bar
-tabstat executionwork problemwork workexposure, stat(mean) by(mainocc_occupation_indiv)
+tabstat executionwork problemwork workexposure, stat(n mean) by(mainocc_occupation_indiv)
 
 collapse (mean) executionwork problemwork workexposure, by(mainocc_occupation_indiv)
 drop if mainocc_occupation_indiv==.
@@ -313,7 +314,7 @@ set graph off
 twoway ///
 (bar executionwork mainocc_occupation_indiv, barwidth(.5)) ///
 , ///
-xlab(1 "Agri SE" 2 "Agri casual" 3 "Casual" 4 "Reg non-quali" 5 "Reg quali" 6 "SE" 7 "NREGA", angle(45)) xtitle("") ///
+xlab(1 "Agri self-emp" 2 "Agri casual" 3 "Casual" 4 "Reg non-quali" 5 "Reg quali" 6 "Self-emp" 7 "MGNREGA", angle(45)) xtitle("") ///
 ylab(.3(.1)1) ytitle("Mean") ///
 title("Execution score") name(exe, replace)
 
@@ -321,7 +322,7 @@ title("Execution score") name(exe, replace)
 twoway ///
 (bar problemwork mainocc_occupation_indiv, barwidth(.5)) ///
 , ///
-xlab(1 "Agri SE" 2 "Agri casual" 3 "Casual" 4 "Reg non-quali" 5 "Reg quali" 6 "SE" 7 "NREGA", angle(45)) xtitle("") ///
+xlab(1 "Agri self-emp" 2 "Agri casual" 3 "Casual" 4 "Reg non-quali" 5 "Reg quali" 6 "Self-emp" 7 "MGNREGA", angle(45)) xtitle("") ///
 ylab(.3(.1)1) ytitle("Mean") ///
 title("Problem score") name(pb, replace)
 
@@ -329,7 +330,7 @@ title("Problem score") name(pb, replace)
 twoway ///
 (bar workexposure mainocc_occupation_indiv, barwidth(.5)) ///
 , ///
-xlab(1 "Agri SE" 2 "Agri casual" 3 "Casual" 4 "Reg non-quali" 5 "Reg quali" 6 "SE" 7 "NREGA", angle(45)) xtitle("") ///
+xlab(1 "Agri self-emp" 2 "Agri casual" 3 "Casual" 4 "Reg non-quali" 5 "Reg quali" 6 "Self-emp" 7 "MGNREGA", angle(45)) xtitle("") ///
 ylab(.3(.1)1) ytitle("Mean") ///
 title("Exposition score") name(work, replace)
 set graph on

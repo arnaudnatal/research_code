@@ -109,12 +109,18 @@ ta `x', gen(`x'_)
 global var age caste_2 caste_3 sex_2 mainocc_occupation_indiv_1 mainocc_occupation_indiv_2 mainocc_occupation_indiv_4 mainocc_occupation_indiv_5 mainocc_occupation_indiv_6 mainocc_occupation_indiv_7 mainocc_occupation_indiv_8 edulevel_2 edulevel_3 edulevel_4 edulevel_5 maritalstatus_2 username_code_1 username_code_2 username_code_3 username_code_4 username_code_5 username_code_7 username_code_8
 
 global treat dummyexposure
+ta dummyexposure
+ta secondlockdownexposure
+ta dummysell
+
+ta dummysell dummyexposure
 
 
 ********** Prepare to R
 keep f1_2020 f2_2020 f3_2020 f4_2020 f5_2020 locus $var $treat villageid_2 villageid_3 villageid_4 villageid_5 villageid_6 villageid_7 villageid_8 villageid_9 villageid_10 HHID_panel INDID_panel egoid cr_OP cr_CO cr_EX cr_AG cr_ES cr_Grit lit_tt num_tt raven_tt annualincome_indiv assets_total1000 HHsize
-rename dummyexposure treat 
+rename $treat treat 
 drop if treat==.
+ta treat
 saveold "N2_CBPS.dta", version(12) replace
 ****************************************
 * END
@@ -178,10 +184,13 @@ fre treat
 mdesc
 drop if locus==.
 
-global var age caste_2 caste_3 sex_2 mainocc_occupation_indiv_1 mainocc_occupation_indiv_2 mainocc_occupation_indiv_4 mainocc_occupation_indiv_5 mainocc_occupation_indiv_6 mainocc_occupation_indiv_7 mainocc_occupation_indiv_8 edulevel_2 edulevel_3 edulevel_4 edulevel_5 maritalstatus_2 annualincome_indiv HHsize villageid_2 villageid_3 villageid_4 villageid_5 villageid_6 villageid_7 villageid_8 villageid_9 villageid_10 username_code_1 username_code_2 username_code_3 username_code_4 username_code_5 username_code_7 username_code_8
+global var age caste_2 caste_3 sex_2 mainocc_occupation_indiv_1 mainocc_occupation_indiv_2 mainocc_occupation_indiv_4 mainocc_occupation_indiv_5 mainocc_occupation_indiv_6 mainocc_occupation_indiv_7 mainocc_occupation_indiv_8 edulevel_2 edulevel_3 edulevel_4 edulevel_5 maritalstatus_2 annualincome_indiv HHsize
+* villageid_2 villageid_3 villageid_4 villageid_5 villageid_6 villageid_7 villageid_8 villageid_9 villageid_10 username_code_1 username_code_2 username_code_3 username_code_4 username_code_5 username_code_7 username_code_8
 
 
 ********** Mean diff before weighting
+reg age treat
+ta treat
 local i=0
 foreach x in $var {
 local i=`i'+1
@@ -190,7 +199,7 @@ est store reg_`i'
 }
 
 ***** Only constant
-qui esttab reg_1 reg_2 reg_3 reg_4 reg_5 reg_6 reg_7 reg_8 reg_9 reg_10 reg_11 reg_12 reg_13 reg_14 reg_15 reg_16 reg_17 reg_18 reg_19 reg_20 reg_21 reg_22 reg_23 reg_24 reg_25 reg_26 reg_27 reg_28 reg_29 reg_30 reg_31 reg_32 reg_33 reg_34, replace ///
+qui esttab reg_1 reg_2 reg_3 reg_4 reg_5 reg_6 reg_7 reg_8 reg_9 reg_10 reg_11 reg_12 reg_13 reg_14 reg_15 reg_16 reg_17 reg_18, replace ///
 	label b(3) p(3) eqlabels(none) ///
 	drop(treat) ///
 	cells("b(fmt(2))") ///
@@ -204,7 +213,7 @@ mat list r(coefs)
 mat rename r(coefs) cons, replace
 
 ***** Only treatment
-qui esttab reg_1 reg_2 reg_3 reg_4 reg_5 reg_6 reg_7 reg_8 reg_9 reg_10 reg_11 reg_12 reg_13 reg_14 reg_15 reg_16 reg_17 reg_18 reg_19 reg_20 reg_21 reg_22 reg_23 reg_24 reg_25 reg_26 reg_27 reg_28 reg_29 reg_30 reg_31 reg_32 reg_33 reg_34, replace ///
+qui esttab reg_1 reg_2 reg_3 reg_4 reg_5 reg_6 reg_7 reg_8 reg_9 reg_10 reg_11 reg_12 reg_13 reg_14 reg_15 reg_16 reg_17 reg_18, replace ///
 	label b(3) p(3) eqlabels(none) ///
 	drop(_cons) ///
 	cells("b(fmt(2))") ///
@@ -218,7 +227,7 @@ mat list r(coefs)
 mat rename r(coefs) diff, replace
 
 ***** Only t-stat
-qui esttab reg_1 reg_2 reg_3 reg_4 reg_5 reg_6 reg_7 reg_8 reg_9 reg_10 reg_11 reg_12 reg_13 reg_14 reg_15 reg_16 reg_17 reg_18 reg_19 reg_20 reg_21 reg_22 reg_23 reg_24 reg_25 reg_26 reg_27 reg_28 reg_29 reg_30 reg_31 reg_32 reg_33 reg_34, replace ///
+qui esttab reg_1 reg_2 reg_3 reg_4 reg_5 reg_6 reg_7 reg_8 reg_9 reg_10 reg_11 reg_12 reg_13 reg_14 reg_15 reg_16 reg_17 reg_18, replace ///
 	label b(3) p(3) eqlabels(none) ///
 	drop(_cons) ///
 	cells("t(fmt(2))") ///
@@ -248,7 +257,7 @@ est store reg_`i'
 }
 
 ***** Only constant
-qui esttab reg_1 reg_2 reg_3 reg_4 reg_5 reg_6 reg_7 reg_8 reg_9 reg_10 reg_11 reg_12 reg_13 reg_14 reg_15 reg_16 reg_17 reg_18 reg_19 reg_20 reg_21 reg_22 reg_23 reg_24 reg_25 reg_26 reg_27 reg_28 reg_29 reg_30 reg_31 reg_32 reg_33 reg_34, replace ///
+qui esttab reg_1 reg_2 reg_3 reg_4 reg_5 reg_6 reg_7 reg_8 reg_9 reg_10 reg_11 reg_12 reg_13 reg_14 reg_15 reg_16 reg_17 reg_18, replace ///
 	label b(3) p(3) eqlabels(none) ///
 	drop(treat) ///
 	cells("b(fmt(2))") ///
@@ -262,7 +271,7 @@ mat list r(coefs)
 mat rename r(coefs) cons, replace
 
 ***** Only treatment
-qui esttab reg_1 reg_2 reg_3 reg_4 reg_5 reg_6 reg_7 reg_8 reg_9 reg_10 reg_11 reg_12 reg_13 reg_14 reg_15 reg_16 reg_17 reg_18 reg_19 reg_20 reg_21 reg_22 reg_23 reg_24 reg_25 reg_26 reg_27 reg_28 reg_29 reg_30 reg_31 reg_32 reg_33 reg_34, replace ///
+qui esttab reg_1 reg_2 reg_3 reg_4 reg_5 reg_6 reg_7 reg_8 reg_9 reg_10 reg_11 reg_12 reg_13 reg_14 reg_15 reg_16 reg_17 reg_18, replace ///
 	label b(3) p(3) eqlabels(none) ///
 	drop(_cons) ///
 	cells("b(fmt(2))") ///
@@ -276,7 +285,7 @@ mat list r(coefs)
 mat rename r(coefs) diff, replace
 
 ***** Only t-stat
-qui esttab reg_1 reg_2 reg_3 reg_4 reg_5 reg_6 reg_7 reg_8 reg_9 reg_10 reg_11 reg_12 reg_13 reg_14 reg_15 reg_16 reg_17 reg_18 reg_19 reg_20 reg_21 reg_22 reg_23 reg_24 reg_25 reg_26 reg_27 reg_28 reg_29 reg_30 reg_31 reg_32 reg_33 reg_34, replace ///
+qui esttab reg_1 reg_2 reg_3 reg_4 reg_5 reg_6 reg_7 reg_8 reg_9 reg_10 reg_11 reg_12 reg_13 reg_14 reg_15 reg_16 reg_17 reg_18, replace ///
 	label b(3) p(3) eqlabels(none) ///
 	drop(_cons) ///
 	cells("t(fmt(2))") ///
@@ -330,7 +339,7 @@ use "neemsis2_r.dta", clear
 global var age caste_2 caste_3 sex_2 mainocc_occupation_indiv_1 mainocc_occupation_indiv_2 mainocc_occupation_indiv_4 mainocc_occupation_indiv_5 mainocc_occupation_indiv_6 mainocc_occupation_indiv_7 mainocc_occupation_indiv_8 edulevel_2 edulevel_3 edulevel_4 edulevel_5 maritalstatus_2 annualincome_indiv HHsize villageid_2 villageid_3 villageid_4 villageid_5 villageid_6 villageid_7 villageid_8 villageid_9 villageid_10 username_code_1 username_code_2 username_code_3 username_code_4 username_code_5 username_code_7 username_code_8
 
 ***** Label
-label var treat "Demonetisation (T=1)"
+label var treat "COVID-19 lockdown (T=1)"
 label var age "Age"
 label var caste_2 "Caste: Middle"
 label var caste_3 "Caste: Upper"
