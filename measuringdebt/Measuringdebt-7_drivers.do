@@ -92,11 +92,13 @@ use"panel_v6", clear
 *** Gen var
 ta house, gen(house_)
 
-recode secondlockdownexposure (.=1)
+recode secondlockdownexposure dummysell(.=1)
 ta secondlockdownexposure, gen(lock_)
 label var lock_1 "Sec. lockdown: Before"
 label var lock_2 "Sec. lockdown: During"
 label var lock_3 "Sec. lockdown: After"
+label var dummysell "Sell assets to face lockdown: Yes"
+
 label var dummydemonetisation "Demonetisation: Yes"
 
 
@@ -148,7 +150,7 @@ global family HHsize HH_count_child stem housetitle ownland
 
 global head head_female head_age head_occ1 head_occ2 head_occ4 head_occ5 head_occ6 head_occ7 head_educ2 head_educ3 head_nonmarried
 
-global shock dummymarriage dummydemonetisation lock_2 lock_3
+global shock dummymarriage dummydemonetisation lock_1 lock_2 lock_3 dummysell dummyexposure
 
 global debt shareform loanamount_HH_std log_loanamount_HH
 
@@ -214,7 +216,10 @@ head_nonmarried mean_head_nonmarried
 
 global shock ///
 dummymarriage mean_dummymarriage ///
-dummydemonetisation mean_dummydemonetisation 
+dummydemonetisation mean_dummydemonetisation ///
+lock_2 mean_lock_2 ///
+lock_3 mean_lock_3
+*dummysell mean_dummysell
 *lock_2 mean_lock_2 ///
 *lock_3 mean_lock_3
 
