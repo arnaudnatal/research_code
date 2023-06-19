@@ -27,12 +27,17 @@ use"panel_wide_v3", clear
 *** Stat desc HH
 preserve
 duplicates drop HHID_panel, force
+tabstat HHsize assets1000 incomeHH1000 shock dummysell villageid_1 villageid_2 villageid_3 villageid_4 villageid_5 villageid_6 villageid_7 villageid_8 villageid_9 villageid_10, stat(n mean cv p50)
+
 tabstat HHsize assets1000 incomeHH1000 shock dummysell villageid_1 villageid_2 villageid_3 villageid_4 villageid_5 villageid_6 villageid_7 villageid_8 villageid_9 villageid_10 if dalits==0, stat(n mean cv p50)
 
 tabstat HHsize assets1000 incomeHH1000 shock dummysell villageid_1 villageid_2 villageid_3 villageid_4 villageid_5 villageid_6 villageid_7 villageid_8 villageid_9 villageid_10 if dalits==1, stat(n mean cv p50)
 restore
 
 *** Stat desc Indiv
+tabstat dalits age dummyhead maritalstatus2 dummyedulevel cat_mainocc_occupation_indiv_1 cat_mainocc_occupation_indiv_2 cat_mainocc_occupation_indiv_3 cat_mainocc_occupation_indiv_4 cat_mainocc_occupation_indiv_5 cat_mainocc_occupation_indiv_6 cat_mainocc_occupation_indiv_7 dummymultipleoccupation_indiv annualincome_indiv, stat(n mean cv p50)
+
+
 tabstat dalits age dummyhead maritalstatus2 dummyedulevel cat_mainocc_occupation_indiv_1 cat_mainocc_occupation_indiv_2 cat_mainocc_occupation_indiv_3 cat_mainocc_occupation_indiv_4 cat_mainocc_occupation_indiv_5 cat_mainocc_occupation_indiv_6 cat_mainocc_occupation_indiv_7 dummymultipleoccupation_indiv annualincome_indiv if female==0, stat(n mean cv p50)
 
 tabstat dalits age dummyhead maritalstatus2 dummyedulevel cat_mainocc_occupation_indiv_1 cat_mainocc_occupation_indiv_2 cat_mainocc_occupation_indiv_3 cat_mainocc_occupation_indiv_4 cat_mainocc_occupation_indiv_5 cat_mainocc_occupation_indiv_6 cat_mainocc_occupation_indiv_7 dummymultipleoccupation_indiv annualincome_indiv if female==1, stat(n mean cv p50)
@@ -41,6 +46,7 @@ tabstat dalits age dummyhead maritalstatus2 dummyedulevel cat_mainocc_occupation
 *** Stat desc Y
 preserve
 replace s_loanamount=. if s_loanamount==0
+tabstat s_indebt2020 s_loanamount s_borrservices_none2020 s_dummyproblemtorepay2020, stat(n mean cv p50)
 tabstat s_indebt2020 s_loanamount s_borrservices_none2020 s_dummyproblemtorepay2020 if female==0, stat(n mean cv p50)
 tabstat s_indebt2020 s_loanamount s_borrservices_none2020 s_dummyproblemtorepay2020 if female==1, stat(n mean cv p50)
 restore
