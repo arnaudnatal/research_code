@@ -461,8 +461,9 @@ keep HHID_panel INDID_panel sex age name ///
 edulevel educ_attainment educ_attainment2 ///
 working_pop ///
 mainocc_profession_indiv mainocc_occupation_indiv mainocc_sector_indiv mainocc_annualincome_indiv mainocc_occupationname_indiv annualincome_indiv ///
-occupationname_mainoccup profession_mainoccup sector_mainoccup educ_attainment educ_attainment2 agecat workingage youth employed str_kindofwork employee selfemployed sector_kilm4 agri industry services sector_kilm4_V2 kilm5 elementaryoccup
+occupationname_mainoccup profession_mainoccup sector_mainoccup educ_attainment educ_attainment2 agecat workingage youth employed str_kindofwork employee selfemployed sector_kilm4 agri industry services sector_kilm4_V2 kilm5 elementaryoccup studentpresent
 
+rename studentpresent currentlyatschool
 gen year=2010
 
 save "RUME_indiv_v0", replace
@@ -480,7 +481,7 @@ edulevel maritalstatus educ_attainment educ_attainment2 ///
 working_pop ///
 mainocc_profession_indiv mainocc_occupation_indiv mainocc_sector_indiv mainocc_annualincome_indiv mainocc_occupationname_indiv annualincome_indiv hoursayear_indiv ///
 occupationname_mainoccup profession_mainoccup sector_mainoccup educ_attainment educ_attainment2 agecat workingage youth employed str_kindofwork employee selfemployed sector_kilm4 agri industry services sector_kilm4_V2 kilm5 elementaryoccup ///
-egoid raven_tt num_tt lit_tt cr_OP cr_CO cr_EX cr_AG cr_ES cr_Grit
+egoid raven_tt num_tt lit_tt cr_OP cr_CO cr_EX cr_AG cr_ES cr_Grit currentlyatschool
 
 gen year=2016
 
@@ -502,7 +503,7 @@ working_pop ///
 mainocc_profession_indiv mainocc_occupation_indiv mainocc_sector_indiv mainocc_annualincome_indiv mainocc_occupationname_indiv annualincome_indiv hoursayear_indiv ///
 occupationname_mainoccup profession_mainoccup sector_mainoccup educ_attainment educ_attainment2 agecat workingage youth employed str_kindofwork employee selfemployed sector_kilm4 agri industry services sector_kilm4_V2 kilm5 elementaryoccup ///
 egoid raven_tt num_tt lit_tt cr_OP cr_CO cr_EX cr_AG cr_ES cr_Grit locus ///
-respect workmate useknowledgeatwork satisfyingpurpose schedule takeholiday agreementatwork1 agreementatwork2 agreementatwork3 agreementatwork4 changework happywork satisfactionsalary executionwork1 executionwork2 executionwork3 executionwork4 executionwork5 executionwork6 executionwork7 executionwork8 executionwork9 accidentalinjury losswork lossworknumber mostseriousincident mostseriousinjury seriousinjuryother physicalharm problemwork1 problemwork2 problemwork4 problemwork5 problemwork6 problemwork7 problemwork8 problemwork9 problemwork10 workexposure1 workexposure2 workexposure3 workexposure4 workexposure5 professionalequipment break retirementwork verbalaggression physicalagression sexualharassment sexualaggression discrimination1 discrimination2 discrimination3 discrimination4 discrimination5 discrimination6 discrimination7 discrimination8 discrimination9 resdiscrimination1 resdiscrimination2 resdiscrimination3 resdiscrimination4 resdiscrimination5 rurallocation lackskill
+respect workmate useknowledgeatwork satisfyingpurpose schedule takeholiday agreementatwork1 agreementatwork2 agreementatwork3 agreementatwork4 changework happywork satisfactionsalary executionwork1 executionwork2 executionwork3 executionwork4 executionwork5 executionwork6 executionwork7 executionwork8 executionwork9 accidentalinjury losswork lossworknumber mostseriousincident mostseriousinjury seriousinjuryother physicalharm problemwork1 problemwork2 problemwork4 problemwork5 problemwork6 problemwork7 problemwork8 problemwork9 problemwork10 workexposure1 workexposure2 workexposure3 workexposure4 workexposure5 professionalequipment break retirementwork verbalaggression physicalagression sexualharassment sexualaggression discrimination1 discrimination2 discrimination3 discrimination4 discrimination5 discrimination6 discrimination7 discrimination8 discrimination9 resdiscrimination1 resdiscrimination2 resdiscrimination3 resdiscrimination4 resdiscrimination5 rurallocation lackskill currentlyatschool
 
 gen year=2020
 

@@ -313,6 +313,25 @@ graph export "ptcs.png", replace as(png)
 cls
 use"panel_indiv_v0.dta", clear
 
+
+*** Tenter comme Séb
+preserve
+drop if age<=15
+drop if currentlyatschool==1
+ta mainocc_occupation_indiv employed, m
+recode mainocc_occupation_indiv employed (.=0)
+ta mainocc_occupation_indiv year if sex==2, col nofreq
+restore
+
+*** Mix Séb Cécile
+preserve
+drop if age<=15
+drop if employed==.
+drop if currentlyatschool==1
+ta employed year if sex==2, col
+restore
+
+
 *** Selection
 ta employed
 drop if employed==.
