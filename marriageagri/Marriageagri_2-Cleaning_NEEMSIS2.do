@@ -23,6 +23,9 @@ do"C:\Users\Arnaud\Documents\GitHub\folderanalysis\marriageagri.do"
 ****************************************
 use "raw\NEEMSIS2-HH.dta", clear
 
+sort HHID2020 INDID2020
+
+ta marriedname
 
 
 ********** How much HH concern?
@@ -32,7 +35,7 @@ keep if n==1
 tab dummymarriage  // 168 HH face one marriage or more between 2016 and 2020
 tab marriedlist if marriedlist!="." & marriedlist!=""
 restore
-
+*185 marriages
 
 
 
@@ -46,6 +49,8 @@ drop m2010
 
 ********** Keep the HH
 keep if dummymarriage==1 | dummymarriage2010==1
+
+ta dummy_marriedlist
 
 save"NEEMSIS2-marriage.dta", replace
 ****************************************
@@ -68,6 +73,8 @@ save"NEEMSIS2-marriage.dta", replace
 use "raw\NEEMSIS2-HH.dta", clear
 
 keep if dummymarriage==1
+ta marriedname
+
 keep if marriedname!=""
 
 keep HHID2020 INDID2020 egoid jatis sex age name dummymarriage dummy_marriedlist marriedname marriedid marriagesomeoneelse marriagedate dummymarriagegift marriagegiftsource marriagegiftsourcename1 marriagegiftsourcenb_WKP marriagegifttype_WKP marriagegiftamount_WKP marriagegiftsourcename2 marriagegiftsourcenb_rela marriagegifttype_rela marriagegiftamount_rela marriagegiftsourcename3 marriagegiftsourcenb_empl marriagegifttype_empl marriagegiftamount_empl marriagegiftsourcename4 marriagegiftsourcenb_mais marriagegifttype_mais marriagegiftamount_mais marriagegiftsourcename5 marriagegiftsourcenb_coll marriagegifttype_coll marriagegiftamount_coll marriagegiftsourcename9 marriagegiftsourcenb_frie marriagegifttype_frie marriagegiftamount_frie marriagegiftsourcename10 marriagegiftsourcenb_SHG marriagegifttype_SHG marriagegiftamount_SHG
@@ -128,9 +135,8 @@ use"raw/NEEMSIS2-HH.dta", clear
 
 ********** Gift
 merge 1:1 HHID2020 INDID2020 using "NEEMSIS2-marriagegiftHH"
-keep if _merge==3
 drop _merge
-
+keep if marriedname!=""
 
 ********** Husband wife caste
 tab husbandwifecaste
@@ -146,7 +152,6 @@ replace hwcaste_group=3 if husbandwifecaste==`x'
 }
 label values hwcaste_group castecat
 rename hwcaste_group hwcaste
-
 
 
 
@@ -278,42 +283,12 @@ save"NEEMSIS2-marriage.dta", replace
 ****************************************
 use"NEEMSIS2-marriage.dta", clear
 
-/*
+
 
 
 ********** Coherence amount
 tab marriagetotalcost 
 plot marriagetotalcost peoplewedding
-/*
-    1800 +  
-    m    |                                                *
-    a    |  
-    r    |  
-    r    |  
-    i    |  
-    a    |  
-    g    |  
-    e    |                                                *
-    t    |  
-    o    |                   *
-    t    |                      *         *
-    a    |                                *               *                *
-    l    |      *         *     *         *               *
-    c    |      *               *                                          *
-    o    |           *    *                               *
-    s    |    * **
-    t    | ** * *  *  *                   *
-    1    | ** * **
-    0    |  * *
-      10 + ** * ** *
-          +----------------------------------------------------------------+
-               40    How many people attended the ${marriedna        2000
-*/
-
-
-
-
-
 
 
 
@@ -324,37 +299,64 @@ tab husbandwifecost
 
 list HHID2020 INDID2020 sex caste hwcaste marriagewifecost marriagehusbandcost marriagetotalcost marriageexpenses if husbandwifecost!=0, clean noobs
 /*
-     HHID2010   INDID   old_ma~d      sex    caste   hwcaste       wife    husband      total   expenses  
-           26       3         31   Female   Dalits    Dalits      50000      50000     250000          .  pb somme ?
-           71       3         31   Female   Dalits    Dalits     550000     500000    1000000      50000  pb somme ?
-      ANTMP37       3         31   Female   Middle    Middle      30000      50000      50000          .  pb somme ?
-      ANTMP39       3          3     Male   Middle    Middle      50000      75000     150000          .  pb somme ?
-    PSKARU262       3          3     Male   Dalits    Dalits      90000      30000     200000     100000  pb somme & husband ?
-     PSKOR200       3          3     Male   Middle    Middle     100000      75000     100000      35000  pb somme ?
-      PSKU134      16         16   Female   Dalits    Dalits     100000     150000     400000          .  pb somme ?
-      PSOR390      16         16   Female   Dalits    Dalits      15800     100000     100000          .  pb somme ?
-       RAEP69       4         31   Female   Dalits    Dalits     100000     100000     250000          .  pb somme ?
-    RAKARU258       3         31   Female   Dalits    Dalits     250000     100000     250000     150000  pb somme ?
-     RAKOR211       4          4     Male   Dalits    Dalits     100000     250000     250000          .  pb somme ?
-      RAOR379       4         31     Male   Dalits    Dalits      50000      50000     200000          .  pb somme ?
-     SIKOR217       3          3     Male    Upper    Middle     500000     500000     500000     500000  pb somme ?
-      SIKU155       3          3     Male   Dalits    Dalits      50000      75000     150000          .  pb somme ?
-      SIKU158       3          3     Male   Dalits    Dalits      50000     100080     200000          .  pb somme ?
-    VENKOR219       2         31   Female   Dalits    Dalits     200000     150000     200000       5000  pb somme ?
-    VENMTP315      16         16   Female   Dalits    Dalits      20000      50000     300000     200000  pb wife & pb husband ? 
-    VENSEM115       3          3     Male   Dalits    Dalits     100000      50000     200000      50000  pb somme ?
+HHID2020	IND~2020	sex	caste	hwcaste	ma~ecost	ma~dcost	ma~lcost	marri~es
+uuid:f6765a2a-2a6d-45c3-a8e2-af3ff0777b98	3	Female	Dalits	Dalits	50000	50000	250000	.       // somme
+uuid:08805e55-b049-4379-8677-fccd5372fb7d	2	Female	Dalits	Dalits	200000	150000	200000	5000    // somme
+uuid:a9c75fcf-6a0a-4731-bf42-1e80752fcc73	4	Male	Dalits	Dalits	100000	250000	250000	.       // somme
+uuid:e5908184-fba6-4106-bf80-fcd3972a1d8c	3	Male	Middle	Middle	100000	75000	100000	35000   // somme
+uuid:30965eab-e285-48ce-9a2e-bedef927d3ac	2	Male	Dalits	Dalits	50000	200000	200000	.       // somme
+uuid:f238747c-1918-4a7c-a7ed-0f508f756e4f	4	Male	Dalits	Dalits	50000	50000	200000	.       // somme
+uuid:9e2d228c-9b26-4e9c-aabb-89711ec2c3c7	3	Male	Dalits	Dalits	50000	100080	200000	.       // somme
+uuid:9a3b8049-d4b8-46ad-89e9-d11877fe88be	3	Male	Middle	Middle	200000	350000	500000	.       // somme
+uuid:83db958d-b1ad-4544-a3d9-5f582dd900c8	1	Female	Middle	Middle	200000	250000	400000	.       // somme
+uuid:3d04313d-f28c-40c0-8e54-a21a96e9113e	16	Female	Dalits	Dalits	100000	150000	400000	.       // somme
+uuid:aba029f6-b4c8-4507-a922-cfb3731fcecc	1	Male	Middle	Middle	200000	10000	300000	.       // somme
+uuid:6eff992e-a90e-461d-b8af-3eb37a798fea	4	Female	Dalits	Dalits	100000	100000	250000	.       // somme
+uuid:92ad6585-9e3f-4b0f-85be-1160a8b80161	3	Female	Dalits	Dalits	250000	100000	250000	150000  // somme
+uuid:7bdc7481-f2a3-4071-8cfe-ebf798fc6878	3	Female	Dalits	Dalits	550000	500000	1000000	50000   // somme
+uuid:4e527146-6844-4e21-8f32-f1f9cfedad2a	16	Female	Dalits	Dalits	15800	100000	100000	.       // somme
+uuid:3cdde5f7-0440-4194-936f-5bcd3984d644	3	Male	Upper	Middle	500000	500000	500000	500000  // somme
+uuid:51a42395-d52d-4af0-905a-60dd9b168a9a	3	Female	Middle	Middle	30000	50000	50000	.       // somme
+uuid:69694844-ee5e-450a-80cb-81d85c7d7e7e	16	Female	Dalits	Dalits	20000	50000	300000	200000  // wife and husband
+uuid:a459cae1-9e19-4143-8c1f-2b537f105a4f	3	Male	Dalits	Dalits	90000	30000	200000	100000  // somme and husband
+uuid:6e71d156-2fa8-411b-85bf-42129aaa5e95	3	Male	Middle	Middle	50000	50000	50000	.       // somme  
+uuid:4636a314-9b75-4dec-8fea-05335cb99b24	3	Male	Middle	Middle	50000	75000	150000	.       // somme
+uuid:8a0af2f0-d483-4b03-a2ea-2bd30c774749	3	Male	Dalits	Dalits	50000	75000	150000	.       // somme
+uuid:b0107e4c-25f9-4f65-a264-d2e5869ddef7	3	Male	Dalits	Dalits	100000	50000	200000	50000   // somme
 */
 
-foreach x in 26/3 71/3 ANTMP37/3 ANTMP39/3 PSKOR200/3 PSKU134/16 PSOR390/16 RAEP69/4 RAKARU258/3 RAKOR211/4 RAOR379/4 SIKOR217/3 SIKU155/3 SIKU158/3 VENKOR219/2 VENSEM115/3{
-replace marriagetotalcost=marriagehusbandcost+marriagewifecost if INDID2010=="`x'"
-}
+*** Pb somme
+replace marriagetotalcost=marriagehusbandcost+marriagewifecost if HHID2020=="uuid:f6765a2a-2a6d-45c3-a8e2-af3ff0777b98" & INDID2020==3
+replace marriagetotalcost=marriagehusbandcost+marriagewifecost if HHID2020=="uuid:08805e55-b049-4379-8677-fccd5372fb7d" & INDID2020==2
+replace marriagetotalcost=marriagehusbandcost+marriagewifecost if HHID2020=="uuid:a9c75fcf-6a0a-4731-bf42-1e80752fcc73" & INDID2020==4
+replace marriagetotalcost=marriagehusbandcost+marriagewifecost if HHID2020=="uuid:e5908184-fba6-4106-bf80-fcd3972a1d8c" & INDID2020==3
+replace marriagetotalcost=marriagehusbandcost+marriagewifecost if HHID2020=="uuid:30965eab-e285-48ce-9a2e-bedef927d3ac" & INDID2020==2
+replace marriagetotalcost=marriagehusbandcost+marriagewifecost if HHID2020=="uuid:f238747c-1918-4a7c-a7ed-0f508f756e4f" & INDID2020==4
+replace marriagetotalcost=marriagehusbandcost+marriagewifecost if HHID2020=="uuid:9e2d228c-9b26-4e9c-aabb-89711ec2c3c7" & INDID2020==3
+replace marriagetotalcost=marriagehusbandcost+marriagewifecost if HHID2020=="uuid:9a3b8049-d4b8-46ad-89e9-d11877fe88be" & INDID2020==3
+replace marriagetotalcost=marriagehusbandcost+marriagewifecost if HHID2020=="uuid:83db958d-b1ad-4544-a3d9-5f582dd900c8" & INDID2020==1
+replace marriagetotalcost=marriagehusbandcost+marriagewifecost if HHID2020=="uuid:3d04313d-f28c-40c0-8e54-a21a96e9113e" & INDID2020==16
+replace marriagetotalcost=marriagehusbandcost+marriagewifecost if HHID2020=="uuid:aba029f6-b4c8-4507-a922-cfb3731fcecc" & INDID2020==1
+replace marriagetotalcost=marriagehusbandcost+marriagewifecost if HHID2020=="uuid:6eff992e-a90e-461d-b8af-3eb37a798fea" & INDID2020==4
+replace marriagetotalcost=marriagehusbandcost+marriagewifecost if HHID2020=="uuid:92ad6585-9e3f-4b0f-85be-1160a8b80161" & INDID2020==3
+replace marriagetotalcost=marriagehusbandcost+marriagewifecost if HHID2020=="uuid:7bdc7481-f2a3-4071-8cfe-ebf798fc6878" & INDID2020==3
+replace marriagetotalcost=marriagehusbandcost+marriagewifecost if HHID2020=="uuid:4e527146-6844-4e21-8f32-f1f9cfedad2a" & INDID2020==16
+replace marriagetotalcost=marriagehusbandcost+marriagewifecost if HHID2020=="uuid:3cdde5f7-0440-4194-936f-5bcd3984d644" & INDID2020==3
+replace marriagetotalcost=marriagehusbandcost+marriagewifecost if HHID2020=="uuid:51a42395-d52d-4af0-905a-60dd9b168a9a" & INDID2020==3
+replace marriagetotalcost=marriagehusbandcost+marriagewifecost if HHID2020=="uuid:6e71d156-2fa8-411b-85bf-42129aaa5e95" & INDID2020==3
+replace marriagetotalcost=marriagehusbandcost+marriagewifecost if HHID2020=="uuid:4636a314-9b75-4dec-8fea-05335cb99b24" & INDID2020==3
+replace marriagetotalcost=marriagehusbandcost+marriagewifecost if HHID2020=="uuid:8a0af2f0-d483-4b03-a2ea-2bd30c774749" & INDID2020==3
+replace marriagetotalcost=marriagehusbandcost+marriagewifecost if HHID2020=="uuid:b0107e4c-25f9-4f65-a264-d2e5869ddef7" & INDID2020==3
 
-replace marriagehusbandcost=marriageexpenses if INDID2010=="PSKARU262/3"
-replace marriagetotalcost=marriagehusbandcost+marriagewifecost if INDID2010=="PSKARU262/3"
+*** Pb husband
+replace marriagehusbandcost=marriageexpenses if HHID2020=="uuid:a459cae1-9e19-4143-8c1f-2b537f105a4f" & INDID2020==3
+replace marriagetotalcost=marriagehusbandcost+marriagewifecost if HHID2020=="uuid:a459cae1-9e19-4143-8c1f-2b537f105a4f" & INDID2020==3
 
-replace marriagewifecost=marriageexpenses if INDID2010=="VENMTP315/16"
-replace marriagetotalcost=marriagewifecost+marriagehusbandcost if INDID2010=="VENMTP315/16"
+*** Pb husband and wife
+replace marriagewifecost=marriageexpenses if HHID2020=="uuid:69694844-ee5e-450a-80cb-81d85c7d7e7e" & INDID2020==16
+replace marriagetotalcost=marriagewifecost+marriagehusbandcost if HHID2020=="uuid:69694844-ee5e-450a-80cb-81d85c7d7e7e" & INDID2020==16
 
+*** Clean
 drop husbandwifecost
 gen husbandwifecost=marriagetotalcost-(marriagewifecost+marriagehusbandcost)
 tab husbandwifecost
@@ -369,19 +371,23 @@ drop husbandwifecost
 fre sex
 gen husb_expensescost=marriageexpenses-marriagehusbandcost if sex==1
 tab husb_expensescost
-*4 case to check here
+*5 case to check here
 
 list HHID2020 INDID2020 sex caste hwcaste marriagewifecost marriagehusbandcost marriagetotalcost marriageexpenses if husb_expensescost>0 & husb_expensescost!=., clean noobs
 /*
-    HHID2010   INDID   old_ma~d    sex    caste   hwcaste       wife    husband      total   expenses  
-    ANTGP162       3         31   Male    Upper    Middle      50000      50000     100000     100000  
-     PSSEM93       3         31   Male   Middle    Middle     200000     100000     300000     300000  
-    RAMTP302       3          3   Male   Dalits    Dalits      50000      50000     100000     100000  
-    SIMTP293       3          3   Male    Upper     Upper      50000      50000     100000     100000  
+                                 HHID2020   IND~2020    sex    caste   hwcaste   ma~ecost   ma~dcost   ma~lcost   marri~es  
+uuid:0e75c80d-e953-475e-b5bd-4a5f3b9755e6          3   Male    Upper    Middle      50000      50000     100000     100000  
+uuid:e9f06e5a-ed16-4fb4-97cf-7578ba9c7ab9          3   Male   Middle    Middle     200000     100000     300000     300000  
+uuid:2b25f8fa-25c5-4d27-b6ea-f3c919ffbb61          3   Male    Upper     Upper      50000      50000     100000     100000  
+uuid:ceaa4296-408d-4a63-bc59-f24d8fd7c7c0          3   Male   Dalits    Dalits      50000      50000     100000     100000  
+uuid:bcfe8f96-597e-4e8c-b875-47971b3414b6          4   Male   Dalits    Dalits      50000      50000     100000     100000  
 */
-foreach x in ANTGP162/3 PSSEM93/3 RAMTP302/3 SIMTP293/3{
-replace marriageexpenses=marriagehusbandcost if INDID2010=="`x'"
-}
+
+replace marriageexpenses=marriagehusbandcost if HHID2020=="uuid:0e75c80d-e953-475e-b5bd-4a5f3b9755e6" & INDID2020==3
+replace marriageexpenses=marriagehusbandcost if HHID2020=="uuid:e9f06e5a-ed16-4fb4-97cf-7578ba9c7ab9" & INDID2020==3
+replace marriageexpenses=marriagehusbandcost if HHID2020=="uuid:2b25f8fa-25c5-4d27-b6ea-f3c919ffbb61" & INDID2020==3
+replace marriageexpenses=marriagehusbandcost if HHID2020=="uuid:ceaa4296-408d-4a63-bc59-f24d8fd7c7c0" & INDID2020==3
+replace marriageexpenses=marriagehusbandcost if HHID2020=="uuid:bcfe8f96-597e-4e8c-b875-47971b3414b6" & INDID2020==4
 
 drop husb_expensescost
 gen husb_expensescost=marriageexpenses-marriagehusbandcost if sex==1
@@ -398,15 +404,17 @@ tab wife_expensescost
 
 list HHID2020 INDID2020 sex caste hwcaste marriagewifecost marriagehusbandcost marriagetotalcost marriageexpenses if wife_expensescost>0 & wife_expensescost!=., clean noobs
 /*
-    HHID2010   INDID   old_ma~d      sex    caste   hwcaste       wife    husband      total   expenses  
-          55       3         31   Female   Middle    Middle       5000       5000      10000      10000  
-           7       4         31   Female   Middle    Middle          0     600000     600000     600000  
-    RAMTP298       3         31   Female   Dalits    Middle          0     200000     200000     190000  
-    RANAT342      16         16   Female   Dalits    Dalits     100000     100000     200000     200000 
+                                 HHID2020   IND~2020      sex    caste   hwcaste   ma~ecost   ma~dcost   ma~lcost   marri~es  
+uuid:e0070a7a-e763-4c3b-9fa1-5b3a18f6b45e          3   Female   Middle    Middle       5000       5000      10000      10000  
+uuid:35993b22-46eb-4ec9-9fca-1156d21ff8a6         16   Female   Dalits    Dalits     100000     100000     200000     200000  
+uuid:521d316a-3324-4bf7-b4c6-471e58e42962          4   Female   Middle    Middle          0     600000     600000     600000  
 */
-foreach x in 55/3 7/4 RAMTP298/3 RANAT342/16{
-replace marriageexpenses=marriagewifecost if INDID2010=="`x'"
-}
+
+*** Replace
+replace marriageexpenses=marriagewifecost if HHID2020=="uuid:e0070a7a-e763-4c3b-9fa1-5b3a18f6b45e" & INDID2020==3
+replace marriageexpenses=marriagewifecost if HHID2020=="uuid:35993b22-46eb-4ec9-9fca-1156d21ff8a6" & INDID2020==16
+replace marriageexpenses=marriagewifecost if HHID2020=="uuid:521d316a-3324-4bf7-b4c6-471e58e42962" & INDID2020==4
+
 
 drop wife_expensescost
 gen wife_expensescost=marriageexpenses-marriagewifecost if sex==2
@@ -425,31 +433,51 @@ tab husbandwifeenga
 
 list HHID2020 INDID2020 sex caste hwcaste engagementwifecost engagementhusbandcost engagementtotalcost if husbandwifeenga!=0, clean noobs
 /*
-     HHID2010   INDID   old_ma~d      sex    caste   hwcaste   en~ecost   en~dcost   en~lcost  
-           26       3         31   Female   Dalits    Dalits      50000     100000     100000  pb somme ?
-           29      16         16   Female   Dalits    Dalits      80000      10000      80000  pb somme ?
-      ANTMP37       3         31   Female   Middle    Middle     100000      75000     200000  pb somme ?
-      ANTMP39       3          3     Male   Middle    Middle      50000      50000     200000  pb somme ?
-     PSKOR200       3          3     Male   Middle    Middle      20000      25000      30000  pb somme ?
-       RAEP69       4         31   Female   Dalits    Dalits      50000      25000      50000  pb somme ?
-    RAKARU258       3         31   Female   Dalits    Dalits      50000      35000     200000  pb somme ?
-     RAKOR211       4          4     Male   Dalits    Dalits     100000     100000     150000  pb somme ?
-     SIKOR217       3          3     Male    Upper    Middle     200000     200000     200000  pb somme ?
-      SIKU155       3          3     Male   Dalits    Dalits      65000      50000     175000  pb somme ?
-      SIKU158       3          3     Male   Dalits    Dalits      50000      50000      50000  pb somme ?
-    VENKOR219       2         31   Female   Dalits    Dalits      30000      50000      50000  pb somme ?
-    VENMTP315      16         16   Female   Dalits    Dalits      20000      25000      25000  pb somme ?
+
+                                 HHID2020   IND~2020      sex    caste   hwcaste   en~ecost   en~dcost   en~lcost  
+uuid:f6765a2a-2a6d-45c3-a8e2-af3ff0777b98          3   Female   Dalits    Dalits      50000     100000     100000  // somme
+uuid:08805e55-b049-4379-8677-fccd5372fb7d          2   Female   Dalits    Dalits      30000      50000      50000  // somme  
+uuid:a9c75fcf-6a0a-4731-bf42-1e80752fcc73          4     Male   Dalits    Dalits     100000     100000     150000  // somme
+uuid:30965eab-e285-48ce-9a2e-bedef927d3ac          2     Male   Dalits    Dalits      50000      40000      50000  // somme
+uuid:6bd1eaa0-9117-47c2-8c61-29d5102daf1f         16   Female   Dalits    Dalits      80000      10000      80000  // somme
+uuid:9e2d228c-9b26-4e9c-aabb-89711ec2c3c7          3     Male   Dalits    Dalits      50000      50000      50000  // somme
+uuid:e5908184-fba6-4106-bf80-fcd3972a1d8c          3     Male   Middle    Middle      20000      25000      30000  // somme
+uuid:9ecbdaca-ffce-4bbc-a69d-455ea0411977          7     Male   Dalits    Dalits      25000      25000     500000  // somme
+uuid:92ad6585-9e3f-4b0f-85be-1160a8b80161          3   Female   Dalits    Dalits      50000      35000     200000  // somme
+uuid:6eff992e-a90e-461d-b8af-3eb37a798fea          4   Female   Dalits    Dalits      50000      25000      50000  // somme
+uuid:3cdde5f7-0440-4194-936f-5bcd3984d644          3     Male    Upper    Middle     200000     200000     200000  // somme
+uuid:51a42395-d52d-4af0-905a-60dd9b168a9a          3   Female   Middle    Middle     100000      75000     200000  // somme
+uuid:69694844-ee5e-450a-80cb-81d85c7d7e7e         16   Female   Dalits    Dalits      20000      25000      25000  // somme
+uuid:6e71d156-2fa8-411b-85bf-42129aaa5e95          3     Male   Middle    Middle      35000      50000      50000  // somme
+uuid:8a0af2f0-d483-4b03-a2ea-2bd30c774749          3     Male   Dalits    Dalits      65000      50000     175000  // somme
+uuid:4636a314-9b75-4dec-8fea-05335cb99b24          3     Male   Middle    Middle      50000      50000     200000  // somme
 */
-foreach x in 26/3 29/16 ANTMP37/3 ANTMP39/3 PSKOR200/3 RAEP69/4 RAKARU258/3 RAKOR211/4 SIKOR217/3 SIKU155/3 SIKU158/3 VENKOR219/2 VENMTP315/16{
-replace engagementtotalcost=engagementwifecost+engagementhusbandcost if INDID2010=="`x'"
-}
+
+*** Somme
+replace engagementtotalcost=engagementwifecost+engagementhusbandcost if HHID2020=="uuid:f6765a2a-2a6d-45c3-a8e2-af3ff0777b98" & INDID2020==3
+replace engagementtotalcost=engagementwifecost+engagementhusbandcost if HHID2020=="uuid:08805e55-b049-4379-8677-fccd5372fb7d" & INDID2020==2
+replace engagementtotalcost=engagementwifecost+engagementhusbandcost if HHID2020=="uuid:a9c75fcf-6a0a-4731-bf42-1e80752fcc73" & INDID2020==4
+replace engagementtotalcost=engagementwifecost+engagementhusbandcost if HHID2020=="uuid:30965eab-e285-48ce-9a2e-bedef927d3ac" & INDID2020==2
+replace engagementtotalcost=engagementwifecost+engagementhusbandcost if HHID2020=="uuid:6bd1eaa0-9117-47c2-8c61-29d5102daf1f" & INDID2020==16
+replace engagementtotalcost=engagementwifecost+engagementhusbandcost if HHID2020=="uuid:9e2d228c-9b26-4e9c-aabb-89711ec2c3c7" & INDID2020==3
+replace engagementtotalcost=engagementwifecost+engagementhusbandcost if HHID2020=="uuid:e5908184-fba6-4106-bf80-fcd3972a1d8c" & INDID2020==3
+replace engagementtotalcost=engagementwifecost+engagementhusbandcost if HHID2020=="uuid:9ecbdaca-ffce-4bbc-a69d-455ea0411977" & INDID2020==7
+replace engagementtotalcost=engagementwifecost+engagementhusbandcost if HHID2020=="uuid:92ad6585-9e3f-4b0f-85be-1160a8b80161" & INDID2020==3
+replace engagementtotalcost=engagementwifecost+engagementhusbandcost if HHID2020=="uuid:6eff992e-a90e-461d-b8af-3eb37a798fea" & INDID2020==4
+replace engagementtotalcost=engagementwifecost+engagementhusbandcost if HHID2020=="uuid:3cdde5f7-0440-4194-936f-5bcd3984d644" & INDID2020==3
+replace engagementtotalcost=engagementwifecost+engagementhusbandcost if HHID2020=="uuid:51a42395-d52d-4af0-905a-60dd9b168a9a" & INDID2020==3
+replace engagementtotalcost=engagementwifecost+engagementhusbandcost if HHID2020=="uuid:69694844-ee5e-450a-80cb-81d85c7d7e7e" & INDID2020==16
+replace engagementtotalcost=engagementwifecost+engagementhusbandcost if HHID2020=="uuid:6e71d156-2fa8-411b-85bf-42129aaa5e95" & INDID2020==3
+replace engagementtotalcost=engagementwifecost+engagementhusbandcost if HHID2020=="uuid:8a0af2f0-d483-4b03-a2ea-2bd30c774749" & INDID2020==3
+replace engagementtotalcost=engagementwifecost+engagementhusbandcost if HHID2020=="uuid:4636a314-9b75-4dec-8fea-05335cb99b24" & INDID2020==3
+
+
 
 drop husbandwifeenga
 gen husbandwifeenga=engagementtotalcost-(engagementwifecost+engagementhusbandcost)
 tab husbandwifeenga
 drop husbandwifeenga
 
-*/
 
 save"NEEMSIS2-marriage_v2.dta", replace
 ****************************************
@@ -559,112 +587,232 @@ save"NEEMSIS2-marriage_v3.dta", replace
 
 
 
+
+****************************************
+* Respondent, age and assets
+****************************************
+use"NEEMSIS2-marriage_v3.dta", clear
+
+
+********** Identify respondent amount
+gen respondent_engagementcost1000=.
+gen respondent_marriagecost1000=.
+gen respondent_sharemarriage=.
+gen respondent_shareengagement=.
+
+replace respondent_engagementcost1000=engagementhusbandcost1000 if sex==1
+replace respondent_engagementcost1000=engagementwifecost1000 if sex==2
+
+replace respondent_marriagecost1000=marriagehusbandcost1000 if sex==1
+replace respondent_marriagecost1000=marriagewifecost1000 if sex==2
+
+replace respondent_shareengagement=husbandshareengagement if sex==1
+replace respondent_shareengagement=wifeshareengagement if sex==2
+
+replace respondent_sharemarriage=husbandsharemarriage if sex==1
+replace respondent_sharemarriage=wifesharemarriage if sex==2
+
+
+********** Age as cat
+fsum ageatmarriage
+fre sex
+gen female_agecat=.
+replace female_agecat=1 if ageatmarriage<18 & ageatmarriage!=. & sex==2
+replace female_agecat=2 if ageatmarriage>=18 & ageatmarriage<25 & ageatmarriage!=. & sex==2
+replace female_agecat=3 if ageatmarriage>=25 & ageatmarriage<30 & ageatmarriage!=. & sex==2
+replace female_agecat=4 if ageatmarriage>=30 & ageatmarriage<40 & ageatmarriage!=. & sex==2
+replace female_agecat=5 if ageatmarriage>=40 & ageatmarriage!=. & sex==2
+
+label define agecat 1"];18[" 2"[18;25[" 3"[25;30[" 4"[30;40[" 5"[40;["
+label values female_agecat agecat
+
+tab female_agecat sex, m
+
+
+
+********** Quantile income and assets
+xtile totalincome_HH_q=totalincome_HH, n(4)
+xtile assets_q=assets, n(4)
+
+label define inc_q 1"Income - Q1" 2"Income - Q2" 3"Income - Q3" 4"Income - Q4", replace
+label define ass_q 1"Assets - Q1" 2"Assets - Q2" 3"Assets - Q3" 4"Assets - Q4", replace
+
+label values totalincome_HH_q inc_q
+label values assets_q ass_q
+
+
+save"NEEMSIS2-marriage_v4.dta", replace
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Network
+****************************************
+use"NEEMSIS2-marriage_v4.dta", clear
+
+********** Cleaning formal network
+gen dummyassopolitic=0
+replace dummyassopolitic=1 if assodegreeparticip_politic1!=""
+*replace dummyassopolitic=1 if assodegreeparticip_politic2!=""
+
+gen dummyassoprofess=0
+replace dummyassoprofess=1 if assodegreeparticip_profess1!=""
+*replace dummyassoprofess=1 if assodegreeparticip_profess2!=""
+*replace dummyassoprofess=1 if assodegreeparticip_profess3!="" 
+
+gen dummyassoshg=0
+replace dummyassoshg=1 if assodegreeparticip_shg1!=""
+*replace dummyassoshg=1 if assodegreeparticip_shg2!=""
+*replace dummyassoshg=1 if assodegreeparticip_shg3!=""
+
+gen dummyassofarmer=0
+replace dummyassofarmer=1 if assodegreeparticip_farmer1!=""
+
+gen dummyassohobby=0
+*replace dummyassohobby=1 if assodegreeparticip_hobby2!=""
+
+gen dummyassoother=0
+*replace dummyassoother=1 if assodegreeparticip_other2!=""
+
+gen dummyassovillage=0
+*replace dummyassovillage=1 if assodegreeparticip_village2!=""
+
+tab1 dummyassopolitic dummyassoprofess dummyassoshg dummyassofarmer dummyassohobby dummyassoother dummyassovillage
+
+egen dummyasso=rowtotal(dummyassopolitic dummyassoprofess dummyassoshg dummyassofarmer dummyassohobby dummyassoother dummyassovillage)
+replace dummyasso=1 if dummyasso>1
+label define asso 0"No asso (n=99)" 1"Asso (n=18)"
+label values dummyasso asso
+
+
+********** Cleaning size network & qualityt
+tab1 nbercontactphone1 nbercontactphone2 nbercontactphone3
+fre nbercontactphone1
+
+gen contactphone=. 
+replace contactphone=1 if nbercontactphone1==7
+replace contactphone=2 if nbercontactphone1==1
+replace contactphone=2 if nbercontactphone1==2
+replace contactphone=3 if nbercontactphone1==3
+replace contactphone=4 if nbercontactphone1==4
+replace contactphone=4 if nbercontactphone1==5
+tab nbercontactphone1 contactphone
+
+*Quality
+tab1 dummycontactleaders1 dummycontactleaders2 dummycontactleaders3
+tab contactleaders1
+gen leaders=0
+replace leaders=1 if contactleaders1=="ADMK"
+replace leaders=1 if contactleaders1=="Admk"
+replace leaders=1 if contactleaders1=="Politician of ADMK"
+replace leaders=2 if contactleaders1=="Village panchayat"
+replace leaders=3 if contactleaders1=="Babu"
+replace leaders=3 if contactleaders1=="DPI"
+tab leaders
+
+*Party cost
+gen partycost1000=marriagehusbandcost1000 if sex==1
+replace partycost1000=marriagewifecost1000 if sex==2
+
+
+
+save"NEEMSIS2-marriage_v5.dta", replace
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Intercaste marriage
+****************************************
+use"NEEMSIS2-marriage_v5.dta", clear
+
+tab jatis caste
+tab hwcaste caste
 /*
-********** Indicators
-*
-gen MEAR=marriageexpenses/assets
-*
-gen MCAR=.
-replace MCAR=marriagehusbandcost/assets if sex==1
-replace MCAR=marriagewifecost/assets if sex==2
-*
-gen ECAR=.
-replace ECAR=engagementhusbandcost/assets if sex==1
-replace ECAR=engagementwifecost/assets if sex==2
-*
-gen DAAR=.
-replace DAAR=marriagedowry/assets if sex==2
-*
-gen MEIR=marriageexpenses/totalincome_HH
-*
-gen MCIR=.
-replace MCIR=marriagehusbandcost/totalincome_HH if sex==1
-replace MCIR=marriagewifecost/totalincome_HH if sex==2
-*
-gen ECIR=.
-replace ECIR=engagementhusbandcost/totalincome_HH if sex==1
-replace ECIR=engagementwifecost/totalincome_HH if sex==2
-*
-gen DAIR=.
-replace DAIR=marriagedowry/totalincome_HH if sex==2
-*
-gen MEMC=.
-replace MEMC=marriageexpenses/marriagehusbandcost if sex==1
-replace MEMC=marriageexpenses/marriagewifecost if sex==2
-*
-gen DMC=.
-replace DMC=marriagedowry/marriagetotalcost
+Pratiloma --> lower dowry  --> downward mobility
+Anuloma --> higher dowry --> upward mobility for female
 
 
-********** Total cost
-*Total cost of marriage: engagement, marriage and dowry
-gen husbtotalcost1000=.
-gen wifetotalcost1000=.
-gen totalcost1000=.
-replace husbtotalcost1000=(engagementhusbandcost+marriagehusbandcost)/1000
-replace wifetotalcost1000=(engagementwifecost+marriagewifecost+marriagedowry)/1000
-replace totalcost1000=(engagementtotalcost+marriagetotalcost+marriagedowry)/1000
-*Total cost on assets and income
-gen TCAR=.
-replace TCAR=(husbtotalcost1000*1000)/assets if sex==1
-replace TCAR=(wifetotalcost1000*1000)/assets if sex==2
-
-gen TCIR=.
-replace TCIR=(husbtotalcost1000*1000)/totalincome_HH if sex==1
-replace TCIR=(wifetotalcost1000*1000)/totalincome_HH if sex==2
-
-
-********* Share
-gen husbandsharemarriage=marriagehusbandcost/marriagetotalcost
-gen wifesharemarriage=marriagewifecost/marriagetotalcost
-gen husbandshareengagement=engagementhusbandcost/engagementtotalcost
-gen wifeshareengagement=engagementwifecost/engagementtotalcost
-
-gen testmar=husbandsharemarriage+wifesharemarriage
-gen testenga=husbandshareengagement+wifeshareengagement
-
-tab1 testmar testenga
-drop testmar testenga
-
-gen husbandsharetotal=husbtotalcost1000/totalcost1000
-gen wifesharetotal=wifetotalcost1000/totalcost1000
-
-gen testtotal=husbandsharetotal+wifesharetotal
-tab testtotal
-drop testtotal
-
-
-********** Total cost and dowry
-gen DWTC=.
-replace DWTC=marriagedowry1000/wifetotalcost1000
-
-gen DWTCnodowry=.
-replace DWTCnodowry=marriagedowry1000/(engagementwifecost1000+marriagewifecost1000)
-
-
-********** Intercaste marriage
-gen intercaste=0 if hwcaste==caste
-replace intercaste=1 if hwcaste!=caste
-
-
-********** Gift
-gen gifttoexpenses=totalmarriagegiftamount/marriageexpenses
-gen gifttocost=.
-replace gifttocost=totalmarriagegiftamount/marriagehusbandcost if sex==1
-replace gifttocost=totalmarriagegiftamount/marriagewifecost if sex==2
-
-
-gen benefitscost=0
-replace benefitscost=1 if gifttocost>1 & gifttocost!=.
-tab1 gifttocost benefitscost
-
-gen benefitsexpenses=0
-replace benefitsexpenses=1 if gifttoexpenses>1 & gifttoexpenses!=.
-tab1 gifttoexpenses benefitsexpenses
-
-********** Gift on income and assets
-gen GAR=totalmarriagegiftamount/assets
-gen GIR=totalmarriagegiftamount/totalincome_HH
+-------------------------+--------------------------------------------
+Valid   1  Vanniyar      |         30      25.64      25.64      25.64
+        2  SC            |         68      58.12      58.12      83.76
+        3  Arunthathiyar |          1       0.85       0.85      84.62
+        4  Rediyar       |          2       1.71       1.71      86.32
+        6  Naidu         |          2       1.71       1.71      88.03
+        8  Asarai        |          1       0.85       0.85      88.89
+        11 Mudaliar      |          6       5.13       5.13      94.02
+        12 Kulalar       |          1       0.85       0.85      94.87
+        13 Chettiyar     |          1       0.85       0.85      95.73
+        15 Muslims       |          1       0.85       0.85      96.58
+        16 Padayachi     |          2       1.71       1.71      98.29
+        17 Yathavar      |          2       1.71       1.71     100.00
+        Total            |        117     100.00     100.00           
 
 
 */
+tab husbandwifecaste jatis if sex==1 & intercaste==1
+/*
+Hommes enquêtés:														Mobility for female	
+4 hommes SC (dalits) se sont mariés avec des Vanniyar (middle)			pratiloma 	
+1 homme Naidu (upper) s'est marié est une Vanniyar (middle)				anuloma 		
+3 hommes Mudaliar  (upper) se sont mariés avec des Vanniyar (middle)	anuloma
+1 homme Chettiyar  (upper) s'est marié avec une Vanniyar (middle)		anuloma
+1 homme Yathavar (upper) s'est marié avec une Vanniyar (middle)			anuloma
+1 homme Yathavar (upper) s'est marié avec une Padayachi	(middle)		anuloma			
+*/
+
+tab husbandwifecaste jatis if sex==2 & intercaste==1
+/*
+Femmes enquêtés:														Mobility for female
+5 femmes SC (dalits) se sont mariées avec des Vanniyar (middle)			anuloma
+1 femme Rediyar (upper) s'est mariée avec un Vanniyar (middle)			pratiloma
+2 femmes Mudaliar (upper) se sont mariée avec des Vanniyar (middle)		pratiloma
+*/
+
+gen pratiloma=0
+replace pratiloma=1 if sex==1 & jatis==2 & husbandwifecaste==1
+replace pratiloma=1 if sex==2 & jatis==4 & husbandwifecaste==1
+replace pratiloma=1 if sex==2 & jatis==11 & husbandwifecaste==1
+
+tab pratiloma
+
+gen anuloma=0
+replace anuloma=1 if sex==1 & jatis==6 & husbandwifecaste==1
+replace anuloma=1 if sex==1 & jatis==11 & husbandwifecaste==1
+replace anuloma=1 if sex==1 & jatis==13 & husbandwifecaste==1
+replace anuloma=1 if sex==1 & jatis==17 & husbandwifecaste==1
+replace anuloma=1 if sex==1 & jatis==17 & husbandwifecaste==16
+replace anuloma=1 if sex==2 & jatis==2 & husbandwifecaste==1
+
+
+
+gen marriagemobility=2 
+replace marriagemobility=1 if pratiloma==1
+replace marriagemobility=3 if anuloma==1
+
+
+save"NEEMSIS2-marriage_v6.dta", replace
+****************************************
+* END

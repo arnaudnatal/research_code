@@ -32,15 +32,12 @@ tab dummymarriage  // 190 HH face one marriage or more between 2010 and 2016
 tab marriedlist if marriedlist!="." & marriedlist!=""
 restore
 
+ta marriedlistdummy
+
+
 *List
-split marriedlist
-destring marriedlist1 marriedlist2 marriedlist3 marriedlist4, replace
-gen married=0
-replace married=1 if INDID2016==marriedlist1
-replace married=1 if INDID2016==marriedlist2
-replace married=1 if INDID2016==marriedlist3
-replace married=1 if INDID2016==marriedlist4
-drop marriedlist1 marriedlist2 marriedlist3 marriedlist4
+rename marriedlistdummy married
+ta married
 
 keep HHID2016 INDID2016 age sex name egoid jatis married dummymarriagegift marriagegiftsource marriagegiftnb_wellknown marriagegiftnb_shg marriagegiftnb_relatives marriagegiftnb_employer marriagegiftnb_maistry marriagegiftnb_colleagues marriagegiftnb_shopkeeper marriagegiftnb_friends marriagegifttype_wellknown marriagegifttype_shg marriagegifttype_relatives marriagegifttype_employer marriagegifttype_maistry marriagegifttype_colleagues marriagegifttype_shopkeeper marriagegifttype_friends marriagegiftamount_wellknown marriagegiftamount_shg marriagegiftamount_relatives marriagegiftamount_employer marriagegiftamount_maistry marriagegiftamount_colleagues marriagegiftamount_shopkeeper marriagegiftamount_friends marriagegoldamount_wellknown marriagegoldamount_relatives marriagegoldamount_employer marriagegoldamount_friends
 
@@ -158,6 +155,8 @@ keep if n==1
 tab dummymarriage  // 190 HH face one marriage or more between 2010 and 2016
 tab marriedlist if marriedlist!="." & marriedlist!=""
 restore
+rename marriedlistdummy married
+ta married
 
 *Keep the HH
 keep if dummymarriage==1
