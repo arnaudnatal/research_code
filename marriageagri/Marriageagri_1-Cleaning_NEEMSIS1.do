@@ -177,18 +177,30 @@ married dummymarriagegift dummymarriage marriedlist husbandwifecaste marriagedow
  
 *Caste
 tab husbandwifecaste
-gen hwcaste_group=.
-foreach x in 2 3{
-replace hwcaste_group=1 if husbandwifecaste==`x'
-}
-foreach x in 1 5 7 8 10 12 15 16{
-replace hwcaste_group=2 if husbandwifecaste==`x'
-}
-foreach x in 4 6 11 13 17{
-replace hwcaste_group=3 if husbandwifecaste==`x'
-}
-label values hwcaste_group castecat
-rename hwcaste_group hwcaste
+decode husbandwifecaste, gen(huwicaste)
+ta huwicaste
+gen hwcaste=.
+replace hwcaste=1 if huwicaste=="Arunthathiyar"
+replace hwcaste=2 if huwicaste=="Asarai"
+replace hwcaste=3 if huwicaste=="Chettiyar"
+replace hwcaste=2 if huwicaste=="Gramani"
+replace hwcaste=2 if huwicaste=="Kulalar"
+replace hwcaste=3 if huwicaste=="Mudaliar"
+replace hwcaste=2 if huwicaste=="Muslims"
+replace hwcaste=3 if huwicaste=="Naidu"
+replace hwcaste=2 if huwicaste=="Nattar"
+replace hwcaste=2 if huwicaste=="Navithar"
+replace hwcaste=2 if huwicaste=="Padayachi"
+replace hwcaste=3 if huwicaste=="Rediyar"
+replace hwcaste=1 if huwicaste=="SC"
+replace hwcaste=3 if huwicaste=="Settu"
+replace hwcaste=2 if huwicaste=="Vanniyar"
+replace hwcaste=3 if huwicaste=="Yathavar"
+replace hwcaste=88 if huwicaste=="Don't know"
+label define hwcaste 1"Dalits" 2"Middle castes" 3"Upper castes" 88"DK"
+label values hwcaste hwcaste
+drop huwicaste
+ta husbandwifecaste hwcaste, m
 
 
 *Age at marriage
@@ -236,6 +248,10 @@ merge m:1 HHID2016 using "raw/NEEMSIS1-assets", keepusing(assets*)
 keep if _merge==3
 drop _merge
 
+merge m:1 HHID2016 using "raw/NEEMSIS1-family"
+keep if _merge==3
+drop _merge
+
 merge m:1 HHID2016 using "raw/NEEMSIS1-occup_HH"
 keep if _merge==3
 drop _merge
@@ -247,10 +263,14 @@ drop _merge
 merge 1:1 HHID2016 INDID2016 using "raw/NEEMSIS1-caste", keepusing(jatiscorr caste)
 keep if _merge==3
 drop _merge
+label define castegrp 1"Dalits" 2"Middles" 3"Uppers"
+label values caste castegrp
 
 merge 1:1 HHID2016 INDID2016 using "raw/NEEMSIS1-education", keepusing(edulevel)
 keep if _merge==3
 drop _merge
+
+
 
 ********** Indicator
 *
@@ -266,9 +286,6 @@ replace DAIR=marriagedowry/annualincome_HH if sex==2
 *
 gen DMC=.
 replace DMC=marriagedowry/marriagetotalcost
-*
-gen intercaste=0 if hwcaste==caste
-replace intercaste=1 if hwcaste!=caste
 *
 gen gifttoexpenses=totalmarriagegiftamount/marriageexpenses
 gen gifttocost=.
@@ -289,13 +306,69 @@ save"NEEMSIS1-marriage_v2.dta", replace
 
 
 
-/*
-********** Anumola Parimola
-tab husbandwifecaste intercaste
-tab hwcaste caste if intercaste==1
-tab husbandwifecaste jatis
-tab intercaste
 
-tab husbandwifecaste jatis if sex==1 & intercaste==1
-tab husbandwifecaste jatis if sex==2 & intercaste==1
+
+
+
+
+
+
+
+
+****************************************
+* Mobility
+****************************************
+use"NEEMSIS1-marriage_v2.dta", clear
+
+
+***** Inter
+*
+gen intercaste=0 if married==1
+replace intercaste=0 if hwcaste==caste & married==1
+replace intercaste=1 if hwcaste!=caste & married==1
+ta intercaste
+*
+gen interjatis=0 if married==1
+replace interjatis=0 if husbandwifecaste==jatis & married==1
+replace interjatis=1 if husbandwifecaste!=jatis & married==1
+ta interjatis
+
+***** Type
+/*
+Pratiloma --> lower dowry  --> downward mobility
+caste femme > caste homme
+--> condamné
+
+Anuloma --> higher dowry --> upward mobility for female
+caste homme > caste femme
+--> toléré
+*/
+
+tab jatis caste
+tab hwcaste caste
+ta intercaste
+ta interjatis
+
+label define marrtype 1"Anuloma" 2"Patriloma"
+gen marrtype=.
+replace marrtype=1 if sex==1 & caste>hwcaste & married==1
+replace marrtype=1 if sex==2 & caste<hwcaste & married==1
+replace marrtype=2 if sex==1 & caste<hwcaste & married==1
+replace marrtype=2 if sex==2 & caste>hwcaste & married==1
+replace marrtype=2 if sex==2 & caste<hwcaste & married==1 & hwcaste==88
+replace marrtype=1 if sex==1 & caste<hwcaste & married==1 & hwcaste==88
+label values marrtype marrtype
+ta marrtype
+list sex caste hwcaste if marrtype==1, clean noobs
+list sex caste hwcaste if marrtype==2, clean noobs
+
+ta intercaste
+ta interjatis
+list sex jatis husbandwifecaste if interjatis==1 & intercaste==1, clean noobs
+list sex jatis husbandwifecaste if interjatis==1 & intercaste==0, clean noobs
+
+
+save"NEEMSIS1-marriage_v3.dta", replace
+****************************************
+* END
 

@@ -136,23 +136,36 @@ use"raw/NEEMSIS2-HH.dta", clear
 ********** Gift
 merge 1:1 HHID2020 INDID2020 using "NEEMSIS2-marriagegiftHH"
 drop _merge
-keep if marriedname!=""
+*keep if marriedname!=""
+gen married=0
+replace married=1 if marriedname!=""
 
 ********** Husband wife caste
 tab husbandwifecaste
-gen hwcaste_group=.
-foreach x in 2 3{
-replace hwcaste_group=1 if husbandwifecaste==`x'
-}
-foreach x in 1 5 7 8 10 12 15 16{
-replace hwcaste_group=2 if husbandwifecaste==`x'
-}
-foreach x in 4 6 11 13 17{
-replace hwcaste_group=3 if husbandwifecaste==`x'
-}
-label values hwcaste_group castecat
-rename hwcaste_group hwcaste
-
+decode husbandwifecaste, gen(huwicaste)
+ta huwicaste
+gen hwcaste=.
+replace hwcaste=1 if huwicaste=="Arunthathiyar"
+replace hwcaste=2 if huwicaste=="Asarai"
+replace hwcaste=3 if huwicaste=="Chettiyar"
+replace hwcaste=2 if huwicaste=="Gramani"
+replace hwcaste=2 if huwicaste=="Kulalar"
+replace hwcaste=3 if huwicaste=="Mudaliar"
+replace hwcaste=2 if huwicaste=="Muslims"
+replace hwcaste=3 if huwicaste=="Naidu"
+replace hwcaste=2 if huwicaste=="Nattar"
+replace hwcaste=2 if huwicaste=="Navithar"
+replace hwcaste=2 if huwicaste=="Padayachi"
+replace hwcaste=3 if huwicaste=="Rediyar"
+replace hwcaste=1 if huwicaste=="SC"
+replace hwcaste=3 if huwicaste=="Settu"
+replace hwcaste=2 if huwicaste=="Vanniyar"
+replace hwcaste=3 if huwicaste=="Yathavar"
+replace hwcaste=88 if huwicaste=="Don't know"
+label define hwcaste 1"Dalits" 2"Middle castes" 3"Upper castes" 88"DK"
+label values hwcaste hwcaste
+drop huwicaste
+ta husbandwifecaste hwcaste, m
 
 
 
@@ -214,47 +227,9 @@ fre marriagedecision_rec
 
 
 
-
-
-********** Marriage decision
-/*
-forvalues i=1(1)19{
-gen _todrop_relation_INDID_`i'=.
-}
-
-forvalues i=1(1)19{
-replace _todrop_relation_INDID_`i'=relationshiptohead if INDID==`i'
-}
-forvalues i=1(1)19{
-bysort HHID2010: egen relation_INDID_`i'=max(_todrop_relation_INDID_`i')
-}
-drop _todrop_*
-
-gen marriagedecisionrelation=.
-forvalues i=1(1)19{
-replace marriagedecisionrelation=relation_INDID_`i' if marriagedecision==`i'
-}
-tab marriagedecisionrelation
-tab marriagedecision
-label values marriagedecisionrelation relationshiptohead
-tab marriagedecisionrelation relationshiptohead
-fre marriagedecisionrelation
-gen marriagedecision_cat=1 if marriagedecisionrelation==1
-foreach x in 2 3 4{
-replace marriagedecision_cat=2 if marriagedecisionrelation==`x'
-}
-foreach x in 5 8 13{
-replace marriagedecision_cat=3 if marriagedecisionrelation==`x'
-}
-label define marriagedecision_cat 1"Head" 2"Wife, grand parents" 3"Personal choice"
-label values marriagedecision_cat marriagedecision_cat
-fre marriagedecision_cat
-*/
-
-
 ********** Drop
-keep if dummymarriage==1
-keep if marriagetype!=.
+*keep if dummymarriage==1
+*keep if marriagetype!=.
 
 
 save"NEEMSIS2-marriage.dta", replace
@@ -518,7 +493,15 @@ merge m:1 HHID2020 using "raw/NEEMSIS2-assets", keepusing(assets*)
 keep if _merge==3
 drop _merge
 
+merge m:1 HHID2020 using "raw/NEEMSIS2-family"
+keep if _merge==3
+drop _merge
+
 merge m:1 HHID2020 using "raw/NEEMSIS2-occup_HH"
+keep if _merge==3
+drop _merge
+
+merge 1:1 HHID2020 INDID2020 using "raw/NEEMSIS2-occup_indiv"
 keep if _merge==3
 drop _merge
 
@@ -545,9 +528,6 @@ replace DAIR=marriagedowry/annualincome_HH if sex==2
 gen DMC=.
 replace DMC=marriagedowry/marriagetotalcost
 *
-gen intercaste=0 if hwcaste==caste
-replace intercaste=1 if hwcaste!=caste
-*
 gen gifttoexpenses=totalmarriagegiftamount/marriageexpenses
 gen gifttocost=.
 *
@@ -567,11 +547,6 @@ replace netbenefitsmarriage1000=(totalmarriagegiftamount_recode-marriagewifecost
 *Benefits on assets and income
 gen BAR=netbenefitsmarriage1000*1000/assets_total
 gen BIR=netbenefitsmarriage1000*1000/annualincome_HH
-
-
-
-ta intercaste ownland
-
 
 
 save"NEEMSIS2-marriage_v3.dta", replace
@@ -609,12 +584,6 @@ replace respondent_engagementcost1000=engagementwifecost1000 if sex==2
 replace respondent_marriagecost1000=marriagehusbandcost1000 if sex==1
 replace respondent_marriagecost1000=marriagewifecost1000 if sex==2
 
-*replace respondent_shareengagement=husbandshareengagement if sex==1
-*replace respondent_shareengagement=wifeshareengagement if sex==2
-
-*replace respondent_sharemarriage=husbandsharemarriage if sex==1
-*replace respondent_sharemarriage=wifesharemarriage if sex==2
-
 
 ********** Age as cat
 fsum ageatmarriage
@@ -644,6 +613,22 @@ label values annualincome_q inc_q
 label values assets_q ass_q
 
 
+********** Type 2
+fre marriagetype
+fre marriageblood
+
+gen marriagetype2=.
+replace marriagetype2=1 if marriagetype==2
+replace marriagetype2=2 if marriagetype==1 & marriageblood==1
+replace marriagetype2=3 if marriagetype==1 & marriageblood==2
+
+label define marriagetype2 1"Outside the family" 2"Father's side" 3"Mother's side"
+label values marriagetype2 marriagetype2
+
+ta marriagetype2 marriagetype, m
+ta marriagetype2 marriageblood, m
+
+
 save"NEEMSIS2-marriage_v4.dta", replace
 ****************************************
 * END
@@ -659,76 +644,55 @@ save"NEEMSIS2-marriage_v4.dta", replace
 
 
 
-
-
 ****************************************
-* Intercaste marriage
+* Mobility
 ****************************************
 use"NEEMSIS2-marriage_v4.dta", clear
 
-tab jatis caste
-tab hwcaste caste
+
+***** Inter
+*
+gen intercaste=0 if married==1
+replace intercaste=0 if hwcaste==caste & married==1
+replace intercaste=1 if hwcaste!=caste & married==1
+ta intercaste
+*
+gen interjatis=0 if married==1
+replace interjatis=0 if husbandwifecaste==jatis & married==1
+replace interjatis=1 if husbandwifecaste!=jatis & married==1
+ta interjatis
+
+***** Type
 /*
 Pratiloma --> lower dowry  --> downward mobility
+caste femme > caste homme
+--> condamné
+
 Anuloma --> higher dowry --> upward mobility for female
-
-
--------------------------+--------------------------------------------
-Valid   1  Vanniyar      |         30      25.64      25.64      25.64
-        2  SC            |         68      58.12      58.12      83.76
-        3  Arunthathiyar |          1       0.85       0.85      84.62
-        4  Rediyar       |          2       1.71       1.71      86.32
-        6  Naidu         |          2       1.71       1.71      88.03
-        8  Asarai        |          1       0.85       0.85      88.89
-        11 Mudaliar      |          6       5.13       5.13      94.02
-        12 Kulalar       |          1       0.85       0.85      94.87
-        13 Chettiyar     |          1       0.85       0.85      95.73
-        15 Muslims       |          1       0.85       0.85      96.58
-        16 Padayachi     |          2       1.71       1.71      98.29
-        17 Yathavar      |          2       1.71       1.71     100.00
-        Total            |        117     100.00     100.00           
-
-
-*/
-tab husbandwifecaste jatis if sex==1 & intercaste==1
-/*
-Hommes enquêtés:														Mobility for female	
-4 hommes SC (dalits) se sont mariés avec des Vanniyar (middle)			pratiloma 	
-1 homme Naidu (upper) s'est marié est une Vanniyar (middle)				anuloma 		
-3 hommes Mudaliar  (upper) se sont mariés avec des Vanniyar (middle)	anuloma
-1 homme Chettiyar  (upper) s'est marié avec une Vanniyar (middle)		anuloma
-1 homme Yathavar (upper) s'est marié avec une Vanniyar (middle)			anuloma
-1 homme Yathavar (upper) s'est marié avec une Padayachi	(middle)		anuloma			
+caste homme > caste femme
+--> toléré
 */
 
-tab husbandwifecaste jatis if sex==2 & intercaste==1
-/*
-Femmes enquêtés:														Mobility for female
-5 femmes SC (dalits) se sont mariées avec des Vanniyar (middle)			anuloma
-1 femme Rediyar (upper) s'est mariée avec un Vanniyar (middle)			pratiloma
-2 femmes Mudaliar (upper) se sont mariée avec des Vanniyar (middle)		pratiloma
-*/
+tab jatis caste
+tab hwcaste caste
+ta intercaste
+ta interjatis
 
-gen pratiloma=0
-replace pratiloma=1 if sex==1 & jatis==2 & husbandwifecaste==1
-replace pratiloma=1 if sex==2 & jatis==4 & husbandwifecaste==1
-replace pratiloma=1 if sex==2 & jatis==11 & husbandwifecaste==1
+label define marrtype 1"Anuloma" 2"Patriloma"
+gen marrtype=.
+replace marrtype=1 if sex==1 & caste>hwcaste & married==1
+replace marrtype=1 if sex==2 & caste<hwcaste & married==1
+replace marrtype=2 if sex==1 & caste<hwcaste & married==1
+replace marrtype=2 if sex==2 & caste>hwcaste & married==1
+label values marrtype marrtype
+ta marrtype
+list sex caste hwcaste if marrtype==1, clean noobs
+list sex caste hwcaste if marrtype==2, clean noobs
 
-tab pratiloma
-
-gen anuloma=0
-replace anuloma=1 if sex==1 & jatis==6 & husbandwifecaste==1
-replace anuloma=1 if sex==1 & jatis==11 & husbandwifecaste==1
-replace anuloma=1 if sex==1 & jatis==13 & husbandwifecaste==1
-replace anuloma=1 if sex==1 & jatis==17 & husbandwifecaste==1
-replace anuloma=1 if sex==1 & jatis==17 & husbandwifecaste==16
-replace anuloma=1 if sex==2 & jatis==2 & husbandwifecaste==1
-
-
-
-gen marriagemobility=2 
-replace marriagemobility=1 if pratiloma==1
-replace marriagemobility=3 if anuloma==1
+ta intercaste
+ta interjatis
+list sex jatis husbandwifecaste if interjatis==1 & intercaste==1, clean noobs
+list sex jatis husbandwifecaste if interjatis==1 & intercaste==0, clean noobs
 
 
 save"NEEMSIS2-marriage_v5.dta", replace

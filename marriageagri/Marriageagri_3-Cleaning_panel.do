@@ -21,25 +21,26 @@ do"C:\Users\Arnaud\Documents\GitHub\folderanalysis\marriageagri.do"
 ****************************************
 * NEEMSIS-1 - Only marriage sample
 ****************************************
-
-use"NEEMSIS1-marriage_v2.dta", clear
+use"NEEMSIS1-marriage_v3.dta", clear
 
 *** Recode
-destring ownland, replace
 recode ownland (.=0)
 
 *** To keep
-keep if marriagedowry!=.
-keep HHID2016 INDID2016 ownland caste age sex egoid name marriagedowry marriagetotalcost marriageexpenses MEAR DAAR MEIR DAIR DMC intercaste gifttoexpenses benefitsexpenses GAR GIR assets_total assets_totalnoland annualincome_HH
+keep if married==1
+keep HHID2016 INDID2016 ownland caste age sex name canread everattendedschool currentlyatschool edulevel working_pop mainocc_occupation_indiv annualincome_HH shareincomeagri_HH shareincomenonagri_HH assets_sizeownland assets_housevalue assets_livestock assets_goods assets_ownland assets_gold assets_total assets_totalnoland assets_totalnoprop HHsize HH_count_child HH_count_adult typeoffamily nbmale nbfemale nbgeneration dummypolygamous head_age head_sex head_working_pop head_mocc_occupation head_nboccupation head_edulevel dependencyratio dummyheadfemale sexratio nonworkersratio ///
+married husbandwifecaste marriagedowry marriagetotalcost marriageexpenses dummymarriagegift howpaymarriage ///
+totalmarriagegiftamount hwcaste ageatmarriage marriagedowry1000 marriagetotalcost1000 marriageexpenses1000 MEAR DAAR MEIR DAIR DMC intercaste interjatis marrtype gifttoexpenses benefitsexpenses GAR GIR 
+
 gen year=2016
 
 *** Panel
-merge m:m HHID2016 using "raw/ODRIIS-HH_wide", keepusing(HHID_panel)
+merge m:m HHID2016 using "raw/keypanel-HH_wide", keepusing(HHID_panel)
 keep if _merge==3
 drop _merge
 
 tostring INDID2016, replace
-merge m:m HHID_panel INDID2016 using "raw/ODRIIS-indiv_wide", keepusing(INDID_panel)
+merge m:m HHID_panel INDID2016 using "raw/keypanel-indiv_wide", keepusing(INDID_panel)
 keep if _merge==3
 drop _merge
 destring INDID2016, replace
@@ -55,29 +56,31 @@ save "NEEMSIS1-marriage_tm.dta", replace
 
 
 
-
-
 ****************************************
 * NEEMSIS-2 - Only marriage sample
 ****************************************
-use"NEEMSIS2-marriage_v3.dta", clear
+use"NEEMSIS2-marriage_v5.dta", clear
 
 *** Recode
 destring ownland, replace
 recode ownland (.=0)
 
-
 *** To keep
-keep HHID2020 INDID2020 ownland caste age sex egoid name marriagedowry marriagetotalcost marriageexpenses MEAR DAAR MEIR DAIR DMC intercaste gifttoexpenses benefitsexpenses GAR GIR assets_total assets_totalnoland annualincome_HH
+keep if married==1
+keep HHID2020 INDID2020 ownland caste age sex name canread everattendedschool currentlyatschool edulevel working_pop mainocc_occupation_indiv annualincome_HH shareincomeagri_HH shareincomenonagri_HH assets_sizeownland assets_housevalue assets_livestock assets_goods assets_ownland assets_gold assets_total assets_totalnoland assets_totalnoprop HHsize HH_count_child HH_count_adult typeoffamily nbmale nbfemale nbgeneration dummypolygamous head_age head_sex head_working_pop head_mocc_occupation head_nboccupation head_edulevel dependencyratio dummyheadfemale sexratio nonworkersratio ///
+married marriagesomeoneelse peoplewedding husbandwifecaste marriagetype marriageblood marriagearranged marriagedecision marriagespousefamily engagementtotalcost engagementhusbandcost engagementwifecost marriagetotalcost marriagehusbandcost marriagewifecost marriageloannb marriageexpenses dummymarriagegift howpaymarriage_loan howpaymarriage_capital howpaymarriage_gift ///
+totalmarriagegiftamount hwcaste ageatmarriage marriagedowry1000 marriagetotalcost1000 marriageexpenses1000 MEAR DAAR MEIR DAIR DMC intercaste interjatis marrtype gifttoexpenses benefitsexpenses GAR GIR marriagetype2 marriagedowry
+
 gen year=2020
 
+
 *** Panel
-merge m:m HHID2020 using "raw/ODRIIS-HH_wide", keepusing(HHID_panel)
+merge m:m HHID2020 using "raw/keypanel-HH_wide", keepusing(HHID_panel)
 keep if _merge==3
 drop _merge
 
 tostring INDID2020, replace
-merge m:m HHID_panel INDID2020 using "raw/ODRIIS-indiv_wide", keepusing(INDID_panel)
+merge m:m HHID_panel INDID2020 using "raw/keypanel-indiv_wide", keepusing(INDID_panel)
 keep if _merge==3
 drop _merge
 destring INDID2020, replace
