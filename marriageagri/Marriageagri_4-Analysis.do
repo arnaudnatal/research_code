@@ -15,109 +15,48 @@ do"C:\Users\Arnaud\Documents\GitHub\folderanalysis\marriageagri.do"
 
 
 
-
-
-
 ****************************************
-* Land and marriage in 2016-17
+* Who's married?
 ****************************************
-use"raw/NEEMSIS1-HH.dta", clear
 
-********** Merge income and assets
-merge m:1 HHID2016 using "raw/NEEMSIS1-assets", keepusing(assets*)
-keep if _merge==3
-drop _merge
+********** NEEMSIS-1 (2016-17)
+use"NEEMSIS1-marriage_v2.dta", clear
+gen dummyland=.
+replace dummyland=0 if assets_sizeownland==.
+replace dummyland=1 if assets_sizeownland!=. &  assets_sizeownland!=0
 
-merge m:1 HHID2016 using "raw/NEEMSIS1-occup_HH", keepusing(annualincome_HH)
-keep if _merge==3
-drop _merge
+keep if married==1
 
-merge 1:1 HHID2016 INDID2016 using "raw/NEEMSIS1-caste", keepusing(jatiscorr caste)
-keep if _merge==3
-drop _merge
+* Socio-demo
+ta sex
+tabstat age, stat(n mean q) by(sex)
+ta age sex
+ta caste sex
 
+* Edu
+ta canread sex
+ta everattendedschool sex
+ta currentlyatschool sex
+ta edulevel sex
 
+* Labour
+ta working_pop sex
+ta mainocc_occupation_indiv sex
 
-********** Recode
-destring ownland, replace
-recode ownland (.=0)
-gen dummy_marriedlist=0
-replace dummy_marriedlist=1 if husbandwifecaste!=.
-drop if livinghome==4
-keep if age>=16
-ta livinghome dummy_marriedlist, m
-
-
-********** Marital status by age and agri
-ta maritalstatus ownland
-ta maritalstatus ownland, col nofreq
+* HH characteristics
+tabstat assets_totalnoland annualincome_HH, stat(n mean cv p50) by(sex)
+ta dummyland sex
 
 
-********** New married
-ta dummy_marriedlist ownland
-ta dummy_marriedlist ownland, col nofreq
-probit dummy_marriedlist ownland age
+********** NEEMSIS-2 (2020-21)
+use"NEEMSIS2-marriage_v5.dta", clear
 
 
 
-****************************************
-* END
-
-
-
-
-
-
-
-
-
-****************************************
-* Land and marriage in 2020-21
-****************************************
-use"raw/NEEMSIS2-HH.dta", clear
-
-********** Merge income and assets
-merge m:1 HHID2020 using "raw/NEEMSIS2-assets", keepusing(assets*)
-keep if _merge==3
-drop _merge
-
-merge m:1 HHID2020 using "raw/NEEMSIS2-occup_HH", keepusing(annualincome_HH)
-keep if _merge==3
-drop _merge
-
-merge 1:1 HHID2020 INDID2020 using "raw/NEEMSIS2-caste", keepusing(jatiscorr caste)
-keep if _merge==3
-drop _merge
-
-
-
-********** Recode
-destring ownland, replace
-recode ownland (.=0)
-recode dummy_marriedlist (.=0)
-drop if livinghome==4
-keep if age>=16
-ta livinghome dummy_marriedlist, m
-drop if dummylefthousehold==1
-
-
-********** Marital status by age and agri
-ta maritalstatus ownland
-ta maritalstatus ownland, col nofreq
-
-
-
-********** New married
-ta dummy_marriedlist ownland
-ta dummy_marriedlist ownland, col nofreq
-probit dummy_marriedlist ownland age
 
 
 ****************************************
 * END
-
-
-
 
 
 
@@ -152,18 +91,16 @@ tab hwcaste caste if sex==1
 tab hwcaste caste if sex==2
 tab marriagearranged caste, col nofreq
 tab marriagetype caste, col nofreq
-*tab marriagedecision caste
-*tab marriagedecision_rec caste, col nofreq
 tab marriagespousefamily caste, col nofreq
 tabstat peoplewedding, stat(mean sd p50 min max) by(caste)
-tab datecovid caste, nofreq col
+
 
 
 
 ********** % of expenses in capital
 preserve
-bysort HHID_panel: egen sum_marriageexpenses=sum(marriageexpenses)
-duplicates drop HHID_panel, force
+bysort HHID2020: egen sum_marriageexpenses=sum(marriageexpenses)
+duplicates drop HHID2020, force
 drop if sum_marriageexpenses==. | sum_marriageexpenses==0
 tab caste
 restore

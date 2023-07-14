@@ -518,7 +518,7 @@ merge m:1 HHID2020 using "raw/NEEMSIS2-assets", keepusing(assets*)
 keep if _merge==3
 drop _merge
 
-merge m:1 HHID2020 using "raw/NEEMSIS2-occup_HH", keepusing(annualincome_HH)
+merge m:1 HHID2020 using "raw/NEEMSIS2-occup_HH"
 keep if _merge==3
 drop _merge
 
@@ -526,6 +526,9 @@ merge 1:1 HHID2020 INDID2020 using "raw/NEEMSIS2-caste", keepusing(jatiscorr cas
 keep if _merge==3
 drop _merge
 
+merge 1:1 HHID2020 INDID2020 using "raw/NEEMSIS2-education", keepusing(edulevel)
+keep if _merge==3
+drop _merge
 
 ********** Indicator
 *
@@ -606,11 +609,11 @@ replace respondent_engagementcost1000=engagementwifecost1000 if sex==2
 replace respondent_marriagecost1000=marriagehusbandcost1000 if sex==1
 replace respondent_marriagecost1000=marriagewifecost1000 if sex==2
 
-replace respondent_shareengagement=husbandshareengagement if sex==1
-replace respondent_shareengagement=wifeshareengagement if sex==2
+*replace respondent_shareengagement=husbandshareengagement if sex==1
+*replace respondent_shareengagement=wifeshareengagement if sex==2
 
-replace respondent_sharemarriage=husbandsharemarriage if sex==1
-replace respondent_sharemarriage=wifesharemarriage if sex==2
+*replace respondent_sharemarriage=husbandsharemarriage if sex==1
+*replace respondent_sharemarriage=wifesharemarriage if sex==2
 
 
 ********** Age as cat
@@ -631,102 +634,17 @@ tab female_agecat sex, m
 
 
 ********** Quantile income and assets
-xtile totalincome_HH_q=totalincome_HH, n(4)
-xtile assets_q=assets, n(4)
+xtile annualincome_q=annualincome_HH, n(4)
+xtile assets_q=assets_total, n(4)
 
 label define inc_q 1"Income - Q1" 2"Income - Q2" 3"Income - Q3" 4"Income - Q4", replace
 label define ass_q 1"Assets - Q1" 2"Assets - Q2" 3"Assets - Q3" 4"Assets - Q4", replace
 
-label values totalincome_HH_q inc_q
+label values annualincome_q inc_q
 label values assets_q ass_q
 
 
 save"NEEMSIS2-marriage_v4.dta", replace
-****************************************
-* END
-
-
-
-
-
-
-
-
-
-
-
-****************************************
-* Network
-****************************************
-use"NEEMSIS2-marriage_v4.dta", clear
-
-********** Cleaning formal network
-gen dummyassopolitic=0
-replace dummyassopolitic=1 if assodegreeparticip_politic1!=""
-*replace dummyassopolitic=1 if assodegreeparticip_politic2!=""
-
-gen dummyassoprofess=0
-replace dummyassoprofess=1 if assodegreeparticip_profess1!=""
-*replace dummyassoprofess=1 if assodegreeparticip_profess2!=""
-*replace dummyassoprofess=1 if assodegreeparticip_profess3!="" 
-
-gen dummyassoshg=0
-replace dummyassoshg=1 if assodegreeparticip_shg1!=""
-*replace dummyassoshg=1 if assodegreeparticip_shg2!=""
-*replace dummyassoshg=1 if assodegreeparticip_shg3!=""
-
-gen dummyassofarmer=0
-replace dummyassofarmer=1 if assodegreeparticip_farmer1!=""
-
-gen dummyassohobby=0
-*replace dummyassohobby=1 if assodegreeparticip_hobby2!=""
-
-gen dummyassoother=0
-*replace dummyassoother=1 if assodegreeparticip_other2!=""
-
-gen dummyassovillage=0
-*replace dummyassovillage=1 if assodegreeparticip_village2!=""
-
-tab1 dummyassopolitic dummyassoprofess dummyassoshg dummyassofarmer dummyassohobby dummyassoother dummyassovillage
-
-egen dummyasso=rowtotal(dummyassopolitic dummyassoprofess dummyassoshg dummyassofarmer dummyassohobby dummyassoother dummyassovillage)
-replace dummyasso=1 if dummyasso>1
-label define asso 0"No asso (n=99)" 1"Asso (n=18)"
-label values dummyasso asso
-
-
-********** Cleaning size network & qualityt
-tab1 nbercontactphone1 nbercontactphone2 nbercontactphone3
-fre nbercontactphone1
-
-gen contactphone=. 
-replace contactphone=1 if nbercontactphone1==7
-replace contactphone=2 if nbercontactphone1==1
-replace contactphone=2 if nbercontactphone1==2
-replace contactphone=3 if nbercontactphone1==3
-replace contactphone=4 if nbercontactphone1==4
-replace contactphone=4 if nbercontactphone1==5
-tab nbercontactphone1 contactphone
-
-*Quality
-tab1 dummycontactleaders1 dummycontactleaders2 dummycontactleaders3
-tab contactleaders1
-gen leaders=0
-replace leaders=1 if contactleaders1=="ADMK"
-replace leaders=1 if contactleaders1=="Admk"
-replace leaders=1 if contactleaders1=="Politician of ADMK"
-replace leaders=2 if contactleaders1=="Village panchayat"
-replace leaders=3 if contactleaders1=="Babu"
-replace leaders=3 if contactleaders1=="DPI"
-tab leaders
-
-*Party cost
-gen partycost1000=marriagehusbandcost1000 if sex==1
-replace partycost1000=marriagewifecost1000 if sex==2
-
-
-
-save"NEEMSIS2-marriage_v5.dta", replace
 ****************************************
 * END
 
@@ -746,7 +664,7 @@ save"NEEMSIS2-marriage_v5.dta", replace
 ****************************************
 * Intercaste marriage
 ****************************************
-use"NEEMSIS2-marriage_v5.dta", clear
+use"NEEMSIS2-marriage_v4.dta", clear
 
 tab jatis caste
 tab hwcaste caste
@@ -813,6 +731,6 @@ replace marriagemobility=1 if pratiloma==1
 replace marriagemobility=3 if anuloma==1
 
 
-save"NEEMSIS2-marriage_v6.dta", replace
+save"NEEMSIS2-marriage_v5.dta", replace
 ****************************************
 * END

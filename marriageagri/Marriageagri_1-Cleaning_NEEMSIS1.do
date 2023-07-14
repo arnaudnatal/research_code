@@ -172,7 +172,7 @@ rename howpaymarriage_n howpaymarriage
 egen totalmarriagegiftamount=rowtotal(marriagegiftamount_wellknown marriagegiftamount_shg marriagegiftamount_relatives marriagegiftamount_employer marriagegiftamount_maistry marriagegiftamount_colleagues marriagegiftamount_shopkeeper marriagegiftamount_friends)
 
 keep HHID2016 INDID2016 villageid villagearea jatis egoid name sex age  relationshiptohead submissiondate ownland ///
-married dummymarriagegift dummymarriage marriedlist husbandwifecaste marriagedowry marriagetotalcost howpaymarriage marriageexpenses dummymarriagegift totalmarriagegiftamount
+married dummymarriagegift dummymarriage marriedlist husbandwifecaste marriagedowry marriagetotalcost howpaymarriage marriageexpenses dummymarriagegift totalmarriagegiftamount currentlyatschool everattendedschool canread
 
  
 *Caste
@@ -236,7 +236,11 @@ merge m:1 HHID2016 using "raw/NEEMSIS1-assets", keepusing(assets*)
 keep if _merge==3
 drop _merge
 
-merge m:1 HHID2016 using "raw/NEEMSIS1-occup_HH", keepusing(annualincome_HH)
+merge m:1 HHID2016 using "raw/NEEMSIS1-occup_HH"
+keep if _merge==3
+drop _merge
+
+merge 1:1 HHID2016 INDID2016 using "raw/NEEMSIS1-occup_indiv"
 keep if _merge==3
 drop _merge
 
@@ -244,6 +248,9 @@ merge 1:1 HHID2016 INDID2016 using "raw/NEEMSIS1-caste", keepusing(jatiscorr cas
 keep if _merge==3
 drop _merge
 
+merge 1:1 HHID2016 INDID2016 using "raw/NEEMSIS1-education", keepusing(edulevel)
+keep if _merge==3
+drop _merge
 
 ********** Indicator
 *
