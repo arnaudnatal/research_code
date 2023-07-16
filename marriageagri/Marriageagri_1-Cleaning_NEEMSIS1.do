@@ -274,6 +274,9 @@ drop _merge
 
 ********** Indicator
 *
+clonevar totalmarriagegiftamount_recode=totalmarriagegiftamount
+recode totalmarriagegiftamount_recode (.=0)
+*
 gen MEAR=marriageexpenses/assets_total
 *
 gen DAAR=.
@@ -288,14 +291,14 @@ gen DMC=.
 replace DMC=marriagedowry/marriagetotalcost
 *
 gen gifttoexpenses=totalmarriagegiftamount/marriageexpenses
-gen gifttocost=.
 *
 gen benefitsexpenses=0
 replace benefitsexpenses=1 if gifttoexpenses>1 & gifttoexpenses!=.
 *
-gen GAR=totalmarriagegiftamount/assets_total
-gen GIR=totalmarriagegiftamount/annualincome_HH
-
+gen GAR=.
+replace GAR=totalmarriagegiftamount/assets_total if totalmarriagegiftamount!=.
+gen GIR=.
+replace GIR=totalmarriagegiftamount/annualincome_HH if totalmarriagegiftamount!=.
 
 
 save"NEEMSIS1-marriage_v2.dta", replace

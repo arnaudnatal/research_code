@@ -515,6 +515,9 @@ drop _merge
 
 ********** Indicator
 *
+clonevar totalmarriagegiftamount_recode=totalmarriagegiftamount
+recode totalmarriagegiftamount_recode (.=0)
+*
 gen MEAR=marriageexpenses/assets_total
 *
 gen DAAR=.
@@ -529,18 +532,21 @@ gen DMC=.
 replace DMC=marriagedowry/marriagetotalcost
 *
 gen gifttoexpenses=totalmarriagegiftamount/marriageexpenses
-gen gifttocost=.
 *
 gen benefitsexpenses=0
 replace benefitsexpenses=1 if gifttoexpenses>1 & gifttoexpenses!=.
 *
-gen GAR=totalmarriagegiftamount/assets_total
-gen GIR=totalmarriagegiftamount/annualincome_HH
+gen GAR=.
+replace GAR=totalmarriagegiftamount/assets_total if totalmarriagegiftamount!=.
+gen GIR=.
+replace GIR=totalmarriagegiftamount/annualincome_HH if totalmarriagegiftamount!=.
+*
+gen gifttocost=.
+replace gifttocost=totalmarriagegiftamount/marriagehusbandcost if sex==1
+replace gifttocost=totalmarriagegiftamount/marriagewifecost if sex==2
 
 
 ********** Net benefits of marriage
-clonevar totalmarriagegiftamount_recode=totalmarriagegiftamount
-recode totalmarriagegiftamount_recode (.=0)
 gen netbenefitsmarriage1000=.
 replace netbenefitsmarriage1000=(marriagedowry+totalmarriagegiftamount_recode-marriagehusbandcost)/1000 if sex==1
 replace netbenefitsmarriage1000=(totalmarriagegiftamount_recode-marriagewifecost-marriagedowry)/1000 if sex==2

@@ -215,17 +215,52 @@ C'est drôle, les mariages d'amour ne sont pas intercastes et quasi par interjat
 ****************************************
 * At what cost?
 ****************************************
+cls
 use"NEEMSIS-marriage.dta", clear
 
 * Total cost
-tabstat marriagetotalcost, stat(n mean cv q) by(year)
+replace marriagetotalcost=marriagetotalcost/1000
+tabstat marriagetotalcost, stat(n mean cv q) by(year) long
+
+tabstat marriagetotalcost if year==2016, stat(n mean cv q) by(intercaste) long
+tabstat marriagetotalcost if year==2016, stat(n mean cv q) by(marrtype) long
+
+tabstat marriagetotalcost if year==2020, stat(n mean cv q) by(intercaste) long
+tabstat marriagetotalcost if year==2020, stat(n mean cv q) by(marrtype) long
 
 * Total expenses
 replace MEIR=MEIR*100
 replace MEAR=MEAR*100
+replace marriageexpenses=marriageexpenses/1000
 
-tabstat marriageexpenses MEIR MEAR, stat(n mean cv q) by(year) long
+cls
+foreach x in marriageexpenses MEIR MEAR {
+tabstat `x', stat(n mean cv q) by(year) long
 
+tabstat `x' if year==2016, stat(n mean cv q) by(intercaste) long
+tabstat `x' if year==2016, stat(n mean cv q) by(marrtype) long
+
+tabstat `x' if year==2020, stat(n mean cv q) by(intercaste) long
+tabstat `x' if year==2020, stat(n mean cv q) by(marrtype) long
+}
+
+
+* Gift
+foreach x in gifttoexpenses GAR GIR gifttocost {
+replace `x'=`x'*100
+}
+replace totalmarriagegiftamount=totalmarriagegiftamount/1000
+
+cls
+foreach x in totalmarriagegiftamount gifttoexpenses GAR GIR gifttocost {
+tabstat `x', stat(n mean cv q) by(year) long
+
+tabstat `x' if year==2016, stat(n mean cv q) by(intercaste) long
+tabstat `x' if year==2016, stat(n mean cv q) by(marrtype) long
+
+tabstat `x' if year==2020, stat(n mean cv q) by(intercaste) long
+tabstat `x' if year==2020, stat(n mean cv q) by(marrtype) long
+}
 
 ****************************************
 * END
@@ -248,12 +283,28 @@ tabstat marriageexpenses MEIR MEAR, stat(n mean cv q) by(year) long
 ****************************************
 use"NEEMSIS-marriage.dta", clear
 
-* Total cost
+* Clean
 replace DAIR=DAIR*100
 replace DMC=DMC*100
+replace DAAR=DAAR*100
+replace marriagedowry=marriagedowry/1000
 
-tabstat marriagedowry DAIR DMC if sex==1, stat(n mean cv q) by(year) long
-tabstat marriagedowry DAIR DMC if sex==2, stat(n mean cv q) by(year) long
+
+* Females
+keep if sex==2
+fre sex
+cls
+foreach x in marriagedowry DAIR DAAR DMC {
+tabstat `x', stat(n mean cv q) by(year) long
+
+tabstat `x' if year==2016, stat(n mean cv q) by(intercaste) long
+tabstat `x' if year==2016, stat(n mean cv q) by(marrtype) long
+
+tabstat `x' if year==2020, stat(n mean cv q) by(intercaste) long
+tabstat `x' if year==2020, stat(n mean cv q) by(marrtype) long
+}
+
+
 
 ****************************************
 * END
