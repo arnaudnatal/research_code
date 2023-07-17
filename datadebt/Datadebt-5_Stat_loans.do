@@ -206,6 +206,80 @@ restore
 
 
 
+****************************************
+* Share formal/semi/informal in total
+****************************************
+
+********** Niveau de détail 1
+use"panel_loans", clear
+
+fre lender_cat
+gen loanamount_info=loanamount if lender_cat==1
+gen loanamount_semi=loanamount if lender_cat==2
+gen loanamount_form=loanamount if lender_cat==3
+
+foreach x in info semi form {
+bysort HHID_panel year: egen sum_`x'=sum(loanamount_`x')
+}
+
+gen total_HH=sum_info+sum_semi+sum_form
+bysort HHID_panel year: egen total_HH2=sum(loanamount)
+gen test=total_HH-total_HH2
+ta test
+drop test total_HH2
+
+foreach x in info semi form {
+gen share_`x'=sum_`x'*100/total_HH
+}
+
+keep HHID_panel year sum_info sum_semi sum_form total_HH share_info share_semi share_form
+duplicates drop
+ta year
+
+tabstat share_info share_semi share_form, stat(n mean cv q) by(y) long
+
+
+
+********** Niveau de détail 2
+use"panel_loans", clear
+
+fre lender4
+forvalues i=1/10 {
+gen loanamount_`i'=loanamount if lender4==`i'
+}
+
+forvalues i=1/10 {
+bysort HHID_panel year: egen sum_cat_`i'=sum(loanamount_`i')
+}
+
+egen total_HH=rowtotal(sum_cat_1 sum_cat_2 sum_cat_3 sum_cat_4 sum_cat_5 sum_cat_6 sum_cat_7 sum_cat_8 sum_cat_9 sum_cat_10)
+
+forvalues i=1/10 {
+gen share_`i'=sum_cat_`i'*100/total_HH
+}
+
+foreach x in share sum_cat {
+rename `x'_1 `x'_wkp
+rename `x'_2 `x'_rela
+rename `x'_3 `x'_labo
+rename `x'_4 `x'_pawn
+rename `x'_5 `x'_shop
+rename `x'_6 `x'_mone
+rename `x'_7 `x'_frie
+rename `x'_8 `x'_micr
+rename `x'_9 `x'_bank
+rename `x'_10 `x'_than
+}
+
+keep HHID_panel year sum_cat_wkp sum_cat_rela sum_cat_labo sum_cat_pawn sum_cat_shop sum_cat_mone sum_cat_frie sum_cat_micr sum_cat_bank sum_cat_than total_HH share_wkp share_rela share_labo share_pawn share_shop share_mone share_frie share_micr share_bank share_than
+duplicates drop
+ta year
+
+tabstat share_wkp share_rela share_labo share_pawn share_shop share_mone share_frie share_micr share_bank share_than, stat(n mean cv q) by(y) long
+
+****************************************
+* END
+
 
 
 
