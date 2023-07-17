@@ -202,6 +202,48 @@ graph export "nbloans.png", as(png) replace
 
 
 
+
+****************************************
+* Comparision national data
+****************************************
+cls
+use"panel_v0", clear
+
+*** Rescale
+replace assets_total=assets_total/1000
+replace assets_totalnoland=assets_totalnoland/1000
+replace annualincome_HH=annualincome_HH/1000
+replace loanamount_HH=loanamount_HH/1000
+gen dummydebt=0
+replace dummydebt=1 if nbloans_HH>0 & nbloans_HH!=.
+gen DAR=loanamount_HH*100/assets_total
+
+
+*** 2016-17
+ta dummydebt ownland if year==2016, col nofreq
+tabstat loanamount_HH if year==2016, stat(n mean) by(ownland)
+tabstat assets_total if year==2016, stat(n mean) by(ownland)
+tabstat DAR if year==2016, stat(n mean) by(ownland)
+
+*** 2020-21
+ta dummydebt ownland if year==2020, col nofreq
+tabstat loanamount_HH if year==2020, stat(n mean) by(ownland)
+tabstat assets_total if year==2020, stat(n mean) by(ownland)
+tabstat DAR if year==2020, stat(n mean) by(ownland)
+
+
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
 ****************************************
 * Graph debt: amount and incidence
 ****************************************
@@ -221,7 +263,8 @@ To ensure a good visibility, we recode the extrems values at p99
 of the pooled sample
 i.e., 25 changes
 */
-tabstat loanamount_HH, stat(mean)  by(year)
+
+tabstat loanamount_HH, stat(n mean)  by(year)
 tabstat loanamount_HH if caste==1, stat(mean)  by(year)
 tabstat loanamount_HH if caste==2, stat(mean)  by(year)
 tabstat loanamount_HH if caste==3, stat(mean)  by(year)

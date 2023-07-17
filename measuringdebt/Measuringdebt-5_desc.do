@@ -68,6 +68,9 @@ use"panel_v5", clear
 ********** Stat desc
 tabstat dsr dir dar dcr afm rfm, stat(n mean cv min p1 p5 p10 q p90 p95 p99 max) by(time) long
 
+tabstat dsr isr, stat(n mean cv q) by(time) long
+
+
 
 ********** Overlap
 set graph off

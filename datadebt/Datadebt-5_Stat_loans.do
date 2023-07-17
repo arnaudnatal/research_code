@@ -212,11 +212,29 @@ restore
 
 ********** Niveau de détail 1
 use"panel_loans", clear
+drop if loansettled==1
+ta year
+ta loan_database year
+drop if loan_database=="MARRIAGE"
+ta year
+drop if HHID_panel=="GOV64" & year==2020
+drop if HHID_panel=="GOV65" & year==2020
+drop if HHID_panel=="GOV66" & year==2020  
+drop if HHID_panel=="GOV67" & year==2020
+drop if HHID_panel=="KUV66" & year==2020
+drop if HHID_panel=="KUV67" & year==2020
 
+ta loan_database year, col
+ta loanlender year, col nofreq
+
+ta lender4 loan_database if year==2016
+ta lender4 loan_database if year==2020
+
+***
 fre lender_cat
-gen loanamount_info=loanamount if lender_cat==1
-gen loanamount_semi=loanamount if lender_cat==2
-gen loanamount_form=loanamount if lender_cat==3
+gen loanamount_info=loanamount if lender4_cat==1
+gen loanamount_semi=loanamount if lender4_cat==2
+gen loanamount_form=loanamount if lender4_cat==3
 
 foreach x in info semi form {
 bysort HHID_panel year: egen sum_`x'=sum(loanamount_`x')
@@ -232,17 +250,51 @@ foreach x in info semi form {
 gen share_`x'=sum_`x'*100/total_HH
 }
 
-keep HHID_panel year sum_info sum_semi sum_form total_HH share_info share_semi share_form
+*** Total
+merge m:1 HHID_panel year using "panel_v0.dta", keepusing(loanamount_HH)
+keep if _merge==3
+drop _merge
+gen diff=loanamount_HH-total_HH
+gen pb=.
+replace pb=1 if diff>1000 | diff<-1000
+sort diff HHID_panel year
+ta pb
+
+preserve
+keep HHID_panel year pb
+duplicates drop
+ta pb
+restore
+
+
+keep HHID_panel year sum_info sum_semi sum_form total_HH share_info share_semi share_form loanamount_HH
 duplicates drop
 ta year
 
 tabstat share_info share_semi share_form, stat(n mean cv q) by(y) long
 
+replace total_HH=total_HH/1000
+replace loanamount_HH=loanamount_HH/1000
+tabstat total_HH loanamount_HH, stat(n mean cv q) by(year)
 
 
 ********** Niveau de détail 2
 use"panel_loans", clear
+drop if loansettled==1
+ta year
+ta loan_database year
+drop if loan_database=="MARRIAGE"
+ta year
+drop if HHID_panel=="GOV64" & year==2020
+drop if HHID_panel=="GOV65" & year==2020
+drop if HHID_panel=="GOV66" & year==2020  
+drop if HHID_panel=="GOV67" & year==2020
+drop if HHID_panel=="KUV66" & year==2020
+drop if HHID_panel=="KUV67" & year==2020
 
+ta lender4 lender_cat
+
+***
 fre lender4
 forvalues i=1/10 {
 gen loanamount_`i'=loanamount if lender4==`i'
@@ -275,7 +327,12 @@ keep HHID_panel year sum_cat_wkp sum_cat_rela sum_cat_labo sum_cat_pawn sum_cat_
 duplicates drop
 ta year
 
-tabstat share_wkp share_rela share_labo share_pawn share_shop share_mone share_frie share_micr share_bank share_than, stat(n mean cv q) by(y) long
+tabstat share_micr share_bank, stat(n mean cv q) by(y) long
+
+gen share_form=share_micr+share_bank
+
+tabstat share_form share_micr share_bank, stat(n mean cv q) by(y) long
+
 
 ****************************************
 * END
