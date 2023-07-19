@@ -30,13 +30,16 @@ tabstat imp1_ds_tot_HH annualincome_HH, stat(min p1 p5 p10 q p90 p95 p99 max)
 gen dsr=imp1_ds_tot_HH/annualincome_HH
 replace dsr=0 if dsr==.
 
-
 * ISR
 gen isr=imp1_is_tot_HH/annualincome_HH
 replace isr=0 if isr==.
 
-tabstat dsr isr, stat(n mean cv p50) by(year) long
 
+replace dsr=dsr*100
+replace isr=isr*100
+tabstat dsr isr, stat(n mean cv p50) by(year) long
+replace dsr=dsr/100
+replace isr=isr/100
 
 * DAR
 tabstat loanamount_HH assets_total assets_totalnoland assets_totalnoprop, stat(n mean cv p50) by(year)
