@@ -72,7 +72,7 @@ global compo2 log_HHsize share_female share_children share_young share_old share
 global yvar snbo snbo_male snbo_female
 
 *** X
-global xvar fvi 
+global xvar fvi_noinv
 
 ****************************************
 * END
@@ -86,7 +86,7 @@ global xvar fvi
 
 
 
-log using "Main.log", replace
+log using "Main_noinv.log", replace
 
 ****************************************
 * Specification 1
