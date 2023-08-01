@@ -155,9 +155,30 @@ cls
 use"panel_v3", clear
 
 
-
 ********** Rename
 rename snbo snbo_total
+
+
+********** Relative nb
+gen sharenbo_total=snbo_total/HHsize
+
+gen sharenbo_female=snbo_female/nbfemale
+replace sharenbo_female=0 if snbo_female==0
+
+gen sharenbo_male=snbo_male/nbmale
+replace sharenbo_male=0 if snbo_male==0
+replace sharenbo_male=0 if nbmale==0
+
+tabstat sharenbo_total sharenbo_female sharenbo_male, stat(mean cv q) by(year) long
+tabstat snbo_total snbo_female snbo_male, stat(mean cv q) by(year) long
+
+gen sharenbo2_female=snbo_female/(female_agegrp_18_24+female_agegrp_25_29+female_agegrp_30_34+female_agegrp_35_39+female_agegrp_40_49+female_agegrp_50_59+female_agegrp_60_69+female_agegrp_70_79+female_agegrp_80_100)
+
+tabstat sharenbo_female sharenbo2_female snbo_female, stat(mean cv q) by(year) long
+
+graph box sharenbo_female, over(year)
+graph box sharenbo2_female, over(year)
+graph box snbo_female, over(year)
 
 
 ********** Classic stats
@@ -434,5 +455,42 @@ ta occupationname if kindofwork==5 | kindofwork==7
 
 ****************************************
 * END
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Stat desc: FVI with and without investment
+****************************************
+cls
+use"panel_v3", clear
+
+
+tabstat imp1_is_tot_HH imp1_is_tot_HH_noinv, stat(n mean cv q) by(year) long
+
+tabstat totHH_givenamt_repa totHH_givenamt_repa_noinv, stat(n mean cv q) by(year) long
+
+tabstat loanamount_HH loanamount_HH_noinv, stat(n mean cv q) by(year) long
+
+tabstat isr isr_noinv, stat(n mean cv q) by(year) long
+
+tabstat tdr tdr_noinv, stat(n mean cv q) by(year) long
+
+tabstat fvi fvi_noinv, stat(n mean cv q) by(year) long
+
+
+
+****************************************
+* END
+
 
 

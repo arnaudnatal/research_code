@@ -65,10 +65,20 @@ replace isr=0 if isr==.
 replace isr=1 if isr>1
 ta isr
 
+gen isr_noinv=imp1_is_tot_HH_noinv/annualincome_HH
+replace isr_noinv=0 if isr_noinv==.
+replace isr_noinv=1 if isr_noinv>1
+ta isr
+
 ********** TDR
 gen tdr=totHH_givenamt_repa/loanamount_HH
 replace tdr=0 if tdr==.
 ta tdr
+
+gen tdr_noinv=totHH_givenamt_repa_noinv/loanamount_HH_noinv
+replace tdr_noinv=0 if tdr_noinv==.
+ta tdr_noinv
+
 
 
 ********** TAR
@@ -76,6 +86,7 @@ gen tar=totHH_givenamt_repa/assets_total
 replace tar=0 if tar==.
 replace tar=1 if tar>1
 ta tar
+
 
 
 ********** DAR
@@ -93,6 +104,7 @@ gen fvi3=(2*tar+2*isr+1*rrgpl2)/5
 gen fvi4=(1*tar+1*isr+1*rrgpl2)/5
 
 
+gen fvi_noinv=(2*tdr_noinv+2*isr_noinv+1*rrgpl2)/5
 
 * FVI
 *gen fvi=(tar+isr+rrgpl2)/3
