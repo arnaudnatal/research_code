@@ -63,7 +63,8 @@ ta shock
 *** X
 global nonvar caste_1 caste_3 village_2 village_3 village_4 village_5 village_6 village_7 village_8 village_9 village_10
 global head head_female head_age head_educ
-global econ remittnet_HH assets_total annualincome_HH dummymarriage shock
+global econ remittnet_HH assets_total annualincome_HH dummymarriage 
+*shock
 
 global compo1 log_HHsize share_children sexratio dependencyratio share_stock
 global compo2 log_HHsize share_female share_children share_young share_old share_stock
@@ -72,7 +73,7 @@ global compo2 log_HHsize share_female share_children share_young share_old share
 global yvar snbo snbo_male snbo_female
 
 *** X
-global xvar fvi_noinv
+global xvar fvi isr tdr rrgpl2 fvi_noinv
 
 ****************************************
 * END
@@ -86,7 +87,7 @@ global xvar fvi_noinv
 
 
 
-log using "Main_noinv.log", replace
+log using "Main.log", replace
 
 ****************************************
 * Specification 1

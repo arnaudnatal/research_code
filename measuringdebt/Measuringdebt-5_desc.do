@@ -30,13 +30,13 @@ use"panel_v5", clear
 
 *** Corr
 corr tdr isr rrgpl
-
+label var tdr "DTR"
 
 *** Graph
 set graph off
 graph matrix tdr isr rrgpl, half ///
 ms(oh) mc(black%30) ///
-note("Correlation:" "TDR-ISR: 0.00; TDR-RRGPL: 0.00; ISR-RRGPL: 0.35", size(vsmall))
+note("Correlation:" "DTR-ISR: 0.00; DTR-RRGPL: 0.00; ISR-RRGPL: 0.35", size(vsmall))
 graph export "graph/matrix_corr.pdf", as(pdf) replace
 set graph on
 
@@ -165,7 +165,8 @@ set graph on
 
 *** Combine
 set graph off
-graph combine dsr dir dar afm rfm dcr, col(3) name(comb, replace)
+*graph combine dsr dir dar afm rfm dcr, col(3) name(comb, replace)
+graph combine dsr dir dar afm, col(2) name(comb, replace)
 graph export "graph/Corr_fvi_oth.pdf", as(pdf) replace
 set graph on
 
@@ -246,7 +247,7 @@ twoway ///
 (kdensity tdr if year==2016) ///
 (kdensity tdr if year==2020) ///
 , ///
-xlabel(0(.2)1) xmtick(0(.1)1) xtitle("TDR") ///
+xlabel(0(.2)1) xmtick(0(.1)1) xtitle("DTR") ///
 ytitle("Density") ///
 legend(order(1 "2010" 2 "2016-17" 3 "2020-21") pos(6) col(3)) ///
 aspectratio(1) name(kd_tdr, replace)
