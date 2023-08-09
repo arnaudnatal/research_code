@@ -25,6 +25,32 @@ do "https://raw.githubusercontent.com/arnaudnatal/folderanalysis/main/$link.do"
 cls
 use"panel_v0", clear
 
+*Measuring debt
+preserve
+use"measuringdebt.dta", clear
+keep HHID_panel year caste
+rename caste caste_measuring
+save"measuringdebt_caste", replace
+restore
+merge 1:1 HHID_panel year using "measuringdebt_caste"
+drop _merge
+ta caste caste_measuring
+
+*Labour debt
+preserve
+use"labourdebt.dta", clear
+keep HHID_panel year caste
+rename caste caste_labour
+save"labourdebt_caste", replace
+restore
+merge 1:1 HHID_panel year using "labourdebt_caste"
+drop _merge
+ta caste caste_labour
+
+ta caste_labour caste_measuring
+
+
+
 
 *** Rescale
 replace assets_total=assets_total/10000
@@ -79,6 +105,12 @@ tabstat assets_totalnoland, stat(mean cv p50) by(year)
 tabstat assets_totalnoland if caste==1, stat(mean cv p50) by(year)
 tabstat assets_totalnoland if caste==2, stat(mean cv p50) by(year)
 tabstat assets_totalnoland if caste==3, stat(mean cv p50) by(year)
+
+*** Assets
+tabstat assets_total, stat(mean cv p50) by(year)
+tabstat assets_total if caste==1, stat(mean cv p50) by(year)
+tabstat assets_total if caste==2, stat(mean cv p50) by(year)
+tabstat assets_total if caste==3, stat(mean cv p50) by(year)
 
 *** Share gold
 tabstat sharegold, stat(mean cv p50) by(year)

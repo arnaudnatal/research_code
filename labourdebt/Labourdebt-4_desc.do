@@ -349,22 +349,38 @@ set graph on
 cls
 use"panel_v3", clear
 
-replace annualincome_HH_r=annualincome_HH_r/10000
+replace annualincome_HH_r=annualincome_HH_r/1000
 replace remittnet_HH_r=remittnet_HH_r/1000
-replace assets_total_r=assets_total_r/10000
+replace assets_total_r=assets_total_r/1000
 
 *** Economics
 tabstat remittnet_HH_r assets_total_r annualincome_HH_r, stat(n mean cv p50) by(year) long
+tabstat remittnet_HH_r assets_total_r annualincome_HH_r if caste==1, stat(n mean cv p50) by(year) long
+tabstat remittnet_HH_r assets_total_r annualincome_HH_r if caste==2, stat(n mean cv p50) by(year) long
+tabstat remittnet_HH_r assets_total_r annualincome_HH_r if caste==3, stat(n mean cv p50) by(year) long
 
 
 *** Head
 ta head_female year, col nofreq
-tabstat head_age, stat(mean) by(year)
-ta head_educ year, col nofreq
+ta head_female year if caste==1, col nofreq
+ta head_female year if caste==2, col nofreq
+ta head_female year if caste==3, col nofreq
 
+tabstat head_age, stat(mean) by(year)
+tabstat head_age if caste==1, stat(mean) by(year)
+tabstat head_age if caste==2, stat(mean) by(year)
+tabstat head_age if caste==3, stat(mean) by(year)
+
+ta head_educ year, col nofreq
+ta head_educ year if caste==1, col nofreq
+ta head_educ year if caste==2, col nofreq
+ta head_educ year if caste==3, col nofreq
 
 *** Family
 tabstat HHsize share_female share_children share_young share_old share_stock sexratio dependencyratio, stat(mean) by(year)
+tabstat HHsize share_female share_children share_young share_old share_stock sexratio dependencyratio if caste==1, stat(mean) by(year)
+tabstat HHsize share_female share_children share_young share_old share_stock sexratio dependencyratio if caste==2, stat(mean) by(year)
+tabstat HHsize share_female share_children share_young share_old share_stock sexratio dependencyratio if caste==3, stat(mean) by(year)
 
 
 

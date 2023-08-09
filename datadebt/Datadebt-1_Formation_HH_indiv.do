@@ -76,6 +76,11 @@ merge 1:m HHID_panel INDID2010 using "raw\keypanel-Indiv_wide", keepusing(INDID_
 keep if _merge==3
 drop _merge
 
+*** caste
+drop jatis caste
+merge 1:1 HHID2010 INDID2010 using "raw\RUME-caste", keepusing(jatiscorr)
+drop _merge
+
 *** Save
 save"RUME_v0", replace
 
@@ -152,6 +157,12 @@ drop _merge
 tostring INDID2016, replace
 merge 1:m HHID_panel INDID2016 using "raw\keypanel-Indiv_wide", keepusing(INDID_panel)
 keep if _merge==3
+drop _merge
+
+*** caste
+drop jatis
+destring INDID2016, replace
+merge 1:1 HHID2016 INDID2016 using "raw\NEEMSIS1-caste", keepusing(jatiscorr)
 drop _merge
 
 *** Save
@@ -238,13 +249,20 @@ merge 1:m HHID_panel INDID2020 using "raw\keypanel-Indiv_wide", keepusing(INDID_
 keep if _merge==3
 drop _merge
 
+*** caste
+drop jatis
+destring INDID2020, replace
+merge 1:1 HHID2020 INDID2020 using "raw\NEEMSIS2-caste", keepusing(jatiscorr)
+drop _merge
+
 *** Drop 6 without agri
 drop if HHID2020=="uuid:7373bf3a-f7a4-4d1a-8c12-ccb183b1f4db"
 drop if HHID2020=="uuid:d4b98efb-0cc6-4e82-996a-040ced0cbd52"
 drop if HHID2020=="uuid:1091f83c-d157-4891-b1ea-09338e91f3ef" 
 drop if HHID2020=="uuid:aea57b03-83a6-44f0-b59e-706b911484c4" 
 drop if HHID2020=="uuid:21f161fd-9a0c-4436-a416-7e75fad830d7" 
-drop if HHID2020=="uuid:b3e4fe70-f2aa-4e0f-bb6e-8fb57bb6f409" 
+drop if HHID2020=="uuid:b3e4fe70-f2aa-4e0f-bb6e-8fb57bb6f409"
+
 
 *** Save
 save"NEEMSIS2_v0", replace
@@ -279,7 +297,7 @@ incomeagri_HH incomenonagri_HH annualincome_HH shareincomeagri_HH shareincomenon
 ownland sizeownland ///
 loanamount_HH nbloans_HH totHH_lendercatamt_info totHH_lendercatamt_semi totHH_lendercatamt_form totHH_givencatamt_econ totHH_givencatamt_curr totHH_givencatamt_huma totHH_givencatamt_soci totHH_givencatamt_hous ///
 remittnet_HH nonworkersratio sum_dummymigration goldquantity_HH ///
-foodexpenses educationexpenses healthexpenses
+foodexpenses educationexpenses healthexpenses jatiscorr
 
 * Level
 gen year=2010
@@ -309,7 +327,7 @@ incomeagri_HH incomenonagri_HH annualincome_HH shareincomeagri_HH shareincomenon
 ownland sizeownland ///
 loanamount_HH nbloans_HH totHH_lendercatamt_info totHH_lendercatamt_semi totHH_lendercatamt_form totHH_givencatamt_econ totHH_givencatamt_curr totHH_givencatamt_huma totHH_givencatamt_soci totHH_givencatamt_hous ///
 remittnet_HH nonworkersratio sum_dummymigration goldquantity_HH ///
-foodexpenses educationexpenses healthexpenses
+foodexpenses educationexpenses healthexpenses jatiscorr
 
 * Level
 gen year=2016
@@ -338,7 +356,7 @@ incomeagri_HH incomenonagri_HH annualincome_HH shareincomeagri_HH shareincomenon
 ownland sizeownland ///
 loanamount_HH nbloans_HH totHH_lendercatamt_info totHH_lendercatamt_semi totHH_lendercatamt_form totHH_givencatamt_econ totHH_givencatamt_curr totHH_givencatamt_huma totHH_givencatamt_soci totHH_givencatamt_hous ///
 remittnet_HH nonworkersratio sum_dummymigration goldquantity_HH ///
-foodexpenses educationexpenses healthexpenses
+foodexpenses educationexpenses healthexpenses jatiscorr
 
 * Level
 gen year=2020
@@ -364,8 +382,6 @@ append using "NEEMSIS2_v1"
 ta sum_dummymigration
 replace sum_dummymigration=1 if sum_dummymigration>1
 rename sum_dummymigration dummymigration
-
-*** Villages
 
 *** Land
 recode ownland (.=0)
@@ -398,26 +414,28 @@ label define tof 1"ToF: Nuclear" 2"ToF: Stem" 3"ToF: Joint-stem"
 label values tof tof
 
 *** Caste
-preserve
-use"raw\RUME-caste", clear
-keep HHID_panel caste jatiscorr
-gen year=2010
-append using "raw\NEEMSIS1-caste"
-keep HHID_panel year caste jatiscorr
-replace year=2016 if year==.
-append using "raw\NEEMSIS2-caste"
-keep HHID_panel year caste jatiscorr
-replace year=2020 if year==.
-encode jatiscorr, gen(jatis)
-drop jatiscorr
-collapse (mean) jatis caste, by(HHID_panel year)
-label values jatis jatis
-ta caste year
-save"castetemp", replace
-restore
+fre jatiscorr
+gen caste=.
+replace caste=1 if jatiscorr=="SC"
+replace caste=1 if jatiscorr=="Arunthathiyar"
 
-merge 1:1 HHID_panel year using "castetemp"
-drop _merge
+replace caste=2 if jatiscorr=="Asarai"
+replace caste=2 if jatiscorr=="Kulalar"
+replace caste=2 if jatiscorr=="Gramani"
+replace caste=2 if jatiscorr=="Padayachi"
+replace caste=2 if jatiscorr=="Vanniyar"
+replace caste=2 if jatiscorr=="Nattar"
+replace caste=2 if jatiscorr=="Navithar"
+replace caste=2 if jatiscorr=="Muslims"
+
+replace caste=3 if jatiscorr=="Rediyar"
+replace caste=3 if jatiscorr=="Settu"
+replace caste=3 if jatiscorr=="Naidu"
+replace caste=3 if jatiscorr=="Chettiyar"
+replace caste=3 if jatiscorr=="Mudaliar"
+replace caste=3 if jatiscorr=="Yathavar"
+
+ta jatiscorr caste, m
 
 label define caste 1"Dalits" 2"Middle" 3"Upper"
 label values caste caste
@@ -434,7 +452,7 @@ label define year 2010"2010" 2016"2016-17" 2020"2020-21"
 label values year year
 
 *
-label values jatis jatis
+*label values jatis jatis
 
 * Select
 drop if time==.
