@@ -359,6 +359,15 @@ tabstat remittnet_HH_r assets_total_r annualincome_HH_r if caste==1, stat(n mean
 tabstat remittnet_HH_r assets_total_r annualincome_HH_r if caste==2, stat(n mean cv p50) by(year) long
 tabstat remittnet_HH_r assets_total_r annualincome_HH_r if caste==3, stat(n mean cv p50) by(year) long
 
+tabstat remittnet_HH_r remittnet_HH_r if year, stat(mean cv p50) by(year) long
+tabstat remittnet_HH_r remittnet_HH_r if caste==1, stat(mean cv p50) by(year) long
+tabstat remittnet_HH_r remittnet_HH_r if caste==2, stat(mean cv p50) by(year) long
+tabstat remittnet_HH_r remittnet_HH_r if caste==3, stat(mean cv p50) by(year) long
+
+
+
+
+
 
 *** Head
 ta head_female year, col nofreq
@@ -382,6 +391,11 @@ tabstat HHsize share_female share_children share_young share_old share_stock sex
 tabstat HHsize share_female share_children share_young share_old share_stock sexratio dependencyratio if caste==2, stat(mean) by(year)
 tabstat HHsize share_female share_children share_young share_old share_stock sexratio dependencyratio if caste==3, stat(mean) by(year)
 
+
+tabstat sexratio share_children dependencyratio nonworkersratio share_stock, stat(mean) by(year)
+tabstat sexratio share_children dependencyratio nonworkersratio share_stock if caste==1, stat(mean) by(year)
+tabstat sexratio share_children dependencyratio nonworkersratio share_stock if caste==2, stat(mean) by(year)
+tabstat sexratio share_children dependencyratio nonworkersratio share_stock if caste==3, stat(mean) by(year)
 
 
 *** Caste

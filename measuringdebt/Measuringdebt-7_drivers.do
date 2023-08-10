@@ -39,34 +39,90 @@ sum head_educ1 head_educ2 head_educ3
 
 *** Stat quali
 cls
-ta caste year, col nofreq
-ta dalits year, col nofreq
 ta stem year, col nofreq
-ta head_female year, col nofreq
-ta head_mocc_occupation year, col nofreq
-ta head_edulevel year, col nofreq
-ta head_nonmarried year, col nofreq
-ta ownland year, col nofreq
-ta dummymarriage year, col nofreq
-ta dummydemonetisation year, col nofreq
-ta vill year, col nofreq
-ta house year, col nofreq
-ta housetitle year, col nofreq
+ta stem year if caste==1, col nofreq
+ta stem year if caste==2, col nofreq
+ta stem year if caste==3, col nofreq
 
+ta head_female year, col nofreq
+ta head_female year if caste==1, col nofreq
+ta head_female year if caste==2, col nofreq
+ta head_female year if caste==3, col nofreq
+
+ta head_mocc_occupation year, col nofreq
+ta head_mocc_occupation year if caste==1, col nofreq
+ta head_mocc_occupation year if caste==2, col nofreq
+ta head_mocc_occupation year if caste==3, col nofreq
+
+ta head_edulevel year, col nofreq
+ta head_edulevel year if caste==1, col nofreq
+ta head_edulevel year if caste==2, col nofreq
+ta head_edulevel year if caste==3, col nofreq
+
+ta head_nonmarried year, col nofreq
+ta head_nonmarried year if caste==1, col nofreq
+ta head_nonmarried year if caste==2, col nofreq
+ta head_nonmarried year if caste==3, col nofreq
+
+ta ownland year, col nofreq
+ta ownland year if caste==1, col nofreq
+ta ownland year if caste==2, col nofreq
+ta ownland year if caste==3, col nofreq
+
+ta dummymarriage year, col nofreq
+ta dummymarriage year if caste==1, col nofreq
+ta dummymarriage year if caste==2, col nofreq
+ta dummymarriage year if caste==3, col nofreq
+
+ta dummydemonetisation year, col nofreq
+ta dummydemonetisation year if caste==1, col nofreq
+ta dummydemonetisation year if caste==2, col nofreq
+ta dummydemonetisation year if caste==3, col nofreq
+
+ta vill year, col nofreq
+ta vill year if caste==1, col nofreq
+ta vill year if caste==2, col nofreq
+ta vill year if caste==3, col nofreq
+
+ta house year, col nofreq
+ta house year if caste==1, col nofreq
+ta house year if caste==2, col nofreq
+ta house year if caste==3, col nofreq
+
+ta housetitle year, col nofreq
+ta housetitle year if caste==1, col nofreq
+ta housetitle year if caste==2, col nofreq
+ta housetitle year if caste==3, col nofreq
 
 *** Stat quanti
 cls
 replace assets_total=assets_total/1000
+replace assets_totalnoland=assets_totalnoland/1000
 replace annualincome_HH=annualincome_HH/1000
 replace loanamount_HH=loanamount_HH/1000
 replace shareform=shareform/100
 
 tabstat HHsize HH_count_child head_age, stat(mean) long by(year)
+tabstat HHsize HH_count_child head_age if caste==1, stat(mean) long by(year)
+tabstat HHsize HH_count_child head_age if caste==2, stat(mean) long by(year)
+tabstat HHsize HH_count_child head_age if caste==3, stat(mean) long by(year)
 
-tabstat assets_total annualincome_HH shareform loanamount_HH if year==2010, stat(mean cv p50) long
-tabstat assets_total annualincome_HH shareform loanamount_HH if year==2016, stat(mean cv p50) long
-tabstat assets_total annualincome_HH shareform loanamount_HH if year==2020, stat(mean cv p50) long
 
+tabstat assets_total assets_totalnoland annualincome_HH shareform loanamount_HH if year==2010, stat(mean cv p50) long
+tabstat assets_total assets_totalnoland annualincome_HH shareform loanamount_HH if year==2016, stat(mean cv p50) long
+tabstat assets_total assets_totalnoland annualincome_HH shareform loanamount_HH if year==2020, stat(mean cv p50) long
+
+tabstat assets_total assets_totalnoland annualincome_HH shareform loanamount_HH if year==2010 & caste==1, stat(mean cv p50) long
+tabstat assets_total assets_totalnoland annualincome_HH shareform loanamount_HH if year==2016 & caste==1, stat(mean cv p50) long
+tabstat assets_total assets_totalnoland annualincome_HH shareform loanamount_HH if year==2020 & caste==1, stat(mean cv p50) long
+
+tabstat assets_total assets_totalnoland annualincome_HH shareform loanamount_HH if year==2010 & caste==2, stat(mean cv p50) long
+tabstat assets_total assets_totalnoland annualincome_HH shareform loanamount_HH if year==2016 & caste==2, stat(mean cv p50) long
+tabstat assets_total assets_totalnoland annualincome_HH shareform loanamount_HH if year==2020 & caste==2, stat(mean cv p50) long
+
+tabstat assets_total assets_totalnoland annualincome_HH shareform loanamount_HH if year==2010 & caste==3, stat(mean cv p50) long
+tabstat assets_total assets_totalnoland annualincome_HH shareform loanamount_HH if year==2016 & caste==3, stat(mean cv p50) long
+tabstat assets_total assets_totalnoland annualincome_HH shareform loanamount_HH if year==2020 & caste==3, stat(mean cv p50) long
 
 
 ****************************************
@@ -102,57 +158,31 @@ label var dummysell "Sell assets to face lockdown: Yes"
 label var dummydemonetisation "Demonetisation: Yes"
 
 
-* Class
-foreach x in assets_total annualincome_HH {
-foreach i in 2010 2016 2020 {
-gen `x'_`i'=.
-replace `x'_`i'=`x' if year==`i'
-xtile cat_`x'_`i'=`x'_`i', n(5)
+* Clean assets
+sum assets_housevalue assets_livestock assets_goods assets_ownland assets_gold
+foreach x in assets_housevalue assets_livestock assets_goods assets_ownland assets_gold {
+replace `x'=1 if `x'==. | `x'<1
 }
-gen `x'_class=.
-foreach i in 2010 2016 2020 {
-replace `x'_class=cat_`x'_`i' if year==`i'
-drop `x'_`i' cat_`x'_`i'
-}
-}
-
-rename annualincome_HH_class income_class
-rename assets_total_class assets_class
-
-ta income_class, gen(income_cl)
-
-label var income_cl1 "Income: Very low"
-label var income_cl2 "Income: Low"
-label var income_cl3 "Income: Middle"
-label var income_cl4 "Income: High"
-label var income_cl5 "Income: Very high"
-
-ta assets_class, gen(assets_cl)
-label var assets_cl1 "Assets: Very low"
-label var assets_cl2 "Assets: Low"
-label var assets_cl3 "Assets: Middle"
-label var assets_cl4 "Assets: High"
-label var assets_cl5 "Assets: Very high"
 
 
 * Log
-foreach x in assets_total annualincome_HH loanamount_HH {
-replace `x'=1 if `x'<1
+foreach x in assets_total assets_totalnoland assets_housevalue assets_livestock assets_goods assets_ownland assets_gold annualincome_HH loanamount_HH assets_totalnoprop {
+replace `x'=1 if `x'<1 | `x'==.
 gen log_`x'=log(`x')
 }
 
 
 
 ********** Macro
-global livelihood income_cl1 income_cl2 income_cl4 income_cl5 assets_cl1 assets_cl2 assets_cl4 assets_cl5 log_annualincome_HH log_assets_total
+global livelihood log_annualincome_HH log_assets_total log_assets_totalnoland remittnet_HH assets_total assets_totalnoland annualincome_HH log_assets_housevalue log_assets_livestock log_assets_goods log_assets_ownland log_assets_gold log_assets_totalnoprop
 
-global family HHsize HH_count_child stem housetitle ownland 
+global family HHsize HH_count_child stem housetitle ownland sexratio dependencyratio
 
 global head head_female head_age head_occ1 head_occ2 head_occ4 head_occ5 head_occ6 head_occ7 head_educ2 head_educ3 head_nonmarried
 
 global shock dummymarriage dummydemonetisation lock_1 lock_2 lock_3 dummysell dummyexposure
 
-global debt shareform loanamount_HH_std log_loanamount_HH
+global debt shareform loanamount_HH_std log_loanamount_HH loanamount_HH
 
 global invar caste_2 caste_3 dalits village_2 village_3 village_4 village_5 village_6 village_7 village_8 village_9 village_10
 
@@ -183,23 +213,22 @@ global livelihood ///
 log_annualincome_HH mean_log_annualincome_HH ///
 log_assets_total mean_log_assets_total
 
-/*
-income_cl1 mean_income_cl1 ///
-income_cl2 mean_income_cl2 ///
-income_cl4 mean_income_cl4 ///
-income_cl5 mean_income_cl5 ///
-assets_cl1 mean_assets_cl1 ///
-assets_cl2 mean_assets_cl2 ///
-assets_cl4 mean_assets_cl4 ///
-assets_cl5 mean_assets_cl5 
-*/
+*remittnet_HH mean_remittnet_HH
+
+
+
 
 global family ///
 HHsize mean_HHsize ///
-HH_count_child mean_HH_count_child ///
-stem mean_stem ///
-housetitle mean_housetitle ///
+HH_count_child mean_HH_count_child
+
+/*
 ownland mean_ownland 
+housetitle mean_housetitle ///
+sexratio mean_sexratio ///
+dependencyratio mean_dependencyratio ///
+stem mean_stem 
+*/
 
 global head ///
 head_female mean_head_female ///
@@ -219,9 +248,6 @@ dummymarriage mean_dummymarriage ///
 dummydemonetisation mean_dummydemonetisation ///
 lock_2 mean_lock_2 ///
 lock_3 mean_lock_3
-*dummysell mean_dummysell
-*lock_2 mean_lock_2 ///
-*lock_3 mean_lock_3
 
 global debt ///
 shareform mean_shareform
@@ -343,7 +369,7 @@ $time ///
 est store spec5
 margins, dydx($livelihood $family $head $shock $debt $invar) post
 est store marg5
-
+*/
 
 *** Spec 6
 glm fvi ///
@@ -359,6 +385,8 @@ $time ///
 est store spec6
 margins, dydx($livelihood $family $head $shock $debt $debt2 $invar) post
 est store marg6
+
+
 
 
 

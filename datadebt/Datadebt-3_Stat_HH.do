@@ -53,8 +53,8 @@ ta caste_labour caste_measuring
 
 
 *** Rescale
-replace assets_total=assets_total/10000
-replace assets_totalnoland=assets_totalnoland/10000
+replace assets_total=assets_total/1000
+replace assets_totalnoland=assets_totalnoland/1000
 replace annualincome_HH=annualincome_HH/1000
 replace loanamount_HH=loanamount_HH/10000
 gen dummydebt=0
@@ -94,12 +94,6 @@ tabstat annualincome_HH if caste==1, stat(mean cv p50) by(year)
 tabstat annualincome_HH if caste==2, stat(mean cv p50) by(year)
 tabstat annualincome_HH if caste==3, stat(mean cv p50) by(year)
 
-*** Income agri (share)
-tabstat shareincomenonagri_HH, stat(mean cv p50) by(year)
-tabstat shareincomenonagri_HH if caste==1, stat(mean cv p50) by(year)
-tabstat shareincomenonagri_HH if caste==2, stat(mean cv p50) by(year)
-tabstat shareincomenonagri_HH if caste==3, stat(mean cv p50) by(year)
-
 *** Assets no land
 tabstat assets_totalnoland, stat(mean cv p50) by(year)
 tabstat assets_totalnoland if caste==1, stat(mean cv p50) by(year)
@@ -113,10 +107,10 @@ tabstat assets_total if caste==2, stat(mean cv p50) by(year)
 tabstat assets_total if caste==3, stat(mean cv p50) by(year)
 
 *** Share gold
-tabstat sharegold, stat(mean cv p50) by(year)
-tabstat sharegold if caste==1, stat(mean cv p50) by(year)
-tabstat sharegold if caste==2, stat(mean cv p50) by(year)
-tabstat sharegold if caste==3, stat(mean cv p50) by(year)
+tabstat sharegold shareincomenonagri_HH, stat(n mean cv p50) by(year)
+tabstat sharegold shareincomenonagri_HH if caste==1, stat(n mean cv p50) by(year)
+tabstat sharegold shareincomenonagri_HH if caste==2, stat(n mean cv p50) by(year)
+tabstat sharegold shareincomenonagri_HH if caste==3, stat(n mean cv p50) by(year)
 
 *** % of land owner?
 ta ownland year, col nofreq
@@ -125,10 +119,11 @@ ta ownland year if caste==2, col nofreq
 ta ownland year if caste==3, col nofreq
 
 *** Size of land
-tabstat sizeownland, stat(mean cv p50) by(year)
-tabstat sizeownland if caste==1, stat(mean cv p50) by(year)
-tabstat sizeownland if caste==2, stat(mean cv p50) by(year)
-tabstat sizeownland if caste==3, stat(mean cv p50) by(year)
+cls
+tabstat sizeownland, stat(mean) by(year)
+tabstat sizeownland if caste==1, stat(mean) by(year)
+tabstat sizeownland if caste==2, stat(mean) by(year)
+tabstat sizeownland if caste==3, stat(mean) by(year)
 
 
 *** PL
