@@ -83,7 +83,7 @@ drop _merge
 drop goldamount_HH goldamountpledge_HH
 
 * Panel
-merge 1:m HHID2010 using"raw/ODRIIS-HH_wide", keepusing(HHID_panel)
+merge 1:m HHID2010 using"raw/keypanel-HH_wide", keepusing(HHID_panel)
 keep if _merge==3
 drop _merge
 rename HHID2010 HHID
@@ -180,7 +180,7 @@ drop goldamount_HH goldamountpledge_HH
 
 
 * Panel
-merge 1:m HHID2016 using"raw/ODRIIS-HH_wide", keepusing(HHID_panel)
+merge 1:m HHID2016 using"raw/keypanel-HH_wide", keepusing(HHID_panel)
 keep if _merge==3
 drop _merge
 rename HHID2016 HHID
@@ -303,7 +303,7 @@ merge 1:1 HHID2020 using "raw/NEEMSIS2-covid", keepusing(secondlockdownexposure 
 drop _merge
 
 * Panel
-merge 1:m HHID2020 using"raw/ODRIIS-HH_wide", keepusing(HHID_panel)
+merge 1:m HHID2020 using"raw/keypanel-HH_wide", keepusing(HHID_panel)
 keep if _merge==3
 drop _merge
 rename HHID2020 HHID
@@ -379,16 +379,13 @@ recode dummydemonetisation (.=0)
 recode dummymarriage (.=0)
 
 * Caste
-tostring year, replace
-merge 1:1 HHID_panel year using "raw/ODRIIS-HH_long", keepusing(castecorr)
+*tostring year, replace
+merge 1:1 HHID_panel year using "raw/Panel-Caste_HH_long", keepusing(caste)
 keep if _merge==3
 drop _merge
-rename castecorr caste
-destring year, replace
 ta caste
-encode caste, gen(castecode)
-drop caste
-rename castecode caste
+label define castecode 1"Dalits" 2"Middle castes" 3"Upper castes"
+label values caste castecode
 fre caste
 
 

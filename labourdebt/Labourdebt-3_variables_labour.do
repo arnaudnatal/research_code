@@ -37,7 +37,7 @@ keep if _merge==3
 drop _merge
 
 *** Merge HHID_panel
-merge m:m HHID2010 using "raw/ODRIIS-HH_wide", keepusing(HHID_panel)
+merge m:m HHID2010 using "raw/keypanel-HH_wide", keepusing(HHID_panel)
 keep if _merge==3
 drop _merge
 gen year=2010
@@ -66,7 +66,7 @@ keep if _merge==3
 drop _merge
 
 *** Merge HHID_panel
-merge m:m HHID2016 using "raw/ODRIIS-HH_wide", keepusing(HHID_panel)
+merge m:m HHID2016 using "raw/keypanel-HH_wide", keepusing(HHID_panel)
 keep if _merge==3
 drop _merge
 gen year=2016
@@ -91,7 +91,7 @@ keep if _merge==3
 drop _merge
 
 *** Merge HHID_panel
-merge m:m HHID2020 using "raw/ODRIIS-HH_wide", keepusing(HHID_panel)
+merge m:m HHID2020 using "raw/keypanel-HH_wide", keepusing(HHID_panel)
 keep if _merge==3
 drop _merge
 gen year=2020
@@ -264,7 +264,7 @@ keep if _merge==3
 drop _merge
 
 *** Merge HHID_panel
-merge m:m HHID2010 using "raw/ODRIIS-HH_wide", keepusing(HHID_panel)
+merge m:m HHID2010 using "raw/keypanel-HH_wide", keepusing(HHID_panel)
 keep if _merge==3
 drop _merge
 gen year=2010
@@ -295,7 +295,7 @@ keep if _merge==3
 drop _merge
 
 *** Merge HHID_panel
-merge m:m HHID2016 using "raw/ODRIIS-HH_wide", keepusing(HHID_panel)
+merge m:m HHID2016 using "raw/keypanel-HH_wide", keepusing(HHID_panel)
 keep if _merge==3
 drop _merge
 gen year=2016
@@ -324,7 +324,7 @@ keep if _merge==3
 drop _merge
 
 *** Merge HHID_panel
-merge m:m HHID2020 using "raw/ODRIIS-HH_wide", keepusing(HHID_panel)
+merge m:m HHID2020 using "raw/keypanel-HH_wide", keepusing(HHID_panel)
 keep if _merge==3
 drop _merge
 gen year=2020
@@ -355,7 +355,7 @@ replace INDID=INDID2016 if year=="2016"
 replace INDID=INDID2020 if year=="2020"
 
 
-merge m:1 HHID_panel INDID year using "raw/ODRIIS-indiv_long", keepusing(INDID_panel)
+merge m:1 HHID_panel INDID year using "raw/keypanel-indiv_long", keepusing(INDID_panel)
 keep if _merge==3
 
 drop _merge
@@ -583,7 +583,7 @@ bysort HHID2010: egen s`x'=sum(`x')
 keep HHID2010 socc_agri socc_nagr socc_casu socc_ncas socc_self socc_nsel socc_agse socc_agca socc_naca socc_nare socc_nase socc_nreg
 duplicates drop
 
-merge 1:m HHID2010 using "raw/ODRIIS-HH_wide", keepusing(HHID_panel)
+merge 1:m HHID2010 using "raw/keypanel-HH_wide", keepusing(HHID_panel)
 keep if _merge==3
 drop _merge HHID2010
 gen year=2010
@@ -654,7 +654,7 @@ bysort HHID2016: egen s`x'=sum(`x')
 keep HHID2016 socc_agri socc_nagr socc_casu socc_ncas socc_self socc_nsel socc_agse socc_agca socc_naca socc_nare socc_nase socc_nreg
 duplicates drop
 
-merge 1:m HHID2016 using "raw/ODRIIS-HH_wide", keepusing(HHID_panel)
+merge 1:m HHID2016 using "raw/keypanel-HH_wide", keepusing(HHID_panel)
 keep if _merge==3
 drop _merge HHID2016
 gen year=2016
@@ -725,7 +725,7 @@ bysort HHID2020: egen s`x'=sum(`x')
 keep HHID2020 socc_agri socc_nagr socc_casu socc_ncas socc_self socc_nsel socc_agse socc_agca socc_naca socc_nare socc_nase socc_nreg
 duplicates drop
 
-merge 1:m HHID2020 using "raw/ODRIIS-HH_wide", keepusing(HHID_panel)
+merge 1:m HHID2020 using "raw/keypanel-HH_wide", keepusing(HHID_panel)
 keep if _merge==3
 drop _merge HHID2020
 gen year=2020

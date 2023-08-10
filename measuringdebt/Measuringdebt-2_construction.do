@@ -375,7 +375,7 @@ use"raw/RUME-loans_mainloans_new.dta", replace
 
 keep HHID2010 loanreasongiven loanlender loansettled loanamount lender_cat reason_cat lender4 dummyml loanamount2 loanbalance2 interestpaid2 totalrepaid2 principalpaid2
 
-merge m:m HHID2010 using "raw/ODRIIS-HH_wide.dta", keepusing(HHID_panel)
+merge m:m HHID2010 using "raw/keypanel-HH_wide.dta", keepusing(HHID_panel)
 keep if _merge==3
 drop _merge
 gen year=2010
@@ -392,7 +392,7 @@ ta loan_database
 drop if loan_database=="MARRIAGE"
 keep HHID2016 loanreasongiven loanlender loansettled loanamount lender_cat reason_cat lender4 dummyml loanamount2 loanbalance2 interestpaid2 totalrepaid2 principalpaid2
 
-merge m:m HHID2016 using "raw/ODRIIS-HH_wide.dta", keepusing(HHID_panel)
+merge m:m HHID2016 using "raw/keypanel-HH_wide.dta", keepusing(HHID_panel)
 keep if _merge==3
 drop _merge
 gen year=2016
@@ -407,7 +407,7 @@ use"raw/NEEMSIS2-loans_mainloans_new.dta", replace
 
 keep HHID2020 loanreasongiven loanlender loansettled loanamount lender_cat reason_cat lender4 dummyml loanamount2 loanbalance2 interestpaid2 totalrepaid2 principalpaid2
 
-merge m:m HHID2020 using "raw/ODRIIS-HH_wide.dta", keepusing(HHID_panel)
+merge m:m HHID2020 using "raw/keypanel-HH_wide.dta", keepusing(HHID_panel)
 keep if _merge==3
 drop _merge
 gen year=2020
