@@ -42,7 +42,7 @@ gen upp_fvi=caste_3*fvi
 *** X
 global nonvar caste_1 caste_3 village_2 village_3 village_4 village_5 village_6 village_7 village_8 village_9 village_10
 global head head_female head_age head_educ
-global econ remittnet_HH assets_total annualincome_HH 
+global econ remittnet_HH assets_total annualincome_HH dummymarriage
 *dummydemonetisation lockdown2 lockdown3
 
 global compo1 log_HHsize share_children sexratio dependencyratio share_stock
@@ -71,7 +71,7 @@ global xvar fvi
 
 
 
-log using "C_Main.log", replace
+log using "Caste.log", replace
 
 ****************************************
 * Specification 1
@@ -85,7 +85,7 @@ est store mlsem_`y'
 }
 
 
-esttab mlsem_snbo mlsem_snbo_male mlsem_snbo_female using "spec1_caste_snbo.csv", replace ///
+esttab mlsem_snbo mlsem_snbo_male mlsem_snbo_female using "Caste.csv", replace ///
 	label b(3) p(3) eqlabels(none) alignment(S) ///
 	drop(_cons $var) ///
 	star(* 0.10 ** 0.05 *** 0.01) ///

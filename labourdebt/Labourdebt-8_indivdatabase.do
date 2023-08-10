@@ -39,11 +39,11 @@ merge 1:1 HHID2010 INDID2010 using "raw/RUME-kilm"
 keep if _merge==3
 drop _merge
 
-merge m:m HHID2010 using "raw/ODRIIS-HH_wide", keepusing(HHID_panel)
+merge m:m HHID2010 using "raw/keypanel-HH_wide", keepusing(HHID_panel)
 keep if _merge==3
 drop _merge
 
-merge m:m HHID_panel INDID2010 using "raw/ODRIIS-indiv_wide", keepusing(INDID_panel)
+merge m:m HHID_panel INDID2010 using "raw/keypanel-indiv_wide", keepusing(INDID_panel)
 keep if _merge==3
 drop _merge
 
@@ -73,12 +73,12 @@ merge 1:1 HHID2016 INDID2016 using "raw/NEEMSIS1-kilm"
 keep if _merge==3
 drop _merge
 
-merge m:m HHID2016 using "raw/ODRIIS-HH_wide", keepusing(HHID_panel)
+merge m:m HHID2016 using "raw/keypanel-HH_wide", keepusing(HHID_panel)
 keep if _merge==3
 drop _merge
 
 tostring INDID2016, replace
-merge m:m HHID_panel INDID2016 using "raw/ODRIIS-indiv_wide", keepusing(INDID_panel)
+merge m:m HHID_panel INDID2016 using "raw/keypanel-indiv_wide", keepusing(INDID_panel)
 keep if _merge==3
 drop _merge
 destring INDID2016, replace
@@ -110,12 +110,12 @@ merge 1:1 HHID2020 INDID2020 using "raw/NEEMSIS2-kilm"
 keep if _merge==3
 drop _merge
 
-merge m:m HHID2020 using "raw/ODRIIS-HH_wide", keepusing(HHID_panel)
+merge m:m HHID2020 using "raw/keypanel-HH_wide", keepusing(HHID_panel)
 keep if _merge==3
 drop _merge
 
 tostring INDID2020, replace
-merge m:m HHID_panel INDID2020 using "raw/ODRIIS-indiv_wide", keepusing(INDID_panel)
+merge m:m HHID_panel INDID2020 using "raw/keypanel-indiv_wide", keepusing(INDID_panel)
 keep if _merge==3
 drop _merge
 destring INDID2020, replace
@@ -274,11 +274,11 @@ foreach x in $var {
 replace `x'=1 if `x'>1 & `x'!=0 & `x'!=.
 }
 
-merge m:m HHID2010 using "raw/ODRIIS-HH_wide", keepusing(HHID_panel)
+merge m:m HHID2010 using "raw/keypanel-HH_wide", keepusing(HHID_panel)
 keep if _merge==3
 drop _merge
 
-merge m:m HHID_panel INDID2010 using "raw/ODRIIS-indiv_wide", keepusing(INDID_panel)
+merge m:m HHID_panel INDID2010 using "raw/keypanel-indiv_wide", keepusing(INDID_panel)
 keep if _merge==3
 drop _merge
 
@@ -324,12 +324,12 @@ foreach x in $var {
 replace `x'=1 if `x'>1 & `x'!=0 & `x'!=.
 }
 
-merge m:m HHID2016 using "raw/ODRIIS-HH_wide", keepusing(HHID_panel)
+merge m:m HHID2016 using "raw/keypanel-HH_wide", keepusing(HHID_panel)
 keep if _merge==3
 drop _merge
 
 tostring INDID2016, replace
-merge m:m HHID_panel INDID2016 using "raw/ODRIIS-indiv_wide", keepusing(INDID_panel)
+merge m:m HHID_panel INDID2016 using "raw/keypanel-indiv_wide", keepusing(INDID_panel)
 keep if _merge==3
 drop _merge
 
@@ -377,12 +377,12 @@ foreach x in $var {
 replace `x'=1 if `x'>1 & `x'!=0 & `x'!=.
 }
 
-merge m:m HHID2020 using "raw/ODRIIS-HH_wide", keepusing(HHID_panel)
+merge m:m HHID2020 using "raw/keypanel-HH_wide", keepusing(HHID_panel)
 keep if _merge==3
 drop _merge
 
 tostring INDID2020, replace
-merge m:m HHID_panel INDID2020 using "raw/ODRIIS-indiv_wide", keepusing(INDID_panel)
+merge m:m HHID_panel INDID2020 using "raw/keypanel-indiv_wide", keepusing(INDID_panel)
 keep if _merge==3
 drop _merge
 

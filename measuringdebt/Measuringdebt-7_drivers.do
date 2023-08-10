@@ -28,6 +28,15 @@ use"panel_v6", clear
 
 xtset panelvar time
 
+*** Verif caste
+preserve
+keep HHID_panel year caste
+reshape wide caste, i(HHID_panel) j(year)
+ta caste2010 caste2016
+ta caste2016 caste2020
+ta caste2010 caste2020
+restore
+
 *** Verif dummies
 ta head_mocc_occupation
 sum head_occ1 head_occ2 head_occ3 head_occ4 head_occ5 head_occ6 head_occ7
@@ -35,15 +44,10 @@ sum head_occ1 head_occ2 head_occ3 head_occ4 head_occ5 head_occ6 head_occ7
 ta head_edulevel
 sum head_educ1 head_educ2 head_educ3
 
-
+ta caste year
 
 *** Stat quali
 cls
-ta stem year, col nofreq
-ta stem year if caste==1, col nofreq
-ta stem year if caste==2, col nofreq
-ta stem year if caste==3, col nofreq
-
 ta head_female year, col nofreq
 ta head_female year if caste==1, col nofreq
 ta head_female year if caste==2, col nofreq
@@ -83,16 +87,6 @@ ta vill year, col nofreq
 ta vill year if caste==1, col nofreq
 ta vill year if caste==2, col nofreq
 ta vill year if caste==3, col nofreq
-
-ta house year, col nofreq
-ta house year if caste==1, col nofreq
-ta house year if caste==2, col nofreq
-ta house year if caste==3, col nofreq
-
-ta housetitle year, col nofreq
-ta housetitle year if caste==1, col nofreq
-ta housetitle year if caste==2, col nofreq
-ta housetitle year if caste==3, col nofreq
 
 *** Stat quanti
 cls

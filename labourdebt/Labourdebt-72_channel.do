@@ -82,7 +82,7 @@ global compo2 log_HHsize share_female share_children share_young share_old share
 global yvar snbo snbo_male snbo_female
 
 *** X
-global xvar fvi 
+global xvar fvi_noinv 
 *isr tdr rrgpl2
  
 ****************************************
@@ -123,7 +123,7 @@ restore
 
 
 
-log using "Main.log", replace
+log using "Channel.log", replace
 
 ****************************************
 * Specification 1
@@ -131,13 +131,13 @@ log using "Main.log", replace
 
 foreach x in $xvar {
 foreach y in $yvar {
-capture noisily xtdpdml `y' $compo1 $econ $head, inv($nonvar) predetermined(L.`x') fiml gof
+capture noisily xtdpdml `y' $compo1 $econ $head, inv($nonvar) predetermined(L.`x') fiml 
 est store mlsem_`y'
 }
 }
 
 
-esttab mlsem_snbo mlsem_snbo_male mlsem_snbo_female using "Main.csv", replace ///
+esttab mlsem_snbo mlsem_snbo_male mlsem_snbo_female using "Channel.csv", replace ///
 	label b(3) p(3) eqlabels(none) alignment(S) ///
 	drop(_cons $var) ///
 	star(* 0.10 ** 0.05 *** 0.01) ///
@@ -151,3 +151,7 @@ esttab mlsem_snbo mlsem_snbo_male mlsem_snbo_female using "Main.csv", replace //
 * END
 
 log close
+
+
+
+

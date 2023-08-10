@@ -42,7 +42,7 @@ gen upp_fvi=caste_3*fvi
 *** X
 global nonvar caste_1 caste_3 village_2 village_3 village_4 village_5 village_6 village_7 village_8 village_9 village_10
 global head head_female head_age head_educ
-global econ remittnet_HH assets_total annualincome_HH 
+global econ remittnet_HH assets_total annualincome_HH dummymarriage
 *dummydemonetisation lockdown2 lockdown3
 
 global compo1 log_HHsize share_children sexratio dependencyratio share_stock
@@ -70,7 +70,7 @@ global xvar fvi
 
 
 
-
+/*
 log using "Rob_spec2.log", replace
 
 ****************************************
@@ -99,7 +99,7 @@ esttab mlsem_snbo mlsem_snbo_male mlsem_snbo_female using "spec2_snbo.csv", repl
 * END
 
 log close
-
+*/
 
 
 
@@ -215,7 +215,7 @@ log close
 
 
 	
-
+/*
 log using "Rob_nodomwork.log", replace
 
 ****************************************
@@ -246,7 +246,7 @@ esttab mlsem_snbo2 mlsem_snbo2_male mlsem_snbo2_female using "nodom_snbo.csv", r
 * END
 
 log close
-
+*/
 
 
 
@@ -254,7 +254,7 @@ log close
 	
 
 	
-	
+/*
 log using "Rob_onlyincomegen.log", replace
 
 ****************************************
@@ -286,3 +286,4 @@ esttab mlsem_snbo3 mlsem_snbo3_male mlsem_snbo3_female using "oincogen_snbo.csv"
 * END
 
 log close
+*/
