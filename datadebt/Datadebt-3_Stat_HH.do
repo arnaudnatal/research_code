@@ -65,7 +65,7 @@ replace educationexpenses=educationexpenses/1000
 
 
 *** Share of gold
-gen sharegold=assets_gold/(assets_totalnoland*10000)
+gen sharegold=assets_gold/(assets_totalnoland*1000)
 
 
 *** Caste
