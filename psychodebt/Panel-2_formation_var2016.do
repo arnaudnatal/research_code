@@ -25,11 +25,11 @@ use"raw\\$wave3", clear
 gen year2020=2020
 rename egoid egoid2020
 keep HHID2020 INDID2020 egoid2020 year2020
-merge m:m HHID2020 using "raw\ODRIIS-HH_wide", keepusing(HHID_panel)
+merge m:m HHID2020 using "raw\keypanel-HH_wide", keepusing(HHID_panel)
 keep if _merge==3
 drop _merge
 tostring INDID2020, replace
-merge m:m HHID_panel INDID2020 using "raw\ODRIIS-Indiv_wide", keepusing(INDID_panel)
+merge m:m HHID_panel INDID2020 using "raw\keypanel-Indiv_wide", keepusing(INDID_panel)
 destring INDID2020, replace
 keep if _merge==3
 drop _merge
@@ -42,11 +42,11 @@ use"raw\\$wave2", clear
 gen year2016=2016
 rename egoid egoid2016
 keep HHID2016 INDID2016 egoid2016 year2016
-merge m:m HHID2016 using "raw\ODRIIS-HH_wide", keepusing(HHID_panel)
+merge m:m HHID2016 using "raw\keypanel-HH_wide", keepusing(HHID_panel)
 keep if _merge==3
 drop _merge
 tostring INDID2016, replace
-merge m:m HHID_panel INDID2016 using "raw\ODRIIS-Indiv_wide", keepusing(INDID_panel)
+merge m:m HHID_panel INDID2016 using "raw\keypanel-Indiv_wide", keepusing(INDID_panel)
 destring INDID2016, replace
 keep if _merge==3
 drop _merge

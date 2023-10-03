@@ -15,158 +15,8 @@ do "https://raw.githubusercontent.com/arnaudnatal/folderanalysis/main/$link.do"
 
 /*
 Rob5:
-Loan level
+Loan level with FE
 */
-
-
-
-****************************************
-* Loan level
-****************************************
-use"raw\NEEMSIS2-loans_mainloans_new", clear
-
-
-*** Indiv level loanamount
-drop if loanamount==.
-drop if loanamount==0
-bysort HHID2020 INDID2020: egen sloanamount=sum(loanamount)
-
-
-*** To keep
-keep HHID2020 INDID2020 loanamount2 lenderscaste lendersex dummyproblemtorepay borrservices_none lenderfirsttime loanduration_month loan_database loanreasongiven lender4 dummyinterest imp1_interest_service lender_cat reason_cat guarantee_none termsofrepayment sloanamount
-
-
-*** Recode/rename var
-fre guarantee_none
-rename guarantee_none dummyguarantee
-recode dummyguarantee (0=1) (1=0)
-fre dummyguarantee
-
-rename loanamount2 loanamount
-
-
-*** Gen ML
-gen dummyml=0
-replace dummyml=1 if lenderfirsttime!=.
-ta dummyml
-
-
-*** Selection
-drop if loanduration_month>48
-
-
-*** Merge charact
-merge m:1 HHID2020 INDID2020 using "raw\NEEMSIS2-HH", keepusing(name age sex caste egoid)
-drop _merge
-
-
-*** Merge covid
-merge m:1 HHID2020 using "raw\NEEMSIS2-covid", keepusing(dummysell)
-drop _merge
-
-
-*** Supp cont for nego
-* Sex
-fre lendersex
-gen dummyssex=1
-replace dummyssex=2 if lendersex==1 & sex==1
-replace dummyssex=2 if lendersex==2 & sex==2
-replace dummyssex=3 if lendersex==.
-label define yesnonanew 1"No" 2"Yes" 3"N/A"
-label values dummyssex yesnonanew
-fre dummyssex
-
-* Caste
-fre lenderscaste
-rename lenderscaste lendersjatis
-gen lenderscaste=.
-replace lenderscaste=2 if lendersjatis==1
-replace lenderscaste=1 if lendersjatis==2
-replace lenderscaste=3 if lendersjatis==4
-replace lenderscaste=2 if lendersjatis==5
-replace lenderscaste=3 if lendersjatis==6
-replace lenderscaste=3 if lendersjatis==9
-replace lenderscaste=2 if lendersjatis==10
-replace lenderscaste=3 if lendersjatis==11
-replace lenderscaste=2 if lendersjatis==12
-replace lenderscaste=3 if lendersjatis==13
-replace lenderscaste=3 if lendersjatis==14
-replace lenderscaste=2 if lendersjatis==15
-replace lenderscaste=2 if lendersjatis==16
-replace lenderscaste=88 if lendersjatis==88
-
-gen dummyscaste=1
-replace dummyscaste=2 if caste==1 & lenderscaste==1
-replace dummyscaste=2 if caste==2 & lenderscaste==2
-replace dummyscaste=2 if caste==3 & lenderscaste==3
-replace dummyscaste=3 if lenderscaste==.
-label values dummyscaste yesnonanew
-fre dummyscaste
-
-
-*** Merge ID
-merge m:m HHID2020 using "raw\keypanel-HH_wide", keepusing(HHID_panel)
-keep if _merge==3
-drop _merge
-
-tostring INDID2020, replace
-merge m:m HHID_panel INDID2020 using "raw\keypanel-indiv_wide", keepusing(INDID_panel)
-keep if _merge==3
-drop _merge
-
-
-*** Order
-order HHID_panel INDID_panel HHID2020 INDID2020 dummyproblemtorepay borrservices_none
-drop lenderfirsttime loanduration_month
-
-
-*** Merge with 2016-17
-merge m:1 HHID_panel INDID_panel using "panel_wide_v2"
-
-
-*** Second selection
-ta loan_database
-ta dummyml
-keep if dummyml==1
-drop dummyml
-ta _merge
-keep if _merge==3
-drop _merge
-
-
-*** Gen FE
-* Indiv
-egen HHINDID=concat(HHID_panel INDID_panel)
-order HHID_panel INDID_panel HHINDID
-encode HHINDID, gen(INDID)
-drop HHINDID
-order HHID_panel INDID_panel INDID
-preserve
-duplicates drop INDID, force
-count
-restore
-
-* HH
-encode HHID_panel, gen(HHID)
-preserve
-duplicates drop HHID, force
-count
-restore
-
-
-* Combien d'indiv diff ?
-duplicates report INDID
-dis (280/2)+(684/3)  // 368 individuals with at least 2 loans
-dis 280+684  // 964 prêts
-
-
-save"panel_loanlevel_rob5", replace
-*************************************
-* END
-
-
-
-
 
 
 
@@ -207,34 +57,84 @@ global suppcont i.dummyssex i.dummyscaste i.dummysell
 
 
 
+
+********** Diff à la main
+
+*** Cluster
+qui reg borrservices_none indebt_indiv $inttot $XIndiv $XHH $Xrest $contloan, cluster(INDID)
+est store r1
+
+*** FE HH manual
+qui reg borrservices_none indebt_indiv $inttot $XIndiv $XHH $Xrest $contloan i.HHID
+est store r2
+
+*** FE Indiv manual
+reg borrservices_none indebt_indiv $inttot $XIndiv $XHH $Xrest $contloan i.INDID
+est store r3
+*1.dummyguarantee |   .1228142   .0383131     3.21   0.001
+
+
+
+
+
+********** xt
+bysort INDID: gen loanid=_n
+egen uniqueloanid=concat(INDID loanid)
+destring uniqueloanid, replace
+xtset INDID uniqueloanid
+
+*** FE Indiv
+xtreg borrservices_none indebt_indiv $inttot $XIndiv $XHH $Xrest $contloan, fe
+*1.dummyguarantee |   .1228142   .0383131     3.21   0.001
+est store fe
+
+
+*** RE Indiv
+xtreg borrservices_none indebt_indiv $inttot $XIndiv $XHH $Xrest $contloan, re
+*1.dummyguarantee |   .0542703    .030857     1.76   0.079
+est store re
+
+
+*** Hausman
+hausman fe re, sigmamore
+/*
+pvalue < 5% donc on rejette H0 comme quoi RE est meilleur
+Donc FE
+*/
+
+
+
+
+
+
+
+
+
+
 ********** Analysis
-
-qui probit borrservices_none indebt_indiv i.female i.dalits $XIndiv $XHH $Xrest $contloan, cluster(INDID)
-est store pr0
-
-qui probit borrservices_none indebt_indiv $PTCS $XIndiv $XHH $Xrest $contloan, cluster(INDID) 
+xtreg borrservices_none indebt_indiv $PTCS $XIndiv $XHH $Xrest $contloan, fe 
 est store pr1
-qui margins, dydx($PTCSma) atmeans post
+margins, dydx($PTCSma) atmeans post
 est store marg1
 
-qui probit borrservices_none indebt_indiv $intfem $XIndiv $XHH $Xrest $contloan, cluster(INDID) 
+xtreg borrservices_none indebt_indiv $intfem $XIndiv $XHH $Xrest $contloan, fe
 est store pr2
-qui margins, dydx($PTCSma) at(female=(0 1)) atmeans post
+margins, dydx($PTCSma) at(female=(0 1)) atmeans post
 est store marg2
 
-qui probit borrservices_none indebt_indiv $intdal $XIndiv $XHH $Xrest $contloan, cluster(INDID) 
+xtreg borrservices_none indebt_indiv $intdal $XIndiv $XHH $Xrest $contloan, fe
 est store pr3
-qui margins, dydx($PTCSma) at(dalits=(0 1)) atmeans post
+margins, dydx($PTCSma) at(dalits=(0 1)) atmeans post
 est store marg3
 
-qui probit borrservices_none indebt_indiv $inttot $XIndiv $XHH $Xrest $contloan, cluster(INDID) 
+xtreg borrservices_none indebt_indiv $inttot $XIndiv $XHH $Xrest $contloan, fe
 est store pr4
-qui margins, dydx($PTCSma) at(dalits=(0 1) female=(0 1)) atmeans post
+margins, dydx($PTCSma) at(dalits=(0 1) female=(0 1)) post
 est store marg4
 
 
 ********** Robustness
-qui probit borrservices_none indebt_indiv $inttot $XIndiv $XHH $Xrest $contloan $suppcont, cluster(INDID) 
+xtreg borrservices_none indebt_indiv $inttot $XIndiv $XHH $Xrest $contloan $suppcont, fe
 est store pr5
 margins, dydx($PTCSma) at(dalits=(0 1) female=(0 1)) atmeans post
 est store marg5
@@ -243,7 +143,7 @@ est store marg5
 
 ********** Overfit
 
-*overfit: probit borrservices_none indebt_indiv $inttot $XIndiv $XHH $Xrest $contloan, cluster(INDID) 
+*overfit: reg borrservices_none indebt_indiv $inttot $XIndiv $XHH $Xrest $contloan i.INDID 
 
 
 
@@ -311,33 +211,33 @@ global suppcont i.dummyssex i.dummyscaste i.dummysell
 
 ********** Analysis
 
-qui probit dummyproblemtorepay indebt_indiv i.female i.dalits $XIndiv $XHH $Xrest $contloan, cluster(HHID)
+reg dummyproblemtorepay indebt_indiv i.female i.dalits $XIndiv $XHH $Xrest $contloan, cluster(HHID)
 est store pr0
 
-qui probit dummyproblemtorepay indebt_indiv $PTCS $XIndiv $XHH $Xrest $contloan, cluster(HHID) 
+reg dummyproblemtorepay indebt_indiv $PTCS $XIndiv $XHH $Xrest $contloan, cluster(HHID) 
 est store pr1
-qui margins, dydx($PTCSma) atmeans post
+margins, dydx($PTCSma) atmeans post
 est store marg1
 
-qui probit dummyproblemtorepay indebt_indiv $intfem $XIndiv $XHH $Xrest $contloan, cluster(HHID) 
+reg dummyproblemtorepay indebt_indiv $intfem $XIndiv $XHH $Xrest $contloan, cluster(HHID) 
 est store pr2
-qui margins, dydx($PTCSma) at(female=(0 1)) atmeans post
+margins, dydx($PTCSma) at(female=(0 1)) atmeans post
 est store marg2
 
-qui probit dummyproblemtorepay indebt_indiv $intdal $XIndiv $XHH $Xrest $contloan, cluster(HHID) 
+reg dummyproblemtorepay indebt_indiv $intdal $XIndiv $XHH $Xrest $contloan, cluster(HHID) 
 est store pr3
-qui margins, dydx($PTCSma) at(dalits=(0 1)) atmeans post
+margins, dydx($PTCSma) at(dalits=(0 1)) atmeans post
 est store marg3
 
-qui probit dummyproblemtorepay indebt_indiv $inttot $XIndiv $XHH $Xrest $contloan, cluster(HHID) baselevel
+reg dummyproblemtorepay indebt_indiv $inttot $XIndiv $XHH $Xrest $contloan, cluster(HHID) baselevel
 est store pr4
-qui margins, dydx($PTCSma) at(dalits=(0 1) female=(0 1)) atmeans post
+margins, dydx($PTCSma) at(dalits=(0 1) female=(0 1)) atmeans post
 est store marg4
 
 
 ********** Robustness
 
-qui probit dummyproblemtorepay indebt_indiv $inttot $XIndiv $XHH $Xrest $contloan $suppcont, cluster(HHID) baselevel
+reg dummyproblemtorepay indebt_indiv $inttot $XIndiv $XHH $Xrest $contloan $suppcont, cluster(HHID) baselevel
 est store pr5
 margins, dydx($PTCSma) at(dalits=(0 1) female=(0 1)) atmeans post
 est store marg5
@@ -346,7 +246,7 @@ est store marg5
 
 
 ********** Overfit
-*overfit: probit dummyproblemtorepay indebt_indiv $inttot $XIndiv $XHH $Xrest $contloan, cluster(HHID) baselevel
+*overfit: reg dummyproblemtorepay indebt_indiv $inttot $XIndiv $XHH $Xrest $contloan, cluster(HHID) baselevel
 
 
 ********** Format
