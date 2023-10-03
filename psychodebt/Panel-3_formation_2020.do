@@ -167,6 +167,5 @@ label var female "Female"
 label var dalits "Dalits"
 
 save"panel_wide_v3", replace
-
 ****************************************
 * END

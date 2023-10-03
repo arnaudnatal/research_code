@@ -18,12 +18,12 @@ do "https://raw.githubusercontent.com/arnaudnatal/folderanalysis/main/$link.do"
 * LOOP
 *************************************
 
-foreach rob in rob1 rob2 rob3 {
+foreach rob in rob5 {
 
 
 
 
-
+/*
 *************************************
 * Recourse
 *************************************
@@ -340,7 +340,7 @@ drop _merge
 export excel using "Margins_rob.xlsx", sheet("Recourse_`rob'") sheetmodify cell(A6) nolabel
 *************************************
 * END
-
+*/
 
 
 
@@ -1020,11 +1020,11 @@ erase"cog3.dta"
 erase"hetero.dta"
 erase"marg1.dta"
 
-erase"Reco_margin_`rob'.csv"
+*erase"Reco_margin_`rob'.csv"
 erase"Nego_margin_`rob'.csv"
 erase"Mana_margin_`rob'.csv"
 
-erase"Reco_`rob'.csv"
+*erase"Reco_`rob'.csv"
 erase"Nego_`rob'.csv"
 erase"Mana_`rob'.csv"
 
