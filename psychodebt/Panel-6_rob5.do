@@ -5,17 +5,15 @@ cls
 *March 29, 2023
 *-----
 gl link = "psychodebt"
-*Rob 1
+*Rob5
 *-----
 do "https://raw.githubusercontent.com/arnaudnatal/folderanalysis/main/$link.do"
 *-------------------------
 
 
-
-
 /*
 Rob5:
-Loan level with FE
+que pour 2016-17
 */
 
 
@@ -25,11 +23,12 @@ Loan level with FE
 
 
 
-cls
+
+
 *************************************
-* Negotiation
+* Cross section
 *************************************
-use"panel_loanlevel_rob5", clear
+use"base2016", clear
 
 
 *** Macro
@@ -49,222 +48,89 @@ global intdal c.base_f1_std##i.dalits c.base_f2_std##i.dalits c.base_f3_std##i.d
 
 global inttot c.base_f1_std##i.female##i.dalits c.base_f2_std##i.female##i.dalits c.base_f3_std##i.female##i.dalits c.base_f5_std##i.female##i.dalits c.base_raven_tt_std##i.female##i.dalits c.base_num_tt_std##i.female##i.dalits c.base_lit_tt_std##i.female##i.dalits
 
-global contloan i.lender4 c.imp1_interest_service i.reason_cat c.loanamount i.dummyguarantee
-* i.lenderscaste i.lendersex i.termsofrepayment
-
-global suppcont i.dummyssex i.dummyscaste i.dummysell
-
-
-
-
-
-********** Diff à la main
-
-*** Cluster
-qui reg borrservices_none indebt_indiv $inttot $XIndiv $XHH $Xrest $contloan, cluster(INDID)
-est store r1
-
-*** FE HH manual
-qui reg borrservices_none indebt_indiv $inttot $XIndiv $XHH $Xrest $contloan i.HHID
-est store r2
-
-*** FE Indiv manual
-reg borrservices_none indebt_indiv $inttot $XIndiv $XHH $Xrest $contloan i.INDID
-est store r3
-*1.dummyguarantee |   .1228142   .0383131     3.21   0.001
-
-
-
-
-
-********** xt
-bysort INDID: gen loanid=_n
-egen uniqueloanid=concat(INDID loanid)
-destring uniqueloanid, replace
-xtset INDID uniqueloanid
-
-*** FE Indiv
-xtreg borrservices_none indebt_indiv $inttot $XIndiv $XHH $Xrest $contloan, fe
-*1.dummyguarantee |   .1228142   .0383131     3.21   0.001
-est store fe
-
-
-*** RE Indiv
-xtreg borrservices_none indebt_indiv $inttot $XIndiv $XHH $Xrest $contloan, re
-*1.dummyguarantee |   .0542703    .030857     1.76   0.079
-est store re
-
-
-*** Hausman
-hausman fe re, sigmamore
-/*
-pvalue < 5% donc on rejette H0 comme quoi RE est meilleur
-Donc FE
-*/
-
-
-
-
-
-
-
-
-
-
-********** Analysis
-xtreg borrservices_none indebt_indiv $PTCS $XIndiv $XHH $Xrest $contloan, fe 
-est store pr1
-margins, dydx($PTCSma) atmeans post
+********** Recourse
+*
+probit s_indebt2016 $PTCS $XIndiv $XHH $Xrest, cluster(HHID)
+qui margins, dydx($PTCSma) atmeans post
 est store marg1
-
-xtreg borrservices_none indebt_indiv $intfem $XIndiv $XHH $Xrest $contloan, fe
-est store pr2
-margins, dydx($PTCSma) at(female=(0 1)) atmeans post
+*
+qui probit s_indebt $intfem $XIndiv $XHH $Xrest, cluster(HHID)
+qui margins, dydx($PTCSma) at(female=(0 1)) atmeans
 est store marg2
-
-xtreg borrservices_none indebt_indiv $intdal $XIndiv $XHH $Xrest $contloan, fe
-est store pr3
-margins, dydx($PTCSma) at(dalits=(0 1)) atmeans post
+*
+qui probit s_indebt $intdal $XIndiv $XHH $Xrest, cluster(HHID)
+qui margins, dydx($PTCSma) at(dalits=(0 1)) atmeans
 est store marg3
-
-xtreg borrservices_none indebt_indiv $inttot $XIndiv $XHH $Xrest $contloan, fe
-est store pr4
-margins, dydx($PTCSma) at(dalits=(0 1) female=(0 1)) post
+*
+qui probit s_indebt $inttot $XIndiv $XHH $Xrest, cluster(HHID)
+qui margins, dydx($PTCSma) at(dalits=(0 1) female=(0 1)) atmeans
 est store marg4
 
 
-********** Robustness
-xtreg borrservices_none indebt_indiv $inttot $XIndiv $XHH $Xrest $contloan $suppcont, fe
-est store pr5
-margins, dydx($PTCSma) at(dalits=(0 1) female=(0 1)) atmeans post
-est store marg5
-
-
-
-********** Overfit
-
-*overfit: reg borrservices_none indebt_indiv $inttot $XIndiv $XHH $Xrest $contloan i.INDID 
-
-
-
-********** Format
-
-esttab pr0 pr1 pr2 pr3 pr4 using "Nego_rob5.csv", ///
+esttab marg1 marg2 marg3 marg4 using "Reco_margin_rob5.csv", ///
 	cells("b(fmt(2) star)" se(par fmt(2))) ///
-	drop($Xrest _cons) ///
 	legend label varlabels(_cons constant) ///
-	stats(N r2_p ll chi2 p, fmt(0 2 2 2 2) labels(`"Observations"' `"Pseudo \$R^2$"' `"Log-likelihood"' `"$\chi^2$"' `"p-value"')) ///
 	starlevels(* 0.10 ** 0.05 *** 0.01) ///
-	replace	
-	
+	replace
+est clear
+
+
+
+********** Negotiation
+
+qui probit s_borrservices_none $PTCS $XIndiv $XHH $Xrest, cluster(HHID)
+qui margins, dydx($PTCSma) atmeans post
+est store marg1
+*
+qui probit s_borrservices_none $intfem $XIndiv $XHH $Xrest, cluster(HHID)
+qui margins, dydx($PTCSma) at(female=(0 1)) atmeans
+est store marg2
+*
+qui probit s_borrservices_none $intdal $XIndiv $XHH $Xrest, cluster(HHID)
+qui margins, dydx($PTCSma) at(dalits=(0 1)) atmeans
+est store marg3
+*
+qui probit s_borrservices_none $inttot $XIndiv $XHH $Xrest, cluster(HHID)
+qui margins, dydx($PTCSma) at(dalits=(0 1) female=(0 1)) atmeans
+est store marg4
+
 esttab marg1 marg2 marg3 marg4 using "Nego_margin_rob5.csv", ///
 	cells("b(fmt(2) star)" se(par fmt(2))) ///
 	legend label varlabels(_cons constant) ///
 	starlevels(* 0.10 ** 0.05 *** 0.01) ///
-	replace		
-
+	replace
 est clear
-*************************************
-* END
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-*************************************
-* Management
-*************************************
-use"panel_loanlevel_rob5", clear
-
-
-*** Macro
-global PTCS base_f1_std base_f2_std base_f3_std base_f5_std base_raven_tt_std base_num_tt_std base_lit_tt_std i.female i.dalits
-
-global PTCSma base_f1_std base_f2_std base_f3_std base_f5_std base_raven_tt_std base_num_tt_std base_lit_tt_std
-
-global XIndiv age dummyhead cat_mainocc_occupation_indiv_1 cat_mainocc_occupation_indiv_2 cat_mainocc_occupation_indiv_4 cat_mainocc_occupation_indiv_5 cat_mainocc_occupation_indiv_6 cat_mainocc_occupation_indiv_7 dummyedulevel maritalstatus2
-
-global XHH assets1000 HHsize incomeHH1000
-
-global Xrest villageid_2 villageid_3 villageid_4 villageid_5 villageid_6 villageid_7 villageid_8 villageid_9 villageid_10 shock
-
-global intfem c.base_f1_std##i.female c.base_f2_std##i.female c.base_f3_std##i.female c.base_f5_std##i.female c.base_raven_tt_std##i.female c.base_num_tt_std##i.female c.base_lit_tt_std##i.female i.dalits
-
-global intdal c.base_f1_std##i.dalits c.base_f2_std##i.dalits c.base_f3_std##i.dalits c.base_f5_std##i.dalits c.base_raven_tt_std##i.dalits c.base_num_tt_std##i.dalits c.base_lit_tt_std##i.dalits i.female
-
-global inttot c.base_f1_std##i.female##i.dalits c.base_f2_std##i.female##i.dalits c.base_f3_std##i.female##i.dalits c.base_f5_std##i.female##i.dalits c.base_raven_tt_std##i.female##i.dalits c.base_num_tt_std##i.female##i.dalits c.base_lit_tt_std##i.female##i.dalits
-
-global contloan i.lender4 c.imp1_interest_service i.reason_cat c.loanamount i.dummyguarantee
-* i.lenderscaste i.lendersex i.termsofrepayment
-
-global suppcont i.dummyssex i.dummyscaste i.dummysell
-
-
-********** Analysis
-
-reg dummyproblemtorepay indebt_indiv i.female i.dalits $XIndiv $XHH $Xrest $contloan, cluster(HHID)
-est store pr0
-
-reg dummyproblemtorepay indebt_indiv $PTCS $XIndiv $XHH $Xrest $contloan, cluster(HHID) 
-est store pr1
-margins, dydx($PTCSma) atmeans post
+********** Management
+*
+qui probit s_dummyproblemtorepay $PTCS $XIndiv $XHH $Xrest, cluster(HHID)
+qui margins, dydx($PTCSma) atmeans post
 est store marg1
-
-reg dummyproblemtorepay indebt_indiv $intfem $XIndiv $XHH $Xrest $contloan, cluster(HHID) 
-est store pr2
-margins, dydx($PTCSma) at(female=(0 1)) atmeans post
+*
+qui probit s_dummyproblemtorepay $intfem $XIndiv $XHH $Xrest, cluster(HHID)
+qui margins, dydx($PTCSma) at(female=(0 1)) atmeans
 est store marg2
-
-reg dummyproblemtorepay indebt_indiv $intdal $XIndiv $XHH $Xrest $contloan, cluster(HHID) 
-est store pr3
-margins, dydx($PTCSma) at(dalits=(0 1)) atmeans post
+*
+qui probit s_dummyproblemtorepay $intdal $XIndiv $XHH $Xrest, cluster(HHID)
+qui margins, dydx($PTCSma) at(dalits=(0 1)) atmeans
 est store marg3
-
-reg dummyproblemtorepay indebt_indiv $inttot $XIndiv $XHH $Xrest $contloan, cluster(HHID) baselevel
-est store pr4
-margins, dydx($PTCSma) at(dalits=(0 1) female=(0 1)) atmeans post
+*
+qui probit s_dummyproblemtorepay $inttot $XIndiv $XHH $Xrest, cluster(HHID)
+qui margins, dydx($PTCSma) at(dalits=(0 1) female=(0 1)) atmeans
 est store marg4
-
-
-********** Robustness
-
-reg dummyproblemtorepay indebt_indiv $inttot $XIndiv $XHH $Xrest $contloan $suppcont, cluster(HHID) baselevel
-est store pr5
-margins, dydx($PTCSma) at(dalits=(0 1) female=(0 1)) atmeans post
-est store marg5
-
-
-
-
-********** Overfit
-*overfit: reg dummyproblemtorepay indebt_indiv $inttot $XIndiv $XHH $Xrest $contloan, cluster(HHID) baselevel
-
-
-********** Format
-esttab pr0 pr1 pr2 pr3 pr4 using "Mana_rob5.csv", ///
-	cells("b(fmt(2) star)" se(par fmt(2))) ///
-	drop($Xrest _cons) ///
-	legend label varlabels(_cons constant) ///
-	stats(N r2_p ll chi2 p, fmt(0 2 2 2 2) labels(`"Observations"' `"Pseudo \$R^2$"' `"Log-likelihood"' `"$\chi^2$"' `"p-value"')) ///
-	starlevels(* 0.10 ** 0.05 *** 0.01) ///
-	replace	
 
 esttab marg1 marg2 marg3 marg4 using "Mana_margin_rob5.csv", ///
 	cells("b(fmt(2) star)" se(par fmt(2))) ///
 	legend label varlabels(_cons constant) ///
 	starlevels(* 0.10 ** 0.05 *** 0.01) ///
-	replace		
+	replace
+est clear
 
 
-est clear	
+
+
+
 *************************************
 * END

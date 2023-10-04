@@ -17,7 +17,7 @@ do "https://raw.githubusercontent.com/arnaudnatal/folderanalysis/main/$link.do"
 *************************************
 * Negotiation
 *************************************
-use"panel_loanlevel_rob5", clear
+use"base_loanlevel_lag", clear
 
 
 *** Macro
@@ -87,7 +87,7 @@ est store marg5
 
 ********** Format
 
-esttab pr0 pr1 pr2 pr3 pr4 using "Nego_rob5.csv", ///
+esttab pr0 pr1 pr2 pr3 pr4 using "Nego_loan.csv", ///
 	cells("b(fmt(2) star)" se(par fmt(2))) ///
 	drop($Xrest _cons) ///
 	legend label varlabels(_cons constant) ///
@@ -95,7 +95,7 @@ esttab pr0 pr1 pr2 pr3 pr4 using "Nego_rob5.csv", ///
 	starlevels(* 0.10 ** 0.05 *** 0.01) ///
 	replace	
 	
-esttab marg1 marg2 marg3 marg4 using "Nego_margin_rob5.csv", ///
+esttab marg1 marg2 marg3 marg4 using "Nego_margin_loan.csv", ///
 	cells("b(fmt(2) star)" se(par fmt(2))) ///
 	legend label varlabels(_cons constant) ///
 	starlevels(* 0.10 ** 0.05 *** 0.01) ///
@@ -121,7 +121,7 @@ est clear
 *************************************
 * Management
 *************************************
-use"panel_loanlevel_rob5", clear
+use"base_loanlevel_lag", clear
 
 
 *** Macro
@@ -149,25 +149,25 @@ global suppcont i.dummyssex i.dummyscaste i.dummysell
 
 ********** Analysis
 
-qui probit dummyproblemtorepay indebt_indiv i.female i.dalits $XIndiv $XHH $Xrest $contloan, cluster(HHID)
+qui probit dummyproblemtorepay indebt_indiv i.female i.dalits $XIndiv $XHH $Xrest $contloan, cluster(INDID)
 est store pr0
 
-qui probit dummyproblemtorepay indebt_indiv $PTCS $XIndiv $XHH $Xrest $contloan, cluster(HHID) 
+qui probit dummyproblemtorepay indebt_indiv $PTCS $XIndiv $XHH $Xrest $contloan, cluster(INDID) 
 est store pr1
 qui margins, dydx($PTCSma) atmeans post
 est store marg1
 
-qui probit dummyproblemtorepay indebt_indiv $intfem $XIndiv $XHH $Xrest $contloan, cluster(HHID) 
+qui probit dummyproblemtorepay indebt_indiv $intfem $XIndiv $XHH $Xrest $contloan, cluster(INDID) 
 est store pr2
 qui margins, dydx($PTCSma) at(female=(0 1)) atmeans post
 est store marg2
 
-qui probit dummyproblemtorepay indebt_indiv $intdal $XIndiv $XHH $Xrest $contloan, cluster(HHID) 
+qui probit dummyproblemtorepay indebt_indiv $intdal $XIndiv $XHH $Xrest $contloan, cluster(INDID) 
 est store pr3
 qui margins, dydx($PTCSma) at(dalits=(0 1)) atmeans post
 est store marg3
 
-qui probit dummyproblemtorepay indebt_indiv $inttot $XIndiv $XHH $Xrest $contloan, cluster(HHID) baselevel
+qui probit dummyproblemtorepay indebt_indiv $inttot $XIndiv $XHH $Xrest $contloan, cluster(INDID) baselevel
 est store pr4
 qui margins, dydx($PTCSma) at(dalits=(0 1) female=(0 1)) atmeans post
 est store marg4
@@ -175,9 +175,9 @@ est store marg4
 
 ********** Robustness
 
-qui probit dummyproblemtorepay indebt_indiv $inttot $XIndiv $XHH $Xrest $contloan $suppcont, cluster(HHID) baselevel
+qui probit dummyproblemtorepay indebt_indiv $inttot $XIndiv $XHH $Xrest $contloan $suppcont, cluster(INDID) baselevel
 est store pr5
-margins, dydx($PTCSma) at(dalits=(0 1) female=(0 1)) atmeans post
+qui margins, dydx($PTCSma) at(dalits=(0 1) female=(0 1)) atmeans post
 est store marg5
 
 
@@ -188,7 +188,7 @@ est store marg5
 
 
 ********** Format
-esttab pr0 pr1 pr2 pr3 pr4 using "Mana_rob5.csv", ///
+esttab pr0 pr1 pr2 pr3 pr4 using "Mana_loan.csv", ///
 	cells("b(fmt(2) star)" se(par fmt(2))) ///
 	drop($Xrest _cons) ///
 	legend label varlabels(_cons constant) ///
@@ -196,7 +196,7 @@ esttab pr0 pr1 pr2 pr3 pr4 using "Mana_rob5.csv", ///
 	starlevels(* 0.10 ** 0.05 *** 0.01) ///
 	replace	
 
-esttab marg1 marg2 marg3 marg4 using "Mana_margin_rob5.csv", ///
+esttab marg1 marg2 marg3 marg4 using "Mana_margin_loan.csv", ///
 	cells("b(fmt(2) star)" se(par fmt(2))) ///
 	legend label varlabels(_cons constant) ///
 	starlevels(* 0.10 ** 0.05 *** 0.01) ///

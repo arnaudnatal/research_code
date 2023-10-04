@@ -62,6 +62,14 @@ label var indebt_indiv "Indebted in 2016-17"
 label var female "Female"
 label var dalits "Dalits"
 
+* Miss
+fre s_indebt
+recode s_indebt (.=0)
+
+* Cluster
+drop HHID
+encode HHID_panel, gen(HHID)
+
 save "base2016.dta", replace
 ****************************************
 * END
@@ -89,6 +97,10 @@ drop if egoid==.
 label var indebt_indiv "Indebted in 2016-17"
 label var female "Female"
 label var dalits "Dalits"
+
+* Cluster
+drop HHID
+encode HHID_panel, gen(HHID)
 
 save "base2020.dta", replace
 ****************************************
@@ -121,7 +133,7 @@ bysort HHID_panel INDID_panel: gen n=_N
 order HHID_panel INDID_panel egoid year n
 ta n year
 
-* Cleaning
+* Cleaning PT
 foreach x in OP CO EX AG ES Grit {
 gen `x'=.
 }
@@ -129,6 +141,28 @@ foreach x in OP CO EX AG ES Grit {
 replace `x'=`x'_2016 if year==2016
 replace `x'=`x'_2020 if year==2020
 }
+
+* Cleaning debt measures
+foreach x in s_indebt s_borrservices_none s_dummyproblemtorepay {
+gen `x'=.
+}
+foreach x in s_indebt s_borrservices_none s_dummyproblemtorepay {
+replace `x'=`x'2016 if year==2016
+replace `x'=`x'2020 if year==2020
+}
+
+
+ta s_indebt year, m
+ta s_borrservices_none year, m
+ta s_dummyproblemtorepay year, m
+
+* Panel var
+drop INDID
+egen INDID=concat(HHID_panel INDID_panel)
+encode INDID, gen(INDID2)
+drop INDID
+rename INDID2 INDID
+ta INDID
 
 
 save"base_panel", replace
