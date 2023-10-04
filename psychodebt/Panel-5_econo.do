@@ -25,7 +25,7 @@ do "https://raw.githubusercontent.com/arnaudnatal/folderanalysis/main/$link.do"
 *************************************
 * Recourse
 *************************************
-use"panel_wide_v3", clear
+use"base_panel_lag", clear
 
 
 *** Macro

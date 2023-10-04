@@ -5,7 +5,7 @@ cls
 *March 29, 2023
 *-----
 gl link = "psychodebt"
-*Rob 1
+*Econo at loan level
 *-----
 do "https://raw.githubusercontent.com/arnaudnatal/folderanalysis/main/$link.do"
 *-------------------------
@@ -13,19 +13,7 @@ do "https://raw.githubusercontent.com/arnaudnatal/folderanalysis/main/$link.do"
 
 
 
-/*
-Rob5:
-Loan level with FE
-*/
 
-
-
-
-
-
-
-
-cls
 *************************************
 * Negotiation
 *************************************
@@ -57,84 +45,34 @@ global suppcont i.dummyssex i.dummyscaste i.dummysell
 
 
 
-
-********** Diff à la main
-
-*** Cluster
-qui reg borrservices_none indebt_indiv $inttot $XIndiv $XHH $Xrest $contloan, cluster(INDID)
-est store r1
-
-*** FE HH manual
-qui reg borrservices_none indebt_indiv $inttot $XIndiv $XHH $Xrest $contloan i.HHID
-est store r2
-
-*** FE Indiv manual
-reg borrservices_none indebt_indiv $inttot $XIndiv $XHH $Xrest $contloan i.INDID
-est store r3
-*1.dummyguarantee |   .1228142   .0383131     3.21   0.001
-
-
-
-
-
-********** xt
-bysort INDID: gen loanid=_n
-egen uniqueloanid=concat(INDID loanid)
-destring uniqueloanid, replace
-xtset INDID uniqueloanid
-
-*** FE Indiv
-xtreg borrservices_none indebt_indiv $inttot $XIndiv $XHH $Xrest $contloan, fe
-*1.dummyguarantee |   .1228142   .0383131     3.21   0.001
-est store fe
-
-
-*** RE Indiv
-xtreg borrservices_none indebt_indiv $inttot $XIndiv $XHH $Xrest $contloan, re
-*1.dummyguarantee |   .0542703    .030857     1.76   0.079
-est store re
-
-
-*** Hausman
-hausman fe re, sigmamore
-/*
-pvalue < 5% donc on rejette H0 comme quoi RE est meilleur
-Donc FE
-*/
-
-
-
-
-
-
-
-
-
-
 ********** Analysis
-xtreg borrservices_none indebt_indiv $PTCS $XIndiv $XHH $Xrest $contloan, fe 
+
+qui probit borrservices_none indebt_indiv i.female i.dalits $XIndiv $XHH $Xrest $contloan, cluster(INDID)
+est store pr0
+
+qui probit borrservices_none indebt_indiv $PTCS $XIndiv $XHH $Xrest $contloan, cluster(INDID) 
 est store pr1
-margins, dydx($PTCSma) atmeans post
+qui margins, dydx($PTCSma) atmeans post
 est store marg1
 
-xtreg borrservices_none indebt_indiv $intfem $XIndiv $XHH $Xrest $contloan, fe
+qui probit borrservices_none indebt_indiv $intfem $XIndiv $XHH $Xrest $contloan, cluster(INDID) 
 est store pr2
-margins, dydx($PTCSma) at(female=(0 1)) atmeans post
+qui margins, dydx($PTCSma) at(female=(0 1)) atmeans post
 est store marg2
 
-xtreg borrservices_none indebt_indiv $intdal $XIndiv $XHH $Xrest $contloan, fe
+qui probit borrservices_none indebt_indiv $intdal $XIndiv $XHH $Xrest $contloan, cluster(INDID) 
 est store pr3
-margins, dydx($PTCSma) at(dalits=(0 1)) atmeans post
+qui margins, dydx($PTCSma) at(dalits=(0 1)) atmeans post
 est store marg3
 
-xtreg borrservices_none indebt_indiv $inttot $XIndiv $XHH $Xrest $contloan, fe
+qui probit borrservices_none indebt_indiv $inttot $XIndiv $XHH $Xrest $contloan, cluster(INDID) 
 est store pr4
-margins, dydx($PTCSma) at(dalits=(0 1) female=(0 1)) post
+qui margins, dydx($PTCSma) at(dalits=(0 1) female=(0 1)) atmeans post
 est store marg4
 
 
 ********** Robustness
-xtreg borrservices_none indebt_indiv $inttot $XIndiv $XHH $Xrest $contloan $suppcont, fe
+qui probit borrservices_none indebt_indiv $inttot $XIndiv $XHH $Xrest $contloan $suppcont, cluster(INDID) 
 est store pr5
 margins, dydx($PTCSma) at(dalits=(0 1) female=(0 1)) atmeans post
 est store marg5
@@ -143,7 +81,7 @@ est store marg5
 
 ********** Overfit
 
-*overfit: reg borrservices_none indebt_indiv $inttot $XIndiv $XHH $Xrest $contloan i.INDID 
+*overfit: probit borrservices_none indebt_indiv $inttot $XIndiv $XHH $Xrest $contloan, cluster(INDID) 
 
 
 
@@ -211,33 +149,33 @@ global suppcont i.dummyssex i.dummyscaste i.dummysell
 
 ********** Analysis
 
-reg dummyproblemtorepay indebt_indiv i.female i.dalits $XIndiv $XHH $Xrest $contloan, cluster(HHID)
+qui probit dummyproblemtorepay indebt_indiv i.female i.dalits $XIndiv $XHH $Xrest $contloan, cluster(HHID)
 est store pr0
 
-reg dummyproblemtorepay indebt_indiv $PTCS $XIndiv $XHH $Xrest $contloan, cluster(HHID) 
+qui probit dummyproblemtorepay indebt_indiv $PTCS $XIndiv $XHH $Xrest $contloan, cluster(HHID) 
 est store pr1
-margins, dydx($PTCSma) atmeans post
+qui margins, dydx($PTCSma) atmeans post
 est store marg1
 
-reg dummyproblemtorepay indebt_indiv $intfem $XIndiv $XHH $Xrest $contloan, cluster(HHID) 
+qui probit dummyproblemtorepay indebt_indiv $intfem $XIndiv $XHH $Xrest $contloan, cluster(HHID) 
 est store pr2
-margins, dydx($PTCSma) at(female=(0 1)) atmeans post
+qui margins, dydx($PTCSma) at(female=(0 1)) atmeans post
 est store marg2
 
-reg dummyproblemtorepay indebt_indiv $intdal $XIndiv $XHH $Xrest $contloan, cluster(HHID) 
+qui probit dummyproblemtorepay indebt_indiv $intdal $XIndiv $XHH $Xrest $contloan, cluster(HHID) 
 est store pr3
-margins, dydx($PTCSma) at(dalits=(0 1)) atmeans post
+qui margins, dydx($PTCSma) at(dalits=(0 1)) atmeans post
 est store marg3
 
-reg dummyproblemtorepay indebt_indiv $inttot $XIndiv $XHH $Xrest $contloan, cluster(HHID) baselevel
+qui probit dummyproblemtorepay indebt_indiv $inttot $XIndiv $XHH $Xrest $contloan, cluster(HHID) baselevel
 est store pr4
-margins, dydx($PTCSma) at(dalits=(0 1) female=(0 1)) atmeans post
+qui margins, dydx($PTCSma) at(dalits=(0 1) female=(0 1)) atmeans post
 est store marg4
 
 
 ********** Robustness
 
-reg dummyproblemtorepay indebt_indiv $inttot $XIndiv $XHH $Xrest $contloan $suppcont, cluster(HHID) baselevel
+qui probit dummyproblemtorepay indebt_indiv $inttot $XIndiv $XHH $Xrest $contloan $suppcont, cluster(HHID) baselevel
 est store pr5
 margins, dydx($PTCSma) at(dalits=(0 1) female=(0 1)) atmeans post
 est store marg5
@@ -246,7 +184,7 @@ est store marg5
 
 
 ********** Overfit
-*overfit: reg dummyproblemtorepay indebt_indiv $inttot $XIndiv $XHH $Xrest $contloan, cluster(HHID) baselevel
+*overfit: probit dummyproblemtorepay indebt_indiv $inttot $XIndiv $XHH $Xrest $contloan, cluster(HHID) baselevel
 
 
 ********** Format

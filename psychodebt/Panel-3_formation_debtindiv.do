@@ -38,6 +38,7 @@ drop if loanduration_month>48
 * Merge charact
 merge m:1 HHID2020 INDID2020 using "raw\NEEMSIS2-HH", keepusing(name age sex caste egoid)
 drop _merge
+rename egoid egoid2020
 
 * Merge covid
 merge m:1 HHID2020 using "raw\NEEMSIS2-covid", keepusing(dummysell)
@@ -115,27 +116,10 @@ keep if _merge==3
 drop _merge
 
 * Clean
-drop egoid name sex age caste HHID2020 INDID2020
+drop name sex age caste HHID2020 INDID2020
 foreach x in s_indebt s_dummyproblemtorepay s_borrservices_none s_dummyscaste s_dummyssex nb_loans s_dummyml {
 rename `x' `x'2020
 }
-
-* Merge with 2016-17
-merge 1:1 HHID_panel INDID_panel using "panel_wide_v2"
-drop if _merge==1
-drop _merge
-
-
-* Check consistency compared to before
-ta s_indebt2020
-ta s_dummyml
-ta s_borrservices_none2020
-ta s_dummyproblemtorepay2020
-
-ta s_indebt2020 sex, col nofreq
-ta s_borrservices_none2020 sex, col nofreq
-ta s_dummyproblemtorepay2020 sex, col nofreq
-
 
 *** Gen FE
 * Indiv
@@ -158,29 +142,13 @@ restore
 
 
 *** Label
-label var indebt_indiv "Indebted in 2016-17"
 label var sharesex "\% debt same sex"
 label var sharecaste "\% debt same caste"
 label var s_loanamount "Total amount of debt (\rupee)"
 
-label var female "Female"
-label var dalits "Dalits"
-
-save"panel_wide_v3", replace
+save"$wave3~debt", replace
 ****************************************
 * END
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -213,6 +181,7 @@ ta dummyml
 merge m:1 HHID2016 INDID2016 using "raw\NEEMSIS1-HH", keepusing(name age sex egoid)
 keep if _merge==3
 drop _merge
+rename egoid egoid2016
 
 merge m:1 HHID2016 INDID2016 using "raw\NEEMSIS1-caste", keepusing(caste)
 keep if _merge==3
@@ -276,7 +245,7 @@ ta sharecaste
 bysort HHID2016 INDID2016: egen s_loanamount=sum(loanamount)
 
 * Indiv level
-drop loanamount dummyproblemtorepay lendersjatis lendersex borrservices_none dummyssex lenderscaste dummyscaste indebt loanduration_month loan_database dummyml
+drop loanamount dummyproblemtorepay lendersjatis lendersex borrservices_none dummyssex lenderscaste dummyscaste indebt loanduration_month loan_database dummyml lendername
 duplicates drop
 
 
@@ -291,18 +260,10 @@ keep if _merge==3
 drop _merge
 
 * Clean
-drop egoid name sex age caste HHID2016 INDID2016
+drop name sex age caste HHID2016 INDID2016
 foreach x in s_indebt s_dummyproblemtorepay s_borrservices_none s_dummyscaste s_dummyssex nb_loans s_dummyml {
 rename `x' `x'2016
 }
-
-/*
-* Merge with 2016-17
-merge 1:1 HHID_panel INDID_panel using "panel_wide_v2"
-drop if _merge==1
-drop _merge
-*/
-
 
 *** Gen FE
 * Indiv
@@ -329,7 +290,6 @@ label var sharesex "\% debt same sex"
 label var sharecaste "\% debt same caste"
 label var s_loanamount "Total amount of debt (\rupee)"
 
-save"debt2016", replace
+save"$wave2~debt", replace
 ****************************************
 * END
-

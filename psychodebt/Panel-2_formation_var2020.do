@@ -28,9 +28,9 @@ keep if _merge==3
 drop _merge
 *destring INDID2020, replace
 
-keep if panel_indiv==1
+*keep if panel_indiv==1
 keep if egoid>0
-keep if egoid2020>0
+*keep if egoid2020>0
 
 * Merge ego
 merge 1:1 HHID2020 INDID2020 using "raw\NEEMSIS2-PTCS"
@@ -75,15 +75,15 @@ putexcel (E2)=matrix(e(r_L))
 
 ********** Omega with Laajaj approach for factor analysis and Cobb Clark
 ** F1
-global f1 imcr_easilyupset imcr_nervous imcr_worryalot imcr_feeldepressed imcr_changemood imcr_easilydistracted imcr_shywithpeople imcr_putoffduties imcr_rudetoother imcr_repetitivetasks
+global f1 imcr_worryalot imcr_easilydistracted imcr_feeldepressed imcr_easilyupset imcr_changemood imcr_nervous imcr_repetitivetasks imcr_putoffduties imcr_shywithpeople imcr_rudetoother imcr_understandotherfeeling
 ** F2
-global f2 imcr_makeplans imcr_appointmentontime imcr_completeduties imcr_enthusiastic imcr_organized imcr_workhard imcr_workwithother
+global f2 imcr_talkative imcr_helpfulwithothers imcr_inventive imcr_staycalm imcr_trustingofother imcr_liketothink imcr_sharefeelings imcr_organized imcr_appointmentontime
 ** F3
-global f3 imcr_liketothink imcr_activeimagination imcr_expressingthoughts imcr_sharefeelings imcr_newideas imcr_inventive imcr_curious imcr_talktomanypeople imcr_talkative imcr_interestedbyart imcr_understandotherfeeling
+global f3 imcr_enthusiastic imcr_talktomanypeople imcr_completeduties imcr_forgiveother imcr_expressingthoughts imcr_activeimagination imcr_makeplans imcr_workwithother
 ** F4
-global f4 imcr_staycalm imcr_managestress
+global f4 imcr_curious imcr_interestedbyart imcr_workhard imcr_enjoypeople imcr_newideas imcr_toleratefaults
 ** F5
-global f5 imcr_forgiveother imcr_toleratefaults imcr_trustingofother imcr_enjoypeople imcr_helpfulwithothers
+global f5 imcr_managestress
 
 /*
 *** Omega
@@ -101,8 +101,14 @@ egen f3_2020=rowmean($f3)
 egen f4_2020=rowmean($f4)
 egen f5_2020=rowmean($f5)
 
+egen OP_2020 = rowmean(imcr_curious imcr_interested~t   imcr_repetitive~s imcr_inventive imcr_liketothink imcr_newideas imcr_activeimag~n)
+egen CO_2020 = rowmean(imcr_organized  imcr_makeplans imcr_workhard imcr_appointmen~e imcr_putoffduties imcr_easilydist~d imcr_completedu~s) 
+egen EX_2020 = rowmean(imcr_enjoypeople imcr_sharefeeli~s imcr_shywithpeo~e  imcr_enthusiastic  imcr_talktomany~e  imcr_talkative imcr_expressing~s ) 
+egen AG_2020 = rowmean(imcr_workwithot~r imcr_understand~g imcr_trustingof~r imcr_rudetoother imcr_toleratefa~s imcr_forgiveother imcr_helpfulwit~s) 
+egen ES_2020 = rowmean(imcr_managestress imcr_nervous imcr_changemood imcr_feeldepres~d imcr_easilyupset imcr_worryalot imcr_staycalm) 
+egen Grit_2020 = rowmean(imcr_tryhard imcr_stickwithgoals imcr_goaftergoal imcr_finishwhatbegin imcr_finishtasks imcr_keepworking)
 
-keep $imcorwith HHID_panel INDID_panel f1_2020 f2_2020 f3_2020 f4_2020 f5_2020 lit_tt raven_tt num_tt
+keep $imcorwith HHID_panel INDID_panel f1_2020 f2_2020 f3_2020 f4_2020 f5_2020 lit_tt raven_tt num_tt OP_2020 CO_2020 EX_2020 AG_2020 ES_2020 Grit_2020
 
 save"$wave3~_ego.dta", replace
 ****************************************
@@ -121,14 +127,18 @@ save"$wave3~_ego.dta", replace
 
 
 ****************************************
-* Prepa 2020
+* Control var 2020
 ****************************************
 use"raw\\$wave3", clear
 
-* To keep
+
+
+********** To keep
 keep HHID2020 INDID2020 egoid name age sex livinghome dummymarriage relationshiptohead maritalstatus villageid
 
-* Indiv
+
+
+********** Indiv
 *tostring INDID2020, replace
 merge m:m HHID2020 INDID2020 using "panel_indiv", keepusing(HHID_panel INDID_panel panel_indiv)
 keep if _merge==3
@@ -150,6 +160,13 @@ drop _merge
 merge 1:1 HHID2020 INDID2020 using "raw\NEEMSIS2-occup_indiv", keepusing(mainocc_profession_indiv mainocc_occupation_indiv mainocc_sector_indiv mainocc_annualincome_indiv mainocc_occupationname_indiv annualincome_indiv nboccupation_indiv)
 drop _merge
 
+* Indiv debt
+merge 1:1 HHID2020 INDID2020 using "raw\NEEMSIS2-loans_indiv", keepusing(nbloans_indiv loanamount_indiv)
+drop _merge
+
+
+
+********** HH
 * Assets
 merge m:1 HHID2020 using "raw\NEEMSIS2-assets", keepusing(assets_sizeownland assets_housevalue assets_livestock assets_goods assets_ownland assets_gold assets_total assets_totalnoland assets_totalnoprop)
 drop _merge
@@ -167,21 +184,13 @@ drop _merge
 *drop _merge
 *rename villagename2020_club villageid2020
 
-* Indiv debt
-merge 1:1 HHID2020 INDID2020 using "raw\NEEMSIS2-loans_indiv", keepusing(nbloans_indiv loanamount_indiv)
-drop _merge
 
+
+********** Factor
 * Only ego
 fre egoid
 drop if egoid==0
-keep if panel_indiv==1
-
-
-* Rename
-*foreach x in egoid name age sex livinghome panel_indiv caste edulevel mainocc_profession_indiv mainocc_occupation_indiv mainocc_sector_indiv mainocc_annualincome_indiv mainocc_occupationname_indiv annualincome_indiv nboccupation_indiv assets_sizeownland assets_housevalue assets_livestock assets_goods assets_ownland assets_gold assets_total assets_totalnoland assets_totalnoprop incomeagri_HH incomenonagri_HH annualincome_HH shareincomeagri_HH shareincomenonagri_HH nbworker_HH nbnonworker_HH nbmale nbfemale age_group HHsize typeoffamily waystem dummypolygamous villageid2020 livingarea nbloans_indiv loanamount_indiv {
-*rename `x' `x'
-*}
-
+*keep if panel_indiv==1
 
 * Merge factor
 merge 1:1 HHID_panel INDID_panel using "$wave3~_ego.dta"
@@ -200,40 +209,7 @@ gen indebt_indiv=0
 replace indebt_indiv=1 if loanamount_indiv>0 & loanamount_indiv!=.
 drop nbloans_indiv loanamount_indiv
 
-save"$wave3~panel", replace
-****************************************
-* END
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-****************************************
-* Suite 2020
-****************************************
-use"$wave3~panel", clear
-
-
-*** Clean
-label define castenew 1"C: Dalits" 2"C: Middle" 3"C: Upper"
-label values caste castenew
-
-label var HHsize "Household size"
-
-gen shock=0
-replace shock=1 if dummymarriage==1
-
-
-*** Standardiser personality traits
+* Standardiser personality traits
 cls
 foreach x in base_f1 base_f2 base_f3 base_f4 base_f5 {
 qui reg `x' age
@@ -241,27 +217,18 @@ predict res_`x', residuals
 egen `x'_std=std(res_`x')
 }
 
-*label var base_cr_OP_std "OP (std)"
-*label var base_cr_CO_std "CO (std)"
-*label var base_cr_EX_std "EX (std)"
-*label var base_cr_AG_std "AG (std)"
-*label var base_cr_ES_std "ES (std)"
-*label var base_cr_Grit_std "Grit cor (std)"
-
 label var base_f1_std "ES (std)"
 label var base_f2_std "CO (std)"
 label var base_f3_std "OP-EX (std)"
 label var base_f4_std "weak ES (std)"
 label var base_f5_std "AG (std)"
 
-
-*** Standardiser les compétences cognitives
+* Standardiser les compétences cognitives
 foreach x in base_raven_tt base_num_tt base_lit_tt {
 qui reg `x' age
 predict res_`x', residuals
 egen `x'_std=std(res_`x')
 }
-
 
 label var base_raven_tt_std "Raven (std)"
 label var base_lit_tt_std "Literacy (std)"
@@ -269,34 +236,8 @@ label var base_num_tt_std "Numeracy (std)"
 
 
 
-save"panel2020_wide", replace
-****************************************
-* END
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-****************************************
-* Cleaning HH database
-****************************************
-
-**********
-use"panel2020_wide", clear
-
-
-********** Groups creation
+********** Var creation
+* Groups social identity
 gen female=0 if sex==1
 replace female=1 if sex==2
 label var female "Female (=1)"
@@ -312,94 +253,20 @@ label values segmana segmana
 
 tab segmana
 
-
-
-********** Labels
-gen agesq=age*age
-label var age "Age"
-label var agesq "Age square"
-
-tab caste, gen(caste_)
-label var caste "C: Dalits"
-label var caste_2 "C: Middle"
-label var caste_3 "C: Upper"
-
-fre mainocc_occupation_indiv
-recode mainocc_occupation_indiv (5=4)
-recode mainocc_occupation_indiv (.=0)
-tab mainocc_occupation_indiv,gen(cat_mainocc_occupation_indiv_)
-label var cat_mainocc_occupation_indiv_1 "MO: No occ."
-label var cat_mainocc_occupation_indiv_2 "MO: Agri"
-label var cat_mainocc_occupation_indiv_3 "MO: Agri coolie"
-label var cat_mainocc_occupation_indiv_4 "MO: Coolie"
-label var cat_mainocc_occupation_indiv_5 "MO: Regular"
-label var cat_mainocc_occupation_indiv_6 "MO: SE"
-label var cat_mainocc_occupation_indiv_7 "MO: NREGA"
-
-fre relationshiptohead
-gen dummyhead=0
-replace dummyhead=1 if relationshiptohead==1
-label var dummyhead "HH head (=1)"
-
-
-fre maritalstatus 
-gen maritalstatus2=1 if maritalstatus==1
-recode maritalstatus2 (.=0)
-label define marital 0"Other (un, wid, sep)" 1"Married (=1)"
-label values maritalstatus2 marital
-label var maritalstatus2 "Married (=1)"
-fre maritalstatus2
-
-ta villageid, gen(villageid_)
-
-gen nboccupation=2 if nboccupation_indiv==1
-replace nboccupation=3 if nboccupation_indiv==2
-replace nboccupation=4 if nboccupation_indiv>2
-replace nboccupation=1 if nboccupation_indiv==.
-tab nboccupation
-label define occ 1"Nb occ: 0" 2"Nb occ: 1" 3"Nb occ: 2" 4"Nb occ: 3 or more"
-label values nboccupation occ
-tab nboccupation, gen(nboccupation_)
-label var nboccupation "Nb occ: 0"
-label var nboccupation_2 "Nb occ: 1"
-label var nboccupation_3 "Nb occ: 2"
-label var nboccupation_4 "Nb occ: 3 or more"
-tab1 nboccupation nboccupation_2 nboccupation_3 nboccupation_4
-
-fre edulevel
-gen dummyedulevel=0
-replace dummyedulevel=1 if edulevel>=1
-ta dummyedulevel
-label var dummyedulevel "School educ (=1)"
-
-label var shock "Shock (=1)"
-
-gen assets1000=assets_total/1000
-label var assets1000 "Assets (\rupee1k)"
-
-gen incomeHH1000=annualincome_HH/1000
-label var incomeHH1000 "Total income (\rupee1k)"
-
-
-
-********** Caste
+* Dalits vs non-Dalits
 clonevar caste2=caste
 recode caste2 (3=2)
 
 tab caste2 female
 
-
-
-**********Dummy for multiple occupation
+* Dummy for multiple occupation
 fre nboccupation_indiv
 gen dummymultipleoccupation_indiv=0 if nboccupation_indiv==1
 replace dummymultipleoccupation_indiv=1 if nboccupation_indiv>1 & nboccupation_indiv!=.
 recode dummymultipleoccupation_indiv (.=0)
 label var dummymultipleoccupation_indiv "Multiple occupation (=1)"
 
-
-
-********** Interaction 
+* Interaction variables
 fre caste2
 gen dalits=0 if caste2==2
 replace dalits=1 if caste2==1
@@ -415,7 +282,98 @@ gen thr_`x'=`x'*female*dalits
 }
 gen femXdal=female*dalits
 
+* Shock
+gen shock=0
+replace shock=1 if dummymarriage==1
 
-save"panel2020_wide_v2", replace
+
+
+********** Label 
+*
+label define castenew 1"C: Dalits" 2"C: Middle" 3"C: Upper"
+label values caste castenew
+
+*
+label var HHsize "Household size"
+
+*
+gen agesq=age*age
+label var age "Age"
+label var agesq "Age square"
+
+*
+tab caste, gen(caste_)
+label var caste "C: Dalits"
+label var caste_2 "C: Middle"
+label var caste_3 "C: Upper"
+
+*
+fre mainocc_occupation_indiv
+recode mainocc_occupation_indiv (5=4)
+recode mainocc_occupation_indiv (.=0)
+tab mainocc_occupation_indiv,gen(cat_mainocc_occupation_indiv_)
+label var cat_mainocc_occupation_indiv_1 "MO: No occ."
+label var cat_mainocc_occupation_indiv_2 "MO: Agri"
+label var cat_mainocc_occupation_indiv_3 "MO: Agri coolie"
+label var cat_mainocc_occupation_indiv_4 "MO: Coolie"
+label var cat_mainocc_occupation_indiv_5 "MO: Regular"
+label var cat_mainocc_occupation_indiv_6 "MO: SE"
+label var cat_mainocc_occupation_indiv_7 "MO: NREGA"
+
+*
+fre relationshiptohead
+gen dummyhead=0
+replace dummyhead=1 if relationshiptohead==1
+label var dummyhead "HH head (=1)"
+
+*
+fre maritalstatus 
+gen maritalstatus2=1 if maritalstatus==1
+recode maritalstatus2 (.=0)
+label define marital 0"Other (un, wid, sep)" 1"Married (=1)"
+label values maritalstatus2 marital
+label var maritalstatus2 "Married (=1)"
+fre maritalstatus2
+
+*
+ta villageid, gen(villageid_)
+
+*
+gen nboccupation=2 if nboccupation_indiv==1
+replace nboccupation=3 if nboccupation_indiv==2
+replace nboccupation=4 if nboccupation_indiv>2
+replace nboccupation=1 if nboccupation_indiv==.
+tab nboccupation
+label define occ 1"Nb occ: 0" 2"Nb occ: 1" 3"Nb occ: 2" 4"Nb occ: 3 or more"
+label values nboccupation occ
+tab nboccupation, gen(nboccupation_)
+label var nboccupation "Nb occ: 0"
+label var nboccupation_2 "Nb occ: 1"
+label var nboccupation_3 "Nb occ: 2"
+label var nboccupation_4 "Nb occ: 3 or more"
+tab1 nboccupation nboccupation_2 nboccupation_3 nboccupation_4
+
+*
+fre edulevel
+gen dummyedulevel=0
+replace dummyedulevel=1 if edulevel>=1
+ta dummyedulevel
+label var dummyedulevel "School educ (=1)"
+
+*
+label var shock "Shock (=1)"
+
+*
+gen assets1000=assets_total/1000
+label var assets1000 "Assets (\rupee1k)"
+
+*
+gen incomeHH1000=annualincome_HH/1000
+label var incomeHH1000 "Total income (\rupee1k)"
+
+*
+gen year=2020
+
+save"$wave3~panel", replace
 ****************************************
 * END

@@ -29,7 +29,7 @@ Overfit
 *************************************
 * Multicolinearity
 *************************************
-use"panel_wide_v3", clear
+use"base_panel_lag", clear
 
 
 *** Macro
@@ -112,7 +112,7 @@ vif
 *************************************
 * Overfit
 *************************************
-use"panel_wide_v3", clear
+use"base_panel_lag", clear
 
 
 *** Macro

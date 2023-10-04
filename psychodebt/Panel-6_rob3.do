@@ -30,7 +30,7 @@ We add COVID-19 exposure
 *************************************
 * Recourse
 *************************************
-use"panel_wide_v3", clear
+use"base_panel_lag", clear
 
 
 *** Macro
@@ -114,7 +114,7 @@ est clear
 *************************************
 * Negotiation
 *************************************
-use"panel_wide_v3", clear
+use"base_panel_lag", clear
 
 
 *** Macro
@@ -196,7 +196,7 @@ est clear
 *************************************
 * Management
 *************************************
-use"panel_wide_v3", clear
+use"base_panel_lag", clear
 
 
 *** Macro
