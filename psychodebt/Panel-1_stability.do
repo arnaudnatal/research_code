@@ -22,7 +22,7 @@ do "https://raw.githubusercontent.com/arnaudnatal/folderanalysis/main/$link.do"
 use"$directory\raw\\$wave2", clear
 duplicates drop HHID2016, force
 keep HHID2016 year
-merge m:m HHID2016 using "raw\ODRIIS-HH_wide.dta", keepusing(HHID_panel)
+merge m:m HHID2016 using "raw\keypanel-HH_wide.dta", keepusing(HHID_panel)
 keep if _merge==3
 drop _merge
 rename year year2016
@@ -32,7 +32,7 @@ use"$directory\raw\\$wave3", clear
 duplicates drop HHID2020, force
 gen year=2020
 keep HHID2020 year
-merge m:m HHID2020 using "raw\ODRIIS-HH_wide.dta", keepusing(HHID_panel)
+merge m:m HHID2020 using "raw\keypanel-HH_wide.dta", keepusing(HHID_panel)
 keep if _merge==3
 drop _merge
 rename year year2020
