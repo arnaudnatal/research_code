@@ -15,12 +15,8 @@ do "https://raw.githubusercontent.com/arnaudnatal/folderanalysis/main/$link.do"
 
 /*
 Rob1:
-We add share same sex and caste for negotiation
-We add loan amount for management
+We add COVID-19 exposure and income constraints
 */
-
-
-
 
 
 
@@ -41,7 +37,7 @@ global XIndiv age dummyhead cat_mainocc_occupation_indiv_1 cat_mainocc_occupatio
 
 global XHH assets1000 HHsize incomeHH1000
 
-global Xrest villageid_2 villageid_3 villageid_4 villageid_5 villageid_6 villageid_7 villageid_8 villageid_9 villageid_10 shock
+global Xrest villageid_2 villageid_3 villageid_4 villageid_5 villageid_6 villageid_7 villageid_8 villageid_9 villageid_10 shock dummysell dummyshock_income
 
 global intfem c.base_f1_std##i.female c.base_f2_std##i.female c.base_f3_std##i.female c.base_f5_std##i.female c.base_raven_tt_std##i.female c.base_num_tt_std##i.female c.base_lit_tt_std##i.female i.dalits
 
@@ -125,7 +121,7 @@ global XIndiv age dummyhead cat_mainocc_occupation_indiv_1 cat_mainocc_occupatio
 
 global XHH assets1000 HHsize incomeHH1000
 
-global Xrest villageid_2 villageid_3 villageid_4 villageid_5 villageid_6 villageid_7 villageid_8 villageid_9 villageid_10 shock
+global Xrest villageid_2 villageid_3 villageid_4 villageid_5 villageid_6 villageid_7 villageid_8 villageid_9 villageid_10 shock dummysell dummyshock_income
 
 global intfem c.base_f1_std##i.female c.base_f2_std##i.female c.base_f3_std##i.female c.base_f5_std##i.female c.base_raven_tt_std##i.female c.base_num_tt_std##i.female c.base_lit_tt_std##i.female i.dalits
 
@@ -136,33 +132,33 @@ global inttot c.base_f1_std##i.female##i.dalits c.base_f2_std##i.female##i.dalit
 
 **********
 
-qui probit s_borrservices_none2020 indebt_indiv i.female i.dalits $XIndiv $XHH $Xrest sharesex sharecaste, cluster(HHID)
+qui probit s_borrservices_none2020 indebt_indiv i.female i.dalits $XIndiv $XHH $Xrest, cluster(HHID)
 est store pr0
 
-qui probit s_borrservices_none2020 indebt_indiv $PTCS $XIndiv $XHH $Xrest sharesex sharecaste, cluster(HHID) 
+qui probit s_borrservices_none2020 indebt_indiv $PTCS $XIndiv $XHH $Xrest, cluster(HHID) 
 est store pr1
 qui margins, dydx($PTCSma) atmeans post
 est store marg1
 
 
-qui probit s_borrservices_none2020 indebt_indiv $intfem $XIndiv $XHH $Xrest sharesex sharecaste, cluster(HHID) 
+qui probit s_borrservices_none2020 indebt_indiv $intfem $XIndiv $XHH $Xrest, cluster(HHID) 
 est store pr2
 qui margins, dydx($PTCSma) at(female=(0 1)) atmeans post
 est store marg2
 
-qui probit s_borrservices_none2020 indebt_indiv $intdal $XIndiv $XHH $Xrest sharesex sharecaste, cluster(HHID) 
+qui probit s_borrservices_none2020 indebt_indiv $intdal $XIndiv $XHH $Xrest, cluster(HHID) 
 est store pr3
 qui margins, dydx($PTCSma) at(dalits=(0 1)) atmeans post
 est store marg3
 
-qui probit s_borrservices_none2020 indebt_indiv $inttot $XIndiv $XHH $Xrest sharesex sharecaste, cluster(HHID) 
+qui probit s_borrservices_none2020 indebt_indiv $inttot $XIndiv $XHH $Xrest, cluster(HHID) 
 est store pr4
 qui margins, dydx($PTCSma) at(dalits=(0 1) female=(0 1)) atmeans post
 est store marg4
 
 esttab pr0 pr1 pr2 pr3 pr4 using "Nego_rob1.csv", ///
 	cells("b(fmt(2) star)" se(par fmt(2))) ///
-	drop($Xrest sharesex sharecaste _cons) ///
+	drop($Xrest _cons) ///
 	legend label varlabels(_cons constant) ///
 	stats(N r2_p ll chi2 p, fmt(0 2 2 2 2) labels(`"Observations"' `"Pseudo \$R^2$"' `"Log-likelihood"' `"$\chi^2$"' `"p-value"')) ///
 	starlevels(* 0.10 ** 0.05 *** 0.01) ///
@@ -207,7 +203,7 @@ global XIndiv age dummyhead cat_mainocc_occupation_indiv_1 cat_mainocc_occupatio
 
 global XHH assets1000 HHsize incomeHH1000
 
-global Xrest villageid_2 villageid_3 villageid_4 villageid_5 villageid_6 villageid_7 villageid_8 villageid_9 villageid_10 shock
+global Xrest villageid_2 villageid_3 villageid_4 villageid_5 villageid_6 villageid_7 villageid_8 villageid_9 villageid_10 shock dummysell dummyshock_income
 
 global intfem c.base_f1_std##i.female c.base_f2_std##i.female c.base_f3_std##i.female c.base_f5_std##i.female c.base_raven_tt_std##i.female c.base_num_tt_std##i.female c.base_lit_tt_std##i.female i.dalits
 
@@ -218,32 +214,32 @@ global inttot c.base_f1_std##i.female##i.dalits c.base_f2_std##i.female##i.dalit
 
 **********
 
-qui probit s_dummyproblemtorepay2020 indebt_indiv i.female i.dalits $XIndiv $XHH $Xrest s_loanamount, cluster(HHID)
+qui probit s_dummyproblemtorepay2020 indebt_indiv i.female i.dalits $XIndiv $XHH $Xrest, cluster(HHID)
 est store pr0
 
-qui probit s_dummyproblemtorepay2020 indebt_indiv $PTCS $XIndiv $XHH $Xrest s_loanamount, cluster(HHID) 
+qui probit s_dummyproblemtorepay2020 indebt_indiv $PTCS $XIndiv $XHH $Xrest, cluster(HHID) 
 est store pr1
 qui margins, dydx($PTCSma) atmeans post
 est store marg1
 
-qui probit s_dummyproblemtorepay2020 indebt_indiv $intfem $XIndiv $XHH $Xrest s_loanamount, cluster(HHID) 
+qui probit s_dummyproblemtorepay2020 indebt_indiv $intfem $XIndiv $XHH $Xrest, cluster(HHID) 
 est store pr2
 qui margins, dydx($PTCSma) at(female=(0 1)) atmeans post
 est store marg2
 
-qui probit s_dummyproblemtorepay2020 indebt_indiv $intdal $XIndiv $XHH $Xrest s_loanamount, cluster(HHID) 
+qui probit s_dummyproblemtorepay2020 indebt_indiv $intdal $XIndiv $XHH $Xrest, cluster(HHID) 
 est store pr3
 qui margins, dydx($PTCSma) at(dalits=(0 1)) atmeans post
 est store marg3
 
-qui probit s_dummyproblemtorepay2020 indebt_indiv $inttot $XIndiv $XHH $Xrest s_loanamount, cluster(HHID) 
+qui probit s_dummyproblemtorepay2020 indebt_indiv $inttot $XIndiv $XHH $Xrest, cluster(HHID) 
 est store pr4
 qui margins, dydx($PTCSma) at(dalits=(0 1) female=(0 1)) atmeans post
 est store marg4
 
 esttab pr0 pr1 pr2 pr3 pr4 using "Mana_rob1.csv", ///
 	cells("b(fmt(2) star)" se(par fmt(2))) ///
-	drop($Xrest s_loanamount _cons) ///
+	drop($Xrest _cons) ///
 	legend label varlabels(_cons constant) ///
 	stats(N r2_p ll chi2 p, fmt(0 2 2 2 2) labels(`"Observations"' `"Pseudo \$R^2$"' `"Log-likelihood"' `"$\chi^2$"' `"p-value"')) ///
 	starlevels(* 0.10 ** 0.05 *** 0.01) ///
