@@ -22,9 +22,6 @@ Cross section evidences
 
 
 
-
-
-
 *************************************
 * Cross section
 *************************************
@@ -50,24 +47,24 @@ global inttot c.base_f1_std##i.female##i.dalits c.base_f2_std##i.female##i.dalit
 
 ********** Recourse
 *
-probit s_indebt2016 $PTCS $XIndiv $XHH $Xrest, cluster(HHID)
-qui margins, dydx($PTCSma) atmeans post
+qui probit s_indebt2016 $PTCS $XIndiv $XHH $Xrest, cluster(HHID)
+margins, dydx($PTCSma) atmeans post
 est store marg1
 *
 qui probit s_indebt $intfem $XIndiv $XHH $Xrest, cluster(HHID)
-qui margins, dydx($PTCSma) at(female=(0 1)) atmeans
+margins, dydx($PTCSma) at(female=(0 1)) atmeans
 est store marg2
 *
 qui probit s_indebt $intdal $XIndiv $XHH $Xrest, cluster(HHID)
-qui margins, dydx($PTCSma) at(dalits=(0 1)) atmeans
+margins, dydx($PTCSma) at(dalits=(0 1)) atmeans
 est store marg3
 *
 qui probit s_indebt $inttot $XIndiv $XHH $Xrest, cluster(HHID)
-qui margins, dydx($PTCSma) at(dalits=(0 1) female=(0 1)) atmeans
+margins, dydx($PTCSma) at(dalits=(0 1) female=(0 1)) atmeans
 est store marg4
 
 
-esttab marg1 marg2 marg3 marg4 using "Reco_margin_rob5.csv", ///
+esttab marg1 marg2 marg3 marg4 using "Reco_margin_rob6.csv", ///
 	cells("b(fmt(2) star)" se(par fmt(2))) ///
 	legend label varlabels(_cons constant) ///
 	starlevels(* 0.10 ** 0.05 *** 0.01) ///
@@ -79,22 +76,22 @@ est clear
 ********** Negotiation
 
 qui probit s_borrservices_none $PTCS $XIndiv $XHH $Xrest, cluster(HHID)
-qui margins, dydx($PTCSma) atmeans post
+margins, dydx($PTCSma) atmeans post
 est store marg1
 *
 qui probit s_borrservices_none $intfem $XIndiv $XHH $Xrest, cluster(HHID)
-qui margins, dydx($PTCSma) at(female=(0 1)) atmeans
+margins, dydx($PTCSma) at(female=(0 1)) atmeans
 est store marg2
 *
 qui probit s_borrservices_none $intdal $XIndiv $XHH $Xrest, cluster(HHID)
-qui margins, dydx($PTCSma) at(dalits=(0 1)) atmeans
+margins, dydx($PTCSma) at(dalits=(0 1)) atmeans
 est store marg3
 *
 qui probit s_borrservices_none $inttot $XIndiv $XHH $Xrest, cluster(HHID)
-qui margins, dydx($PTCSma) at(dalits=(0 1) female=(0 1)) atmeans
+margins, dydx($PTCSma) at(dalits=(0 1) female=(0 1)) atmeans
 est store marg4
 
-esttab marg1 marg2 marg3 marg4 using "Nego_margin_rob5.csv", ///
+esttab marg1 marg2 marg3 marg4 using "Nego_margin_rob6.csv", ///
 	cells("b(fmt(2) star)" se(par fmt(2))) ///
 	legend label varlabels(_cons constant) ///
 	starlevels(* 0.10 ** 0.05 *** 0.01) ///
@@ -106,22 +103,22 @@ est clear
 ********** Management
 *
 qui probit s_dummyproblemtorepay $PTCS $XIndiv $XHH $Xrest, cluster(HHID)
-qui margins, dydx($PTCSma) atmeans post
+margins, dydx($PTCSma) atmeans post
 est store marg1
 *
 qui probit s_dummyproblemtorepay $intfem $XIndiv $XHH $Xrest, cluster(HHID)
-qui margins, dydx($PTCSma) at(female=(0 1)) atmeans
+margins, dydx($PTCSma) at(female=(0 1)) atmeans
 est store marg2
 *
 qui probit s_dummyproblemtorepay $intdal $XIndiv $XHH $Xrest, cluster(HHID)
-qui margins, dydx($PTCSma) at(dalits=(0 1)) atmeans
+margins, dydx($PTCSma) at(dalits=(0 1)) atmeans
 est store marg3
 *
 qui probit s_dummyproblemtorepay $inttot $XIndiv $XHH $Xrest, cluster(HHID)
-qui margins, dydx($PTCSma) at(dalits=(0 1) female=(0 1)) atmeans
+margins, dydx($PTCSma) at(dalits=(0 1) female=(0 1)) atmeans
 est store marg4
 
-esttab marg1 marg2 marg3 marg4 using "Mana_margin_rob5.csv", ///
+esttab marg1 marg2 marg3 marg4 using "Mana_margin_rob6.csv", ///
 	cells("b(fmt(2) star)" se(par fmt(2))) ///
 	legend label varlabels(_cons constant) ///
 	starlevels(* 0.10 ** 0.05 *** 0.01) ///

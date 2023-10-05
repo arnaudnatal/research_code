@@ -64,47 +64,55 @@ global suppcont i.dummyssex i.dummyscaste i.dummysell
 
 
 ********** Analysis
-reg borrservices_none indebt_indiv i.female i.dalits $XIndiv $XHH $Xrest $contloan i.INDID
-est store pr0
+probit borrservices_none indebt_indiv i.female i.dalits $XIndiv $XHH $Xrest $contloan, cluster(INDID)
+est store pr0a
+xtreg borrservices_none indebt_indiv i.female i.dalits $XIndiv $XHH $Xrest $contloan, fe
+est store pr0b
 
-reg borrservices_none indebt_indiv $PTCS $XIndiv $XHH $Xrest $contloan i.INDID
-est store pr1
+
+probit borrservices_none indebt_indiv $PTCS $XIndiv $XHH $Xrest $contloan, cluster(INDID)
+est store pr1a
 margins, dydx($PTCSma) atmeans post
-est store marg1
+est store marg1a
+xtreg borrservices_none indebt_indiv $PTCS $XIndiv $XHH $Xrest $contloan, fe
+est store pr1b
+margins, dydx($PTCSma) atmeans post
+est store marg1b
 
-reg borrservices_none indebt_indiv $intfem $XIndiv $XHH $Xrest $contloan i.INDID
-est store pr2
+
+probit borrservices_none indebt_indiv $intfem $XIndiv $XHH $Xrest $contloan, cluster(INDID)
+est store pr2a
 margins, dydx($PTCSma) at(female=(0 1)) atmeans post
-est store marg2
+est store marg2a
+xtreg borrservices_none indebt_indiv $intfem $XIndiv $XHH $Xrest $contloan, fe
+est store pr2b
+margins, dydx($PTCSma) at(female=(0 1)) atmeans post
+est store marg2b
 
-reg borrservices_none indebt_indiv $intdal $XIndiv $XHH $Xrest $contloan i.INDID
-est store pr3
+
+probit borrservices_none indebt_indiv $intdal $XIndiv $XHH $Xrest $contloan, cluster(INDID)
+est store pr3a
 margins, dydx($PTCSma) at(dalits=(0 1)) atmeans post
-est store marg3
+est store marg3a
+xtreg borrservices_none indebt_indiv $intdal $XIndiv $XHH $Xrest $contloan, fe
+est store pr3b
+margins, dydx($PTCSma) at(dalits=(0 1)) atmeans post
+est store marg3b
 
-reg borrservices_none indebt_indiv $inttot $XIndiv $XHH $Xrest $contloan i.INDID
-est store pr4
+
+probit borrservices_none indebt_indiv $inttot $XIndiv $XHH $Xrest $contloan, cluster(INDID)
+est store pr4a
 margins, dydx($PTCSma) at(dalits=(0 1) female=(0 1)) post
-est store marg4
-
-
-********** Robustness
-reg borrservices_none indebt_indiv $inttot $XIndiv $XHH $Xrest $contloan $suppcont i.INDID
-est store pr5
-margins, dydx($PTCSma) at(dalits=(0 1) female=(0 1)) atmeans post
-est store marg5
-
-
-
-********** Overfit
-
-*overfit: reg borrservices_none indebt_indiv $inttot $XIndiv $XHH $Xrest $contloan i.INDID 
-
+est store marg4a
+xtreg borrservices_none indebt_indiv $inttot $XIndiv $XHH $Xrest $contloan, fe
+est store pr4b
+margins, dydx($PTCSma) at(dalits=(0 1) female=(0 1)) post
+est store marg4b
 
 
 ********** Format
 
-esttab pr0 pr1 pr2 pr3 pr4 using "Nego_rob3.csv", ///
+esttab pr0a pr0b pr1a pr1b pr2a pr2b pr3a pr3b pr4a pr4b using "Nego_rob4.csv", ///
 	cells("b(fmt(2) star)" se(par fmt(2))) ///
 	drop($Xrest _cons) ///
 	legend label varlabels(_cons constant) ///
@@ -112,11 +120,17 @@ esttab pr0 pr1 pr2 pr3 pr4 using "Nego_rob3.csv", ///
 	starlevels(* 0.10 ** 0.05 *** 0.01) ///
 	replace	
 	
-esttab marg1 marg2 marg3 marg4 using "Nego_margin_rob3.csv", ///
+esttab marg1a marg2a marg3a marg4a using "Nego_margin_rob4a.csv", ///
 	cells("b(fmt(2) star)" se(par fmt(2))) ///
 	legend label varlabels(_cons constant) ///
 	starlevels(* 0.10 ** 0.05 *** 0.01) ///
-	replace		
+	replace
+	
+esttab marg1b marg2b marg3b marg4b using "Nego_margin_rob4b.csv", ///
+	cells("b(fmt(2) star)" se(par fmt(2))) ///
+	legend label varlabels(_cons constant) ///
+	starlevels(* 0.10 ** 0.05 *** 0.01) ///
+	replace	
 
 est clear
 *************************************
@@ -173,46 +187,55 @@ global suppcont i.dummyssex i.dummyscaste i.dummysell
 
 ********** Analysis
 
+probit dummyproblemtorepay indebt_indiv i.female i.dalits $XIndiv $XHH $Xrest $contloan, cluster(INDID)
+est store pr0a
 xtreg dummyproblemtorepay indebt_indiv i.female i.dalits $XIndiv $XHH $Xrest $contloan, fe
-est store pr0
+est store pr0b
 
-xtreg dummyproblemtorepay indebt_indiv $PTCS $XIndiv $XHH $Xrest $contloan, fe 
-est store pr1
+
+probit dummyproblemtorepay indebt_indiv $PTCS $XIndiv $XHH $Xrest $contloan, cluster(INDID)
+est store pr1a
 margins, dydx($PTCSma) atmeans post
-est store marg1
+est store marg1a
+xtreg dummyproblemtorepay indebt_indiv $PTCS $XIndiv $XHH $Xrest $contloan, fe 
+est store pr1b
+margins, dydx($PTCSma) atmeans post
+est store marg1b
 
-xtreg dummyproblemtorepay indebt_indiv $intfem $XIndiv $XHH $Xrest $contloan, fe
-est store pr2
+
+probit dummyproblemtorepay indebt_indiv $intfem $XIndiv $XHH $Xrest $contloan, cluster(INDID)
+est store pr2a
 margins, dydx($PTCSma) at(female=(0 1)) atmeans post
-est store marg2
+est store marg2a
+xtreg dummyproblemtorepay indebt_indiv $intfem $XIndiv $XHH $Xrest $contloan, fe
+est store pr2b
+margins, dydx($PTCSma) at(female=(0 1)) atmeans post
+est store marg2b
 
-xtreg dummyproblemtorepay indebt_indiv $intdal $XIndiv $XHH $Xrest $contloan, fe
-est store pr3
+
+probit dummyproblemtorepay indebt_indiv $intdal $XIndiv $XHH $Xrest $contloan, cluster(INDID)
+est store pr3a
 margins, dydx($PTCSma) at(dalits=(0 1)) atmeans post
-est store marg3
+est store marg3a
+xtreg dummyproblemtorepay indebt_indiv $intdal $XIndiv $XHH $Xrest $contloan, fe
+est store pr3b
+margins, dydx($PTCSma) at(dalits=(0 1)) atmeans post
+est store marg3b
 
+
+probit dummyproblemtorepay indebt_indiv $inttot $XIndiv $XHH $Xrest $contloan, cluster(INDID)
+est store pr4a
+margins, dydx($PTCSma) at(dalits=(0 1) female=(0 1)) atmeans post
+est store marg4a
 xtreg dummyproblemtorepay indebt_indiv $inttot $XIndiv $XHH $Xrest $contloan, fe
-est store pr4
+est store pr4b
 margins, dydx($PTCSma) at(dalits=(0 1) female=(0 1)) atmeans post
-est store marg4
+est store marg4b
 
-
-********** Robustness
-
-xtreg dummyproblemtorepay indebt_indiv $inttot $XIndiv $XHH $Xrest $contloan $suppcont, fe
-est store pr5
-margins, dydx($PTCSma) at(dalits=(0 1) female=(0 1)) atmeans post
-est store marg5
-
-
-
-
-********** Overfit
-*overfit: reg dummyproblemtorepay indebt_indiv $inttot $XIndiv $XHH $Xrest $contloan, cluster(HHID) baselevel
 
 
 ********** Format
-esttab pr0 pr1 pr2 pr3 pr4 using "Mana_rob3.csv", ///
+esttab pr0a pr0b pr1a pr1b pr2a pr2b pr3a pr3b pr4a pr4b using "Mana_rob4.csv", ///
 	cells("b(fmt(2) star)" se(par fmt(2))) ///
 	drop($Xrest _cons) ///
 	legend label varlabels(_cons constant) ///
@@ -220,12 +243,17 @@ esttab pr0 pr1 pr2 pr3 pr4 using "Mana_rob3.csv", ///
 	starlevels(* 0.10 ** 0.05 *** 0.01) ///
 	replace	
 
-esttab marg1 marg2 marg3 marg4 using "Mana_margin_rob3.csv", ///
+esttab marg1a marg2a marg3a marg4a using "Mana_margin_rob4a.csv", ///
 	cells("b(fmt(2) star)" se(par fmt(2))) ///
 	legend label varlabels(_cons constant) ///
 	starlevels(* 0.10 ** 0.05 *** 0.01) ///
 	replace		
 
+esttab marg1b marg2b marg3b marg4b using "Mana_margin_rob4b.csv", ///
+	cells("b(fmt(2) star)" se(par fmt(2))) ///
+	legend label varlabels(_cons constant) ///
+	starlevels(* 0.10 ** 0.05 *** 0.01) ///
+	replace	
 
 est clear	
 *************************************

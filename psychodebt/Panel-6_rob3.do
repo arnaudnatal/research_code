@@ -97,7 +97,7 @@ qui margins, dydx($PTCSma) at(dalits=(0 1) female=(0 1)) atmeans post
 est store marg4b
 
 
-esttab pr0a pr0b pr1a pr1b pr2a pr2b pr3a pr3b pr4a pr4b using "Reco_robHHFE.csv", ///
+esttab pr0a pr0b pr1a pr1b pr2a pr2b pr3a pr3b pr4a pr4b using "Reco_rob3.csv", ///
 	cells("b(fmt(2) star)" se(par fmt(2))) ///
 	drop(*.HHID _cons) ///
 	legend label varlabels(_cons constant) ///
@@ -105,11 +105,17 @@ esttab pr0a pr0b pr1a pr1b pr2a pr2b pr3a pr3b pr4a pr4b using "Reco_robHHFE.csv
 	starlevels(* 0.10 ** 0.05 *** 0.01) ///
 	replace	
 	
-esttab marg1a marg1b marg2a marg2b marg3a marg3b marg4a marg4b using "Reco_margin_robHHFE.csv", ///
+esttab marg1a marg2a marg3a marg4a using "Reco_margin_rob3a.csv", ///
 	cells("b(fmt(2) star)" se(par fmt(2))) ///
 	legend label varlabels(_cons constant) ///
 	starlevels(* 0.10 ** 0.05 *** 0.01) ///
-	replace		
+	replace
+	
+esttab marg1b marg2b marg3b marg4b using "Reco_margin_rob3b.csv", ///
+	cells("b(fmt(2) star)" se(par fmt(2))) ///
+	legend label varlabels(_cons constant) ///
+	starlevels(* 0.10 ** 0.05 *** 0.01) ///
+	replace	
 	
 est clear
 *************************************
@@ -135,7 +141,7 @@ est clear
 *************************************
 * Negotiation
 *************************************
-use"panel_wide_v3", clear
+use"base_panel_lag", clear
 
 
 *** Macro
@@ -204,7 +210,7 @@ qui margins, dydx($PTCSma) at(dalits=(0 1) female=(0 1)) atmeans post
 est store marg4b
 
 
-esttab pr0a pr0b pr1a pr1b pr2a pr2b pr3a pr3b pr4a pr4b using "Nego_robHHFE.csv", ///
+esttab pr0a pr0b pr1a pr1b pr2a pr2b pr3a pr3b pr4a pr4b using "Nego_rob3.csv", ///
 	cells("b(fmt(2) star)" se(par fmt(2))) ///
 	drop(*.HHID _cons) ///
 	legend label varlabels(_cons constant) ///
@@ -212,11 +218,17 @@ esttab pr0a pr0b pr1a pr1b pr2a pr2b pr3a pr3b pr4a pr4b using "Nego_robHHFE.csv
 	starlevels(* 0.10 ** 0.05 *** 0.01) ///
 	replace	
 	
-esttab marg1a marg1b marg2a marg2b marg3a marg3b marg4a marg4b using "Nego_margin_robHHFE.csv", ///
+esttab marg1a marg2a marg3a marg4a using "Nego_margin_rob3a.csv", ///
 	cells("b(fmt(2) star)" se(par fmt(2))) ///
 	legend label varlabels(_cons constant) ///
 	starlevels(* 0.10 ** 0.05 *** 0.01) ///
 	replace
+	
+esttab marg1b marg2b marg3b marg4b using "Nego_margin_rob3b.csv", ///
+	cells("b(fmt(2) star)" se(par fmt(2))) ///
+	legend label varlabels(_cons constant) ///
+	starlevels(* 0.10 ** 0.05 *** 0.01) ///
+	replace	
 
 est clear
 *************************************
@@ -238,7 +250,7 @@ est clear
 *************************************
 * Management
 *************************************
-use"panel_wide_v3", clear
+use"base_panel_lag", clear
 
 
 *** Macro
@@ -306,7 +318,7 @@ qui margins, dydx($PTCSma) at(dalits=(0 1) female=(0 1)) atmeans post
 est store marg4b
 
 
-esttab pr0a pr0b pr1a pr1b pr2a pr2b pr3a pr3b pr4a pr4b using "Mana_robHHFE.csv", ///
+esttab pr0a pr0b pr1a pr1b pr2a pr2b pr3a pr3b pr4a pr4b using "Mana_rob3.csv", ///
 	cells("b(fmt(2) star)" se(par fmt(2))) ///
 	drop(*.HHID _cons) ///
 	legend label varlabels(_cons constant) ///
@@ -314,12 +326,17 @@ esttab pr0a pr0b pr1a pr1b pr2a pr2b pr3a pr3b pr4a pr4b using "Mana_robHHFE.csv
 	starlevels(* 0.10 ** 0.05 *** 0.01) ///
 	replace	
 	
-esttab marg1a marg1b marg2a marg2b marg3a marg3b marg4a marg4b using "Mana_margin_robHHFE.csv", ///
+esttab marg1a marg2a marg3a marg4a using "Mana_margin_rob3a.csv", ///
 	cells("b(fmt(2) star)" se(par fmt(2))) ///
 	legend label varlabels(_cons constant) ///
 	starlevels(* 0.10 ** 0.05 *** 0.01) ///
 	replace	
 
+esttab marg1b marg2b marg3b marg4b using "Mana_margin_rob3b.csv", ///
+	cells("b(fmt(2) star)" se(par fmt(2))) ///
+	legend label varlabels(_cons constant) ///
+	starlevels(* 0.10 ** 0.05 *** 0.01) ///
+	replace
 
 est clear	
 *************************************
