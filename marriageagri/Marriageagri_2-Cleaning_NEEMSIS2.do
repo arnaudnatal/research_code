@@ -171,25 +171,25 @@ ta husbandwifecaste hwcaste, m
 
 ********** How pay marriage?
 tab howpaymarriage
-replace howpaymarriage="Loan" if howpaymarriage=="1"
-replace howpaymarriage="Own capital / Savings" if howpaymarriage=="2"
-replace howpaymarriage="Both" if howpaymarriage=="4"
-replace howpaymarriage="Both" if howpaymarriage=="1 2"
-replace howpaymarriage="Both & gift" if howpaymarriage=="1 2 3"
-replace howpaymarriage="Both & gift" if howpaymarriage=="2 3"
-replace howpaymarriage="Both" if howpaymarriage=="2 4"
-tab howpaymarriage
-gen howpaymarriage_loan=0
-gen howpaymarriage_capital=0
-gen howpaymarriage_gift=0
-replace howpaymarriage_loan=1 if howpaymarriage=="Loan"
-replace howpaymarriage_loan=1 if howpaymarriage=="Both"
-replace howpaymarriage_loan=1 if howpaymarriage=="Both & gift"
-replace howpaymarriage_capital=1 if howpaymarriage=="Own capital / Savings"
-replace howpaymarriage_capital=1 if howpaymarriage=="Both"
-replace howpaymarriage_capital=1 if howpaymarriage=="Both & gift"
-replace howpaymarriage_gift=1 if howpaymarriage=="Both & gift"
-tab1 howpaymarriage_loan howpaymarriage_capital howpaymarriage_gift
+*replace howpaymarriage="Loan" if howpaymarriage=="1"
+*replace howpaymarriage="Own capital / Savings" if howpaymarriage=="2"
+*replace howpaymarriage="Both" if howpaymarriage=="4"
+*replace howpaymarriage="Both" if howpaymarriage=="1 2"
+*replace howpaymarriage="Both & gift" if howpaymarriage=="1 2 3"
+*replace howpaymarriage="Both & gift" if howpaymarriage=="2 3"
+*replace howpaymarriage="Both" if howpaymarriage=="2 4"
+*tab howpaymarriage
+*gen howpaymarriage_loan=0
+*gen howpaymarriage_capital=0
+*gen howpaymarriage_gift=0
+*replace howpaymarriage_loan=1 if howpaymarriage=="Loan"
+*replace howpaymarriage_loan=1 if howpaymarriage=="Both"
+*replace howpaymarriage_loan=1 if howpaymarriage=="Both & gift"
+*replace howpaymarriage_capital=1 if howpaymarriage=="Own capital / Savings"
+*replace howpaymarriage_capital=1 if howpaymarriage=="Both"
+*replace howpaymarriage_capital=1 if howpaymarriage=="Both & gift"
+*replace howpaymarriage_gift=1 if howpaymarriage=="Both & gift"
+tab1 howpaymarriage_loan howpaymarriage_capi howpaymarriage_gift howpaymarriage_both
 drop howpaymarriage
 
 
