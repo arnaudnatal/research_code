@@ -172,7 +172,7 @@ rename howpaymarriage_n howpaymarriage
 egen totalmarriagegiftamount=rowtotal(marriagegiftamount_wellknown marriagegiftamount_shg marriagegiftamount_relatives marriagegiftamount_employer marriagegiftamount_maistry marriagegiftamount_colleagues marriagegiftamount_shopkeeper marriagegiftamount_friends)
 
 keep HHID2016 INDID2016 villageid villagearea jatis egoid name sex age  relationshiptohead submissiondate ownland ///
-married dummymarriagegift dummymarriage marriedlist husbandwifecaste marriagedowry marriagetotalcost howpaymarriage marriageexpenses dummymarriagegift totalmarriagegiftamount currentlyatschool everattendedschool canread
+married dummymarriagegift dummymarriage marriedlist husbandwifecaste marriagedowry marriagetotalcost howpaymarriage marriageexpenses dummymarriagegift totalmarriagegiftamount currentlyatschool everattendedschool canread educationexpenses
 
  
 *Caste
@@ -212,6 +212,30 @@ gen ageatmarriage=yearmarriage-yearborn if husbandwifecaste!=.
 drop yearborn1 yearborn yearmarriage
 tab ageatmarriage
 sort ageatmarriage
+
+
+*How pay marriage?
+fre howpaymarriage
+gen howpaymarriage_loan=0 if howpaymarriage!=""
+gen howpaymarriage_capi=0 if howpaymarriage!=""
+gen howpaymarriage_gift=0 if howpaymarriage!=""
+
+replace howpaymarriage_loan=1 if howpaymarriage=="Both"
+replace howpaymarriage_loan=1 if howpaymarriage=="Loan"
+replace howpaymarriage_capi=1 if howpaymarriage=="Both"
+replace howpaymarriage_capi=1 if howpaymarriage=="Own capital / Savings"
+replace howpaymarriage_gift=1 if dummymarriagegift==1
+
+label define yesno 0"No" 1"Yes"
+label values howpaymarriage_loan yesno
+label values howpaymarriage_capi yesno
+label values howpaymarriage_gift yesno
+
+
+fre howpaymarriage_loan
+fre howpaymarriage_capi
+fre howpaymarriage_gift
+order howpaymarriage_loan howpaymarriage_capi howpaymarriage_gift, after(howpaymarriage)
 
 save "NEEMSIS1-marriage.dta", replace
 ****************************************
@@ -273,6 +297,26 @@ drop _merge
 
 
 ********** Indicator
+* 
+label define divHH 1"Agricultural household" 2"Non-agricultural household" 3"Diversified household"
+gen divHH0=.
+replace divHH0=1 if shareincomeagri_HH==1
+replace divHH0=2 if shareincomeagri_HH==0
+replace divHH0=3 if shareincomeagri_HH!=0 & shareincomeagri_HH!=1 & shareincomeagri_HH!=.
+label values divHH0 divHH
+fre divHH0
+gen divHH5=.
+replace divHH5=1 if shareincomeagri_HH>=0.95
+replace divHH5=2 if shareincomeagri_HH<=0.05
+replace divHH5=3 if shareincomeagri_HH>0.05 & shareincomeagri_HH<0.95 & shareincomeagri_HH!=.
+label values divHH5 divHH
+fre divHH5
+gen divHH10=.
+replace divHH10=1 if shareincomeagri_HH>=0.9
+replace divHH10=2 if shareincomeagri_HH<=0.1
+replace divHH10=3 if shareincomeagri_HH>0.1 & shareincomeagri_HH<0.9 & shareincomeagri_HH!=.
+label values divHH10 divHH
+fre divHH10
 *
 clonevar totalmarriagegiftamount_recode=totalmarriagegiftamount
 recode totalmarriagegiftamount_recode (.=0)
