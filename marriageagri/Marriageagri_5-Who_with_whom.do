@@ -123,6 +123,21 @@ ta working_pop sex
 recode mainocc_occupation_indiv (.=0)
 ta mainocc_occupation_indiv sex, col nofreq
 
+
+
+
+
+********** Panel
+use"NEEMSIS-marriage.dta", clear
+
+ta sex
+ta caste sex, col nofreq
+tabstat age, stat(n mean p50) by(sex)
+ta edulevel sex, col nofreq
+ta working_pop sex, col nofreq
+ta mainocc_occupation_indiv sex, col nofreq
+
+
 ****************************************
 * END
 
@@ -227,9 +242,8 @@ ta sex 				marriagearranged, row nofreq
 ta caste 			marriagearranged, row nofreq
 ta intercaste 		marriagearranged, row nofreq
 ta interjatis 		marriagearranged, row nofreq
-/*
-C'est drôle, les mariages d'amour ne sont pas intercastes et quasi par interjatis
-*/
+
+ta sex 				marriagearranged, cchi2 chi2 exp
 
 ****************************************
 * END

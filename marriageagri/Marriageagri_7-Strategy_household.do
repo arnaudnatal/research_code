@@ -47,17 +47,6 @@ STATISTICAL ANALYSIS:
 5. Dowry as a symbol of upward mobility
 6. Differences between families that remained solely peasant and those that diversified, exploring the role of marriages and marriage payments in these differentiated strategies
 
-PLAN D'ANALYSE:
-1. Statistiques des variables de mariage sans hétérogéneité pour 2016-17 et 2020-21
-2. Statistiques qui montrent le déclin de l'agriculture
-3. Statistiques qui montrent la volatilité des revenus non-agricoles
-4. Statistiques qui montrent les montants d'investissement dans l'éducation en séparant les hommes et femmes
-5. Statistiques qui montrent les dépenses d'habitations
-6. Dowry par type de mariage pour upward mobility
-7. Classer les ménages en fonction des types de revenus qu'ils ont : que agri, que non-agri, les deux
-8. Faire une part de agri/non agri aussi
-
-
 *****************************************************/
 
 
@@ -343,23 +332,46 @@ reg marrdow_female_HH totHH_effectiveamt_hous
 
 
 
+
+
 ****************************************
-* Aspiration and social mobility
+* Cost of the marriage and agriculture at the marriage level
 ****************************************
 use"NEEMSIS-marriage.dta", clear
 
-********** Clean
-replace assets_total=assets_total/1000
-replace marriagedowry=marriagedowry/1000
+*** Prepa
+
+global amoun marriageexpenses marriagetotalcost
+global ratio MEIR MEAR
+global total $amoun $ratio
+
+foreach x in $amoun {
+replace `x'=`x'/1000
+}
+foreach x in $ratio {
+replace `x'=`x'*100
+}
+
+cls
+*** Agricultural status
+*divHH0 divHH5
+foreach x in ownland divHH10 {
+tabstat $total, stat(n mean q) by(`x') long
+}
+
+/*
+Ceux qui sont propriétaire terrien ont des dots plus élevés en moyenne.
+Ceux qui sont propriétaire terrien ont un ratio de dot/revenu plus élevé.
+Ceux qui sont propriétaire terrien ont un ratio de dot/actifs plus faible.
+*/
 
 
-********** Aspirations
-fre sex
-keep if sex==2
-set graph off
-twoway (scatter  marriagedowry assets_total) (lfit  marriagedowry assets_total)
-set graph on
+*** Share agri
+cpcorr $total \ incomenonagri_HH shareincomeagri_HH
+
+
 
 
 ****************************************
 * END
+

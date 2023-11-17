@@ -147,6 +147,7 @@ cls
 use"NEEMSIS-marriage.dta", clear
 
 * Total cost
+preserve
 replace marriagetotalcost=marriagetotalcost/1000
 tabstat marriagetotalcost, stat(n mean cv q) by(year) long
 
@@ -155,6 +156,21 @@ tabstat marriagetotalcost if year==2016, stat(n mean cv q) by(marrtype) long
 
 tabstat marriagetotalcost if year==2020, stat(n mean cv q) by(intercaste) long
 tabstat marriagetotalcost if year==2020, stat(n mean cv q) by(marrtype) long
+restore
+
+* Cost to income to have an idea
+gen CTI=(marriagetotalcost/annualincome_HH)*100
+cls
+foreach x in CTI {
+tabstat `x', stat(n mean cv q) by(year) long
+
+tabstat `x' if year==2016, stat(n mean cv q) by(intercaste) long
+tabstat `x' if year==2016, stat(n mean cv q) by(marrtype) long
+
+tabstat `x' if year==2020, stat(n mean cv q) by(intercaste) long
+tabstat `x' if year==2020, stat(n mean cv q) by(marrtype) long
+}
+
 
 * Total expenses
 replace MEIR=MEIR*100
