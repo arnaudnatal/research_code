@@ -24,7 +24,7 @@ do"C:/Users/Arnaud/Documents/GitHub/folderanalysis/$link.do"
 ****************************************
 * Construction: debt
 ****************************************
-use"panel_v0", clear
+use"panel_HH_v0", clear
 
 * DSR
 tabstat imp1_ds_tot_HH annualincome_HH, stat(min p1 p5 p10 q p90 p95 p99 max)
@@ -66,26 +66,6 @@ gen tar=totHH_givenamt_repa/assets_total
 replace tar=0 if tar==.
 
 
-* AFM - Absolut Financial Margin
-gen temp=1 if imp1_ds_tot_HH==.
-recode imp1_ds_tot_HH (.=0)
-gen afm=annualincome_HH+remittnet_HH+goldreadyamount-imp1_ds_tot_HH-expenses_total
-replace imp1_ds_tot_HH=. if temp==1
-drop temp
-
-
-* RFM - Relative Financial Margin
-gen rfm=afm/annualincome_HH
-
-* LPC - Loans per capita
-gen lpc=nbloans_HH/squareroot_HHsize
-replace lpc=0 if lpc==.
-
-* LAPC - Loan amount per capita
-gen lapc=loanamount_HH/squareroot_HHsize
-replace lapc=0 if lapc==.
-
-
 * Poverty
 /*
 All is expressed in 2010 PPP
@@ -105,16 +85,10 @@ replace annualincome_HH2=round(annualincome_HH2,1)
 tabstat annualincome_HH_backup annualincome_HH annualincome_HH2, stat(n mean) by(year)
 
 gen dailyincome_pc=(annualincome_HH2/365)/HHsize
-gen dailyusdincome_pc=dailyincome_pc/65.10
 gen dailyuspppdincome_pc=dailyincome_pc/20.65
-gen rrgpl=((dailyusdincome_pc-2.15)/2.15)*(-1)
-gen rrgpl_ppp=((dailyuspppdincome_pc-2.15)/2.15)*(-1)
-
-rename rrgpl rrgpl_tauxdechange
-rename rrgpl_ppp rrgpl
 
 
-save"panel_v1", replace
+save"panel_HH_v1", replace
 ****************************************
 * END
 
@@ -137,7 +111,7 @@ save"panel_v1", replace
 ****************************************
 * Poverty and other
 ****************************************
-use"panel_v1", clear
+use"panel_HH_v1", clear
 
 * HH
 encode HHID_panel, gen(panelvar)
@@ -314,23 +288,19 @@ use"panel_v2", clear
 
 replace loanamount_HH=0 if loanamount_HH==.
 
-foreach x in loanamount_HH annualincome_HH assets_total imp1_ds_tot_HH imp1_is_tot_HH totHH_givenamt_repa dsr isr dar dir tdr tar afm rfm expenses_total remreceived_HH remsent_HH remittnet_HH dailyincome_pc assets_gold goldquantity_HH goldreadyamount nbloans_HH lpc lapc {
+foreach x in loanamount_HH annualincome_HH assets_total imp1_ds_tot_HH imp1_is_tot_HH totHH_givenamt_repa dsr isr dar dir tdr tar expenses_total remreceived_HH remsent_HH remittnet_HH dailyincome_pc assets_gold goldquantity_HH goldreadyamount nbloans_HH {
 egen `x'_std=std(`x')
 }
 
 *** Label
 label var dar_std "DAR (std)"
 label var dsr_std "DSR (std)"
-label var afm_std "AFM (std)"
-label var rfm_std "RFM (std)"
 label var tdr_std "TDR (std)"
 label var tar_std "TAR (std)"
 label var isr_std "ISR (std)"
 label var dailyincome_pc_std "Livelihood (std)"
 label var assets_total_std "Wealth (std)"
 label var nbloans_HH_std "Nb loans (std)"
-label var lpc_std "Loans pc (std)"
-label var lapc_std "Loan amount pc (std)"
 
 
 label var annualincome_HH_std "Annual income (std)"
@@ -346,104 +316,15 @@ label var housetitle "House title: Yes"
 label var head_female "Head sex: Female"
 
 
-
-save"panel_v3", replace
-****************************************
-* END
-
-
-
+*** Dummyloans
+gen dummyloans_HH=0
+replace dummyloans_HH=1 if loanamount_HH!=. & loanamount_HH>0
+label values dummyloans_HH yesno
+ta dummyloans_HH year, col nofreq
 
 
 
 
-
-
-
-
-
-
-
-
-
-
-****************************************
-* Construction: loan level database for descriptive stat
-****************************************
-
-*** RUME
-use"raw/RUME-loans_mainloans_new.dta", replace
-
-keep HHID2010 loanreasongiven loanlender loansettled loanamount lender_cat reason_cat lender4 dummyml loanamount2 loanbalance2 interestpaid2 totalrepaid2 principalpaid2
-
-merge m:m HHID2010 using "raw/keypanel-HH_wide.dta", keepusing(HHID_panel)
-keep if _merge==3
-drop _merge
-gen year=2010
-
-save"RUME-loans.dta", replace
-
-
-
-
-*** NEEMSIS1
-use"raw/NEEMSIS1-loans_mainloans_new.dta", replace
-
-ta loan_database
-drop if loan_database=="MARRIAGE"
-keep HHID2016 loanreasongiven loanlender loansettled loanamount lender_cat reason_cat lender4 dummyml loanamount2 loanbalance2 interestpaid2 totalrepaid2 principalpaid2
-
-merge m:m HHID2016 using "raw/keypanel-HH_wide.dta", keepusing(HHID_panel)
-keep if _merge==3
-drop _merge
-gen year=2016
-
-save"NEEMSIS1-loans.dta", replace
-
-
-
-
-*** NEEMSIS2
-use"raw/NEEMSIS2-loans_mainloans_new.dta", replace
-
-keep HHID2020 loanreasongiven loanlender loansettled loanamount lender_cat reason_cat lender4 dummyml loanamount2 loanbalance2 interestpaid2 totalrepaid2 principalpaid2
-
-merge m:m HHID2020 using "raw/keypanel-HH_wide.dta", keepusing(HHID_panel)
-keep if _merge==3
-drop _merge
-gen year=2020
-
-save"NEEMSIS2-loans.dta", replace
-
-
-
-*** Append
-use"RUME-loans.dta", replace
-
-append using "NEEMSIS1-loans"
-append using "NEEMSIS2-loans"
-
-gen test=loanamount-loanamount2
-ta test
-drop test loanamount
-
-foreach x in loanamount loanbalance interestpaid totalrepaid principalpaid {
-rename `x'2 `x'
-}
-
-drop HHID2010 HHID2016 HHID2020
-
-order HHID_panel year loanamount loansettled loanreasongiven loanlender 
-
-
-********** Selection of the 6 households
-drop if HHID_panel=="GOV66" & year==2020  
-drop if HHID_panel=="KUV66" & year==2020
-drop if HHID_panel=="GOV64" & year==2020
-drop if HHID_panel=="GOV67" & year==2020
-drop if HHID_panel=="KUV67" & year==2020
-drop if HHID_panel=="GOV65" & year==2020
-
-save"panel_loans", replace
+save"panel_HH_v3", replace
 ****************************************
 * END

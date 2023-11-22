@@ -24,29 +24,13 @@ do"C:/Users/Arnaud/Documents/GitHub/folderanalysis/$link.do"
 use"raw/RUME-HH", clear
 
 * To keep
-keep HHID2010 village villagearea ownland house housetitle
+keep HHID2010 villagename villagearea ownland house housetitle
 fre house housetitle
 gen livingarea=1
 
 * Clean
-decode village, gen(villageid)
-drop village
-rename villageid village
-replace village="ELA" if village=="ELANTHALMPATTU"
-replace village="GOV" if village=="GOVULAPURAM"
-replace village="KOR" if village=="KORATTORE"
-replace village="KAR" if village=="KARUMBUR"
-replace village="KUV" if village=="KUVAGAM"
-replace village="ORA" if village=="ORAIYURE"
-replace village="SEM" if village=="SEMAKOTTAI"
-replace village="MAN" if village=="MANAPAKKAM"
-replace village="MANAM" if village=="MANAMTHAVIZHINTHAPUTHUR"
-replace village="NAT" if village=="NATHAM"
-
-decode villagearea, gen(vi)
-drop villagearea
-rename vi area
-gen villageid=village
+decode villagename, gen(villageid)
+drop villagename
 
 * Uniq HH
 duplicates drop
@@ -90,7 +74,7 @@ rename HHID2010 HHID
 
 *Year
 gen year=2010
-ta village livingarea
+ta villageid livingarea
 
 
 * Gold not pledge
@@ -223,7 +207,7 @@ drop if livinghome==4
 drop if dummylefthousehold==1
 fre house
 preserve
-keep if house==""
+keep if house==.
 ta dummyeverland2010
 ta dummyeverhadland
 restore
@@ -439,6 +423,6 @@ dis 1146/3
 drop n
 
 
-save"panel_v0", replace
+save"panel_HH_v0", replace
 ****************************************
 * END
