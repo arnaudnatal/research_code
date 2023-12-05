@@ -34,6 +34,34 @@ fre loanreasongiven
 ta lender4 year if loanreasongiven==4, col nofreq
 
 
+ta loanreasongiven loaneffectivereason
+
+****************************************
+* END
+
+
+
+
+
+
+
+
+****************************************
+* Stat desc
+****************************************
+use"panel_loans", replace
+
+
+ta loanreasongiven effective_repa, row nofreq
+ta loanreasongiven effective_repa, col nofreq
+ta loanreasongiven effective_repa, m
+ta loanreasongiven effective_repa if year==2010, m
+ta loanreasongiven effective_repa if year==2016, m
+ta loanreasongiven effective_repa if year==2020, m
+
+
+
+
 
 
 ****************************************

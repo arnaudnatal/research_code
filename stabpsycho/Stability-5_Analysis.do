@@ -25,11 +25,12 @@ do "https://raw.githubusercontent.com/arnaudnatal/folderanalysis/main/$link.do"
 ****************************************
 use "panel_stab_wide_v5", clear
 
-tab age25
+ta age25
 
 *keep if age25==1
 * 740 individuals on 835
 
+ta diff_fa_ES
 
 
 ********** Histo + kdensity

@@ -426,3 +426,70 @@ drop n
 save"panel_HH_v0", replace
 ****************************************
 * END
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Villages
+****************************************
+
+********** Test n°1
+use"panel_HH_v0", clear
+
+fre village
+gen RUMEvillage=0
+replace RUMEvillage=1 if village=="ELA"
+replace RUMEvillage=1 if village=="GOV"
+replace RUMEvillage=1 if village=="KAR"
+replace RUMEvillage=1 if village=="KOR"
+replace RUMEvillage=1 if village=="KUV"
+replace RUMEvillage=1 if village=="MAN"
+replace RUMEvillage=1 if village=="MANAM"
+replace RUMEvillage=1 if village=="NAT"
+replace RUMEvillage=1 if village=="ORA"
+replace RUMEvillage=1 if village=="SEM"
+replace RUMEvillage=1 if year==2010
+
+ta RUMEvillage year
+
+keep HHID_panel RUMEvillage year village
+drop if year==2010
+
+reshape wide RUMEvillage village, i(HHID_panel) j(year)
+
+keep if RUMEvillage2016==0
+
+
+
+********** Test n°2
+use"panel_HH_v0", clear
+
+fre village
+gen RUMEvillage=0
+replace RUMEvillage=1 if village=="ELA"
+replace RUMEvillage=1 if village=="GOV"
+replace RUMEvillage=1 if village=="KAR"
+replace RUMEvillage=1 if village=="KOR"
+replace RUMEvillage=1 if village=="KUV"
+replace RUMEvillage=1 if village=="MAN"
+replace RUMEvillage=1 if village=="MANAM"
+replace RUMEvillage=1 if village=="NAT"
+replace RUMEvillage=1 if village=="ORA"
+replace RUMEvillage=1 if village=="SEM"
+replace RUMEvillage=1 if year==2010
+
+drop if RUMEvillage==0
+ta year
+
+****************************************
+* END
