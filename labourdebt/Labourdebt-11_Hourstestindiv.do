@@ -257,6 +257,8 @@ restore
 * Female
 preserve
 keep if sex==2
+sum hoursayear_indiv, det
+drop if hoursayear_indiv>r(p95)
 xtreg hoursayear_indiv $xvar $compo1 $econ $head $nonvar $indiv, fe cluster(HHclust)
 restore
 
@@ -268,7 +270,7 @@ restore
 
 
 
-
+/*
 
 
 ****************************************

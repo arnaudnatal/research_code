@@ -244,7 +244,7 @@ graph export "Heuresparan.pdf", as(pdf) replace
 
 
 
-*********** FVI cat and below p25 and above
+*********** FVI cat and below p25 and above for males
 xtile cat_fvi=fvi_noinv_lag, nq(4)
 
 twoway ///
@@ -258,9 +258,20 @@ legend(order(1 "25 % FVI plus bas" 2 "25 % FVI plus haut") pos(6) col(2)) name(d
 graph export "Heuresparan_fvi.pdf", as(pdf) replace
 
 
-********** Test
-reg hours_male i.cat_fvi
+*********** FVI cat and below p25 and above for females
+twoway ///
+(kdensity hours_female if cat_fvi==1, xline(1669 2500, lcolor("197 102 63")) lcolor("164 204 76")) ///
+(kdensity hours_female if cat_fvi==4, lcolor("80 151 68")) ///
+, ///
+xtitle("Heures par an") xlabel(0(1000)4000) xmtick(0(500)4000) ///
+ytitle("Densité") title("Temps de travail des femmes") ///
+legend(order(1 "25 % FVI plus bas" 2 "25 % FVI plus haut") pos(6) col(2)) name(densité, replace) scale(1.5)
 
+graph export "Heuresparan_f_fvi.pdf", as(pdf) replace
+
+
+********** Scatter
+twoway (scatter hours_female fvi_noinv_lag)
 
 
 ****************************************
