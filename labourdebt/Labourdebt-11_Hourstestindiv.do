@@ -179,7 +179,7 @@ drop if year==2010
 ta year
 
 * Keep var of interest
-keep HHID_panel year caste_1 caste_3 village_2 village_3 village_4 village_5 village_6 village_7 village_8 village_9 village_10 head_female head_age head_educ remittnet_HH assets_total dummymarriage log_HHsize share_children sexratio dependencyratio share_stock fvi fvi_lag
+keep HHID_panel year caste_1 caste_3 village_2 village_3 village_4 village_5 village_6 village_7 village_8 village_9 village_10 head_female head_age head_educ remittnet_HH assets_total dummymarriage log_HHsize share_children sexratio dependencyratio share_stock fvi fvi_lag fvi_noinv fvi_noinv_lag
 
 save"varHH", replace
 ****************************************
@@ -240,83 +240,97 @@ global nonvar caste_1 caste_3 village_2 village_3 village_4 village_5 village_6 
 global head head_female head_age head_educ
 global econ remittnet_HH assets_total dummymarriage 
 global compo1 log_HHsize share_children sexratio dependencyratio share_stock
+global xvar fvi_noinv_lag
 global indiv age i.edulevel i.relationshiptohead
 
 
-cls
-********** Effets de FVI en pooled
-reg work c.fvi##i.sex $compo1 $econ $head $nonvar $indiv, cluster(HHclust)
-reg hoursayear_indiv c.fvi##i.sex $compo1 $econ $head $nonvar $indiv, cluster(HHclust)
-* Male
-preserve
-keep if sex==1
-reg work c.fvi $compo1 $econ $head $nonvar $indiv, cluster(HHclust)
-reg hoursayear_indiv c.fvi $compo1 $econ $head $nonvar $indiv, cluster(HHclust)
-restore
-* Female
-preserve
-keep if sex==2
-reg work c.fvi $compo1 $econ $head $nonvar $indiv, cluster(HHclust)
-reg hoursayear_indiv c.fvi $compo1 $econ $head $nonvar $indiv, cluster(HHclust)
-restore
 
-
-
-cls
-********** Effets de FVI en FE
+********** Effets de FVI lag no invest en FE
 xtset panelvar year
-xtreg work c.fvi##i.sex $compo1 $econ $head $nonvar $indiv, fe cluster(HHclust)
-xtreg hoursayear_indiv c.fvi##i.sex $compo1 $econ $head $nonvar $indiv, fe cluster(HHclust)
+
 * Male
 preserve
 keep if sex==1
-xtreg work c.fvi $compo1 $econ $head $nonvar $indiv, fe cluster(HHclust)
-xtreg hoursayear_indiv c.fvi $compo1 $econ $head $nonvar $indiv, fe cluster(HHclust)
+xtreg hoursayear_indiv $xvar $compo1 $econ $head $nonvar $indiv, fe cluster(HHclust)
 restore
+
 * Female
 preserve
 keep if sex==2
-xtreg work c.fvi $compo1 $econ $head $nonvar $indiv, fe cluster(HHclust)
-xtreg hoursayear_indiv c.fvi $compo1 $econ $head $nonvar $indiv, fe cluster(HHclust)
-restore
-
-
-cls
-********** Effets de FVI lag en pooled
-reg work c.fvi_lag##i.sex $compo1 $econ $head $nonvar $indiv, cluster(HHclust)
-reg hoursayear_indiv c.fvi_lag##i.sex $compo1 $econ $head $nonvar $indiv, cluster(HHclust)
-* Male
-preserve
-keep if sex==1
-reg work c.fvi_lag $compo1 $econ $head $nonvar $indiv, cluster(HHclust)
-reg hoursayear_indiv c.fvi_lag $compo1 $econ $head $nonvar $indiv, cluster(HHclust)
-restore
-* Female
-preserve
-keep if sex==2
-reg work c.fvi_lag $compo1 $econ $head $nonvar $indiv, cluster(HHclust)
-reg hoursayear_indiv c.fvi_lag $compo1 $econ $head $nonvar $indiv, cluster(HHclust)
-restore
-
-
-cls
-********** Effets de FVI lag en FE SUPER !
-xtset panelvar year
-xtreg work c.fvi_lag##i.sex $compo1 $econ $head $nonvar $indiv, fe cluster(HHclust)
-xtreg hoursayear_indiv c.fvi_lag##i.sex $compo1 $econ $head $nonvar $indiv, fe cluster(HHclust)
-* Male
-preserve
-keep if sex==1
-xtreg work c.fvi_lag $compo1 $econ $head $nonvar $indiv, fe cluster(HHclust)
-xtreg hoursayear_indiv c.fvi_lag $compo1 $econ $head $nonvar $indiv, fe cluster(HHclust)
-restore
-* Female
-preserve
-keep if sex==2
-xtreg work c.fvi_lag $compo1 $econ $head $nonvar $indiv, fe cluster(HHclust)
-xtreg hoursayear_indiv c.fvi_lag $compo1 $econ $head $nonvar $indiv, fe cluster(HHclust)
+xtreg hoursayear_indiv $xvar $compo1 $econ $head $nonvar $indiv, fe cluster(HHclust)
 restore
 
 
 ****************************************
 * END
+
+
+
+
+
+
+
+
+****************************************
+* Coef plot
+****************************************
+import excel "Testhours.xlsx", sheet("Sheet1") firstrow clear
+
+* Label
+replace level="1" if level=="Household"
+replace level="2" if level=="Individual"
+destring level, replace
+label define level 1"Ménage" 2"Individu"
+label values level level
+
+replace sample="1" if sample=="Total"
+replace sample="2" if sample=="Males"
+replace sample="3" if sample=="Females"
+destring sample, replace
+label define sample 1"Total" 2"Hommes" 3"Femmes"
+label values sample sample
+
+drop y
+
+* Graph HH
+preserve
+keep if level==1
+twoway ///
+(rcap max min sample, xline(1.5 2.5) lcolor("164 204 76")) ///
+(scatter coef sample, yline(0, lcolor("80 151 68") lpattern(solid)) mcolor("197 102 63")) ///
+, xlabel(0" " 1"Total" 2"Hommes" 3"Femmes" 4" ", nogrid notick angle(0)) ///
+ylab(, angle(vertical)) ///
+title("Niveau ménage", size(small)) ///
+xtitle("Échantillon") ytitle("Heures travaillées") ///
+legend(order(1 "I.C. 95 %" 2 "Coef." ) pos(6) col(2)) ///
+note("Modèles à EF", size(vsmall)) scale(1.5) ///
+name(hourshh, replace)
+restore
+
+
+* Graph indiv
+preserve
+keep if level==2
+twoway ///
+(rcap max min sample, xline(2.5) lcolor("164 204 76")) ///
+(scatter coef sample, yline(0, lcolor("80 151 68") lpattern(solid)) mcolor("197 102 63")) ///
+, xlabel(1" " 2"Hommes" 3"Femmes" 4" ", nogrid notick angle(0)) ///
+ylab(, angle(vertical)) ///
+title("Niveau individu", size(small)) ///
+xtitle("Échantillon") ytitle("Heures travaillées") ///
+legend(order(1 "I.C. 95 %" 2 "Coef." ) pos(6) col(2)) ///
+note("Modèles à EF + cluster ménage", size(vsmall)) scale(1.5) ///
+name(hoursindiv, replace)
+restore
+
+
+* One graph
+grc1leg hourshh hoursindiv, title("Effet du lag de FVI, sans investissement") name(gphcomb, replace)
+graph export "Testhours.pdf", as(pdf) replace
+
+
+****************************************
+* END
+
+
+

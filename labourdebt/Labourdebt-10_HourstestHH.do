@@ -198,39 +198,13 @@ global nonvar caste_1 caste_3 village_2 village_3 village_4 village_5 village_6 
 global head head_female head_age head_educ
 global econ remittnet_HH assets_total dummymarriage 
 global compo1 log_HHsize share_children sexratio dependencyratio share_stock
+global xvar fvi_noinv_lag
 
-
-cls
-********** Effets de FVI en pooled
-reg hours_HH 		fvi $compo1 $econ $head $nonvar
-reg hours_male_HH	fvi $compo1 $econ $head $nonvar
-reg hours_female_HH fvi $compo1 $econ $head $nonvar
-
-
-
-cls
-********** Effets de FVI en FE
-xtset panelvar year
-xtreg hours_HH 			fvi	$compo1 $econ $head $nonvar, fe
-xtreg hours_male_HH		fvi $compo1 $econ $head $nonvar, fe
-xtreg hours_female_HH 	fvi $compo1 $econ $head $nonvar, fe
-
-
-
-cls
-********** Effets de FVI lag en pooled
-reg hours_HH 		fvi_lag $compo1 $econ $head $nonvar
-reg hours_male_HH	fvi_lag $compo1 $econ $head $nonvar
-reg hours_female_HH fvi_lag $compo1 $econ $head $nonvar
-
-
-
-cls
 ********** Effets de FVI lag en FE
 xtset panelvar year
-xtreg hours_HH 			fvi_lag	$compo1 $econ $head $nonvar, fe
-xtreg hours_male_HH		fvi_lag	$compo1 $econ $head $nonvar, fe
-xtreg hours_female_HH 	fvi_lag $compo1 $econ $head $nonvar, fe
+xtreg hours_HH 	$xvar	$compo1 $econ $head $nonvar, fe
+xtreg hours_male_HH	$xvar	$compo1 $econ $head $nonvar, fe
+xtreg hours_female_HH $xvar $compo1 $econ $head $nonvar, fe
 
 
 ****************************************
