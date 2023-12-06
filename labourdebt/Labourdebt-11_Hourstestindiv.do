@@ -292,12 +292,16 @@ label values sample sample
 
 drop y
 
+*"80 151 68" brick
+*"164 204 76" greenlight
+*"197 102 63" darkgreen
+
 * Graph HH
 preserve
 keep if level==1
 twoway ///
-(rcap max min sample, xline(1.5 2.5) lcolor("164 204 76")) ///
-(scatter coef sample, yline(0, lcolor("80 151 68") lpattern(solid)) mcolor("197 102 63")) ///
+(rcap max min sample, lcolor("164 204 76")) ///
+(scatter coef sample, yline(0, lcolor("197 102 63")) mcolor("80 151 68")) ///
 , xlabel(0" " 1"Total" 2"Hommes" 3"Femmes" 4" ", nogrid notick angle(0)) ///
 ylab(, angle(vertical)) ///
 title("Niveau ménage", size(small)) ///
@@ -312,8 +316,8 @@ restore
 preserve
 keep if level==2
 twoway ///
-(rcap max min sample, xline(2.5) lcolor("164 204 76")) ///
-(scatter coef sample, yline(0, lcolor("80 151 68") lpattern(solid)) mcolor("197 102 63")) ///
+(rcap max min sample, lcolor("164 204 76")) ///
+(scatter coef sample, yline(0, lcolor("197 102 63")) mcolor("80 151 68")) ///
 , xlabel(1" " 2"Hommes" 3"Femmes" 4" ", nogrid notick angle(0)) ///
 ylab(, angle(vertical)) ///
 title("Niveau individu", size(small)) ///

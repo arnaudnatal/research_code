@@ -170,9 +170,8 @@ save"totocc", replace
 ****************************************
 save"totocc", replace
 
-* Year
-ta occupation year, col nofreq
-ta occupation year, chi2 cchi2 exp
+tabstat hoursayear, stat(min p1 p5 p10 q p90 p95 p99 max)
+ta hoursayear if hoursayear>4000
 
 * Sex
 ta occupation sex, col nofreq
