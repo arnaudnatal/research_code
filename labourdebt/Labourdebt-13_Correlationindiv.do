@@ -207,11 +207,26 @@ save"occindiv", replace
 ****************************************
 use"occindiv", clear
 
+ta working_pop year
+
 * Change style
 set scheme plotplain_v2
 grstyle init
 grstyle set plain, box grid
 *
+
+********** Working_pop
+preserve
+drop if working_pop==1
+egen sexyear=group(sex year), label
+tabplot working_pop sexyear, percent(sexyear) showval frame(100) subtitle("") xtitle("") ytitle("") note("Pourcentage par sexe par an", size(vsmall)) ylabel(1 "Actifs occupés" 2 "Actifs non-occupés") xlabel(1 `" "Hommes" "2010" "' 2 `" "Hommes" "2016-17" "' 3 `" "Hommes" "2020-21" "' 4 `" "Femmes" "2010" "' 5 `" "Femmes" "2016-17" "' 6 `" "Femmes" "2020-21" "') color("164 204 76")
+graph export "Working_pop.pdf", as(pdf) replace
+restore
+
+
+
+
+********** Total line for working time
 
 * Selection
 drop if year==2010
@@ -219,7 +234,7 @@ ta year
 drop if hoursayear_indiv==.
 drop if hoursayear_indiv>4000
 
-********** Total line for working time
+* Graph 
 gen hours_male=hoursayear_indiv if sex==1
 gen hours_female=hoursayear_indiv if sex==2
 
@@ -269,9 +284,6 @@ legend(order(1 "25 % FVI plus bas" 2 "25 % FVI plus haut") pos(6) col(2)) name(d
 
 graph export "Heuresparan_f_fvi.pdf", as(pdf) replace
 
-
-********** Scatter
-twoway (scatter hours_female fvi_noinv_lag)
 
 
 ****************************************

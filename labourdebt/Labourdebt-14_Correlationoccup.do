@@ -178,6 +178,14 @@ ta occupation sex, col nofreq
 ta occupation sex, chi2 cchi2 exp
 
 
+preserve
+egen sexyear=group(sex year), label
+tabplot occupation sexyear, percent(sexyear) showval frame(100) subtitle("") xtitle("") ytitle("") note("Pourcentage par sexe par an", size(vsmall)) ylabel(7 "Agri SE" 6 "Agri journa" 5 "Journa" 4 "Reg non-quali" 3 "Reg quali" 2 "SE" 1 "MGNREGA") xlabel(1 `" "Hommes" "2010" "' 2 `" "Hommes" "2016-17" "' 3 `" "Hommes" "2020-21" "' 4 `" "Femmes" "2010" "' 5 `" "Femmes" "2016-17" "' 6 `" "Femmes" "2020-21" "') color("164 204 76")
+graph export "Occupationsex.pdf", as(pdf) replace
+restore
+
+
+
 ****************************************
 * END
 
