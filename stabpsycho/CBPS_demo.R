@@ -28,15 +28,12 @@ ps_scores<-fit$fitted.values
 treated_indices<-which(treat == 1)
 untreated_indices<-which(treat == 0)
 
-plot(density(ps_scores[treated_indices]), col = "blue", main = "Propensity Score Distribution", xlab = "Propensity Score")
-lines(density(ps_scores[untreated_indices]), col = "red")
-legend("topright", legend = c("Treated", "Untreated"), fill = c("blue", "red"))
-
-
 
 # Store weights
 weights<-fit$weights
+ps_scores<-fit$fitted.values
 neemsis1$weights<-weights
+neemsis1$ps_scores<-ps_scores
 write.dta(neemsis1, "neemsis1_r.dta") 
 
 # Store ADSM

@@ -254,7 +254,7 @@ log close
 	
 
 	
-/*
+
 log using "Rob_onlyincomegen.log", replace
 
 ****************************************

@@ -329,5 +329,86 @@ ta clt_fvi
 *** Caste
 ta caste clt_fvi, expected cchi2 chi2
 
+
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Reg 
+****************************************
+cls
+use"panel_v6", clear
+
+
+*** Gen var
+ta house, gen(house_)
+
+recode secondlockdownexposure dummysell(.=1)
+ta secondlockdownexposure, gen(lock_)
+label var lock_1 "Sec. lockdown: Before"
+label var lock_2 "Sec. lockdown: During"
+label var lock_3 "Sec. lockdown: After"
+label var dummysell "Sell assets to face lockdown: Yes"
+
+label var dummydemonetisation "Demonetisation: Yes"
+
+
+* Clean assets
+sum assets_housevalue assets_livestock assets_goods assets_ownland assets_gold
+foreach x in assets_housevalue assets_livestock assets_goods assets_ownland assets_gold {
+replace `x'=1 if `x'==. | `x'<1
+}
+
+
+* Log
+foreach x in assets_total assets_totalnoland assets_housevalue assets_livestock assets_goods assets_ownland assets_gold annualincome_HH loanamount_HH assets_totalnoprop {
+replace `x'=1 if `x'<1 | `x'==.
+gen log_`x'=log(`x')
+}
+
+
+*** Clean
+sort HHID_panel year
+keep if year==2010
+drop if clt_fvi==.
+
+label define caste 1"Caste: Dalits" 2"Caste: Middle" 3"Caste: Upper"
+label values caste caste
+
+
+*** Desc of trend
+ta clt_fvi
+
+
+*** Macro
+global livelihood log_annualincome_HH log_assets_total
+
+global family HHsize HH_count_child
+
+global head head_female head_age head_occ1 head_occ2 head_occ4 head_occ5 head_occ6 head_occ7 head_educ2 head_educ3 head_nonmarried
+
+global shock dummymarriage dummydemonetisation lock_2 lock_3
+
+global debt shareform
+
+global debt2 log_loanamount_HH
+
+global invar caste_2 caste_3 village_2 village_3 village_4 village_5 village_6 village_7 village_8 village_9 village_10
+
+
+*** Reg
+ta clt_fvi
+mlogit clt_fvi $livelihood $family $head $shock $debt $debt2 $invar
+
 ****************************************
 * END

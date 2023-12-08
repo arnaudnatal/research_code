@@ -7,7 +7,7 @@ cls
 gl link = "stabpsycho"
 *Stab
 *-----
-do "https://raw.githubusercontent.com/arnaudnatal/folderanalysis/main/$link.do"
+do "C:/Users/Arnaud/Documents/GitHub/folderanalysis/$link.do"
 *-------------------------
 
 
@@ -336,6 +336,21 @@ matrix list tot
 cls
 use "neemsis2_r.dta", clear
 
+merge 1:1 HHID_panel INDID_panel using "$wave3~matching_v2.dta", keepusing(caste)
+keep if _merge==3
+drop _merge
+merge m:1 HHID_panel using "raw/keypanel-HH_wide", keepusing(HHID2020)
+keep if _merge==3
+drop _merge
+merge m:1 HHID_panel INDID_panel using "raw/keypanel-indiv_wide", keepusing(INDID2020)
+keep if _merge==3
+drop _merge
+destring INDID2020, replace
+merge 1:m HHID2020 INDID2020 using "raw/NEEMSIS2-HH", keepusing(compensation compensationamount)
+keep if _merge==3
+drop _merge
+
+
 global var age caste_2 caste_3 sex_2 mainocc_occupation_indiv_1 mainocc_occupation_indiv_2 mainocc_occupation_indiv_4 mainocc_occupation_indiv_5 mainocc_occupation_indiv_6 mainocc_occupation_indiv_7 mainocc_occupation_indiv_8 edulevel_2 edulevel_3 edulevel_4 edulevel_5 maritalstatus_2 annualincome_indiv HHsize villageid_2 villageid_3 villageid_4 villageid_5 villageid_6 villageid_7 villageid_8 villageid_9 villageid_10 username_code_1 username_code_2 username_code_3 username_code_4 username_code_5 username_code_7 username_code_8
 
 ***** Label
@@ -390,7 +405,133 @@ esttab regpw_f1_2020 regpw_locus using "reg_lock_pw.tex", replace f ///
 	refcat(, nolabel) ///
 	stats(N r2 r2_a F p, fmt(0 2 2 2) layout("\multicolumn{1}{c}{@}" "\multicolumn{1}{S}{@}" "\multicolumn{1}{S}{@}" "\multicolumn{1}{S}{@}" "\multicolumn{1}{S}{@}") labels(`"Observations"' `"\(R^{2}\)"' `"Adjusted \(R^{2}\)"' `"F-stat"' `"p-value"'))
 
-ta treat
+********** Caste
+cls
+foreach x in f1_2020 locus {
+glm `x' i.treat##i.caste $var [pw=weights], link(log) family(igaussian)
+est store regpw_`x'
+}
+
+esttab regpw_f1_2020 regpw_locus, drop(_cons $var) cells("b(fmt(2)star)" "se(fmt(2)par)")
+
+
+********** Compensation
+cls
+foreach x in f1_2020 locus {
+glm `x' treat i.compensation $var [pw=weights], link(log) family(igaussian)
+est store regpw_`x'
+}
+
+esttab regpw_f1_2020 regpw_locus, drop(_cons) cells("b(fmt(2)star)" "se(fmt(2)par)") 
+ 
 	
 ****************************************
 * END
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Support commun
+****************************************
+cls
+use "neemsis2_r.dta", clear
+
+merge 1:1 HHID_panel INDID_panel using "$wave3~matching_v2.dta", keepusing(caste)
+drop _merge
+
+
+global var age caste_2 caste_3 sex_2 mainocc_occupation_indiv_1 mainocc_occupation_indiv_2 mainocc_occupation_indiv_4 mainocc_occupation_indiv_5 mainocc_occupation_indiv_6 mainocc_occupation_indiv_7 mainocc_occupation_indiv_8 edulevel_2 edulevel_3 edulevel_4 edulevel_5 maritalstatus_2 annualincome_indiv HHsize villageid_2 villageid_3 villageid_4 villageid_5 villageid_6 villageid_7 villageid_8 villageid_9 villageid_10 username_code_1 username_code_2 username_code_3 username_code_4 username_code_5 username_code_7 username_code_8
+
+***** Label
+label var treat "COVID-19 lockdown (T=1)"
+label var age "Age"
+label var caste_2 "Caste: Middle"
+label var caste_3 "Caste: Upper"
+label var sex_2 "Sex: Female"
+label var mainocc_occupation_indiv_1 "Occ: No occupation"
+label var mainocc_occupation_indiv_2 "Occ: Agri SE"
+label var mainocc_occupation_indiv_4 "Occ: Non-agri casual"
+label var mainocc_occupation_indiv_5 "Occ: Non-agri regular non-qualified"
+label var mainocc_occupation_indiv_6 "Occ: Non-agri regular qualified"
+label var mainocc_occupation_indiv_7 "Occ: Non-agri SE"
+label var mainocc_occupation_indiv_8 "Occ: NREGA"
+label var edulevel_2 "Edu: Primary completed"
+label var edulevel_3 "Edu: High-School"
+label var edulevel_4 "Edu: HSC/Diploma"
+label var edulevel_5 "Edu: Bachelors"
+label var maritalstatus_2 "MS: Unmarried"
+label var annualincome_indiv "Income"
+label var HHsize "HH size"
+
+replace f1_2020=0.01 if f1_2020<0
+
+
+
+***** Support commun à la main
+fre treat
+twoway ///
+(kdensity ps_scores if treat==1, lcolor("164 204 76") bwidth(0.04)) ///
+(kdensity ps_scores if treat==2, lcolor("80 151 68") bwidth(0.04)) ///
+,  xtitle("Score de propension") ytitle("") legend(order(1 "T=0" 2 "T=1") pos(6) col(2)) title("Support commun COVID-19") name(covid, replace)
+graph export "supportlock.pdf", as(pdf) replace
+*("164 204 76")
+*("197 102 63")
+*("80 151 68")
+
+
+
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Compensation amount
+****************************************
+cls
+use "raw/NEEMSIS2-HH", clear
+
+keep HHID2020 compensation compensationamount caste
+duplicates drop
+
+ta compensation caste, col nofreq
+tabstat compensationamount, stat(n mean q) by(caste)
+
+probit compensation i.caste
+reg compensationamount i.caste
+
+****************************************
+* END
+
+
+
+
+
+
+

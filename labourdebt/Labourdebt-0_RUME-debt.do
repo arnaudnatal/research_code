@@ -25,9 +25,23 @@ use"raw\RUME-loans_mainloans_new.dta", clear
 drop if loansettled==1
 
 ********** Drop economic investment
+/*
 fre loanreasongiven
 drop if loanreasongiven==1
 drop if loanreasongiven==6
+*/
+
+fre effective_repa
+drop if effective_agri==1
+drop if effective_inve==1
+
+
+********** Drop economic investment
+/*
+fre loanreasongiven
+drop if loanreasongiven==1
+drop if loanreasongiven==6
+*/
 
 
 *** HH level

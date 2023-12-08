@@ -22,11 +22,19 @@ fit<-CBPS(treat~age+caste_2+caste_3+sex_2+mainocc_occupation_indiv_1+mainocc_occ
 
 summary(fit)
 
+# Store CBPS
+#ps_scores<-predict(fit)
+ps_scores<-fit$fitted.values
+treated_indices<-which(treat == 1)
+untreated_indices<-which(treat == 0)
+
+
 # Store weights
 weights<-fit$weights
+ps_scores<-fit$fitted.values
 neemsis2$weights<-weights
+neemsis2$ps_scores<-ps_scores
 write.dta(neemsis2, "neemsis2_r.dta") 
-
 
 # Store ADSM
 adsm<-plot(fit, covars=NULL, silent=FALSE, boxplot=TRUE)

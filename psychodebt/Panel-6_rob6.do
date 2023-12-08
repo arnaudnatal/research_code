@@ -139,6 +139,33 @@ est clear
 
 
 
+global inttot c.base_f1_std##i.female##i.dalits c.base_f2_std##i.female##i.dalits c.base_f3_std##i.female##i.dalits c.base_f5_std##i.female##i.dalits c.base_raven_tt_std##i.female##i.dalits c.base_num_tt_std##i.female##i.dalits c.base_lit_tt_std##i.female##i.dalits
+
+global XIndiv age dummyhead cat_mainocc_occupation_indiv_1 cat_mainocc_occupation_indiv_2 cat_mainocc_occupation_indiv_4 cat_mainocc_occupation_indiv_5 cat_mainocc_occupation_indiv_6 cat_mainocc_occupation_indiv_7 dummyedulevel maritalstatus2
+
+global XHH assets1000 HHsize incomeHH1000
+
+global Xrest villageid_2 villageid_3 villageid_4 villageid_5 villageid_6 villageid_7 villageid_8 villageid_9 villageid_10 shock
+
+global contloan i.lender4 i.reason_cat c.loanamount i.dummyguarantee
+
+
+*xtreg  indebt_indiv $inttot $XIndiv $XHH $Xrest $contloan, fe
+
+
+*borrservices_none
+
+*imp1_interest_service
+
+
+reg imp1_interest_service $inttot $XIndiv $XHH $Xrest $contloan, robust
+predict y1_hat
+ivreg2 borrservices_none $inttot $XIndiv $XHH $Xrest $contloan (imp1_interest_service = y1_hat), robust first endog(imp1_interest_service)
+drop y1_hat
+margins, dydx($PTCSma) at(dalits=(0 1) female=(0 1)) post
+
+
+
 
 
 

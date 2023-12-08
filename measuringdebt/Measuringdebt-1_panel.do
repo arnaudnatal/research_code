@@ -229,7 +229,7 @@ ta dummyeverhadland
 restore
 
 * To keep
-keep HHID2020 villagearea villageid dummymarriage ownland ownland house housetitle
+keep HHID2020 villagearea villageid dummymarriage ownland ownland house housetitle compensation compensationamount
 fre house housetitle
 destring house housetitle, replace
 destring ownland, replace

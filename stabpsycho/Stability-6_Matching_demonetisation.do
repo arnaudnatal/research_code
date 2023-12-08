@@ -7,7 +7,7 @@ cls
 gl link = "stabpsycho"
 *Stab
 *-----
-do "https://raw.githubusercontent.com/arnaudnatal/folderanalysis/main/$link.do"
+do "C:/Users/Arnaud/Documents/GitHub/folderanalysis/$link.do"
 *-------------------------
 
 
@@ -319,6 +319,10 @@ matrix list tot
 cls
 use "neemsis1_r.dta", clear
 
+merge 1:1 HHID_panel INDID_panel using "$wave2~matching_v2.dta", keepusing(caste)
+drop _merge
+
+
 global var age caste_2 caste_3 sex_2 mainocc_occupation_indiv_1 mainocc_occupation_indiv_2 mainocc_occupation_indiv_4 mainocc_occupation_indiv_5 mainocc_occupation_indiv_6 mainocc_occupation_indiv_7 mainocc_occupation_indiv_8 edulevel_2 edulevel_3 edulevel_4 edulevel_5 maritalstatus_2 annualincome_indiv HHsize villageid_2 villageid_3 villageid_4 villageid_5 villageid_6 villageid_7 villageid_8 villageid_9 villageid_10 username_code_1 username_code_2 username_code_3 username_code_4 username_code_5 username_code_7
 
 ***** Label
@@ -375,7 +379,85 @@ esttab regpw_f1_2016 regpw_f2_2016 regpw_f3_2016 regpw_f5_2016 using "reg_demo_p
 	refcat(, nolabel) ///
 	stats(N r2 r2_a F p, fmt(0 2 2 2) layout("\multicolumn{1}{c}{@}" "\multicolumn{1}{S}{@}" "\multicolumn{1}{S}{@}" "\multicolumn{1}{S}{@}" "\multicolumn{1}{S}{@}") labels(`"Observations"' `"\(R^{2}\)"' `"Adjusted \(R^{2}\)"' `"F-stat"' `"p-value"'))
 
-ta treat
+	
+	
+***** Caste
+cls
+foreach x in f1_2016 f2_2016 f3_2016 f4_2016 f5_2016 {
+glm `x' i.treat##i.caste $var [pw=weights], link(log) family(igaussian)
+est store regpw_`x'
+}
+
+esttab regpw_f1_2016 regpw_f2_2016 regpw_f3_2016 regpw_f5_2016, drop(_cons $var) cells("b(fmt(2)star)" "se(fmt(2)par)")
 	
 ****************************************
 * END
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Support commun
+****************************************
+cls
+use "neemsis1_r.dta", clear
+
+merge 1:1 HHID_panel INDID_panel using "$wave2~matching_v2.dta", keepusing(caste)
+keep if _merge==3
+drop _merge
+
+
+global var age caste_2 caste_3 sex_2 mainocc_occupation_indiv_1 mainocc_occupation_indiv_2 mainocc_occupation_indiv_4 mainocc_occupation_indiv_5 mainocc_occupation_indiv_6 mainocc_occupation_indiv_7 mainocc_occupation_indiv_8 edulevel_2 edulevel_3 edulevel_4 edulevel_5 maritalstatus_2 annualincome_indiv HHsize villageid_2 villageid_3 villageid_4 villageid_5 villageid_6 villageid_7 villageid_8 villageid_9 villageid_10 username_code_1 username_code_2 username_code_3 username_code_4 username_code_5 username_code_7
+
+***** Label
+label var treat "Demonetisation (T=1)"
+label var age "Age"
+label var caste_2 "Caste: Middle"
+label var caste_3 "Caste: Upper"
+label var sex_2 "Sex: Female"
+label var mainocc_occupation_indiv_1 "Occ: No occupation"
+label var mainocc_occupation_indiv_2 "Occ: Agri SE"
+label var mainocc_occupation_indiv_4 "Occ: Non-agri casual"
+label var mainocc_occupation_indiv_5 "Occ: Non-agri regular non-qualified"
+label var mainocc_occupation_indiv_6 "Occ: Non-agri regular qualified"
+label var mainocc_occupation_indiv_7 "Occ: Non-agri SE"
+label var mainocc_occupation_indiv_8 "Occ: NREGA"
+label var edulevel_2 "Edu: Primary completed"
+label var edulevel_3 "Edu: High-School"
+label var edulevel_4 "Edu: HSC/Diploma"
+label var edulevel_5 "Edu: Bachelors"
+label var maritalstatus_2 "MS: Unmarried"
+label var annualincome_indiv "Income"
+label var HHsize "HH size"
+
+
+
+***** Support commun à la main
+fre treat
+twoway ///
+(kdensity ps_scores if treat==0, lcolor("164 204 76") bwidth(0.1)) ///
+(kdensity ps_scores if treat==1, lcolor("80 151 68") bwidth(0.1)) ///
+,  xtitle("Score de propension") ytitle("") legend(order(1 "T=0" 2 "T=1") pos(6) col(2)) title("Support commun démonétisation") name(demo, replace)
+graph export "supportdemo.pdf", as(pdf) replace
+*("164 204 76")
+*("197 102 63")
+*("80 151 68")
+
+
+****************************************
+* END
+
+
+
+
+
+
+

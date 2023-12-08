@@ -166,6 +166,10 @@ drop _merge
 
 
 ********** HH
+* Debt
+merge m:1 HHID2016 using "raw\NEEMSIS1-loans_HH", keepusing(loanamount_HH)
+drop _merge
+
 * Assets
 merge m:1 HHID2016 using "raw\NEEMSIS1-assets", keepusing(assets_sizeownland assets_housevalue assets_livestock assets_goods assets_ownland assets_gold assets_total assets_totalnoland assets_totalnoprop)
 drop _merge

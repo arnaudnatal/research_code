@@ -141,6 +141,13 @@ count
 restore
 
 
+*** Gestion intra-ménage de la dette
+/*
+diviser le montant de la dette de l’individu par celle du ménage pour avoir cette part
+*/
+*gen gimd=
+
+
 *** Label
 label var sharesex "\% debt same sex"
 label var sharecaste "\% debt same caste"
