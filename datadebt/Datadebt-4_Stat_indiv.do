@@ -227,10 +227,3 @@ graph export "monthlyincome.png", as(png) replace
 
 ****************************************
 * END
-
-
-
-
-
-
-

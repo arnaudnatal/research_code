@@ -382,3 +382,55 @@ graph export "Debt_total.pdf", as(pdf) replace
 
 ****************************************
 * END
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Digital finance
+****************************************
+use"raw/NEEMSIS2-HH", clear
+
+* Clear
+drop if livinghome==3
+drop if livinghome==4
+drop if dummylefthousehold==1
+
+* Clean
+ta usemobilefinancetype
+foreach i in 1 2 3 4 77 {
+gen mobile_`i'=0
+}
+foreach i in 1 2 3 4 77 {
+replace mobile_`i'=1 if strpos(usemobilefinancetype,"`i'")
+}
+
+rename mobile_1 mobile_paybills
+rename mobile_2 mobile_sendmone
+rename mobile_3 mobile_paydebt
+rename mobile_4 mobile_savemone
+rename mobile_77 mobile_other
+
+keep HHID2020 caste usemobilefinance mobile_paybills mobile_sendmone mobile_paydebt mobile_savemone mobile_other usemobilefinanceother
+duplicates drop
+
+* Stats
+ta usemobilefinance caste, col nofreq
+foreach x in mobile_paybills mobile_sendmone mobile_paydebt mobile_savemone mobile_other {
+ta `x' caste, col nofreq
+}
+ta usemobilefinanceother caste
+
+
+
+
+****************************************
+* END
+
+

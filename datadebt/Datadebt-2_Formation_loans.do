@@ -398,8 +398,6 @@ merge m:1 HHID2020 using "Neemsis2_caste", keepusing(caste)
 keep if _merge==3
 drop _merge
 
-
-
 save"temp_NEEMSIS2loanpanel", replace
 ****************************************
 * END

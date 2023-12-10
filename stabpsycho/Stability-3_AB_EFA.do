@@ -195,6 +195,11 @@ egen f3_2016=rowmean($f3)
 egen f4_2016=rowmean($f4)
 egen f5_2016=rowmean($f5)
 
+*
+preserve
+keep HHID_panel INDID_panel f1_2016 f2_2016 f3_2016 f4_2016 f5_2016
+save "_temp_2016", replace
+restore
 
 * To keep
 keep if panel==1
