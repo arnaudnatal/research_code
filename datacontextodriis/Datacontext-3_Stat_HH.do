@@ -218,6 +218,12 @@ set graph on
 grc1leg total dalits mid upp, col(2) name(income_comb, replace)
 graph export "Lorenz_income.pdf", replace as(pdf)
 
+
+*** Montrer que les inégalités augmentent
+lorenz annualincome_HH2010 annualincome_HH2016 annualincome_HH2020, gini
+lorenz graph, overlay noci legend(order(2 "2010" 3 "2016-17" 4 "2020-21") pos(6) col(3)) title("Courbe de Lorenz des revenues des ménages") name(total,replace) diagonal(lpattern(solid) lcolor("197 102 63")) xtitle("Part de la population") ytitle("Part des revenus cumulés") lcolor("164 204 76")
+
+
 ****************************************
 * END
 
