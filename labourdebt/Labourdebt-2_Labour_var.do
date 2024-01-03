@@ -25,7 +25,7 @@ do"C:\Users\Arnaud\Documents\GitHub\folderanalysis\labourdebt.do"
 use"raw/NEEMSIS1-occup_indiv", clear
 
 * Merge sex, age
-merge 1:1 HHID2016 INDID2016 using "raw/NEEMSIS1-HH", keepusing(sex age relationshiptohead livinghome)
+merge 1:1 HHID2016 INDID2016 using "raw/NEEMSIS1-HH", keepusing(sex age relationshiptohead livinghome maritalstatus)
 drop _merge
 
 * Merge edulevel
@@ -33,7 +33,7 @@ merge 1:1 HHID2016 INDID2016 using "raw/NEEMSIS1-education", keepusing(edulevel)
 drop _merge
 
 * Keep
-keep HHID2016 INDID2016 hoursayear_indiv sex age edulevel   relationshiptohead dummyworkedpastyear working_pop livinghome nboccupation_indiv mainocc_profession_indiv mainocc_occupation_indiv mainocc_sector_indiv mainocc_annualincome_indiv mainocc_occupationname_indiv annualincome_indiv mainocc_hoursayear_indiv mainocc_tenureday_indiv
+keep HHID2016 INDID2016 hoursayear_indiv sex age edulevel   relationshiptohead dummyworkedpastyear working_pop livinghome nboccupation_indiv mainocc_profession_indiv mainocc_occupation_indiv mainocc_sector_indiv mainocc_annualincome_indiv mainocc_occupationname_indiv annualincome_indiv mainocc_hoursayear_indiv mainocc_tenureday_indiv maritalstatus
 
 * Merge panel
 merge m:m HHID2016 using "raw/keypanel-HH_wide", keepusing(HHID_panel)
@@ -57,6 +57,8 @@ drop if livinghome==3
 drop if livinghome==4
 drop livinghome
 
+* Maritalstatus
+fre maritalstatus
 
 save "hoursindiv2016", replace
 ****************************************
@@ -77,7 +79,7 @@ save "hoursindiv2016", replace
 use"raw/NEEMSIS2-occup_indiv", clear
 
 * Merge sex, age
-merge 1:1 HHID2020 INDID2020 using "raw/NEEMSIS2-HH", keepusing(sex age relationshiptohead livinghome dummylefthousehold)
+merge 1:1 HHID2020 INDID2020 using "raw/NEEMSIS2-HH", keepusing(sex age relationshiptohead livinghome dummylefthousehold maritalstatus)
 drop _merge
 
 * Merge edulevel
@@ -85,7 +87,7 @@ merge 1:1 HHID2020 INDID2020 using "raw/NEEMSIS2-education", keepusing(edulevel)
 drop _merge
 
 * Keep
-keep HHID2020 INDID2020 hoursayear_indiv sex age edulevel relationshiptohead dummyworkedpastyear working_pop livinghome dummylefthousehold nboccupation_indiv mainocc_profession_indiv mainocc_occupation_indiv mainocc_sector_indiv mainocc_annualincome_indiv mainocc_occupationname_indiv annualincome_indiv mainocc_hoursayear_indiv mainocc_tenureday_indiv
+keep HHID2020 INDID2020 hoursayear_indiv sex age edulevel relationshiptohead dummyworkedpastyear working_pop livinghome dummylefthousehold nboccupation_indiv mainocc_profession_indiv mainocc_occupation_indiv mainocc_sector_indiv mainocc_annualincome_indiv mainocc_occupationname_indiv annualincome_indiv mainocc_hoursayear_indiv mainocc_tenureday_indiv maritalstatus
 
 * Merge panel
 merge m:m HHID2020 using "raw/keypanel-HH_wide", keepusing(HHID_panel)
@@ -110,6 +112,9 @@ drop if livinghome==4
 drop if dummylefthousehold==1
 drop livinghome dummylefthousehold
 
+* Maritalstatus
+fre maritalstatus
+recode maritalstatus (.=5)
 
 save "hoursindiv2020", replace
 ****************************************
@@ -173,6 +178,15 @@ replace `x'=`x'*0.86 if year==2016
 replace `x'=round(`x',1)
 }
 
+* Maritalstatus
+recode maritalstatus (4=3) (5=4)
+label define maritalstatus 1"Married: Yes" 2"Married: No" 3"Married: Other" 4"Married: Below 10", replace
+label values maritalstatus maritalstatus
+preserve
+drop if age<14
+fre maritalstatus
+restore
+rename maritalstatus marital
 
 save "laboursupply_indiv", replace
 ****************************************
