@@ -157,6 +157,28 @@ fre sex
 label define sex 1"Sex: Male" 2"Sex: Female", replace
 fre sex
 
+* Land ownership
+gen landowner=.
+replace landowner=0 if assets_sizeownland==.
+replace landowner=1 if assets_sizeownland!=.
+
+label define landowner 0"Land: No" 1"Land: Yes"
+label values landowner landowner
+label var landowner "Does your household own land?"
+
+
+* Average monthly expenses
+gen monthlyexpenses=(expenses_total/12)/HHsize
+label var monthlyexpenses "Monthly per capita expenses (INR)"
+
+* Remittances received?
+gen dummyremrec=.
+replace dummyremrec=0 if remreceived_HH==0
+replace dummyremrec=1 if remreceived_HH>1
+label define dummyremrec 0"Rem. received: No" 1"Rem. received: Yes"
+label values dummyremrec dummyremrec
+label var dummyremrec "Does your household receive remittances?"
+
 
 save"panel_laboursupplyindiv_v2", replace
 ****************************************

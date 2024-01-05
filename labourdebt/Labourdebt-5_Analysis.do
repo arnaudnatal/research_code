@@ -107,7 +107,6 @@ restore
 use"panel_laboursupplyindiv_v2", clear
 
 
-
 ********** Selection
 drop if age<14
 
@@ -117,17 +116,28 @@ sort HHID_panel INDID_panel year
 xtset panelvar year
 
 
-********** Controls
+********** Controls brut
+global rawnonvar i.caste i.villageid
+global rawecon remittnet_HH assets_total dummymarriage 
+global rawcompo HHsize HH_count_child sexratio nonworkersratio
+global rawindiv c.age##c.age i.edulevel i.relation2 i.sex i.marital
+
+
+********** Exclusion restriction
+global excl1 i.landowner i.relation2 c.monthlyexpenses // Abraham 2017, The Indian Journal of Labour Economics
+global excl2 i.marital c.HH_count_child c.HH_count_adult // Beam 2020, EDCC
+global excl3 i.dummyremrec // Test
+
+
+********** Controls according to exclusion
+global excl $excl2
+
 global nonvar i.caste i.villageid
 global econ remittnet_HH assets_total dummymarriage 
 global compo HHsize HH_count_child sexratio nonworkersratio
-global indiv c.age##c.age i.edulevel i.relation2 i.sex i.marital
+global indiv c.age##c.age i.edulevel i.sex
 
 global xvar DSR_lag
-global yvar work multipleoccup hoursayear_indiv
-
-global excl c.HH_count_child c.HH_count_adult 
-
 
 
 
@@ -135,16 +145,16 @@ global excl c.HH_count_child c.HH_count_adult
 ********** Total
 * Multiple occupations
 foreach x in $xvar {
-xtheckmanfe multipleoccup `x' $indiv $econ $compo, selection(work = $excl)
+xtheckmanfe multipleoccup `x' $indiv $econ $compo $nonvar, selection(work = $excl) id(panelvar) time(year) reps(100)
 est store mult_`x'
 }
 * Hours a year
 foreach x in $xvar {
-xtheckmanfe hoursayear_indiv `x' $indiv $econ $compo, selection(work = $excl)
+xtheckmanfe hoursayear_indiv `x' $indiv $econ $compo, selection(work = $excl) id(panelvar) time(year) reps(100)
 est store hour_`x'
 }
 * Tables
-esttab work_* mult_* hour_* using "Heckman_Total.csv", replace ///
+esttab mult_* hour_* using "Heckman_Total.csv", replace ///
 	label b(3) p(3) eqlabels(none) alignment(S) ///
 	drop(_cons $econ $compo) ///
 	star(* 0.10 ** 0.05 *** 0.01) ///
@@ -161,16 +171,16 @@ fre sex
 keep if sex==1
 * Multiple occupations
 foreach x in $xvar {
-xtheckmanfe multipleoccup `x' $indiv $econ $compo, selection(work = $excl)
+xtheckmanfe multipleoccup `x' $indiv $econ $compo, selection(work = $excl) id(panelvar) time(year) reps(100)
 est store mult_`x'
 }
 * Hours a year
 foreach x in $xvar {
-xtheckmanfe hoursayear_indiv `x' $indiv $econ $compo, selection(work = $excl)
+xtheckmanfe hoursayear_indiv `x' $indiv $econ $compo, selection(work = $excl) id(panelvar) time(year) reps(100)
 est store hour_`x'
 }
 * Tables
-esttab work_* mult_* hour_* using "Heckman_Males.csv", replace ///
+esttab mult_* hour_* using "Heckman_Males.csv", replace ///
 	label b(3) p(3) eqlabels(none) alignment(S) ///
 	drop(_cons $econ $compo) ///
 	star(* 0.10 ** 0.05 *** 0.01) ///
@@ -187,16 +197,16 @@ fre sex
 keep if sex==2
 * Multiple occupations
 foreach x in $xvar {
-xtheckmanfe multipleoccup `x' $indiv $econ $compo, selection(work = $excl)
+xtheckmanfe multipleoccup `x' $indiv $econ $compo, selection(work = $excl) id(panelvar) time(year) reps(100)
 est store mult_`x'
 }
 * Hours a year
 foreach x in $xvar {
-xtheckmanfe hoursayear_indiv `x' $indiv $econ $compo, selection(work = $excl)
+xtheckmanfe hoursayear_indiv `x' $indiv $econ $compo, selection(work = $excl) id(panelvar) time(year) reps(100)
 est store hour_`x'
 }
 * Tables
-esttab work_* mult_* hour_* using "Heckman_Females.csv", replace ///
+esttab mult_* hour_* using "Heckman_Females.csv", replace ///
 	label b(3) p(3) eqlabels(none) alignment(S) ///
 	drop(_cons $econ $compo) ///
 	star(* 0.10 ** 0.05 *** 0.01) ///
@@ -213,16 +223,16 @@ preserve
 drop if age<58
 * Multiple occupations
 foreach x in $xvar {
-xtheckmanfe multipleoccup `x' $indiv $econ $compo, selection(work = $excl)
+xtheckmanfe multipleoccup `x' $indiv $econ $compo, selection(work = $excl) id(panelvar) time(year) reps(100)
 est store mult_`x'
 }
 * Hours a year
 foreach x in $xvar {
-xtheckmanfe hoursayear_indiv `x' $indiv $econ $compo, selection(work = $excl)
+xtheckmanfe hoursayear_indiv `x' $indiv $econ $compo, selection(work = $excl) id(panelvar) time(year) reps(100)
 est store hour_`x'
 }
 * Tables
-esttab work_* mult_* hour_* using "Heckman_Old.csv", replace ///
+esttab mult_* hour_* using "Heckman_Old.csv", replace ///
 	label b(3) p(3) eqlabels(none) alignment(S) ///
 	drop(_cons $econ $compo) ///
 	star(* 0.10 ** 0.05 *** 0.01) ///
