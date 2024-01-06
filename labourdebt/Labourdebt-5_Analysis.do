@@ -102,7 +102,7 @@ restore
 
 
 ****************************************
-* Heckman
+* Heckman total sample
 ****************************************
 use"panel_laboursupplyindiv_v2", clear
 
@@ -123,38 +123,74 @@ global rawcompo HHsize HH_count_child sexratio nonworkersratio
 global rawindiv c.age##c.age i.edulevel i.relation2 i.sex i.marital
 
 
-********** Exclusion restriction
-global excl1 i.landowner i.relation2 c.monthlyexpenses // Abraham 2017, The Indian Journal of Labour Economics
-global excl2 i.marital c.HH_count_child c.HH_count_adult // Beam 2020, EDCC
-global excl3 i.dummyremrec // Test
+
+********** Exclusion 1
+xtheckmanfe hoursayear_indiv DSR_lag ///
+c.age##c.age i.edulevel i.sex i.marital ///
+remittnet_HH assets_total dummymarriage ///
+HHsize HH_count_child sexratio nonworkersratio ///
+, selection(work = i.landowner i.relation2 c.monthlyexpenses) ///
+id(panelvar) time(year) reps(50)
+est store excl_1
 
 
-********** Controls according to exclusion
-global excl $excl2
-
-global nonvar i.caste i.villageid
-global econ remittnet_HH assets_total dummymarriage 
-global compo HHsize HH_count_child sexratio nonworkersratio
-global indiv c.age##c.age i.edulevel i.sex
-
-global xvar DSR_lag
-
+********** Exclusion 2
+xtheckmanfe hoursayear_indiv DSR_lag ///
+c.age##c.age i.edulevel i.sex i.relation2 ///
+remittnet_HH assets_total dummymarriage ///
+HHsize sexratio nonworkersratio ///
+, selection(work = i.marital c.HH_count_child c.HH_count_adult) ///
+id(panelvar) time(year) reps(50)
+est store excl_2
 
 
+********** Exclusion 3
+xtheckmanfe hoursayear_indiv DSR_lag ///
+c.age##c.age i.edulevel i.relation2 i.sex i.marital ///
+remittnet_HH assets_total dummymarriage ///
+HHsize HH_count_child sexratio nonworkersratio ///
+, selection(work = i.dummyremrec) ///
+id(panelvar) time(year) reps(50)
+est store excl_3
 
-********** Total
-* Multiple occupations
-foreach x in $xvar {
-xtheckmanfe multipleoccup `x' $indiv $econ $compo $nonvar, selection(work = $excl) id(panelvar) time(year) reps(100)
-est store mult_`x'
-}
-* Hours a year
-foreach x in $xvar {
-xtheckmanfe hoursayear_indiv `x' $indiv $econ $compo, selection(work = $excl) id(panelvar) time(year) reps(100)
-est store hour_`x'
-}
-* Tables
-esttab mult_* hour_* using "Heckman_Total.csv", replace ///
+
+
+********** Exclusion 4
+xtheckmanfe hoursayear_indiv DSR_lag ///
+c.age##c.age i.edulevel i.relation2 i.sex i.marital ///
+remittnet_HH assets_total dummymarriage ///
+HHsize HH_count_child sexratio ///
+, selection(work = c.nonworkersratio) ///
+id(panelvar) time(year) reps(50)
+est store excl_4
+
+
+
+********** Exclusion 5
+xtheckmanfe hoursayear_indiv DSR_lag ///
+i.edulevel i.relation2 i.sex i.marital ///
+remittnet_HH assets_total dummymarriage ///
+HHsize HH_count_child sexratio nonworkersratio ///
+, selection(work = c.age##c.age) ///
+id(panelvar) time(year) reps(50)
+est store excl_5
+
+
+
+********** Exclusion 6
+xtheckmanfe hoursayear_indiv DSR_lag ///
+c.age##c.age i.edulevel i.relation2 i.sex i.marital ///
+remittnet_HH assets_total dummymarriage ///
+HHsize sexratio nonworkersratio ///
+, selection(work = i.head_edulevel HH_count_child annualincome_HH) ///
+id(panelvar) time(year) reps(50)
+est store excl_6
+
+
+
+
+********** Tables
+esttab excl_1 excl_2 excl_3 excl_4 excl_5 excl_6 using "Heckman_total.csv", replace ///
 	label b(3) p(3) eqlabels(none) alignment(S) ///
 	drop(_cons $econ $compo) ///
 	star(* 0.10 ** 0.05 *** 0.01) ///
@@ -162,25 +198,115 @@ esttab mult_* hour_* using "Heckman_Total.csv", replace ///
 	refcat(, nolabel) ///
 	stats(N, fmt(0) ///
 	labels(`"Observations"'))
-
 	
+****************************************
+* END
 
-********** Males
-preserve
-fre sex
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Heckman males
+****************************************
+use"panel_laboursupplyindiv_v2", clear
+
+
+********** Selection
+drop if age<14
 keep if sex==1
-* Multiple occupations
-foreach x in $xvar {
-xtheckmanfe multipleoccup `x' $indiv $econ $compo, selection(work = $excl) id(panelvar) time(year) reps(100)
-est store mult_`x'
-}
-* Hours a year
-foreach x in $xvar {
-xtheckmanfe hoursayear_indiv `x' $indiv $econ $compo, selection(work = $excl) id(panelvar) time(year) reps(100)
-est store hour_`x'
-}
-* Tables
-esttab mult_* hour_* using "Heckman_Males.csv", replace ///
+
+
+********** Panel
+sort HHID_panel INDID_panel year
+xtset panelvar year
+
+
+********** Controls brut
+global rawnonvar i.caste i.villageid
+global rawecon remittnet_HH assets_total dummymarriage 
+global rawcompo HHsize HH_count_child sexratio nonworkersratio
+global rawindiv c.age##c.age i.edulevel i.relation2 i.sex i.marital
+
+
+
+********** Exclusion 1
+xtheckmanfe hoursayear_indiv DSR_lag ///
+c.age##c.age i.edulevel i.sex i.marital ///
+remittnet_HH assets_total dummymarriage ///
+HHsize HH_count_child sexratio nonworkersratio ///
+, selection(work = i.landowner i.relation2 c.monthlyexpenses) ///
+id(panelvar) time(year) reps(50)
+est store excl_1
+
+
+********** Exclusion 2
+xtheckmanfe hoursayear_indiv DSR_lag ///
+c.age##c.age i.edulevel i.sex i.relation2 ///
+remittnet_HH assets_total dummymarriage ///
+HHsize sexratio nonworkersratio ///
+, selection(work = i.marital c.HH_count_child c.HH_count_adult) ///
+id(panelvar) time(year) reps(50)
+est store excl_2
+
+
+********** Exclusion 3
+xtheckmanfe hoursayear_indiv DSR_lag ///
+c.age##c.age i.edulevel i.relation2 i.sex i.marital ///
+remittnet_HH assets_total dummymarriage ///
+HHsize HH_count_child sexratio nonworkersratio ///
+, selection(work = i.dummyremrec) ///
+id(panelvar) time(year) reps(50)
+est store excl_3
+
+
+
+********** Exclusion 4
+xtheckmanfe hoursayear_indiv DSR_lag ///
+c.age##c.age i.edulevel i.relation2 i.sex i.marital ///
+remittnet_HH assets_total dummymarriage ///
+HHsize HH_count_child sexratio ///
+, selection(work = c.nonworkersratio) ///
+id(panelvar) time(year) reps(50)
+est store excl_4
+
+
+
+********** Exclusion 5
+xtheckmanfe hoursayear_indiv DSR_lag ///
+i.edulevel i.relation2 i.sex i.marital ///
+remittnet_HH assets_total dummymarriage ///
+HHsize HH_count_child sexratio nonworkersratio ///
+, selection(work = c.age##c.age) ///
+id(panelvar) time(year) reps(50)
+est store excl_5
+
+
+
+********** Exclusion 6
+xtheckmanfe hoursayear_indiv DSR_lag ///
+c.age##c.age i.edulevel i.relation2 i.sex i.marital ///
+remittnet_HH assets_total dummymarriage ///
+HHsize sexratio nonworkersratio ///
+, selection(work = i.head_edulevel HH_count_child annualincome_HH) ///
+id(panelvar) time(year) reps(50)
+est store excl_6
+
+
+
+
+********** Tables
+esttab excl_1 excl_2 excl_3 excl_4 excl_5 excl_6 using "Heckman_males.csv", replace ///
 	label b(3) p(3) eqlabels(none) alignment(S) ///
 	drop(_cons $econ $compo) ///
 	star(* 0.10 ** 0.05 *** 0.01) ///
@@ -188,25 +314,113 @@ esttab mult_* hour_* using "Heckman_Males.csv", replace ///
 	refcat(, nolabel) ///
 	stats(N, fmt(0) ///
 	labels(`"Observations"'))
-restore
+
+****************************************
+* END
 
 
-********** Females
-preserve
-fre sex
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Heckman females
+****************************************
+use"panel_laboursupplyindiv_v2", clear
+
+
+********** Selection
+drop if age<14
 keep if sex==2
-* Multiple occupations
-foreach x in $xvar {
-xtheckmanfe multipleoccup `x' $indiv $econ $compo, selection(work = $excl) id(panelvar) time(year) reps(100)
-est store mult_`x'
-}
-* Hours a year
-foreach x in $xvar {
-xtheckmanfe hoursayear_indiv `x' $indiv $econ $compo, selection(work = $excl) id(panelvar) time(year) reps(100)
-est store hour_`x'
-}
-* Tables
-esttab mult_* hour_* using "Heckman_Females.csv", replace ///
+
+
+********** Panel
+sort HHID_panel INDID_panel year
+xtset panelvar year
+
+
+********** Controls brut
+global rawnonvar i.caste i.villageid
+global rawecon remittnet_HH assets_total dummymarriage 
+global rawcompo HHsize HH_count_child sexratio nonworkersratio
+global rawindiv c.age##c.age i.edulevel i.relation2 i.sex i.marital
+
+
+
+********** Exclusion 1
+xtheckmanfe hoursayear_indiv DSR_lag ///
+c.age##c.age i.edulevel i.sex i.marital ///
+remittnet_HH assets_total dummymarriage ///
+HHsize HH_count_child sexratio nonworkersratio ///
+, selection(work = i.landowner i.relation2 c.monthlyexpenses) ///
+id(panelvar) time(year) reps(50)
+est store excl_1
+
+
+********** Exclusion 2
+xtheckmanfe hoursayear_indiv DSR_lag ///
+c.age##c.age i.edulevel i.sex i.relation2 ///
+remittnet_HH assets_total dummymarriage ///
+HHsize sexratio nonworkersratio ///
+, selection(work = i.marital c.HH_count_child c.HH_count_adult) ///
+id(panelvar) time(year) reps(50)
+est store excl_2
+
+
+********** Exclusion 3
+xtheckmanfe hoursayear_indiv DSR_lag ///
+c.age##c.age i.edulevel i.relation2 i.sex i.marital ///
+remittnet_HH assets_total dummymarriage ///
+HHsize HH_count_child sexratio nonworkersratio ///
+, selection(work = i.dummyremrec) ///
+id(panelvar) time(year) reps(50)
+est store excl_3
+
+
+
+********** Exclusion 4
+xtheckmanfe hoursayear_indiv DSR_lag ///
+c.age##c.age i.edulevel i.relation2 i.sex i.marital ///
+remittnet_HH assets_total dummymarriage ///
+HHsize HH_count_child sexratio ///
+, selection(work = c.nonworkersratio) ///
+id(panelvar) time(year) reps(50)
+est store excl_4
+
+
+
+********** Exclusion 5
+xtheckmanfe hoursayear_indiv DSR_lag ///
+i.edulevel i.relation2 i.sex i.marital ///
+remittnet_HH assets_total dummymarriage ///
+HHsize HH_count_child sexratio nonworkersratio ///
+, selection(work = c.age##c.age) ///
+id(panelvar) time(year) reps(50)
+est store excl_5
+
+
+
+********** Exclusion 6
+xtheckmanfe hoursayear_indiv DSR_lag ///
+c.age##c.age i.edulevel i.relation2 i.sex i.marital ///
+remittnet_HH assets_total dummymarriage ///
+HHsize sexratio nonworkersratio ///
+, selection(work = i.head_edulevel HH_count_child annualincome_HH) ///
+id(panelvar) time(year) reps(50)
+est store excl_6
+
+
+
+
+********** Tables
+esttab excl_1 excl_2 excl_3 excl_4 excl_5 excl_6 using "Heckman_females.csv", replace ///
 	label b(3) p(3) eqlabels(none) alignment(S) ///
 	drop(_cons $econ $compo) ///
 	star(* 0.10 ** 0.05 *** 0.01) ///
@@ -214,25 +428,108 @@ esttab mult_* hour_* using "Heckman_Females.csv", replace ///
 	refcat(, nolabel) ///
 	stats(N, fmt(0) ///
 	labels(`"Observations"'))
-restore
+
+****************************************
+* END
 
 
 
-********** More than 58
-preserve
+
+
+
+
+
+
+****************************************
+* Heckman old
+****************************************
+use"panel_laboursupplyindiv_v2", clear
+
+
+********** Selection
+drop if age<14
 drop if age<58
-* Multiple occupations
-foreach x in $xvar {
-xtheckmanfe multipleoccup `x' $indiv $econ $compo, selection(work = $excl) id(panelvar) time(year) reps(100)
-est store mult_`x'
-}
-* Hours a year
-foreach x in $xvar {
-xtheckmanfe hoursayear_indiv `x' $indiv $econ $compo, selection(work = $excl) id(panelvar) time(year) reps(100)
-est store hour_`x'
-}
-* Tables
-esttab mult_* hour_* using "Heckman_Old.csv", replace ///
+
+********** Panel
+sort HHID_panel INDID_panel year
+xtset panelvar year
+
+
+********** Controls brut
+global rawnonvar i.caste i.villageid
+global rawecon remittnet_HH assets_total dummymarriage 
+global rawcompo HHsize HH_count_child sexratio nonworkersratio
+global rawindiv c.age##c.age i.edulevel i.relation2 i.sex i.marital
+
+
+
+********** Exclusion 1
+xtheckmanfe hoursayear_indiv DSR_lag ///
+c.age##c.age i.edulevel i.sex i.marital ///
+remittnet_HH assets_total dummymarriage ///
+HHsize HH_count_child sexratio nonworkersratio ///
+, selection(work = i.landowner i.relation2 c.monthlyexpenses) ///
+id(panelvar) time(year) reps(50)
+est store excl_1
+
+
+********** Exclusion 2
+xtheckmanfe hoursayear_indiv DSR_lag ///
+c.age##c.age i.edulevel i.sex i.relation2 ///
+remittnet_HH assets_total dummymarriage ///
+HHsize sexratio nonworkersratio ///
+, selection(work = i.marital c.HH_count_child c.HH_count_adult) ///
+id(panelvar) time(year) reps(50)
+est store excl_2
+
+
+********** Exclusion 3
+xtheckmanfe hoursayear_indiv DSR_lag ///
+c.age##c.age i.edulevel i.relation2 i.sex i.marital ///
+remittnet_HH assets_total dummymarriage ///
+HHsize HH_count_child sexratio nonworkersratio ///
+, selection(work = i.dummyremrec) ///
+id(panelvar) time(year) reps(50)
+est store excl_3
+
+
+
+********** Exclusion 4
+xtheckmanfe hoursayear_indiv DSR_lag ///
+c.age##c.age i.edulevel i.relation2 i.sex i.marital ///
+remittnet_HH assets_total dummymarriage ///
+HHsize HH_count_child sexratio ///
+, selection(work = c.nonworkersratio) ///
+id(panelvar) time(year) reps(50)
+est store excl_4
+
+
+
+********** Exclusion 5
+xtheckmanfe hoursayear_indiv DSR_lag ///
+i.edulevel i.relation2 i.sex i.marital ///
+remittnet_HH assets_total dummymarriage ///
+HHsize HH_count_child sexratio nonworkersratio ///
+, selection(work = c.age##c.age) ///
+id(panelvar) time(year) reps(50)
+est store excl_5
+
+
+
+********** Exclusion 6
+xtheckmanfe hoursayear_indiv DSR_lag ///
+c.age##c.age i.edulevel i.relation2 i.sex i.marital ///
+remittnet_HH assets_total dummymarriage ///
+HHsize sexratio nonworkersratio ///
+, selection(work = i.head_edulevel HH_count_child annualincome_HH) ///
+id(panelvar) time(year) reps(50)
+est store excl_6
+
+
+
+
+********** Tables
+esttab excl_1 excl_2 excl_3 excl_4 excl_5 excl_6 using "Heckman_old.csv", replace ///
 	label b(3) p(3) eqlabels(none) alignment(S) ///
 	drop(_cons $econ $compo) ///
 	star(* 0.10 ** 0.05 *** 0.01) ///
@@ -240,8 +537,6 @@ esttab mult_* hour_* using "Heckman_Old.csv", replace ///
 	refcat(, nolabel) ///
 	stats(N, fmt(0) ///
 	labels(`"Observations"'))
-restore
-
 
 ****************************************
 * END
