@@ -179,6 +179,9 @@ label define dummyremrec 0"Rem. received: No" 1"Rem. received: Yes"
 label values dummyremrec dummyremrec
 label var dummyremrec "Does your household receive remittances?"
 
+********** Hours a week
+gen hoursaweek_indiv=hoursayear_indiv/52
+
 
 save"panel_laboursupplyindiv_v2", replace
 ****************************************

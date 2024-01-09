@@ -25,8 +25,8 @@ drop if loansettled==1
 
 ********** Drop economic investment
 fre effective_repa
-*drop if effective_agri==1
-*drop if effective_inve==1
+drop if effective_agri==1
+drop if effective_inve==1
 
 
 
@@ -98,8 +98,8 @@ drop if loansettled==1
 
 ********** Drop economic investment
 fre effective_repa
-*drop if effective_agri==1
-*drop if effective_inve==1
+drop if effective_agri==1
+drop if effective_inve==1
 
 
 *** HH level
@@ -204,8 +204,8 @@ drop if loansettled==1
 
 ********** Drop economic investment
 fre effective_repa
-*drop if effective_agri==1
-*drop if effective_inve==1
+drop if effective_agri==1
+drop if effective_inve==1
 
 
 
