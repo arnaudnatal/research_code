@@ -2,15 +2,14 @@
 cls
 *Arnaud NATAL
 *arnaud.natal@u-bordeaux.fr
-*December 5, 2023
+*March 1, 2024
 *-----
-gl link = "labourdebt"
+gl link = "educationdebt"
 *Prepa database
 *-----
 *do "https://raw.githubusercontent.com/arnaudnatal/folderanalysis/main/$link.do"
-do"C:\Users\Arnaud\Documents\GitHub\folderanalysis\labourdebt.do"
+do"C:\Users\Arnaud\Documents\GitHub\folderanalysis\educationdebt.do"
 *-------------------------
-
 
 
 
