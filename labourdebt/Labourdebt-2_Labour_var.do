@@ -24,6 +24,14 @@ do"C:\Users\Arnaud\Documents\GitHub\folderanalysis\labourdebt.do"
 ****************************************
 use"raw/NEEMSIS1-occup_indiv", clear
 
+
+* Vérification
+tabstat hoursayear_indiv hoursayearagri_indiv hoursayearnonagri_indiv, stat(p90 p95 p99 max)
+replace hoursayear_indiv=7300 if hoursayear_indiv>7300 & hoursayear_indiv!=.
+replace hoursayearagri_indiv=7300 if hoursayearagri_indiv>7300 & hoursayearagri_indiv!=.
+replace hoursayearnonagri_indiv=7300 if hoursayearnonagri_indiv>7300 & hoursayearnonagri_indiv!=.
+
+
 * Merge sex, age
 merge 1:1 HHID2016 INDID2016 using "raw/NEEMSIS1-HH", keepusing(sex age relationshiptohead livinghome maritalstatus)
 drop _merge
@@ -120,6 +128,12 @@ keep $var
 order $var
 duplicates drop
 
+* Max
+foreach x in hours_agriself hours_agricasu hours_casua hours_regnonqu hours_regquali hours_self hours_nrega {
+tabstat `x', stat(p90 p95 p99 max)
+replace `x'=7300 if `x'>7300 & `x'!=.
+}
+
 save"hoursindiv2016_bis", replace
 ****************************************
 * END
@@ -140,6 +154,13 @@ save"hoursindiv2016_bis", replace
 * 2020-21 at individual level
 ****************************************
 use"raw/NEEMSIS2-occup_indiv", clear
+
+* Vérification
+tabstat hoursayear_indiv hoursayearagri_indiv hoursayearnonagri_indiv, stat(p90 p95 p99 max)
+replace hoursayear_indiv=7300 if hoursayear_indiv>7300 & hoursayear_indiv!=.
+replace hoursayearagri_indiv=7300 if hoursayearagri_indiv>7300 & hoursayearagri_indiv!=.
+replace hoursayearnonagri_indiv=7300 if hoursayearnonagri_indiv>7300 & hoursayearnonagri_indiv!=.
+
 
 * Merge sex, age
 merge 1:1 HHID2020 INDID2020 using "raw/NEEMSIS2-HH", keepusing(sex age relationshiptohead livinghome dummylefthousehold maritalstatus)
@@ -238,6 +259,12 @@ global var HHID_panel INDID_panel year hours_agriself hours_agricasu hours_casua
 keep $var
 order $var
 duplicates drop
+
+* Max
+foreach x in hours_agriself hours_agricasu hours_casua hours_regnonqu hours_regquali hours_self hours_nrega {
+tabstat `x', stat(p90 p95 p99 max)
+replace `x'=7300 if `x'>7300 & `x'!=.
+}
 
 save"hoursindiv2020_bis", replace
 ****************************************
@@ -441,6 +468,7 @@ restore
 rename maritalstatus marital
 
 * Share
+tabstat hours_agriself hours_agricasu hours_casua hours_regnonqu hours_regquali hours_self hours_nrega hours_agri hours_nonagri hours_selfemp hours_casu, stat(n mean q p90 p95 p99 max)
 
 save "laboursupply_indiv", replace
 ****************************************

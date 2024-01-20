@@ -106,7 +106,6 @@ gen ISR=(imp1_is_tot_HH/annualincome_HH)*100
 * ISR lag
 gen ISR_lag=(lag_imp1_is_tot_HH/lag_annualincome_HH)*100
 
-
 * TDR
 gen TDR=(totHH_givenamt_repa/loanamount_HH)*100
 
@@ -184,14 +183,19 @@ label define dummyremrec 0"Rem. received: No" 1"Rem. received: Yes"
 label values dummyremrec dummyremrec
 label var dummyremrec "Does your household receive remittances?"
 
+
 * Hours a week
+tabstat hoursayear_indiv, stat(n mean q p90 p95 p99 max)
+
 gen hoursaweek_indiv=hoursayear_indiv/52
+gen hoursamonth_indiv=hoursayear_indiv/12
 
+gen hoursaweek_HH=hoursayear_HH/52
+gen hoursamonth_HH=hoursayear_HH/12
 
-* Hours a week HH
-foreach x in hoursayear_HH hoursayearagri_HH hoursayearnonagri_HH sharehoursayearagri_HH sharehoursayearnonagri_HH hours_male_HH hours_female_HH hours_old_HH hours_agriself_HH hours_agricasu_HH hours_casua_HH hours_regnonqu_HH hours_regquali_HH hours_self_HH hours_nrega_HH hours_agri_HH hours_nonagri_HH hours_selfemp_HH hours_casu_HH {
-replace `x'=`x'/52
-label var `x' "hours a week"
+foreach x in male female old agriself agricasu casua regnonqu regquali self nrega agri nonagri selfemp casu {
+gen hoursaweek_`x'_HH=hours_`x'_HH/52
+gen hoursamonth_`x'_HH=hours_`x'_HH/12
 }
 
 
