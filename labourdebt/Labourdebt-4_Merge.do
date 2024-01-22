@@ -24,6 +24,8 @@ do"C:\Users\Arnaud\Documents\GitHub\folderanalysis\labourdebt.do"
 ****************************************
 use"laboursupply_indiv", clear
 
+ta year
+
 * Controls
 merge m:m HHID_panel year using "panel_cont_v1"
 keep if _merge==3
@@ -54,6 +56,8 @@ drop assets_total1000 assets_totalnoland1000 assets_totalnoprop1000
 * Merge HH data
 merge m:1 HHID_panel year using "laboursupply_HH"
 drop _merge
+
+ta year
 
 save"panel_laboursupplyindiv", replace
 ****************************************
@@ -96,9 +100,30 @@ gen DAR2_lag=(lag_loanbalance_HH/lag_assets_total)*100
 
 * DSR
 gen DSR=(imp1_ds_tot_HH/annualincome_HH)*100
+preserve
+keep HHID_panel DSR year
+duplicates drop
+ta year
+tabstat DSR, stat(n) by(year)
+restore
+recode DSR (.=0)
 
 * DSR lag
 gen DSR_lag=(lag_imp1_ds_tot_HH/lag_annualincome_HH)*100
+preserve
+keep HHID_panel DSR_lag year panel
+duplicates drop
+ta year panel
+tabstat DSR_lag, stat(n) by(year)
+restore
+replace DSR_lag=0 if DSR_lag==. & panel==1
+preserve
+keep HHID_panel DSR_lag year panel
+duplicates drop
+ta year panel
+tabstat DSR_lag, stat(n) by(year)
+restore
+
 
 * ISR
 gen ISR=(imp1_is_tot_HH/annualincome_HH)*100
@@ -212,6 +237,10 @@ replace dalits=1 if caste==1
 label define dalits 0"Dalits: No" 1"Dalits: Yes"
 label values dalits dalits
 order dalits, after(caste)
+
+
+* Sex year for stat desc
+egen sexyear=group(sex year), label
 
 
 save"panel_laboursupplyindiv_v2", replace

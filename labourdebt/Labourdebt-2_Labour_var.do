@@ -452,10 +452,11 @@ order hours_agri hours_nonagri hours_selfemp hours_casu, after(hours_nrega)
 
 * Deflate and round
 foreach x in mainocc_annualincome_indiv annualincome_indiv {
-replace `x'=`x'*0.54 if year==2010
-replace `x'=`x'*0.86 if year==2016
+replace `x'=`x'*1.85 if year==2010
+replace `x'=`x'*1.16 if year==2016
 replace `x'=round(`x',1)
 }
+
 
 * Maritalstatus
 recode maritalstatus (4=3) (5=4)

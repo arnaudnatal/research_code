@@ -348,9 +348,12 @@ global quant7 goldreadyamount expenses_educ
 global quanti $quanti1 $quanti2 $quanti3 $quanti4 $quanti5 $quanti6 $quanti7
 
 *** Deflate and round
+/*
+Base 2020
+*/
 foreach x in $quanti {
-replace `x'=`x'*0.54 if year==2010
-replace `x'=`x'*0.86 if year==2016
+replace `x'=`x'*1.85 if year==2010
+replace `x'=`x'*1.16 if year==2016
 replace `x'=round(`x',1)
 }
 
@@ -389,7 +392,6 @@ save"panel_cont_v0", replace
 ****************************************
 * Lag income and assets pour ratios
 ****************************************
-
 
 * Création du lag
 use"panel_cont_v0", clear
