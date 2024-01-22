@@ -240,9 +240,12 @@ ta selection_indiv year, m
 
 
 ********** Stat desc
+ta year
+ta sexyear
+
 ********** LFP
-fre sexyear
 fre work
+ta work year, col nofreq
 ta work sexyear, col nofreq
 
 tabplot work sexyear, percent(sexyear) showval frame(100) ///
@@ -255,6 +258,8 @@ graph export "Work_sex.pdf", as(pdf) replace
 
 
 ***** Multiple
+fre multipleoccup
+ta multipleoccup year, col nofreq
 ta multipleoccup sexyear, col nofreq
 
 tabplot multipleoccup sexyear, percent(sexyear) showval frame(100) ///
@@ -267,38 +272,39 @@ graph export "Multiple_sex.pdf", as(pdf) replace
 
 
 ***** Labour supply
-tabstat hoursamonth_indiv, stat(n mean cv q p90 p95 p99 max) by(year)
-tabstat hoursamonth_indiv if sex==1, stat(n mean cv p50) by(year)
-tabstat hoursamonth_indiv if sex==2, stat(n mean cv p50) by(year)
+tabstat hoursamonth_indiv, stat(n mean cv p50) by(year)
+tabstat hoursamonth_indiv, stat(n mean cv p50) by(sexyear)
 
 * Density
 twoway ///
-(kdensity hoursamonth_indiv if sex==1, bwidth(20) xline(139 208.6)) ///
-(kdensity hoursamonth_indiv if sex==2, bwidth(20)) ///
+(kdensity hoursamonth_indiv if sexyear==1, bwidth(20) lpattern(solid) lcolor(gs0) xline(139 208.6)) ///
+(kdensity hoursamonth_indiv if sexyear==2, bwidth(20) lpattern(dash) lcolor(gs0)) ///
+(kdensity hoursamonth_indiv if sexyear==3, bwidth(20) lpattern(solid) lcolor(gs10)) ///
+(kdensity hoursamonth_indiv if sexyear==4, bwidth(20) lpattern(dash) lcolor(gs10)) ///
 , ///
 xtitle("Monthly working hours") xlabel(0(50)600) xmtick(0(25)600) ///
 ytitle("Density") ///
-legend(order(1 "Male" 2 "Female") pos(6) col(2)) ///
+legend(order(1 "Male in 2016-17" 2 "Male in 2020-21" 3 "Female in 2016-17" 4 "Female in 2020-21") pos(6) col(2)) ///
 note("Kernel: Epanechnikov" "Bandwidth: 20", size(vsmall)) ///
 name(densityls, replace)
 graph export "LS_density.pdf", as(pdf) replace
 
 * Stripplot
-stripplot hoursamonth_indiv, over(sex) ///
+stripplot hoursamonth_indiv, over(sexyear) ///
 stack width(10) jitter(2) ///
 box(barw(0.1)) boffset(-0.15) pctile(5) ///
-ms(oh oh) msize(small) mc(black%30) ///
+ms(oh oh) msize(small) mc(gs8%30) ///
 xline(139 208.6) ///
 xtitle("Monthly working hours") xlabel(0(50)600) xmtick(0(25)600) ///
-ytitle("") ylabel(1 "Male" 2 "Female", noticks) ///
+ytitle("") ylabel(1 "Male in 2016-17" 2 "Male in 2020-21" 3 "Female in 2016-17" 4 "Female in 2020-21", noticks) ///
 legend(order(4 "Whisker from 5% to 95%") pos(6) col(3) on) ///
 name(stripplotls, replace)
 graph export "LS_stripplot.pdf", as(pdf) replace
 
 
 ********** Occupation
-fre sexyear
 fre mainocc_occupation_indiv
+ta mainocc_occupation_indiv year, col nofreq
 ta mainocc_occupation_indiv sexyear, col nofreq
 
 tabplot mainocc_occupation_indiv sexyear, percent(sexyear) showval frame(100) ///
@@ -311,16 +317,75 @@ graph export "Occupation_sex.pdf", as(pdf) replace
 
 
 
-
 ********** Controls
-foreach x in edulevel relation2 {
+cls
+foreach x in edulevel relation2 marital {
 ta `x' year, col nofreq
-ta `x' year if sex==1, col nofreq
-ta `x' year if sex==2, col nofreq
+ta `x' sexyear, col nofreq
 }
+tabstat age, stat(n mean cv p50) by(year)
+tabstat age, stat(n mean cv p50) by(sexyear)
+
+
+****************************************
+* END
 
 
 
+
+
+
+
+
+
+****************************************
+* Correlation families : LFP
+****************************************
+use"panel_laboursupplyindiv_v2", clear
+
+* Selection
+ta year
+drop if age<14
+keep HHID_panel INDID_panel year relationshiptohead2 work
+fre relationshiptohead2
+
+* Var tot 
+bysort HHID_panel year relationshiptohead2: egen sum_rel=sum(1)
+ta sum_rel
+
+* Var LFP
+bysort HHID_panel year relationshiptohead2: egen sum_LFP=sum(work)
+ta sum_LFP
+
+* Share LFP
+gen shareLFP=sum_LFP/sum_rel
+
+* Selection
+keep HHID_panel year relationshiptohead2 sum_rel sum_LFP shareLFP
+duplicates drop
+ta year
+sort HHID_panel year relationshiptohead2
+
+* Reshape
+drop sum_rel sum_LFP
+rename shareLFP var
+reshape wide var, i(HHID_panel year) j(relationshiptohead2)
+rename var1 Head
+rename var2 Wife
+rename var3 Parents
+rename var4 Son
+rename var5 Daughter
+rename var6 Son_in_law
+rename var7 Daughter_in_law
+rename var8 Siblings
+rename var9 Grandchild
+rename var10 Others
+
+* Table
+pwcorr Head Wife Parents Son Daughter Son_in_law Daughter_in_law Siblings Grandchild Others
+pwcorr Head Wife Parents Son Daughter Son_in_law Daughter_in_law Siblings Grandchild Others, star(0.01)
+pwcorr Head Wife Parents Son Daughter Son_in_law Daughter_in_law Siblings Grandchild Others, star(0.05)
+pwcorr Head Wife Parents Son Daughter Son_in_law Daughter_in_law Siblings Grandchild Others, star(0.1)
 
 ****************************************
 * END
@@ -338,6 +403,66 @@ ta `x' year if sex==2, col nofreq
 
 
 
+****************************************
+* Correlation families : hours
+****************************************
+use"panel_laboursupplyindiv_v2", clear
+
+* Selection
+ta year
+drop if age<14
+drop if hoursayear_indiv==.
+keep HHID_panel INDID_panel year relationshiptohead2 hoursayear_indiv
+fre relationshiptohead2
+
+* Selection
+keep HHID_panel year relationshiptohead2 hoursayear_indiv
+duplicates drop
+ta year
+sort HHID_panel year relationshiptohead2
+
+* Var tot 
+bysort HHID_panel year relationshiptohead2: egen sum_hours=sum(hoursayear_indiv)
+
+* Selection
+keep HHID_panel year relationshiptohead2 sum_hours
+duplicates drop
+ta year
+sort HHID_panel year relationshiptohead2
+
+
+* Reshape
+rename sum_hours var
+reshape wide var, i(HHID_panel year) j(relationshiptohead2)
+rename var1 Head
+rename var2 Wife
+rename var3 Parents
+rename var4 Son
+rename var5 Daughter
+rename var6 Son_in_law
+rename var7 Daughter_in_law
+rename var8 Siblings
+rename var9 Grandchild
+rename var10 Others
+
+* Table
+pwcorr Head Wife Parents Son Daughter Son_in_law Daughter_in_law Siblings Grandchild Others
+pwcorr Head Wife Parents Son Daughter Son_in_law Daughter_in_law Siblings Grandchild Others, star(0.01)
+pwcorr Head Wife Parents Son Daughter Son_in_law Daughter_in_law Siblings Grandchild Others, star(0.05)
+pwcorr Head Wife Parents Son Daughter Son_in_law Daughter_in_law Siblings Grandchild Others, star(0.1)
+
+
+****************************************
+* END
+
+
+
+
+
+
+
+
+
 
 
 
@@ -345,125 +470,50 @@ ta `x' year if sex==2, col nofreq
 ****************************************
 * Correlation couples
 ****************************************
-use"hoursindiv_v2", clear
+use"panel_laboursupplyindiv_v2", clear
 
+* Selection
+ta year
+drop if age<14
+keep HHID_panel INDID_panel year relationshiptohead2 work hoursayear_indiv mainocc_occupation_indiv annualincome_indiv nboccupation_indiv
+fre relationshiptohead2
 
-********** Cleaning
-* Removing those who cannot be in a couple
-fre relationshiptohead
-drop if relationshiptohead==9
-drop if relationshiptohead==12
-drop if relationshiptohead==13
-drop if relationshiptohead==14
-drop if relationshiptohead==15
-drop if relationshiptohead==16
-drop if relationshiptohead==17
-drop if relationshiptohead==77
-
-* Creating groups of couples
-fre relationshiptohead
-gen couplegrp=.
-replace couplegrp=1 if relationshiptohead==1
-replace couplegrp=1 if relationshiptohead==2
-replace couplegrp=2 if relationshiptohead==3
-replace couplegrp=2 if relationshiptohead==4
-replace couplegrp=3 if relationshiptohead==5
-replace couplegrp=3 if relationshiptohead==7
-replace couplegrp=4 if relationshiptohead==6
-replace couplegrp=4 if relationshiptohead==8
-replace couplegrp=5 if relationshiptohead==10
-replace couplegrp=5 if relationshiptohead==11
-
-
-* Identify the partners in each group
-fre relationshiptohead
-gen partner=.
-replace partner=1 if relationshiptohead==1
-replace partner=2 if relationshiptohead==2
-replace partner=1 if relationshiptohead==3
-replace partner=2 if relationshiptohead==4
-replace partner=1 if relationshiptohead==5
-replace partner=2 if relationshiptohead==7
-replace partner=1 if relationshiptohead==6
-replace partner=2 if relationshiptohead==8
-replace partner=1 if relationshiptohead==10
-replace partner=2 if relationshiptohead==11
-
-
-
-********** Reshape
-* Check duplicates for sons and daughters
-fre relationshiptohead
-ta relationshiptohead, gen(rela)
-forvalues i=1/10 {
-bysort HHID_panel year: egen sum_rela`i'=sum(rela`i')
-drop rela`i'
-}
-
-tab1 sum_rela1 sum_rela2 sum_rela3 sum_rela4 sum_rela5 sum_rela6 sum_rela7 sum_rela8 sum_rela9 sum_rela10
-drop sum_rela1 sum_rela2 sum_rela3 sum_rela4 sum_rela5 sum_rela6 sum_rela7 sum_rela8 sum_rela9 sum_rela10
-
-/*
-There are too many sons and daughters in each household to re-couple so quickly, so I'm only keeping the chef.
-*/
-
-keep if relationshiptohead==1 | relationshiptohead==2
-drop couplegrp partner
+* Keep head and wife
+keep if relationshiptohead2==1 | relationshiptohead2==2
 
 * Check duplicates head
-ta relationshiptohead, gen(rela)
+ta relationshiptohead2, gen(rela)
 forvalues i=1/2 {
 bysort HHID_panel year: egen sum_rela`i'=sum(rela`i')
 drop rela`i'
 }
-
-tab1 sum_rela1 sum_rela2
-preserve
-keep if sum_rela1==2 | sum_rela2==2
-sort HHID_panel year
-restore
-
-drop if sum_rela1==2 
-drop if sum_rela2==2
 drop if sum_rela1==0 
 drop if sum_rela2==0
-drop sum_rela*
-/*
-I've decided to delete the ones with duplicates to go faster, but I'll have to look into this further next time.
-I also delete those for which there is no partner.
-*/
-
-* Keep
-keep HHID_panel year relationshiptohead INDID_panel age sex working_pop mainocc_profession_indiv mainocc_occupation_indiv mainocc_sector_indiv mainocc_annualincome_indiv mainocc_occupationname_indiv annualincome_indiv nboccupation_indiv hoursayear_indiv mainocc_hoursayear_indiv
+drop if sum_rela1==2
+drop if sum_rela2==2
+drop sum_rela1 sum_rela2
 
 * Reshape
-reshape wide INDID_panel age sex working_pop mainocc_profession_indiv mainocc_occupation_indiv mainocc_sector_indiv mainocc_annualincome_indiv mainocc_occupationname_indiv annualincome_indiv nboccupation_indiv hoursayear_indiv mainocc_hoursayear_indiv, i(HHID_panel year) j(relationshiptohead)
-
+reshape wide INDID_panel mainocc_occupation_indiv annualincome_indiv nboccupation_indiv hoursayear_indiv work, i(HHID_panel year) j(relationshiptohead2)
 ta year
-
-
-
-********** Demographic characteristics
-ta sex1 sex2
-corr age1 age2
 
 
 
 ********* Labour characteristics
 * Decision to work
-ta working_pop1 working_pop2, chi2
+ta work1 work2, chi2 exp cchi2
 
 * Main occupation
 ta mainocc_occupation_indiv1 mainocc_occupation_indiv2, chi2 exp cchi2
 
 * Nb of occupation
-corr nboccupation_indiv1 nboccupation_indiv2
+pwcorr nboccupation_indiv1 nboccupation_indiv2, sig
 
 * Labour supply
-corr hoursayear_indiv1 hoursayear_indiv2
+pwcorr hoursayear_indiv1 hoursayear_indiv2, sig
 
 * Income
-corr annualincome_indiv1 annualincome_indiv2
+pwcorr annualincome_indiv1 annualincome_indiv2, sig
 
 
 ****************************************

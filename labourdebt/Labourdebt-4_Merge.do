@@ -243,6 +243,20 @@ order dalits, after(caste)
 egen sexyear=group(sex year), label
 
 
+* Relationshiptohead2
+clonevar relationshiptohead2=relationshiptohead
+order relationshiptohead2, after(relationshiptohead)
+fre relationshiptohead2
+recode relationshiptohead2 (4=3) (11=3) (12=3)  // Parents + in-law
+recode relationshiptohead2 (10=9)  // Siblings
+recode relationshiptohead2 (15=77) (16=77) (17=77)  // Others
+fre relationshiptohead2
+recode relationshiptohead2 (5=4) (6=5) (7=6) (8=7) (9=8) (13=9) (77=10)
+label define relationshiptohead2 1"Head" 2"Wife" 3"Parents" 4"Son" 5"Daughter" 6"Son-in-law" 7"Daughter-in-law" 8"Siblings" 9"Grandchild" 10"Others"
+label values relationshiptohead2 relationshiptohead2
+
+
+
 save"panel_laboursupplyindiv_v2", replace
 ****************************************
 * END
