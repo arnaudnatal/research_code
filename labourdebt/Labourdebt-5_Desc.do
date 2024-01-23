@@ -63,13 +63,14 @@ On en supprime 976 qui ont moins de 14 ans, l'âge légal pour travailler.
 mdesc hoursaweek_indiv DSR_lag age edulevel relation2 sex marital remittnet_HH assets_total dummymarriage HHsize HH_count_child sexratio work nonworkersratio
 
 * 1303 ?
-ta work panel, m
+ta work, m
 /*
 1303 missings for hours a week --> 1303 who do not work = sample selection issue corrected with two stage Heckman procedure
 */
 
 * 988 ?
 ta panel year, m
+ta panel work, m
 /*
 988 missings
 Ils correspondent à l'attrition car variable en lag
@@ -162,6 +163,8 @@ label values time time
 gen DSR=(imp1_ds_tot_HH/annualincome_HH)*100
 gen DSR_all=DSR
 recode DSR_all (.=0)
+tabstat DSR_all, stat(n mean cv p50) by(year)
+ta selection_HH
 
 ***** Remittances
 replace remittnet_HH=remittnet_HH/1000
@@ -172,15 +175,54 @@ replace assets_total=assets_total/1000
 
 
 ********** Stat desc
+use"panel_laboursupplyindiv_v2", clear
+
+keep HHID_panel year time DSR DSR_lag remittnet_HH assets_total dummymarriage HHsize HH_count_child sexratio nonworkersratio annualincome_HH
+duplicates drop
+ta year
+drop if DSR_lag==.
+ta year
+
+
 **** DSR
-tabstat DSR, stat(n mean cv p50) by(year)
-tabstat DSR_all, stat(n mean cv p50) by(year)
+tabstat DSR_lag, stat(n mean cv p50) by(year)
+
+tabstat DSR_lag, stat(n p90 p95 p99 max) by(year)
+
+* Density
+twoway ///
+(kdensity DSR_lag if time==2 & DSR_lag<400, bwidth(5)) ///
+(kdensity DSR_lag if time==3 & DSR_lag<400, bwidth(5)) ///
+, ///
+xtitle("Lag DSR (%)") xlabel(0(50)400) xmtick(0(25)400) ///
+ytitle("Density") ///
+legend(order(1 "2016-17 (i.e., 2010 values)" 2 "2020-21 (i.e., 2016-17 values)") pos(6) col(2)) ///
+note("Kernel: Epanechnikov" "Bandwidth: 5", size(vsmall)) ///
+name(densitydsr, replace)
+graph export "DSR_density.pdf", as(pdf) replace
+
+
+* Stripplot
+stripplot DSR_lag if DSR_lag<400, over(time) ///
+stack width(5) jitter(2) ///
+box(barw(0.1)) boffset(-0.15) pctile(5) ///
+ms(oh oh) msize(small) mc(gs8%30) ///
+xtitle("Lag DSR (%)") xlabel(0(50)400) xmtick(0(25)400) ///
+ytitle("") ylabel(2 "2016-17 (i.e., 2010 values)" 3 "2020-21 (i.e., 2016-17 values)", noticks) ///
+legend(order(4 "Whisker from 5% to 95%") pos(6) col(3) on) ///
+name(stripplotdsr, replace)
+graph export "DSR_stripplot.pdf", as(pdf) replace
+
+
 
 ***** Remittances
 tabstat remittnet_HH, stat(n mean cv p50) by(year)
 
 ***** Assets
 tabstat assets_total, stat(n mean cv p50) by(year)
+
+***** Income
+tabstat annualincome_HH, stat(n mean cv p50) by(year)
 
 ***** Marriage
 ta dummymarriage year, col nofreq
@@ -245,6 +287,7 @@ ta sexyear
 
 ********** LFP
 fre work
+ta work year
 ta work year, col nofreq
 ta work sexyear, col nofreq
 
@@ -275,9 +318,12 @@ graph export "Multiple_sex.pdf", as(pdf) replace
 tabstat hoursamonth_indiv, stat(n mean cv p50) by(year)
 tabstat hoursamonth_indiv, stat(n mean cv p50) by(sexyear)
 
+ta hoursaweek_indiv if sex==1 & time==3
+ta hoursaweek_indiv if sex==2 & time==3
+
 * Density
 twoway ///
-(kdensity hoursamonth_indiv if sexyear==1, bwidth(20) lpattern(solid) lcolor(gs0) xline(139 208.6)) ///
+(kdensity hoursamonth_indiv if sexyear==1, bwidth(20) lpattern(solid) lcolor(gs0)) ///
 (kdensity hoursamonth_indiv if sexyear==2, bwidth(20) lpattern(dash) lcolor(gs0)) ///
 (kdensity hoursamonth_indiv if sexyear==3, bwidth(20) lpattern(solid) lcolor(gs10)) ///
 (kdensity hoursamonth_indiv if sexyear==4, bwidth(20) lpattern(dash) lcolor(gs10)) ///
@@ -294,7 +340,6 @@ stripplot hoursamonth_indiv, over(sexyear) ///
 stack width(10) jitter(2) ///
 box(barw(0.1)) boffset(-0.15) pctile(5) ///
 ms(oh oh) msize(small) mc(gs8%30) ///
-xline(139 208.6) ///
 xtitle("Monthly working hours") xlabel(0(50)600) xmtick(0(25)600) ///
 ytitle("") ylabel(1 "Male in 2016-17" 2 "Male in 2020-21" 3 "Female in 2016-17" 4 "Female in 2020-21", noticks) ///
 legend(order(4 "Whisker from 5% to 95%") pos(6) col(3) on) ///
@@ -329,6 +374,8 @@ tabstat age, stat(n mean cv p50) by(sexyear)
 
 ****************************************
 * END
+
+
 
 
 
@@ -454,6 +501,287 @@ pwcorr Head Wife Parents Son Daughter Son_in_law Daughter_in_law Siblings Grandc
 
 ****************************************
 * END
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Correlation families : occupations
+****************************************
+use"panel_laboursupplyindiv_v2", clear
+
+* Selection
+ta year
+drop if age<14
+drop if work==0
+keep HHID_panel INDID_panel year relationshiptohead2 mainocc_occupation_indiv
+fre relationshiptohead2
+rename mainocc_occupation_indiv occupation
+fre occupation
+
+* Var tot 
+bysort HHID_panel year relationshiptohead2: egen sum_rel=sum(1)
+ta sum_rel
+
+* Var occ
+ta occupation, gen(occ)
+forvalues i=1/7 {
+bysort HHID_panel year relationshiptohead2: egen sum_occ`i'=sum(occ`i')
+}
+
+* Share occ
+forvalues i=1/7{
+gen share_occ`i'=(sum_occ`i'/sum_rel)*100
+}
+
+
+* Selection
+keep HHID_panel year relationshiptohead2 share_occ1 share_occ2 share_occ3 share_occ4 share_occ5 share_occ6 share_occ7
+duplicates drop
+ta year
+sort HHID_panel year relationshiptohead2
+
+* Reshape
+rename share_occ1 agrise 
+rename share_occ2 agrica
+rename share_occ3 casual
+rename share_occ4 regnon
+rename share_occ5 regqua
+rename share_occ6 selfem
+rename share_occ7 mgnreg
+
+reshape wide agrise agrica casual regnon regqua selfem mgnreg, i(HHID_panel year) j(relationshiptohead2)
+
+foreach x in agrise agrica casual regnon regqua selfem mgnreg {
+rename `x'1 hea_`x'
+rename `x'2 wif_`x'
+rename `x'3 par_`x'
+rename `x'4 son_`x'
+rename `x'5 dau_`x'
+rename `x'6 sil_`x'
+rename `x'7 dil_`x'
+rename `x'8 sib_`x'
+rename `x'9 gra_`x'
+rename `x'10 oth_`x'
+}
+
+
+* Table
+global varhea hea_agrise hea_agrica hea_casual hea_regnon hea_regqua hea_selfem hea_mgnreg
+global varwif wif_agrise wif_agrica wif_casual wif_regnon wif_regqua wif_selfem wif_mgnreg
+global varpar par_agrise par_agrica par_casual par_regnon par_regqua par_selfem par_mgnreg
+global varson son_agrise son_agrica son_casual son_regnon son_regqua son_selfem son_mgnreg
+global vardau dau_agrise dau_agrica dau_casual dau_regnon dau_regqua dau_selfem dau_mgnreg
+global varsil sil_agrise sil_agrica sil_casual sil_regnon sil_regqua sil_selfem sil_mgnreg
+global vardil dil_agrise dil_agrica dil_casual dil_regnon dil_regqua dil_selfem dil_mgnreg
+global varsib sib_agrise sib_agrica sib_casual sib_regnon sib_regqua sib_selfem sib_mgnreg
+global vargra gra_agrise gra_agrica gra_casual gra_regnon gra_regqua gra_selfem gra_mgnreg
+global varoth oth_agrise oth_agrica oth_casual oth_regnon oth_regqua oth_selfem oth_mgnreg
+global var $varhea $varwif $varpar $varson $vardau $varsil $vardil $varsib $vargra $varoth
+
+
+cls
+cpcorr $varhea \ $varwif, f(%4.2f)
+cpcorr $varhea \ $varpar, f(%4.2f)
+cpcorr $varhea \ $varson, f(%4.2f)
+cpcorr $varhea \ $vardau, f(%4.2f)
+cpcorr $varhea \ $varsil, f(%4.2f)
+cpcorr $varhea \ $vardil, f(%4.2f)
+cpcorr $varhea \ $varsib, f(%4.2f)
+cpcorr $varhea \ $vargra, f(%4.2f)
+cpcorr $varhea \ $varoth, f(%4.2f)
+
+cpcorr $varwif \ $varpar, f(%4.2f)
+cpcorr $varwif \ $varson, f(%4.2f)
+cpcorr $varwif \ $vardau, f(%4.2f)
+cpcorr $varwif \ $varsil, f(%4.2f)
+cpcorr $varwif \ $vardil, f(%4.2f)
+cpcorr $varwif \ $varsib, f(%4.2f)
+cpcorr $varwif \ $vargra, f(%4.2f)
+cpcorr $varwif \ $varoth, f(%4.2f)
+
+cpcorr $varpar \ $varson, f(%4.2f)
+cpcorr $varpar \ $vardau, f(%4.2f)
+cpcorr $varpar \ $varsil, f(%4.2f)
+cpcorr $varpar \ $vardil, f(%4.2f)
+cpcorr $varpar \ $varsib, f(%4.2f)
+cpcorr $varpar \ $vargra, f(%4.2f)
+cpcorr $varpar \ $varoth, f(%4.2f)
+
+cpcorr $varson \ $vardau, f(%4.2f)
+cpcorr $varson \ $varsil, f(%4.2f)
+cpcorr $varson \ $vardil, f(%4.2f)
+cpcorr $varson \ $varsib, f(%4.2f)
+cpcorr $varson \ $vargra, f(%4.2f)
+cpcorr $varson \ $varoth, f(%4.2f)
+
+cls
+pwcorr $var
+
+cls
+pwcorr $var, star(0.01)
+
+cls
+pwcorr $var, star(0.05)
+
+cls
+pwcorr $var, star(0.1)
+
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Correlation families : occupations MCA
+****************************************
+use"panel_laboursupplyindiv_v2", clear
+
+* Selection
+ta year
+drop if age<14
+drop if work==0
+keep HHID_panel year relationshiptohead2 mainocc_occupation_indiv
+fre relationshiptohead2
+rename mainocc_occupation_indiv occupation
+rename relationshiptohead2 relation
+bysort HHID_panel year relation: gen n=_n
+
+egen relan=group(relation n), label
+drop relation n
+
+reshape wide occupation, i(HHID_panel year) j(relan)
+
+
+* Chi2
+cls
+forvalues i=1/25 {
+local j=`i'+1
+forvalues k=`j'/25 {
+ta occupation`i' occupation`k', chi2
+}
+}
+
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Correlation sex : occupations
+****************************************
+use"panel_laboursupplyindiv_v2", clear
+
+* Selection
+ta year
+drop if age<14
+drop if work==0
+keep HHID_panel INDID_panel year sex mainocc_occupation_indiv
+fre sex
+rename mainocc_occupation_indiv occupation
+fre occupation
+
+* Var tot 
+bysort HHID_panel year sex: egen sum_rel=sum(1)
+ta sum_rel
+
+* Var occ
+ta occupation, gen(occ)
+forvalues i=1/7 {
+bysort HHID_panel year sex: egen sum_occ`i'=sum(occ`i')
+}
+
+* Share occ
+forvalues i=1/7{
+gen share_occ`i'=(sum_occ`i'/sum_rel)*100
+}
+
+
+* Selection
+keep HHID_panel year sex share_occ1 share_occ2 share_occ3 share_occ4 share_occ5 share_occ6 share_occ7
+duplicates drop
+ta year
+sort HHID_panel year sex
+
+* Reshape
+rename share_occ1 agrise 
+rename share_occ2 agrica
+rename share_occ3 casual
+rename share_occ4 regnon
+rename share_occ5 regqua
+rename share_occ6 selfem
+rename share_occ7 mgnreg
+
+reshape wide agrise agrica casual regnon regqua selfem mgnreg, i(HHID_panel year) j(sex)
+
+foreach x in agrise agrica casual regnon regqua selfem mgnreg {
+rename `x'1 male_`x'
+rename `x'2 fema_`x'
+}
+
+
+* Table
+global varmale male_agrise male_agrica male_casual male_regnon male_regqua male_selfem male_mgnreg
+global varfema fema_agrise fema_agrica fema_casual fema_regnon fema_regqua fema_selfem fema_mgnreg
+global var $varmale $varfema
+
+* 2016-17
+cls
+cpcorr $varmale \ $varfema if year==2016, f(%4.2f)
+matrix pval=r(p)
+matrix list pval
+
+* 2020-21
+cls
+cpcorr $varmale \ $varfema if year==2020, f(%4.2f)
+matrix pval=r(p)
+matrix list pval
+
+* Pooled
+cls
+cpcorr $varmale \ $varfema, f(%4.2f)
+matrix pval=r(p)
+matrix list pval
+
+****************************************
+* END
+
+
+
+
+
+
+
+
 
 
 

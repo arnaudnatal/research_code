@@ -141,7 +141,7 @@ c.age##c.age i.edulevel i.relation2 i.sex i.marital ///
 remittnet_HH assets_total dummymarriage ///
 HHsize HH_count_child sexratio ///
 , selection(work = c.nonworkersratio) ///
-id(panelvar) time(year) reps(30)
+id(panelvar) time(year) reps(100)
 est store excl_4
 
 *3210 individus
@@ -202,7 +202,7 @@ c.age##c.age i.edulevel i.relation2 i.sex i.marital ///
 remittnet_HH assets_total dummymarriage ///
 HHsize HH_count_child sexratio ///
 , selection(work = c.nonworkersratio) ///
-id(panelvar) time(year) reps(30)
+id(panelvar) time(year) reps(100)
 est store excl_4
 
 
@@ -261,7 +261,7 @@ c.age##c.age i.edulevel i.relation2 i.sex i.marital ///
 remittnet_HH assets_total dummymarriage ///
 HHsize HH_count_child sexratio ///
 , selection(work = c.nonworkersratio) ///
-id(panelvar) time(year) reps(30)
+id(panelvar) time(year) reps(100)
 est store excl_4
 
 
@@ -286,52 +286,6 @@ esttab excl_4 using "Heckman_females.csv", replace ///
 
 
 
-****************************************
-* Heckman old
-****************************************
-use"panel_laboursupplyindiv_v2", clear
-
-
-********** Selection
-drop if age<14
-drop if age<58
-
-********** Panel
-sort HHID_panel INDID_panel year
-xtset panelvar year
-
-
-********** Controls brut
-global rawnonvar i.caste i.villageid
-global rawecon remittnet_HH assets_total dummymarriage 
-global rawcompo HHsize HH_count_child sexratio nonworkersratio
-global rawindiv c.age##c.age i.edulevel i.relation2 i.sex i.marital
-
-
-
-********** Exclusion 4
-capture noisily xtheckmanfe hoursaweek_indiv DSR_lag ///
-c.age##c.age i.edulevel i.relation2 i.sex i.marital ///
-remittnet_HH assets_total dummymarriage ///
-HHsize HH_count_child sexratio ///
-, selection(work = c.nonworkersratio) ///
-id(panelvar) time(year) reps(30)
-est store excl_4
-
-
-
-********** Tables
-esttab excl_4 using "Heckman_old.csv", replace ///
-	label b(3) p(3) eqlabels(none) alignment(S) ///
-	drop(_cons) ///
-	star(* 0.10 ** 0.05 *** 0.01) ///
-	cells("b(fmt(2)star)" "se(fmt(2)par)") ///
-	refcat(, nolabel) ///
-	stats(N, fmt(0) ///
-	labels(`"Observations"'))
-
-****************************************
-* END
 
 
 
@@ -372,7 +326,7 @@ c.age##c.age i.edulevel i.relation2 i.sex i.marital ///
 remittnet_HH assets_total dummymarriage ///
 HHsize HH_count_child sexratio ///
 , selection(work = c.nonworkersratio) ///
-id(panelvar) time(year) reps(30)
+id(panelvar) time(year) reps(100)
 est store excl_`x'
 }
 

@@ -255,6 +255,14 @@ recode relationshiptohead2 (5=4) (6=5) (7=6) (8=7) (9=8) (13=9) (77=10)
 label define relationshiptohead2 1"Head" 2"Wife" 3"Parents" 4"Son" 5"Daughter" 6"Son-in-law" 7"Daughter-in-law" 8"Siblings" 9"Grandchild" 10"Others"
 label values relationshiptohead2 relationshiptohead2
 
+* Time
+gen time=0
+replace time=1 if year==2010
+replace time=2 if year==2016
+replace time=3 if year==2020
+label define time 1"2010" 2"2016-17" 3"2020-21"
+label values time time
+
 
 
 save"panel_laboursupplyindiv_v2", replace
