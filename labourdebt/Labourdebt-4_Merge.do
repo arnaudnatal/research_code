@@ -264,6 +264,23 @@ label define time 1"2010" 2"2016-17" 3"2020-21"
 label values time time
 
 
+* 1k remittances
+replace remittnet_HH=remittnet_HH/1000 
+
+
+* 10k assets
+replace assets_total=assets_total/10000
+
+
+* Label
+label var remittnet_HH "Net remittances)"
+label var assets_total "Assets"
+label var dummymarriage "Experiencing marriage (% of yes)"
+label var HHsize "HH size"
+label var HH_count_child "No. of children" 
+label var sexratio "Sex ratio"
+
+
 
 save"panel_laboursupplyindiv_v2", replace
 ****************************************

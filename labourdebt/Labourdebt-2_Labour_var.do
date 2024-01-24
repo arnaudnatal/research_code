@@ -364,6 +364,64 @@ save"wec", replace
 
 
 
+
+
+
+****************************************
+* Discrimination
+****************************************
+use"raw/NEEMSIS2-ego", clear
+
+
+* Merge panel
+merge m:m HHID2020 using "raw/keypanel-HH_wide", keepusing(HHID_panel)
+keep if _merge==3
+drop _merge
+
+tostring INDID2020, replace
+merge m:m HHID_panel INDID2020 using "raw/keypanel-indiv_wide", keepusing(INDID_panel)
+keep if _merge==3
+drop _merge
+
+
+* Discrimination
+global discri discrimination1 discrimination2 discrimination3 discrimination4 discrimination5 discrimination6 discrimination7 discrimination8 discrimination9
+fre $discri
+egen discrimination=rowtotal($discri)
+replace discrimination=discrimination/9
+ta discrimination
+
+* Discrimination dummy
+gen discrimination_dummy=discrimination
+replace discrimination_dummy=1 if discrimination_dummy>0
+ta discrimination_dummy
+
+
+* To keep
+gen year=2020
+global var HHID_panel INDID_panel year discrimination discrimination_dummy respect workmate agreementatwork1 agreementatwork2 agreementatwork3 agreementatwork4 happywork verbalaggression physicalagression sexualharassment
+keep $var
+order $var
+rename physicalagression physicalaggression
+
+save"discri", replace
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ****************************************
 * Append indiv database
 ****************************************
@@ -407,6 +465,11 @@ drop _merge
 merge 1:1 HHID_panel INDID_panel year using "wec"
 drop if _merge==2
 drop _merge
+
+merge 1:1 HHID_panel INDID_panel year using "discri"
+drop if _merge==2
+drop _merge
+
 
 save"hoursindiv_v2", replace
 ****************************************

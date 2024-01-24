@@ -48,7 +48,7 @@ est store work
 xtreg hoursayear_indiv DSR_lag $indiv $econ $compo, fe cluster(HHFE)
 est store hour
 * Tables
-esttab work hour using "Craggs_Total.csv", replace ///
+esttab work hour using "Craggs_total.csv", replace ///
 	label b(3) p(3) eqlabels(none) alignment(S) ///
 	drop(_cons $econ $compo) ///
 	star(* 0.10 ** 0.05 *** 0.01) ///
@@ -70,7 +70,7 @@ est store work
 xtreg hoursayear_indiv DSR_lag $indiv $econ $compo, fe cluster(HHFE)
 est store hour
 * Tables
-esttab work hour using "Craggs_Males.csv", replace ///
+esttab work hour using "Craggs_males.csv", replace ///
 	label b(3) p(3) eqlabels(none) alignment(S) ///
 	drop(_cons $econ $compo) ///
 	star(* 0.10 ** 0.05 *** 0.01) ///
@@ -93,7 +93,7 @@ est store work
 xtreg hoursayear_indiv DSR_lag $indiv $econ $compo, fe cluster(HHFE)
 est store hour
 * Tables
-esttab work hour using "Craggs_Females.csv", replace ///
+esttab work hour using "Craggs_females.csv", replace ///
 	label b(3) p(3) eqlabels(none) alignment(S) ///
 	drop(_cons $econ $compo) ///
 	star(* 0.10 ** 0.05 *** 0.01) ///
@@ -103,28 +103,6 @@ esttab work hour using "Craggs_Females.csv", replace ///
 	labels(`"Observations"'))
 restore
 
-
-
-
-********** More than 58
-preserve
-drop if age<58
-* Work
-qui xtreg work DSR_lag $indiv $econ $compo, fe cluster(HHFE)
-est store work
-* Hours a year
-xtreg hoursayear_indiv DSR_lag $indiv $econ $compo, fe cluster(HHFE)
-est store hour
-* Tables
-esttab work hour using "Craggs_Old.csv", replace ///
-	label b(3) p(3) eqlabels(none) alignment(S) ///
-	drop(_cons $econ $compo) ///
-	star(* 0.10 ** 0.05 *** 0.01) ///
-	cells("b(fmt(2)star)" "se(fmt(2)par)") ///
-	refcat(, nolabel) ///
-	stats(N, fmt(0) ///
-	labels(`"Observations"'))
-restore
 
 
 ****************************************
