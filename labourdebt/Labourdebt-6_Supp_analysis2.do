@@ -39,50 +39,25 @@ sort HHID_panel INDID_panel year
 
 
 
-********** Controls
-global nonvar i.caste i.villageid
-global econ remittnet_HH assets_total dummymarriage 
-global compo HHsize HH_count_child sexratio nonworkersratio
-global indiv c.age##c.age i.edulevel i.relation2 i.sex
-
 ********** Total
-* Work
-qui reg work lag_share_dsr $indiv $econ $compo, cluster(HHFE)
-est store work
-* Hours a year
-qui reg hoursayear_indiv lag_share_dsr $indiv $econ $compo, cluster(HHFE)
-est store hour
-* Tables
-esttab work hour using "Sharedsr_total.csv", replace ///
-	label b(3) p(3) eqlabels(none) alignment(S) ///
-	drop(_cons $econ $compo) ///
-	star(* 0.10 ** 0.05 *** 0.01) ///
-	cells("b(fmt(2)star)" "se(fmt(2)par)") ///
-	refcat(, nolabel) ///
-	stats(N, fmt(0) ///
-	labels(`"Observations"'))
-
+heckman hoursamonth_indiv lag_share_dsr ///
+i.cat_age i.edulevel i.relation2 i.sex i.marital ///
+c.remitt_std c.assets_std dummymarriage i.caste ///
+HHsize HH_count_child sexratio ///
+, select(work = c.nonworkersratio) ///
+clust(HHFE)
 
 	
 ********** Males
 preserve
 fre sex
 keep if sex==1
-* Work
-qui reg work lag_share_dsr $indiv $econ $compo, cluster(HHFE)
-est store work
-* Hours a year
-qui reg hoursayear_indiv lag_share_dsr $indiv $econ $compo, cluster(HHFE)
-est store hour
-* Tables
-esttab work hour using "Sharedsr_males.csv", replace ///
-	label b(3) p(3) eqlabels(none) alignment(S) ///
-	drop(_cons $econ $compo) ///
-	star(* 0.10 ** 0.05 *** 0.01) ///
-	cells("b(fmt(2)star)" "se(fmt(2)par)") ///
-	refcat(, nolabel) ///
-	stats(N, fmt(0) ///
-	labels(`"Observations"'))
+heckman hoursamonth_indiv lag_share_dsr ///
+i.cat_age i.edulevel i.relation2 i.sex i.marital ///
+c.remitt_std c.assets_std dummymarriage i.caste ///
+HHsize HH_count_child sexratio ///
+, select(work = c.nonworkersratio) ///
+clust(HHFE)
 restore
 
 
@@ -91,21 +66,12 @@ restore
 preserve
 fre sex
 keep if sex==2
-* Work
-qui reg work lag_share_dsr $indiv $econ $compo, cluster(HHFE)
-est store work
-* Hours a year
-qui reg hoursayear_indiv lag_share_dsr $indiv $econ $compo, cluster(HHFE)
-est store hour
-* Tables
-esttab work hour using "Sharedsr_females.csv", replace ///
-	label b(3) p(3) eqlabels(none) alignment(S) ///
-	drop(_cons $econ $compo) ///
-	star(* 0.10 ** 0.05 *** 0.01) ///
-	cells("b(fmt(2)star)" "se(fmt(2)par)") ///
-	refcat(, nolabel) ///
-	stats(N, fmt(0) ///
-	labels(`"Observations"'))
+heckman hoursamonth_indiv lag_share_dsr ///
+i.cat_age i.edulevel i.relation2 i.sex i.marital ///
+c.remitt_std c.assets_std dummymarriage i.caste ///
+HHsize HH_count_child sexratio ///
+, select(work = c.nonworkersratio) ///
+clust(HHFE)
 restore
 	
 ****************************************
@@ -134,20 +100,19 @@ restore
 ****************************************
 * Caractéristiques de l'emploi des femmes
 ****************************************
-use"panel_laboursupplyindiv_v2", clear
-
-
-********** Selection
-drop if age<14
 
 
 ********** Type of employment
 cls
-preserve
+use"panel_laboursupplyindiv_v2", clear
+drop if age<14
 keep if work==1
-ta mainocc_occupation_indiv sex, col nofreq
-ta mainocc_occupation_indiv sex, cchi2 exp chi2
-restore
+rename mainocc_occupation_indiv occupation
+rename mainocc_annualincome_indiv income
+rename mainocc_hoursayear_indiv hoursayear
+
+ta occupation sex, col nofreq
+ta occupation sex, cchi2 exp chi2
 /*
 Femmes sur-représentés dans les activités agri casual et MGNREGA.
 */
@@ -156,48 +121,116 @@ Femmes sur-représentés dans les activités agri casual et MGNREGA.
 
 ********** Hourly income
 cls
-preserve
+use"panel_laboursupplyindiv_v2", clear
+drop if age<14
 keep if work==1
-gen hourlyincome=mainocc_annualincome_indiv/mainocc_hoursayear_indiv
-tabstat hourlyincome, stat(n mean cv p50) by(sex) long
-tabstat hourlyincome, stat(n mean cv p50) by(mainocc_occupation_indiv) long
-reg hourlyincome i.sex##i.mainocc_occupation_indiv, clust(HHFE) baselevel
-restore
+rename mainocc_occupation_indiv occupation
+*
+rename mainocc_annualincome_indiv income
+rename mainocc_hoursayear_indiv hoursayear
+gen hourlyincome=income/hoursayear
+fre occupation
+ta occupation year
+*
+tabstat hourlyincome, stat(n mean q) by(occupation)
+reg hourlyincome ib(2).occupation, clust(HHFE) baselevel
+*
+margins, dydx(occupation) atmeans post
+*marginsplot, yline(0)
 
-/*
-Femmes ont un hourly income beaucoup plus faible que celui des hommes
-Agri casual et MGNREGA ont un hourly income beaucoup plus faible que les autres occupations
-*/
+***** Graph
+collapse (mean) hourlyincome, by(occupation year)
+drop if occupation==.
+
+*
+graph bar hourlyincome, over(year) over(occupation, lab(angle(45)) relabel(1 "Agri self-emp" 2 "Agri casual" 3 "Casual" 4 "Reg non-quali" 5 "Reg quali" 6 "Self-emp" 7 "MGNREGA"))	ytitle("Mean") ylabel(0(10)90) asyvars legend(order(1 "2016-17" 2 "2020-21") pos(6) col(2)) name(inc, replace)
+graph export "Hourlyincome.pdf", as(pdf) replace
+
+
+
+
+
 
 
 
 ********** WEC
 cls
-preserve
+use"panel_laboursupplyindiv_v2", clear
+drop if age<14
 keep if work==1
+rename mainocc_occupation_indiv occupation
+*
+keep if year==2020
+fre occupation
+ta executionwork
 global var executionwork problemwork workexposure wec
-tabstat $var, stat(n mean cv p50) by(sex) long
-tabstat $var, stat(n mean cv p50) by(mainocc_occupation_indiv) long
+*
 foreach x in $var {
-reg `x' i.sex##i.mainocc_occupation_indiv, clust(HHFE) allbaselevels
+tabstat `x', stat(n mean q) by(occupation)
+reg `x' ib(2).occupation, clust(HHFE) baselevel
+margins, dydx(occupation) atmeans post
+*marginsplot, yline(0) name(`x',replace)
 }
-restore
+
+***** Graph
+collapse (mean) executionwork problemwork workexposure, by(occupation)
+drop if occupation==.
+
+set graph off
+* Execution
+twoway ///
+(bar executionwork occupation, barwidth(.5)) ///
+, ///
+xlab(1 "Agri self-emp" 2 "Agri casual" 3 "Casual" 4 "Reg non-quali" 5 "Reg quali" 6 "Self-emp" 7 "MGNREGA", angle(45)) xtitle("") ///
+ylab(.3(.1)1) ytitle("Mean") ///
+title("Execution score") name(exe, replace)
+
+* Problem
+twoway ///
+(bar problemwork occupation, barwidth(.5)) ///
+, ///
+xlab(1 "Agri self-emp" 2 "Agri casual" 3 "Casual" 4 "Reg non-quali" 5 "Reg quali" 6 "Self-emp" 7 "MGNREGA", angle(45)) xtitle("") ///
+ylab(.3(.1)1) ytitle("Mean") ///
+title("Problem score") name(pb, replace)
+
+* Work exposure
+twoway ///
+(bar workexposure occupation, barwidth(.5)) ///
+, ///
+xlab(1 "Agri self-emp" 2 "Agri casual" 3 "Casual" 4 "Reg non-quali" 5 "Reg quali" 6 "Self-emp" 7 "MGNREGA", angle(45)) xtitle("") ///
+ylab(.3(.1)1) ytitle("Mean") ///
+title("Exposition score") name(work, replace)
+set graph on
+
+
+* Combine
+graph combine exe pb work, col(3) name(comb, replace)
+graph export "Workingcond.pdf", as(pdf) replace
+
+
+
+
+
 
 
 
 ********** Discrimination
 cls
-preserve
+use"panel_laboursupplyindiv_v2", clear
+drop if age<14
 keep if work==1
+rename mainocc_occupation_indiv occupation
+*
+keep if year==2020
+fre occupation
 global var respect workmate agreementatwork1 agreementatwork2 agreementatwork3 agreementatwork4 happywork verbalaggression physicalaggression sexualharassment discrimination discrimination_dummy
-tabstat $var, stat(n mean cv p50) by(sex) long
-tabstat $var, stat(n mean cv p50) by(mainocc_occupation_indiv) long
+*
 foreach x in $var {
-reg `x' i.sex##i.mainocc_occupation_indiv, clust(HHFE) allbaselevels
+tabstat `x', stat(n mean q) by(occupation)
+reg `x' ib(2).occupation, clust(HHFE) baselevel
+margins, dydx(occupation) atmeans post
+marginsplot, yline(0) name(`x',replace)
 }
-restore
-
-
 
 ****************************************
 * END

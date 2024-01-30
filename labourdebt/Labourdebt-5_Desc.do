@@ -185,7 +185,7 @@ ta year
 
 
 **** DSR
-tabstat DSR_lag, stat(n mean cv p50) by(year)
+tabstat DSR_lag, stat(n mean cv q p90 p95) by(year)
 
 tabstat DSR_lag, stat(n p90 p95 p99 max) by(year)
 
@@ -262,6 +262,7 @@ tabstat nonworkersratio, stat(n mean cv p50) by(year)
 
 
 
+
 ****************************************
 * Indiv level stat
 ****************************************
@@ -290,7 +291,6 @@ fre work
 ta work year
 ta work year, col nofreq
 ta work sexyear, col nofreq
-
 tabplot work sexyear, percent(sexyear) showval frame(100) ///
 subtitle("") xtitle("") ytitle("") ///
 note("% by sex by year", size(vsmall)) ///
@@ -349,6 +349,12 @@ graph export "LS_stripplot.pdf", as(pdf) replace
 
 ********** Occupation
 fre mainocc_occupation_indiv
+ta mainocc_occupation_indiv sex, exp cchi2 chi2 col
+
+ta mainocc_occupation_indiv sex if year==2016, exp cchi2 chi2
+ta mainocc_occupation_indiv sex if year==2020, exp cchi2 chi2
+ta mainocc_occupation_indiv sexyear, exp cchi2 chi2
+
 ta mainocc_occupation_indiv year, col nofreq
 ta mainocc_occupation_indiv sexyear, col nofreq
 
@@ -979,7 +985,7 @@ destring year, replace
 drop if year==2010
 
 * Var for regressions
-global varreg DSR_lag remittnet_HH assets_total dummymarriage HHsize HH_count_child sexratio nonworkersratio
+global varreg DSR_lag remittnet_HH assets_total dummymarriage HHsize HH_count_child sexratio nonworkersratio DSR
 global varsup panel caste villageid
 merge 1:m HHID_panel year using "panel_laboursupplyindiv_v2", keepusing($varreg $varsup)
 /*
@@ -1010,12 +1016,12 @@ Panel - 		873
 
 
 ********** Attrition
-foreach x in HHsize HH_count_child sexratio assets_total nonworkersratio remittnet_HH DSR_lag {
+foreach x in HHsize HH_count_child sexratio assets_total nonworkersratio remittnet_HH DSR {
 xtile q_`x'=`x', n(3)
 }
 
 cls
-foreach x in q_HHsize q_HH_count_child q_sexratio q_assets_total q_nonworkersratio q_remittnet_HH q_DSR_lag dummymarriage caste villageid {
+foreach x in q_HHsize q_HH_count_child q_sexratio q_assets_total q_nonworkersratio q_remittnet_HH q_DSR dummymarriage caste villageid {
 ta `x' selection_HH, exp cchi2 chi2
 }
 
@@ -1028,6 +1034,7 @@ Qui sont les ménages attrition ?
 - "Q1 assets" sous-représentés dans l'attrition et surreprésentés dans le panel
 - "Q3 non workers ratio" surreprésentés dans l'attrition et sous-représentés dans le panel
 - Rien sur les remittances
+- "Q2 DSR" surrepresentés dans l'attrition et sous-représentés dans le panel
 - Rien sur le mariage
 - "Middles" surreprésentés dans l'attrition et sous-représentés dans le panel
 - "Uppers" sous-représentés dans l'attrition et surreprésentés dans le panel

@@ -539,6 +539,6 @@ save"panel_sharedsr_v2", replace
 
 
 
-
-
-
+do"$dofile\\Labourdebt-2_Labour_var.do"
+do"$dofile\\Labourdebt-3_Controls_var.do"
+do"$dofile\\Labourdebt-4_Merge.do"

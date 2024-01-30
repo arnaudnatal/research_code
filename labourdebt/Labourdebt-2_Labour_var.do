@@ -342,7 +342,7 @@ fre accidentalinjury losswork lossworknumber mostseriousincident mostseriousinju
 
 * Gen global
 foreach x in executionwork problemwork workexposure {
-replace `x'=`x'*100
+replace `x'=`x'
 }
 gen wec=(executionwork+problemwork+workexposure)/3
 tabstat wec, stat(min max)
@@ -581,3 +581,7 @@ ta year
 save "laboursupply_HH", replace
 ****************************************
 * END
+
+
+do"$dofile\\Labourdebt-3_Controls_var.do"
+do"$dofile\\Labourdebt-4_Merge.do"

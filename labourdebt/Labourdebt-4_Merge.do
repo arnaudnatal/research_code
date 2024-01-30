@@ -264,6 +264,10 @@ label define time 1"2010" 2"2016-17" 3"2020-21"
 label values time time
 
 
+* Std
+egen assets_std=std(assets_total)
+egen remitt_std=std(remittnet_HH)
+
 * 1k remittances
 replace remittnet_HH=remittnet_HH/1000 
 
@@ -273,12 +277,27 @@ replace assets_total=assets_total/10000
 
 
 * Label
-label var remittnet_HH "Net remittances)"
+label var remitt_std "Net remittances (std)"
+label var assets_std "Assets (std)"
+label var remittnet_HH "Net remittances"
 label var assets_total "Assets"
 label var dummymarriage "Experiencing marriage (% of yes)"
 label var HHsize "HH size"
 label var HH_count_child "No. of children" 
 label var sexratio "Sex ratio"
+
+* Age
+tabstat age, stat(n mean q)
+gen cat_age=.
+replace cat_age=1 if age<25
+replace cat_age=2 if age>=25 & age<35
+replace cat_age=3 if age>=35 & age<50
+replace cat_age=4 if age>=50
+label define cat_age 1"Age: Below 25" 2"Age: 25-34" 3"Age: 35-49" 4"Age: 50 or more"
+label values cat_age cat_age
+
+
+
 
 
 
