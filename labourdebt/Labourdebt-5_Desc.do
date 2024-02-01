@@ -55,7 +55,9 @@ drop if age<14
 On en supprime 976 qui ont moins de 14 ans, l'âge légal pour travailler. 
 */
 
-
+ta year
+bysort HHID_panel INDID_panel: gen n=_N
+ta n
 
 
 
@@ -70,6 +72,12 @@ ta work, m
 
 * 988 ?
 ta panel year, m
+preserve
+keep if panel==.
+keep HHID_panel year
+duplicates drop
+ta year
+restore
 ta panel work, m
 /*
 988 missings
@@ -90,6 +98,7 @@ restore
 */
 
 
+
 ********** Indiv level
 keep HHID_panel INDID_panel year panel
 rename panel selection_indiv
@@ -97,8 +106,14 @@ recode selection_indiv (.=0)
 ta selection_indiv year, m
 save"ssizeindiv", replace
 
+drop INDID_panel
+duplicates drop
+ta year
+ta selection_indiv year
+
 
 ********** HH level
+
 drop INDID_panel
 duplicates drop
 rename selection_indiv selection_HH

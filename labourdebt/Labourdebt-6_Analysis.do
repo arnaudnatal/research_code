@@ -111,6 +111,43 @@ est store excl_7
 
 
 
+****************************************
+* Heckman total sample
+****************************************
+
+***
+use"panel_laboursupplyindiv_v2", clear
+
+drop if age<14
+keep if DSR_lag==.
+ta year
+bysort HHID_panel INDID_panel: gen n=_N
+ta n
+ta year
+keep if year==2016
+keep HHID_panel INDID_panel year
+gen drop=1
+order HHID_panel INDID_panel year drop
+
+save"_temp", replace
+
+
+***
+use"raw/keypanel-Indiv_wide", clear
+
+keep HHID_panel INDID_panel name2010 name2016 name2020
+
+merge 1:1 HHID_panel INDID_panel using "_temp"
+keep if _merge==3
+drop _merge
+mdesc name2020
+
+
+****************************************
+* END
+
+
+
 
 
 
@@ -141,7 +178,7 @@ global rawecon remitt_std assets_std dummymarriage
 global rawcompo HHsize HH_count_child sexratio nonworkersratio
 global rawindiv c.age i.edulevel i.relation2 i.sex i.marital
 
-
+mdesc hoursamonth_indiv DSR_lag age edulevel relation2 sex marital remitt_std assets_std dummymarriage HHsize HH_count_child sexratio work nonworkersratio
 
 ********** Exclusion 4
 est clear

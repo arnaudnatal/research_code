@@ -502,6 +502,19 @@ ta imp1_ds_tot_HH year
 
 save"panel_debt_noinvest_v2", replace
 
+use"panel_debt_noinvest_v2", clear
+
+ta year
+
+gen dummylag=0
+replace dummylag=1 if lag_nbloans_HH!=.
+ta dummylag year
+
+bysort HHID_panel: gen n=_N
+ta dummylag n 
+
+ta n year
+
 
 
 ***** Indiv
@@ -536,6 +549,134 @@ save"panel_sharedsr_v2", replace
 
 *************************************
 * END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Lag
+****************************************
+
+use"panel_debt_noinvest", clear
+ta year
+drop HHID2010 HHID2016 HHID2020
+
+drop if year==2020
+recode year (2010=2016) (2016=2020)
+ta year
+
+foreach x in nbloans_HH loanamount_HH loanbalance_HH imp1_ds_tot_HH imp1_is_tot_HH nbHH_lendercat_info dumHH_lendercat_info nbHH_lendercat_semi dumHH_lendercat_semi nbHH_lendercat_form dumHH_lendercat_form nbHH_given_repa dumHH_given_repa nbHH_effective_repa dumHH_effective_repa totHH_lendercatamt_info totHH_lendercatamt_semi totHH_lendercatamt_form totHH_givenamt_repa totHH_givencatamt_econ totHH_givencatamt_curr totHH_givencatamt_huma totHH_givencatamt_soci totHH_givencatamt_hous totHH_effectiveamt_repa shareform {
+rename `x' lag_`x'
+}
+ta year
+save "_temp_lag", replace
+
+
+
+********** Merger le lag
+use"panel_debt_noinvest", clear
+ta year
+merge 1:1 HHID_panel year using "_temp_lag"
+drop if _merge==2
+ta year _merge
+drop _merge 
+drop HHID2010 HHID2016 HHID2020
+
+ta year
+ta imp1_ds_tot_HH year
+
+save"panel_debt_noinvest_v2", replace
+
+
+
+
+***** Indiv
+use"panel_sharedsr", clear
+
+* Creation du lag
+preserve
+drop if year==2020
+ta year
+recode year (2016=2020) (2010=2016)
+ta year
+
+rename share_dsr lag_share_dsr
+
+drop HHID2016 INDID2016 HHID2020 INDID2020
+
+save "_temp_lag", replace
+restore
+
+
+* Merge lag
+merge 1:1 HHID_panel INDID_panel year using "_temp_lag"
+drop _merge 
+drop HHID2016 INDID2016 HHID2020 INDID2020
+
+tabstat share_dsr lag_share_dsr, stat(n mean q)
+
+label var lag_share_dsr "Lag share DSR (%)"
+label var share_dsr "Share DSR (%)"
+
+save"panel_sharedsr_v2", replace
+
+*************************************
+* END
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Identifier les 24 ménages
+****************************************
+
+use"raw/keypanel-HH_wide", clear
+
+keep HHID_panel HHID2010 HHID2016 HHID2020
+gen tokeep=0
+replace tokeep=1 if HHID2010!="" & HHID2016==""
+replace tokeep=1 if HHID2016!="" & HHID2020==""
+keep if tokeep==1
+
+
+
+keep HHID_panel HHID2010 HHID2016
+drop if HHID2010!="" & HHID2016==""
+drop if HHID2010=="" & HHID2016!=""
+gen panel=0
+replace panel=1 if HHID2010!="" & HHID2016!=""
+ta panel
+reshape long HHID, i(HHID_panel) j(year)
+ta year
+drop if HHID==""
+drop HHID
+ta year
+save"_temp388", replace
+
+
+
+*************************************
+* END
+
+
+
+
 
 
 
