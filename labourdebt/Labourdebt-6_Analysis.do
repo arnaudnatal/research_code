@@ -29,7 +29,7 @@ Selection que des wifes et des daughter in law n'est pas intéressant
 ********** Exclusion 1
 est clear
 capture noisily xtheckmanfe hoursamonth_indiv DSR_lag ///
-c.age i.edulevel i.sex i.marital ///
+i.cat_age i.edulevel i.sex i.marital ///
 remitt_std assets_std dummymarriage ///
 HHsize HH_count_child sexratio nonworkersratio ///
 , selection(work = i.landowner i.relation2 c.monthlyexpenses) ///
@@ -41,7 +41,7 @@ est store excl_1
 ********** Exclusion 2
 est clear
 capture noisily xtheckmanfe hoursamonth_indiv DSR_lag ///
-c.age i.edulevel i.sex i.relation2 ///
+i.cat_age i.edulevel i.sex i.relation2 ///
 remitt_std assets_std dummymarriage ///
 HHsize sexratio nonworkersratio ///
 , selection(work = i.marital c.HH_count_child c.HH_count_adult) ///
@@ -53,7 +53,7 @@ est store excl_2
 ********** Exclusion 3
 est clear
 capture noisily xtheckmanfe hoursamonth_indiv DSR_lag ///
-c.age i.edulevel i.relation2 i.sex i.marital ///
+i.cat_age i.edulevel i.relation2 i.sex i.marital ///
 remitt_std assets_std dummymarriage ///
 HHsize HH_count_child sexratio nonworkersratio ///
 , selection(work = i.dummyremrec) ///
@@ -69,7 +69,7 @@ capture noisily xtheckmanfe hoursamonth_indiv DSR_lag ///
 i.edulevel i.relation2 i.sex i.marital ///
 remitt_std assets_std dummymarriage ///
 HHsize HH_count_child sexratio nonworkersratio ///
-, selection(work = c.age) ///
+, selection(work = i.cat_age) ///
 id(panelvar) time(year) reps(30)
 est store excl_5
 */
@@ -79,7 +79,7 @@ est store excl_5
 ********** Exclusion 6
 est clear
 capture noisily xtheckmanfe hoursamonth_indiv DSR_lag ///
-c.age i.edulevel i.relation2 i.sex i.marital ///
+i.cat_age i.edulevel i.relation2 i.sex i.marital ///
 remitt_std assets_std dummymarriage ///
 HHsize sexratio nonworkersratio ///
 , selection(work = i.head_edulevel HH_count_child annualincome_HH) ///
@@ -91,7 +91,7 @@ est store excl_6
 ********** Exclusion 7
 est clear
 capture noisily xtheckmanfe hoursamonth_indiv DSR_lag ///
-c.age i.edulevel i.relation2 i.sex i.marital ///
+i.cat_age i.edulevel i.relation2 i.sex i.marital ///
 remitt_std assets_std dummymarriage ///
 HHsize sexratio nonworkersratio ///
 , selection(work = c.HH_count_child) ///
@@ -114,58 +114,18 @@ est store excl_7
 ****************************************
 * Heckman total sample
 ****************************************
-
-***
-use"panel_laboursupplyindiv_v2", clear
-
-drop if age<14
-keep if DSR_lag==.
-ta year
-bysort HHID_panel INDID_panel: gen n=_N
-ta n
-ta year
-keep if year==2016
-keep HHID_panel INDID_panel year
-gen drop=1
-order HHID_panel INDID_panel year drop
-
-save"_temp", replace
-
-
-***
-use"raw/keypanel-Indiv_wide", clear
-
-keep HHID_panel INDID_panel name2010 name2016 name2020
-
-merge 1:1 HHID_panel INDID_panel using "_temp"
-keep if _merge==3
-drop _merge
-mdesc name2020
-
-
-****************************************
-* END
-
-
-
-
-
-
-
-
-
-
-
-
-****************************************
-* Heckman total sample
-****************************************
 use"panel_laboursupplyindiv_v2", clear
 
 
 ********** Selection
 drop if age<14
 
+preserve
+drop if DSR_lag==.
+keep HHID_panel year
+duplicates drop
+ta year
+restore
 
 ********** Panel
 sort HHID_panel INDID_panel year
@@ -176,14 +136,14 @@ xtset panelvar year
 global rawnonvar i.caste i.villageid
 global rawecon remitt_std assets_std dummymarriage 
 global rawcompo HHsize HH_count_child sexratio nonworkersratio
-global rawindiv c.age i.edulevel i.relation2 i.sex i.marital
+global rawindiv i.cat_age i.edulevel i.relation2 i.sex i.marital
 
 mdesc hoursamonth_indiv DSR_lag age edulevel relation2 sex marital remitt_std assets_std dummymarriage HHsize HH_count_child sexratio work nonworkersratio
 
 ********** Exclusion 4
 est clear
 capture noisily xtheckmanfe hoursamonth_indiv DSR_lag ///
-c.age i.edulevel i.relation2 i.sex i.marital ///
+i.cat_age i.edulevel i.relation2 i.sex i.marital ///
 remitt_std assets_std dummymarriage ///
 HHsize HH_count_child sexratio ///
 , selection(work = c.nonworkersratio) ///
@@ -238,13 +198,13 @@ xtset panelvar year
 global rawnonvar i.caste i.villageid
 global rawecon remitt_std assets_std dummymarriage 
 global rawcompo HHsize HH_count_child sexratio nonworkersratio
-global rawindiv c.age i.edulevel i.relation2 i.sex i.marital
+global rawindiv i.cat_age i.edulevel i.relation2 i.sex i.marital
 
 
 ********** Exclusion 4
 est clear
 capture noisily xtheckmanfe hoursamonth_indiv DSR_lag ///
-c.age i.edulevel i.relation2 i.sex i.marital ///
+i.cat_age i.edulevel i.relation2 i.sex i.marital ///
 remitt_std assets_std dummymarriage ///
 HHsize HH_count_child sexratio ///
 , selection(work = c.nonworkersratio) ///
@@ -298,13 +258,13 @@ xtset panelvar year
 global rawnonvar i.caste i.villageid
 global rawecon remitt_std assets_std dummymarriage 
 global rawcompo HHsize HH_count_child sexratio nonworkersratio
-global rawindiv c.age i.edulevel i.relation2 i.sex i.marital
+global rawindiv i.cat_age i.edulevel i.relation2 i.sex i.marital
 
 
 ********** Exclusion 4
 est clear
 capture noisily xtheckmanfe hoursamonth_indiv DSR_lag ///
-c.age i.edulevel i.relation2 i.sex i.marital ///
+i.cat_age i.edulevel i.relation2 i.sex i.marital ///
 remitt_std assets_std dummymarriage ///
 HHsize HH_count_child sexratio ///
 , selection(work = c.nonworkersratio) ///
@@ -338,7 +298,6 @@ esttab excl_4 using "Heckman_females.csv", replace ///
 
 
 
-/*
 
 
 ****************************************
@@ -359,7 +318,7 @@ xtset panelvar year
 global rawnonvar i.caste i.villageid
 global rawecon remitt_std assets_std dummymarriage 
 global rawcompo HHsize HH_count_child sexratio nonworkersratio
-global rawindiv c.age i.edulevel i.relation2 i.sex i.marital
+global rawindiv i.cat_age i.edulevel i.relation2 i.sex i.marital
 
 
 
@@ -367,7 +326,7 @@ global rawindiv c.age i.edulevel i.relation2 i.sex i.marital
 est clear
 foreach x in hours_agri hours_nonagri hours_selfemp hours_casu {
 capture noisily xtheckmanfe `x' DSR_lag ///
-c.age i.edulevel i.relation2 i.sex i.marital ///
+i.cat_age i.edulevel i.relation2 i.sex i.marital ///
 remitt_std assets_std dummymarriage ///
 HHsize HH_count_child sexratio ///
 , selection(work = c.nonworkersratio) ///
@@ -400,6 +359,10 @@ esttab excl_* using "Heckman_jobs.csv", replace ///
 
 
 
+
+
+
+
 ****************************************
 * Heckman type of jobs for females
 ****************************************
@@ -420,7 +383,7 @@ xtset panelvar year
 global rawnonvar i.caste i.villageid
 global rawecon remitt_std assets_std dummymarriage 
 global rawcompo HHsize HH_count_child sexratio nonworkersratio
-global rawindiv c.age i.edulevel i.relation2 i.sex i.marital
+global rawindiv i.cat_age i.edulevel i.relation2 i.sex i.marital
 
 
 gen hours_reg=hours_regnonqu+hours_regquali
@@ -430,7 +393,7 @@ est clear
 *foreach x in hours_agri hours_nonagri hours_selfemp hours_casu {
 foreach x in hours_self hours_agriself hours_casua hours_reg hours_nrega hours_agricasu {
 capture noisily xtheckmanfe `x' DSR_lag ///
-c.age i.edulevel i.relation2 i.sex i.marital ///
+i.cat_age i.edulevel i.relation2 i.sex i.marital ///
 remitt_std assets_std dummymarriage ///
 HHsize HH_count_child sexratio ///
 , selection(work = c.nonworkersratio) ///

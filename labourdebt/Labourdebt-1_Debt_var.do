@@ -579,6 +579,7 @@ foreach x in nbloans_HH loanamount_HH loanbalance_HH imp1_ds_tot_HH imp1_is_tot_
 rename `x' lag_`x'
 }
 ta year
+gen panel=1
 save "_temp_lag", replace
 
 

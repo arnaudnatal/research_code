@@ -81,6 +81,12 @@ save"panel_laboursupplyindiv", replace
 use"panel_laboursupplyindiv", clear
 
 preserve
+keep HHID_panel year
+duplicates drop
+ta year
+restore
+
+preserve
 keep HHID_panel year nbloans_HH
 duplicates drop
 ta nbloans_HH year
@@ -113,14 +119,14 @@ gen DSR_lag=(lag_imp1_ds_tot_HH/lag_annualincome_HH)*100
 preserve
 keep HHID_panel DSR_lag year panel
 duplicates drop
-ta year panel
+*ta year panel
 tabstat DSR_lag, stat(n) by(year)
 restore
 replace DSR_lag=0 if DSR_lag==. & panel==1
 preserve
 keep HHID_panel DSR_lag year panel
 duplicates drop
-ta year panel
+*ta year panel
 tabstat DSR_lag, stat(n) by(year)
 restore
 
@@ -295,10 +301,6 @@ replace cat_age=3 if age>=35 & age<50
 replace cat_age=4 if age>=50
 label define cat_age 1"Age: Below 25" 2"Age: 25-34" 3"Age: 35-49" 4"Age: 50 or more"
 label values cat_age cat_age
-
-
-
-
 
 
 save"panel_laboursupplyindiv_v2", replace

@@ -192,6 +192,12 @@ replace assets_total=assets_total/1000
 ********** Stat desc
 use"panel_laboursupplyindiv_v2", clear
 
+preserve
+keep HHID_panel year
+duplicates drop
+ta year
+restore
+
 keep HHID_panel year time DSR DSR_lag remittnet_HH assets_total dummymarriage HHsize HH_count_child sexratio nonworkersratio annualincome_HH
 duplicates drop
 ta year
