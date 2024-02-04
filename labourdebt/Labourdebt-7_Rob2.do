@@ -5,12 +5,11 @@ cls
 *December 5, 2023
 *-----
 gl link = "labourdebt"
-*Prepa database
+*Outliers 5%
 *-----
 *do "https://raw.githubusercontent.com/arnaudnatal/folderanalysis/main/$link.do"
 do"C:\Users\Arnaud\Documents\GitHub\folderanalysis\labourdebt.do"
 *-------------------------
-
 
 
 
@@ -28,25 +27,33 @@ use"panel_laboursupplyindiv_v2", clear
 ********** Selection
 drop if age<14
 
+preserve
+drop if DSR_lag==.
+keep HHID_panel year
+duplicates drop
+ta year
+restore
 
 ********** Panel
 sort HHID_panel INDID_panel year
 xtset panelvar year
 
 
-********** Controls brut
-global rawnonvar i.caste i.villageid
-global rawecon remittnet_HH assets_total dummymarriage 
-global rawcompo HHsize HH_count_child sexratio nonworkersratio
-global rawindiv c.age i.edulevel i.relation2 i.sex i.marital
-
-
+********** 10% outliers
+foreach i in 2016 2020 {
+gen todrop`i'=1 if year==`i'
+qui sum hoursamonth_indiv if year==`i', det
+replace todrop`i'=0 if inrange(hoursamonth_indiv, r(p5), r(p95)) & year==`i'
+replace todrop`i'=0 if work==0 & year==`i'
+drop if todrop`i'==1
+drop todrop`i'
+}
 
 ********** Exclusion 4
 est clear
-capture noisily xtheckmanfe hoursamonth_indiv c.DSR_lag##i.caste ///
+capture noisily xtheckmanfe hoursamonth_indiv DSR_lag ///
 c.age i.edulevel i.relation2 i.sex i.marital ///
-remittnet_HH assets_total dummymarriage ///
+remitt_std assets_std dummymarriage ///
 HHsize HH_count_child sexratio ///
 , selection(work = c.nonworkersratio) ///
 id(panelvar) time(year) reps(500)
@@ -54,7 +61,7 @@ est store excl_4
 
 
 ********** Tables
-esttab excl_4 using "Caste_Heckman_total.csv", replace ///
+esttab excl_4 using "Heckman_total_noout.csv", replace ///
 	label b(3) p(3) eqlabels(none) alignment(S) ///
 	drop(_cons) ///
 	star(* 0.10 ** 0.05 *** 0.01) ///
@@ -63,6 +70,67 @@ esttab excl_4 using "Caste_Heckman_total.csv", replace ///
 	stats(N, fmt(0) ///
 	labels(`"Observations"'))
 	
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Heckman females
+****************************************
+use"panel_laboursupplyindiv_v2", clear
+
+
+********** Selection
+drop if age<14
+keep if sex==2
+
+
+********** Panel
+sort HHID_panel INDID_panel year
+xtset panelvar year
+
+
+********** 10% outliers
+foreach i in 2016 2020 {
+gen todrop`i'=1 if year==`i'
+qui sum hoursamonth_indiv if year==`i', det
+replace todrop`i'=0 if inrange(hoursamonth_indiv, r(p5), r(p95)) & year==`i'
+replace todrop`i'=0 if work==0 & year==`i'
+drop if todrop`i'==1
+drop todrop`i'
+}
+
+
+********** Exclusion 4
+est clear
+capture noisily xtheckmanfe hoursamonth_indiv DSR_lag ///
+c.age i.edulevel i.relation2 i.sex i.marital ///
+remitt_std assets_std dummymarriage ///
+HHsize HH_count_child sexratio ///
+, selection(work = c.nonworkersratio) ///
+id(panelvar) time(year) reps(500)
+est store excl_4
+
+
+********** Tables
+esttab excl_4 using "Heckman_females_noout.csv", replace ///
+	label b(3) p(3) eqlabels(none) alignment(S) ///
+	drop(_cons) ///
+	star(* 0.10 ** 0.05 *** 0.01) ///
+	cells("b(fmt(2)star)" "se(fmt(2)par)") ///
+	refcat(, nolabel) ///
+	stats(N, fmt(0) ///
+	labels(`"Observations"'))
+
 ****************************************
 * END
 
@@ -96,149 +164,32 @@ sort HHID_panel INDID_panel year
 xtset panelvar year
 
 
-********** Controls brut
-global rawnonvar i.caste i.villageid
-global rawecon remittnet_HH assets_total dummymarriage 
-global rawcompo HHsize HH_count_child sexratio nonworkersratio
-global rawindiv c.age i.edulevel i.relation2 i.sex i.marital
-
-
-********** Exclusion 4
-est clear
-capture noisily xtheckmanfe hoursamonth_indiv c.DSR_lag##i.caste ///
-c.age i.edulevel i.relation2 i.sex i.marital ///
-remittnet_HH assets_total dummymarriage ///
-HHsize HH_count_child sexratio ///
-, selection(work = c.nonworkersratio) ///
-id(panelvar) time(year) reps(500)
-est store excl_4
-
-
-
-********** Tables
-esttab excl_4 using "Caste_Heckman_males.csv", replace ///
-	label b(3) p(3) eqlabels(none) alignment(S) ///
-	drop(_cons) ///
-	star(* 0.10 ** 0.05 *** 0.01) ///
-	cells("b(fmt(2)star)" "se(fmt(2)par)") ///
-	refcat(, nolabel) ///
-	stats(N, fmt(0) ///
-	labels(`"Observations"'))
-
-****************************************
-* END
-
-
-
-
-
-
-
-
-
-
-
-
-
-****************************************
-* Heckman females
-****************************************
-use"panel_laboursupplyindiv_v2", clear
-
-
-********** Selection
-drop if age<14
-keep if sex==2
-
-
-********** Panel
-sort HHID_panel INDID_panel year
-xtset panelvar year
-
-
-********** Controls brut
-global rawnonvar i.caste i.villageid
-global rawecon remittnet_HH assets_total dummymarriage 
-global rawcompo HHsize HH_count_child sexratio nonworkersratio
-global rawindiv c.age i.edulevel i.relation2 i.sex i.marital
-
-
-********** Exclusion 4
-est clear
-capture noisily xtheckmanfe hoursamonth_indiv c.DSR_lag##i.caste ///
-c.age i.edulevel i.relation2 i.sex i.marital ///
-remittnet_HH assets_total dummymarriage ///
-HHsize HH_count_child sexratio ///
-, selection(work = c.nonworkersratio) ///
-id(panelvar) time(year) reps(500)
-est store excl_4
-
-
-********** Tables
-esttab excl_4 using "Caste_Heckman_females.csv", replace ///
-	label b(3) p(3) eqlabels(none) alignment(S) ///
-	drop(_cons) ///
-	star(* 0.10 ** 0.05 *** 0.01) ///
-	cells("b(fmt(2)star)" "se(fmt(2)par)") ///
-	refcat(, nolabel) ///
-	stats(N, fmt(0) ///
-	labels(`"Observations"'))
-
-****************************************
-* END
-
-
-
-
-
-
-
-
-/*
-
-
-
-
-
-
-
-****************************************
-* Heckman type of jobs
-****************************************
-use"panel_laboursupplyindiv_v2", clear
-
-
-********** Selection
-drop if age<14
-
-********** Panel
-sort HHID_panel INDID_panel year
-xtset panelvar year
-
-
-********** Controls brut
-global rawnonvar i.caste i.villageid
-global rawecon remittnet_HH assets_total dummymarriage 
-global rawcompo HHsize HH_count_child sexratio nonworkersratio
-global rawindiv c.age i.edulevel i.relation2 i.sex i.marital
-
-
-
-********** Exclusion 4
-est clear
-foreach x in hours_agri hours_nonagri hours_selfemp hours_casu {
-capture noisily xtheckmanfe `x' c.DSR_lag##i.caste ///
-c.age i.edulevel i.relation2 i.sex i.marital ///
-remittnet_HH assets_total dummymarriage ///
-HHsize HH_count_child sexratio ///
-, selection(work = c.nonworkersratio) ///
-id(panelvar) time(year) reps(500)
-est store excl_`x'
+********** 10% outliers
+foreach i in 2016 2020 {
+gen todrop`i'=1 if year==`i'
+qui sum hoursamonth_indiv if year==`i', det
+replace todrop`i'=0 if inrange(hoursamonth_indiv, r(p5), r(p95)) & year==`i'
+replace todrop`i'=0 if work==0 & year==`i'
+drop if todrop`i'==1
+drop todrop`i'
 }
 
 
+
+********** Exclusion 4
+est clear
+capture noisily xtheckmanfe hoursamonth_indiv DSR_lag ///
+c.age i.edulevel i.relation2 i.sex i.marital ///
+remitt_std assets_std dummymarriage ///
+HHsize HH_count_child sexratio ///
+, selection(work = c.nonworkersratio) ///
+id(panelvar) time(year) reps(500)
+est store excl_4
+
+
+
 ********** Tables
-esttab excl_* using "Caste_Heckman_jobs.csv", replace ///
+esttab excl_4 using "Heckman_males_noout.csv", replace ///
 	label b(3) p(3) eqlabels(none) alignment(S) ///
 	drop(_cons) ///
 	star(* 0.10 ** 0.05 *** 0.01) ///
@@ -249,4 +200,3 @@ esttab excl_* using "Caste_Heckman_jobs.csv", replace ///
 
 ****************************************
 * END
-

@@ -37,15 +37,15 @@ xtset panelvar year
 global nonvar i.caste i.villageid
 global econ remittnet_HH assets_total dummymarriage 
 global compo HHsize HH_count_child sexratio nonworkersratio
-global indiv c.age##c.age i.edulevel i.relation2 i.sex i.marital
+global indiv c.age i.edulevel i.relation2 i.sex i.marital
 
 
 ********** Total
 * Work
 qui xtreg work DSR_lag $indiv $econ $compo, fe cluster(HHFE)
 est store work
-* Hours a year
-xtreg hoursayear_indiv DSR_lag $indiv $econ $compo, fe cluster(HHFE)
+* Hours a month
+xtreg hoursamonth_indiv DSR_lag $indiv $econ $compo, fe cluster(HHFE)
 est store hour
 * Tables
 esttab work hour using "Craggs_total.csv", replace ///
@@ -66,8 +66,8 @@ keep if sex==1
 * Work
 qui xtreg work DSR_lag $indiv $econ $compo, fe cluster(HHFE)
 est store work
-* Hours a year
-xtreg hoursayear_indiv DSR_lag $indiv $econ $compo, fe cluster(HHFE)
+* Hours a month
+xtreg hoursamonth_indiv DSR_lag $indiv $econ $compo, fe cluster(HHFE)
 est store hour
 * Tables
 esttab work hour using "Craggs_males.csv", replace ///
@@ -89,8 +89,8 @@ keep if sex==2
 * Work
 qui xtreg work DSR_lag $indiv $econ $compo, fe cluster(HHFE)
 est store work
-* Hours a year
-xtreg hoursayear_indiv DSR_lag $indiv $econ $compo, fe cluster(HHFE)
+* Hours a month
+xtreg hoursamonth_indiv DSR_lag $indiv $econ $compo, fe cluster(HHFE)
 est store hour
 * Tables
 esttab work hour using "Craggs_females.csv", replace ///

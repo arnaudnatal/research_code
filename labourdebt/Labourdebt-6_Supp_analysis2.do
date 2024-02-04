@@ -41,23 +41,41 @@ sort HHID_panel INDID_panel year
 
 ********** Total
 heckman hoursamonth_indiv lag_share_dsr ///
-i.cat_age i.edulevel i.relation2 i.sex i.marital ///
+c.age i.edulevel i.relation2 i.sex i.marital ///
 c.remitt_std c.assets_std dummymarriage i.caste ///
 HHsize HH_count_child sexratio ///
 , select(work = c.nonworkersratio) ///
 clust(HHFE)
+est store reg1
 
-	
+
+
 ********** Males
+*
 preserve
 fre sex
 keep if sex==1
+set maxiter 53
 heckman hoursamonth_indiv lag_share_dsr ///
-i.cat_age i.edulevel i.relation2 i.sex i.marital ///
+c.age i.edulevel i.relation2 i.marital ///
 c.remitt_std c.assets_std dummymarriage i.caste ///
 HHsize HH_count_child sexratio ///
 , select(work = c.nonworkersratio) ///
 clust(HHFE)
+est store reg2
+restore
+*
+preserve
+fre sex
+keep if sex==1
+set maxiter 45
+heckman hoursamonth_indiv lag_share_dsr ///
+i.cat_age i.edulevel i.relation2 i.marital ///
+c.remitt_std c.assets_std dummymarriage i.caste ///
+HHsize HH_count_child sexratio ///
+, select(work = c.nonworkersratio) ///
+clust(HHFE)
+est store reg3
 restore
 
 
@@ -67,12 +85,34 @@ preserve
 fre sex
 keep if sex==2
 heckman hoursamonth_indiv lag_share_dsr ///
-i.cat_age i.edulevel i.relation2 i.sex i.marital ///
+i.cat_age i.edulevel i.relation2 i.marital ///
 c.remitt_std c.assets_std dummymarriage i.caste ///
 HHsize HH_count_child sexratio ///
 , select(work = c.nonworkersratio) ///
 clust(HHFE)
+est store reg4
+
+set maxiter 56
+heckman hoursamonth_indiv lag_share_dsr ///
+c.age i.edulevel i.relation2 i.marital ///
+c.remitt_std c.assets_std dummymarriage i.caste ///
+HHsize HH_count_child sexratio ///
+, select(work = c.nonworkersratio) ///
+clust(HHFE)
+est store reg5
+
 restore
+
+
+********** Table
+esttab reg1 reg2 reg3 reg4 reg5 using "Indiv_Heckman.csv", replace ///
+	label b(3) p(3) eqlabels(none) alignment(S) ///
+	keep(lag_share_dsr) ///
+	star(* 0.10 ** 0.05 *** 0.01) ///
+	cells("b(fmt(2)star)" "se(fmt(2)par)") ///
+	refcat(, nolabel) ///
+	stats(N, fmt(0) ///
+	labels(`"Observations"'))
 	
 ****************************************
 * END
