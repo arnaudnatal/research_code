@@ -370,6 +370,12 @@ graph export "LS_stripplot.pdf", as(pdf) replace
 
 ********** Occupation
 fre mainocc_occupation_indiv
+
+ta mainocc_occupation_indiv sexyear
+ta mainocc_occupation_indiv sexyear, col nofreq
+
+ta mainocc_occupation_indiv year
+ta mainocc_occupation_indiv year, col nofreq
 ta mainocc_occupation_indiv sex, exp cchi2 chi2 col
 
 ta mainocc_occupation_indiv sex if year==2016, exp cchi2 chi2

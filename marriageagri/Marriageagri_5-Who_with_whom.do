@@ -170,7 +170,7 @@ keep if married==1
 ta intercaste
 ta marrtype
 ta interjatis
-ta interjatis intercaste, cell nofreq
+ta interjatis intercaste, cell
 
 * Details castes
 ta caste hwcaste
@@ -201,6 +201,9 @@ list sex caste hwcaste marrtype if marrtype!=., clean noobs
 
 ****************************************
 * END
+
+
+
 
 
 

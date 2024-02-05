@@ -27,30 +27,23 @@ use"panel_laboursupplyindiv_v2", clear
 ********** Selection
 drop if age<14
 
-preserve
-drop if DSR_lag==.
-keep HHID_panel year
-duplicates drop
-ta year
-restore
-
 ********** Panel
 sort HHID_panel INDID_panel year
 xtset panelvar year
+est clear
 
 
 ********** 10% outliers
 foreach i in 2016 2020 {
 gen todrop`i'=1 if year==`i'
 qui sum hoursamonth_indiv if year==`i', det
-replace todrop`i'=0 if inrange(hoursamonth_indiv, r(p5), r(p95)) & year==`i'
+replace todrop`i'=0 if inrange(hoursamonth_indiv, r(p1), r(p99)) & year==`i'
 replace todrop`i'=0 if work==0 & year==`i'
 drop if todrop`i'==1
 drop todrop`i'
 }
 
 ********** Exclusion 4
-est clear
 capture noisily xtheckmanfe hoursamonth_indiv DSR_lag ///
 c.age i.edulevel i.relation2 i.sex i.marital ///
 remitt_std assets_std dummymarriage ///
@@ -97,13 +90,14 @@ keep if sex==2
 ********** Panel
 sort HHID_panel INDID_panel year
 xtset panelvar year
+est clear
 
 
 ********** 10% outliers
 foreach i in 2016 2020 {
 gen todrop`i'=1 if year==`i'
 qui sum hoursamonth_indiv if year==`i', det
-replace todrop`i'=0 if inrange(hoursamonth_indiv, r(p5), r(p95)) & year==`i'
+replace todrop`i'=0 if inrange(hoursamonth_indiv, r(p1), r(p99)) & year==`i'
 replace todrop`i'=0 if work==0 & year==`i'
 drop if todrop`i'==1
 drop todrop`i'
@@ -111,7 +105,6 @@ drop todrop`i'
 
 
 ********** Exclusion 4
-est clear
 capture noisily xtheckmanfe hoursamonth_indiv DSR_lag ///
 c.age i.edulevel i.relation2 i.sex i.marital ///
 remitt_std assets_std dummymarriage ///
@@ -162,13 +155,14 @@ keep if sex==1
 ********** Panel
 sort HHID_panel INDID_panel year
 xtset panelvar year
+est clear
 
 
 ********** 10% outliers
 foreach i in 2016 2020 {
 gen todrop`i'=1 if year==`i'
 qui sum hoursamonth_indiv if year==`i', det
-replace todrop`i'=0 if inrange(hoursamonth_indiv, r(p5), r(p95)) & year==`i'
+replace todrop`i'=0 if inrange(hoursamonth_indiv, r(p1), r(p99)) & year==`i'
 replace todrop`i'=0 if work==0 & year==`i'
 drop if todrop`i'==1
 drop todrop`i'
@@ -177,7 +171,6 @@ drop todrop`i'
 
 
 ********** Exclusion 4
-est clear
 capture noisily xtheckmanfe hoursamonth_indiv DSR_lag ///
 c.age i.edulevel i.relation2 i.sex i.marital ///
 remitt_std assets_std dummymarriage ///
