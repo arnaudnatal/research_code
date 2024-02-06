@@ -215,6 +215,12 @@ Les montants investi sont en cloche : forte augmentation entre 2010 et 2016-17, 
 ****************************************
 * Dowry and agriculture at the marriage level
 ****************************************
+
+cls
+********** Females
+/*
+Est-ce que la dot envoyé est différente selon le statut agricole de la femme ?
+*/
 use"NEEMSIS-marriage.dta", clear
 
 *** Prepa
@@ -248,6 +254,45 @@ Ceux qui sont propriétaire terrien ont un ratio de dot/actifs plus faible.
 
 *** Share agri
 cpcorr $total \ incomenonagri_HH shareincomeagri_HH
+
+
+
+
+
+
+
+cls
+********** Males
+/*
+Est-ce que la dot reçu est différente selon le statut agricole de l'homme ?
+*/
+use"NEEMSIS-marriage.dta", clear
+
+*** Prepa
+fre sex
+keep if sex==1
+
+replace marriagedowry=marriagedowry/1000
+
+*** Agricultural status
+*divHH0 divHH5
+foreach x in ownland divHH10 {
+tabstat marriagedowry, stat(n mean q) by(`x') long
+}
+
+/*
+Ceux qui sont propriétaire terrien ont des dots plus élevés en moyenne.
+Ceux qui sont propriétaire terrien ont un ratio de dot/revenu plus élevé.
+Ceux qui sont propriétaire terrien ont un ratio de dot/actifs plus faible.
+*/
+
+
+*** Share agri
+cpcorr marriagedowry \ incomenonagri_HH shareincomeagri_HH
+
+
+
+
 
 
 

@@ -120,6 +120,32 @@ ta howpaymarriage_capi year if caste==3, col nofreq
 * Gift
 ta howpaymarriage_gift year if caste==3, col nofreq
 
+
+********** Males
+cls
+fre sex
+ta year if sex==1
+* Loan
+ta howpaymarriage_loan year if sex==1, col nofreq
+* Capital
+ta howpaymarriage_capi year if sex==1, col nofreq
+* Gift
+ta howpaymarriage_gift year if sex==1, col nofreq
+
+
+********** Females
+cls
+fre sex
+ta year if sex==2
+* Loan
+ta howpaymarriage_loan year if sex==2, col nofreq
+* Capital
+ta howpaymarriage_capi year if sex==2, col nofreq
+* Gift
+ta howpaymarriage_gift year if sex==2, col nofreq
+
+
+
 ****************************************
 * END
 
@@ -153,9 +179,11 @@ tabstat marriagetotalcost, stat(n mean cv q) by(year) long
 
 tabstat marriagetotalcost if year==2016, stat(n mean cv q) by(intercaste) long
 tabstat marriagetotalcost if year==2016, stat(n mean cv q) by(marrtype) long
+tabstat marriagetotalcost if year==2016, stat(n mean cv q) by(sex) long
 
 tabstat marriagetotalcost if year==2020, stat(n mean cv q) by(intercaste) long
 tabstat marriagetotalcost if year==2020, stat(n mean cv q) by(marrtype) long
+tabstat marriagetotalcost if year==2020, stat(n mean cv q) by(sex) long
 restore
 
 * Cost to income to have an idea
@@ -166,9 +194,11 @@ tabstat `x', stat(n mean cv q) by(year) long
 
 tabstat `x' if year==2016, stat(n mean cv q) by(intercaste) long
 tabstat `x' if year==2016, stat(n mean cv q) by(marrtype) long
+tabstat `x' if year==2016, stat(n mean cv q) by(sex) long
 
 tabstat `x' if year==2020, stat(n mean cv q) by(intercaste) long
 tabstat `x' if year==2020, stat(n mean cv q) by(marrtype) long
+tabstat `x' if year==2020, stat(n mean cv q) by(sex) long
 }
 
 
@@ -183,9 +213,13 @@ tabstat `x', stat(n mean cv q) by(year) long
 
 tabstat `x' if year==2016, stat(n mean cv q) by(intercaste) long
 tabstat `x' if year==2016, stat(n mean cv q) by(marrtype) long
+tabstat `x' if year==2016, stat(n mean cv q) by(sex) long
 
 tabstat `x' if year==2020, stat(n mean cv q) by(intercaste) long
 tabstat `x' if year==2020, stat(n mean cv q) by(marrtype) long
+tabstat `x' if year==2020, stat(n mean cv q) by(sex) long
+
+tabstat `x', stat(n mean cv q) by(sex) long
 }
 
 
@@ -201,9 +235,11 @@ tabstat `x', stat(n mean cv q) by(year) long
 
 tabstat `x' if year==2016, stat(n mean cv q) by(intercaste) long
 tabstat `x' if year==2016, stat(n mean cv q) by(marrtype) long
+tabstat `x' if year==2016, stat(n mean cv q) by(sex) long
 
 tabstat `x' if year==2020, stat(n mean cv q) by(intercaste) long
 tabstat `x' if year==2020, stat(n mean cv q) by(marrtype) long
+tabstat `x' if year==2020, stat(n mean cv q) by(sex) long
 }
 
 ****************************************
@@ -243,9 +279,20 @@ tabstat `x' if year==2020, stat(n mean cv q) by(marrtype) long
 
 
 
+* Males
+preserve
+keep if sex==1
+cls
+foreach x in marriagedowry DAIR DAAR DMC {
+tabstat `x' if year==2016, stat(n mean cv q) by(intercaste) long
+tabstat `x' if year==2020, stat(n mean cv q) by(intercaste) long
+}
+restore
+
+
+
 * Females
 keep if sex==2
-fre sex
 cls
 foreach x in marriagedowry DAIR DAAR DMC {
 tabstat `x', stat(n mean cv q) by(year) long
