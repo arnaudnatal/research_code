@@ -290,13 +290,6 @@ Ceux qui sont propriétaire terrien ont un ratio de dot/actifs plus faible.
 *** Share agri
 cpcorr marriagedowry \ incomenonagri_HH shareincomeagri_HH
 
-
-
-
-
-
-
-
 ****************************************
 * END
 
@@ -399,20 +392,73 @@ replace `x'=`x'*100
 
 cls
 *** Agricultural status
-*divHH0 divHH5
 foreach x in ownland divHH10 {
 tabstat $total, stat(n mean q) by(`x') long
 }
 
-/*
-Ceux qui sont propriétaire terrien ont des dots plus élevés en moyenne.
-Ceux qui sont propriétaire terrien ont un ratio de dot/revenu plus élevé.
-Ceux qui sont propriétaire terrien ont un ratio de dot/actifs plus faible.
-*/
-
 
 *** Share agri
 cpcorr $total \ incomenonagri_HH shareincomeagri_HH
+
+
+
+
+cls
+********** Males
+use"NEEMSIS-marriage.dta", clear
+keep if sex==1
+
+*** Prepa
+global amoun marriageexpenses
+global ratio MEIR MEAR
+global total $amoun $ratio
+
+foreach x in $amoun {
+replace `x'=`x'/1000
+}
+foreach x in $ratio {
+replace `x'=`x'*100
+}
+
+*** Agricultural status
+foreach x in ownland divHH10 {
+tabstat $total, stat(n mean q) by(`x') long
+}
+
+*** Share agri
+cpcorr $total \ incomenonagri_HH shareincomeagri_HH
+
+
+
+
+
+cls
+********** Females
+use"NEEMSIS-marriage.dta", clear
+keep if sex==2
+
+*** Prepa
+global amoun marriageexpenses
+global ratio MEIR MEAR
+global total $amoun $ratio
+
+foreach x in $amoun {
+replace `x'=`x'/1000
+}
+foreach x in $ratio {
+replace `x'=`x'*100
+}
+
+*** Agricultural status
+foreach x in ownland divHH10 {
+tabstat $total, stat(n mean q) by(`x') long
+}
+
+*** Share agri
+cpcorr $total \ incomenonagri_HH shareincomeagri_HH
+
+
+
 
 
 
