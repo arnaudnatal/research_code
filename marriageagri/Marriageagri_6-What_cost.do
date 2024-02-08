@@ -242,6 +242,13 @@ tabstat `x' if year==2020, stat(n mean cv q) by(marrtype) long
 tabstat `x' if year==2020, stat(n mean cv q) by(sex) long
 }
 
+cls
+foreach x in totalmarriagegiftamount gifttoexpenses GIR {
+tabstat `x', stat(n mean cv q) by(sex) long
+}
+
+reg totalmarriagegiftamount i.sex, baselevel
+
 ****************************************
 * END
 
@@ -307,5 +314,77 @@ tabstat `x' if year==2020, stat(n mean cv q) by(marrtype) long
 
 ****************************************
 * END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Expenses and dowry
+****************************************
+cls
+use"NEEMSIS-marriage.dta", clear
+
+
+
+********** By sex
+tabstat marriagenetcost1000 MNCI marriagenetcost_alt1000 MNCI_alt, stat(n mean q) by(sex)
+
+
+********** By sex and caste
+tabstat marriagenetcost_alt1000 MNCI_alt if sex==1, stat(n mean q) by(caste) long
+tabstat marriagenetcost_alt1000 MNCI_alt if sex==2, stat(n mean q) by(caste) long
+
+
+********** By sex and land
+tabstat marriagenetcost_alt1000 MNCI_alt if sex==1, stat(n mean q) by(ownland) long
+tabstat marriagenetcost_alt1000 MNCI_alt if sex==2, stat(n mean q) by(ownland) long
+
+tabstat marriagenetcost_alt1000 MNCI_alt if sex==1, stat(n mean q) by(divHH10) long
+tabstat marriagenetcost_alt1000 MNCI_alt if sex==2, stat(n mean q) by(divHH10) long
+
+
+
+
+****************************************
+* END
+
+
+
+
+
+
+
+/*
+C'est normal que la dot déclarée par les hommes soit plus faible car argent en plus pour eux
+Pour les femmes, normalement, c'est un peu sous estimé
+
+Bien faire des commentaires sur les deux graphiques où je calcule le prix net du mariage
++ Une fois ce commentaire et ces graphiques fait
++ Dire que le mariage s'est aussi de la dette et faire des stat sur la dette pour mariage
+
+Mettre en relation MNCI + la dette du mariage avec le statut agricole.
+*/
 
 
