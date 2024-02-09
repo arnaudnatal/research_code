@@ -55,6 +55,8 @@ STATISTICAL ANALYSIS:
 
 
 
+
+
 ****************************************
 * Loan level
 ****************************************
@@ -62,19 +64,41 @@ STATISTICAL ANALYSIS:
 ***** 2016-17
 use"raw/NEEMSIS1-loans_mainloans_new", clear
 
-keep HHID2016 INDID2016 loanid loanreasongiven loanamount2
+keep HHID2016 INDID2016 loanid loanreasongiven loanamount2 loanbalance2
 gen year=2016
 
 save"_temploan2016", replace
+
+bysort HHID2016: egen balance_total_HH=sum(loanbalance2)
+fre loanreasongiven
+gen balance_marr=0
+replace balance_marr=loanbalance2 if loanreasongiven==8
+bysort HHID2016: egen balance_marr_HH=sum(balance_marr)
+
+keep HHID2016 balance_marr_HH balance_total_HH
+duplicates drop
+save"_temp2016", replace
+
 
 
 ***** 2020-21
 use"raw/NEEMSIS2-loans_mainloans_new", clear
 
-keep HHID2020 INDID2020 loanid loanreasongiven loanamount2
+keep HHID2020 INDID2020 loanid loanreasongiven loanamount2 loanbalance2
 gen year=2020
 
 save"_temploan2020", replace
+
+bysort HHID2020: egen balance_total_HH=sum(loanbalance2)
+fre loanreasongiven
+gen balance_marr=0
+replace balance_marr=loanbalance2 if loanreasongiven==8
+bysort HHID2020: egen balance_marr_HH=sum(balance_marr)
+
+keep HHID2020 balance_marr_HH balance_total_HH
+duplicates drop
+save"_temp2020", replace
+
 
 
 ***** Pooled
@@ -92,6 +116,11 @@ save"pooledloans", replace
 
 
 
+
+
+
+
+
 ****************************************
 * HH level
 ****************************************
@@ -101,6 +130,8 @@ use"raw/NEEMSIS1-HH", clear
 
 keep HHID2016 dummymarriage
 duplicates drop
+merge 1:1 HHID2016 using "_temp2016"
+drop _merge
 merge 1:1 HHID2016 using "raw/NEEMSIS1-occup_HH", keepusing(annualincome_HH)
 drop _merge
 merge 1:1 HHID2016 using "raw/NEEMSIS1-loans_HH", keepusing(nbHH_given_marr dumHH_given_marr nbHH_effective_marr dumHH_effective_marr totHH_givenamt_marr totHH_effectiveamt_marr nbloans_HH loanamount_HH)
@@ -122,6 +153,8 @@ use"raw/NEEMSIS2-HH", clear
 
 keep HHID2020 dummymarriage
 duplicates drop
+merge 1:1 HHID2020 using "_temp2020"
+drop _merge
 merge 1:1 HHID2020 using "raw/NEEMSIS2-occup_HH", keepusing(annualincome_HH)
 drop _merge
 merge 1:1 HHID2020 using "raw/NEEMSIS2-loans_HH", keepusing(nbHH_given_marr dumHH_given_marr nbHH_effective_marr dumHH_effective_marr totHH_givenamt_marr totHH_effectiveamt_marr nbloans_HH loanamount_HH)
@@ -149,6 +182,9 @@ gen sharedebteffecmarr=totHH_effectiveamt_marr*100/loanamount_HH
 gen shareincogivenmarr=totHH_givenamt_marr*100/annualincome_HH
 gen shareincoeffecmarr=totHH_effectiveamt_marr*100/annualincome_HH
 
+gen sharebaldebtmarr=balance_marr_HH*100/balance_total_HH
+gen sharebalincomarr=balance_marr_HH*100/annualincome_HH
+
 foreach x in annualincome_HH loanamount_HH totHH_givenamt_marr totHH_effectiveamt_marr {
 replace `x'=`x'*(100/116) if year==2020
 }
@@ -156,6 +192,12 @@ replace `x'=`x'*(100/116) if year==2020
 save"pooleddebtmar", replace
 ****************************************
 * END
+
+
+
+
+
+
 
 
 
@@ -186,7 +228,13 @@ In pooled setting:
 use"pooleddebtmar", clear
 
 
-tabstat sharedebtgivenmarr sharedebteffecmarr shareincogivenmarr shareincoeffecmarr, stat(n mean q) by(dummymarriage) long
+tabstat sharedebtgivenmarr sharedebteffecmarr shareincogivenmarr shareincoeffecmarr sharebaldebtmarr sharebalincomarr totHH_givenamt_marr totHH_effectiveamt_marr annualincome_HH balance_total_HH loanamount_HH, stat(n mean q) by(dummymarriage) long
+
+tabstat sharebalincomarr if dummymarriage==1, stat(n mean q p90 p95 p99 max) long
+
+tabstat sharebalincomarr if dummymarriage==1 & sharebalincomarr<1000, stat(n mean q p90 p95 p99 max) long
+
+
 
 reg loanamount_HH i.dummymarriage
 
