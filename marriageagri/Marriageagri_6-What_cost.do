@@ -121,6 +121,7 @@ ta howpaymarriage_gift year if sex==2, col nofreq
 - Is the cost of marriage different depending on the agricultural status?
 - Is the cost of marriage different depending on the agricultural status of the wife's family?
 - Is the cost of marriage different depending on the agricultural status of the husband's family?
+- Does the cost of the marriage depend on the number of children still to be married?
 */
 
 cls
@@ -222,6 +223,17 @@ cpcorr marriageexpenses1000 MEIR MEAR \ incomenonagri_HH shareincomeagri_HH
 
 
 
+
+cls
+********** Cost of the marriage and number of children still to be married
+use"NEEMSIS-marriage.dta", clear
+
+fre sex
+keep if sex==2
+cpcorr unmarried_female_1824 unmarried_female_2530 unmarried_female unmarried_daughter \ totalmarriagegiftamount_alt
+
+
+
 ****************************************
 * END
 
@@ -246,7 +258,8 @@ cpcorr marriageexpenses1000 MEIR MEAR \ incomenonagri_HH shareincomeagri_HH
 /*
 - What are the amount of gifts?
 - What are the characteristics of low gift group?
-- What are the ffects of marriage cost on gift received?
+- What are the affects of marriage cost on gift received?
+- Does the amount of gifts received depend on the number of children still to be married?
 */
 
 cls
@@ -329,6 +342,19 @@ restore
 
 
 
+
+
+
+cls
+********** Amount of the gifts received and number of children still to be married
+use"NEEMSIS-marriage.dta", clear
+
+fre sex
+keep if sex==2
+cpcorr unmarried_female_1824 unmarried_female_2530 unmarried_female unmarried_daughter \ totalmarriagegiftamount_alt
+
+
+
 ****************************************
 * END
 
@@ -357,6 +383,8 @@ restore
 - Does the dowry asked by the male's family depend on the family's education expenses?
 - Does the dowry sent differ according to the agricultural status of the wife's family?
 - Does the dowry received differ according to the agricultural status of the husband's family?
+- Does the amount of the dowry sent depend on the number of children still to be married?
+- Does the amount of the dowry received depend on the number of children still to be married?
 */
 
 
@@ -615,6 +643,34 @@ tabstat marriagedowry1000, stat(n mean q) by(`x') long
 
 * Share agri
 cpcorr marriagedowry \ incomenonagri_HH shareincomeagri_HH
+
+
+
+
+
+cls
+********** Amount of the dowry sent and number of children still to be married
+use"NEEMSIS-marriage.dta", clear
+
+fre sex
+keep if sex==2
+cpcorr unmarried_female_1824 unmarried_female_2530 unmarried_female unmarried_daughter \ marriagedowry1000
+
+
+
+
+
+
+
+
+cls
+********** Amount of the dowry received and number of children still to be married
+use"NEEMSIS-marriage.dta", clear
+
+fre sex
+keep if sex==1
+cpcorr unmarried_female_1824 unmarried_female_2530 unmarried_female unmarried_daughter \ marriagedowry1000
+
 
 
 
