@@ -14,58 +14,6 @@ do"C:\Users\Arnaud\Documents\GitHub\folderanalysis\marriageagri.do"
 
 
 
-/*****************************************************
-
-TITLE:
-The political and sexual economies of marriages. Two decades of change in South-Arcot, South India
-
-AUTHORS:
-I. Guérin, A. Natal, C. J. Nordman, and G. Venkatasubramanian
-
-JOURNAL:
-Contemporary South Asia
-
-ABSTRACT:
-This chapter explores the multifaceted role of marriages in the south-Arcot region of central Tamil Nadu.
-There are cases of forced celibacy, but they remain isolated.
-By mobilising twenty years of ethnographic survey, and three household surveys conducted in 2010, 2016-17 and 2020-21, including questions on marriages (who marries whom? at what cost? with a dowry and if so how much?), this paper will examine how marriages are both shaped by and constitutive of local political and sexual economies. 
-By local political and sexual economies, we mean the intertwining of access to material resources, norms of kinship and deviant sexuality.
-As feminist anthropology has long shown, modes of accumulation, kinship and sexuality are inseparable and mutually constructed.
-The drastic and interconnected changes observed over the last two decades in modes of production, marital alliances and the control of female sexuality are a clear illustration of this.
-Our data suggest two main findings, which explains the reasons behind low prevalence of forced celibacy, while highlighting the intensification of patriarchal norms: First, marriages and marital transfers (primarily dowry) play a crucial role in compensating for a volatile economy, whether it is agricultural decline (with the exception of the pandemic period, agricultural incomes are declining, both in absolute and relative terms), a precarious and uncertain non-farm labour market, and costly and risky investments in education (of boys in particular) and expensive housing expenditures.
-In turn, and this is our second argument, the dowry, which is a recent practice among the lower castes and classes, strongly devalues the economic value of young girls and is accompanied by increasing control over women's bodies and sexuality as a symbol of upward mobility.
-The paper will also examine the differences between families that remained solely peasant and those that diversified, exploring the role of marriages and marriage payments in these differentiated strategies.
-
-KEYWORDS:
-Marriage, kinship, sexuality, economy, Tamil Nadu
-
-STATISTICAL ANALYSIS:
-1. Who maries whom?
-2. At what cost?
-3. What about dowry?
-4. Marital transfers (primarily dowry) play a crucial role in compensating for a volatile economy, i.e. agricultural decline, uncertain non-farm labour market, risky investment in education of boys, expensive housing expenditures
-5. Dowry as a symbol of upward mobility
-6. Differences between families that remained solely peasant and those that diversified, exploring the role of marriages and marriage payments in these differentiated strategies
-
-PLAN D'ANALYSE:
-1. Statistiques des variables de mariage sans hétérogéneité pour 2016-17 et 2020-21
-2. Statistiques qui montrent le déclin de l'agriculture
-3. Statistiques qui montrent la volatilité des revenus non-agricoles
-4. Statistiques qui montrent les montants d'investissement dans l'éducation en séparant les hommes et femmes
-5. Statistiques qui montrent les dépenses d'habitations
-6. Dowry par type de mariage pour upward mobility
-7. Classer les ménages en fonction des types de revenus qu'ils ont : que agri, que non-agri, les deux
-8. Faire une part de agri/non agri aussi
-
-
-*****************************************************/
-
-
-
-
-
-
-
 
 
 
@@ -144,8 +92,6 @@ ta howpaymarriage_capi year if sex==2, col nofreq
 * Gift
 ta howpaymarriage_gift year if sex==2, col nofreq
 
-
-
 ****************************************
 * END
 
@@ -169,46 +115,46 @@ ta howpaymarriage_gift year if sex==2, col nofreq
 ****************************************
 * At what cost?
 ****************************************
+/*
+- What is the price of the marriage?
+- What are the expenses of the marriage?
+- Is the cost of marriage different depending on the agricultural status?
+- Is the cost of marriage different depending on the agricultural status of the wife's family?
+- Is the cost of marriage different depending on the agricultural status of the husband's family?
+*/
+
 cls
+********** Total cost and expenses of the marriage
 use"NEEMSIS-marriage.dta", clear
 
 * Total cost
-preserve
-replace marriagetotalcost=marriagetotalcost/1000
-tabstat marriagetotalcost, stat(n mean cv q) by(year) long
+tabstat marriagetotalcost1000, stat(n mean cv q) by(year) long
 
-tabstat marriagetotalcost if year==2016, stat(n mean cv q) by(intercaste) long
-tabstat marriagetotalcost if year==2016, stat(n mean cv q) by(marrtype) long
-tabstat marriagetotalcost if year==2016, stat(n mean cv q) by(sex) long
+tabstat marriagetotalcost1000 if year==2016, stat(n mean cv q) by(intercaste) long
+tabstat marriagetotalcost1000 if year==2016, stat(n mean cv q) by(marrtype) long
+tabstat marriagetotalcost1000 if year==2016, stat(n mean cv q) by(sex) long
 
-tabstat marriagetotalcost if year==2020, stat(n mean cv q) by(intercaste) long
-tabstat marriagetotalcost if year==2020, stat(n mean cv q) by(marrtype) long
-tabstat marriagetotalcost if year==2020, stat(n mean cv q) by(sex) long
-restore
+tabstat marriagetotalcost1000 if year==2020, stat(n mean cv q) by(intercaste) long
+tabstat marriagetotalcost1000 if year==2020, stat(n mean cv q) by(marrtype) long
+tabstat marriagetotalcost1000 if year==2020, stat(n mean cv q) by(sex) long
+
 
 * Cost to income to have an idea
-gen CTI=(marriagetotalcost/annualincome_HH)*100
 cls
-foreach x in CTI {
-tabstat `x', stat(n mean cv q) by(year) long
+tabstat CTI, stat(n mean cv q) by(year) long
 
-tabstat `x' if year==2016, stat(n mean cv q) by(intercaste) long
-tabstat `x' if year==2016, stat(n mean cv q) by(marrtype) long
-tabstat `x' if year==2016, stat(n mean cv q) by(sex) long
+tabstat CTI if year==2016, stat(n mean cv q) by(intercaste) long
+tabstat CTI if year==2016, stat(n mean cv q) by(marrtype) long
+tabstat CTI if year==2016, stat(n mean cv q) by(sex) long
 
-tabstat `x' if year==2020, stat(n mean cv q) by(intercaste) long
-tabstat `x' if year==2020, stat(n mean cv q) by(marrtype) long
-tabstat `x' if year==2020, stat(n mean cv q) by(sex) long
-}
+tabstat CTI if year==2020, stat(n mean cv q) by(intercaste) long
+tabstat CTI if year==2020, stat(n mean cv q) by(marrtype) long
+tabstat CTI if year==2020, stat(n mean cv q) by(sex) long
 
 
 * Total expenses
-replace MEIR=MEIR*100
-replace MEAR=MEAR*100
-replace marriageexpenses=marriageexpenses/1000
-
 cls
-foreach x in marriageexpenses MEIR MEAR {
+foreach x in marriageexpenses1000 MEIR MEAR {
 tabstat `x', stat(n mean cv q) by(year) long
 
 tabstat `x' if year==2016, stat(n mean cv q) by(intercaste) long
@@ -223,31 +169,58 @@ tabstat `x', stat(n mean cv q) by(sex) long
 }
 
 
-* Gift
-foreach x in gifttoexpenses GAR GIR gifttocost {
-replace `x'=`x'*100
-}
-replace totalmarriagegiftamount=totalmarriagegiftamount/1000
+
+
 
 cls
-foreach x in totalmarriagegiftamount gifttoexpenses GAR GIR gifttocost {
-tabstat `x', stat(n mean cv q) by(year) long
+********** Cost of the marriage and agricultural status
+use"NEEMSIS-marriage.dta", clear
 
-tabstat `x' if year==2016, stat(n mean cv q) by(intercaste) long
-tabstat `x' if year==2016, stat(n mean cv q) by(marrtype) long
-tabstat `x' if year==2016, stat(n mean cv q) by(sex) long
-
-tabstat `x' if year==2020, stat(n mean cv q) by(intercaste) long
-tabstat `x' if year==2020, stat(n mean cv q) by(marrtype) long
-tabstat `x' if year==2020, stat(n mean cv q) by(sex) long
+* Agricultural status
+foreach x in ownland divHH10 {
+tabstat $total, stat(n mean q) by(`x') long
 }
+
+* Share agri
+cpcorr $total \ incomenonagri_HH shareincomeagri_HH
+
+
+
+
 
 cls
-foreach x in totalmarriagegiftamount gifttoexpenses GIR {
-tabstat `x', stat(n mean cv q) by(sex) long
+********** Cost of the marriage and agricultural status of the male's family
+use"NEEMSIS-marriage.dta", clear
+keep if sex==1
+
+* Agricultural status
+foreach x in ownland divHH10 {
+tabstat marriageexpenses1000 MEIR MEAR, stat(n mean q) by(`x') long
 }
 
-reg totalmarriagegiftamount i.sex, baselevel
+* Share agri
+cpcorr marriageexpenses1000 MEIR MEAR \ incomenonagri_HH shareincomeagri_HH
+
+
+
+
+
+cls
+********** Cost of the marriage and agricultural status of the female's family
+use"NEEMSIS-marriage.dta", clear
+keep if sex==2
+
+* Agricultural status
+foreach x in ownland divHH10 {
+tabstat marriageexpenses1000 MEIR MEAR, stat(n mean q) by(`x') long
+}
+
+* Share agri
+cpcorr marriageexpenses1000 MEIR MEAR \ incomenonagri_HH shareincomeagri_HH
+
+
+
+
 
 ****************************************
 * END
@@ -260,21 +233,140 @@ reg totalmarriagegiftamount i.sex, baselevel
 
 
 
+
+
+
+
+
+
+
+****************************************
+* How much gifts?
+****************************************
+/*
+- What are the amount of gifts?
+- What are the characteristics of low gift group?
+- What are the ffects of marriage cost on gift received?
+*/
+
+cls
+use"NEEMSIS-marriage.dta", clear
+
+
+********** Amount of gifts
+cls
+foreach x in totalmarriagegiftamount1000 gifttoexpenses GAR GIR gifttocost {
+tabstat `x', stat(n mean cv q) by(year) long
+tabstat `x', stat(n mean cv q) by(sex) long
+
+tabstat `x' if year==2016, stat(n mean cv q) by(intercaste) long
+tabstat `x' if year==2016, stat(n mean cv q) by(marrtype) long
+tabstat `x' if year==2016, stat(n mean cv q) by(sex) long
+
+tabstat `x' if year==2020, stat(n mean cv q) by(intercaste) long
+tabstat `x' if year==2020, stat(n mean cv q) by(marrtype) long
+tabstat `x' if year==2020, stat(n mean cv q) by(sex) long
+}
+
+
+********** Caractéristiques de low level of gift
+* Caractéristiques de l'individu
+tab caste lowgift, col nofreq chi2
+tab caste lowgift, exp cchi2 chi2
+ta edulevel lowgift, col nofreq chi2
+ta edulevel lowgift, exp cchi2 chi2
+ta edulevel lowgift if sex==1, exp cchi2 chi2
+ta edulevel lowgift if sex==2, exp cchi2 chi2
+ta sex lowgift, col nofreq chi2
+ta working_pop lowgift, col nofreq chi2
+ta mainocc_occupation_indiv lowgift, col nofreq chi2
+
+* Caractéristiques du mariage
+ta intercaste lowgift, col nofreq chi2
+ta interjatis lowgift, col nofreq chi2
+reg marriagedowry c.lowgift if sex==1
+reg marriagedowry c.lowgift if sex==2
+tabstat marriagedowry if sex==2, stat(n mean) by(lowgift)
+
+* Caractéristiques de la famille du/de la marié/e
+tabstat assets_totalnoland annualincome_HH shareincomenonagri_HH, stat(n mean) by(lowgift)
+reg assets_totalnoland lowgift
+reg annualincome_HH lowgift
+reg shareincomenonagri_HH lowgift
+ta divHH10 lowgift, col nofreq chi2
+ta ownland lowgift, col nofreq chi2
+
+
+
+
+********** Effects of costs on gift
+* Selection
+gen selection=marriagehusbandcost+marriagewifecost
+drop if selection==.
+drop if totalmarriagegiftamount_alt==.
+
+* Stat gift and cost
+pwcorr totalmarriagegiftamount_alt marriagehusbandcost if sex==1, star(0.05)
+pwcorr totalmarriagegiftamount_alt marriagewifecost if sex==2, star(0.05)
+pwcorr totalmarriagegiftamount_alt marriagewifecost2 if sex==2, star(0.05)
+
+* By the level of wealth
+pwcorr totalmarriagegiftamount_alt marriagewifecost2 if sex==2 & status==1, star(0.05)
+pwcorr totalmarriagegiftamount_alt marriagewifecost2 if sex==2 & status==2, star(0.05)
+
+* By the family composition
+preserve
+fre relationshiptohead
+keep if relationshiptohead==5
+cpcorr married_son unmarried_son married_daughter unmarried_daughter \ marriagedowry totalmarriagegiftamount_alt marriagehusbandcost if sex==1
+restore
+
+preserve
+fre relationshiptohead
+keep if relationshiptohead==6
+cpcorr married_son unmarried_son married_daughter unmarried_daughter \ marriagedowry totalmarriagegiftamount_alt marriagewifecost2 if sex==2
+restore
+
+
+
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ****************************************
 * Dowry
 ****************************************
+/*
+- What are the amount of dowry?
+- What are the determinants of the dowry paid? 
+- What are the determinants of the dowry received?
+- Does the dowry asked by the male's family depend on the family's education expenses?
+- Does the dowry sent differ according to the agricultural status of the wife's family?
+- Does the dowry received differ according to the agricultural status of the husband's family?
+*/
+
+
+cls
+********** Amount
 use"NEEMSIS-marriage.dta", clear
-
-* Clean
-replace DAIR=DAIR*100
-replace DMC=DMC*100
-replace DAAR=DAAR*100
-replace marriagedowry=marriagedowry/1000
-
 
 * Total
 cls
-foreach x in marriagedowry DAIR DAAR DMC {
+foreach x in marriagedowry1000 DAIR DAAR DMC {
 tabstat `x', stat(n mean cv q) by(year) long
 
 tabstat `x' if year==2016, stat(n mean cv q) by(intercaste) long
@@ -283,7 +375,6 @@ tabstat `x' if year==2016, stat(n mean cv q) by(marrtype) long
 tabstat `x' if year==2020, stat(n mean cv q) by(intercaste) long
 tabstat `x' if year==2020, stat(n mean cv q) by(marrtype) long
 }
-
 
 
 * Males
@@ -297,8 +388,8 @@ tabstat `x' if year==2020, stat(n mean cv q) by(intercaste) long
 restore
 
 
-
 * Females
+preserve
 keep if sex==2
 cls
 foreach x in marriagedowry DAIR DAAR DMC {
@@ -310,6 +401,222 @@ tabstat `x' if year==2016, stat(n mean cv q) by(marrtype) long
 tabstat `x' if year==2020, stat(n mean cv q) by(intercaste) long
 tabstat `x' if year==2020, stat(n mean cv q) by(marrtype) long
 }
+restore
+
+
+
+
+
+
+
+cls
+********** Determinants of absolut dowry from the female side
+use"NEEMSIS-marriage.dta", clear
+
+* Selection
+keep if sex==2
+
+* Reg
+reg marriagedowry1000 i.year i.edulevel i.working_pop i.caste i.ownland c.assets_totalnoland c.annualincome_HH c.shareincomeagri_HH i.intercaste c.nbmarr_male c.nbmarr_female c.educationexpenses, baselevel
+est store reg1
+
+reg marriagedowry1000 i.year i.edulevel i.working_pop i.caste i.ownland c.assets_totalnoland c.annualincome_HH c.shareincomeagri_HH i.interjatis c.nbmarr_male c.nbmarr_female c.educationexpenses, baselevel
+est store reg2
+
+reg marriagedowry1000 i.year i.edulevel i.working_pop i.caste i.ownland c.assets_totalnoland c.annualincome_HH c.shareincomeagri_HH i.intercaste c.nbmarr_male c.nbmarr_female c.educationexpenses i.marriagespousefamily, baselevel
+est store reg3
+
+reg marriagedowry1000 i.year i.edulevel i.working_pop i.caste i.ownland c.assets_totalnoland c.annualincome_HH c.shareincomeagri_HH i.interjatis c.nbmarr_male c.nbmarr_female c.educationexpenses i.marriagespousefamily, baselevel
+est store reg4
+
+esttab reg1 reg2 reg3 reg4 using "_reg.csv", replace ///
+	label b(3) p(3) eqlabels(none) alignment(S) ///
+	drop(_cons) ///
+	star(* 0.10 ** 0.05 *** 0.01) ///
+	cells("b(fmt(2)star)" "se(fmt(2)par)") ///
+	refcat(, nolabel) ///
+	stats(N, fmt(0) ///
+	labels(`"Observations"'))
+	
+	
+	
+	
+	
+cls
+********** Determinants of the relative dowry from the female side
+use"NEEMSIS-marriage.dta", clear
+
+* Selection
+keep if sex==2
+
+* Reg
+reg DAIR i.year i.edulevel i.working_pop i.caste i.ownland c.assets_totalnoland c.annualincome_HH c.shareincomeagri_HH i.intercaste c.nbmarr_male c.nbmarr_female, baselevel
+est store reg1
+
+reg DAIR i.year i.edulevel i.working_pop i.caste i.ownland c.assets_totalnoland c.annualincome_HH c.shareincomeagri_HH i.interjatis c.nbmarr_male c.nbmarr_female, baselevel
+est store reg2
+
+reg DAIR i.year i.edulevel i.working_pop i.caste i.ownland c.assets_totalnoland c.annualincome_HH c.shareincomeagri_HH i.intercaste c.nbmarr_male c.nbmarr_female i.marriagespousefamily, baselevel
+est store reg3
+
+reg DAIR i.year i.edulevel i.working_pop i.caste i.ownland c.assets_totalnoland c.annualincome_HH c.shareincomeagri_HH i.interjatis c.nbmarr_male c.nbmarr_female i.marriagespousefamily, baselevel
+est store reg4
+
+esttab reg1 reg2 reg3 reg4 using "_reg.csv", replace ///
+	label b(3) p(3) eqlabels(none) alignment(S) ///
+	drop(_cons) ///
+	star(* 0.10 ** 0.05 *** 0.01) ///
+	cells("b(fmt(2)star)" "se(fmt(2)par)") ///
+	refcat(, nolabel) ///
+	stats(N, fmt(0) ///
+	labels(`"Observations"'))
+
+
+	
+	
+cls
+********** Determinants of absolut dowry from the male side
+use"NEEMSIS-marriage.dta", clear
+
+* Selection
+keep if sex==1
+
+* Reg
+reg marriagedowry1000 i.year i.edulevel i.working_pop i.caste i.ownland c.assets_totalnoland c.annualincome_HH c.shareincomeagri_HH i.intercaste c.nbmarr_male c.nbmarr_female, baselevel
+est store reg1
+
+reg marriagedowry1000 i.year i.edulevel i.working_pop i.caste i.ownland c.assets_totalnoland c.annualincome_HH c.shareincomeagri_HH i.interjatis c.nbmarr_male c.nbmarr_female, baselevel
+est store reg2
+
+reg marriagedowry1000 i.year i.edulevel i.working_pop i.caste i.ownland c.assets_totalnoland c.annualincome_HH c.shareincomeagri_HH i.intercaste c.nbmarr_male c.nbmarr_female i.marriagespousefamily, baselevel
+est store reg3
+
+reg marriagedowry1000 i.year i.edulevel i.working_pop i.caste i.ownland c.assets_totalnoland c.annualincome_HH c.shareincomeagri_HH i.interjatis c.nbmarr_male c.nbmarr_female i.marriagespousefamily, baselevel
+est store reg4
+
+esttab reg1 reg2 reg3 reg4 using "_reg.csv", replace ///
+	label b(3) p(3) eqlabels(none) alignment(S) ///
+	drop(_cons) ///
+	star(* 0.10 ** 0.05 *** 0.01) ///
+	cells("b(fmt(2)star)" "se(fmt(2)par)") ///
+	refcat(, nolabel) ///
+	stats(N, fmt(0) ///
+	labels(`"Observations"'))
+
+
+
+	
+
+
+
+cls
+********** Dowry asked and education expenses
+use"panel_HH.dta", clear
+
+* Selection
+drop if marrdow_male_HH==0
+drop if marrdow_male_HH==.
+fre caste
+ta year
+
+
+* Total expenses
+pwcorr educexp_HH marrdow_male_HH, star(0.05)
+pwcorr educexp_HH marrdow_male_HH if caste==1, star(0.05)
+pwcorr educexp_HH marrdow_male_HH if caste==2, star(0.05)
+pwcorr educexp_HH marrdow_male_HH if caste==3, star(0.05)
+pwcorr educexp_HH marrdow_male_HH if caste==1 | caste==2, star(0.05)
+
+* Expenses in education of males
+pwcorr educexp_male_HH marrdow_male_HH, star(0.05)
+pwcorr educexp_male_HH marrdow_male_HH if caste==1, star(0.05)
+pwcorr educexp_male_HH marrdow_male_HH if caste==2, star(0.05)
+pwcorr educexp_male_HH marrdow_male_HH if caste==3, star(0.05)
+pwcorr educexp_male_HH marrdow_male_HH if caste==1 | caste==2, star(0.05)
+
+
+
+* Expenses in education of females
+pwcorr educexp_female_HH marrdow_male_HH, star(0.05)
+pwcorr educexp_female_HH marrdow_male_HH if caste==1, star(0.05)
+pwcorr educexp_female_HH marrdow_male_HH if caste==2, star(0.05)
+pwcorr educexp_female_HH marrdow_male_HH if caste==3, star(0.05)
+pwcorr educexp_female_HH marrdow_male_HH if caste==1 | caste==2, star(0.05)
+
+
+
+
+
+cls
+********** Dowry asked and housing expenditures
+use"panel_HH.dta", clear
+
+* Selection
+drop if marrdow_male_HH==0
+drop if marrdow_male_HH==.
+fre caste
+ta year
+
+* Credit reason given
+pwcorr totHH_givenamt_hous marrdow_male_HH, star(0.05)
+pwcorr totHH_givenamt_hous marrdow_male_HH if caste==1, star(0.05)
+pwcorr totHH_givenamt_hous marrdow_male_HH if caste==2, star(0.05)
+pwcorr totHH_givenamt_hous marrdow_male_HH if caste==3, star(0.05)
+pwcorr totHH_givenamt_hous marrdow_male_HH if caste==1 | caste==2, star(0.05)
+
+
+* Credit effective reason)
+pwcorr totHH_effectiveamt_hous marrdow_male_HH, star(0.05)
+pwcorr totHH_effectiveamt_hous marrdow_male_HH if caste==1, star(0.05)
+pwcorr totHH_effectiveamt_hous marrdow_male_HH if caste==2, star(0.05)
+pwcorr totHH_effectiveamt_hous marrdow_male_HH if caste==3, star(0.05)
+pwcorr totHH_effectiveamt_hous marrdow_male_HH if caste==1 | caste==2, star(0.05)
+
+
+
+
+
+
+
+cls
+********** Agricultural status and dowry sent
+use"NEEMSIS-marriage.dta", clear
+
+* Prepa
+fre sex
+keep if sex==2
+
+* Agricultural status
+foreach x in ownland divHH10 {
+tabstat marriagedowry1000 DAIR DAAR DMC, stat(n mean q) by(`x') long
+}
+
+* Share agri
+cpcorr marriagedowry1000 DAIR DAAR DMC \ incomenonagri_HH shareincomeagri_HH
+
+
+
+
+
+
+
+cls
+********** Agricultural status and dowry received
+use"NEEMSIS-marriage.dta", clear
+
+* Prepa
+fre sex
+keep if sex==1
+
+* Agricultural status
+foreach x in ownland divHH10 {
+tabstat marriagedowry1000, stat(n mean q) by(`x') long
+}
+
+* Share agri
+cpcorr marriagedowry \ incomenonagri_HH shareincomeagri_HH
+
+
 
 
 ****************************************
@@ -329,35 +636,39 @@ tabstat `x' if year==2020, stat(n mean cv q) by(marrtype) long
 
 
 
-
-
-
-
-
-
-
-
-
-
-
 ****************************************
-* Expenses and dowry
+* Marriage net cost (expenses + dowry)
 ****************************************
+/*
+- What is the net cost of the marriage? (expenses and dowry together)
+*/
+
 cls
 use"NEEMSIS-marriage.dta", clear
 
+ta cat_cost sex, col nofreq
 
+fre cat_cost
 
-********** By sex
+* By sex
 tabstat marriagenetcost1000 MNCI marriagenetcost_alt1000 MNCI_alt, stat(n mean q) by(sex)
 
+* By sex and status
+tabstat marriagenetcost_alt1000 MNCI_alt if sex==1, stat(n mean q) by(cat_cost)
+tabstat marriagenetcost_alt1000 MNCI_alt if sex==2, stat(n mean q) by(cat_cost)
 
-********** By sex and caste
+* By sex, status and land
+tabstat marriagenetcost_alt1000 MNCI_alt if sex==1 & cat_cost==3, stat(n mean q) by(ownland)
+tabstat marriagenetcost_alt1000 MNCI_alt if sex==2 & cat_cost==1, stat(n mean q) by(ownland)
+
+tabstat marriagenetcost_alt1000 MNCI_alt if sex==1 & cat_cost==3, stat(n mean q) by(divHH10)
+tabstat marriagenetcost_alt1000 MNCI_alt if sex==2 & cat_cost==1, stat(n mean q) by(divHH10)
+
+* By sex and caste
 tabstat marriagenetcost_alt1000 MNCI_alt if sex==1, stat(n mean q) by(caste) long
 tabstat marriagenetcost_alt1000 MNCI_alt if sex==2, stat(n mean q) by(caste) long
 
-
-********** By sex and land
+* By sex and land
 tabstat marriagenetcost_alt1000 MNCI_alt if sex==1, stat(n mean q) by(ownland) long
 tabstat marriagenetcost_alt1000 MNCI_alt if sex==2, stat(n mean q) by(ownland) long
 
@@ -365,26 +676,10 @@ tabstat marriagenetcost_alt1000 MNCI_alt if sex==1, stat(n mean q) by(divHH10) l
 tabstat marriagenetcost_alt1000 MNCI_alt if sex==2, stat(n mean q) by(divHH10) long
 
 
-
-
 ****************************************
 * END
 
 
 
-
-
-
-
-/*
-C'est normal que la dot déclarée par les hommes soit plus faible car argent en plus pour eux
-Pour les femmes, normalement, c'est un peu sous estimé
-
-Bien faire des commentaires sur les deux graphiques où je calcule le prix net du mariage
-+ Une fois ce commentaire et ces graphiques fait
-+ Dire que le mariage s'est aussi de la dette et faire des stat sur la dette pour mariage
-
-Mettre en relation MNCI + la dette du mariage avec le statut agricole.
-*/
 
 

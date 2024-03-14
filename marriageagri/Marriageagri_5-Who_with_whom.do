@@ -14,63 +14,6 @@ do"C:\Users\Arnaud\Documents\GitHub\folderanalysis\marriageagri.do"
 
 
 
-/*****************************************************
-
-TITLE:
-The political and sexual economies of marriages. Two decades of change in South-Arcot, South India
-
-AUTHORS:
-I. Guérin, A. Natal, C. J. Nordman, and G. Venkatasubramanian
-
-JOURNAL:
-Contemporary South Asia
-
-ABSTRACT:
-This chapter explores the multifaceted role of marriages in the south-Arcot region of central Tamil Nadu.
-There are cases of forced celibacy, but they remain isolated.
-By mobilising twenty years of ethnographic survey, and three household surveys conducted in 2010, 2016-17 and 2020-21, including questions on marriages (who marries whom? at what cost? with a dowry and if so how much?), this paper will examine how marriages are both shaped by and constitutive of local political and sexual economies. 
-By local political and sexual economies, we mean the intertwining of access to material resources, norms of kinship and deviant sexuality.
-As feminist anthropology has long shown, modes of accumulation, kinship and sexuality are inseparable and mutually constructed.
-The drastic and interconnected changes observed over the last two decades in modes of production, marital alliances and the control of female sexuality are a clear illustration of this.
-Our data suggest two main findings, which explains the reasons behind low prevalence of forced celibacy, while highlighting the intensification of patriarchal norms: First, marriages and marital transfers (primarily dowry) play a crucial role in compensating for a volatile economy, whether it is agricultural decline (with the exception of the pandemic period, agricultural incomes are declining, both in absolute and relative terms), a precarious and uncertain non-farm labour market, and costly and risky investments in education (of boys in particular) and expensive housing expenditures.
-In turn, and this is our second argument, the dowry, which is a recent practice among the lower castes and classes, strongly devalues the economic value of young girls and is accompanied by increasing control over women's bodies and sexuality as a symbol of upward mobility.
-The paper will also examine the differences between families that remained solely peasant and those that diversified, exploring the role of marriages and marriage payments in these differentiated strategies.
-
-KEYWORDS:
-Marriage, kinship, sexuality, economy, Tamil Nadu
-
-STATISTICAL ANALYSIS:
-1. Who maries whom?
-2. At what cost?
-3. What about dowry?
-4. Marital transfers (primarily dowry) play a crucial role in compensating for a volatile economy, i.e. agricultural decline, uncertain non-farm labour market, risky investment in education of boys, expensive housing expenditures
-5. Dowry as a symbol of upward mobility
-6. Differences between families that remained solely peasant and those that diversified, exploring the role of marriages and marriage payments in these differentiated strategies
-
-PLAN D'ANALYSE:
-1. Statistiques des variables de mariage sans hétérogéneité pour 2016-17 et 2020-21
-2. Statistiques qui montrent le déclin de l'agriculture
-3. Statistiques qui montrent la volatilité des revenus non-agricoles
-4. Statistiques qui montrent les montants d'investissement dans l'éducation en séparant les hommes et femmes
-5. Statistiques qui montrent les dépenses d'habitations
-6. Dowry par type de mariage pour upward mobility
-7. Classer les ménages en fonction des types de revenus qu'ils ont : que agri, que non-agri, les deux
-8. Faire une part de agri/non agri aussi
-
-
-*****************************************************/
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

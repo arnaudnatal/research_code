@@ -327,7 +327,12 @@ label values caste caste
 ta clt_fvi
 
 *** Caste
-ta caste clt_fvi, expected cchi2 chi2
+ta caste
+ta clt_fvi
+
+ta caste clt_fvi, col nofreq
+ta caste clt_fvi, col nofreq chi2
+ta caste clt_fvi, col nofreq chi2 cchi2
 
 
 ****************************************
