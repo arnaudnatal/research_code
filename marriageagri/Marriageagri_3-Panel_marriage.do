@@ -33,7 +33,8 @@ married husbandwifecaste marriagedowry marriagetotalcost marriageexpenses dummym
 totalmarriagegiftamount hwcaste ageatmarriage marriagedowry1000 marriagetotalcost1000 marriageexpenses1000 MEAR DAAR MEIR DAIR DMC intercaste interjatis marrtype gifttoexpenses benefitsexpenses GAR GIR divHH0 divHH5 divHH10 incomeagri_HH incomenonagri_HH educationexpenses ///
 relationshiptohead relation_head relation_wife relation_mother relation_father relation_son relation_daughter relation_soninlaw relation_daughterinlaw relation_sister relation_brother relation_motherinlaw relation_fatherinlaw relation_grandchildren relation_cousin relation_other agegrp_0_13 agegrp_14_17 agegrp_18_24 agegrp_25_29 agegrp_30_34 agegrp_35_39 agegrp_40_49 agegrp_50_59 agegrp_60_69 agegrp_70_79 agegrp_80_100 male_agegrp_0_13 female_agegrp_0_13 male_agegrp_14_17 female_agegrp_14_17 male_agegrp_18_24 female_agegrp_18_24 male_agegrp_25_29 female_agegrp_25_29 male_agegrp_30_34 female_agegrp_30_34 male_agegrp_35_39 female_agegrp_35_39 male_agegrp_40_49 female_agegrp_40_49 male_agegrp_50_59 female_agegrp_50_59 male_agegrp_60_69 female_agegrp_60_69 male_agegrp_70_79 female_agegrp_70_79 male_agegrp_80_100 female_agegrp_80_100 ///
 unmarried married_male unmarried_male married_female unmarried_female married_male_1824 unmarried_male_1824 married_female_1824 unmarried_female_1824 married_male_2530 unmarried_male_2530 married_female_2530 unmarried_female_2530 married_male_more30 unmarried_male_more30 married_female_more30 unmarried_female_more30 married_male_more18 unmarried_male_more18 married_female_more18 unmarried_female_more18 married_1824 unmarried_1824 married_2530 unmarried_2530 married_more30 unmarried_more30 married_more18 unmarried_more18 ///
-maritalstatus family unmarried_son unmarried_daughter married_son married_daughter
+maritalstatus family unmarried_son unmarried_daughter married_son married_daughter ///
+educexp_male_HH educexp_female_HH educexp_HH
 
 gen year=2016
 
@@ -76,7 +77,8 @@ totalmarriagegiftamount hwcaste ageatmarriage marriagedowry1000 marriagetotalcos
 engagementhusbandcost marriagehusbandcost engagementwifecost marriagewifecost ///
 relationshiptohead relation_head relation_wife relation_mother relation_father relation_son relation_daughter relation_soninlaw relation_daughterinlaw relation_sister relation_brother relation_motherinlaw relation_fatherinlaw relation_grandchildren relation_cousin relation_other agegrp_0_13 agegrp_14_17 agegrp_18_24 agegrp_25_29 agegrp_30_34 agegrp_35_39 agegrp_40_49 agegrp_50_59 agegrp_60_69 agegrp_70_79 agegrp_80_100 male_agegrp_0_13 female_agegrp_0_13 male_agegrp_14_17 female_agegrp_14_17 male_agegrp_18_24 female_agegrp_18_24 male_agegrp_25_29 female_agegrp_25_29 male_agegrp_30_34 female_agegrp_30_34 male_agegrp_35_39 female_agegrp_35_39 male_agegrp_40_49 female_agegrp_40_49 male_agegrp_50_59 female_agegrp_50_59 male_agegrp_60_69 female_agegrp_60_69 male_agegrp_70_79 female_agegrp_70_79 male_agegrp_80_100 female_agegrp_80_100 ///
 unmarried married_male unmarried_male married_female unmarried_female married_male_1824 unmarried_male_1824 married_female_1824 unmarried_female_1824 married_male_2530 unmarried_male_2530 married_female_2530 unmarried_female_2530 married_male_more30 unmarried_male_more30 married_female_more30 unmarried_female_more30 married_male_more18 unmarried_male_more18 married_female_more18 unmarried_female_more18 married_1824 unmarried_1824 married_2530 unmarried_2530 married_more30 unmarried_more30 married_more18 unmarried_more18 ///
-maritalstatus family unmarried_son unmarried_daughter married_son married_daughter
+maritalstatus family unmarried_son unmarried_daughter married_son married_daughter ///
+educexp_male_HH educexp_female_HH educexp_HH
 
 gen year=2020
 
@@ -207,12 +209,20 @@ gen marriagewifecost2=marriagedowry+marriagewifecost if sex==2
 
 
 ********** Assets "high" and "low"
-tabstat assets_total, stat(n q) by(sex)
+xtile status2016=assets_total if year==2016, n(3)
+ta status2016
+xtile status2020=assets_total if year==2020, n(3)
+ta status2020
 gen status=.
-replace status=1 if assets_total<483879.3
-replace status=2 if assets_total>=483879.3
-label define status 1"Low wealth" 2"High wealth"
+replace status=status2016 if year==2016
+replace status=status2020 if year==2020
+label define status 1"Low" 2"Middle" 3"High"
 label values status status
+drop status2016 status2020
+
+tabstat assets_total, stat(n mean q) by(status)
+tabstat assets_total if year==2016, stat(n mean q) by(status)
+tabstat assets_total if year==2020, stat(n mean q) by(status)
 
 
 ********** 1000
@@ -239,6 +249,22 @@ bysort HHID_panel year: gen nbmarr=_N
 
 ********** Cost to income
 gen CTI=(marriagetotalcost/annualincome_HH)*100
+
+
+
+*********** Unmarried cat
+global var unmarried_female_1824 unmarried_female_2530 unmarried_female unmarried_daughter unmarried_male_1824 unmarried_male_2530 unmarried_male unmarried_son married_female_1824 married_female_2530 married_female married_daughter married_male_1824 married_male_2530 married_male married_son
+
+foreach x in $var {
+gen cat_`x'=`x'
+}
+foreach x in $var {
+replace cat_`x'=1 if cat_`x'>1 & cat_`x'!=. & cat_`x'!=0
+}
+
+foreach x in $var {
+ta cat_`x'
+}
 
 
 

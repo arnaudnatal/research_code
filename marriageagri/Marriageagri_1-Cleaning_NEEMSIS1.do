@@ -345,6 +345,17 @@ gen GIR=.
 replace GIR=totalmarriagegiftamount/annualincome_HH if totalmarriagegiftamount!=.
 
 
+***** Education expenses
+fre sex
+gen educationexpenses_male=.
+replace educationexpenses_male=educationexpenses if sex==1
+gen educationexpenses_female=.
+replace educationexpenses_female=educationexpenses if sex==2
+bysort HHID2016: egen educexp_male_HH=sum(educationexpenses_male)
+bysort HHID2016: egen educexp_female_HH=sum(educationexpenses_female)
+bysort HHID2016: egen educexp_HH=sum(educationexpenses)
+drop educationexpenses_male educationexpenses_female
+
 save"NEEMSIS1-marriage_v2.dta", replace
 ****************************************
 * END

@@ -179,11 +179,11 @@ use"NEEMSIS-marriage.dta", clear
 
 * Agricultural status
 foreach x in ownland divHH10 {
-tabstat $total, stat(n mean q) by(`x') long
+tabstat marriageexpenses1000 MEIR MEAR, stat(n mean q) by(`x') long
 }
 
 * Share agri
-cpcorr $total \ incomenonagri_HH shareincomeagri_HH
+cpcorr marriageexpenses1000 MEIR MEAR \ incomenonagri_HH shareincomeagri_HH
 
 
 
@@ -228,10 +228,41 @@ cls
 ********** Cost of the marriage and number of children still to be married
 use"NEEMSIS-marriage.dta", clear
 
-fre sex
-keep if sex==2
-cpcorr unmarried_female_1824 unmarried_female_2530 unmarried_female unmarried_daughter \ totalmarriagegiftamount_alt
+* Macro var
+global var unmarried_female_1824 unmarried_female_2530 unmarried_female unmarried_daughter unmarried_male_1824 unmarried_male_2530 unmarried_male unmarried_son
 
+* Total
+cpcorr $var \ marriageexpenses1000 MEIR MEAR
+
+foreach x in $var {
+tabstat marriageexpenses1000 MEIR MEAR, stat(n mean) by(cat_`x')
+}
+
+
+cls
+* Males
+preserve
+keep if sex==1
+cpcorr $var \ marriageexpenses1000 MEIR MEAR
+cpcorr $var \ marriagehusbandcost
+
+foreach x in $var {
+tabstat marriageexpenses1000 MEIR MEAR marriagehusbandcost, stat(n mean) by(cat_`x')
+}
+restore
+
+
+cls
+* Females
+preserve
+keep if sex==2
+cpcorr $var \ marriageexpenses1000 MEIR MEAR
+cpcorr $var \ marriagewifecost2
+
+foreach x in $var {
+tabstat marriageexpenses1000 MEIR MEAR marriagewifecost2, stat(n mean) by(cat_`x')
+}
+restore
 
 
 ****************************************
@@ -263,11 +294,9 @@ cpcorr unmarried_female_1824 unmarried_female_2530 unmarried_female unmarried_da
 */
 
 cls
+********** Amount of gifts
 use"NEEMSIS-marriage.dta", clear
 
-
-********** Amount of gifts
-cls
 foreach x in totalmarriagegiftamount1000 gifttoexpenses GAR GIR gifttocost {
 tabstat `x', stat(n mean cv q) by(year) long
 tabstat `x', stat(n mean cv q) by(sex) long
@@ -324,21 +353,57 @@ pwcorr totalmarriagegiftamount_alt marriagewifecost if sex==2, star(0.05)
 pwcorr totalmarriagegiftamount_alt marriagewifecost2 if sex==2, star(0.05)
 
 * By the level of wealth
+pwcorr totalmarriagegiftamount_alt marriagehusbandcost if sex==1 & status==1, star(0.05)
+pwcorr totalmarriagegiftamount_alt marriagehusbandcost if sex==1 & status==2, star(0.05)
+pwcorr totalmarriagegiftamount_alt marriagehusbandcost if sex==1 & status==3, star(0.05)
 pwcorr totalmarriagegiftamount_alt marriagewifecost2 if sex==2 & status==1, star(0.05)
 pwcorr totalmarriagegiftamount_alt marriagewifecost2 if sex==2 & status==2, star(0.05)
+pwcorr totalmarriagegiftamount_alt marriagewifecost2 if sex==2 & status==3, star(0.05)
+
+/*
+Il n'y a pas de différence de corrélation entre cout du mariage et gift recus selon le statut économique du ménage (T1, T2, T3 d'actifs).
+*/
+
 
 * By the family composition
-preserve
-fre relationshiptohead
-keep if relationshiptohead==5
-cpcorr married_son unmarried_son married_daughter unmarried_daughter \ marriagedowry totalmarriagegiftamount_alt marriagehusbandcost if sex==1
-restore
+cls
+pwcorr totalmarriagegiftamount_alt marriagehusbandcost if sex==1 & cat_unmarried_female==0, star(0.01)
+pwcorr totalmarriagegiftamount_alt marriagehusbandcost if sex==1 & cat_unmarried_female==1, star(0.01)
 
-preserve
-fre relationshiptohead
-keep if relationshiptohead==6
-cpcorr married_son unmarried_son married_daughter unmarried_daughter \ marriagedowry totalmarriagegiftamount_alt marriagewifecost2 if sex==2
-restore
+pwcorr totalmarriagegiftamount_alt marriagehusbandcost if sex==1 & cat_unmarried_daughter==0, star(0.01)
+pwcorr totalmarriagegiftamount_alt marriagehusbandcost if sex==1 & cat_unmarried_daughter==1, star(0.01)
+
+pwcorr totalmarriagegiftamount_alt marriagehusbandcost if sex==1 & cat_unmarried_male==0, star(0.01)
+pwcorr totalmarriagegiftamount_alt marriagehusbandcost if sex==1 & cat_unmarried_male==1, star(0.01)
+
+pwcorr totalmarriagegiftamount_alt marriagehusbandcost if sex==1 & cat_unmarried_son==0, star(0.01)
+pwcorr totalmarriagegiftamount_alt marriagehusbandcost if sex==1 & cat_unmarried_son==1, star(0.01)
+
+/*
+- Il y a une corr positive (0.45 à 1%) entre gift received et cout du mariage pour les familles des époux pour lesquelles il reste des femmes non mariées dans le ménage.
+*/
+
+
+cls
+pwcorr totalmarriagegiftamount_alt marriagewifecost2 if sex==2 & cat_unmarried_female==0, star(0.05)
+pwcorr totalmarriagegiftamount_alt marriagewifecost2 if sex==2 & cat_unmarried_female==1, star(0.05)
+
+pwcorr totalmarriagegiftamount_alt marriagewifecost2 if sex==2 & cat_unmarried_daughter==0, star(0.05)
+pwcorr totalmarriagegiftamount_alt marriagewifecost2 if sex==2 & cat_unmarried_daughter==1, star(0.05)
+
+pwcorr totalmarriagegiftamount_alt marriagewifecost2 if sex==2 & cat_unmarried_male==0, star(0.05)
+pwcorr totalmarriagegiftamount_alt marriagewifecost2 if sex==2 & cat_unmarried_male==1, star(0.05)
+
+pwcorr totalmarriagegiftamount_alt marriagewifecost2 if sex==2 & cat_unmarried_son==0, star(0.05)
+pwcorr totalmarriagegiftamount_alt marriagewifecost2 if sex==2 & cat_unmarried_son==1, star(0.05)
+
+/*
+- Il y a une corr positive (0.38 à 1%) entre gift received et cout du mariage pour les familles des épouses pour lesquelles il ne reste pas de femmes non mariées dans le ménage.
+- Il y a une corr positive (0.38 à 1%) entre gift received et cout du mariage pour les familles des épouses pour lesquelles il ne reste pas de fille non mariées dans le ménage.
+- Il y a une corr positive (0.39 à 1%) entre gift received et cout du mariage pour les familles des épouses pour lesquelles il ne reste pas d'homme non mariés dans le ménage.
+- Il y a une corr positive (0.34 à 1%) entre gift received et cout d mariage pour les familles des épouses pour lesquelles il reste des hommes non mariés dans le ménage. Donc pas de différence selon le nb d'homme qu'il reste dans le ménage.
+- Il y a une corr positive (0.42 à 1%) entre gift received et cout du mariage pour les familles des épouses pour lesquelles il ne reste pas de fils non mariés dans le ménage.
+*/
 
 
 
@@ -349,15 +414,52 @@ cls
 ********** Amount of the gifts received and number of children still to be married
 use"NEEMSIS-marriage.dta", clear
 
-fre sex
+* Macro var
+global var unmarried_female_1824 unmarried_female_2530 unmarried_female unmarried_daughter unmarried_male_1824 unmarried_male_2530 unmarried_male unmarried_son
+
+* Total
+cpcorr $var \ totalmarriagegiftamount_alt
+
+foreach x in $var {
+tabstat totalmarriagegiftamount_alt, stat(n mean q) by(cat_`x')
+}
+
+
+cls
+* Males
+preserve
+keep if sex==1
+cpcorr $var \ totalmarriagegiftamount_alt
+
+foreach x in $var {
+tabstat totalmarriagegiftamount_alt, stat(n mean q) by(cat_`x')
+}
+restore
+
+
+cls
+* Females
+preserve
 keep if sex==2
-cpcorr unmarried_female_1824 unmarried_female_2530 unmarried_female unmarried_daughter \ totalmarriagegiftamount_alt
+cpcorr $var \ totalmarriagegiftamount_alt
+
+foreach x in $var {
+tabstat totalmarriagegiftamount_alt, stat(n mean q) by(cat_`x')
+}
+restore
 
 
+/*
+Célibataire ici non-marié, donc à marier.
+
+Recoivent-ils plus quand il reste des enfants à marier dans le ménage ?
+- Le montant moyen des gifts recus par la famille est plus élevé lorsque cette dernière n'a plus de femme célibataire ou de daughter célibataire.
+- Le montant moyen des gifts recus par la famille est plus élevé lorsque cette dernière a encore des hommes entre 25 et 30 célibataires.
+- Le montant moyen des gifts recus par la famille de l'époux est plus élevé lorsque cette dernière n'a plus de femme célibataire ou de daughter célibataire.
+*/
 
 ****************************************
 * END
-
 
 
 
@@ -445,16 +547,16 @@ use"NEEMSIS-marriage.dta", clear
 keep if sex==2
 
 * Reg
-reg marriagedowry1000 i.year i.edulevel i.working_pop i.caste i.ownland c.assets_totalnoland c.annualincome_HH c.shareincomeagri_HH i.intercaste c.nbmarr_male c.nbmarr_female c.educationexpenses, baselevel
+reg marriagedowry1000 i.year i.edulevel i.working_pop i.caste i.ownland c.assets_totalnoland c.annualincome_HH c.shareincomeagri_HH i.intercaste c.nbmarr_male c.nbmarr_female c.educexp_female_HH, baselevel
 est store reg1
 
-reg marriagedowry1000 i.year i.edulevel i.working_pop i.caste i.ownland c.assets_totalnoland c.annualincome_HH c.shareincomeagri_HH i.interjatis c.nbmarr_male c.nbmarr_female c.educationexpenses, baselevel
+reg marriagedowry1000 i.year i.edulevel i.working_pop i.caste i.ownland c.assets_totalnoland c.annualincome_HH c.shareincomeagri_HH i.interjatis c.nbmarr_male c.nbmarr_female c.educexp_female_HH, baselevel
 est store reg2
 
-reg marriagedowry1000 i.year i.edulevel i.working_pop i.caste i.ownland c.assets_totalnoland c.annualincome_HH c.shareincomeagri_HH i.intercaste c.nbmarr_male c.nbmarr_female c.educationexpenses i.marriagespousefamily, baselevel
+reg marriagedowry1000 i.year i.edulevel i.working_pop i.caste i.ownland c.assets_totalnoland c.annualincome_HH c.shareincomeagri_HH i.intercaste c.nbmarr_male c.nbmarr_female c.educexp_female_HH i.marriagespousefamily, baselevel
 est store reg3
 
-reg marriagedowry1000 i.year i.edulevel i.working_pop i.caste i.ownland c.assets_totalnoland c.annualincome_HH c.shareincomeagri_HH i.interjatis c.nbmarr_male c.nbmarr_female c.educationexpenses i.marriagespousefamily, baselevel
+reg marriagedowry1000 i.year i.edulevel i.working_pop i.caste i.ownland c.assets_totalnoland c.annualincome_HH c.shareincomeagri_HH i.interjatis c.nbmarr_male c.nbmarr_female c.educexp_female_HH i.marriagespousefamily, baselevel
 est store reg4
 
 esttab reg1 reg2 reg3 reg4 using "_reg.csv", replace ///
@@ -469,7 +571,7 @@ esttab reg1 reg2 reg3 reg4 using "_reg.csv", replace ///
 	
 	
 	
-	
+
 cls
 ********** Determinants of the relative dowry from the female side
 use"NEEMSIS-marriage.dta", clear
@@ -478,16 +580,16 @@ use"NEEMSIS-marriage.dta", clear
 keep if sex==2
 
 * Reg
-reg DAIR i.year i.edulevel i.working_pop i.caste i.ownland c.assets_totalnoland c.annualincome_HH c.shareincomeagri_HH i.intercaste c.nbmarr_male c.nbmarr_female, baselevel
+reg DAIR i.year i.edulevel i.working_pop i.caste i.ownland c.assets_totalnoland c.annualincome_HH c.shareincomeagri_HH i.intercaste c.nbmarr_male c.nbmarr_female c.educexp_female_HH, baselevel
 est store reg1
 
-reg DAIR i.year i.edulevel i.working_pop i.caste i.ownland c.assets_totalnoland c.annualincome_HH c.shareincomeagri_HH i.interjatis c.nbmarr_male c.nbmarr_female, baselevel
+reg DAIR i.year i.edulevel i.working_pop i.caste i.ownland c.assets_totalnoland c.annualincome_HH c.shareincomeagri_HH i.interjatis c.nbmarr_male c.nbmarr_female c.educexp_female_HH, baselevel
 est store reg2
 
-reg DAIR i.year i.edulevel i.working_pop i.caste i.ownland c.assets_totalnoland c.annualincome_HH c.shareincomeagri_HH i.intercaste c.nbmarr_male c.nbmarr_female i.marriagespousefamily, baselevel
+reg DAIR i.year i.edulevel i.working_pop i.caste i.ownland c.assets_totalnoland c.annualincome_HH c.shareincomeagri_HH i.intercaste c.nbmarr_male c.nbmarr_female c.educexp_female_HH i.marriagespousefamily, baselevel
 est store reg3
 
-reg DAIR i.year i.edulevel i.working_pop i.caste i.ownland c.assets_totalnoland c.annualincome_HH c.shareincomeagri_HH i.interjatis c.nbmarr_male c.nbmarr_female i.marriagespousefamily, baselevel
+reg DAIR i.year i.edulevel i.working_pop i.caste i.ownland c.assets_totalnoland c.annualincome_HH c.shareincomeagri_HH i.interjatis c.nbmarr_male c.nbmarr_female c.educexp_female_HH i.marriagespousefamily, baselevel
 est store reg4
 
 esttab reg1 reg2 reg3 reg4 using "_reg.csv", replace ///
@@ -510,16 +612,16 @@ use"NEEMSIS-marriage.dta", clear
 keep if sex==1
 
 * Reg
-reg marriagedowry1000 i.year i.edulevel i.working_pop i.caste i.ownland c.assets_totalnoland c.annualincome_HH c.shareincomeagri_HH i.intercaste c.nbmarr_male c.nbmarr_female, baselevel
+reg marriagedowry1000 i.year i.edulevel i.working_pop i.caste i.ownland c.assets_totalnoland c.annualincome_HH c.shareincomeagri_HH i.intercaste c.nbmarr_male c.nbmarr_female c.educexp_male_HH, baselevel
 est store reg1
 
-reg marriagedowry1000 i.year i.edulevel i.working_pop i.caste i.ownland c.assets_totalnoland c.annualincome_HH c.shareincomeagri_HH i.interjatis c.nbmarr_male c.nbmarr_female, baselevel
+reg marriagedowry1000 i.year i.edulevel i.working_pop i.caste i.ownland c.assets_totalnoland c.annualincome_HH c.shareincomeagri_HH i.interjatis c.nbmarr_male c.nbmarr_female c.educexp_male_HH, baselevel
 est store reg2
 
-reg marriagedowry1000 i.year i.edulevel i.working_pop i.caste i.ownland c.assets_totalnoland c.annualincome_HH c.shareincomeagri_HH i.intercaste c.nbmarr_male c.nbmarr_female i.marriagespousefamily, baselevel
+reg marriagedowry1000 i.year i.edulevel i.working_pop i.caste i.ownland c.assets_totalnoland c.annualincome_HH c.shareincomeagri_HH i.intercaste c.nbmarr_male c.nbmarr_female c.educexp_male_HH i.marriagespousefamily, baselevel
 est store reg3
 
-reg marriagedowry1000 i.year i.edulevel i.working_pop i.caste i.ownland c.assets_totalnoland c.annualincome_HH c.shareincomeagri_HH i.interjatis c.nbmarr_male c.nbmarr_female i.marriagespousefamily, baselevel
+reg marriagedowry1000 i.year i.edulevel i.working_pop i.caste i.ownland c.assets_totalnoland c.annualincome_HH c.shareincomeagri_HH i.interjatis c.nbmarr_male c.nbmarr_female c.educexp_male_HH i.marriagespousefamily, baselevel
 est store reg4
 
 esttab reg1 reg2 reg3 reg4 using "_reg.csv", replace ///
@@ -652,9 +754,24 @@ cls
 ********** Amount of the dowry sent and number of children still to be married
 use"NEEMSIS-marriage.dta", clear
 
+* Macro var
+global var unmarried_female_1824 unmarried_female_2530 unmarried_female unmarried_daughter unmarried_male_1824 unmarried_male_2530 unmarried_male unmarried_son
+
 fre sex
 keep if sex==2
-cpcorr unmarried_female_1824 unmarried_female_2530 unmarried_female unmarried_daughter \ marriagedowry1000
+cpcorr $var \ marriagedowry1000
+
+foreach x in $var {
+tabstat marriagedowry1000, stat(n mean q) by(cat_`x')
+}
+
+
+/*
+- La dot moyenne versé par les familles des épouses pour lesquelles il reste des femmes/filles célibataires/à marier est plus élevée que celle versé par les familles pour lesquelles il ne reste pas de célibataires.
+- Les familles où il reste des fils non mariés versent une dot plus élevée que les familles où il ne reste pas de fils non mariés.
+*/
+
+
 
 
 
@@ -667,11 +784,20 @@ cls
 ********** Amount of the dowry received and number of children still to be married
 use"NEEMSIS-marriage.dta", clear
 
+* Macro var
+global var unmarried_female_1824 unmarried_female_2530 unmarried_female unmarried_daughter unmarried_male_1824 unmarried_male_2530 unmarried_male unmarried_son
+
 fre sex
 keep if sex==1
-cpcorr unmarried_female_1824 unmarried_female_2530 unmarried_female unmarried_daughter \ marriagedowry1000
+cpcorr $var \ marriagedowry1000
 
+foreach x in $var {
+tabstat marriagedowry1000, stat(n mean q) by(cat_`x')
+}
 
+/*
+- Les familles où il reste des fils non mariés recoivent une dot plus élevée que les familles où il ne reste pas de fils non mariés.
+*/
 
 
 

@@ -578,6 +578,19 @@ gen BAR=netbenefitsmarriage1000*1000/assets_total
 gen BIR=netbenefitsmarriage1000*1000/annualincome_HH
 
 
+***** Education expenses
+fre sex
+gen educationexpenses_male=.
+replace educationexpenses_male=educationexpenses if sex==1
+gen educationexpenses_female=.
+replace educationexpenses_female=educationexpenses if sex==2
+bysort HHID2020: egen educexp_male_HH=sum(educationexpenses_male)
+bysort HHID2020: egen educexp_female_HH=sum(educationexpenses_female)
+bysort HHID2020: egen educexp_HH=sum(educationexpenses)
+drop educationexpenses_male educationexpenses_female
+
+
+
 save"NEEMSIS2-marriage_v3.dta", replace
 ****************************************
 * END
