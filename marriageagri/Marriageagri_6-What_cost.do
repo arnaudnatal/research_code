@@ -317,8 +317,15 @@ tab caste lowgift, col nofreq chi2
 tab caste lowgift, exp cchi2 chi2
 ta edulevel lowgift, col nofreq chi2
 ta edulevel lowgift, exp cchi2 chi2
-ta edulevel lowgift if sex==1, exp cchi2 chi2
-ta edulevel lowgift if sex==2, exp cchi2 chi2
+tabstat totalmarriagegiftamount_alt, stat(n mean q) by(edulevel)
+reg totalmarriagegiftamount_alt i.edulevel
+reg totalmarriagegiftamount_alt i.edulevel if sex==1
+reg totalmarriagegiftamount_alt i.edulevel if sex==2
+reg totalmarriagegiftamount_alt c.educexp_female_HH
+reg totalmarriagegiftamount_alt c.educexp_female_HH if sex==1
+reg totalmarriagegiftamount_alt c.educexp_female_HH if sex==2
+*ta edulevel lowgift if sex==1, exp cchi2 chi2
+*ta edulevel lowgift if sex==2, exp cchi2 chi2
 ta sex lowgift, col nofreq chi2
 ta working_pop lowgift, col nofreq chi2
 ta mainocc_occupation_indiv lowgift, col nofreq chi2
@@ -333,10 +340,14 @@ tabstat marriagedowry if sex==2, stat(n mean) by(lowgift)
 * Caractéristiques de la famille du/de la marié/e
 tabstat assets_totalnoland annualincome_HH shareincomenonagri_HH, stat(n mean) by(lowgift)
 reg assets_totalnoland lowgift
+pwcorr assets_totalnoland totalmarriagegiftamount_alt, star(0.01)
 reg annualincome_HH lowgift
+ta status lowgift, col nofreq chi2
+ta status lowgift, exp cchi2 chi2
 reg shareincomenonagri_HH lowgift
 ta divHH10 lowgift, col nofreq chi2
 ta ownland lowgift, col nofreq chi2
+
 
 
 
@@ -360,9 +371,6 @@ pwcorr totalmarriagegiftamount_alt marriagewifecost2 if sex==2 & status==1, star
 pwcorr totalmarriagegiftamount_alt marriagewifecost2 if sex==2 & status==2, star(0.05)
 pwcorr totalmarriagegiftamount_alt marriagewifecost2 if sex==2 & status==3, star(0.05)
 
-/*
-Il n'y a pas de différence de corrélation entre cout du mariage et gift recus selon le statut économique du ménage (T1, T2, T3 d'actifs).
-*/
 
 
 * By the family composition
@@ -379,10 +387,6 @@ pwcorr totalmarriagegiftamount_alt marriagehusbandcost if sex==1 & cat_unmarried
 pwcorr totalmarriagegiftamount_alt marriagehusbandcost if sex==1 & cat_unmarried_son==0, star(0.01)
 pwcorr totalmarriagegiftamount_alt marriagehusbandcost if sex==1 & cat_unmarried_son==1, star(0.01)
 
-/*
-- Il y a une corr positive (0.45 à 1%) entre gift received et cout du mariage pour les familles des époux pour lesquelles il reste des femmes non mariées dans le ménage.
-*/
-
 
 cls
 pwcorr totalmarriagegiftamount_alt marriagewifecost2 if sex==2 & cat_unmarried_female==0, star(0.05)
@@ -396,14 +400,6 @@ pwcorr totalmarriagegiftamount_alt marriagewifecost2 if sex==2 & cat_unmarried_m
 
 pwcorr totalmarriagegiftamount_alt marriagewifecost2 if sex==2 & cat_unmarried_son==0, star(0.05)
 pwcorr totalmarriagegiftamount_alt marriagewifecost2 if sex==2 & cat_unmarried_son==1, star(0.05)
-
-/*
-- Il y a une corr positive (0.38 à 1%) entre gift received et cout du mariage pour les familles des épouses pour lesquelles il ne reste pas de femmes non mariées dans le ménage.
-- Il y a une corr positive (0.38 à 1%) entre gift received et cout du mariage pour les familles des épouses pour lesquelles il ne reste pas de fille non mariées dans le ménage.
-- Il y a une corr positive (0.39 à 1%) entre gift received et cout du mariage pour les familles des épouses pour lesquelles il ne reste pas d'homme non mariés dans le ménage.
-- Il y a une corr positive (0.34 à 1%) entre gift received et cout d mariage pour les familles des épouses pour lesquelles il reste des hommes non mariés dans le ménage. Donc pas de différence selon le nb d'homme qu'il reste dans le ménage.
-- Il y a une corr positive (0.42 à 1%) entre gift received et cout du mariage pour les familles des épouses pour lesquelles il ne reste pas de fils non mariés dans le ménage.
-*/
 
 
 
@@ -449,14 +445,7 @@ tabstat totalmarriagegiftamount_alt, stat(n mean q) by(cat_`x')
 restore
 
 
-/*
-Célibataire ici non-marié, donc à marier.
 
-Recoivent-ils plus quand il reste des enfants à marier dans le ménage ?
-- Le montant moyen des gifts recus par la famille est plus élevé lorsque cette dernière n'a plus de femme célibataire ou de daughter célibataire.
-- Le montant moyen des gifts recus par la famille est plus élevé lorsque cette dernière a encore des hommes entre 25 et 30 célibataires.
-- Le montant moyen des gifts recus par la famille de l'époux est plus élevé lorsque cette dernière n'a plus de femme célibataire ou de daughter célibataire.
-*/
 
 ****************************************
 * END
@@ -635,7 +624,7 @@ esttab reg1 reg2 reg3 reg4 using "_reg.csv", replace ///
 
 
 
-	
+
 
 
 
