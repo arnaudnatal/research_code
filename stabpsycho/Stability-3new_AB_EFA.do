@@ -389,9 +389,9 @@ rename ES_imcr ES
 rename Grit_imcr Grit
 
 keep HHID_panel INDID_panel year ///
-fES fOP fCO fbES fbCO fbOP OP CO EX AG ES Grit
+fES fOP fCO fbES fbCO fbOP OP CO EX AG ES Grit $f1without $f2without $f3without
 
-reshape wide fES fOP fCO fbES fbCO fbOP OP CO EX AG ES Grit, i(HHID_panel INDID_panel) j(year)
+reshape wide fES fOP fCO fbES fbCO fbOP OP CO EX AG ES Grit $f1without $f2without $f3without, i(HHID_panel INDID_panel) j(year)
 
 
 ********** Diff

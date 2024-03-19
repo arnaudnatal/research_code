@@ -27,12 +27,9 @@ use"panel_stab_v2_wide", clear
 keep if panel2016==1
 
 
-
-
 ********** To keep
 keep HHID_panel INDID_panel ///
-egoid* name* sex* age* jatiscorr* caste* edulevel* villageid* panel* dummydemonetisation* relationshiptohead* maritalstatus* mainocc_occupation_indiv* annualincome_indiv* annualincome_HH* assets_total1000* assets_totalnoland1000* HHsize* typeoffamily* village* aspirationminimumwage* dummyaspirationmorehours* aspirationminimumwage2* dummyexposure* secondlockdownexposure* dummysell* submissiondate* ars* ars2* ars3* username* edulevel_backup*
-
+egoid* name* sex* age* jatiscorr* caste* edulevel* villageid* panel* dummydemonetisation* relationshiptohead* maritalstatus* mainocc_occupation_indiv* annualincome_indiv* annualincome_HH* assets_total1000* assets_totalnoland1000* HHsize* typeoffamily* village* aspirationminimumwage* dummyaspirationmorehours* aspirationminimumwage2* dummyexposure* secondlockdownexposure* dummysell* submissiondate* ars* ars2* ars3* username* edulevel_backup* num_tt* lit_tt* raven_tt* loanamount_HH* assets_sizeownland* ownland* dummymarriage* dummy_marriedlist* expenses_heal* shareexpenses_heal* mainocc_profession_indiv* mainocc_sector_indiv* mainocc_occupationname_indiv*
 
 
 
@@ -58,8 +55,6 @@ fre username_neemsis2
 drop username2016 username_20162016 username_20202016 username_2020_code2016 username2020 username_20162020 username_20202020 username_2016_code2020
 
 fre username_backup2016 username_neemsis1 username_backup2020 username_neemsis2
-
-
 
 
 
@@ -97,8 +92,11 @@ label define edulevel 0"Edu: Below prim" 1"Edu: Primary" 2"Edu: High school" 3"E
 
 
 * MOC
-rename mainocc_occupation_indiv2016 moc_indiv
-label define occupcode 0"Occ: No occup" 1"Occ: Agri" 2"Occ: Agri coolie" 3"Occ: Coolie" 4"Occ: Reg non-qual" 5"Occ: Reg qualif" 6"Occ: SE" 7"Occ: NREGA", modify
+clonevar moc_indiv=mainocc_occupation_indiv2016
+recode moc_indiv (5=4)
+label define occupcode2 0"Occ: No occup" 1"Occ: Agri" 2"Occ: Agri coolie" 3"Occ: Coolie" 4"Occ: Reg" 6"Occ: SE" 7"Occ: NREGA"
+label values moc_indiv occupcode2
+ta mainocc_occupation_indiv2016 moc_indiv
 
 
 * Bias
@@ -159,59 +157,120 @@ label values annualincome_HH2016_q income
 label values annualincome_indiv2016_q income
 
 
-* Cov expo
-destring dummysell2020, replace
-label define cov 0 "Cov: Not exp" 1 "Cov: Exposed"
-label values dummysell2020 cov
-fre dummysell2020
-
-* General shock
-gen shock=dummydemonetisation2016+dummysell2020
-fre shock
-
-
-* Dummy shock
-gen dummyshock=shock
-recode dummyshock (4=1) (3=1) (2=1)
-label define dummyshock 0"Shock: No" 1"Shock: Yes"
-label values dummyshock dummyshock
-
-
-* Recode shock
-gen shock_recode=shock
-recode shock_recode (4=2) (3=2)
-label define shock_recode 0"Shock: No" 1"Shock: One" 2"Shock: Two or more"
-label values shock_recode shock_recode
-
-* Dummy
-foreach x in sex age_cat educode moc_indiv caste annualincome_indiv2016_q {
-tab `x', gen(`x'_)
-}
-
-* Recode moc_indiv
-recode moc_indiv (5=4)
-des moc_indiv
-fre moc_indiv
-label define occupcode 4"Occ: Reg", modify
-fre moc_indiv
-
-
-
-
-********** Traits
-merge 1:1 HHID_panel INDID_panel using "panel_stab_v2_pooled_wide"
-drop _merge
-keep if sex!=.
-
-
-********** Last changes
+* Caste
 codebook caste
 label define castecat2 1"Caste: Dalits" 2"Caste: Middle" 3"Caste: Upper", modify
 label values caste castecat
 fre caste
 
 
+* Type of family
+label define typeoffamily 1 "Fam: Nuclear" 2 "Fam: Stem" 3 "Fam: Joint-stem"
+foreach i in 2016 2020 {
+replace typeoffamily`i'="1" if typeoffamily`i'=="nuclear"
+replace typeoffamily`i'="2" if typeoffamily`i'=="stem"
+replace typeoffamily`i'="3" if typeoffamily`i'=="joint-stem"
+destring typeoffamily`i', replace
+}
+label values typeoffamily2016 typeoffamily
+label values typeoffamily2020 typeoffamily
+fre typeoffamily2016 typeoffamily2020
 
+
+
+********** Merge cognition
+merge 1:1 HHID_panel INDID_panel using "panel_stab_v2_pooled_wide"
+drop _merge
+keep if sex!=.
+
+
+
+
+********** Shocks
+* COVID
+destring dummysell2020, replace
+label define cov 0 "Cov: Not exp" 1 "Cov: Exposed"
+label values dummysell2020 cov
+fre dummysell2020
+
+* Demonetisation
+ta dummydemonetisation2016
+label define demo2 0 "Demo: Not exp" 1 "Demo: Exposed"
+label values dummydemonetisation2016 demo2
+fre dummydemonetisation2016
+
+* Land
+gen dummyshockland=.
+label define shockland 0 "Same or higher land area" 1 "Sale/loss of land"
+label values dummyshockland shockland
+replace dummyshockland=0 if assets_sizeownland2020>=assets_sizeownland2016
+replace dummyshockland=1 if assets_sizeownland2020<assets_sizeownland2016
+ta dummyshockland
+
+* Debt
+gen temp1=loanamount_HH2016*(100/158)
+gen temp2=loanamount_HH2020*(100/184)
+gen dummyshockdebt=.
+label define shockdebt 0 "Same or lower debt" 1 "Higher debt (x2)"
+label values dummyshockdebt shockdebt
+gen temp=temp2/temp1
+ta temp
+replace dummyshockdebt=0 if temp<2
+replace dummyshockdebt=1 if temp>=2
+ta dummyshockdebt
+drop temp temp1 temp2
+
+* Health
+gen temp1=expenses_heal2016*(100/158)
+gen temp2=expenses_heal2020*(100/184)
+gen dummyshockhealth=.
+label define shockhealth 0 "Same or lower health spending" 1 "Higher health spending (x2)"
+label values dummyshockhealth shockhealth
+gen temp=temp2/temp1
+ta temp
+replace dummyshockhealth=0 if temp<2
+replace dummyshockhealth=1 if temp>=2
+ta dummyshockhealth
+drop temp temp1 temp2
+
+
+* Health2
+gen dummyshockhealth2=.
+label define shockhealth2 0 "Same or lower health spending" 1 "Higher health spending"
+label values dummyshockhealth2 shockhealth2
+gen temp=shareexpenses_heal2020/shareexpenses_heal2016
+ta temp
+replace dummyshockhealth2=0 if temp<2
+replace dummyshockhealth2=1 if temp>=2
+ta dummyshockhealth
+drop temp
+
+
+* Employment
+ta mainocc_occupation_indiv2016 mainocc_occupation_indiv2020, chi2
+fre mainocc_occupation_indiv2016
+
+gen dummyshockemployment=0
+label define shockemployment 0 "Same or better type of job" 1 "Lower type of job"
+replace dummyshockemployment=1 if mainocc_occupation_indiv2016!=0 & mainocc_occupation_indiv2020==0
+replace dummyshockemployment=1 if mainocc_occupation_indiv2016!=0 & mainocc_occupation_indiv2016!=7 & mainocc_occupation_indiv2020==7
+replace dummyshockemployment=1 if mainocc_occupation_indiv2016==1 & mainocc_occupation_indiv2020==2
+replace dummyshockemployment=1 if mainocc_occupation_indiv2016==1 & mainocc_occupation_indiv2020==7
+replace dummyshockemployment=1 if mainocc_occupation_indiv2016==4 & mainocc_occupation_indiv2020==2
+replace dummyshockemployment=1 if mainocc_occupation_indiv2016==4 & mainocc_occupation_indiv2020==3
+replace dummyshockemployment=1 if mainocc_occupation_indiv2016==4 & mainocc_occupation_indiv2020==7
+replace dummyshockemployment=1 if mainocc_occupation_indiv2016==5 & mainocc_occupation_indiv2020==2
+replace dummyshockemployment=1 if mainocc_occupation_indiv2016==5 & mainocc_occupation_indiv2020==3
+replace dummyshockemployment=1 if mainocc_occupation_indiv2016==5 & mainocc_occupation_indiv2020==7
+label values dummyshockemployment shockemployment
+
+ta mainocc_occupation_indiv2016 mainocc_occupation_indiv2020 if dummyshockemployment==0
+ta mainocc_occupation_indiv2016 mainocc_occupation_indiv2020 if dummyshockemployment==1
+
+
+cls
+global shock dummysell2020 dummydemonetisation2016 dummyshockland dummyshockdebt dummyshockhealth dummyshockemployment
+tab1 $shock
 
 save "panel_stab_pooled_wide_v3", replace
 ****************************************

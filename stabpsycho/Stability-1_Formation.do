@@ -33,7 +33,7 @@ merge 1:1 HHID2016 INDID2016 using "raw\NEEMSIS1-education.dta", keepusing(edule
 drop _merge
 
 * Occupations
-merge 1:1 HHID2016 INDID2016 using "raw\NEEMSIS1-occup_indiv.dta", keepusing(mainocc_occupation_indiv annualincome_indiv)
+merge 1:1 HHID2016 INDID2016 using "raw\NEEMSIS1-occup_indiv.dta", keepusing(mainocc_profession_indiv mainocc_occupation_indiv mainocc_sector_indiv mainocc_occupationname_indiv annualincome_indiv)
 drop _merge
 
 * Occupations HH
@@ -41,7 +41,7 @@ merge m:1 HHID2016 using "raw\NEEMSIS1-occup_HH.dta", keepusing(annualincome_HH)
 drop _merge
 
 * Assets
-merge m:1 HHID2016 using "raw\NEEMSIS1-assets.dta", keepusing(assets_total1000 assets_totalnoland1000)
+merge m:1 HHID2016 using "raw\NEEMSIS1-assets.dta", keepusing(assets_total1000 assets_totalnoland1000 assets_sizeownland expenses_heal shareexpenses_heal)
 drop _merge
 
 * Family
@@ -53,14 +53,18 @@ merge m:1 HHID2016 using "raw\NEEMSIS1-villages.dta", keepusing(villagename2016 
 drop _merge
 rename villagename2016 villagename
 
+* Debt
+merge m:1 HHID2016 using "raw\NEEMSIS1-loans_HH", keepusing(loanamount_HH)
+drop _merge
+
 * Panel HH
-merge m:m HHID2016 using "raw\ODRIIS-HH_wide.dta", keepusing(HHID_panel)
+merge m:m HHID2016 using "raw\keypanel-HH_wide.dta", keepusing(HHID_panel)
 keep if _merge==3
 drop _merge
 
 * Panel Indiv
 tostring INDID2016, replace
-merge m:m HHID_panel INDID2016 using "raw\ODRIIS-indiv_wide.dta", keepusing(INDID_panel)
+merge m:m HHID_panel INDID2016 using "raw\keypanel-indiv_wide.dta", keepusing(INDID_panel)
 keep if _merge==3
 drop _merge
 destring INDID2016, replace
@@ -111,9 +115,11 @@ rename `x' `x'_2016
 */
 
 
-save"$wave2-_ego", replace
+save"wave2-_ego", replace
 ****************************************
 * END
+
+
 
 
 
@@ -128,7 +134,7 @@ save"$wave2-_ego", replace
 ****************************************
 use"$directory\raw\NEEMSIS2-HH.dta", clear
 
-keep HHID2020 INDID2020 egoid name age sex submissiondate villageid relationshiptohead maritalstatus username
+keep HHID2020 INDID2020 egoid name age sex submissiondate villageid relationshiptohead maritalstatus username dummymarriage dummy_marriedlist
 rename submissiondate submissiondate2020
 
 gen year=2020
@@ -173,7 +179,7 @@ merge 1:1 HHID2020 INDID2020 using "raw\NEEMSIS2-education.dta", keepusing(edule
 drop _merge
 
 * Occupations
-merge 1:1 HHID2020 INDID2020 using "raw\NEEMSIS2-occup_indiv.dta", keepusing(mainocc_occupation_indiv annualincome_indiv)
+merge 1:1 HHID2020 INDID2020 using "raw\NEEMSIS2-occup_indiv.dta", keepusing(mainocc_profession_indiv mainocc_occupation_indiv mainocc_sector_indiv mainocc_occupationname_indiv annualincome_indiv)
 drop _merge
 
 * Occupations HH
@@ -181,7 +187,7 @@ merge m:1 HHID2020 using "raw\NEEMSIS2-occup_HH.dta", keepusing(annualincome_HH)
 drop _merge
 
 * Assets
-merge m:1 HHID2020 using "raw\NEEMSIS2-assets.dta", keepusing(assets_total1000 assets_totalnoland1000)
+merge m:1 HHID2020 using "raw\NEEMSIS2-assets.dta", keepusing(assets_total1000 assets_totalnoland1000 assets_sizeownland expenses_heal shareexpenses_heal)
 drop _merge
 
 * Family
@@ -193,14 +199,18 @@ merge m:1 HHID2020 using "raw\NEEMSIS2-villages.dta", keepusing(village_new)
 rename village_new villagename
 drop _merge
 
+* Debt
+merge m:1 HHID2020 using "raw\NEEMSIS2-loans_HH", keepusing(loanamount_HH)
+drop _merge
+
 * Panel HH
-merge m:m HHID2020 using "raw\ODRIIS-HH_wide.dta", keepusing(HHID_panel)
+merge m:m HHID2020 using "raw\keypanel-HH_wide.dta", keepusing(HHID_panel)
 keep if _merge==3
 drop _merge
 
 * Panel Indiv
 tostring INDID2020, replace
-merge m:m HHID_panel INDID2020 using "raw\ODRIIS-indiv_wide.dta", keepusing(INDID_panel)
+merge m:m HHID_panel INDID2020 using "raw\keypanel-indiv_wide.dta", keepusing(INDID_panel)
 keep if _merge==3
 drop _merge
 destring INDID2020, replace
@@ -232,7 +242,7 @@ rename `x' `x'_2020
 }
 */
 
-save"$wave3-_ego", replace
+save"wave3-_ego", replace
 ****************************************
 * END
 
@@ -251,12 +261,15 @@ save"$wave3-_ego", replace
 ****************************************
 * Panel
 ****************************************
-use"$wave2-_ego", replace
+use"wave2-_ego", replace
 
 * Append
 keep HHID_panel INDID_panel egoid year name age sex edulevel mainocc_occupation_indiv
-append using "$wave3-_ego", keep(HHID_panel INDID_panel egoid year name age sex edulevel mainocc_occupation_indiv)
+append using "wave3-_ego", keep(HHID_panel INDID_panel egoid year name age sex edulevel mainocc_occupation_indiv)
 order HHID_panel INDID_panel year egoid name age sex edulevel mainocc_occupation_indiv
+
+duplicates tag HHID_panel INDID_panel year, gen(tag)
+ta tag
 
 * Reshape
 reshape wide egoid name age sex edulevel mainocc_occupation_indiv, i(HHID_panel INDID_panel) j(year)
@@ -290,10 +303,10 @@ save"panel", replace
 ****************************************
 * Panel 2016 2020
 ****************************************
-use"$wave2-_ego", clear
+use"wave2-_ego", clear
 
 * Append
-append using "$wave3-_ego"
+append using "wave3-_ego"
 
 * Merge panel
 merge m:1 HHID_panel INDID_panel using "panel"
@@ -334,6 +347,32 @@ rename tos submissiondate
 *** 
 recode mainocc_occupation_indiv (.=0)
 
+
+
+*** Ownland
+ta assets_sizeownland
+recode assets_sizeownland (.=0)
+ta assets_sizeownland
+gen ownland=.
+replace ownland=0 if assets_sizeownland==0
+replace ownland=1 if assets_sizeownland>0
+label define ownland 0"No land" 1"Land owner"
+label values ownland ownland
+order ownland, after(assets_sizeownland)
+
+
 save"panel_stab_v1", replace
 ****************************************
 * END
+
+
+
+
+
+
+
+
+
+
+
+
