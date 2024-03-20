@@ -38,7 +38,7 @@ egoid* name* sex* age* jatiscorr* caste* edulevel* villageid* panel* dummydemone
 rename username_2016_code2016 username_neemsis1
 desc username_neemsis1
 fre username_neemsis1
-label define username_2016_code 1"Enum: Ant" 2"Enum: Kum" 3"Enum: May" 4"Enum: Paz" 5"Enum: Raj" 6"Enum: Sit" 7"Enum: Viv", modify
+label define username_2016_code 1"Enu2016: Ant" 2"Enu2016: Kum" 3"Enu2016: May" 4"Enu2016: Paz" 5"Enu2016: Raj" 6"Enu2016: Sit" 7"Enu2016: Viv", modify
 
 * 2020
 rename username_2020_code2020 username_neemsis2
@@ -46,7 +46,7 @@ fre username_neemsis2
 desc username_neemsis2
 recode username_neemsis2 (1=4)
 fre username_neemsis2
-label define userneemsis2 1"Chithra-Radhika" 2"Mayan" 3"Pazani" 4"Raichal" 5"Rajalakschmi" 6"Suganya-Malarvizhi" 7"Vivek-Radja"
+label define userneemsis2 1"Enu2020: Chi" 2"Enu2020: May" 3"Enu2020: Paz" 4"Enu2020: Rai" 5"Enu2020: Raj" 6"Enu2020: Sug" 7"Enu2020: Viv"
 fre username_neemsis2
 replace username_neemsis2=username_neemsis2-1
 label values username_neemsis2 userneemsis2
@@ -104,7 +104,7 @@ gen diff_ars3=ars32020-ars32016
 tabstat diff_ars3, stat(n mean sd p50 min max range)
 dis 2.428571*0.05
 egen diff_ars3_cat5=cut(diff_ars3), at(-1,-.121,.121,1.5) icodes
-label define ars3cat 0"Bias: Decrease" 1"Bias: Stable" 2"Bias: Increase"
+label define ars3cat 0"AcqB: Decrease" 1"AcqB: Stable" 2"AcqB: Increase"
 label values diff_ars3_cat5 ars3cat
 
 
@@ -177,11 +177,47 @@ label values typeoffamily2020 typeoffamily
 fre typeoffamily2016 typeoffamily2020
 
 
+* Label
+label var age2016 "Age (in years)"
+label var HHsize2016 "Household size"
+label var ars32016 "Absolute acquiescence score"
+
+
+
 
 ********** Merge cognition
 merge 1:1 HHID_panel INDID_panel using "panel_stab_v2_pooled_wide"
 drop _merge
 keep if sex!=.
+label var fES2016 "Emotional stability score"
+label var fCO2016 "Conscientiousness score"
+label var fOP2016 "Openness to experience score"
+label var num_tt2016 "Numeracy score"
+label var lit_tt2016 "Literacy score"
+label var raven_tt2016 "Raven score"
+
+label var fES2020 "Emotional stability score in 2020-21"
+label var fCO2020 "Conscientiousness score in 2020-21"
+label var fOP2020 "Openness to experience score in 2020-21"
+label var num_tt2020 "Numeracy score in 2020-21"
+label var lit_tt2020 "Literacy score in 2020-21"
+label var raven_tt2020 "Raven score in 2020-21"
+
+label var diff_fES "ES_2020 - ES_2016"
+label var diff_fCO "CO_2020 - CO_2016"
+label var diff_fOP "OP_2020 - OP_2016"
+
+label var dumdiff_fES "Unstable on ES (% of yes)"
+label var dumdiff_fCO "Unstable on CO (% of yes)"
+label var dumdiff_fOP "Unstable on OP (% of yes)"
+
+label var catdiff_fES "ES temporal trajectory"
+label var catdiff_fCO "CO temporal trajectory"
+label var catdiff_fOP "OP temporal trajectory"
+
+label var abs_diff_rec_fES "Intensity of ES instability"
+label var abs_diff_rec_fCO "Intensity of CO instability"
+label var abs_diff_rec_fOP "Intensity of OP instability"
 
 
 
@@ -192,12 +228,14 @@ destring dummysell2020, replace
 label define cov 0 "Cov: Not exp" 1 "Cov: Exposed"
 label values dummysell2020 cov
 fre dummysell2020
+label var dummysell2020 "COVID-19 exposure (% of yes)"
 
 * Demonetisation
 ta dummydemonetisation2016
 label define demo2 0 "Demo: Not exp" 1 "Demo: Exposed"
 label values dummydemonetisation2016 demo2
 fre dummydemonetisation2016
+label var dummydemonetisation2016 "Demonetisation exposure (% of yes)"
 
 * Land
 gen dummyshockland=.
@@ -206,6 +244,7 @@ label values dummyshockland shockland
 replace dummyshockland=0 if assets_sizeownland2020>=assets_sizeownland2016
 replace dummyshockland=1 if assets_sizeownland2020<assets_sizeownland2016
 ta dummyshockland
+label var dummyshockland "Sale/loss of land (% of yes)"
 
 * Debt
 gen temp1=loanamount_HH2016*(100/158)
@@ -219,6 +258,8 @@ replace dummyshockdebt=0 if temp<2
 replace dummyshockdebt=1 if temp>=2
 ta dummyshockdebt
 drop temp temp1 temp2
+label var dummyshockdebt "Higher debt (x2) (% of yes)"
+
 
 * Health
 gen temp1=expenses_heal2016*(100/158)
@@ -232,11 +273,13 @@ replace dummyshockhealth=0 if temp<2
 replace dummyshockhealth=1 if temp>=2
 ta dummyshockhealth
 drop temp temp1 temp2
+label var dummyshockhealth "Higher health spending (x2) (% of yes)"
+
 
 
 * Health2
 gen dummyshockhealth2=.
-label define shockhealth2 0 "Same or lower health spending" 1 "Higher health spending"
+label define shockhealth2 0 "Same or lower health spending" 1 "Higher health spending (x2)"
 label values dummyshockhealth2 shockhealth2
 gen temp=shareexpenses_heal2020/shareexpenses_heal2016
 ta temp
@@ -244,6 +287,8 @@ replace dummyshockhealth2=0 if temp<2
 replace dummyshockhealth2=1 if temp>=2
 ta dummyshockhealth
 drop temp
+label var dummyshockhealth2 "Higher health spending (x2) (% of yes)"
+
 
 
 * Employment
@@ -266,11 +311,10 @@ label values dummyshockemployment shockemployment
 
 ta mainocc_occupation_indiv2016 mainocc_occupation_indiv2020 if dummyshockemployment==0
 ta mainocc_occupation_indiv2016 mainocc_occupation_indiv2020 if dummyshockemployment==1
+label var dummyshockemployment "Lower type of job (% of yes)"
 
 
-cls
-global shock dummysell2020 dummydemonetisation2016 dummyshockland dummyshockdebt dummyshockhealth dummyshockemployment
-tab1 $shock
+
 
 save "panel_stab_pooled_wide_v3", replace
 ****************************************

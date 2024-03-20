@@ -274,18 +274,34 @@ global shock dummysell2020 dummydemonetisation2016 dummyshockland dummyshockdebt
 
 ***** ES
 probit dumdiff_fES $indiv $cogni $house $shock $contr, cluster(cluster) baselevel
+est store reg1
+margins, dydx($indiv $cogni $house $shock) atmeans post
+est store mar1
 
 
 
 ***** OP
 probit dumdiff_fOP $indiv $cogni $house $shock $contr, cluster(cluster) baselevel
-
-
+est store reg2
+margins, dydx($indiv $cogni $house $shock) atmeans post
+est store mar2
 
 ***** CO
 probit dumdiff_fCO $indiv $cogni $house $shock $contr, cluster(cluster) baselevel
+est store reg3
+margins, dydx($indiv $cogni $house $shock) atmeans post
+est store mar3
 
 
+***** Tables
+esttab reg1 mar1 reg2 mar2 reg3 mar3 using "probit.csv", replace ///
+	label b(3) p(3) eqlabels(none) alignment(S) ///
+	drop(_cons) ///
+	star(* 0.10 ** 0.05 *** 0.01) ///
+	cells("b(fmt(2)star)" "se(fmt(2)par)") ///
+	refcat(, nolabel) ///
+	stats(N r2_p, fmt(0 2) ///
+	labels(`"Observations"' `"Pseudo R2"'))
 
 ****************************************
 * END
@@ -326,20 +342,45 @@ global shock dummysell2020 dummydemonetisation2016 dummyshockland dummyshockdebt
 
 
 ***** ES
+cls
 mprobit catdiff_fES $indiv $cogni $house $shock $contr, cluster(cluster) baselevel baseoutcome(2)
-
+est store reg1
+margins, dydx($indiv $cogni $house $shock) atmeans post
+est store mar1
 
 
 ***** OP
 mprobit catdiff_fOP $indiv $cogni $house $shock $contr, cluster(cluster) baselevel baseoutcome(2)
-
+est store reg2
+margins, dydx($indiv $cogni $house $shock) atmeans post
+est store mar2
 
 
 ***** CO
 mprobit catdiff_fCO $indiv $cogni $house $shock $contr, cluster(cluster) baselevel baseoutcome(2)
+est store reg3
+margins, dydx($indiv $cogni $house $shock) atmeans post
+est store mar3
 
 
 
+***** Tables
+esttab reg1 reg2 reg3 using "mprobit.xlsx", replace ///
+	label b(3) p(3) eqlabels(none) alignment(S) ///
+	drop(_cons) ///
+	star(* 0.10 ** 0.05 *** 0.01) ///
+	cells("b(fmt(2)star)" "se(fmt(2)par)") ///
+	refcat(, nolabel) ///
+	stats(N, fmt(0) ///
+	labels(`"Observations"'))
+	
+esttab mar1 mar2 mar3 using "mprobit_margins.xlsx", replace ///
+	label b(3) p(3) eqlabels(none) alignment(S) ///
+	star(* 0.10 ** 0.05 *** 0.01) ///
+	cells("b(fmt(2)star)" "se(fmt(2)par)") ///
+	refcat(, nolabel) ///
+	stats(N, fmt(0) ///
+	labels(`"Observations"'))
 
 ****************************************
 * END
@@ -381,20 +422,25 @@ global shock dummysell2020 dummydemonetisation2016 dummyshockland dummyshockdebt
 glm abs_diff_rec_fES $indiv $cogni $house $shock $contr ///
 if catdiff_fES==1 | catdiff_fES==3 ///
 , link(log) family(igaussian) cluster(cluster) allbase
-est store glm_all_ES
+est store reg1ES
+margins, dydx($indiv $cogni $house $shock) atmeans post
+est store mar1ES
 
 * Increasing
 glm abs_diff_rec_fES $indiv $cogni $house $shock $contr ///
 if catdiff_fES==3 ///
 , link(log) family(igaussian) cluster(cluster) allbase
-est store glm_inc_ES
+est store reg2ES
+margins, dydx($indiv $cogni $house $shock) atmeans post
+est store mar2ES
 
 * Decreasing
 glm abs_diff_rec_fES $indiv $cogni $house $shock $contr ///
 if catdiff_fES==1 ///
 , link(log) family(igaussian) cluster(cluster) allbase
-est store glm_dec_ES
-
+est store reg3ES
+margins, dydx($indiv $cogni $house $shock) atmeans post
+est store mar3ES
 
 
 
@@ -405,19 +451,27 @@ est store glm_dec_ES
 glm abs_diff_rec_fOP $indiv $cogni $house $shock $contr ///
 if catdiff_fOP==1 | catdiff_fOP==3 ///
 , link(log) family(igaussian) cluster(cluster) allbase
-est store glm_all_OP
+est store reg1OP
+margins, dydx($indiv $cogni $house $shock) atmeans post
+est store mar1OP
 
 * Increasing
 glm abs_diff_rec_fOP $indiv $cogni $house $shock $contr ///
 if catdiff_fOP==3 ///
 , link(log) family(igaussian) cluster(cluster) allbase
-est store glm_inc_OP
+est store reg2OP
+margins, dydx($indiv $cogni $house $shock) atmeans post
+est store mar2OP
 
 * Decreasing
 glm abs_diff_rec_fOP $indiv $cogni $house $shock $contr ///
 if catdiff_fOP==1 ///
 , link(log) family(igaussian) cluster(cluster) allbase
-est store glm_dec_OP
+est store reg3OP
+margins, dydx($indiv $cogni $house $shock) atmeans post
+est store mar3OP
+
+
 
 
 ***** CO
@@ -425,31 +479,39 @@ est store glm_dec_OP
 glm abs_diff_rec_fCO $indiv $cogni $house $shock $contr ///
 if catdiff_fCO==1 | catdiff_fCO==3 ///
 , link(log) family(igaussian) cluster(cluster) allbase
-est store glm_all_CO
+est store reg1CO
+margins, dydx($indiv $cogni $house $shock) atmeans post
+est store mar1CO
 
 * Increasing
 glm abs_diff_rec_fCO $indiv $cogni $house $shock $contr ///
 if catdiff_fCO==3 ///
 , link(log) family(igaussian) cluster(cluster) allbase
-est store glm_inc_CO
+est store reg2CO
+margins, dydx($indiv $cogni $house $shock) atmeans post
+est store mar2CO
 
 * Decreasing
 glm abs_diff_rec_fCO $indiv $cogni $house $shock $contr ///
 if catdiff_fCO==1 ///
 , link(log) family(igaussian) cluster(cluster) allbase
-est store glm_dec_CO
+est store reg3CO
+margins, dydx($indiv $cogni $house $shock) atmeans post
+est store mar3CO
 
 
 
 ********** Format
-/*
-esttab all_ES inc_ES dec_ES all_OP inc_OP dec_OP all_CO inc_CO dec_CO using "reg.csv", replace ///
+esttab ///
+reg1ES mar1ES reg2ES mar2ES reg3ES mar3ES ///
+reg1OP mar1OP reg2OP mar2OP reg3OP mar3OP ///
+reg1CO mar1CO reg2CO mar2CO reg3CO mar3CO ///
+using "glm.csv", replace ///
 	label b(3) p(3) eqlabels(none) alignment(S) ///
 	star(* 0.10 ** 0.05 *** 0.01) ///
 	cells("b(fmt(2)star)" "se(fmt(2)par)") ///
 	refcat(, nolabel) ///
 	stats(N ll, fmt(0 2) layout("\multicolumn{1}{c}{@}" "\multicolumn{1}{S}{@}") labels(`"Observations"' `"Log-pseudo likelihood"'))
-*/
 ****************************************
 * END
 
