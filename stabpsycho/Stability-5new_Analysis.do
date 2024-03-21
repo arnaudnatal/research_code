@@ -16,6 +16,34 @@ do "C:/Users/Arnaud/Documents/GitHub/folderanalysis/$link.do"
 
 
 
+****************************************
+* Naive vs Factor
+****************************************
+use "panel_stab_pooled_wide_v3", clear
+est clear
+graph drop _all
+
+
+
+scatter fES2016 ES2016
+
+
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 ****************************************

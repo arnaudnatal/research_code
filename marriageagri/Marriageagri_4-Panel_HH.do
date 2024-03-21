@@ -320,6 +320,48 @@ label values dumeducexp_male_HH yesno
 label values dumeducexp_female_HH yesno
 
 
+
+
+* Time
+gen time=.
+replace time=1 if year==2010
+replace time=2 if year==2016
+replace time=3 if year==2020
+label define time 1"2010" 2"2016-17" 3"2020-21"
+label values time time
+
+* Assets class
+xtile assets2010=assets_total if year==2010, n(3)
+xtile assets2016=assets_total if year==2016, n(3)
+xtile assets2020=assets_total if year==2020, n(3)
+gen assets_q=.
+replace assets_q=assets2010 if year==2010
+replace assets_q=assets2016 if year==2016
+replace assets_q=assets2020 if year==2020
+label define tercass 1"Assets: T1" 2"Assets: T2" 3"Assets: T3"
+label values assets_q tercass
+drop assets2010 assets2016 assets2020
+
+* Income class
+xtile income2010=annualincome_HH if year==2010, n(3)
+xtile income2016=annualincome_HH if year==2016, n(3)
+xtile income2020=annualincome_HH if year==2020, n(3)
+gen income_q=.
+replace income_q=income2010 if year==2010
+replace income_q=income2016 if year==2016
+replace income_q=income2020 if year==2020
+label define tercinc 1"Income: T1" 2"Income: T2" 3"Income: T3"
+label values income_q tercinc
+drop income2010 income2016 income2020
+
+ta income_q year, col nofreq
+ta assets_q year, col nofreq
+
+* Caste
+label define caste2 1"Dalits" 2"Middle castes" 3"Upper castes"
+label values caste caste2
+
+
 save"panel_HH", replace
 ****************************************
 * END
