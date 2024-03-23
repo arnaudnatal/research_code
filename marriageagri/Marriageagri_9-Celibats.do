@@ -14,43 +14,6 @@ do"C:\Users\Arnaud\Documents\GitHub\folderanalysis\marriageagri.do"
 
 
 
-/*****************************************************
-
-TITLE:
-The political and sexual economies of marriages. Two decades of change in South-Arcot, South India
-
-AUTHORS:
-I. Guérin, A. Natal, C. J. Nordman, and G. Venkatasubramanian
-
-JOURNAL:
-Contemporary South Asia
-
-ABSTRACT:
-This chapter explores the multifaceted role of marriages in the south-Arcot region of central Tamil Nadu.
-There are cases of forced celibacy, but they remain isolated.
-By mobilising twenty years of ethnographic survey, and three household surveys conducted in 2010, 2016-17 and 2020-21, including questions on marriages (who marries whom? at what cost? with a dowry and if so how much?), this paper will examine how marriages are both shaped by and constitutive of local political and sexual economies. 
-By local political and sexual economies, we mean the intertwining of access to material resources, norms of kinship and deviant sexuality.
-As feminist anthropology has long shown, modes of accumulation, kinship and sexuality are inseparable and mutually constructed.
-The drastic and interconnected changes observed over the last two decades in modes of production, marital alliances and the control of female sexuality are a clear illustration of this.
-Our data suggest two main findings, which explains the reasons behind low prevalence of forced celibacy, while highlighting the intensification of patriarchal norms: First, marriages and marital transfers (primarily dowry) play a crucial role in compensating for a volatile economy, whether it is agricultural decline (with the exception of the pandemic period, agricultural incomes are declining, both in absolute and relative terms), a precarious and uncertain non-farm labour market, and costly and risky investments in education (of boys in particular) and expensive housing expenditures.
-In turn, and this is our second argument, the dowry, which is a recent practice among the lower castes and classes, strongly devalues the economic value of young girls and is accompanied by increasing control over women's bodies and sexuality as a symbol of upward mobility.
-The paper will also examine the differences between families that remained solely peasant and those that diversified, exploring the role of marriages and marriage payments in these differentiated strategies.
-
-KEYWORDS:
-Marriage, kinship, sexuality, economy, Tamil Nadu
-
-STATISTICAL ANALYSIS:
-1. Who maries whom?
-2. At what cost?
-3. What about dowry?
-4. Marital transfers (primarily dowry) play a crucial role in compensating for a volatile economy, i.e. agricultural decline, uncertain non-farm labour market, risky investment in education of boys, expensive housing expenditures
-5. Dowry as a symbol of upward mobility
-6. Differences between families that remained solely peasant and those that diversified, exploring the role of marriages and marriage payments in these differentiated strategies
-
-*****************************************************/
-
-
-
 
 
 
@@ -206,6 +169,18 @@ replace divHH10=3 if shareincomeagri_HH>0.1 & shareincomeagri_HH<0.9 & shareinco
 label values divHH10 divHH
 fre divHH10
 
+* Gen celibat
+gen celib=.
+replace celib=0 if maritalstatus==1
+replace celib=1 if maritalstatus==2
+replace celib=. if maritalstatus==3
+replace celib=. if maritalstatus==4
+replace celib=. if maritalstatus==5
+
+label define celib 0"Married" 1"Single"
+label values celib celib
+
+order celib, after(maritalstatus)
 
 save"Celibat", replace
 ****************************************
@@ -223,48 +198,100 @@ save"Celibat", replace
 ****************************************
 * Celibat
 ****************************************
+
+********** Stat
 use"Celibat", clear
 
 * Selection
 keep if sex==1
 fre maritalstatus
-drop if maritalstatus==3
-drop if maritalstatus==4
-drop if maritalstatus==5
+drop if celib==.
 sort HHID_panel INDID_panel year
-
-* Only 25 or more
-keep if age>=25
-ta maritalstatus year
-
-* Only 30 or more
 keep if age>=30
-ta maritalstatus year, col nofreq
-ta caste maritalstatus, col nofreq chi2
 
-ta currentlyatschool
-
-ta edulevel maritalstatus, col nofreq chi2
-ta edulevel maritalstatus, exp cchi2 chi2
-
-ta working_pop maritalstatus, col nofreq chi2
-ta working_pop maritalstatus, exp cchi2 chi2
-
-ta mainocc_occupation_indiv maritalstatus, col nofreq chi2
-ta mainocc_occupation_indiv maritalstatus, exp cchi2 chi2
-
-ta ownland maritalstatus, col nofreq chi2
-ta divHH10 maritalstatus, col nofreq chi2
-
-tabstat annualincome_HH annualincome_indiv, stat(mean sd) by(maritalstatus)
-reg annualincome_HH i.maritalstatus
-reg annualincome_indiv i.maritalstatus
+* Evolution
+ta celib year, col nofreq
 
 
-* Only single males
+* Determinants in 2016-17
+preserve
+keep if year==2016
+ta caste celib, col nofreq chi2
+
+ta edulevel celib, col nofreq chi2
+ta edulevel celib, exp cchi2 chi2
+
+ta working_pop celib, col nofreq chi2
+ta working_pop celib, exp cchi2 chi2
+
+ta mainocc_occupation_indiv celib, col nofreq chi2
+ta mainocc_occupation_indiv celib, exp cchi2 chi2
+
+ta ownland celib, col nofreq chi2
+ta divHH10 celib, col nofreq chi2
+
+tabstat annualincome_HH annualincome_indiv, stat(mean sd) by(celib)
+reg annualincome_HH i.celib
+reg annualincome_indiv i.celib
+restore
+
+
+
+* Determinants in 2020-21
+preserve
+keep if year==2020
+ta caste celib, col nofreq chi2
+
+ta edulevel celib, col nofreq chi2
+ta edulevel celib, exp cchi2 chi2
+
+ta working_pop celib, col nofreq chi2
+ta working_pop celib, exp cchi2 chi2
+
+ta mainocc_occupation_indiv celib, col nofreq chi2
+ta mainocc_occupation_indiv celib, exp cchi2 chi2
+
+ta ownland celib, col nofreq chi2
+ta divHH10 celib, col nofreq chi2
+
+tabstat annualincome_HH annualincome_indiv, stat(mean sd) by(celib)
+reg annualincome_HH i.celib
+reg annualincome_indiv i.celib
+restore
+
+
+
+
+
+
+
+
+********** Graph
+use"Celibat", clear
+
+* Selection
+keep if sex==1
 fre maritalstatus
-keep if maritalstatus==2
+drop if celib==.
+sort HHID_panel INDID_panel year
+keep if age>=30
+label define caste 1"Dalits" 2"Middle castes" 3"Upper castes", replace
+label values caste caste
 
+
+ta celib year if caste==1, col nofreq
+
+* Share
+collapse (mean) celib, by(year caste)
+replace celib=celib*100
+
+graph bar (mean) celib, over(year, lab(nolab)) over(caste) asyvars ///
+bar(1, fcolor(gs0)) bar(2, fcolor(gs7)) ///
+ytitle("Percent") ylabel(0(1)9) ymtick(0(.5)9) ///
+title("Share of single males") ///
+legend(order(1 "2016-17" 2 "2020-21") pos(6) col(3)) name(celib, replace)
+
+graph export "graph/single_males.png", as(png) replace
 
 
 
