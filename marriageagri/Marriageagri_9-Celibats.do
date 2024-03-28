@@ -213,6 +213,7 @@ keep if age>=30
 ta celib year, col nofreq
 
 
+cls
 * Determinants in 2016-17
 preserve
 keep if year==2016
@@ -236,7 +237,7 @@ reg annualincome_indiv i.celib
 restore
 
 
-
+cls
 * Determinants in 2020-21
 preserve
 keep if year==2020

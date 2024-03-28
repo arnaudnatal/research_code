@@ -23,6 +23,24 @@ do"C:\Users\Arnaud\Documents\GitHub\folderanalysis\marriageagri.do"
 ****************************************
 use "raw\NEEMSIS2-HH.dta", clear
 
+
+
+
+********** Education
+preserve
+keep HHID2020 INDID2020 sex currentlyatschool educationexpenses amountschoolfees bookscost transportcost
+sort HHID2020 INDID2020
+tab currentlyatschool sex
+foreach x in currentlyatschool educationexpenses amountschoolfees bookscost transportcost {
+bysort HHID2020 : egen s_`x'=sum(`x')
+}
+tabstat educationexpenses, stat(n mean p50) by(sex)
+keep HHID2020 s_currentlyatschool s_educationexpenses s_amountschoolfees s_bookscost s_transportcost
+duplicates drop
+ta s_currentlyatschool
+restore
+
+
 sort HHID2020 INDID2020
 
 ta marriedname

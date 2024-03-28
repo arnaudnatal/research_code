@@ -149,6 +149,21 @@ save"NEEMSIS1-marriagegift.dta", replace
 ****************************************
 use "raw/NEEMSIS1-HH.dta", clear
 
+********** Education
+preserve
+keep HHID2016 INDID2016 sex currentlyatschool educationexpenses amountschoolfees bookscost transportcost
+sort HHID2016 INDID2016
+tab currentlyatschool sex
+foreach x in currentlyatschool educationexpenses amountschoolfees bookscost transportcost {
+bysort HHID2016 : egen s_`x'=sum(`x')
+}
+tabstat educationexpenses, stat(n mean p50) by(sex)
+keep HHID2016 s_currentlyatschool s_educationexpenses s_amountschoolfees s_bookscost s_transportcost
+duplicates drop
+ta s_currentlyatschool
+restore
+
+
 preserve
 bysort HHID2016: gen n=_n
 keep if n==1
@@ -173,6 +188,8 @@ egen totalmarriagegiftamount=rowtotal(marriagegiftamount_wellknown marriagegifta
 
 keep HHID2016 INDID2016 villageid villagearea jatis egoid name sex age  relationshiptohead submissiondate ownland maritalstatus ///
 married dummymarriagegift dummymarriage marriedlist husbandwifecaste marriagedowry marriagetotalcost howpaymarriage marriageexpenses dummymarriagegift totalmarriagegiftamount currentlyatschool everattendedschool canread educationexpenses
+
+sum educationexpenses
 
  
 *Caste
