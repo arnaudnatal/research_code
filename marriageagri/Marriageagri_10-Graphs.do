@@ -562,7 +562,7 @@ twoway (scatter marrdow_male_HH educexp_HH if educexp_HH!=0) ///
 xtitle("Education expenses (INR 1k)") ytitle("Amount of dowry received (INR 1k)") ///
 title("Education of boys and girls") ///
 xlabel(0(10)80) xmtick(0(5)80) ///
-ylabel(0(100)800) ymtick(0(50)800) ///
+ylabel(0(100)900) ymtick(0(50)900) ///
 note("r=0.25, pvalue<0.05" "n=71", size(vsmall)) ///
 legend(off) name(gph1, replace)
 
@@ -575,7 +575,7 @@ twoway (scatter marrdow_male_HH educexp_male_HH if educexp_male_HH!=0) ///
 xtitle("Education expenses (INR 1k)") ytitle("Amount of dowry received (INR 1k)") ///
 title("Boy's education") ///
 xlabel(0(10)80) xmtick(0(5)80) ///
-ylabel(0(100)600) ymtick(0(50)600) ///
+ylabel(0(100)900) ymtick(0(50)900) ///
 note("r=0.16, pvalue<0.30" "n=54", size(vsmall)) ///
 legend(off) name(gph2, replace)
 
@@ -588,7 +588,7 @@ twoway (scatter marrdow_male_HH educexp_female_HH if educexp_female_HH!=0) ///
 xtitle("Education expenses (INR 1k)") ytitle("Amount of dowry received (INR 1k)") ///
 title("Girl's education") ///
 xlabel(0(10)50) xmtick(0(5)50) ///
-ylabel(0(100)800) ymtick(0(50)800) ///
+ylabel(0(100)900) ymtick(0(50)900) ///
 note("r=0.47, pvalue<0.01" "n=33", size(vsmall)) ///
 legend(off) name(gph3, replace)
 
@@ -633,33 +633,63 @@ use"panel_HH.dta", clear
 
 * Selection
 drop if year==2010
-recode educexp_male_HH educexp_female_HH (0=.)
+recode educexp_HH educexp_male_HH educexp_female_HH (0=.)
+replace educexp_HH=educexp_HH/1000
 replace educexp_male_HH=educexp_male_HH/1000
 replace educexp_female_HH=educexp_female_HH/1000
 
-* Format
-collapse (mean) dumeducexp_male_HH dumeducexp_female_HH educexp_male_HH educexp_female_HH, by(caste time)
+gen dumeducexp_HH=.
+replace dumeducexp_HH=1 if educexp_HH>0 & educexp_HH!=.
+replace dumeducexp_HH=0 if educexp_HH==.
 
+* Stat
+tabstat dumeducexp_HH dumeducexp_male_HH dumeducexp_female_HH educexp_male_HH educexp_female_HH, stat(n mean) by(year)
+tabstat educexp_HH educexp_male_HH educexp_female_HH, stat(n mean) by(year)
+
+tabstat dumeducexp_HH dumeducexp_male_HH dumeducexp_female_HH educexp_male_HH educexp_female_HH, stat(n mean) by(caste)
+tabstat educexp_HH educexp_male_HH educexp_female_HH, stat(n mean) by(caste)
+
+
+* Collapse for total
+preserve
+collapse (mean) dumeducexp_HH dumeducexp_male_HH dumeducexp_female_HH educexp_HH educexp_male_HH educexp_female_HH, by(time)
+gen caste=0
+save"_temp", replace
+restore
+
+* Collapse by caste
+collapse (mean) dumeducexp_HH dumeducexp_male_HH dumeducexp_female_HH educexp_HH educexp_male_HH educexp_female_HH, by(caste time)
+
+* Append total
+append using "_temp"
+
+* Clean
+label define caste 0"Total" 1"Dalits" 2"Middle castes" 3"Upper castes"
+label values caste caste
+sort caste time
+
+rename dumeducexp_HH dumeducexp0
 rename dumeducexp_male_HH dumeducexp1
 rename dumeducexp_female_HH dumeducexp2
+rename educexp_HH educexp0
 rename educexp_male_HH educexp1
 rename educexp_female_HH educexp2
 
+* Reshape
 reshape long dumeducexp educexp, i(caste time) j(sex)
-label define sex 1"Males" 2"Females"
+label define sex 0"Total" 1"Boys" 2"Girls"
 label values sex sex
-
 replace dumeducexp=dumeducexp*100
 
 * Share
-graph bar (mean) dumeducexp, over(time) over(sex) over(caste) ///
-ytitle("Percent") ylabel(0(10)60) ymtick(0(5)60) ///
+graph bar (mean) dumeducexp, over(time) over(sex, lab(angle(45))) over(caste, lab(angle(45))) ///
+ytitle("Percent") ylabel(0(10)80) ymtick(0(5)80) ///
 title("Share of households investing in education") ///
 legend(pos(6) col(2)) name(share, replace)
 
 * Amount invested
-graph bar (mean) educexp, over(time) over(sex) over(caste) ///
-ytitle("INR 1k") ylabel(0(2)22) ymtick(0(1)22) ///
+graph bar (mean) educexp, over(time) over(sex, lab(angle(45))) over(caste, lab(angle(45))) ///
+ytitle("INR 1k") ylabel(0(5)30) ymtick(0(2.5)30) ///
 title("Average amount invested in education last year") ///
 legend(pos(6) col(2)) name(amount, replace)
 
@@ -789,6 +819,7 @@ use"panel_HH.dta", clear
 
 * Caste and jatis
 ta jatis caste
+ta jatis year, col nofreq
 clonevar jatis_str=jatis
 encode jatis, gen(jatis_enc)
 drop jatis
@@ -862,6 +893,7 @@ graph export "graph/land_jatis.png", as(png) replace
 cls
 use"panel_HH.dta", clear
 
+ta divHH10 time, col nofreq
 
 * Global
 catplot divHH10 time, percent(time) asyvars stack vert ///

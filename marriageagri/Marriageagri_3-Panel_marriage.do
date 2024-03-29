@@ -116,11 +116,15 @@ use"NEEMSIS1-marriage_tm.dta", clear
 append using "NEEMSIS2-marriage_tm.dta"
 order HHID_panel INDID_panel year name
 
+tabstat totalmarriagegiftamount marriagehusbandcost marriagewifecost if year==2020, stat(n mean cv q) by(sex) long
+
+
 * Deflate
-global rupees marriagedowry marriagetotalcost marriageexpenses totalmarriagegiftamount marriagedowry1000 marriagetotalcost1000 marriageexpenses1000 assets_housevalue assets_livestock assets_goods assets_ownland assets_gold assets_total assets_totalnoland assets_totalnoprop incomeagri_HH incomenonagri_HH annualincome_HH engagementtotalcost engagementhusbandcost engagementwifecost marriagehusbandcost marriagewifecost engagementhusbandcost marriagehusbandcost engagementwifecost marriagewifecost
+global rupees marriagedowry marriagetotalcost marriageexpenses totalmarriagegiftamount marriagedowry1000 marriagetotalcost1000 marriageexpenses1000 assets_housevalue assets_livestock assets_goods assets_ownland assets_gold assets_total assets_totalnoland assets_totalnoprop incomeagri_HH incomenonagri_HH annualincome_HH engagementtotalcost engagementhusbandcost engagementwifecost marriagehusbandcost marriagewifecost
 foreach x in $rupees {
 replace `x'=`x'*(100/116) if year==2020
 }
+
 
 
 * Time
@@ -230,7 +234,7 @@ foreach x in totalmarriagegiftamount assets_totalnoland annualincome_HH {
 gen `x'1000=`x'/1000
 }
 
-foreach x in MEAR MEIR gifttoexpenses GAR GIR gifttocost DAIR DMC DAAR {
+foreach x in MEAR MEIR gifttoexpenses GAR GIR DAIR DMC DAAR {
 replace `x'=`x'*100
 }
 

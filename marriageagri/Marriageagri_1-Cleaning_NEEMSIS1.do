@@ -311,6 +311,9 @@ merge 1:1 HHID2016 INDID2016 using "raw/NEEMSIS1-education", keepusing(edulevel)
 keep if _merge==3
 drop _merge
 
+merge 1:1 HHID2016 INDID2016 using "raw/NEEMSIS1-kilm", keepusing(educ_attainment educ_attainment2)
+keep if _merge==3
+drop _merge
 
 
 ********** Indicator

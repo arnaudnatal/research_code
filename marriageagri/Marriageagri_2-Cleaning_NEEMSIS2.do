@@ -534,6 +534,10 @@ merge 1:1 HHID2020 INDID2020 using "raw/NEEMSIS2-education", keepusing(edulevel)
 keep if _merge==3
 drop _merge
 
+merge 1:1 HHID2020 INDID2020 using "raw/NEEMSIS2-kilm", keepusing(educ_attainment educ_attainment2)
+keep if _merge==3
+drop _merge
+
 ********** Indicator
 * 
 label define divHH 1"Agricultural household" 2"Non-agricultural household" 3"Diversified household"
@@ -583,8 +587,11 @@ gen GIR=.
 replace GIR=totalmarriagegiftamount/annualincome_HH if totalmarriagegiftamount!=.
 *
 gen gifttocost=.
-replace gifttocost=totalmarriagegiftamount/marriagehusbandcost if sex==1
-replace gifttocost=totalmarriagegiftamount/marriagewifecost if sex==2
+replace gifttocost=totalmarriagegiftamount*100/marriagehusbandcost if sex==1
+replace gifttocost=totalmarriagegiftamount*100/marriagewifecost if sex==2
+tabstat gifttocost, stat(n mean cv q) by(sex) long
+*
+tabstat totalmarriagegiftamount marriagehusbandcost marriagewifecost, stat(n mean cv q) by(sex) long
 
 
 ********** Net benefits of marriage

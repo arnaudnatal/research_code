@@ -297,6 +297,13 @@ cls
 ********** Amount of gifts
 use"NEEMSIS-marriage.dta", clear
 
+gen gifttocost2=.
+replace gifttocost2=totalmarriagegiftamount*100/marriagehusbandcost if sex==1
+replace gifttocost2=totalmarriagegiftamount*100/marriagewifecost2 if sex==2
+tabstat gifttocost gifttocost2, stat(n mean cv q) by(sex) long
+drop gifttocost2
+
+
 foreach x in totalmarriagegiftamount1000 gifttoexpenses GAR GIR gifttocost {
 tabstat `x', stat(n mean cv q) by(year) long
 tabstat `x', stat(n mean cv q) by(sex) long

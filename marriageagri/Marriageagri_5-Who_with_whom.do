@@ -39,6 +39,8 @@ ta canread sex, col nofreq
 ta everattendedschool sex, col nofreq
 ta currentlyatschool sex
 ta edulevel sex, col nofreq
+ta educ_attainment2 sex, col nofreq
+
 
 * Labour
 ta working_pop sex
