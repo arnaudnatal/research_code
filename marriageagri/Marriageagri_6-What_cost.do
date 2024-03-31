@@ -608,7 +608,7 @@ use"NEEMSIS-marriage.dta", clear
 keep if sex==1
 
 * Reg
-reg marriagedowry1000 i.year i.edulevel i.working_pop i.caste i.ownland c.assets_totalnoland c.annualincome_HH c.shareincomeagri_HH i.intercaste c.nbmarr_male c.nbmarr_female c.educexp_male_HH, baselevel
+reg marriagedowry1000 i.year i.edulevel i.working_pop i.caste i.ownland c.assets_totalnoland c.annualincome_HH c.shareincomeagri_HH i.intercaste c.nbmarr_male c.nbmarr_female c.educexp_female_HH, baselevel
 est store reg1
 
 reg marriagedowry1000 i.year i.edulevel i.working_pop i.caste i.ownland c.assets_totalnoland c.annualincome_HH c.shareincomeagri_HH i.interjatis c.nbmarr_male c.nbmarr_female c.educexp_male_HH, baselevel
@@ -824,35 +824,23 @@ tabstat marriagedowry1000, stat(n mean q) by(cat_`x')
 cls
 use"NEEMSIS-marriage.dta", clear
 
-ta cat_cost sex, col nofreq
-
-fre cat_cost
-
 * By sex
-tabstat marriagenetcost1000 MNCI marriagenetcost_alt1000 MNCI_alt, stat(n mean q) by(sex)
+tabstat marriagenetcost1000 MNCI, stat(n mean) by(sex)
 
 * By sex and status
-tabstat marriagenetcost_alt1000 MNCI_alt if sex==1, stat(n mean q) by(cat_cost)
-tabstat marriagenetcost_alt1000 MNCI_alt if sex==2, stat(n mean q) by(cat_cost)
+tabstat marriagenetcost1000 MNCI if sex==1, stat(n mean) by(cat_cost)
+tabstat marriagenetcost1000 MNCI if sex==2, stat(n mean) by(cat_cost)
 
+cls
 * By sex, status and land
-tabstat marriagenetcost_alt1000 MNCI_alt if sex==1 & cat_cost==3, stat(n mean q) by(ownland)
-tabstat marriagenetcost_alt1000 MNCI_alt if sex==2 & cat_cost==1, stat(n mean q) by(ownland)
+ta cat_cost sex if year==2020, col
 
-tabstat marriagenetcost_alt1000 MNCI_alt if sex==1 & cat_cost==3, stat(n mean q) by(divHH10)
-tabstat marriagenetcost_alt1000 MNCI_alt if sex==2 & cat_cost==1, stat(n mean q) by(divHH10)
+tabstat marriagenetcost1000 MNCI if sex==1 & cat_cost==1, stat(n mean) by(ownland)
 
-* By sex and caste
-tabstat marriagenetcost_alt1000 MNCI_alt if sex==1, stat(n mean q) by(caste) long
-tabstat marriagenetcost_alt1000 MNCI_alt if sex==2, stat(n mean q) by(caste) long
+tabstat marriagenetcost1000 MNCI if sex==2 & cat_cost==3, stat(n mean) by(ownland)
 
-* By sex and land
-tabstat marriagenetcost_alt1000 MNCI_alt if sex==1, stat(n mean q) by(ownland) long
-tabstat marriagenetcost_alt1000 MNCI_alt if sex==2, stat(n mean q) by(ownland) long
 
-tabstat marriagenetcost_alt1000 MNCI_alt if sex==1, stat(n mean q) by(divHH10) long
-tabstat marriagenetcost_alt1000 MNCI_alt if sex==2, stat(n mean q) by(divHH10) long
-
+ta MNCI if sex==2 & cat_cost==3 & year==2020
 
 ****************************************
 * END

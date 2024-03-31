@@ -34,7 +34,7 @@ totalmarriagegiftamount hwcaste ageatmarriage marriagedowry1000 marriagetotalcos
 relationshiptohead relation_head relation_wife relation_mother relation_father relation_son relation_daughter relation_soninlaw relation_daughterinlaw relation_sister relation_brother relation_motherinlaw relation_fatherinlaw relation_grandchildren relation_cousin relation_other agegrp_0_13 agegrp_14_17 agegrp_18_24 agegrp_25_29 agegrp_30_34 agegrp_35_39 agegrp_40_49 agegrp_50_59 agegrp_60_69 agegrp_70_79 agegrp_80_100 male_agegrp_0_13 female_agegrp_0_13 male_agegrp_14_17 female_agegrp_14_17 male_agegrp_18_24 female_agegrp_18_24 male_agegrp_25_29 female_agegrp_25_29 male_agegrp_30_34 female_agegrp_30_34 male_agegrp_35_39 female_agegrp_35_39 male_agegrp_40_49 female_agegrp_40_49 male_agegrp_50_59 female_agegrp_50_59 male_agegrp_60_69 female_agegrp_60_69 male_agegrp_70_79 female_agegrp_70_79 male_agegrp_80_100 female_agegrp_80_100 ///
 unmarried married_male unmarried_male married_female unmarried_female married_male_1824 unmarried_male_1824 married_female_1824 unmarried_female_1824 married_male_2530 unmarried_male_2530 married_female_2530 unmarried_female_2530 married_male_more30 unmarried_male_more30 married_female_more30 unmarried_female_more30 married_male_more18 unmarried_male_more18 married_female_more18 unmarried_female_more18 married_1824 unmarried_1824 married_2530 unmarried_2530 married_more30 unmarried_more30 married_more18 unmarried_more18 ///
 maritalstatus family unmarried_son unmarried_daughter married_son married_daughter ///
-educexp_male_HH educexp_female_HH educexp_HH
+educexp_male_HH educexp_female_HH educexp_HH educ_attainment educ_attainment2
 
 gen year=2016
 
@@ -78,7 +78,7 @@ engagementhusbandcost marriagehusbandcost engagementwifecost marriagewifecost //
 relationshiptohead relation_head relation_wife relation_mother relation_father relation_son relation_daughter relation_soninlaw relation_daughterinlaw relation_sister relation_brother relation_motherinlaw relation_fatherinlaw relation_grandchildren relation_cousin relation_other agegrp_0_13 agegrp_14_17 agegrp_18_24 agegrp_25_29 agegrp_30_34 agegrp_35_39 agegrp_40_49 agegrp_50_59 agegrp_60_69 agegrp_70_79 agegrp_80_100 male_agegrp_0_13 female_agegrp_0_13 male_agegrp_14_17 female_agegrp_14_17 male_agegrp_18_24 female_agegrp_18_24 male_agegrp_25_29 female_agegrp_25_29 male_agegrp_30_34 female_agegrp_30_34 male_agegrp_35_39 female_agegrp_35_39 male_agegrp_40_49 female_agegrp_40_49 male_agegrp_50_59 female_agegrp_50_59 male_agegrp_60_69 female_agegrp_60_69 male_agegrp_70_79 female_agegrp_70_79 male_agegrp_80_100 female_agegrp_80_100 ///
 unmarried married_male unmarried_male married_female unmarried_female married_male_1824 unmarried_male_1824 married_female_1824 unmarried_female_1824 married_male_2530 unmarried_male_2530 married_female_2530 unmarried_female_2530 married_male_more30 unmarried_male_more30 married_female_more30 unmarried_female_more30 married_male_more18 unmarried_male_more18 married_female_more18 unmarried_female_more18 married_1824 unmarried_1824 married_2530 unmarried_2530 married_more30 unmarried_more30 married_more18 unmarried_more18 ///
 maritalstatus family unmarried_son unmarried_daughter married_son married_daughter ///
-educexp_male_HH educexp_female_HH educexp_HH
+educexp_male_HH educexp_female_HH educexp_HH educ_attainment educ_attainment2
 
 gen year=2020
 
@@ -119,11 +119,22 @@ order HHID_panel INDID_panel year name
 tabstat totalmarriagegiftamount marriagehusbandcost marriagewifecost if year==2020, stat(n mean cv q) by(sex) long
 
 
+preserve
+replace annualincome_HH=annualincome_HH*(100/158) if year==2016
+replace annualincome_HH=annualincome_HH*(100/184) if year==2020
+tabstat annualincome_HH, stat(n mean p50) by(year)
+restore
+
+
 * Deflate
 global rupees marriagedowry marriagetotalcost marriageexpenses totalmarriagegiftamount marriagedowry1000 marriagetotalcost1000 marriageexpenses1000 assets_housevalue assets_livestock assets_goods assets_ownland assets_gold assets_total assets_totalnoland assets_totalnoprop incomeagri_HH incomenonagri_HH annualincome_HH engagementtotalcost engagementhusbandcost engagementwifecost marriagehusbandcost marriagewifecost
 foreach x in $rupees {
 replace `x'=`x'*(100/116) if year==2020
 }
+
+
+
+
 
 
 
@@ -139,33 +150,18 @@ fre time
 ********** New variables
 gen totalmarriagegiftamount_alt=totalmarriagegiftamount
 replace totalmarriagegiftamount_alt=0 if totalmarriagegiftamount==.
+
+
 ********** Cout net du mariage
-* hommes : gift+dowry-expenses
-* femmes : gift-dowry-expenses
 gen marriagenetcost=.
-replace marriagenetcost=totalmarriagegiftamount_alt+marriagedowry-marriageexpenses if sex==1 & marriageexpenses!=.
-replace marriagenetcost=totalmarriagegiftamount_alt-marriagedowry-marriageexpenses if sex==2 & marriageexpenses!=.
+replace marriagenetcost=marriagehusbandcost-totalmarriagegiftamount_alt-marriagedowry if sex==1
+replace marriagenetcost=marriagewifecost+marriagedowry-totalmarriagegiftamount_alt if sex==2
 *
 gen marriagenetcost1000=marriagenetcost/1000 if marriagenetcost!=.
 *
 gen MNCI=marriagenetcost*100/annualincome
+replace MNCI=1000 if MNCI>1000 & MNCI!=.
 
-
-********** Cout net du mariage alt
-* hommes : gift+dowry-expenses (ou cost)
-* femmes : gift-dowry-expenses (ou cost)
-
-/*
-*J'estime le % du cout qu'ils ont en expenses puis je l'impute
-gen _tempmale=marriageexpenses*100/marriagehusbandcost if sex==1
-gen _tempfemale=marriageexpenses*100/marriagewifecost if sex==2
-sum _tempmale _tempfemale
-*
-    Variable |        Obs        Mean    Std. Dev.       Min        Max
--------------+---------------------------------------------------------
-   _tempmale |         25    96.66667    34.24056       23.2        116
- _tempfemale |         13    67.98709    45.66061        2.9        116
-*/
 
 
 gen marriagenetcost_alt=marriagenetcost
@@ -179,11 +175,11 @@ gen MNCI_alt=marriagenetcost_alt*100/annualincome
 
 tabstat marriagenetcost1000 marriagenetcost_alt1000, stat(n mean q) by(sex)
 
-label define cat_cost 1"Net loss" 2"Balanced" 3"Net gain"
+label define cat_cost 1"Net gain" 2"Balanced" 3"Net loss"
 gen cat_cost=.
-replace cat_cost=1 if marriagenetcost_alt1000<0
-replace cat_cost=2 if marriagenetcost_alt1000==0
-replace cat_cost=3 if marriagenetcost_alt1000>0
+replace cat_cost=1 if marriagenetcost1000<0
+replace cat_cost=2 if marriagenetcost1000==0
+replace cat_cost=3 if marriagenetcost1000>0
 label values cat_cost cat_cost
 
 * Recode
@@ -209,7 +205,37 @@ ta lowgift year, col nofreq
 
 
 ********** Cost for females with dowry
-gen marriagewifecost2=marriagedowry+marriagewifecost if sex==2
+gen marriagewifecost2=marriagedowry+marriagewifecost if year==2020
+
+
+********** Costoincome
+gen costtoincome=.
+replace costtoincome=marriagehusbandcost*100/annualincome_HH if sex==1
+replace costtoincome=marriagewifecost*100/annualincome_HH if sex==2
+ta costtoincome
+replace costtoincome=1000 if costtoincome>1000 & costtoincome!=.
+
+gen costtoincome2=.
+replace costtoincome2=marriagehusbandcost*100/annualincome_HH if sex==1
+replace costtoincome2=marriagewifecost2*100/annualincome_HH if sex==2
+ta costtoincome2
+replace costtoincome2=1000 if costtoincome2>1000 & costtoincome2!=.
+
+
+********** Dowrytoincome
+gen dowrytoincome=marriagedowry*100/annualincome_HH if sex==2
+replace dowrytoincome=1000 if dowrytoincome>1000 & dowrytoincome!=.
+
+
+
+
+
+********** New total cost of the marriage and shares
+gen marriagetotalcost2=marriagewifecost2+marriagehusbandcost
+gen sharemales=marriagehusbandcost*100/marriagetotalcost2
+gen sharefemales=marriagewifecost2*100/marriagetotalcost2
+
+
 
 
 ********** Assets "high" and "low"
@@ -270,6 +296,12 @@ foreach x in $var {
 ta cat_`x'
 }
 
+
+********** Assets q
+merge m:1 HHID_panel year using "panel_HH", keepusing(assets_q)
+keep if _merge==3
+drop _merge
+ta assets_q year, col nofreq
 
 
 save"NEEMSIS-marriage", replace

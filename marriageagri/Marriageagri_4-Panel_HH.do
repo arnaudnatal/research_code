@@ -303,6 +303,7 @@ replace `x'=`x'*(100/184) if year==2020
 }
 
 
+
 ********** Cleaning 
 drop expenses_educ
 recode ownland (.=0)
