@@ -304,6 +304,32 @@ drop _merge
 ta assets_q year, col nofreq
 
 
+
+********** Gift to income
+drop gifttocost
+gen gifttocosthusband=totalmarriagegiftamount_alt*100/marriagehusbandcost if sex==1
+gen gifttocostwife=totalmarriagegiftamount_alt*100/marriagewifecost2 if sex==2
+gen gifttocost=.
+replace gifttocost=gifttocosthusband if sex==1
+replace gifttocost=gifttocostwife if sex==2
+
+drop lowgift
+xtile abs_lowgift=totalmarriagegiftamount_alt, n(3)
+fre abs_lowgift
+recode abs_lowgift (2=0) (3=0)
+label define lowgift 0"Norm-High gifts" 1"Low gifts", replace
+label values abs_lowgift lowgift
+fre abs_lowgift
+
+xtile rel_lowgift=gifttocost, n(3)
+fre rel_lowgift
+recode rel_lowgift (2=0) (3=0)
+label values rel_lowgift lowgift
+fre rel_lowgift
+
+
+
+
 save"NEEMSIS-marriage", replace
 ****************************************
 * END

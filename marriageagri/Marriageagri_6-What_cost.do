@@ -297,63 +297,44 @@ cls
 ********** Amount of gifts
 use"NEEMSIS-marriage.dta", clear
 
-gen gifttocost2=.
-replace gifttocost2=totalmarriagegiftamount*100/marriagehusbandcost if sex==1
-replace gifttocost2=totalmarriagegiftamount*100/marriagewifecost2 if sex==2
-tabstat gifttocost gifttocost2, stat(n mean cv q) by(sex) long
-drop gifttocost2
+replace totalmarriagegiftamount_alt=totalmarriagegiftamount_alt/1000
+
+********** Desc
+
+tab caste abs_lowgift, col nofreq chi2
+ta educ_attainment2 abs_lowgift, col nofreq chi2
+ta sex abs_lowgift, col nofreq chi2
+ta working_pop abs_lowgift, col nofreq chi2
+ta mainocc_occupation_indiv abs_lowgift, col nofreq chi2
 
 
-foreach x in totalmarriagegiftamount1000 gifttoexpenses GAR GIR gifttocost {
-tabstat `x', stat(n mean cv q) by(year) long
-tabstat `x', stat(n mean cv q) by(sex) long
-
-tabstat `x' if year==2016, stat(n mean cv q) by(intercaste) long
-tabstat `x' if year==2016, stat(n mean cv q) by(marrtype) long
-tabstat `x' if year==2016, stat(n mean cv q) by(sex) long
-
-tabstat `x' if year==2020, stat(n mean cv q) by(intercaste) long
-tabstat `x' if year==2020, stat(n mean cv q) by(marrtype) long
-tabstat `x' if year==2020, stat(n mean cv q) by(sex) long
-}
+tab caste rel_lowgift, col nofreq chi2
+ta educ_attainment2 rel_lowgift, col nofreq chi2
+ta sex rel_lowgift, col nofreq chi2
+ta working_pop rel_lowgift, col nofreq chi2
+ta mainocc_occupation_indiv rel_lowgift, col nofreq chi2
 
 
-********** Caractéristiques de low level of gift
-* Caractéristiques de l'individu
-tab caste lowgift, col nofreq chi2
-tab caste lowgift, exp cchi2 chi2
-ta edulevel lowgift, col nofreq chi2
-ta edulevel lowgift, exp cchi2 chi2
-tabstat totalmarriagegiftamount_alt, stat(n mean q) by(edulevel)
-reg totalmarriagegiftamount_alt i.edulevel
-reg totalmarriagegiftamount_alt i.edulevel if sex==1
-reg totalmarriagegiftamount_alt i.edulevel if sex==2
-reg totalmarriagegiftamount_alt c.educexp_female_HH
-reg totalmarriagegiftamount_alt c.educexp_female_HH if sex==1
-reg totalmarriagegiftamount_alt c.educexp_female_HH if sex==2
-*ta edulevel lowgift if sex==1, exp cchi2 chi2
-*ta edulevel lowgift if sex==2, exp cchi2 chi2
-ta sex lowgift, col nofreq chi2
-ta working_pop lowgift, col nofreq chi2
-ta mainocc_occupation_indiv lowgift, col nofreq chi2
+tabstat totalmarriagegiftamount_alt, stat(n mean) by(assets_q)
+tabstat totalmarriagegiftamount_alt, stat(n mean) by(caste)
 
-* Caractéristiques du mariage
-ta intercaste lowgift, col nofreq chi2
-ta interjatis lowgift, col nofreq chi2
-reg marriagedowry c.lowgift if sex==1
-reg marriagedowry c.lowgift if sex==2
-tabstat marriagedowry if sex==2, stat(n mean) by(lowgift)
 
-* Caractéristiques de la famille du/de la marié/e
-tabstat assets_totalnoland annualincome_HH shareincomenonagri_HH, stat(n mean) by(lowgift)
-reg assets_totalnoland lowgift
-pwcorr assets_totalnoland totalmarriagegiftamount_alt, star(0.01)
-reg annualincome_HH lowgift
-ta status lowgift, col nofreq chi2
-ta status lowgift, exp cchi2 chi2
-reg shareincomenonagri_HH lowgift
-ta divHH10 lowgift, col nofreq chi2
-ta ownland lowgift, col nofreq chi2
+********** OLS
+
+*** Absolut
+reg abs_lowgift i.caste i.educ_attainment2 i.sex i.working_pop i.assets_q i.ownland i.divHH10, baselevel
+reg totalmarriagegiftamount_alt i.caste i.educ_attainment2 i.sex i.working_pop i.assets_q i.ownland i.divHH10, baselevel
+
+
+*** Relative to cost
+reg rel_lowgift i.caste i.educ_attainment2 i.sex i.working_pop i.assets_q i.ownland i.divHH10, baselevel
+reg gifttocost i.caste i.educ_attainment2 i.sex i.working_pop i.assets_q i.ownland i.divHH10, baselevel
+
+
+
+
+
+
 
 
 

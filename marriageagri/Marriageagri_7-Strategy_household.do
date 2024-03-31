@@ -109,3 +109,43 @@ restore
 * END
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Informal employment
+****************************************
+
+* Salaried job
+use"raw/NEEMSIS2-occupations.dta", clear
+
+fre kindofwork
+fre salariedcontract
+fre salariedjobinsurance
+
+* SE
+use"raw/NEEMSIS2-ego.dta", clear
+
+fre mainoccuptype
+fre businesssocialsecurity
+
+
+
+****************************************
+* END
+

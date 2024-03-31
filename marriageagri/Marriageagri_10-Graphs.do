@@ -226,19 +226,19 @@ forvalues i=2/4 {
 append using "_temp`i'"
 }
 
-label define sample 1"Total" 2"T1 assets" 3"T2 assets" 4"T3 assets"
+label define sample 1"Total" 2"Terc. 1" 3"Terc. 2" 4"Terc. 3"
 label values sample sample
 
 ***** Graph
 twoway ///
 (bar m_cost sample, barwidth(.8)) ///
 (rspike max_cost min_cost sample) ///
-, ylabel(0(10)140) ymtick(0(5)140) ///
-xlabel(1/4,valuelabel angle(0)) ///
+, ylabel(0(10)150) ymtick(0(5)150) ///
+xlabel(1/4,valuelabel angle(45)) ///
 ytitle("INR 1k") xtitle("") ///
-title("Amount of gifts received") ///
+title("By tercile of assets") ///
 legend(off) /// 
-name(gph1, replace)
+name(gphassets, replace)
 graph export "graph/Gifts_assets.png", as(png) replace
 
 
@@ -309,24 +309,109 @@ forvalues i=2/5 {
 append using "_temp`i'"
 }
 
-label define sample 1"Total" 2"No education" 3"Primary" 4"Secondary" 5"Tertiary"
+label define sample 1"Total" 2"No educ" 3"Primary" 4"Second" 5"Tertiary"
 label values sample sample
 
 ***** Graph
 twoway ///
 (bar m_cost sample, barwidth(.8)) ///
 (rspike max_cost min_cost sample) ///
-, ylabel(0(10)120) ymtick(0(5)120) ///
-xlabel(1/5,valuelabel angle(0)) ///
+, ylabel(0(10)150) ymtick(0(5)150) ///
+xlabel(1/5,valuelabel angle(45)) ///
 ytitle("INR 1k") xtitle("") ///
-title("Amount of gifts received") ///
+title("By level of education") ///
 legend(off) /// 
-name(gph1, replace)
+name(gpheduc, replace)
 graph export "graph/Gifts_educ.png", as(png) replace
 
 
 ****************************************
 * END
+
+
+
+
+
+
+
+
+****************************************
+* Gifts and caste
+****************************************
+use"NEEMSIS-marriage.dta", clear
+
+replace totalmarriagegiftamount_alt=totalmarriagegiftamount_alt/1000
+
+tabstat totalmarriagegiftamount_alt, stat(n mean) by(caste)
+
+***** Rename
+rename totalmarriagegiftamount_alt total
+
+fre caste
+
+***** By categories
+gen total1=total if caste==1
+gen total2=total if caste==2
+gen total3=total if caste==3
+
+
+
+***** Macro for formatting database
+global var total total1 total2 total3
+local i=1
+foreach x in $var {
+preserve
+rename `x' cost
+keep cost
+collapse (mean) m_cost=cost (sd) sd_cost=cost (count) n_cost=cost
+gen sample=`i'
+order sample
+* M
+gen max_cost=m_cost+invttail(n_cost-1,0.025)*(sd_cost/sqrt(n_cost))
+gen min_cost=m_cost-invttail(n_cost-1,0.025)*(sd_cost/sqrt(n_cost))
+save"_temp`i'", replace
+restore
+local i=`i'+1
+}
+
+***** Append
+use "_temp1", clear
+
+forvalues i=2/4 {
+append using "_temp`i'"
+}
+
+label define sample 1"Total" 2"Dalits" 3"Middle" 4"Upper"
+label values sample sample
+
+***** Graph
+twoway ///
+(bar m_cost sample, barwidth(.8)) ///
+(rspike max_cost min_cost sample) ///
+, ylabel(0(10)150) ymtick(0(5)150) ///
+xlabel(1/4,valuelabel angle(45)) ///
+ytitle("INR 1k") xtitle("") ///
+title("By caste") ///
+legend(off) /// 
+name(gphcaste, replace)
+graph export "graph/Gifts_caste.png", as(png) replace
+
+
+
+********** Combine
+graph combine gpheduc gphassets gphcaste, col(3) name(comb, replace)
+graph export "graph/Gifts_educassetscaste.png", as(png) replace
+
+
+****************************************
+* END
+
+
+
+
+
+
+
 
 
 
