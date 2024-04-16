@@ -522,6 +522,7 @@ replace `x'=round(`x',1)
 
 
 * Maritalstatus
+fre maritalstatus
 recode maritalstatus (4=3) (5=4)
 label define maritalstatus 1"Married: Yes" 2"Married: No" 3"Married: Other" 4"Married: Below 10", replace
 label values maritalstatus maritalstatus
