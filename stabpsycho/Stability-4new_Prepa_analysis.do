@@ -186,9 +186,16 @@ label var ars32016 "Absolute acquiescence score"
 
 
 ********** Merge cognition
-merge 1:1 HHID_panel INDID_panel using "panel_stab_v2_pooled_wide"
+merge 1:1 HHID_panel INDID_panel using "panel_stab_v2_pooled_wide", keepusing( ///
+fES2016 fES2020 diff_fES abs_diff_fES catdiff_fES dumdiff_fES var_fES ///
+fCO2016 fCO2020 diff_fCO abs_diff_fCO catdiff_fCO dumdiff_fCO var_fCO ///
+fOP2016 fOP2020 diff_fOP abs_diff_fOP catdiff_fOP dumdiff_fOP var_fOP ///
+num_tt2016 num_tt2020 ///
+lit_tt2016 lit_tt2020 ///
+raven_tt2016 raven_tt2020)
 drop _merge
 keep if sex!=.
+
 label var fES2016 "Emotional stability score"
 label var fCO2016 "Conscientiousness score"
 label var fOP2016 "Openness to experience score"
@@ -215,10 +222,13 @@ label var catdiff_fES "ES temporal trajectory"
 label var catdiff_fCO "CO temporal trajectory"
 label var catdiff_fOP "OP temporal trajectory"
 
-label var abs_diff_rec_fES "Intensity of ES instability"
-label var abs_diff_rec_fCO "Intensity of CO instability"
-label var abs_diff_rec_fOP "Intensity of OP instability"
+label var abs_diff_fES "Intensity of ES instability"
+label var abs_diff_fCO "Intensity of CO instability"
+label var abs_diff_fOP "Intensity of OP instability"
 
+label var var_fES "Variation ES (%)"
+label var var_fCO "Variation CO (%)"
+label var var_fOP "Variation OP (%)"
 
 
 

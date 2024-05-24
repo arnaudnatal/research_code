@@ -2114,8 +2114,8 @@ ta divHH10 time, col nofreq
 
 * Global
 catplot divHH10 time, percent(time) asyvars stack vert ///
-bar(1, color(gs0)) bar(2, color(gs7))  bar(3, color(gs12)) ///
-ylabel(0(10)100) ymtick(0(5)100) ///
+bar(1, color(plg2)) bar(2, color(plr1))  bar(3, color(ply1)) ///
+ylabel(0(20)100) ymtick(0(10)100) ///
 ytitle("Percent") title("Total") ///
 legend(pos(6) col(3)) name(tot, replace)
 
@@ -2124,28 +2124,28 @@ legend(pos(6) col(3)) name(tot, replace)
 set graph off
 * Dalits
 catplot divHH10 time if caste==1, percent(time) asyvars stack vert ///
-bar(1, color(gs0)) bar(2, color(gs7))  bar(3, color(gs12)) ///
-ylabel(0(10)100) ymtick(0(5)100) ///
+bar(1, color(plg2)) bar(2, color(plr1))  bar(3, color(ply1)) ///
+ylabel(0(20)100) ymtick(0(10)100) ///
 ytitle("Percent") title("Dalits") ///
 legend(pos(6) col(3)) name(dal, replace)
 
 * Middle
 catplot divHH10 time if caste==2, percent(time) asyvars stack vert ///
-bar(1, color(gs0)) bar(2, color(gs7))  bar(3, color(gs12)) ///
-ylabel(0(10)100) ymtick(0(5)100) ///
+bar(1, color(plg2)) bar(2, color(plr1))  bar(3, color(ply1)) ///
+ylabel(0(20)100) ymtick(0(10)100) ///
 ytitle("Percent") title("Middle castes") ///
 legend(pos(6) col(3)) name(mid, replace)
 
 * Uppers
 catplot divHH10 time if caste==3, percent(time) asyvars stack vert ///
-bar(1, color(gs0)) bar(2, color(gs7))  bar(3, color(gs12)) ///
-ylabel(0(10)100) ymtick(0(5)100) ///
+bar(1, color(plg2)) bar(2, color(plr1))  bar(3, color(ply1)) ///
+ylabel(0(20)100) ymtick(0(10)100) ///
 ytitle("Percent") title("Upper castes") ///
 legend(pos(6) col(3)) name(upp, replace)
 
 * Combine
 set graph on
-grc1leg tot dal mid upp, name(comb_caste, replace)
+grc1leg tot dal mid upp, name(comb_caste, replace) note("{it: Source:} RUME (2010), NEEMSIS (2016-17, 2020-21).", size(vsmall)) title("Agricultural status of households by caste")
 graph export "graph/diversification_caste.png", as(png) replace
 
 

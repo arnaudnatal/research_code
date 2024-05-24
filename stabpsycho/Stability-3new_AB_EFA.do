@@ -174,6 +174,7 @@ factor $imcr_without, pcf
 *****
 factor $imcr_without, pcf fa(6)
 rotate, quartimin
+predict f1without_alt_ES f2without_alt_OP f3without_alt_CO f4without_alt_EXAG f5without_alt_EXES f6without_alt_AG
 *putexcel set "EFA_pooled.xlsx", modify sheet("Without_Grit")
 *putexcel (E2)=matrix(e(r_L))
 
@@ -232,6 +233,7 @@ factor $imcr_with, pcf
 *****
 factor $imcr_with, pcf fa(7)
 rotate, quartimin
+predict f1with_alt_ES f2with_alt_COGrit f3with_alt_OP f4with_alt_EXAG f5with_alt_EXES f6with_alt_AGGrit f7with_alt_OP
 *putexcel set "EFA_pooled.xlsx", modify sheet("With_Grit")
 *putexcel (E2)=matrix(e(r_L))
 
@@ -264,60 +266,90 @@ global f7with imcr_interestedbyart
 
 
 
-
-
-
-
-
-
-
 ********** Factors construction
 
 ***** Without
 *
 omegacoef $f1without
 egen f1without=rowmean($f1without)
+replace f1without=1 if f1without<1 & f1without!=. 
+replace f1without=5 if f1without>5 & f1without!=.
+rename f1without f1without_ES
 *
 omegacoef $f2without
 egen f2without=rowmean($f2without)
+replace f2without=1 if f2without<1 & f2without!=. 
+replace f2without=5 if f2without>5 & f2without!=. 
+rename f2without f2without_OP
 *
 omegacoef $f3without
 egen f3without=rowmean($f3without)
+replace f3without=1 if f3without<1 & f3without!=. 
+replace f3without=5 if f3without>5 & f3without!=. 
+rename f3without f3without_CO
 *
 *omegacoef $f4without
 egen f4without=rowmean($f4without)
+replace f4without=1 if f4without<1 & f4without!=. 
+replace f4without=5 if f4without>5 & f4without!=. 
+rename f4without f4without_EXAG
 *
 *omegacoef $f5without
 egen f5without=rowmean($f5without)
+replace f5without=1 if f5without<1 & f5without!=. 
+replace f5without=5 if f5without>5 & f5without!=. 
+rename f5without f5without_EXES
 *
 *omegacoef $f6without
 egen f6without=rowmean($f6without)
-
+replace f6without=1 if f6without<1 & f6without!=. 
+replace f6without=5 if f6without>5 & f6without!=. 
+rename f6without f6without_AG
 
 
 ***** With
 *
 omegacoef $f1with
 egen f1with=rowmean($f1with)
+replace f1with=1 if f1with<1 & f1with!=. 
+replace f1with=5 if f1with>5 & f1with!=. 
+rename f1with f1with_ES
 *
 omegacoef $f2with
 egen f2with=rowmean($f2with)
+replace f2with=1 if f2with<1 & f2with!=. 
+replace f2with=5 if f2with>5 & f2with!=.
+rename f2with f2with_COGrit
 *
 omegacoef $f3with
 egen f3with=rowmean($f3with)
+replace f3with=1 if f3with<1 & f3with!=. 
+replace f3with=5 if f3with>5 & f3with!=.
+rename f3with f3with_OP
 *
 *omegacoef $f4with
 egen f4with=rowmean($f4with)
+replace f4with=1 if f4with<1 & f4with!=. 
+replace f4with=5 if f4with>5 & f4with!=.
+rename f4with f4with_EXAG
 *
 *omegacoef $f5with
 egen f5with=rowmean($f5with)
+replace f5with=1 if f5with<1 & f5with!=. 
+replace f5with=5 if f5with>5 & f5with!=.
+rename f5with f5with_EXES
 *
 *omegacoef $f6with
 egen f6with=rowmean($f6with)
+replace f6with=1 if f6with<1 & f6with!=. 
+replace f6with=5 if f6with>5 & f6with!=.
+rename f6with f6with_AGGrit
 *
 *omegacoef $f7with
 egen f7with=rowmean($f7with)
-
+replace f7with=1 if f7with<1 & f7with!=. 
+replace f7with=5 if f7with>5 & f7with!=.
+rename f7with f7with_OP
 
 
 
@@ -326,21 +358,33 @@ egen f7with=rowmean($f7with)
 * 
 omegacoef $imcr_OP
 egen OP_imcr=rowmean($imcr_OP)
+replace OP_imcr=1 if OP_imcr<1 & OP_imcr!=.
+replace OP_imcr=5 if OP_imcr>5 & OP_imcr!=.
 * 
 omegacoef $imcr_CO
 egen CO_imcr=rowmean($imcr_CO)
+replace CO_imcr=1 if CO_imcr<1 & CO_imcr!=.
+replace CO_imcr=5 if CO_imcr>5 & CO_imcr!=.
 *
 omegacoef $imcr_EX
 egen EX_imcr=rowmean($imcr_EX)
+replace EX_imcr=1 if EX_imcr<1 & EX_imcr!=.
+replace EX_imcr=5 if EX_imcr>5 & EX_imcr!=.
 *
 omegacoef $imcr_AG
 egen AG_imcr=rowmean($imcr_AG)
+replace AG_imcr=1 if AG_imcr<1 & AG_imcr!=.
+replace AG_imcr=5 if AG_imcr>5 & AG_imcr!=.
 *
 omegacoef $imcr_ES
 egen ES_imcr=rowmean($imcr_ES)
+replace ES_imcr=1 if ES_imcr<1 & ES_imcr!=.
+replace ES_imcr=5 if ES_imcr>5 & ES_imcr!=.
 *
 omegacoef $imcr_Grit
 egen Grit_imcr=rowmean($imcr_Grit)
+replace Grit_imcr=1 if Grit_imcr<1 & Grit_imcr!=.
+replace Grit_imcr=5 if Grit_imcr>5 & Grit_imcr!=.
 
 
 save "panel_stab_v2_pooled", replace
@@ -368,18 +412,21 @@ save "panel_stab_v2_pooled", replace
 ****************************************
 use "panel_stab_v2_pooled", clear
 
-********** Reshape the data base
-global traits f1without f2without f3without f4without f5without f6without f1with f2with f3with f4with f5with f6with f7with OP_imcr CO_imcr EX_imcr AG_imcr ES_imcr Grit_imcr
-
 
 ********** Clean
-rename f1without fES
-rename f2without fOP
-rename f3without fCO
+rename f1without_ES fES
+rename f2without_OP fOP
+rename f3without_CO fCO
+rename f1without_alt_ES fESs
+rename f2without_alt_OP fOPs
+rename f3without_alt_CO fCOs
 
-rename f1with fbES
-rename f2with fbCO
-rename f3with fbOP
+rename f1with_ES fbES
+rename f2with_CO fbCO
+rename f3with_OP fbOP
+rename f1with_alt_ES fbESs
+rename f2with_alt_CO fbCOs
+rename f3with_alt_OP fbOPs
 
 rename OP_imcr OP
 rename CO_imcr CO
@@ -388,30 +435,41 @@ rename AG_imcr AG
 rename ES_imcr ES
 rename Grit_imcr Grit
 
-keep HHID_panel INDID_panel year ///
-fES fOP fCO fbES fbCO fbOP OP CO EX AG ES Grit $f1without $f2without $f3without
+global fact fES fOP fCO fbES fbCO fbOP
+global facts fESs fOPs fCOs fbESs fbCOs fbOPs
+global naive OP CO EX AG ES Grit
+global cogn num_tt lit_tt raven_tt
+global perso $fact $facts $naive $cogn
 
-reshape wide fES fOP fCO fbES fbCO fbOP OP CO EX AG ES Grit $f1without $f2without $f3without, i(HHID_panel INDID_panel) j(year)
+
+keep HHID_panel INDID_panel year $perso
+
+reshape wide $perso, i(HHID_panel INDID_panel) j(year)
+foreach x in $perso {
+order `x'2020, after(`x'2016)
+}
 
 
 ********** Diff
-foreach x in fES fOP fCO fbES fbCO fbOP OP CO EX AG ES Grit {
+foreach x in $perso {
 gen diff_`x'=`x'2020-`x'2016
 gen abs_diff_`x'=abs(`x'2020-`x'2016)
 gen var_`x'=(`x'2020-`x'2016)*100/`x'2016
 gen abs_var_`x'=abs((`x'2020-`x'2016)*100/`x'2016)
+order diff_`x' abs_diff_`x' var_`x' abs_var_`x', after(`x'2020)
 }
 
 
 
 ********** Abs cat
-foreach x in fES fOP fCO fbES fbCO fbOP OP CO EX AG ES Grit {
+foreach x in $perso {
 gen cat_abs_var_`x'=.
+order cat_abs_var_`x', after(abs_var_`x')
 }
 
 label define catvar 1"Less than 1%" 2"1-5%" 3"5-10%" 4"10-20%" 5"20-50%" 6"50-100%" 7"More than 100%"
 
-foreach x in fES fOP fCO fbES fbCO fbOP OP CO EX AG ES Grit {
+foreach x in $perso {
 replace cat_abs_var_`x'=1 if abs_var_`x'<1 & abs_var_`x'!=.
 replace cat_abs_var_`x'=2 if abs_var_`x'>=1 & abs_var_`x'<5 & abs_var_`x'!=.
 replace cat_abs_var_`x'=3 if abs_var_`x'>=5 & abs_var_`x'<10 & abs_var_`x'!=.
@@ -424,22 +482,24 @@ label values cat_abs_var_`x' catvar
 
 
 ********** Catvar
-foreach x in fES fOP fCO fbES fbCO fbOP OP CO EX AG ES Grit {
+foreach x in $perso {
 gen catvar_`x'=.
+order catvar_`x', after(cat_abs_var_`x')
 }
 label define catvar2 1"Decrease" 2"Stable" 3"Increase"
-foreach x in fES fOP fCO fbES fbCO fbOP OP CO EX AG ES Grit {
+foreach x in $perso {
 replace catvar_`x'=1 if var_`x'<-10 & var_`x'!=.
 replace catvar_`x'=2 if var_`x'>=-10 & var_`x'<=10 & var_`x'!=.
 replace catvar_`x'=3 if var_`x'>=10 & var_`x'!=.
 label values catvar_`x' catvar2
 }
 *
-foreach x in fES fOP fCO fbES fbCO fbOP OP CO EX AG ES Grit {
+foreach x in $perso {
 gen dumvar_`x'=.
+order dumvar_`x', after(catvar_`x')
 }
 label define dumvar2 0"Stable" 1"Instable"
-foreach x in fES fOP fCO fbES fbCO fbOP OP CO EX AG ES Grit {
+foreach x in $perso {
 replace dumvar_`x'=0 if catvar_`x'==2
 replace dumvar_`x'=1 if catvar_`x'==1 | catvar_`x'==3
 label values dumvar_`x' dumvar2
@@ -451,45 +511,48 @@ label values dumvar_`x' dumvar2
 
 
 ********** Catdiff
-foreach x in fES fOP fCO fbES fbCO fbOP OP CO EX AG ES Grit {
+foreach x in $perso {
 gen catdiff_`x'=.
+order catdiff_`x', after(abs_diff_`x')
 }
-foreach x in fES fOP fCO fbES fbCO fbOP OP CO EX AG ES Grit {
+foreach x in $perso {
 replace catdiff_`x'=1 if diff_`x'<-0.5 & diff_`x'!=.
 replace catdiff_`x'=2 if diff_`x'>=-0.5 & diff_`x'<=0.5 & diff_`x'!=.
 replace catdiff_`x'=3 if diff_`x'>=0.5 & diff_`x'!=.
 label values catdiff_`x' catvar2
 }
 *
-foreach x in fES fOP fCO fbES fbCO fbOP OP CO EX AG ES Grit {
+foreach x in $perso {
 gen dumdiff_`x'=.
+order dumdiff_`x', after(catdiff_`x')
 }
-foreach x in fES fOP fCO fbES fbCO fbOP OP CO EX AG ES Grit {
+foreach x in $perso {
 replace dumdiff_`x'=0 if catdiff_`x'==2
 replace dumdiff_`x'=1 if catdiff_`x'==1 | catdiff_`x'==3
 label values dumdiff_`x' dumvar2
 }
 
 
-cls
+
+********** Stat
+
+preserve
+drop if fES2016==.
+drop if fES2020==.
+
 ta catdiff_fES catvar_fES
+ta catdiff_fESs catvar_fESs
+
 ta catdiff_fOP catvar_fOP
+ta catdiff_fOPs catvar_fOPs
+
 ta catdiff_fCO catvar_fCO
+ta catdiff_fCOs catvar_fCOs
+restore
+/*
+Le plus pertinent, selon moi, c'est de regarder la simple différence sur les moyennes plutôt que la variation et le score.
+*/
 
-cls
-ta dumdiff_fES dumvar_fES
-ta dumdiff_fOP dumvar_fOP
-ta dumdiff_fCO dumvar_fCO
-
-
-********** Replace abs diff by 0 if diff is below 0.5
-foreach x in ES OP CO {
-gen abs_diff_rec_f`x'=abs_diff_f`x'
-}
-
-foreach x in ES OP CO {
-replace abs_diff_rec_f`x'=0 if catdiff_f`x'==2
-}
 
 
 save "panel_stab_v2_pooled_wide", replace

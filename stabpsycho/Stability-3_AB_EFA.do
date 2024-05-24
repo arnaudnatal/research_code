@@ -31,6 +31,7 @@ fre panel
 codebook time
 label define time 1"2016-17" 2"2020-21", modify
 
+tabstat ars3, stat(n mean) by(time)
 
 stripplot ars3 if panel==1, over(time) ///
 stack width(0.01) jitter(1) /// //refline(lp(dash)) ///
@@ -64,19 +65,27 @@ use"panel_stab_v2", clear
 
 
 *** 2016-17
-qui reg ars3 i.sex i.caste age ib(0).edulevel i.villageid if year==2016
+reg ars3 i.sex i.caste age ib(0).edulevel i.villageid if year==2016
 est store ars1_1
-qui reg ars3 i.sex i.caste age ib(0).edulevel i.villageid i.username_2016_code if year==2016
+reg ars3 i.sex i.caste age ib(0).edulevel i.villageid i.username_2016_code if year==2016
 est store ars1_2
 
 
-*** 2016-17
-qui reg ars3 i.sex i.caste age ib(0).edulevel i.villageid if year==2020
+*** 2020-21
+reg ars3 i.sex i.caste age ib(0).edulevel i.villageid if year==2020
 est store ars2_1
-qui reg ars3 i.sex i.caste age ib(0).edulevel i.villageid i.username_2020_code if year==2020
+reg ars3 i.sex i.caste age ib(0).edulevel i.villageid i.username_2020_code if year==2020
 est store ars2_2
 
 esttab ars1_1 ars1_2 ars2_1 ars2_2, ///
+	star(* 0.10 ** 0.05 *** 0.01) ///
+	cells("b(fmt(2) star)" se(par fmt(2))) ///
+	drop() ///	
+	legend label varlabels(_cons constant) ///
+	stats(N r2, fmt(0 3) labels(`"Observations"' `"\$R^2$"'))
+	
+	
+esttab ars1_1 ars1_2 ars2_1 ars2_2 using "regAB.csv", replace ///
 	star(* 0.10 ** 0.05 *** 0.01) ///
 	cells("b(fmt(2) star)" se(par fmt(2))) ///
 	drop() ///	

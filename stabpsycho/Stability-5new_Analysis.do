@@ -15,37 +15,6 @@ do "C:/Users/Arnaud/Documents/GitHub/folderanalysis/$link.do"
 
 
 
-
-****************************************
-* Naive vs Factor
-****************************************
-use "panel_stab_pooled_wide_v3", clear
-est clear
-graph drop _all
-
-
-
-scatter fES2016 ES2016
-
-
-****************************************
-* END
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ****************************************
 * Scatter scores
 ****************************************
@@ -60,7 +29,7 @@ replace fES2016=0 if fES2016<0 & fES2016!=.
 replace fES2020=0 if fES2020<0 & fES2020!=.
 twoway ///
 (scatter fES2020 fES2016, mcolor(black%30)) ///
-(function y=x, range(0 6)) ///
+(function y=x, range(1 5)) ///
 , xtitle("Score in 2016-17") ytitle("Score in 2020-21") ///
 title(" 'Emotional stability' factor") name(s_fES, replace) legend(order(1 "Individual" 2 "First bisector") pos(6) col(2))
 graph export "distri_fES.pdf", as(pdf) replace 
@@ -75,7 +44,7 @@ replace fOP2016=0 if fOP2016<0 & fOP2016!=.
 replace fOP2020=0 if fOP2020<0 & fOP2020!=.
 twoway ///
 (scatter fOP2020 fOP2016, mcolor(black%30)) ///
-(function y=x, range(0 6)) ///
+(function y=x, range(1 5)) ///
 , xtitle("Score in 2016-17") ytitle("Score in 2020-21") ///
 title(" 'Openness to experience' factor") name(s_fOP, replace) legend(order(1 "Individual" 2 "First bisector") pos(6) col(2))
 graph export "distri_fOP.pdf", as(pdf) replace 
@@ -90,7 +59,7 @@ replace fCO2016=0 if fCO2016<0 & fCO2016!=.
 replace fCO2020=0 if fCO2020<0 & fCO2020!=.
 twoway ///
 (scatter fCO2020 fCO2016, mcolor(black%30)) ///
-(function y=x, range(0 6)) ///
+(function y=x, range(1 5)) ///
 , xtitle("Score in 2016-17") ytitle("Score in 2020-21") ///
 title(" 'Conscientiousness' factor") name(s_fCO, replace) legend(order(1 "Individual" 2 "First bisector") pos(6) col(2))
 graph export "distri_fCO.pdf", as(pdf) replace 
@@ -187,7 +156,7 @@ graph export "histo_fES.pdf", as(pdf) replace
 
 
 
-
+/*
 ****************************************
 * Over items
 ****************************************
@@ -259,7 +228,7 @@ graph save "sub_fCO.gph", replace
 
 ****************************************
 * END
-
+*/
 
 
 
