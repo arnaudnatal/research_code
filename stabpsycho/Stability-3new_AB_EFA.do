@@ -442,11 +442,12 @@ global cogn num_tt lit_tt raven_tt
 global perso $fact $facts $naive $cogn
 
 
-keep HHID_panel INDID_panel year $perso
+keep HHID_panel INDID_panel year $perso $imcr_without
 
-reshape wide $perso, i(HHID_panel INDID_panel) j(year)
+reshape wide $perso $imcr_without, i(HHID_panel INDID_panel) j(year)
 foreach x in $perso {
 order `x'2020, after(`x'2016)
+order $imcr_staycalm, before()
 }
 
 
