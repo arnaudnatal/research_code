@@ -81,7 +81,7 @@ Donc plus simplement, pour mesurer le biais moyen, par individu, nous faisons la
 Plus on s'éloigne de 3, plus le biais est important.
 
 Cependant, il ne faut pas oublier que 3 fait office de valeur tranchante : 1 et 2 sont assez similaires, 3 est neutre et 4 et 5 sont assez similaires.
-Donc un individu qui répondu 5 et 2 n'a pas vraiment de biais (ou alors 1 et 4).
+Donc un individu qui a répondu 5 et 2 n'a pas vraiment de biais (ou alors 1 et 4).
 Si à l'une des questions, l'individu répond 3, le biais augmente, mais n'est pas non plus très grand car il reste neutre.
 
 Le biais devient important lorsque l'individu répond deux choses allant dans le même sens : 1 et 2 (1 et 1, 2 et 2) ou 4 et 5 (4 et 4, 5 et 5).
@@ -123,11 +123,15 @@ label define big5n2 5"5 - Almost never" 4"4 - Rarely" 3"3 - Sometimes" 2"2 - Qui
 foreach x in rudetoother putoffduties easilydistracted shywithpeople repetitive~s nervous changemood feeldepressed easilyupset worryalot {
 label values `x' big5n2
 }
+
+
+
+
 *corrected items: 
 foreach var of varlist $big5grit {
 gen cr_`var'=`var'-ars2 if ars!=. 
 }
-
+ta ars2
 
 
 ********** Big5 taxonomy
@@ -140,6 +144,24 @@ egen cr_Grit = rowmean(cr_tryhard  cr_stickwithgoals   cr_goaftergoal cr_finishw
 
 
 
+
+********** Distribution théorique
+preserve
+keep if cr_ES<1 | cr_ES>5
+drop if cr_ES==.
+keep HHID_panel INDID_panel ars2 ///
+managestress nervous changemood feeldepres~d easilyupset worryalot  staycalm ///
+cr_managestress  cr_nervous  cr_changemood cr_feeldepres~d cr_easilyupset cr_worryalot  cr_staycalm ///
+cr_ES
+sort ars2
+order ars2, before(cr_ES)
+order managestress staycalm, after(INDID_panel)
+corr ars2 cr_ES
+/*
+ars2 le plus faible fait le plus augmenter cr_ES
+ars2 le plus fort fait le plus diminuer cr_ES
+*/
+restore
 
 
 ********** username

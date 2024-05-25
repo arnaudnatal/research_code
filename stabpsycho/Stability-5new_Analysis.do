@@ -29,7 +29,7 @@ replace fES2016=0 if fES2016<0 & fES2016!=.
 replace fES2020=0 if fES2020<0 & fES2020!=.
 twoway ///
 (scatter fES2020 fES2016, mcolor(black%30)) ///
-(function y=x, range(1 5)) ///
+(function y=x, range(0 6)) ///
 , xtitle("Score in 2016-17") ytitle("Score in 2020-21") ///
 title(" 'Emotional stability' factor") name(s_fES, replace) legend(order(1 "Individual" 2 "First bisector") pos(6) col(2))
 graph export "distri_fES.pdf", as(pdf) replace 
@@ -44,7 +44,7 @@ replace fOP2016=0 if fOP2016<0 & fOP2016!=.
 replace fOP2020=0 if fOP2020<0 & fOP2020!=.
 twoway ///
 (scatter fOP2020 fOP2016, mcolor(black%30)) ///
-(function y=x, range(1 5)) ///
+(function y=x, range(0 6)) ///
 , xtitle("Score in 2016-17") ytitle("Score in 2020-21") ///
 title(" 'Openness to experience' factor") name(s_fOP, replace) legend(order(1 "Individual" 2 "First bisector") pos(6) col(2))
 graph export "distri_fOP.pdf", as(pdf) replace 
@@ -59,7 +59,7 @@ replace fCO2016=0 if fCO2016<0 & fCO2016!=.
 replace fCO2020=0 if fCO2020<0 & fCO2020!=.
 twoway ///
 (scatter fCO2020 fCO2016, mcolor(black%30)) ///
-(function y=x, range(1 5)) ///
+(function y=x, range(0 6)) ///
 , xtitle("Score in 2016-17") ytitle("Score in 2020-21") ///
 title(" 'Conscientiousness' factor") name(s_fCO, replace) legend(order(1 "Individual" 2 "First bisector") pos(6) col(2))
 graph export "distri_fCO.pdf", as(pdf) replace 
@@ -171,10 +171,10 @@ graph drop _all
 set graph off
 foreach x in $fvES {
 preserve
-replace imcr_`x'2016=0 if imcr_`x'2016<0 & imcr_`x'2016!=.
-replace imcr_`x'2020=0 if imcr_`x'2020<0 & imcr_`x'2020!=.
+replace `x'2016=0 if `x'2016<0 & `x'2016!=.
+replace `x'2020=0 if `x'2020<0 & `x'2020!=.
 set graph off
-twoway (scatter imcr_`x'2020 imcr_`x'2016, mcolor(black%30)) (function y=x, range(0 6)), xtitle("Score in 2016-17") ytitle("Score in 2020-21") title("`x'") name(s_`x') legend(order(1 "Individual" 2 "First bisector") pos(6) col(2))
+twoway (scatter `x'2020 `x'2016, mcolor(black%30)) (function y=x, range(0 6)), xtitle("Score in 2016-17") ytitle("Score in 2020-21") title("`x'") name(s_`x') legend(order(1 "Individual" 2 "First bisector") pos(6) col(2))
 restore
 }
 set graph on
@@ -193,10 +193,10 @@ graph drop _all
 set graph off
 foreach x in $fvOP {
 preserve
-replace imcr_`x'2016=0 if imcr_`x'2016<0 & imcr_`x'2016!=.
-replace imcr_`x'2020=0 if imcr_`x'2020<0 & imcr_`x'2020!=.
+replace `x'2016=0 if `x'2016<0 & `x'2016!=.
+replace `x'2020=0 if `x'2020<0 & `x'2020!=.
 set graph off
-twoway (scatter imcr_`x'2020 imcr_`x'2016, mcolor(black%30)) (function y=x, range(0 6)), xtitle("Score in 2016-17") ytitle("Score in 2020-21") title("`x'") name(s_`x') legend(order(1 "Individual" 2 "First bisector") pos(6) col(2))
+twoway (scatter `x'2020 `x'2016, mcolor(black%30)) (function y=x, range(0 6)), xtitle("Score in 2016-17") ytitle("Score in 2020-21") title("`x'") name(s_`x') legend(order(1 "Individual" 2 "First bisector") pos(6) col(2))
 restore
 }
 set graph on
@@ -214,10 +214,10 @@ graph drop _all
 set graph off
 foreach x in $fvCO {
 preserve
-replace imcr_`x'2016=0 if imcr_`x'2016<0 & imcr_`x'2016!=.
-replace imcr_`x'2020=0 if imcr_`x'2020<0 & imcr_`x'2020!=.
+replace `x'2016=0 if `x'2016<0 & `x'2016!=.
+replace `x'2020=0 if `x'2020<0 & `x'2020!=.
 set graph off
-twoway (scatter imcr_`x'2020 imcr_`x'2016, mcolor(black%30)) (function y=x, range(0 6)), xtitle("Score in 2016-17") ytitle("Score in 2020-21") title("`x'") name(s_`x') legend(order(1 "Individual" 2 "First bisector") pos(6) col(2))
+twoway (scatter `x'2020 `x'2016, mcolor(black%30)) (function y=x, range(0 6)), xtitle("Score in 2016-17") ytitle("Score in 2020-21") title("`x'") name(s_`x') legend(order(1 "Individual" 2 "First bisector") pos(6) col(2))
 restore
 }
 set graph on
@@ -227,7 +227,7 @@ graph save "sub_fCO.gph", replace
 
 ****************************************
 * END
-*/
+
 
 
 
@@ -269,6 +269,7 @@ global shock dummysell2020 dummydemonetisation2016 dummyshockland dummyshockdebt
 
 
 ***** ES
+fre dumdiff_fES
 probit dumdiff_fES $indiv $cogni $house $shock $contr, cluster(cluster) baselevel
 est store reg1
 margins, dydx($indiv $cogni $house $shock) atmeans post
@@ -320,7 +321,7 @@ esttab reg1 mar1 reg2 mar2 reg3 mar3 using "probit.csv", replace ///
 
 
 
-
+/*
 ****************************************
 * Multi probit stable vs dec vs inc
 ****************************************
@@ -330,9 +331,9 @@ graph drop _all
 
 
 ***** Macro
-global indiv c.age2016 i.sex i.educode i.moc_indiv i.marital
+global indiv c.age2016 i.sex i.educode ib(2).moc_indiv i.marital
 global cogni fES2016 fOP2016 fCO2016 num_tt2016 lit_tt2016 raven_tt2016
-global house i.caste i.assets2016_q i.annualincome_HH2016_q c.HHsize2016 i.typeoffamily2016
+global house i.caste ib(2).assets2016_q ib(2).annualincome_HH2016_q c.HHsize2016 i.typeoffamily2016
 global contr i.username_neemsis1 i.username_neemsis2 c.ars32016 i.diff_ars3_cat5 i.villageid2016
 global shock dummysell2020 dummydemonetisation2016 dummyshockland dummyshockdebt dummyshockhealth dummyshockemployment
 
@@ -361,7 +362,7 @@ est store mar3
 
 
 ***** Tables
-esttab reg1 reg2 reg3 using "mprobit.xlsx", replace ///
+esttab reg1 reg2 reg3 using "mprobit.csv", replace ///
 	label b(3) p(3) eqlabels(none) alignment(S) ///
 	drop(_cons) ///
 	star(* 0.10 ** 0.05 *** 0.01) ///
@@ -370,7 +371,7 @@ esttab reg1 reg2 reg3 using "mprobit.xlsx", replace ///
 	stats(N, fmt(0) ///
 	labels(`"Observations"'))
 	
-esttab mar1 mar2 mar3 using "mprobit_margins.xlsx", replace ///
+esttab mar1 mar2 mar3 using "mprobit_margins.csv", replace ///
 	label b(3) p(3) eqlabels(none) alignment(S) ///
 	star(* 0.10 ** 0.05 *** 0.01) ///
 	cells("b(fmt(2)star)" "se(fmt(2)par)") ///
@@ -380,7 +381,7 @@ esttab mar1 mar2 mar3 using "mprobit_margins.xlsx", replace ///
 
 ****************************************
 * END
-
+*/
 
 
 
@@ -405,9 +406,9 @@ graph drop _all
 
 
 ***** Macro
-global indiv c.age2016 i.sex i.educode i.moc_indiv i.marital
+global indiv c.age2016 i.sex i.educode ib(2).moc_indiv i.marital
 global cogni fES2016 fOP2016 fCO2016 num_tt2016 lit_tt2016 raven_tt2016
-global house i.caste i.assets2016_q i.annualincome_HH2016_q c.HHsize2016 i.typeoffamily2016
+global house i.caste ib(2).assets2016_q ib(2).annualincome_HH2016_q c.HHsize2016 i.typeoffamily2016
 global contr i.username_neemsis1 i.username_neemsis2 c.ars32016 i.diff_ars3_cat5 i.villageid2016
 global shock dummysell2020 dummydemonetisation2016 dummyshockland dummyshockdebt dummyshockhealth dummyshockemployment
 
@@ -498,10 +499,17 @@ est store mar3CO
 
 
 ********** Format
+/*
 esttab ///
 reg1ES mar1ES reg2ES mar2ES reg3ES mar3ES ///
 reg1OP mar1OP reg2OP mar2OP reg3OP mar3OP ///
 reg1CO mar1CO reg2CO mar2CO reg3CO mar3CO ///
+*/
+
+esttab ///
+mar1ES mar2ES mar3ES ///
+mar1OP mar2OP mar3OP ///
+mar1CO mar2CO mar3CO ///
 using "glm.csv", replace ///
 	label b(3) p(3) eqlabels(none) alignment(S) ///
 	star(* 0.10 ** 0.05 *** 0.01) ///

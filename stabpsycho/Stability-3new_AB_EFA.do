@@ -272,38 +272,38 @@ global f7with imcr_interestedbyart
 *
 omegacoef $f1without
 egen f1without=rowmean($f1without)
-replace f1without=1 if f1without<1 & f1without!=. 
-replace f1without=5 if f1without>5 & f1without!=.
+replace f1without=0 if f1without<0 & f1without!=. 
+replace f1without=6 if f1without>6 & f1without!=.
 rename f1without f1without_ES
 *
 omegacoef $f2without
 egen f2without=rowmean($f2without)
-replace f2without=1 if f2without<1 & f2without!=. 
-replace f2without=5 if f2without>5 & f2without!=. 
+replace f2without=0 if f2without<0 & f2without!=. 
+replace f2without=6 if f2without>6 & f2without!=. 
 rename f2without f2without_OP
 *
 omegacoef $f3without
 egen f3without=rowmean($f3without)
-replace f3without=1 if f3without<1 & f3without!=. 
-replace f3without=5 if f3without>5 & f3without!=. 
+replace f3without=0 if f3without<0 & f3without!=. 
+replace f3without=6 if f3without>6 & f3without!=. 
 rename f3without f3without_CO
 *
 *omegacoef $f4without
 egen f4without=rowmean($f4without)
-replace f4without=1 if f4without<1 & f4without!=. 
-replace f4without=5 if f4without>5 & f4without!=. 
+replace f4without=0 if f4without<0 & f4without!=. 
+replace f4without=6 if f4without>6 & f4without!=. 
 rename f4without f4without_EXAG
 *
 *omegacoef $f5without
 egen f5without=rowmean($f5without)
-replace f5without=1 if f5without<1 & f5without!=. 
-replace f5without=5 if f5without>5 & f5without!=. 
+replace f5without=0 if f5without<0 & f5without!=. 
+replace f5without=6 if f5without>6 & f5without!=. 
 rename f5without f5without_EXES
 *
 *omegacoef $f6without
 egen f6without=rowmean($f6without)
-replace f6without=1 if f6without<1 & f6without!=. 
-replace f6without=5 if f6without>5 & f6without!=. 
+replace f6without=0 if f6without<0 & f6without!=. 
+replace f6without=6 if f6without>6 & f6without!=. 
 rename f6without f6without_AG
 
 
@@ -311,44 +311,44 @@ rename f6without f6without_AG
 *
 omegacoef $f1with
 egen f1with=rowmean($f1with)
-replace f1with=1 if f1with<1 & f1with!=. 
-replace f1with=5 if f1with>5 & f1with!=. 
+replace f1with=0 if f1with<0 & f1with!=. 
+replace f1with=6 if f1with>6 & f1with!=. 
 rename f1with f1with_ES
 *
 omegacoef $f2with
 egen f2with=rowmean($f2with)
-replace f2with=1 if f2with<1 & f2with!=. 
-replace f2with=5 if f2with>5 & f2with!=.
+replace f2with=0 if f2with<0 & f2with!=. 
+replace f2with=6 if f2with>6 & f2with!=.
 rename f2with f2with_COGrit
 *
 omegacoef $f3with
 egen f3with=rowmean($f3with)
-replace f3with=1 if f3with<1 & f3with!=. 
-replace f3with=5 if f3with>5 & f3with!=.
+replace f3with=0 if f3with<0 & f3with!=. 
+replace f3with=6 if f3with>6 & f3with!=.
 rename f3with f3with_OP
 *
 *omegacoef $f4with
 egen f4with=rowmean($f4with)
-replace f4with=1 if f4with<1 & f4with!=. 
-replace f4with=5 if f4with>5 & f4with!=.
+replace f4with=0 if f4with<0 & f4with!=. 
+replace f4with=6 if f4with>6 & f4with!=.
 rename f4with f4with_EXAG
 *
 *omegacoef $f5with
 egen f5with=rowmean($f5with)
-replace f5with=1 if f5with<1 & f5with!=. 
-replace f5with=5 if f5with>5 & f5with!=.
+replace f5with=0 if f5with<0 & f5with!=. 
+replace f5with=6 if f5with>6 & f5with!=.
 rename f5with f5with_EXES
 *
 *omegacoef $f6with
 egen f6with=rowmean($f6with)
-replace f6with=1 if f6with<1 & f6with!=. 
-replace f6with=5 if f6with>5 & f6with!=.
+replace f6with=0 if f6with<0 & f6with!=. 
+replace f6with=6 if f6with>6 & f6with!=.
 rename f6with f6with_AGGrit
 *
 *omegacoef $f7with
 egen f7with=rowmean($f7with)
-replace f7with=1 if f7with<1 & f7with!=. 
-replace f7with=5 if f7with>5 & f7with!=.
+replace f7with=0 if f7with<0 & f7with!=. 
+replace f7with=6 if f7with>6 & f7with!=.
 rename f7with f7with_OP
 
 
@@ -358,33 +358,33 @@ rename f7with f7with_OP
 * 
 omegacoef $imcr_OP
 egen OP_imcr=rowmean($imcr_OP)
-replace OP_imcr=1 if OP_imcr<1 & OP_imcr!=.
-replace OP_imcr=5 if OP_imcr>5 & OP_imcr!=.
+replace OP_imcr=0 if OP_imcr<0 & OP_imcr!=.
+replace OP_imcr=6 if OP_imcr>6 & OP_imcr!=.
 * 
 omegacoef $imcr_CO
 egen CO_imcr=rowmean($imcr_CO)
-replace CO_imcr=1 if CO_imcr<1 & CO_imcr!=.
-replace CO_imcr=5 if CO_imcr>5 & CO_imcr!=.
+replace CO_imcr=0 if CO_imcr<0 & CO_imcr!=.
+replace CO_imcr=6 if CO_imcr>6 & CO_imcr!=.
 *
 omegacoef $imcr_EX
 egen EX_imcr=rowmean($imcr_EX)
-replace EX_imcr=1 if EX_imcr<1 & EX_imcr!=.
-replace EX_imcr=5 if EX_imcr>5 & EX_imcr!=.
+replace EX_imcr=0 if EX_imcr<0 & EX_imcr!=.
+replace EX_imcr=6 if EX_imcr>6 & EX_imcr!=.
 *
 omegacoef $imcr_AG
 egen AG_imcr=rowmean($imcr_AG)
-replace AG_imcr=1 if AG_imcr<1 & AG_imcr!=.
-replace AG_imcr=5 if AG_imcr>5 & AG_imcr!=.
+replace AG_imcr=0 if AG_imcr<0 & AG_imcr!=.
+replace AG_imcr=6 if AG_imcr>6 & AG_imcr!=.
 *
 omegacoef $imcr_ES
 egen ES_imcr=rowmean($imcr_ES)
-replace ES_imcr=1 if ES_imcr<1 & ES_imcr!=.
-replace ES_imcr=5 if ES_imcr>5 & ES_imcr!=.
+replace ES_imcr=0 if ES_imcr<0 & ES_imcr!=.
+replace ES_imcr=6 if ES_imcr>6 & ES_imcr!=.
 *
 omegacoef $imcr_Grit
 egen Grit_imcr=rowmean($imcr_Grit)
-replace Grit_imcr=1 if Grit_imcr<1 & Grit_imcr!=.
-replace Grit_imcr=5 if Grit_imcr>5 & Grit_imcr!=.
+replace Grit_imcr=0 if Grit_imcr<0 & Grit_imcr!=.
+replace Grit_imcr=6 if Grit_imcr>6 & Grit_imcr!=.
 
 
 save "panel_stab_v2_pooled", replace
@@ -444,11 +444,37 @@ global perso $fact $facts $naive $cogn
 
 keep HHID_panel INDID_panel year $perso $imcr_without
 
+
+
+********** Rank order stability
+
+***** ID
+egen unique_id=group(HHID_panel INDID_panel)
+gen wave=1 if year==2016
+replace wave=2 if year==2020
+fre wave
+
+***** Stat
+cls
+icc fES unique_id
+icc fOP unique_id
+icc fCO unique_id
+
+
+
+
+********** Reshape
+drop unique_id wave
 reshape wide $perso $imcr_without, i(HHID_panel INDID_panel) j(year)
+
+pwcorr fES2016 fES2020, star(.05)
+pwcorr fOP2016 fOP2020, star(.05)
+pwcorr fCO2016 fCO2020, star(.05)
+
 foreach x in $perso {
 order `x'2020, after(`x'2016)
-order $imcr_staycalm, before()
 }
+order imcr_curious2016 imcr_interestedbyart2016 imcr_repetitivetasks2016 imcr_inventive2016 imcr_liketothink2016 imcr_newideas2016 imcr_activeimagination2016 imcr_organized2016 imcr_makeplans2016 imcr_workhard2016 imcr_appointmentontime2016 imcr_putoffduties2016 imcr_easilydistracted2016 imcr_completeduties2016 imcr_enjoypeople2016 imcr_sharefeelings2016 imcr_shywithpeople2016 imcr_enthusiastic2016 imcr_talktomanypeople2016 imcr_talkative2016 imcr_expressingthoughts2016 imcr_workwithother2016 imcr_understandotherfeeling2016 imcr_trustingofother2016 imcr_rudetoother2016 imcr_toleratefaults2016 imcr_forgiveother2016 imcr_helpfulwithothers2016 imcr_managestress2016 imcr_nervous2016 imcr_changemood2016 imcr_feeldepressed2016 imcr_easilyupset2016 imcr_worryalot2016 imcr_staycalm2016 imcr_curious2020 imcr_interestedbyart2020 imcr_repetitivetasks2020 imcr_inventive2020 imcr_liketothink2020 imcr_newideas2020 imcr_activeimagination2020 imcr_organized2020 imcr_makeplans2020 imcr_workhard2020 imcr_appointmentontime2020 imcr_putoffduties2020 imcr_easilydistracted2020 imcr_completeduties2020 imcr_enjoypeople2020 imcr_sharefeelings2020 imcr_shywithpeople2020 imcr_enthusiastic2020 imcr_talktomanypeople2020 imcr_talkative2020 imcr_expressingthoughts2020 imcr_workwithother2020 imcr_understandotherfeeling2020 imcr_trustingofother2020 imcr_rudetoother2020 imcr_toleratefaults2020 imcr_forgiveother2020 imcr_helpfulwithothers2020 imcr_managestress2020 imcr_nervous2020 imcr_changemood2020 imcr_feeldepressed2020 imcr_easilyupset2020 imcr_worryalot2020 imcr_staycalm2020, last
 
 
 ********** Diff
@@ -517,9 +543,9 @@ gen catdiff_`x'=.
 order catdiff_`x', after(abs_diff_`x')
 }
 foreach x in $perso {
-replace catdiff_`x'=1 if diff_`x'<-0.5 & diff_`x'!=.
-replace catdiff_`x'=2 if diff_`x'>=-0.5 & diff_`x'<=0.5 & diff_`x'!=.
-replace catdiff_`x'=3 if diff_`x'>=0.5 & diff_`x'!=.
+replace catdiff_`x'=1 if diff_`x'<-0.4 & diff_`x'!=.
+replace catdiff_`x'=2 if diff_`x'>=-0.4 & diff_`x'<=0.4 & diff_`x'!=.
+replace catdiff_`x'=3 if diff_`x'>=0.4 & diff_`x'!=.
 label values catdiff_`x' catvar2
 }
 *

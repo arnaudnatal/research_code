@@ -186,13 +186,16 @@ label var ars32016 "Absolute acquiescence score"
 
 
 ********** Merge cognition
+global items imcr_curious2016 imcr_interestedbyart2016 imcr_repetitivetasks2016 imcr_inventive2016 imcr_liketothink2016 imcr_newideas2016 imcr_activeimagination2016 imcr_organized2016 imcr_makeplans2016 imcr_workhard2016 imcr_appointmentontime2016 imcr_putoffduties2016 imcr_easilydistracted2016 imcr_completeduties2016 imcr_enjoypeople2016 imcr_sharefeelings2016 imcr_shywithpeople2016 imcr_enthusiastic2016 imcr_talktomanypeople2016 imcr_talkative2016 imcr_expressingthoughts2016 imcr_workwithother2016 imcr_understandotherfeeling2016 imcr_trustingofother2016 imcr_rudetoother2016 imcr_toleratefaults2016 imcr_forgiveother2016 imcr_helpfulwithothers2016 imcr_managestress2016 imcr_nervous2016 imcr_changemood2016 imcr_feeldepressed2016 imcr_easilyupset2016 imcr_worryalot2016 imcr_staycalm2016 imcr_curious2020 imcr_interestedbyart2020 imcr_repetitivetasks2020 imcr_inventive2020 imcr_liketothink2020 imcr_newideas2020 imcr_activeimagination2020 imcr_organized2020 imcr_makeplans2020 imcr_workhard2020 imcr_appointmentontime2020 imcr_putoffduties2020 imcr_easilydistracted2020 imcr_completeduties2020 imcr_enjoypeople2020 imcr_sharefeelings2020 imcr_shywithpeople2020 imcr_enthusiastic2020 imcr_talktomanypeople2020 imcr_talkative2020 imcr_expressingthoughts2020 imcr_workwithother2020 imcr_understandotherfeeling2020 imcr_trustingofother2020 imcr_rudetoother2020 imcr_toleratefaults2020 imcr_forgiveother2020 imcr_helpfulwithothers2020 imcr_managestress2020 imcr_nervous2020 imcr_changemood2020 imcr_feeldepressed2020 imcr_easilyupset2020 imcr_worryalot2020 imcr_staycalm2020
+
 merge 1:1 HHID_panel INDID_panel using "panel_stab_v2_pooled_wide", keepusing( ///
 fES2016 fES2020 diff_fES abs_diff_fES catdiff_fES dumdiff_fES var_fES ///
 fCO2016 fCO2020 diff_fCO abs_diff_fCO catdiff_fCO dumdiff_fCO var_fCO ///
 fOP2016 fOP2020 diff_fOP abs_diff_fOP catdiff_fOP dumdiff_fOP var_fOP ///
 num_tt2016 num_tt2020 ///
 lit_tt2016 lit_tt2020 ///
-raven_tt2016 raven_tt2020)
+raven_tt2016 raven_tt2020 ///
+$items)
 drop _merge
 keep if sex!=.
 
@@ -231,6 +234,12 @@ label var var_fCO "Variation CO (%)"
 label var var_fOP "Variation OP (%)"
 
 
+********** Items to rename
+foreach x in $items {
+local new=substr("`x'",6,99)
+rename `x' `new'
+}
+
 
 ********** Shocks
 * COVID
@@ -260,31 +269,32 @@ label var dummyshockland "Sale/loss of land (% of yes)"
 gen temp1=loanamount_HH2016*(100/158)
 gen temp2=loanamount_HH2020*(100/184)
 gen dummyshockdebt=.
-label define shockdebt 0 "Same or lower debt" 1 "Higher debt (x2)"
+label define shockdebt 0 "Same or lower debt" 1 "Higher debt (x1.5)"
 label values dummyshockdebt shockdebt
 gen temp=temp2/temp1
 ta temp
-replace dummyshockdebt=0 if temp<2
-replace dummyshockdebt=1 if temp>=2
+replace dummyshockdebt=0 if temp<1.5
+replace dummyshockdebt=1 if temp>=1.5
 ta dummyshockdebt
 drop temp temp1 temp2
-label var dummyshockdebt "Higher debt (x2) (% of yes)"
+label var dummyshockdebt "Higher debt (x1.5) (% of yes)"
+ta dummyshockdebt
 
 
 * Health
 gen temp1=expenses_heal2016*(100/158)
 gen temp2=expenses_heal2020*(100/184)
 gen dummyshockhealth=.
-label define shockhealth 0 "Same or lower health spending" 1 "Higher health spending (x2)"
+label define shockhealth 0 "Same or lower health spending" 1 "Higher health spending (x1.5)"
 label values dummyshockhealth shockhealth
 gen temp=temp2/temp1
 ta temp
-replace dummyshockhealth=0 if temp<2
-replace dummyshockhealth=1 if temp>=2
+replace dummyshockhealth=0 if temp<1.5
+replace dummyshockhealth=1 if temp>=1.5
 ta dummyshockhealth
 drop temp temp1 temp2
-label var dummyshockhealth "Higher health spending (x2) (% of yes)"
-
+label var dummyshockhealth "Higher health spending (x1.5) (% of yes)"
+ta dummyshockhealth
 
 
 * Health2
@@ -310,6 +320,7 @@ label define shockemployment 0 "Same or better type of job" 1 "Lower type of job
 replace dummyshockemployment=1 if mainocc_occupation_indiv2016!=0 & mainocc_occupation_indiv2020==0
 replace dummyshockemployment=1 if mainocc_occupation_indiv2016!=0 & mainocc_occupation_indiv2016!=7 & mainocc_occupation_indiv2020==7
 replace dummyshockemployment=1 if mainocc_occupation_indiv2016==1 & mainocc_occupation_indiv2020==2
+replace dummyshockemployment=1 if mainocc_occupation_indiv2016==1 & mainocc_occupation_indiv2020==3
 replace dummyshockemployment=1 if mainocc_occupation_indiv2016==1 & mainocc_occupation_indiv2020==7
 replace dummyshockemployment=1 if mainocc_occupation_indiv2016==4 & mainocc_occupation_indiv2020==2
 replace dummyshockemployment=1 if mainocc_occupation_indiv2016==4 & mainocc_occupation_indiv2020==3
@@ -317,11 +328,30 @@ replace dummyshockemployment=1 if mainocc_occupation_indiv2016==4 & mainocc_occu
 replace dummyshockemployment=1 if mainocc_occupation_indiv2016==5 & mainocc_occupation_indiv2020==2
 replace dummyshockemployment=1 if mainocc_occupation_indiv2016==5 & mainocc_occupation_indiv2020==3
 replace dummyshockemployment=1 if mainocc_occupation_indiv2016==5 & mainocc_occupation_indiv2020==7
+replace dummyshockemployment=1 if mainocc_occupation_indiv2016==6 & mainocc_occupation_indiv2020==2
+replace dummyshockemployment=1 if mainocc_occupation_indiv2016==6 & mainocc_occupation_indiv2020==3
 label values dummyshockemployment shockemployment
 
 ta mainocc_occupation_indiv2016 mainocc_occupation_indiv2020 if dummyshockemployment==0
 ta mainocc_occupation_indiv2016 mainocc_occupation_indiv2020 if dummyshockemployment==1
 label var dummyshockemployment "Lower type of job (% of yes)"
+
+
+/*
+Self employed to casual
+*/
+
+
+
+********** abs diff rec fes fop fco
+/*
+Je considère un changement de score compris entre -5% et +5% comme acceptable pour la stabilité.
+*/
+foreach x in ES OP CO {
+gen abs_diff_rec_f`x'=abs_diff_f`x'
+replace abs_diff_rec_f`x'=0 if dumdiff_f`x'==0
+order abs_diff_rec_f`x', after(abs_diff_f`x')
+}
 
 
 
