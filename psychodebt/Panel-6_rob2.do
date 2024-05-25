@@ -25,6 +25,25 @@ Add debt contract terms
 *************************************
 use"base_loanlevel_lag", clear
 
+*** How many indiv? How many HH? How many loans?
+
+count
+* A total of 1084 main loans
+
+preserve
+keep HHID_panel INDID_panel
+duplicates drop
+count
+restore
+* From 488 egos
+
+preserve
+keep HHID_panel
+duplicates drop
+count
+restore
+* From 413 households
+
 
 *** Macro
 global PTCS base_f1_std base_f2_std base_f3_std base_f5_std base_raven_tt_std base_num_tt_std base_lit_tt_std i.female i.dalits
@@ -71,11 +90,11 @@ est store marg3
 
 qui probit borrservices_none indebt_indiv $inttot $XIndiv $XHH $Xrest $contloan, cluster(INDID)
 est store pr4
-qui margins, dydx($PTCSma) at(dalits=(0 1) female=(0 1)) atmeans post
+margins, dydx($PTCSma) at(dalits=(0 1) female=(0 1)) atmeans post
 est store marg4
 
 ********** Overfit
-*probit borrservices_none indebt_indiv $inttot $XIndiv $XHH $Xrest $contloan, cluster(INDID)
+*overfit: probit borrservices_none indebt_indiv $inttot $XIndiv $XHH $Xrest $contloan, cluster(INDID)
 
 
 ********** Format
@@ -160,13 +179,13 @@ est store marg3
 
 qui probit dummyproblemtorepay indebt_indiv $inttot $XIndiv $XHH $Xrest $contloan, cluster(INDID) baselevel
 est store pr4
-qui margins, dydx($PTCSma) at(dalits=(0 1) female=(0 1)) atmeans post
+margins, dydx($PTCSma) at(dalits=(0 1) female=(0 1)) atmeans post
 est store marg4
 
 
 ********** Overfit
 
-*overfit: probit dummyproblemtorepay indebt_indiv $inttot $XIndiv $XHH $Xrest $contloan, cluster(INDID)
+overfit: probit dummyproblemtorepay indebt_indiv $inttot $XIndiv $XHH $Xrest $contloan, cluster(INDID)
 
 
 ********** Format
