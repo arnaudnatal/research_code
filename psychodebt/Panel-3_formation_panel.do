@@ -18,10 +18,10 @@ do "https://raw.githubusercontent.com/arnaudnatal/folderanalysis/main/$link.do"
 ****************************************
 * Formation base indiv 2016
 ****************************************
-use"$wave2~panel", clear
+use"NEEMSIS1-HH~panel", clear
 
 * Merge with debt
-merge 1:1 HHID_panel INDID_panel using "$wave2~debt"
+merge 1:1 HHID_panel INDID_panel using "NEEMSIS1-HH~debt"
 drop _merge
 
 * Keep egos
@@ -54,10 +54,10 @@ save "base2016.dta", replace
 ****************************************
 * Formation base indiv 2020
 ****************************************
-use"$wave3~panel", clear
+use"NEEMSIS2-HH~panel", clear
 
 * Merge with debt
-merge 1:1 HHID_panel INDID_panel using "$wave3~debt"
+merge 1:1 HHID_panel INDID_panel using "NEEMSIS2-HH~debt"
 drop _merge
 
 * Keep egos
@@ -183,10 +183,10 @@ save"base_shock", replace
 ****************************************
 * Formation base indiv lag
 ****************************************
-use"$wave2~panel", clear
+use"NEEMSIS1-HH~panel", clear
 
 * Merge with debt in 2020-21
-merge 1:1 HHID_panel INDID_panel using "$wave3~debt"
+merge 1:1 HHID_panel INDID_panel using "NEEMSIS2-HH~debt"
 drop _merge
 
 * Keep egos
@@ -225,7 +225,7 @@ use"base_loanlevel_2020", clear
 
 
 *** Merge with 2016-17
-merge m:1 HHID_panel INDID_panel using "$wave2~panel"
+merge m:1 HHID_panel INDID_panel using "NEEMSIS1-HH~panel"
 keep if _merge==3
 drop _merge
 
@@ -233,6 +233,56 @@ drop _merge
 merge m:1 HHID_panel using "base_shock"
 keep if _merge==3
 drop _merge
+
+* Label
+label var age "Age"
+label var indebt_indiv "Indebted in 2016-17 (=1)"
+label var borrservices_none "No need to provide service (=1)"
+label var dummyproblemtorepay "Problem to repay (=1)"
+label var imp1_interest_service "Interest rate (%)"
+label var loanamount "Loan amount (INR)"
+label var sloanamount "Individual's total debt (INR)"
+
+fre dummyinterest
+label define dummyinterest 0"Interest: No" 1"Interest: Yes", replace
+label values dummyinterest dummyinterest
+
+fre reason_cat
+label define reason_cat 1"Reason: Economic" 2"Reason: Current" 3"Reason: Human capital" 4"Reason: Social" 5"Reason: Housing", replace
+label values reason_cat reason_cat
+
+fre lender4
+label define lender4 1"Lender: WKP" 2"Lender: Relatives" 3"Lender: Labour" 4"Lender: Pawn broker" 6"Lender: Moneylenders" 7"Lender: Friends" 8"Lender: Microcredit" 9"Lender: Bank" , replace
+label values lender4 lender4
+
+fre lender_cat
+recode lender_cat (2=1) (3=2)
+label define lender_cat 1"Lender: Informal" 2"Lender: Formal", replace
+label values lender_cat lender_cat
+
+fre dummyguarantee
+label define dummyguarantee 0"Guarantee: No" 1"Guarantee: Yes", replace
+label values dummyguarantee dummyguarantee
+
+fre dummyssex 
+label define dummyssex 1"Same sex: No" 2"Same sex: Yes" 3"Same sex: N/A", replace
+label values dummyssex dummyssex
+
+fre dummyscaste
+label define dummyscaste 1"Same caste: No" 2"Same caste: Yes" 3"Same caste: N/A", replace
+label values dummyscaste dummyscaste
+
+fre borrservices_none
+label define borrservices_none 0"Services" 1"No services", replace
+label values borrservices_none borrservices_none
+
+
+********** Recode
+recode annualincome_indiv (.=0)
+replace annualincome_indiv=annualincome_indiv/1000
+replace loanamount=loanamount/1000
+replace sloanamount=sloanamount/1000
+
 
 save"base_loanlevel_lag", replace
 ****************************************
@@ -256,7 +306,7 @@ use"base_loanlevel_2016", clear
 drop INDID2016
 
 *** Merge with 2016-17
-merge m:1 HHID_panel INDID_panel using "$wave2~panel"
+merge m:1 HHID_panel INDID_panel using "NEEMSIS1-HH~panel"
 keep if _merge==3
 drop _merge
 
@@ -282,7 +332,7 @@ use"base_loanlevel_2020", clear
 drop INDID2020
 
 *** Merge with 2020-21
-merge m:1 HHID_panel INDID_panel using "$wave3~panel"
+merge m:1 HHID_panel INDID_panel using "NEEMSIS2-HH~panel"
 keep if _merge==3
 drop _merge
 
