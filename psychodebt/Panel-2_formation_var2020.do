@@ -19,7 +19,7 @@ do "https://raw.githubusercontent.com/arnaudnatal/folderanalysis/main/$link.do"
 ****************************************
 * EFA 2020
 **************************************** 
-use"raw\\$wave3", clear
+use"raw\NEEMSIS2-HH", clear
 
 * Indiv
 *tostring INDID2020, replace
@@ -110,7 +110,7 @@ egen Grit_2020 = rowmean(imcr_tryhard imcr_stickwithgoals imcr_goaftergoal imcr_
 
 keep $imcorwith HHID_panel INDID_panel f1_2020 f2_2020 f3_2020 f4_2020 f5_2020 lit_tt raven_tt num_tt OP_2020 CO_2020 EX_2020 AG_2020 ES_2020 Grit_2020
 
-save"$wave3~_ego.dta", replace
+save"NEEMSIS2-HH~_ego.dta", replace
 ****************************************
 * END
 
@@ -129,7 +129,7 @@ save"$wave3~_ego.dta", replace
 ****************************************
 * Control var 2020
 ****************************************
-use"raw\\$wave3", clear
+use"raw\NEEMSIS2-HH", clear
 
 
 
@@ -197,7 +197,7 @@ drop if egoid==0
 *keep if panel_indiv==1
 
 * Merge factor
-merge 1:1 HHID_panel INDID_panel using "$wave3~_ego.dta"
+merge 1:1 HHID_panel INDID_panel using "NEEMSIS2-HH~_ego.dta"
 keep if _merge==3
 drop _merge
 
@@ -316,13 +316,13 @@ fre mainocc_occupation_indiv
 recode mainocc_occupation_indiv (5=4)
 recode mainocc_occupation_indiv (.=0)
 tab mainocc_occupation_indiv,gen(cat_mainocc_occupation_indiv_)
-label var cat_mainocc_occupation_indiv_1 "MO: No occ."
-label var cat_mainocc_occupation_indiv_2 "MO: Agri"
-label var cat_mainocc_occupation_indiv_3 "MO: Agri coolie"
-label var cat_mainocc_occupation_indiv_4 "MO: Coolie"
-label var cat_mainocc_occupation_indiv_5 "MO: Regular"
-label var cat_mainocc_occupation_indiv_6 "MO: SE"
-label var cat_mainocc_occupation_indiv_7 "MO: NREGA"
+label var cat_mainocc_occupation_indiv_1 "Occ: No occ"
+label var cat_mainocc_occupation_indiv_2 "Occ: Agri"
+label var cat_mainocc_occupation_indiv_3 "Occ: Agri coolie"
+label var cat_mainocc_occupation_indiv_4 "Occ: Coolie"
+label var cat_mainocc_occupation_indiv_5 "Occ: Regular"
+label var cat_mainocc_occupation_indiv_6 "Occ: SE"
+label var cat_mainocc_occupation_indiv_7 "Occ: MGNREGA"
 
 *
 fre relationshiptohead
@@ -378,6 +378,6 @@ label var incomeHH1000 "Total income (\rupee1k)"
 *
 gen year=2020
 
-save"$wave3~panel", replace
+save"NEEMSIS2-HH~panel", replace
 ****************************************
 * END

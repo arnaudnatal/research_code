@@ -50,10 +50,9 @@ global PTCS base_f1_std base_f2_std base_f3_std base_f5_std base_raven_tt_std ba
 
 global PTCSma base_f1_std base_f2_std base_f3_std base_f5_std base_raven_tt_std base_num_tt_std base_lit_tt_std
 
-*dummyhead
 global XIndiv age cat_mainocc_occupation_indiv_1 cat_mainocc_occupation_indiv_2 cat_mainocc_occupation_indiv_4 cat_mainocc_occupation_indiv_5 cat_mainocc_occupation_indiv_6 cat_mainocc_occupation_indiv_7 dummyedulevel maritalstatus2
 
-global XHH assets1000 HHsize incomeHH1000
+global XHH log_assets_total HHsize log_annualincome_HH
 
 global Xrest villageid_2 villageid_3 villageid_4 villageid_5 villageid_6 villageid_7 villageid_8 villageid_9 villageid_10 shock
 
@@ -63,13 +62,14 @@ global intdal c.base_f1_std##i.dalits c.base_f2_std##i.dalits c.base_f3_std##i.d
 
 global inttot c.base_f1_std##i.female##i.dalits c.base_f2_std##i.female##i.dalits c.base_f3_std##i.female##i.dalits c.base_f5_std##i.female##i.dalits c.base_raven_tt_std##i.female##i.dalits c.base_num_tt_std##i.female##i.dalits c.base_lit_tt_std##i.female##i.dalits
 
-global contloan i.lender_cat i.dummyinterest i.reason_cat c.loanamount i.dummyssex i.dummyscaste
+global contloan ib(1).lender_cat dummyinterest ib(2).reason_cat c.log_loanamount ib(1).dummyssex ib(1).dummyscaste
 
+fre lender_cat dummyinterest reason_cat dummyssex dummyscaste
 
 
 ********** Analysis
 
-qui probit borrservices_none indebt_indiv i.female i.dalits $XIndiv $XHH $Xrest $contloan, cluster(INDID)
+probit borrservices_none indebt_indiv i.female i.dalits $XIndiv $XHH $Xrest $contloan, cluster(INDID)
 est store pr0
 
 qui probit borrservices_none indebt_indiv $PTCS $XIndiv $XHH $Xrest $contloan, cluster(INDID) 
@@ -140,10 +140,9 @@ global PTCS base_f1_std base_f2_std base_f3_std base_f5_std base_raven_tt_std ba
 
 global PTCSma base_f1_std base_f2_std base_f3_std base_f5_std base_raven_tt_std base_num_tt_std base_lit_tt_std
 
-*dummyhead
 global XIndiv age cat_mainocc_occupation_indiv_1 cat_mainocc_occupation_indiv_2 cat_mainocc_occupation_indiv_4 cat_mainocc_occupation_indiv_5 cat_mainocc_occupation_indiv_6 cat_mainocc_occupation_indiv_7 dummyedulevel maritalstatus2
 
-global XHH assets1000 HHsize incomeHH1000
+global XHH log_assets_total HHsize log_annualincome_HH
 
 global Xrest villageid_2 villageid_3 villageid_4 villageid_5 villageid_6 villageid_7 villageid_8 villageid_9 villageid_10 shock
 
@@ -153,12 +152,14 @@ global intdal c.base_f1_std##i.dalits c.base_f2_std##i.dalits c.base_f3_std##i.d
 
 global inttot c.base_f1_std##i.female##i.dalits c.base_f2_std##i.female##i.dalits c.base_f3_std##i.female##i.dalits c.base_f5_std##i.female##i.dalits c.base_raven_tt_std##i.female##i.dalits c.base_num_tt_std##i.female##i.dalits c.base_lit_tt_std##i.female##i.dalits
 
-global contloan i.lender_cat i.dummyinterest i.reason_cat c.loanamount c.sloanamount
+*global contloan i.lender_cat i.dummyinterest i.reason_cat c.log_loanamount i.dummyssex i.dummyscaste
+
+global contloan ib(1).lender_cat dummyinterest ib(2).reason_cat c.log_loanamount c.log_sloanamount
+
 
 
 ********** Analysis
-
-qui probit dummyproblemtorepay indebt_indiv i.female i.dalits $XIndiv $XHH $Xrest $contloan, cluster(INDID)
+probit dummyproblemtorepay indebt_indiv i.female i.dalits $XIndiv $XHH $Xrest $contloan, cluster(INDID)
 est store pr0
 
 qui probit dummyproblemtorepay indebt_indiv $PTCS $XIndiv $XHH $Xrest $contloan, cluster(INDID) 

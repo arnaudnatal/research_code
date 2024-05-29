@@ -279,10 +279,33 @@ label values borrservices_none borrservices_none
 
 ********** Recode
 recode annualincome_indiv (.=0)
-replace annualincome_indiv=annualincome_indiv/1000
-replace loanamount=loanamount/1000
-replace sloanamount=sloanamount/1000
 
+gen annualincome_indiv10000=annualincome_indiv/10000
+label var annualincome_indiv10000 "Individual income (10k rupees)"
+
+gen loanamount1000=loanamount/1000
+label var loanamount1000 "Loan amount (1k rupees)"
+
+replace sloanamount=sloanamount/10000
+label var sloanamount "Sum loan amount (10k rupees)"
+
+gen assets10000=assets_total/10000
+label var assets10000 "Assets (10k rupees)"
+
+gen incomeHH10000=incomeHH1000/10
+label var incomeHH10000 "Total income (10k rupees)"
+
+
+* Passer en log pour faire augmente d'un pourcent dans l'interpretation
+foreach x in annualincome_indiv loanamount sloanamount assets_total annualincome_HH {
+recode `x' (0=1)
+gen log_`x'=log(`x')
+}
+label var log_annualincome_indiv "Individual income (log)"
+label var log_loanamount "Loan amount (log)"
+label var log_sloanamount "Total amount of debt (log)"
+label var log_assets_total "Assets (log)"
+label var log_annualincome_HH "Annual income (log)"
 
 save"base_loanlevel_lag", replace
 ****************************************
