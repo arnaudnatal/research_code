@@ -101,7 +101,7 @@ set graph off
 twoway ///
 (kdensity base_f1_std if female==0, lp(solid) lcolor(black)) ///
 (kdensity base_f1_std if female==1, lp(dash) lcolor(black)) ///
-, ytitle("Density") xtitle("ES (std)") legend(order(1 "Male" 2 "Female") pos(6) col(2) off) name(gph1, replace)
+, ytitle("Density") xtitle("ES (std)") legend(order(1 "Men" 2 "Women") pos(6) col(2) off) name(gph1, replace)
 
 twoway ///
 (kdensity base_f2_std if female==0, lp(solid) lcolor(black)) ///
@@ -167,7 +167,7 @@ set graph off
 twoway ///
 (kdensity base_f1_std if female==0, lp(solid) lcolor(black)) ///
 (kdensity base_f1_std if female==1, lp(dash) lcolor(black)) ///
-, ytitle("Density") xtitle("ES (std)") legend(order(1 "Males" 2 "Females") pos(6) col(2) off) name(gph1s, replace)
+, ytitle("Density") xtitle("ES (std)") legend(order(1 "Men" 2 "Women") pos(6) col(2) off) name(gph1s, replace)
 
 twoway ///
 (kdensity base_f2_std if female==0, lp(solid) lcolor(black)) ///
@@ -187,7 +187,7 @@ twoway ///
 twoway ///
 (kdensity base_raven_tt_std if female==0, lp(solid) lcolor(black)) ///
 (kdensity base_raven_tt_std if female==1, lp(dash) lcolor(black)) ///
-, ytitle("Density") xtitle("Raven (std)") legend(order(1 "Males" 2 "Females") pos(6) col(2) off) name(gph5s, replace)
+, ytitle("Density") xtitle("Raven (std)") legend(order(1 "Men" 2 "Women") pos(6) col(2) off) name(gph5s, replace)
 
 twoway ///
 (kdensity base_num_tt_std if female==0, lp(solid) lcolor(black)) ///

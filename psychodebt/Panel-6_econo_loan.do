@@ -5,7 +5,7 @@ cls
 *March 29, 2023
 *-----
 gl link = "psychodebt"
-*Rob2
+*Loan level reg
 *-----
 do "https://raw.githubusercontent.com/arnaudnatal/folderanalysis/main/$link.do"
 *-------------------------
@@ -54,7 +54,7 @@ global XIndiv age cat_mainocc_occupation_indiv_1 cat_mainocc_occupation_indiv_2 
 
 global XHH log_assets_total HHsize log_annualincome_HH
 
-global Xrest villageid_2 villageid_3 villageid_4 villageid_5 villageid_6 villageid_7 villageid_8 villageid_9 villageid_10 shock
+global Xrest villageid_2 villageid_3 villageid_4 villageid_5 villageid_6 villageid_7 villageid_8 villageid_9 villageid_10 shock dummysell
 
 global intfem c.base_f1_std##i.female c.base_f2_std##i.female c.base_f3_std##i.female c.base_f5_std##i.female c.base_raven_tt_std##i.female c.base_num_tt_std##i.female c.base_lit_tt_std##i.female i.dalits
 
@@ -144,7 +144,7 @@ global XIndiv age cat_mainocc_occupation_indiv_1 cat_mainocc_occupation_indiv_2 
 
 global XHH log_assets_total HHsize log_annualincome_HH
 
-global Xrest villageid_2 villageid_3 villageid_4 villageid_5 villageid_6 villageid_7 villageid_8 villageid_9 villageid_10 shock
+global Xrest villageid_2 villageid_3 villageid_4 villageid_5 villageid_6 villageid_7 villageid_8 villageid_9 villageid_10 shock dummysell
 
 global intfem c.base_f1_std##i.female c.base_f2_std##i.female c.base_f3_std##i.female c.base_f5_std##i.female c.base_raven_tt_std##i.female c.base_num_tt_std##i.female c.base_lit_tt_std##i.female i.dalits
 

@@ -183,6 +183,10 @@ drop _merge
 merge m:1 HHID2020 using "raw\NEEMSIS2-family", keepusing(nbmale nbfemale age_group HHsize typeoffamily waystem dummypolygamous)
 drop _merge
 
+* COVID
+merge m:1 HHID2020 using "raw\NEEMSIS2-covid", keepusing(dummyexposure secondlockdownexposure dummysell)
+drop _merge
+
 * Villages
 *merge m:1 HHID2020 using "raw\NEEMSIS2-villages", keepusing(livingarea villagename2020_club)
 *drop _merge

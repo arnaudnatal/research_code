@@ -54,7 +54,7 @@ drop _merge
 
 
 *** Merge covid
-merge m:1 HHID2020 using "raw\NEEMSIS2-covid", keepusing(dummysell)
+merge m:1 HHID2020 using "raw\NEEMSIS2-covid", keepusing(dummyexposure secondlockdownexposure dummysell)
 drop _merge
 
 
