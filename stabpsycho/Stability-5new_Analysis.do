@@ -32,8 +32,8 @@ twoway ///
 (function y=x, range(0 6)) ///
 , xtitle("Score in 2016-17") ytitle("Score in 2020-21") ///
 title(" 'Emotional stability' factor") name(s_fES, replace) legend(order(1 "Individual" 2 "First bisector") pos(6) col(2))
-graph export "distri_fES.pdf", as(pdf) replace 
-graph save "distri_fES.gph", replace
+graph export "new/distri_fES.pdf", as(pdf) replace 
+graph save "new/distri_fES.gph", replace
 restore
 
 
@@ -47,8 +47,8 @@ twoway ///
 (function y=x, range(0 6)) ///
 , xtitle("Score in 2016-17") ytitle("Score in 2020-21") ///
 title(" 'Openness to experience' factor") name(s_fOP, replace) legend(order(1 "Individual" 2 "First bisector") pos(6) col(2))
-graph export "distri_fOP.pdf", as(pdf) replace 
-graph save "distri_fOP.gph", replace
+graph export "new/distri_fOP.pdf", as(pdf) replace 
+graph save "new/distri_fOP.gph", replace
 restore
 
 
@@ -62,8 +62,8 @@ twoway ///
 (function y=x, range(0 6)) ///
 , xtitle("Score in 2016-17") ytitle("Score in 2020-21") ///
 title(" 'Conscientiousness' factor") name(s_fCO, replace) legend(order(1 "Individual" 2 "First bisector") pos(6) col(2))
-graph export "distri_fCO.pdf", as(pdf) replace 
-graph save "distri_fCO.gph", replace
+graph export "new/distri_fCO.pdf", as(pdf) replace 
+graph save "new/distri_fCO.gph", replace
 restore
 
 
@@ -107,8 +107,8 @@ twoway ///
 ytitle("Percent") xtitle("ES_2020 - ES_2016") ///
 ylabel(, grid gmax gmin) xlabel(, nogrid gmax gmin) ///
 plotregion(margin(none)) legend(order(1 "Decreasing" 2 "Stable" 3 "Increasing") pos(6) col(3)) note("Kernel: epanechnikov" "Bandwidth=0.2", size(vsmall))
-graph save "histo_fES.gph", replace
-graph export "histo_fES.pdf", as(pdf) replace
+graph save "new/histo_fES.gph", replace
+graph export "new/histo_fES.pdf", as(pdf) replace
 
 ***** OP
 twoway__histogram_gen diff_fOP, percent bin(70) gen(h x, replace)
@@ -121,8 +121,8 @@ twoway ///
 ytitle("Percent") xtitle("OP_2020 - OP_2016") ///
 ylabel(, grid gmax gmin) xlabel(, nogrid gmax gmin) ///
 plotregion(margin(none)) legend(order(1 "Decreasing" 2 "Stable" 3 "Increasing") pos(6) col(3)) note("Kernel: epanechnikov" "Bandwidth=0.2", size(vsmall))
-graph save "histo_fES.gph", replace
-graph export "histo_fES.pdf", as(pdf) replace
+graph save "new/histo_fOP.gph", replace
+graph export "new/histo_fOP.pdf", as(pdf) replace
 
 ***** CO
 twoway__histogram_gen diff_fCO, percent bin(70) gen(h x, replace)
@@ -135,8 +135,8 @@ twoway ///
 ytitle("Percent") xtitle("CO_2020 - CO_2016") ///
 ylabel(, grid gmax gmin) xlabel(, nogrid gmax gmin) ///
 plotregion(margin(none)) legend(order(1 "Decreasing" 2 "Stable" 3 "Increasing") pos(6) col(3)) note("Kernel: epanechnikov" "Bandwidth=0.2", size(vsmall))
-graph save "histo_fES.gph", replace
-graph export "histo_fES.pdf", as(pdf) replace
+graph save "new/histo_fCO.gph", replace
+graph export "new/histo_fCO.pdf", as(pdf) replace
 
 
 ****************************************
@@ -179,8 +179,8 @@ restore
 }
 set graph on
 grc1leg s_enjoypeople s_rudetoother s_shywithpeople s_repetitivetasks s_putoffduties s_feeldepressed s_changemood s_nervous s_easilyupset s_easilydistracted s_worryalot, col(4) title("Items of the 'Emotional stability' factor")
-graph export "sub_fES.pdf", as(pdf) replace 
-graph save "sub_fES.gph", replace
+graph export "new/sub_fES.pdf", as(pdf) replace 
+graph save "new/sub_fES.gph", replace
 
 
 
@@ -201,8 +201,8 @@ restore
 }
 set graph on
 grc1leg s_interestedbyart s_liketothink s_activeimagination s_inventive s_newideas s_curious, col(3) title("Items of the 'Openness to experience' factor")
-graph export "sub_fOP.pdf", as(pdf) replace 
-graph save "sub_fOP.gph", replace
+graph export "new/sub_fOP.pdf", as(pdf) replace 
+graph save "new/sub_fOP.gph", replace
 
 
 
@@ -222,8 +222,8 @@ restore
 }
 set graph on
 grc1leg s_workwithother s_organized s_appointmentontime s_workhard s_makeplans s_completeduties s_enthusiastic, col(4) title("Items of the 'Conscientiousness' factor")
-graph export "sub_fCO.pdf", as(pdf) replace 
-graph save "sub_fCO.gph", replace
+graph export "new/sub_fCO.pdf", as(pdf) replace 
+graph save "new/sub_fCO.gph", replace
 
 ****************************************
 * END
@@ -291,7 +291,7 @@ est store mar3
 
 
 ***** Tables
-esttab reg1 mar1 reg2 mar2 reg3 mar3 using "probit.csv", replace ///
+esttab reg1 mar1 reg2 mar2 reg3 mar3 using "new/probit.csv", replace ///
 	label b(3) p(3) eqlabels(none) alignment(S) ///
 	drop(_cons) ///
 	star(* 0.10 ** 0.05 *** 0.01) ///
@@ -510,7 +510,7 @@ esttab ///
 mar1ES mar2ES mar3ES ///
 mar1OP mar2OP mar3OP ///
 mar1CO mar2CO mar3CO ///
-using "glm.csv", replace ///
+using "new/glm.csv", replace ///
 	label b(3) p(3) eqlabels(none) alignment(S) ///
 	star(* 0.10 ** 0.05 *** 0.01) ///
 	cells("b(fmt(2)star)" "se(fmt(2)par)") ///
@@ -527,6 +527,73 @@ using "glm.csv", replace ///
 
 
 
+
+
+
+
+****************************************
+* FE model
+****************************************
+
+
+********** Reshape
+use "panel_stab_pooled_wide_v3", clear
+
+drop age25 educode educode20
+
+reshape long egoid age jatiscorr edulevel villageid panel dummydemonetisation relationshiptohead maritalstatus mainocc_profession_indiv mainocc_occupation_indiv mainocc_sector_indiv mainocc_occupationname_indiv annualincome_indiv annualincome_HH expenses_heal shareexpenses_heal assets_sizeownland ownland assets_total1000 assets_totalnoland1000 HHsize typeoffamily villagename villagename_club loanamount_HH raven_tt num_tt lit_tt aspirationminimumwage dummyaspirationmorehours aspirationminimumwage2 dummymarriage dummy_marriedlist dummyexposure secondlockdownexposure dummysell submissiondate ars ars2 ars3 username_backup edulevel_backup fES fOP fCO curious interestedbyart repetitivetasks inventive liketothink newideas activeimagination organized makeplans workhard appointmentontime putoffduties easilydistracted completeduties enjoypeople sharefeelings shywithpeople enthusiastic talktomanypeople talkative expressingthoughts workwithother understandotherfeeling trustingofother rudetoother toleratefaults forgiveother helpfulwithothers managestress nervous changemood feeldepressed easilyupset worryalot staycalm, i(HHID_panel INDID_panel) j(year)
+
+drop if egoid==.
+ta year
+
+egen HHINDID_panel=group(HHID_panel INDID_panel)
+ta HHINDID_panel
+
+
+save"_temp_FE", replace
+
+
+********** Econometrics
+use"_temp_FE", clear
+est clear
+graph drop _all
+xtset HHINDID_panel year
+
+
+***** Macro
+global indiv c.age i.edulevel ib(2).mainocc_occupation_indiv i.maritalstatus
+global house c.assets_total1000 c.annualincome_HH c.HHsize i.typeoffamily
+global contr i.username_neemsis1 i.username_neemsis2 c.ars3 i.villageid
+global shock dummyshockland dummyshockdebt dummyshockhealth dummyshockemployment
+
+***** ES
+xtreg fES $indiv $house $shock $contr, fe
+est store feES
+
+***** OP
+xtreg fOP $indiv $house $shock $contr, fe
+est store feOP
+
+***** CO
+xtreg fCO $indiv $house $shock $contr, fe
+est store feCO
+
+
+
+
+
+********** Format
+esttab ///
+feES feOP feCO ///
+using "new/fe.csv", replace ///
+	label b(3) p(3) eqlabels(none) alignment(S) ///
+	star(* 0.10 ** 0.05 *** 0.01) ///
+	cells("b(fmt(2)star)" "se(fmt(2)par)") ///
+	refcat(, nolabel) ///
+	stats(N ll, fmt(0 2) layout("\multicolumn{1}{c}{@}" "\multicolumn{1}{S}{@}") labels(`"Observations"' `"Log-pseudo likelihood"'))
+
+****************************************
+* END
 
 
 
