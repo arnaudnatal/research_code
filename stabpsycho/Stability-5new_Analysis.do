@@ -239,6 +239,59 @@ graph save "new/sub_fCO.gph", replace
 
 
 
+****************************************
+* Probit stable vs unstable
+****************************************
+use "panel_stab_pooled_wide_v3", clear
+est clear
+graph drop _all
+
+
+
+***** ES
+cls
+ta catdiff_fES
+ta sex catdiff_fES, col nofreq chi2
+ta caste catdiff_fES, col nofreq chi2
+ta age_cat catdiff_fES, col nofreq chi2
+ta educode catdiff_fES, col nofreq chi2
+ta moc_indiv catdiff_fES, col nofreq chi2
+ta annualincome_indiv2016_q catdiff_fES, col nofreq chi2
+ta dummydemonetisation2016 catdiff_fES, col nofreq chi2
+ta dummysell2020 catdiff_fES, col nofreq chi2
+ta diff_ars3_cat5 catdiff_fES, col nofreq chi2
+
+
+
+***** OP
+cls
+ta catdiff_fOP
+ta sex catdiff_fOP, col nofreq chi2
+ta caste catdiff_fOP, col nofreq chi2
+ta age_cat catdiff_fOP, col nofreq chi2
+ta educode catdiff_fOP, col nofreq chi2
+ta moc_indiv catdiff_fOP, col nofreq chi2
+ta annualincome_indiv2016_q catdiff_fOP, col nofreq chi2
+ta dummydemonetisation2016 catdiff_fOP, col nofreq chi2
+ta dummysell2020 catdiff_fOP, col nofreq chi2
+ta diff_ars3_cat5 catdiff_fOP, col nofreq chi2
+
+
+
+
+
+***** CO
+cls
+ta catdiff_fCO
+ta sex catdiff_fCO, col nofreq chi2
+ta caste catdiff_fCO, col nofreq chi2
+ta age_cat catdiff_fCO, col nofreq chi2
+ta educode catdiff_fCO, col nofreq chi2
+ta moc_indiv catdiff_fCO, col nofreq chi2
+ta annualincome_indiv2016_q catdiff_fCO, col nofreq chi2
+ta dummydemonetisation2016 catdiff_fCO, col nofreq chi2
+ta dummysell2020 catdiff_fCO, col nofreq chi2
+ta diff_ars3_cat5 catdiff_fCO, col nofreq chi2
 
 
 
@@ -246,6 +299,8 @@ graph save "new/sub_fCO.gph", replace
 
 
 
+****************************************
+* END
 
 
 
@@ -261,9 +316,9 @@ graph drop _all
 
 
 ***** Macro
-global indiv c.age2016 i.sex i.educode i.moc_indiv i.marital
+global indiv c.age2016 i.sex ib(1).educode ib(3).moc_indiv i.marital
 global cogni fES2016 fOP2016 fCO2016 num_tt2016 lit_tt2016 raven_tt2016
-global house i.caste i.assets2016_q i.annualincome_HH2016_q c.HHsize2016 i.typeoffamily2016
+global house i.caste ib(2).assets2016_q ib(2).annualincome_HH2016_q c.HHsize2016 i.typeoffamily2016
 global contr i.username_neemsis1 i.username_neemsis2 c.ars32016 i.diff_ars3_cat5 i.villageid2016
 global shock dummysell2020 dummydemonetisation2016 dummyshockland dummyshockdebt dummyshockhealth dummyshockemployment
 
@@ -321,7 +376,7 @@ esttab reg1 mar1 reg2 mar2 reg3 mar3 using "new/probit.csv", replace ///
 
 
 
-/*
+
 ****************************************
 * Multi probit stable vs dec vs inc
 ****************************************
@@ -331,33 +386,35 @@ graph drop _all
 
 
 ***** Macro
-global indiv c.age2016 i.sex i.educode ib(2).moc_indiv i.marital
+global indiv c.age2016 i.sex ib(1).educode ib(3).moc_indiv i.marital
 global cogni fES2016 fOP2016 fCO2016 num_tt2016 lit_tt2016 raven_tt2016
 global house i.caste ib(2).assets2016_q ib(2).annualincome_HH2016_q c.HHsize2016 i.typeoffamily2016
 global contr i.username_neemsis1 i.username_neemsis2 c.ars32016 i.diff_ars3_cat5 i.villageid2016
 global shock dummysell2020 dummydemonetisation2016 dummyshockland dummyshockdebt dummyshockhealth dummyshockemployment
 
 
+
+
 ***** ES
 cls
 mprobit catdiff_fES $indiv $cogni $house $shock $contr, cluster(cluster) baselevel baseoutcome(2)
 est store reg1
-margins, dydx($indiv $cogni $house $shock) atmeans post
-est store mar1
+*margins, dydx($indiv $cogni $house $shock) atmeans post
+*est store mar1
 
 
 ***** OP
 mprobit catdiff_fOP $indiv $cogni $house $shock $contr, cluster(cluster) baselevel baseoutcome(2)
 est store reg2
-margins, dydx($indiv $cogni $house $shock) atmeans post
-est store mar2
+*margins, dydx($indiv $cogni $house $shock) atmeans post
+*est store mar2
 
 
 ***** CO
 mprobit catdiff_fCO $indiv $cogni $house $shock $contr, cluster(cluster) baselevel baseoutcome(2)
 est store reg3
-margins, dydx($indiv $cogni $house $shock) atmeans post
-est store mar3
+*margins, dydx($indiv $cogni $house $shock) atmeans post
+*est store mar3
 
 
 
@@ -370,7 +427,8 @@ esttab reg1 reg2 reg3 using "mprobit.csv", replace ///
 	refcat(, nolabel) ///
 	stats(N, fmt(0) ///
 	labels(`"Observations"'))
-	
+
+/*
 esttab mar1 mar2 mar3 using "mprobit_margins.csv", replace ///
 	label b(3) p(3) eqlabels(none) alignment(S) ///
 	star(* 0.10 ** 0.05 *** 0.01) ///
@@ -378,10 +436,10 @@ esttab mar1 mar2 mar3 using "mprobit_margins.csv", replace ///
 	refcat(, nolabel) ///
 	stats(N, fmt(0) ///
 	labels(`"Observations"'))
-
+*/
 ****************************************
 * END
-*/
+
 
 
 

@@ -158,12 +158,11 @@ factor $imcr_without, pcf
 * Kaiser criterion (eigenvalue>1) : 8  (without Grit)
 
 * Catell screeplot
-*screeplot
 *screeplot, neigen(15) yline(1)
 
 * Velicer Minimum Average Partial Correlation
-*ssc install minap 
-*minap $imcr_without
+*ssc install minap
+minap $imcr_without
 * Without Grit 3
 
 * Horn Parallel Analysis
