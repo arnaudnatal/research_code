@@ -278,8 +278,6 @@ ta diff_ars3_cat5 catdiff_fOP, col nofreq chi2
 
 
 
-
-
 ***** CO
 cls
 ta catdiff_fCO
@@ -293,14 +291,18 @@ ta dummydemonetisation2016 catdiff_fCO, col nofreq chi2
 ta dummysell2020 catdiff_fCO, col nofreq chi2
 ta diff_ars3_cat5 catdiff_fCO, col nofreq chi2
 
-
-
-
-
-
-
 ****************************************
 * END
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -419,7 +421,7 @@ est store reg3
 
 
 ***** Tables
-esttab reg1 reg2 reg3 using "mprobit.csv", replace ///
+esttab reg1 reg2 reg3 using "new/mprobit.csv", replace ///
 	label b(3) p(3) eqlabels(none) alignment(S) ///
 	drop(_cons) ///
 	star(* 0.10 ** 0.05 *** 0.01) ///
