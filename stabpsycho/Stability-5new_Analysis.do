@@ -239,8 +239,14 @@ graph save "new/sub_fCO.gph", replace
 
 
 
+
+
+
+
+
+
 ****************************************
-* Probit stable vs unstable
+* Desc of path
 ****************************************
 use "panel_stab_pooled_wide_v3", clear
 est clear
@@ -466,7 +472,7 @@ graph drop _all
 
 
 ***** Macro
-global indiv c.age2016 i.sex i.educode ib(2).moc_indiv i.marital
+global indiv i.sex ib(0).educode ib(2).age_cat ib(2).moc_indiv i.marital
 global cogni fES2016 fOP2016 fCO2016 num_tt2016 lit_tt2016 raven_tt2016
 global house i.caste ib(2).assets2016_q ib(2).annualincome_HH2016_q c.HHsize2016 i.typeoffamily2016
 global contr i.username_neemsis1 i.username_neemsis2 c.ars32016 i.diff_ars3_cat5 i.villageid2016

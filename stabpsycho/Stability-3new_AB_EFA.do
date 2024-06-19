@@ -154,6 +154,7 @@ global imcr_without $imcr_OP $imcr_CO $imcr_EX $imcr_AG $imcr_ES
 factortest $imcr_without
 factor $imcr_without, pcf
 
+
 ***** How many factors to keep?
 * Kaiser criterion (eigenvalue>1) : 8  (without Grit)
 
@@ -171,11 +172,16 @@ minap $imcr_without
 * Without Grit 6
 
 *****
-factor $imcr_without, pcf fa(6)
+*
+factor $imcr_without, pcf mineigen(1) fa(3)
+putexcel set "new/EFA_pooled.xlsx", modify sheet("Scores")
+putexcel (D2)=matrix(e(L))
+
+*
 rotate, quartimin
 predict f1without_alt_ES f2without_alt_OP f3without_alt_CO f4without_alt_EXAG f5without_alt_EXES f6without_alt_AG
-*putexcel set "EFA_pooled.xlsx", modify sheet("Without_Grit")
-*putexcel (E2)=matrix(e(r_L))
+putexcel set "new/EFA_pooled.xlsx", modify sheet("Rotated")
+putexcel (D2)=matrix(e(r_L))
 
 
 ***** Factors
@@ -196,71 +202,6 @@ global f5without imcr_expressingthoughts imcr_sharefeelings imcr_staycalm imcr_m
 
 * F6
 global f6without imcr_toleratefaults imcr_trustingofother imcr_forgiveother
-
-
-
-
-
-
-
-********** With Grit
-global imcr_with $imcr_OP $imcr_CO $imcr_EX $imcr_AG $imcr_ES $imcr_Grit
-
-*****
-factortest $imcr_with
-factor $imcr_with, pcf
-
-***** How many factors to keep?
-* Kaiser criterion (eigenvalue>1) : 10 (with Grit)
-
-* Catell screeplot
-*screeplot
-*screeplot, neigen(15) yline(1)
-
-* Velicer Minimum Average Partial Correlation
-*ssc install minap 
-*minap $imcr_with
-* With Grit 3
-
-
-* Horn Parallel Analysis
-*ssc instal paran 
-*paran $imcr_with, factor(pcf)
-* With Grit 7
-
-
-*****
-factor $imcr_with, pcf fa(7)
-rotate, quartimin
-predict f1with_alt_ES f2with_alt_COGrit f3with_alt_OP f4with_alt_EXAG f5with_alt_EXES f6with_alt_AGGrit f7with_alt_OP
-*putexcel set "EFA_pooled.xlsx", modify sheet("With_Grit")
-*putexcel (E2)=matrix(e(r_L))
-
-
-
-***** Factors
-* F1
-global f1with imcr_tryhard imcr_enjoypeople imcr_rudetoother imcr_shywithpeople imcr_repetitivetasks imcr_putoffduties imcr_feeldepressed imcr_changemood imcr_nervous imcr_easilyupset imcr_easilydistracted imcr_worryalot
-
-* F2
-global f2with imcr_goaftergoal imcr_finishtasks imcr_workwithother imcr_organized imcr_workhard imcr_appointmentontime imcr_finishwhatbegin imcr_makeplans imcr_completeduties imcr_enthusiastic
-
-* F3
-global f3with imcr_understandotherfeeling imcr_liketothink imcr_activeimagination imcr_inventive imcr_newideas imcr_curious
-
-* F4
-global f4with imcr_talktomanypeople imcr_helpfulwithothers imcr_talkative
-
-* F5
-global f5with imcr_trustingofother imcr_expressingthoughts imcr_sharefeelings imcr_managestress imcr_staycalm
-
-* F6
-global f6with imcr_toleratefaults imcr_stickwithgoals imcr_forgiveother imcr_keepworking
-
-* F7
-global f7with imcr_interestedbyart
-
-
 
 
 
@@ -305,85 +246,6 @@ replace f6without=0 if f6without<0 & f6without!=.
 replace f6without=6 if f6without>6 & f6without!=. 
 rename f6without f6without_AG
 
-
-***** With
-*
-omegacoef $f1with
-egen f1with=rowmean($f1with)
-replace f1with=0 if f1with<0 & f1with!=. 
-replace f1with=6 if f1with>6 & f1with!=. 
-rename f1with f1with_ES
-*
-omegacoef $f2with
-egen f2with=rowmean($f2with)
-replace f2with=0 if f2with<0 & f2with!=. 
-replace f2with=6 if f2with>6 & f2with!=.
-rename f2with f2with_COGrit
-*
-omegacoef $f3with
-egen f3with=rowmean($f3with)
-replace f3with=0 if f3with<0 & f3with!=. 
-replace f3with=6 if f3with>6 & f3with!=.
-rename f3with f3with_OP
-*
-*omegacoef $f4with
-egen f4with=rowmean($f4with)
-replace f4with=0 if f4with<0 & f4with!=. 
-replace f4with=6 if f4with>6 & f4with!=.
-rename f4with f4with_EXAG
-*
-*omegacoef $f5with
-egen f5with=rowmean($f5with)
-replace f5with=0 if f5with<0 & f5with!=. 
-replace f5with=6 if f5with>6 & f5with!=.
-rename f5with f5with_EXES
-*
-*omegacoef $f6with
-egen f6with=rowmean($f6with)
-replace f6with=0 if f6with<0 & f6with!=. 
-replace f6with=6 if f6with>6 & f6with!=.
-rename f6with f6with_AGGrit
-*
-*omegacoef $f7with
-egen f7with=rowmean($f7with)
-replace f7with=0 if f7with<0 & f7with!=. 
-replace f7with=6 if f7with>6 & f7with!=.
-rename f7with f7with_OP
-
-
-
-
-********** Naive
-* 
-omegacoef $imcr_OP
-egen OP_imcr=rowmean($imcr_OP)
-replace OP_imcr=0 if OP_imcr<0 & OP_imcr!=.
-replace OP_imcr=6 if OP_imcr>6 & OP_imcr!=.
-* 
-omegacoef $imcr_CO
-egen CO_imcr=rowmean($imcr_CO)
-replace CO_imcr=0 if CO_imcr<0 & CO_imcr!=.
-replace CO_imcr=6 if CO_imcr>6 & CO_imcr!=.
-*
-omegacoef $imcr_EX
-egen EX_imcr=rowmean($imcr_EX)
-replace EX_imcr=0 if EX_imcr<0 & EX_imcr!=.
-replace EX_imcr=6 if EX_imcr>6 & EX_imcr!=.
-*
-omegacoef $imcr_AG
-egen AG_imcr=rowmean($imcr_AG)
-replace AG_imcr=0 if AG_imcr<0 & AG_imcr!=.
-replace AG_imcr=6 if AG_imcr>6 & AG_imcr!=.
-*
-omegacoef $imcr_ES
-egen ES_imcr=rowmean($imcr_ES)
-replace ES_imcr=0 if ES_imcr<0 & ES_imcr!=.
-replace ES_imcr=6 if ES_imcr>6 & ES_imcr!=.
-*
-omegacoef $imcr_Grit
-egen Grit_imcr=rowmean($imcr_Grit)
-replace Grit_imcr=0 if Grit_imcr<0 & Grit_imcr!=.
-replace Grit_imcr=6 if Grit_imcr>6 & Grit_imcr!=.
 
 
 save "panel_stab_v2_pooled", replace
@@ -585,4 +447,148 @@ save "panel_stab_v2_pooled_wide", replace
 ****************************************
 * END
 
+
+
+/*
+********** With Grit
+global imcr_with $imcr_OP $imcr_CO $imcr_EX $imcr_AG $imcr_ES $imcr_Grit
+
+*****
+factortest $imcr_with
+factor $imcr_with, pcf
+
+***** How many factors to keep?
+* Kaiser criterion (eigenvalue>1) : 10 (with Grit)
+
+* Catell screeplot
+*screeplot
+*screeplot, neigen(15) yline(1)
+
+* Velicer Minimum Average Partial Correlation
+*ssc install minap 
+*minap $imcr_with
+* With Grit 3
+
+
+* Horn Parallel Analysis
+*ssc instal paran 
+*paran $imcr_with, factor(pcf)
+* With Grit 7
+
+
+*****
+factor $imcr_with, pcf fa(7)
+rotate, quartimin
+predict f1with_alt_ES f2with_alt_COGrit f3with_alt_OP f4with_alt_EXAG f5with_alt_EXES f6with_alt_AGGrit f7with_alt_OP
+*putexcel set "EFA_pooled.xlsx", modify sheet("With_Grit")
+*putexcel (E2)=matrix(e(r_L))
+
+
+
+***** Factors
+* F1
+global f1with imcr_tryhard imcr_enjoypeople imcr_rudetoother imcr_shywithpeople imcr_repetitivetasks imcr_putoffduties imcr_feeldepressed imcr_changemood imcr_nervous imcr_easilyupset imcr_easilydistracted imcr_worryalot
+
+* F2
+global f2with imcr_goaftergoal imcr_finishtasks imcr_workwithother imcr_organized imcr_workhard imcr_appointmentontime imcr_finishwhatbegin imcr_makeplans imcr_completeduties imcr_enthusiastic
+
+* F3
+global f3with imcr_understandotherfeeling imcr_liketothink imcr_activeimagination imcr_inventive imcr_newideas imcr_curious
+
+* F4
+global f4with imcr_talktomanypeople imcr_helpfulwithothers imcr_talkative
+
+* F5
+global f5with imcr_trustingofother imcr_expressingthoughts imcr_sharefeelings imcr_managestress imcr_staycalm
+
+* F6
+global f6with imcr_toleratefaults imcr_stickwithgoals imcr_forgiveother imcr_keepworking
+
+* F7
+global f7with imcr_interestedbyart
+
+
+***** With
+*
+omegacoef $f1with
+egen f1with=rowmean($f1with)
+replace f1with=0 if f1with<0 & f1with!=. 
+replace f1with=6 if f1with>6 & f1with!=. 
+rename f1with f1with_ES
+*
+omegacoef $f2with
+egen f2with=rowmean($f2with)
+replace f2with=0 if f2with<0 & f2with!=. 
+replace f2with=6 if f2with>6 & f2with!=.
+rename f2with f2with_COGrit
+*
+omegacoef $f3with
+egen f3with=rowmean($f3with)
+replace f3with=0 if f3with<0 & f3with!=. 
+replace f3with=6 if f3with>6 & f3with!=.
+rename f3with f3with_OP
+*
+*omegacoef $f4with
+egen f4with=rowmean($f4with)
+replace f4with=0 if f4with<0 & f4with!=. 
+replace f4with=6 if f4with>6 & f4with!=.
+rename f4with f4with_EXAG
+*
+*omegacoef $f5with
+egen f5with=rowmean($f5with)
+replace f5with=0 if f5with<0 & f5with!=. 
+replace f5with=6 if f5with>6 & f5with!=.
+rename f5with f5with_EXES
+*
+*omegacoef $f6with
+egen f6with=rowmean($f6with)
+replace f6with=0 if f6with<0 & f6with!=. 
+replace f6with=6 if f6with>6 & f6with!=.
+rename f6with f6with_AGGrit
+*
+*omegacoef $f7with
+egen f7with=rowmean($f7with)
+replace f7with=0 if f7with<0 & f7with!=. 
+replace f7with=6 if f7with>6 & f7with!=.
+rename f7with f7with_OP
+
+
+
+
+
+
+
+
+
+********** Naive
+* 
+omegacoef $imcr_OP
+egen OP_imcr=rowmean($imcr_OP)
+replace OP_imcr=0 if OP_imcr<0 & OP_imcr!=.
+replace OP_imcr=6 if OP_imcr>6 & OP_imcr!=.
+* 
+omegacoef $imcr_CO
+egen CO_imcr=rowmean($imcr_CO)
+replace CO_imcr=0 if CO_imcr<0 & CO_imcr!=.
+replace CO_imcr=6 if CO_imcr>6 & CO_imcr!=.
+*
+omegacoef $imcr_EX
+egen EX_imcr=rowmean($imcr_EX)
+replace EX_imcr=0 if EX_imcr<0 & EX_imcr!=.
+replace EX_imcr=6 if EX_imcr>6 & EX_imcr!=.
+*
+omegacoef $imcr_AG
+egen AG_imcr=rowmean($imcr_AG)
+replace AG_imcr=0 if AG_imcr<0 & AG_imcr!=.
+replace AG_imcr=6 if AG_imcr>6 & AG_imcr!=.
+*
+omegacoef $imcr_ES
+egen ES_imcr=rowmean($imcr_ES)
+replace ES_imcr=0 if ES_imcr<0 & ES_imcr!=.
+replace ES_imcr=6 if ES_imcr>6 & ES_imcr!=.
+*
+omegacoef $imcr_Grit
+egen Grit_imcr=rowmean($imcr_Grit)
+replace Grit_imcr=0 if Grit_imcr<0 & Grit_imcr!=.
+replace Grit_imcr=6 if Grit_imcr>6 & Grit_imcr!=.
 
