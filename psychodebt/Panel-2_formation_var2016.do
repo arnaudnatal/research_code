@@ -7,7 +7,9 @@ cls
 gl link = "psychodebt"
 *EFA + panel 2016
 *-----
-do "https://raw.githubusercontent.com/arnaudnatal/folderanalysis/main/$link.do"
+*do "https://raw.githubusercontent.com/arnaudnatal/folderanalysis/main/$link.do"
+
+do"C:\Users\Arnaud\Documents\GitHub\folderanalysis\psychodebt.do"
 *-------------------------
 
 
@@ -63,25 +65,30 @@ replace im`x'=r(mean) if im`x'==. & sex==`i' & caste==`j' & egoid!=0 & egoid!=.
 global imcor imcr_curious imcr_interestedbyart imcr_repetitivetasks imcr_inventive imcr_liketothink imcr_newideas imcr_activeimagination imcr_organized imcr_makeplans imcr_workhard imcr_appointmentontime imcr_putoffduties imcr_easilydistracted imcr_completeduties imcr_enjoypeople imcr_sharefeelings imcr_shywithpeople imcr_enthusiastic imcr_talktomanypeople imcr_talkative imcr_expressingthoughts imcr_workwithother imcr_understandotherfeeling imcr_trustingofother imcr_rudetoother imcr_toleratefaults imcr_forgiveother imcr_helpfulwithothers imcr_managestress imcr_nervous imcr_changemood imcr_feeldepressed imcr_easilyupset imcr_worryalot imcr_staycalm 
 
 
-/*
+
 ********** Without grit
 minap $imcor
 factor $imcor, pcf fa(5) 
-rotate, oblimin
+rotate, quartimin
 putexcel set "EFA_2016.xlsx", modify sheet(imcor)
 putexcel (E2)=matrix(e(r_L))
-*/
+
 
 ********** Omega with Laajaj approach for factor analysis and Cobb Clark
 ** F1
-global f1 imcr_easilyupset imcr_nervous imcr_worryalot imcr_feeldepressed imcr_changemood imcr_easilydistracted imcr_shywithpeople imcr_putoffduties imcr_rudetoother imcr_repetitivetasks
+*global f1 imcr_easilyupset imcr_nervous imcr_worryalot imcr_feeldepressed imcr_changemood imcr_easilydistracted imcr_shywithpeople imcr_putoffduties imcr_rudetoother imcr_repetitivetasks
+global f1 imcr_easilyupset imcr_nervous imcr_worryalot imcr_feeldepressed imcr_changemood imcr_easilydistracted imcr_shywithpeople imcr_trustingofother imcr_putoffduties imcr_rudetoother imcr_repetitivetasks
 ** F2
+*global f2 imcr_makeplans imcr_appointmentontime imcr_completeduties imcr_enthusiastic imcr_organized imcr_workhard imcr_workwithother
 global f2 imcr_makeplans imcr_appointmentontime imcr_completeduties imcr_enthusiastic imcr_organized imcr_workhard imcr_workwithother
 ** F3
+*global f3 imcr_liketothink imcr_activeimagination imcr_expressingthoughts imcr_sharefeelings imcr_newideas imcr_inventive imcr_curious imcr_talktomanypeople imcr_talkative imcr_interestedbyart imcr_understandotherfeeling
 global f3 imcr_liketothink imcr_activeimagination imcr_expressingthoughts imcr_sharefeelings imcr_newideas imcr_inventive imcr_curious imcr_talktomanypeople imcr_talkative imcr_interestedbyart imcr_understandotherfeeling
 ** F4
+*global f4 imcr_staycalm imcr_managestress
 global f4 imcr_staycalm imcr_managestress
 ** F5
+*global f5 imcr_forgiveother imcr_toleratefaults imcr_trustingofother imcr_enjoypeople imcr_helpfulwithothers
 global f5 imcr_forgiveother imcr_toleratefaults imcr_trustingofother imcr_enjoypeople imcr_helpfulwithothers
 
 /*

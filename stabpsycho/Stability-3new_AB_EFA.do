@@ -173,35 +173,27 @@ minap $imcr_without
 
 *****
 *
-factor $imcr_without, pcf mineigen(1) fa(3)
-putexcel set "new/EFA_pooled.xlsx", modify sheet("Scores")
-putexcel (D2)=matrix(e(L))
-
-*
+cls
+factor $imcr_without, pcf fa(3)
 rotate, quartimin
-predict f1without_alt_ES f2without_alt_OP f3without_alt_CO f4without_alt_EXAG f5without_alt_EXES f6without_alt_AG
-putexcel set "new/EFA_pooled.xlsx", modify sheet("Rotated")
-putexcel (D2)=matrix(e(r_L))
+predict f1without_alt_ES f2without_alt_OPEX f3without_alt_CO
+*putexcel set "new/EFA_pooled.xlsx", modify sheet("Rotated")
+*putexcel (D2)=matrix(e(r_L))
 
 
 ***** Factors
 * F1
-global f1without imcr_enjoypeople imcr_rudetoother imcr_shywithpeople imcr_repetitivetasks imcr_putoffduties imcr_feeldepressed imcr_changemood imcr_nervous imcr_easilyupset imcr_easilydistracted imcr_worryalot
+global f1without imcr_enjoypeople imcr_rudetoother imcr_shywithpeople imcr_repetitivetasks imcr_putoffduties imcr_feeldepressed imcr_changemood imcr_easilyupset imcr_nervous imcr_worryalot
+
 
 * F2
-global f2without imcr_interestedbyart imcr_liketothink imcr_activeimagination imcr_inventive imcr_newideas imcr_curious
+global f2without imcr_interestedbyart imcr_curious imcr_talkative imcr_expressingthoughts imcr_sharefeelings imcr_inventive imcr_liketothink imcr_newideas
+
 
 * F3
-global f3without imcr_workwithother imcr_organized imcr_appointmentontime imcr_workhard imcr_makeplans imcr_completeduties imcr_enthusiastic
+global f3without imcr_organized imcr_enthusiastic imcr_appointmentontime imcr_workhard imcr_completeduties imcr_makeplans
 
-* F4
-global f4without imcr_understandotherfeeling imcr_talktomanypeople imcr_helpfulwithothers imcr_talkative
 
-* F5
-global f5without imcr_expressingthoughts imcr_sharefeelings imcr_staycalm imcr_managestress
-
-* F6
-global f6without imcr_toleratefaults imcr_trustingofother imcr_forgiveother
 
 
 
@@ -220,32 +212,13 @@ omegacoef $f2without
 egen f2without=rowmean($f2without)
 replace f2without=0 if f2without<0 & f2without!=. 
 replace f2without=6 if f2without>6 & f2without!=. 
-rename f2without f2without_OP
+rename f2without f2without_OPEX
 *
 omegacoef $f3without
 egen f3without=rowmean($f3without)
 replace f3without=0 if f3without<0 & f3without!=. 
 replace f3without=6 if f3without>6 & f3without!=. 
 rename f3without f3without_CO
-*
-*omegacoef $f4without
-egen f4without=rowmean($f4without)
-replace f4without=0 if f4without<0 & f4without!=. 
-replace f4without=6 if f4without>6 & f4without!=. 
-rename f4without f4without_EXAG
-*
-*omegacoef $f5without
-egen f5without=rowmean($f5without)
-replace f5without=0 if f5without<0 & f5without!=. 
-replace f5without=6 if f5without>6 & f5without!=. 
-rename f5without f5without_EXES
-*
-*omegacoef $f6without
-egen f6without=rowmean($f6without)
-replace f6without=0 if f6without<0 & f6without!=. 
-replace f6without=6 if f6without>6 & f6without!=. 
-rename f6without f6without_AG
-
 
 
 save "panel_stab_v2_pooled", replace
@@ -276,31 +249,16 @@ use "panel_stab_v2_pooled", clear
 
 ********** Clean
 rename f1without_ES fES
-rename f2without_OP fOP
+rename f2without_OP fOPEX
 rename f3without_CO fCO
 rename f1without_alt_ES fESs
-rename f2without_alt_OP fOPs
+rename f2without_alt_OP fOPEXs
 rename f3without_alt_CO fCOs
 
-rename f1with_ES fbES
-rename f2with_CO fbCO
-rename f3with_OP fbOP
-rename f1with_alt_ES fbESs
-rename f2with_alt_CO fbCOs
-rename f3with_alt_OP fbOPs
-
-rename OP_imcr OP
-rename CO_imcr CO
-rename EX_imcr EX
-rename AG_imcr AG
-rename ES_imcr ES
-rename Grit_imcr Grit
-
-global fact fES fOP fCO fbES fbCO fbOP
-global facts fESs fOPs fCOs fbESs fbCOs fbOPs
-global naive OP CO EX AG ES Grit
+global fact fES fOPEX fCO
+global facts fESs fOPEXs fCOs
 global cogn num_tt lit_tt raven_tt
-global perso $fact $facts $naive $cogn
+global perso $fact $facts $cogn
 
 
 keep HHID_panel INDID_panel year $perso $imcr_without
@@ -318,7 +276,7 @@ fre wave
 ***** Stat
 cls
 icc fES unique_id
-icc fOP unique_id
+icc fOPEX unique_id
 icc fCO unique_id
 
 
@@ -329,7 +287,7 @@ drop unique_id wave
 reshape wide $perso $imcr_without, i(HHID_panel INDID_panel) j(year)
 
 pwcorr fES2016 fES2020, star(.05)
-pwcorr fOP2016 fOP2020, star(.05)
+pwcorr fOPEX2016 fOPEX2020, star(.05)
 pwcorr fCO2016 fCO2020, star(.05)
 
 foreach x in $perso {
@@ -431,8 +389,8 @@ drop if fES2020==.
 ta catdiff_fES catvar_fES
 ta catdiff_fESs catvar_fESs
 
-ta catdiff_fOP catvar_fOP
-ta catdiff_fOPs catvar_fOPs
+ta catdiff_fOPEX catvar_fOPEX
+ta catdiff_fOPEXs catvar_fOPEXs
 
 ta catdiff_fCO catvar_fCO
 ta catdiff_fCOs catvar_fCOs
@@ -563,32 +521,32 @@ rename f7with f7with_OP
 ********** Naive
 * 
 omegacoef $imcr_OP
-egen OP_imcr=rowmean($imcr_OP)
-replace OP_imcr=0 if OP_imcr<0 & OP_imcr!=.
-replace OP_imcr=6 if OP_imcr>6 & OP_imcr!=.
+egen OP=rowmean($imcr_OP)
+replace OP=0 if OP<0 & OP!=.
+replace OP=6 if OP>6 & OP!=.
 * 
 omegacoef $imcr_CO
-egen CO_imcr=rowmean($imcr_CO)
-replace CO_imcr=0 if CO_imcr<0 & CO_imcr!=.
-replace CO_imcr=6 if CO_imcr>6 & CO_imcr!=.
+egen CO=rowmean($imcr_CO)
+replace CO=0 if CO<0 & CO!=.
+replace CO=6 if CO>6 & CO!=.
 *
 omegacoef $imcr_EX
-egen EX_imcr=rowmean($imcr_EX)
-replace EX_imcr=0 if EX_imcr<0 & EX_imcr!=.
-replace EX_imcr=6 if EX_imcr>6 & EX_imcr!=.
+egen EX=rowmean($imcr_EX)
+replace EX=0 if EX<0 & EX!=.
+replace EX=6 if EX>6 & EX!=.
 *
 omegacoef $imcr_AG
-egen AG_imcr=rowmean($imcr_AG)
-replace AG_imcr=0 if AG_imcr<0 & AG_imcr!=.
-replace AG_imcr=6 if AG_imcr>6 & AG_imcr!=.
+egen AG=rowmean($imcr_AG)
+replace AG=0 if AG<0 & AG!=.
+replace AG=6 if AG>6 & AG!=.
 *
 omegacoef $imcr_ES
-egen ES_imcr=rowmean($imcr_ES)
-replace ES_imcr=0 if ES_imcr<0 & ES_imcr!=.
-replace ES_imcr=6 if ES_imcr>6 & ES_imcr!=.
+egen ES=rowmean($imcr_ES)
+replace ES=0 if ES<0 & ES!=.
+replace ES=6 if ES>6 & ES!=.
 *
 omegacoef $imcr_Grit
-egen Grit_imcr=rowmean($imcr_Grit)
-replace Grit_imcr=0 if Grit_imcr<0 & Grit_imcr!=.
-replace Grit_imcr=6 if Grit_imcr>6 & Grit_imcr!=.
+egen Grit=rowmean($imcr_Grit)
+replace Grit=0 if Grit<0 & Grit!=.
+replace Grit=6 if Grit>6 & Grit!=.
 

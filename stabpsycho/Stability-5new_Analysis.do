@@ -37,18 +37,18 @@ graph save "new/distri_fES.gph", replace
 restore
 
 
-***** OP
+***** OPEX
 preserve
-tabstat fOP2016 fOP2020, stat(n min max)
-replace fOP2016=0 if fOP2016<0 & fOP2016!=.
-replace fOP2020=0 if fOP2020<0 & fOP2020!=.
+tabstat fOPEX2016 fOPEX2020, stat(n min max)
+replace fOPEX2016=0 if fOPEX2016<0 & fOPEX2016!=.
+replace fOPEX2020=0 if fOPEX2020<0 & fOPEX2020!=.
 twoway ///
-(scatter fOP2020 fOP2016, mcolor(black%30)) ///
+(scatter fOPEX2020 fOPEX2016, mcolor(black%30)) ///
 (function y=x, range(0 6)) ///
 , xtitle("Score in 2016-17") ytitle("Score in 2020-21") ///
-title(" 'Openness to experience' factor") name(s_fOP, replace) legend(order(1 "Individual" 2 "First bisector") pos(6) col(2))
-graph export "new/distri_fOP.pdf", as(pdf) replace 
-graph save "new/distri_fOP.gph", replace
+title(" 'Plasticity' factor") name(s_fOPEX, replace) legend(order(1 "Individual" 2 "First bisector") pos(6) col(2))
+graph export "new/distri_fOPEX.pdf", as(pdf) replace 
+graph save "new/distri_fOPEX.gph", replace
 restore
 
 
@@ -111,18 +111,18 @@ graph save "new/histo_fES.gph", replace
 graph export "new/histo_fES.pdf", as(pdf) replace
 
 ***** OP
-twoway__histogram_gen diff_fOP, percent bin(70) gen(h x, replace)
+twoway__histogram_gen diff_fOPEX, percent bin(70) gen(h x, replace)
 twoway ///
 (bar h x if x<-.5, color() barwidth(0.1)) ///
 (bar h x if x>=-.5 & x<=.5, color() barwidth(0.1)) ///
 (bar h x if x>.5, color() barwidth(0.1)) ///
-(kdensity diff_fOP, yaxis(2) lpattern(solid) bwidth(0.2)ytitle("Density", axis(2))) ///
+(kdensity diff_fOPEX, yaxis(2) lpattern(solid) bwidth(0.2)ytitle("Density", axis(2))) ///
 , ///
-ytitle("Percent") xtitle("OP_2020 - OP_2016") ///
+ytitle("Percent") xtitle("OPEX_2020 - OPEX_2016") ///
 ylabel(, grid gmax gmin) xlabel(, nogrid gmax gmin) ///
 plotregion(margin(none)) legend(order(1 "Decreasing" 2 "Stable" 3 "Increasing") pos(6) col(3)) note("Kernel: epanechnikov" "Bandwidth=0.2", size(vsmall))
-graph save "new/histo_fOP.gph", replace
-graph export "new/histo_fOP.pdf", as(pdf) replace
+graph save "new/histo_fOPEX.gph", replace
+graph export "new/histo_fOPEX.pdf", as(pdf) replace
 
 ***** CO
 twoway__histogram_gen diff_fCO, percent bin(70) gen(h x, replace)
@@ -165,7 +165,7 @@ graph drop _all
 
 
 ***** ES
-global fvES enjoypeople rudetoother shywithpeople repetitivetasks putoffduties feeldepressed changemood nervous easilyupset easilydistracted worryalot
+global fvES enjoypeople rudetoother shywithpeople repetitivetasks putoffduties feeldepressed changemood easilyupset nervous worryalot
 
 graph drop _all
 set graph off
@@ -178,7 +178,7 @@ twoway (scatter `x'2020 `x'2016, mcolor(black%30)) (function y=x, range(0 6)), x
 restore
 }
 set graph on
-grc1leg s_enjoypeople s_rudetoother s_shywithpeople s_repetitivetasks s_putoffduties s_feeldepressed s_changemood s_nervous s_easilyupset s_easilydistracted s_worryalot, col(4) title("Items of the 'Emotional stability' factor")
+grc1leg s_enjoypeople s_rudetoother s_shywithpeople s_repetitivetasks s_putoffduties s_feeldepressed s_changemood s_easilyupset s_nervous s_worryalot, col(5) title("Items of the 'Emotional stability' factor")
 graph export "new/sub_fES.pdf", as(pdf) replace 
 graph save "new/sub_fES.gph", replace
 
@@ -186,12 +186,12 @@ graph save "new/sub_fES.gph", replace
 
 
 
-***** OP
-global fvOP interestedbyart liketothink activeimagination inventive newideas curious
+***** OPEX
+global fvOPEX interestedbyart liketothink inventive newideas curious talkative expressingthoughts sharefeelings   
 
 graph drop _all
 set graph off
-foreach x in $fvOP {
+foreach x in $fvOPEX {
 preserve
 replace `x'2016=0 if `x'2016<0 & `x'2016!=.
 replace `x'2020=0 if `x'2020<0 & `x'2020!=.
@@ -200,15 +200,15 @@ twoway (scatter `x'2020 `x'2016, mcolor(black%30)) (function y=x, range(0 6)), x
 restore
 }
 set graph on
-grc1leg s_interestedbyart s_liketothink s_activeimagination s_inventive s_newideas s_curious, col(3) title("Items of the 'Openness to experience' factor")
-graph export "new/sub_fOP.pdf", as(pdf) replace 
-graph save "new/sub_fOP.gph", replace
+grc1leg s_interestedbyart s_liketothink s_inventive s_newideas s_curious s_talkative s_expressingthoughts s_sharefeelings, col(4) title("Items of the 'Plasticity' factor")
+graph export "new/sub_fOPEX.pdf", as(pdf) replace 
+graph save "new/sub_fOPEX.gph", replace
 
 
 
 
 ***** CO
-global fvCO workwithother organized appointmentontime workhard makeplans completeduties enthusiastic
+global fvCO organized enthusiastic appointmentontime workhard completeduties makeplans
 
 graph drop _all
 set graph off
@@ -221,7 +221,7 @@ twoway (scatter `x'2020 `x'2016, mcolor(black%30)) (function y=x, range(0 6)), x
 restore
 }
 set graph on
-grc1leg s_workwithother s_organized s_appointmentontime s_workhard s_makeplans s_completeduties s_enthusiastic, col(4) title("Items of the 'Conscientiousness' factor")
+grc1leg s_organized s_enthusiastic s_appointmentontime s_workhard s_completeduties s_makeplans, col(3) title("Items of the 'Conscientiousness' factor")
 graph export "new/sub_fCO.pdf", as(pdf) replace 
 graph save "new/sub_fCO.gph", replace
 
@@ -263,24 +263,20 @@ ta age_cat catdiff_fES, col nofreq chi2
 ta educode catdiff_fES, col nofreq chi2
 ta moc_indiv catdiff_fES, col nofreq chi2
 ta annualincome_indiv2016_q catdiff_fES, col nofreq chi2
-ta dummydemonetisation2016 catdiff_fES, col nofreq chi2
-ta dummysell2020 catdiff_fES, col nofreq chi2
 ta diff_ars3_cat5 catdiff_fES, col nofreq chi2
 
 
 
-***** OP
+***** OPEX
 cls
-ta catdiff_fOP
-ta sex catdiff_fOP, col nofreq chi2
-ta caste catdiff_fOP, col nofreq chi2
-ta age_cat catdiff_fOP, col nofreq chi2
-ta educode catdiff_fOP, col nofreq chi2
-ta moc_indiv catdiff_fOP, col nofreq chi2
-ta annualincome_indiv2016_q catdiff_fOP, col nofreq chi2
-ta dummydemonetisation2016 catdiff_fOP, col nofreq chi2
-ta dummysell2020 catdiff_fOP, col nofreq chi2
-ta diff_ars3_cat5 catdiff_fOP, col nofreq chi2
+ta catdiff_fOPEX
+ta sex catdiff_fOPEX, col nofreq chi2
+ta caste catdiff_fOPEX, col nofreq chi2
+ta age_cat catdiff_fOPEX, col nofreq chi2
+ta educode catdiff_fOPEX, col nofreq chi2
+ta moc_indiv catdiff_fOPEX, col nofreq chi2
+ta annualincome_indiv2016_q catdiff_fOPEX, col nofreq chi2
+ta diff_ars3_cat5 catdiff_fOPEX, col nofreq chi2
 
 
 
@@ -293,8 +289,6 @@ ta age_cat catdiff_fCO, col nofreq chi2
 ta educode catdiff_fCO, col nofreq chi2
 ta moc_indiv catdiff_fCO, col nofreq chi2
 ta annualincome_indiv2016_q catdiff_fCO, col nofreq chi2
-ta dummydemonetisation2016 catdiff_fCO, col nofreq chi2
-ta dummysell2020 catdiff_fCO, col nofreq chi2
 ta diff_ars3_cat5 catdiff_fCO, col nofreq chi2
 
 ****************************************
@@ -324,8 +318,8 @@ graph drop _all
 
 
 ***** Macro
-global indiv c.age2016 i.sex ib(1).educode ib(3).moc_indiv i.marital
-global cogni fES2016 fOP2016 fCO2016 num_tt2016 lit_tt2016 raven_tt2016
+global indiv c.age2016 i.sex ib(0).educode ib(3).moc_indiv i.marital
+global cogni fES2016 fOPEX2016 fCO2016 num_tt2016 lit_tt2016 raven_tt2016
 global house i.caste ib(2).assets2016_q ib(2).annualincome_HH2016_q c.HHsize2016 i.typeoffamily2016
 global contr i.username_neemsis1 i.username_neemsis2 c.ars32016 i.diff_ars3_cat5 i.villageid2016
 global shock dummysell2020 dummydemonetisation2016 dummyshockland dummyshockdebt dummyshockhealth dummyshockemployment
@@ -340,8 +334,8 @@ est store mar1
 
 
 
-***** OP
-probit dumdiff_fOP $indiv $cogni $house $shock $contr, cluster(cluster) baselevel
+***** OPEX
+probit dumdiff_fOPEX $indiv $cogni $house $shock $contr, cluster(cluster) baselevel
 est store reg2
 margins, dydx($indiv $cogni $house $shock) atmeans post
 est store mar2
@@ -354,7 +348,7 @@ est store mar3
 
 
 ***** Tables
-esttab reg1 mar1 reg2 mar2 reg3 mar3 using "new/probit.csv", replace ///
+esttab reg1 reg2 reg3 using "new/probit.csv", replace ///
 	label b(3) p(3) eqlabels(none) alignment(S) ///
 	drop(_cons) ///
 	star(* 0.10 ** 0.05 *** 0.01) ///
@@ -394,8 +388,8 @@ graph drop _all
 
 
 ***** Macro
-global indiv c.age2016 i.sex ib(1).educode ib(3).moc_indiv i.marital
-global cogni fES2016 fOP2016 fCO2016 num_tt2016 lit_tt2016 raven_tt2016
+global indiv c.age2016 i.sex ib(0).educode ib(3).moc_indiv i.marital
+global cogni fES2016 fOPEX2016 fCO2016 num_tt2016 lit_tt2016 raven_tt2016
 global house i.caste ib(2).assets2016_q ib(2).annualincome_HH2016_q c.HHsize2016 i.typeoffamily2016
 global contr i.username_neemsis1 i.username_neemsis2 c.ars32016 i.diff_ars3_cat5 i.villageid2016
 global shock dummysell2020 dummydemonetisation2016 dummyshockland dummyshockdebt dummyshockhealth dummyshockemployment
@@ -411,8 +405,8 @@ est store reg1
 *est store mar1
 
 
-***** OP
-mprobit catdiff_fOP $indiv $cogni $house $shock $contr, cluster(cluster) baselevel baseoutcome(2)
+***** OPEX
+mprobit catdiff_fOPEX $indiv $cogni $house $shock $contr, cluster(cluster) baselevel baseoutcome(2)
 est store reg2
 *margins, dydx($indiv $cogni $house $shock) atmeans post
 *est store mar2
@@ -473,7 +467,7 @@ graph drop _all
 
 ***** Macro
 global indiv i.sex ib(0).educode ib(2).age_cat ib(2).moc_indiv i.marital
-global cogni fES2016 fOP2016 fCO2016 num_tt2016 lit_tt2016 raven_tt2016
+global cogni fES2016 fOPEX2016 fCO2016 num_tt2016 lit_tt2016 raven_tt2016
 global house i.caste ib(2).assets2016_q ib(2).annualincome_HH2016_q c.HHsize2016 i.typeoffamily2016
 global contr i.username_neemsis1 i.username_neemsis2 c.ars32016 i.diff_ars3_cat5 i.villageid2016
 global shock dummysell2020 dummydemonetisation2016 dummyshockland dummyshockdebt dummyshockhealth dummyshockemployment
@@ -509,30 +503,30 @@ est store mar3ES
 
 
 
-***** OP
+***** OPEX
 * Unstable
-glm abs_diff_rec_fOP $indiv $cogni $house $shock $contr ///
-if catdiff_fOP==1 | catdiff_fOP==3 ///
+glm abs_diff_rec_fOPEX $indiv $cogni $house $shock $contr ///
+if catdiff_fOPEX==1 | catdiff_fOPEX==3 ///
 , link(log) family(igaussian) cluster(cluster) allbase
-est store reg1OP
+est store reg1OPEX
 margins, dydx($indiv $cogni $house $shock) atmeans post
-est store mar1OP
+est store mar1OPEX
 
 * Increasing
-glm abs_diff_rec_fOP $indiv $cogni $house $shock $contr ///
-if catdiff_fOP==3 ///
+glm abs_diff_rec_fOPEX $indiv $cogni $house $shock $contr ///
+if catdiff_fOPEX==3 ///
 , link(log) family(igaussian) cluster(cluster) allbase
-est store reg2OP
+est store reg2OPEX
 margins, dydx($indiv $cogni $house $shock) atmeans post
-est store mar2OP
+est store mar2OPEX
 
 * Decreasing
-glm abs_diff_rec_fOP $indiv $cogni $house $shock $contr ///
-if catdiff_fOP==1 ///
+glm abs_diff_rec_fOPEX $indiv $cogni $house $shock $contr ///
+if catdiff_fOPEX==1 ///
 , link(log) family(igaussian) cluster(cluster) allbase
-est store reg3OP
+est store reg3OPEX
 margins, dydx($indiv $cogni $house $shock) atmeans post
-est store mar3OP
+est store mar3OPEX
 
 
 
@@ -568,13 +562,13 @@ est store mar3CO
 /*
 esttab ///
 reg1ES mar1ES reg2ES mar2ES reg3ES mar3ES ///
-reg1OP mar1OP reg2OP mar2OP reg3OP mar3OP ///
+reg1OPEX mar1OPEX reg2OPEX mar2OPEX reg3OPEX mar3OPEX ///
 reg1CO mar1CO reg2CO mar2CO reg3CO mar3CO ///
 */
 
 esttab ///
 mar1ES mar2ES mar3ES ///
-mar1OP mar2OP mar3OP ///
+mar1OPEX mar2OPEX mar3OPEX ///
 mar1CO mar2CO mar3CO ///
 using "new/glm.csv", replace ///
 	label b(3) p(3) eqlabels(none) alignment(S) ///
@@ -607,7 +601,7 @@ use "panel_stab_pooled_wide_v3", clear
 
 drop age25 educode educode20
 
-reshape long egoid age jatiscorr edulevel villageid panel dummydemonetisation relationshiptohead maritalstatus mainocc_profession_indiv mainocc_occupation_indiv mainocc_sector_indiv mainocc_occupationname_indiv annualincome_indiv annualincome_HH expenses_heal shareexpenses_heal assets_sizeownland ownland assets_total1000 assets_totalnoland1000 HHsize typeoffamily villagename villagename_club loanamount_HH raven_tt num_tt lit_tt aspirationminimumwage dummyaspirationmorehours aspirationminimumwage2 dummymarriage dummy_marriedlist dummyexposure secondlockdownexposure dummysell submissiondate ars ars2 ars3 username_backup edulevel_backup fES fOP fCO curious interestedbyart repetitivetasks inventive liketothink newideas activeimagination organized makeplans workhard appointmentontime putoffduties easilydistracted completeduties enjoypeople sharefeelings shywithpeople enthusiastic talktomanypeople talkative expressingthoughts workwithother understandotherfeeling trustingofother rudetoother toleratefaults forgiveother helpfulwithothers managestress nervous changemood feeldepressed easilyupset worryalot staycalm, i(HHID_panel INDID_panel) j(year)
+reshape long egoid age jatiscorr edulevel villageid panel dummydemonetisation relationshiptohead maritalstatus mainocc_profession_indiv mainocc_occupation_indiv mainocc_sector_indiv mainocc_occupationname_indiv annualincome_indiv annualincome_HH expenses_heal shareexpenses_heal assets_sizeownland ownland assets_total1000 assets_totalnoland1000 HHsize typeoffamily villagename villagename_club loanamount_HH raven_tt num_tt lit_tt aspirationminimumwage dummyaspirationmorehours aspirationminimumwage2 dummymarriage dummy_marriedlist dummyexposure secondlockdownexposure dummysell submissiondate ars ars2 ars3 username_backup edulevel_backup fES fOPEX fCO curious interestedbyart repetitivetasks inventive liketothink newideas activeimagination organized makeplans workhard appointmentontime putoffduties easilydistracted completeduties enjoypeople sharefeelings shywithpeople enthusiastic talktomanypeople talkative expressingthoughts workwithother understandotherfeeling trustingofother rudetoother toleratefaults forgiveother helpfulwithothers managestress nervous changemood feeldepressed easilyupset worryalot staycalm, i(HHID_panel INDID_panel) j(year)
 
 drop if egoid==.
 ta year
@@ -636,9 +630,9 @@ global shock dummyshockland dummyshockdebt dummyshockhealth dummyshockemployment
 xtreg fES $indiv $house $shock $contr, fe
 est store feES
 
-***** OP
-xtreg fOP $indiv $house $shock $contr, fe
-est store feOP
+***** OPEX
+xtreg fOPEX $indiv $house $shock $contr, fe
+est store feOPEX
 
 ***** CO
 xtreg fCO $indiv $house $shock $contr, fe
@@ -650,7 +644,7 @@ est store feCO
 
 ********** Format
 esttab ///
-feES feOP feCO ///
+feES feOPEX feCO ///
 using "new/fe.csv", replace ///
 	label b(3) p(3) eqlabels(none) alignment(S) ///
 	star(* 0.10 ** 0.05 *** 0.01) ///

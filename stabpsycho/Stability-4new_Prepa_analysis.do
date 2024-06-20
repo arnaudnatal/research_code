@@ -191,7 +191,7 @@ global items imcr_curious2016 imcr_interestedbyart2016 imcr_repetitivetasks2016 
 merge 1:1 HHID_panel INDID_panel using "panel_stab_v2_pooled_wide", keepusing( ///
 fES2016 fES2020 diff_fES abs_diff_fES catdiff_fES dumdiff_fES var_fES ///
 fCO2016 fCO2020 diff_fCO abs_diff_fCO catdiff_fCO dumdiff_fCO var_fCO ///
-fOP2016 fOP2020 diff_fOP abs_diff_fOP catdiff_fOP dumdiff_fOP var_fOP ///
+fOPEX2016 fOPEX2020 diff_fOPEX abs_diff_fOPEX catdiff_fOPEX dumdiff_fOPEX var_fOPEX ///
 num_tt2016 num_tt2020 ///
 lit_tt2016 lit_tt2020 ///
 raven_tt2016 raven_tt2020 ///
@@ -201,37 +201,37 @@ keep if sex!=.
 
 label var fES2016 "Emotional stability score"
 label var fCO2016 "Conscientiousness score"
-label var fOP2016 "Openness to experience score"
+label var fOPEX2016 "Plasticity score"
 label var num_tt2016 "Numeracy score"
 label var lit_tt2016 "Literacy score"
 label var raven_tt2016 "Raven score"
 
 label var fES2020 "Emotional stability score in 2020-21"
 label var fCO2020 "Conscientiousness score in 2020-21"
-label var fOP2020 "Openness to experience score in 2020-21"
+label var fOPEX2020 "Plasticity score in 2020-21"
 label var num_tt2020 "Numeracy score in 2020-21"
 label var lit_tt2020 "Literacy score in 2020-21"
 label var raven_tt2020 "Raven score in 2020-21"
 
 label var diff_fES "ES_2020 - ES_2016"
 label var diff_fCO "CO_2020 - CO_2016"
-label var diff_fOP "OP_2020 - OP_2016"
+label var diff_fOPEX "OPEX_2020 - OPEX_2016"
 
 label var dumdiff_fES "Unstable on ES (% of yes)"
 label var dumdiff_fCO "Unstable on CO (% of yes)"
-label var dumdiff_fOP "Unstable on OP (% of yes)"
+label var dumdiff_fOPEX "Unstable on OPEX (% of yes)"
 
 label var catdiff_fES "ES temporal trajectory"
 label var catdiff_fCO "CO temporal trajectory"
-label var catdiff_fOP "OP temporal trajectory"
+label var catdiff_fOPEX "OPEX temporal trajectory"
 
 label var abs_diff_fES "Intensity of ES instability"
 label var abs_diff_fCO "Intensity of CO instability"
-label var abs_diff_fOP "Intensity of OP instability"
+label var abs_diff_fOPEX "Intensity of OPEX instability"
 
 label var var_fES "Variation ES (%)"
 label var var_fCO "Variation CO (%)"
-label var var_fOP "Variation OP (%)"
+label var var_fOPEX "Variation OPEX (%)"
 
 
 ********** Items to rename
@@ -347,7 +347,7 @@ Self employed to casual
 /*
 Je considère un changement de score compris entre -5% et +5% comme acceptable pour la stabilité.
 */
-foreach x in ES OP CO {
+foreach x in ES OPEX CO {
 gen abs_diff_rec_f`x'=abs_diff_f`x'
 replace abs_diff_rec_f`x'=0 if dumdiff_f`x'==0
 order abs_diff_rec_f`x', after(abs_diff_f`x')
