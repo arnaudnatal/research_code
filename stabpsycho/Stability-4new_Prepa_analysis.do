@@ -94,7 +94,7 @@ label define edulevel 0"Edu: Below prim" 1"Edu: Primary" 2"Edu: High school" 3"E
 * MOC
 clonevar moc_indiv=mainocc_occupation_indiv2016
 recode moc_indiv (5=4)
-label define occupcode2 0"Occ: No occup" 1"Occ: Agri" 2"Occ: Agri coolie" 3"Occ: Coolie" 4"Occ: Reg" 6"Occ: SE" 7"Occ: NREGA"
+label define occupcode2 0"Occ: No occup" 1"Occ: Agri" 2"Occ: Agri coolie" 3"Occ: Coolie" 4"Occ: Reg" 6"Occ: SE" 7"Occ: MGNREGA"
 label values moc_indiv occupcode2
 ta mainocc_occupation_indiv2016 moc_indiv
 
@@ -215,23 +215,23 @@ label var raven_tt2020 "Raven score in 2020-21"
 
 label var diff_fES "ES_2020 - ES_2016"
 label var diff_fCO "CO_2020 - CO_2016"
-label var diff_fOPEX "OPEX_2020 - OPEX_2016"
+label var diff_fOPEX "PL_2020 - PL_2016"
 
 label var dumdiff_fES "Unstable on ES (% of yes)"
 label var dumdiff_fCO "Unstable on CO (% of yes)"
-label var dumdiff_fOPEX "Unstable on OPEX (% of yes)"
+label var dumdiff_fOPEX "Unstable on PL (% of yes)"
 
 label var catdiff_fES "ES temporal trajectory"
 label var catdiff_fCO "CO temporal trajectory"
-label var catdiff_fOPEX "OPEX temporal trajectory"
+label var catdiff_fOPEX "PL temporal trajectory"
 
 label var abs_diff_fES "Intensity of ES instability"
 label var abs_diff_fCO "Intensity of CO instability"
-label var abs_diff_fOPEX "Intensity of OPEX instability"
+label var abs_diff_fOPEX "Intensity of PL instability"
 
 label var var_fES "Variation ES (%)"
 label var var_fCO "Variation CO (%)"
-label var var_fOPEX "Variation OPEX (%)"
+label var var_fOPEX "Variation PL (%)"
 
 
 ********** Items to rename
@@ -281,6 +281,25 @@ label var dummyshockdebt "Higher debt (x1.5) (% of yes)"
 ta dummyshockdebt
 
 
+
+* Debt2
+gen temp1=loanamount_HH2016*(100/158)
+gen temp2=loanamount_HH2020*(100/184)
+gen dummyshockdebt2=.
+label define shockdebt2 0 "Same or lower debt" 1 "Higher debt (x2)"
+label values dummyshockdebt2 shockdebt2
+gen temp=temp2/temp1
+ta temp
+replace dummyshockdebt2=0 if temp<2
+replace dummyshockdebt2=1 if temp>=2
+ta dummyshockdebt2
+drop temp temp1 temp2
+label var dummyshockdebt2 "Higher debt (x2) (% of yes)"
+ta dummyshockdebt2
+
+
+
+
 * Health
 gen temp1=expenses_heal2016*(100/158)
 gen temp2=expenses_heal2020*(100/184)
@@ -298,16 +317,19 @@ ta dummyshockhealth
 
 
 * Health2
+gen temp1=expenses_heal2016*(100/158)
+gen temp2=expenses_heal2020*(100/184)
 gen dummyshockhealth2=.
 label define shockhealth2 0 "Same or lower health spending" 1 "Higher health spending (x2)"
 label values dummyshockhealth2 shockhealth2
-gen temp=shareexpenses_heal2020/shareexpenses_heal2016
+gen temp=temp2/temp1
 ta temp
 replace dummyshockhealth2=0 if temp<2
 replace dummyshockhealth2=1 if temp>=2
-ta dummyshockhealth
-drop temp
+ta dummyshockhealth2
+drop temp temp1 temp2
 label var dummyshockhealth2 "Higher health spending (x2) (% of yes)"
+ta dummyshockhealth2
 
 
 
