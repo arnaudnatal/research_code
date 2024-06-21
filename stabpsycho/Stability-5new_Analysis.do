@@ -322,7 +322,7 @@ global indiv c.age2016 i.sex ib(0).educode ib(3).moc_indiv i.marital
 global cogni fES2016 fOPEX2016 fCO2016 num_tt2016 lit_tt2016 raven_tt2016
 global house i.caste ib(2).assets2016_q ib(2).annualincome_HH2016_q c.HHsize2016 i.typeoffamily2016
 global contr i.username_neemsis1 i.username_neemsis2 c.ars32016 i.diff_ars3_cat5 i.villageid2016
-global shock dummysell2020 dummydemonetisation2016 dummyshockland dummyshockdebt dummyshockhealth dummyshockemployment
+global shock dummysell2020 dummydemonetisation2016 dummyshockland dummyshockdebt dummyshockhealth dummyshockincome
 
 
 ***** ES
@@ -392,7 +392,7 @@ global indiv c.age2016 i.sex ib(0).educode ib(3).moc_indiv i.marital
 global cogni fES2016 fOPEX2016 fCO2016 num_tt2016 lit_tt2016 raven_tt2016
 global house i.caste ib(2).assets2016_q ib(2).annualincome_HH2016_q c.HHsize2016 i.typeoffamily2016
 global contr i.username_neemsis1 i.username_neemsis2 c.ars32016 i.diff_ars3_cat5 i.villageid2016
-global shock dummysell2020 dummydemonetisation2016 dummyshockland dummyshockdebt dummyshockhealth dummyshockemployment
+global shock dummysell2020 dummydemonetisation2016 dummyshockland dummyshockdebt dummyshockhealth dummyshockincome
 
 
 
@@ -470,7 +470,7 @@ global indiv i.sex ib(0).educode ib(2).age_cat ib(2).moc_indiv i.marital
 global cogni fES2016 fOPEX2016 fCO2016 num_tt2016 lit_tt2016 raven_tt2016
 global house i.caste ib(2).assets2016_q ib(2).annualincome_HH2016_q c.HHsize2016 i.typeoffamily2016
 global contr i.username_neemsis1 i.username_neemsis2 c.ars32016 i.diff_ars3_cat5 i.villageid2016
-global shock dummysell2020 dummydemonetisation2016 dummyshockland dummyshockdebt dummyshockhealth dummyshockemployment
+global shock dummysell2020 dummydemonetisation2016 dummyshockland dummyshockdebt dummyshockhealth dummyshockincome
 
 
 
@@ -591,6 +591,11 @@ using "new/glm.csv", replace ///
 
 
 
+
+/*
+
+
+
 ****************************************
 * FE model
 ****************************************
@@ -624,7 +629,7 @@ xtset HHINDID_panel year
 global indiv c.age i.edulevel ib(2).mainocc_occupation_indiv i.maritalstatus
 global house c.assets_total1000 c.annualincome_HH c.HHsize i.typeoffamily
 global contr i.username_neemsis1 i.username_neemsis2 c.ars3 i.villageid
-global shock dummyshockland dummyshockdebt dummyshockhealth dummyshockemployment
+global shock dummyshockland dummyshockdebt dummyshockhealth dummyshockincome
 
 ***** ES
 xtreg fES $indiv $house $shock $contr, fe

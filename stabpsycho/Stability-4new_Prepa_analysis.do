@@ -332,36 +332,36 @@ label var dummyshockhealth2 "Higher health spending (x2) (% of yes)"
 ta dummyshockhealth2
 
 
-
-* Employment
-ta mainocc_occupation_indiv2016 mainocc_occupation_indiv2020, chi2
-fre mainocc_occupation_indiv2016
-
-gen dummyshockemployment=0
-label define shockemployment 0 "Same or better type of job" 1 "Lower type of job"
-replace dummyshockemployment=1 if mainocc_occupation_indiv2016!=0 & mainocc_occupation_indiv2020==0
-replace dummyshockemployment=1 if mainocc_occupation_indiv2016!=0 & mainocc_occupation_indiv2016!=7 & mainocc_occupation_indiv2020==7
-replace dummyshockemployment=1 if mainocc_occupation_indiv2016==1 & mainocc_occupation_indiv2020==2
-replace dummyshockemployment=1 if mainocc_occupation_indiv2016==1 & mainocc_occupation_indiv2020==3
-replace dummyshockemployment=1 if mainocc_occupation_indiv2016==1 & mainocc_occupation_indiv2020==7
-replace dummyshockemployment=1 if mainocc_occupation_indiv2016==4 & mainocc_occupation_indiv2020==2
-replace dummyshockemployment=1 if mainocc_occupation_indiv2016==4 & mainocc_occupation_indiv2020==3
-replace dummyshockemployment=1 if mainocc_occupation_indiv2016==4 & mainocc_occupation_indiv2020==7
-replace dummyshockemployment=1 if mainocc_occupation_indiv2016==5 & mainocc_occupation_indiv2020==2
-replace dummyshockemployment=1 if mainocc_occupation_indiv2016==5 & mainocc_occupation_indiv2020==3
-replace dummyshockemployment=1 if mainocc_occupation_indiv2016==5 & mainocc_occupation_indiv2020==7
-replace dummyshockemployment=1 if mainocc_occupation_indiv2016==6 & mainocc_occupation_indiv2020==2
-replace dummyshockemployment=1 if mainocc_occupation_indiv2016==6 & mainocc_occupation_indiv2020==3
-label values dummyshockemployment shockemployment
-
-ta mainocc_occupation_indiv2016 mainocc_occupation_indiv2020 if dummyshockemployment==0
-ta mainocc_occupation_indiv2016 mainocc_occupation_indiv2020 if dummyshockemployment==1
-label var dummyshockemployment "Lower type of job (% of yes)"
+* Income
+gen temp1=annualincome_indiv2016*(100/158)
+gen temp2=annualincome_indiv2020*(100/184)
+gen dummyshockincome=.
+label define shockincome 0 "Same or lower income" 1 "Higher income (x1.5)"
+label values dummyshockincome shockincome
+gen temp=temp2/temp1
+ta temp
+replace dummyshockincome=0 if temp<2
+replace dummyshockincome=1 if temp>=2
+ta dummyshockincome
+drop temp temp1 temp2
+label var dummyshockincome "Higher income (x1.5) (% of yes)"
+ta dummyshockincome
 
 
-/*
-Self employed to casual
-*/
+* Income2
+gen temp1=annualincome_indiv2016*(100/158)
+gen temp2=annualincome_indiv2020*(100/184)
+gen dummyshockincome2=.
+label define shockincome2 0 "Same or lower income" 1 "Higher income (x2)"
+label values dummyshockincome2 shockincome2
+gen temp=temp2/temp1
+ta temp
+replace dummyshockincome2=0 if temp<2
+replace dummyshockincome2=1 if temp>=2
+ta dummyshockincome2
+drop temp temp1 temp2
+label var dummyshockincome2 "Higher income (x2) (% of yes)"
+ta dummyshockincome2
 
 
 
