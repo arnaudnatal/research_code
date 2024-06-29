@@ -189,12 +189,18 @@ label var ars32016 "Absolute acquiescence score"
 global items imcr_curious2016 imcr_interestedbyart2016 imcr_repetitivetasks2016 imcr_inventive2016 imcr_liketothink2016 imcr_newideas2016 imcr_activeimagination2016 imcr_organized2016 imcr_makeplans2016 imcr_workhard2016 imcr_appointmentontime2016 imcr_putoffduties2016 imcr_easilydistracted2016 imcr_completeduties2016 imcr_enjoypeople2016 imcr_sharefeelings2016 imcr_shywithpeople2016 imcr_enthusiastic2016 imcr_talktomanypeople2016 imcr_talkative2016 imcr_expressingthoughts2016 imcr_workwithother2016 imcr_understandotherfeeling2016 imcr_trustingofother2016 imcr_rudetoother2016 imcr_toleratefaults2016 imcr_forgiveother2016 imcr_helpfulwithothers2016 imcr_managestress2016 imcr_nervous2016 imcr_changemood2016 imcr_feeldepressed2016 imcr_easilyupset2016 imcr_worryalot2016 imcr_staycalm2016 imcr_curious2020 imcr_interestedbyart2020 imcr_repetitivetasks2020 imcr_inventive2020 imcr_liketothink2020 imcr_newideas2020 imcr_activeimagination2020 imcr_organized2020 imcr_makeplans2020 imcr_workhard2020 imcr_appointmentontime2020 imcr_putoffduties2020 imcr_easilydistracted2020 imcr_completeduties2020 imcr_enjoypeople2020 imcr_sharefeelings2020 imcr_shywithpeople2020 imcr_enthusiastic2020 imcr_talktomanypeople2020 imcr_talkative2020 imcr_expressingthoughts2020 imcr_workwithother2020 imcr_understandotherfeeling2020 imcr_trustingofother2020 imcr_rudetoother2020 imcr_toleratefaults2020 imcr_forgiveother2020 imcr_helpfulwithothers2020 imcr_managestress2020 imcr_nervous2020 imcr_changemood2020 imcr_feeldepressed2020 imcr_easilyupset2020 imcr_worryalot2020 imcr_staycalm2020
 
 merge 1:1 HHID_panel INDID_panel using "panel_stab_v2_pooled_wide", keepusing( ///
-fES2016 fES2020 diff_fES abs_diff_fES catdiff_fES dumdiff_fES var_fES ///
-fCO2016 fCO2020 diff_fCO abs_diff_fCO catdiff_fCO dumdiff_fCO var_fCO ///
-fOPEX2016 fOPEX2020 diff_fOPEX abs_diff_fOPEX catdiff_fOPEX dumdiff_fOPEX var_fOPEX ///
+fES2016 fES2020 ///
+fCO2016 fCO2020 ///
+fOPEX2016 fOPEX2020 ///
 num_tt2016 num_tt2020 ///
 lit_tt2016 lit_tt2020 ///
 raven_tt2016 raven_tt2020 ///
+diff_fES abs_diff_fES catdiff_fES dumdiff_fES ///
+diff_fCO abs_diff_fCO catdiff_fCO dumdiff_fCO ///
+diff_fOPEX abs_diff_fOPEX catdiff_fOPEX dumdiff_fOPEX ///
+var_fES abs_var_fES catvar_fES dumvar_fES ///
+var_fCO abs_var_fCO catvar_fCO dumvar_fCO ///
+var_fOPEX abs_var_fOPEX catvar_fOPEX dumvar_fOPEX ///
 $items)
 drop _merge
 keep if sex!=.
@@ -213,9 +219,9 @@ label var num_tt2020 "Numeracy score in 2020-21"
 label var lit_tt2020 "Literacy score in 2020-21"
 label var raven_tt2020 "Raven score in 2020-21"
 
-label var diff_fES "ES_2020 - ES_2016"
-label var diff_fCO "CO_2020 - CO_2016"
-label var diff_fOPEX "PL_2020 - PL_2016"
+label var diff_fES "Emotional stability"
+label var diff_fCO "Conscientiousness"
+label var diff_fOPEX "Plasticity"
 
 label var dumdiff_fES "Unstable on ES (% of yes)"
 label var dumdiff_fCO "Unstable on CO (% of yes)"
@@ -232,6 +238,19 @@ label var abs_diff_fOPEX "Intensity of PL instability"
 label var var_fES "Variation ES (%)"
 label var var_fCO "Variation CO (%)"
 label var var_fOPEX "Variation PL (%)"
+
+label var dumvar_fES "Unstable on ES (% of yes)"
+label var dumvar_fCO "Unstable on CO (% of yes)"
+label var dumvar_fOPEX "Unstable on PL (% of yes)"
+
+label var catvar_fES "ES temporal trajectory"
+label var catvar_fCO "CO temporal trajectory"
+label var catvar_fOPEX "PL temporal trajectory"
+
+label var abs_var_fES "Intensity of ES instability"
+label var abs_var_fCO "Intensity of CO instability"
+label var abs_var_fOPEX "Intensity of PL instability"
+
 
 
 ********** Items to rename
@@ -365,10 +384,8 @@ ta dummyshockincome2
 
 
 
-********** abs diff rec fes fop fco
-/*
-Je considère un changement de score compris entre -5% et +5% comme acceptable pour la stabilité.
-*/
+
+********** Abs diff rec
 foreach x in ES OPEX CO {
 gen abs_diff_rec_f`x'=abs_diff_f`x'
 replace abs_diff_rec_f`x'=0 if dumdiff_f`x'==0
