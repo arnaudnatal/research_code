@@ -54,7 +54,7 @@ drop _merge
 rename villagename2016 villagename
 
 * Debt
-merge m:1 HHID2016 using "raw\NEEMSIS1-loans_HH", keepusing(loanamount_HH)
+merge m:1 HHID2016 using "raw\NEEMSIS1-loans_HH", keepusing(loanamount_HH imp1_ds_tot_HH)
 drop _merge
 
 * Panel HH
@@ -200,7 +200,7 @@ rename village_new villagename
 drop _merge
 
 * Debt
-merge m:1 HHID2020 using "raw\NEEMSIS2-loans_HH", keepusing(loanamount_HH)
+merge m:1 HHID2020 using "raw\NEEMSIS2-loans_HH", keepusing(loanamount_HH imp1_ds_tot_HH)
 drop _merge
 
 * Panel HH

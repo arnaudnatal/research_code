@@ -29,7 +29,7 @@ keep if panel2016==1
 
 ********** To keep
 keep HHID_panel INDID_panel ///
-egoid* name* sex* age* jatiscorr* caste* edulevel* villageid* panel* dummydemonetisation* relationshiptohead* maritalstatus* mainocc_occupation_indiv* annualincome_indiv* annualincome_HH* assets_total1000* assets_totalnoland1000* HHsize* typeoffamily* village* aspirationminimumwage* dummyaspirationmorehours* aspirationminimumwage2* dummyexposure* secondlockdownexposure* dummysell* submissiondate* ars* ars2* ars3* username* edulevel_backup* num_tt* lit_tt* raven_tt* loanamount_HH* assets_sizeownland* ownland* dummymarriage* dummy_marriedlist* expenses_heal* shareexpenses_heal* mainocc_profession_indiv* mainocc_sector_indiv* mainocc_occupationname_indiv*
+egoid* name* sex* age* jatiscorr* caste* edulevel* villageid* panel* dummydemonetisation* relationshiptohead* maritalstatus* mainocc_occupation_indiv* annualincome_indiv* annualincome_HH* assets_total1000* assets_totalnoland1000* HHsize* typeoffamily* village* aspirationminimumwage* dummyaspirationmorehours* aspirationminimumwage2* dummyexposure* secondlockdownexposure* dummysell* submissiondate* ars* ars2* ars3* username* edulevel_backup* num_tt* lit_tt* raven_tt* loanamount_HH* imp1_ds_tot_HH* assets_sizeownland* ownland* dummymarriage* dummy_marriedlist* expenses_heal* shareexpenses_heal* mainocc_profession_indiv* mainocc_sector_indiv* mainocc_occupationname_indiv*
 
 
 
@@ -285,8 +285,8 @@ ta dummyshockland
 label var dummyshockland "Sale/loss of land (% of yes)"
 
 * Debt
-gen temp1=loanamount_HH2016*(100/158)
-gen temp2=loanamount_HH2020*(100/184)
+gen temp1=imp1_ds_tot_HH2016/annualincome_HH2016
+gen temp2=imp1_ds_tot_HH2020/annualincome_HH2020
 gen dummyshockdebt=.
 label define shockdebt 0 "Same or lower debt" 1 "Higher debt (x1.5)"
 label values dummyshockdebt shockdebt
@@ -299,11 +299,9 @@ drop temp temp1 temp2
 label var dummyshockdebt "Higher debt (x1.5) (% of yes)"
 ta dummyshockdebt
 
-
-
 * Debt2
-gen temp1=loanamount_HH2016*(100/158)
-gen temp2=loanamount_HH2020*(100/184)
+gen temp1=imp1_ds_tot_HH2016/annualincome_HH2016
+gen temp2=imp1_ds_tot_HH2020/annualincome_HH2020
 gen dummyshockdebt2=.
 label define shockdebt2 0 "Same or lower debt" 1 "Higher debt (x2)"
 label values dummyshockdebt2 shockdebt2
@@ -316,12 +314,9 @@ drop temp temp1 temp2
 label var dummyshockdebt2 "Higher debt (x2) (% of yes)"
 ta dummyshockdebt2
 
-
-
-
 * Health
-gen temp1=expenses_heal2016*(100/158)
-gen temp2=expenses_heal2020*(100/184)
+gen temp1=expenses_heal2016/annualincome_HH2016
+gen temp2=expenses_heal2020/annualincome_HH2020
 gen dummyshockhealth=.
 label define shockhealth 0 "Same or lower health spending" 1 "Higher health spending (x1.5)"
 label values dummyshockhealth shockhealth
@@ -336,8 +331,8 @@ ta dummyshockhealth
 
 
 * Health2
-gen temp1=expenses_heal2016*(100/158)
-gen temp2=expenses_heal2020*(100/184)
+gen temp1=expenses_heal2016/annualincome_HH2016
+gen temp2=expenses_heal2020/annualincome_HH2020
 gen dummyshockhealth2=.
 label define shockhealth2 0 "Same or lower health spending" 1 "Higher health spending (x2)"
 label values dummyshockhealth2 shockhealth2
