@@ -268,6 +268,7 @@ grc1leg gph1c gph2c gph3c gph4c, col(4) name(ptc, replace)
 *
 graph combine pts ptc, col(1) name(pt, replace)
 graph export "pt.pdf", as(pdf) replace
+graph export "pt.png", as(png) replace
 
 
 ***** Cognitive skills
@@ -276,6 +277,7 @@ grc1leg gph5c gph6c gph7c, col(4) name(csc, replace)
 *
 graph combine css csc, col(1) name(cs, replace)
 graph export "cs.pdf", as(pdf) replace
+graph export "cs.png", as(png) replace
 
 *************************************
 * END

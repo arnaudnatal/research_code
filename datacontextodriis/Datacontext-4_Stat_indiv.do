@@ -286,9 +286,18 @@ restore
 
 ********** Same graph
 grc1leg co op ex ag es grit locus num lit raven, col(5) name(ptcscomb, replace)
+graph save "ptcs.gph", replace
 graph export "ptcs.pdf", replace as(pdf)
 graph export "ptcs.png", replace as(png)
 
+/*
+graph use ptcs
+graph describe
+
+serset dir
+serset set 0 
+serset use , clear
+*/
 ****************************************
 * END
 
@@ -445,6 +454,7 @@ set graph on
 *** Combine
 grc1leg p_total p_male p_female p_dalits p_middle p_upper, col(3) note("Individuals aged 15 and over.", size(vsmall)) name(p_comb, replace)
 graph export "Emp_share.pdf", as(pdf) replace
+graph export "Emp_share.png", as(png) replace
 
 
 ****************************************
@@ -648,6 +658,8 @@ set graph on
 *** Combine
 grc1leg occ occ_c1 occ_c2 occ_dal occ_mid occ_up, col(3) name(occ_comb, replace)
 graph export "Occ_total.pdf", as(pdf) replace
+graph export "Occ_total.png", as(png) replace
+
 
 ****************************************
 * END
@@ -846,6 +858,7 @@ set graph on
 *** Combine
 grc1leg occ occ_male occ_female occ_dalits occ_middle occ_upper, col(3) name(occ_comb, replace)
 graph export "Occ_inc_total.pdf", as(pdf) replace
+graph export "Occ_inc_total.png", as(png) replace
 
 
 ****************************************
@@ -948,6 +961,8 @@ set graph on
 
 graph combine exe pb work, col(3) name(comb, replace)
 graph export "Workingcond.pdf", as(pdf) replace
+graph export "Workingcond.png", as(png) replace
+
 
 ****************************************
 * END

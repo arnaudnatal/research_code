@@ -354,8 +354,8 @@ label define shockincome 0 "Same or lower income" 1 "Higher income (x1.5)"
 label values dummyshockincome shockincome
 gen temp=temp2/temp1
 ta temp
-replace dummyshockincome=0 if temp<2
-replace dummyshockincome=1 if temp>=2
+replace dummyshockincome=0 if temp<1.5
+replace dummyshockincome=1 if temp>=1.5
 ta dummyshockincome
 drop temp temp1 temp2
 label var dummyshockincome "Higher income (x1.5) (% of yes)"
@@ -378,6 +378,20 @@ label var dummyshockincome2 "Higher income (x2) (% of yes)"
 ta dummyshockincome2
 
 
+* Assets
+gen temp1=assets_total10002016*(100/158)
+gen temp2=assets_total10002020*(100/184)
+gen dummyshockassets=.
+label define shockassets 0 "Assets: Same or higher" 1 "Assets: Lower"
+label values dummyshockassets shockassets
+gen temp=temp2/temp1
+ta temp
+replace dummyshockassets=0 if temp>=1
+replace dummyshockassets=1 if temp<1
+ta dummyshockassets
+drop temp temp1 temp2
+label var dummyshockassets "Lower assets (% of yes)"
+ta dummyshockassets
 
 
 ********** Abs diff rec

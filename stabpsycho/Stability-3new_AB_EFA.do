@@ -398,13 +398,13 @@ drop if fES2016==.
 drop if fES2020==.
 
 ta catdiff_fES
-ta catvar_fES
+*ta catvar_fES
 
 ta catdiff_fOPEX
-ta catvar_fOPEX
+*ta catvar_fOPEX
 
 ta catdiff_fCO
-ta catvar_fCO
+*ta catvar_fCO
 restore
 /*
 Le plus pertinent, selon moi, c'est de regarder la simple différence sur les moyennes plutôt que la variation et le score.

@@ -25,42 +25,44 @@ graph drop _all
 
 
 ***** Macro
-global indiv c.age2016 i.sex ib(0).educode ib(3).moc_indiv i.marital
-global cogni fES2016 fOPEX2016 fCO2016 num_tt2016 lit_tt2016 raven_tt2016
-global house i.caste ib(2).assets2016_q ib(2).annualincome_HH2016_q c.HHsize2016 i.typeoffamily2016
-global contr i.username_neemsis1 i.username_neemsis2 i.diff_ars3_cat5 i.villageid2016
-global shock dummysell2020 dummydemonetisation2016 dummyshockdebt dummyshockhealth dummyshockincome dummyshockland
+global indiv ib(1).age_cat female ib(0).educode ib(3).moc_indiv marital
+global house i.caste ib(2).assets2016_q ib(2).annualincome_HH2016_q c.HHsize2016
+global contr i.username_neemsis1 i.username_neemsis2 i.villageid2016
+global shock dummysell2020 dummydemonetisation2016 dummyshockdebt dummyshockassets
+*dummyshockincome dummyshockland dummyshockhealth
+*global cogni fES2016 fOPEX2016 fCO2016 num_tt2016 lit_tt2016 raven_tt2016
+
 
 ***** Recode
 /*
 - High school or more
-- Middle and upper together
+- Age
 */
 fre educode
 recode educode (3=2)
-fre caste
-recode caste (3=2)
+fre age_cat
+recode age_cat (0=1)
 
 
 
 ***** ES
-probit dumdiff_fES $indiv $cogni $house $shock $contr, cluster(cluster) baselevel
+probit dumdiff_fES $indiv $house $shock $contr, cluster(cluster) baselevel
 est store reg1
-margins, dydx($indiv $cogni $house $shock) atmeans post
+margins, dydx($indiv $house $shock) atmeans post
 est store mar1
 
 
 
 ***** OPEX
-probit dumdiff_fOPEX $indiv $cogni $house $shock $contr, cluster(cluster) baselevel
+probit dumdiff_fOPEX $indiv $house $shock $contr, cluster(cluster) baselevel
 est store reg2
-margins, dydx($indiv $cogni $house $shock) atmeans post
+margins, dydx($indiv $house $shock) atmeans post
 est store mar2
 
 ***** CO
-probit dumdiff_fCO $indiv $cogni $house $shock $contr, cluster(cluster) baselevel
+probit dumdiff_fCO $indiv $house $shock $contr, cluster(cluster) baselevel
 est store reg3
-margins, dydx($indiv $cogni $house $shock) atmeans post
+margins, dydx($indiv $house $shock) atmeans post
 est store mar3
 
 
@@ -104,44 +106,48 @@ est clear
 graph drop _all
 
 
+
 ***** Macro
-global indiv c.age2016 i.sex ib(0).educode ib(3).moc_indiv i.marital
-global cogni fES2016 fOPEX2016 fCO2016 num_tt2016 lit_tt2016 raven_tt2016
-global house i.caste ib(2).assets2016_q ib(2).annualincome_HH2016_q c.HHsize2016 i.typeoffamily2016
-global contr i.username_neemsis1 i.username_neemsis2 i.diff_ars3_cat5 i.villageid2016
-global shock dummysell2020 dummydemonetisation2016 dummyshockdebt dummyshockhealth dummyshockincome dummyshockland
+global indiv ib(1).age_cat female ib(0).educode ib(3).moc_indiv marital
+global house i.caste ib(2).assets2016_q ib(2).annualincome_HH2016_q c.HHsize2016
+global contr i.username_neemsis1 i.username_neemsis2 i.villageid2016
+global shock dummysell2020 dummydemonetisation2016 dummyshockdebt dummyshockassets
+*dummyshockincome dummyshockland dummyshockhealth
+*global cogni fES2016 fOPEX2016 fCO2016 num_tt2016 lit_tt2016 raven_tt2016
 
 
 ***** Recode
 /*
 - High school or more
-- Middle and upper together
+- Age
 */
 fre educode
 recode educode (3=2)
-*fre caste
-*recode caste (3=2)
+fre age_cat
+recode age_cat (0=1)
+
+
 
 
 ***** ES
 cls
-mprobit catdiff_fES $indiv $cogni $house $shock $contr, cluster(cluster) baselevel baseoutcome(2)
+mprobit catdiff_fES $indiv $house $shock $contr, cluster(cluster) baselevel baseoutcome(2)
 est store reg1
-*margins, dydx($indiv $cogni $house $shock) atmeans post
+*margins, dydx($indiv $house $shock) atmeans post
 *est store mar1
 
 
 ***** OPEX
-mprobit catdiff_fOPEX $indiv $cogni $house $shock $contr, cluster(cluster) baselevel baseoutcome(2)
+mprobit catdiff_fOPEX $indiv $house $shock $contr, cluster(cluster) baselevel baseoutcome(2)
 est store reg2
-*margins, dydx($indiv $cogni $house $shock) atmeans post
+*margins, dydx($indiv $house $shock) atmeans post
 *est store mar2
 
 
 ***** CO
-mprobit catdiff_fCO $indiv $cogni $house $shock $contr, cluster(cluster) baselevel baseoutcome(2)
+mprobit catdiff_fCO $indiv $house $shock $contr, cluster(cluster) baselevel baseoutcome(2)
 est store reg3
-*margins, dydx($indiv $cogni $house $shock) atmeans post
+*margins, dydx($indiv $house $shock) atmeans post
 *est store mar3
 
 
@@ -192,48 +198,48 @@ graph drop _all
 
 
 ***** Macro
-global indiv c.age2016 i.sex ib(0).educode ib(3).moc_indiv i.marital
-global cogni fES2016 fOPEX2016 fCO2016 num_tt2016 lit_tt2016 raven_tt2016
-global house i.caste ib(2).assets2016_q ib(2).annualincome_HH2016_q c.HHsize2016 i.typeoffamily2016
-global contr i.username_neemsis1 i.username_neemsis2 i.diff_ars3_cat5 i.villageid2016
-global shock dummysell2020 dummydemonetisation2016 dummyshockdebt dummyshockhealth dummyshockincome dummyshockland
+global indiv ib(1).age_cat female ib(0).educode ib(3).moc_indiv marital
+global house i.caste ib(2).assets2016_q ib(2).annualincome_HH2016_q c.HHsize2016
+global contr i.username_neemsis1 i.username_neemsis2 i.villageid2016
+global shock dummysell2020 dummydemonetisation2016 dummyshockdebt dummyshockassets
+*dummyshockincome dummyshockland dummyshockhealth
+*global cogni fES2016 fOPEX2016 fCO2016 num_tt2016 lit_tt2016 raven_tt2016
 
 
 ***** Recode
 /*
 - High school or more
-- Middle and upper together
+- Age
 */
 fre educode
 recode educode (3=2)
-fre caste
-recode caste (3=2)
-
+fre age_cat
+recode age_cat (0=1)
 
 
 ***** ES
 * Unstable
-glm abs_diff_fES $indiv $cogni $house $shock $contr ///
+glm abs_diff_fES $indiv $house $shock $contr ///
 if catdiff_fES==1 | catdiff_fES==3 ///
 , link(log) family(igaussian) cluster(cluster) allbase
 est store reg1ES
-margins, dydx($indiv $cogni $house $shock) atmeans post
+margins, dydx($indiv $house $shock) atmeans post
 est store mar1ES
 
 * Increasing
-glm abs_diff_fES $indiv $cogni $house $shock $contr ///
+glm abs_diff_fES $indiv $house $shock $contr ///
 if catdiff_fES==3 ///
 , link(log) family(igaussian) cluster(cluster) allbase
 est store reg2ES
-margins, dydx($indiv $cogni $house $shock) atmeans post
+margins, dydx($indiv $house $shock) atmeans post
 est store mar2ES
 
 * Decreasing
-glm abs_diff_fES $indiv $cogni $house $shock $contr ///
+glm abs_diff_fES $indiv $house $shock $contr ///
 if catdiff_fES==1 ///
 , link(log) family(igaussian) cluster(cluster) allbase
 est store reg3ES
-margins, dydx($indiv $cogni $house $shock) atmeans post
+margins, dydx($indiv $house $shock) atmeans post
 est store mar3ES
 
 
@@ -242,27 +248,27 @@ est store mar3ES
 
 ***** OPEX
 * Unstable
-glm abs_diff_fOPEX $indiv $cogni $house $shock $contr ///
+glm abs_diff_fOPEX $indiv $house $shock $contr ///
 if catdiff_fOPEX==1 | catdiff_fOPEX==3 ///
 , link(log) family(igaussian) cluster(cluster) allbase
 est store reg1OPEX
-margins, dydx($indiv $cogni $house $shock) atmeans post
+margins, dydx($indiv $house $shock) atmeans post
 est store mar1OPEX
 
 * Increasing
-glm abs_diff_fOPEX $indiv $cogni $house $shock $contr ///
+glm abs_diff_fOPEX $indiv $house $shock $contr ///
 if catdiff_fOPEX==3 ///
 , link(log) family(igaussian) cluster(cluster) allbase
 est store reg2OPEX
-margins, dydx($indiv $cogni $house $shock) atmeans post
+margins, dydx($indiv $house $shock) atmeans post
 est store mar2OPEX
 
 * Decreasing
-glm abs_diff_fOPEX $indiv $cogni $house $shock $contr ///
+glm abs_diff_fOPEX $indiv $house $shock $contr ///
 if catdiff_fOPEX==1 ///
 , link(log) family(igaussian) cluster(cluster) allbase
 est store reg3OPEX
-margins, dydx($indiv $cogni $house $shock) atmeans post
+margins, dydx($indiv $house $shock) atmeans post
 est store mar3OPEX
 
 
@@ -270,27 +276,27 @@ est store mar3OPEX
 
 ***** CO
 * Unstable
-glm abs_diff_fCO $indiv $cogni $house $shock $contr ///
+glm abs_diff_fCO $indiv $house $shock $contr ///
 if catdiff_fCO==1 | catdiff_fCO==3 ///
 , link(log) family(igaussian) cluster(cluster) allbase
 est store reg1CO
-margins, dydx($indiv $cogni $house $shock) atmeans post
+margins, dydx($indiv $house $shock) atmeans post
 est store mar1CO
 
 * Increasing
-glm abs_diff_fCO $indiv $cogni $house $shock $contr ///
+glm abs_diff_fCO $indiv $house $shock $contr ///
 if catdiff_fCO==3 ///
 , link(log) family(igaussian) cluster(cluster) allbase
 est store reg2CO
-margins, dydx($indiv $cogni $house $shock) atmeans post
+margins, dydx($indiv $house $shock) atmeans post
 est store mar2CO
 
 * Decreasing
-glm abs_diff_fCO $indiv $cogni $house $shock $contr ///
+glm abs_diff_fCO $indiv $house $shock $contr ///
 if catdiff_fCO==1 ///
 , link(log) family(igaussian) cluster(cluster) allbase
 est store reg3CO
-margins, dydx($indiv $cogni $house $shock) atmeans post
+margins, dydx($indiv $house $shock) atmeans post
 est store mar3CO
 
 

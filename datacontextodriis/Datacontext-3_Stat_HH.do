@@ -296,11 +296,13 @@ set graph on
 *** Combine
 grc1leg total2 dalits2 mid2 upp2, col(2) name(assets_comb, replace)
 graph export "Lorenz_assets.pdf", replace as(pdf)
+graph export "Lorenz_assets.png", replace as(png)
 
 
 *** Combine assets and income
 grc1leg total total2, name(comb_incass, replace)
 graph export "Lorenz_incass.pdf", replace as(pdf)
+graph export "Lorenz_incass.png", replace as(png)
 
 ****************************************
 * END
@@ -434,6 +436,7 @@ legend(order(1 "Share of land owner" 2 "Average land size (ha)") pos(6) col(2)) 
 title("Total") ///
 aspectratio() name(agri, replace)
 graph export "Agri_total.pdf", as(pdf) replace
+graph export "Agri_total.png", as(png) replace
 restore
 
 
@@ -495,6 +498,7 @@ restore
 *** Combine
 grc1leg agri agri_c1 agri_c2 agri_c3, col(2) name(agri_comb, replace)
 graph export "Agri_total.pdf", as(pdf) replace
+graph export "Agri_total.png", as(png) replace
 
 
 ****************************************
@@ -546,6 +550,7 @@ collapse (mean) shareincomeagri_HH shareincomenonagri_HH, by(caste year)
 
 graph bar shareincomeagri_HH shareincomenonagri_HH, over(year, label(angle(45))) over(caste) stack ytitle("Share") legend(order(1 "Agricultural income" 2 "Non-agricultural income") pos(6) col(2))
 graph export "Shareincome.pdf", replace as(pdf)
+graph export "Shareincome.png", replace as(png)
 
 
 ****************************************
@@ -608,6 +613,7 @@ legend(order(1 "Share of indebted households" 2 "Average loanamount (INR 10k)") 
 title("Total") ///
 aspectratio() name(debt, replace)
 graph export "Debt_total.pdf", as(pdf) replace
+graph export "Debt_total.png", as(png) replace
 restore
 
 
@@ -671,6 +677,8 @@ restore
 *** Combine
 grc1leg debt debt_c1 debt_c2 debt_c3, col(2) name(debt_comb, replace)
 graph export "Debt_total.pdf", as(pdf) replace
+graph export "Debt_total.png", as(png) replace
+
 
 ****************************************
 * END

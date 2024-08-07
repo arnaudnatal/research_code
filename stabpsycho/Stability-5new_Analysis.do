@@ -15,6 +15,99 @@ do "C:/Users/Arnaud/Documents/GitHub/folderanalysis/$link.do"
 
 
 
+****************************************
+* Stability
+****************************************
+use "panel_stab_pooled_wide_v3", clear
+est clear
+graph drop _all
+
+***** Mean level
+sum fES2016 fES2020
+ttest fES2016==fES2020
+label var fES2016 "2016-17" 
+label var fES2020 "2020-21" 
+violinplot fES2016 fES2020, vert mean title("Emotional stability score") ylabel(0(1)6) ymtick(0(.5)6) yscale(range(-.5 .)) nowhiskers name(es, replace)
+
+sum fOPEX2016 fOPEX2020
+ttest fOPEX2016==fOPEX2020
+label var fOPEX2016 "2016-17" 
+label var fOPEX2020 "2020-21" 
+violinplot fOPEX2016 fOPEX2020, vert mean title("Plasticity score") ylabel(0(1)6) ymtick(0(.5)6) yscale(range(-.5 .)) nowhiskers name(opex, replace)
+
+sum fCO2016 fCO2020
+ttest fCO2016==fCO2020
+label var fCO2016 "2016-17" 
+label var fCO2020 "2020-21" 
+violinplot fCO2016 fCO2020, vert mean title("Conscientiousness score") ylabel(0(1)6) ymtick(0(.5)6) yscale(range(-.5 .)) nowhiskers name(co, replace)
+
+* Combine
+graph combine es opex co, name(comb, replace) col(3) note("{it:Note:} The grey box is the interquartile range, the white circle is the median, the small horizontal line is the mean.", size(vsmall))
+graph save "new/violins.gph", replace
+graph export "new/violins.pdf", as(pdf) replace
+graph export "new/violins.png", as(png) replace
+graph export "new/violins.eps", as(eps) replace
+
+
+
+
+***** Rank order stability using Spearman's rank correlation coefficients
+corr fES2016 fES2020
+spearman fES2016 fES2020, stats(rho p)
+label var fES2016 "Score in 2016-17" 
+label var fES2020 "Score 2020-21" 
+twoway (scatter fES2020 fES2016, mcolor(black%30)) ///
+, ///
+xlabel(0(1)6) xmtick(0(.5)6) ///
+ylabel(0(1)6) ymtick(0(.5)6) ///
+title("Emotional stability") aspectratio(1.5) ///
+note("Pearson's {it:p} = 0.0293" "Spearman's {it:p} = 0.0487", size(small)) ///
+name(es, replace)
+
+corr fOPEX2016 fOPEX2020
+spearman fOPEX2016 fOPEX2020, stats(rho p)
+label var fOPEX2016 "Score in 2016-17" 
+label var fOPEX2020 "Score 2020-21" 
+twoway (scatter fOPEX2020 fOPEX2016, mcolor(black%30)) ///
+, ///
+xlabel(0(1)6) xmtick(0(.5)6) ///
+ylabel(0(1)6) ymtick(0(.5)6) ///
+title("Plasticity") aspectratio(1.5) ///
+note("Pearson's {it:p} = -0.0135" "Spearman's {it:p} = 0.0013", size(small)) ///
+name(opex, replace)
+
+corr fCO2016 fCO2020
+spearman fCO2016 fCO2020, stats(rho p)
+label var fCO2016 "Score in 2016-17" 
+label var fCO2020 "Score 2020-21" 
+twoway (scatter fCO2020 fCO2016, mcolor(black%30)) ///
+, ///
+xlabel(0(1)6) xmtick(0(.5)6) ///
+ylabel(0(1)6) ymtick(0(.5)6) ///
+title("Conscientiousness") aspectratio(1.5) ///
+note("Pearson's {it:p} = -0.0831" "Spearman's {it:p} = -0.0954", size(small)) ///
+name(co, replace)
+
+* Combine
+graph combine es opex co, name(comb2, replace) col(3)
+graph save "new/scatters.gph", replace
+graph export "new/scatters.pdf", as(pdf) replace
+graph export "new/scatters.png", as(png) replace
+graph export "new/scatters.eps", as(eps) replace
+
+
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
 
 ****************************************
 * Graphs score
@@ -32,8 +125,6 @@ tab1 dumdiff_fES dumdiff_fOPEX dumdiff_fCO
 
 ***** Violin
 violinplot diff_fES diff_fOPEX diff_fCO, xline(-.6 .6) b(s(p25 p75)) left xtitle("Difference in score between 2016-17 and 2020-21") name(violins, replace)
-graph save "new/violins.gph", replace
-graph export "new/violins.pdf", as(pdf) replace
 
 
 
@@ -51,7 +142,8 @@ ta trait cat, row nofreq
 tabplot cat trait, note("") title("") subtitle("Percent given trait", size(small)) xtitle("") ytitle("") xlabel(,angle()) percent(trait) showval(mlabsize(vsmall)) frame(100) name(cat, replace)
 graph save "new/traitstab.gph", replace
 graph export "new/traitstab.pdf", as(pdf) replace
-
+graph export "new/traitstab.png", as(png) replace
+graph export "new/traitstab.eps", as(eps) replace
 
 ****************************************
 * END
@@ -65,99 +157,22 @@ graph export "new/traitstab.pdf", as(pdf) replace
 
 
 
-
-
-
-
-
-
 ****************************************
-* Desc of path
+* Intensity of instability
 ****************************************
 use "panel_stab_pooled_wide_v3", clear
 est clear
 graph drop _all
 
 
+***** Stat
+tabstat abs_diff_fES if catdiff_fES!=2, stat(n mean sd p10 q p90) by(catdiff_fES)
+tabstat abs_diff_fOPEX if catdiff_fOPEX!=2, stat(n mean sd p10 q p90) by(catdiff_fOPEX)
+tabstat abs_diff_fCO if catdiff_fCO!=2, stat(n mean sd p10 q p90) by(catdiff_fCO)
 
-***** ES
-cls
-*
-ta catdiff_fES
-*
-ta sex catdiff_fES, col nofreq chi2
-ta age_cat catdiff_fES, col nofreq chi2
-ta educode catdiff_fES, col nofreq chi2
-ta moc_indiv catdiff_fES, col nofreq chi2
-ta marital catdiff_fES, col nofreq chi2
-*
-ta caste catdiff_fES, col nofreq chi2
-ta assets2016_q catdiff_fES, col nofreq chi2
-ta annualincome_HH2016_q catdiff_fES, col nofreq chi2
-ta typeoffamily2016 catdiff_fES, col nofreq chi2
-*
-ta dummysell2020 catdiff_fES, col nofreq chi2
-ta dummydemonetisation2016 catdiff_fES, col nofreq chi2
-ta dummyshockdebt2 catdiff_fES, col nofreq chi2
-ta dummyshockhealth2 catdiff_fES, col nofreq chi2
-ta dummyshockincome2 catdiff_fES, col nofreq chi2
-ta dummyshockland catdiff_fES, col nofreq chi2
-
-
-
-***** OPEX
-cls
-*
-ta catdiff_fOPEX
-*
-ta sex catdiff_fOPEX, col nofreq chi2
-ta age_cat catdiff_fOPEX, col nofreq chi2
-ta educode catdiff_fOPEX, col nofreq chi2
-ta moc_indiv catdiff_fOPEX, col nofreq chi2
-ta marital catdiff_fOPEX, col nofreq chi2
-*
-ta caste catdiff_fOPEX, col nofreq chi2
-ta assets2016_q catdiff_fOPEX, col nofreq chi2
-ta annualincome_HH2016_q catdiff_fOPEX, col nofreq chi2
-ta typeoffamily2016 catdiff_fOPEX, col nofreq chi2
-*
-ta dummysell2020 catdiff_fOPEX, col nofreq chi2
-ta dummydemonetisation2016 catdiff_fOPEX, col nofreq chi2
-ta dummyshockdebt2 catdiff_fOPEX, col nofreq chi2
-ta dummyshockhealth2 catdiff_fOPEX, col nofreq chi2
-ta dummyshockincome2 catdiff_fOPEX, col nofreq chi2
-ta dummyshockland catdiff_fOPEX, col nofreq chi2
-
-
-
-***** CO
-cls
-*
-ta catdiff_fCO
-*
-ta sex catdiff_fCO, col nofreq chi2
-ta age_cat catdiff_fCO, col nofreq chi2
-ta educode catdiff_fCO, col nofreq chi2
-ta moc_indiv catdiff_fCO, col nofreq chi2
-ta marital catdiff_fCO, col nofreq chi2
-*
-ta caste catdiff_fCO, col nofreq chi2
-ta assets2016_q catdiff_fCO, col nofreq chi2
-ta annualincome_HH2016_q catdiff_fCO, col nofreq chi2
-ta typeoffamily2016 catdiff_fCO, col nofreq chi2
-*
-ta dummysell2020 catdiff_fCO, col nofreq chi2
-ta dummydemonetisation2016 catdiff_fCO, col nofreq chi2
-ta dummyshockdebt2 catdiff_fCO, col nofreq chi2
-ta dummyshockhealth2 catdiff_fCO, col nofreq chi2
-ta dummyshockincome2 catdiff_fCO, col nofreq chi2
-ta dummyshockland catdiff_fCO, col nofreq chi2
 
 ****************************************
 * END
-
-
-
 
 
 
@@ -236,6 +251,8 @@ set graph on
 graph combine g1 g2 g3, col(3) name(comb1, replace)
 graph export "new/evo_items.pdf", as(pdf) replace 
 graph save "new/evo_items.gph", replace
+graph export "new/evo_items.png", as(png) replace 
+graph export "new/evo_items.eps", as(eps) replace 
 
 
 ****************************************
