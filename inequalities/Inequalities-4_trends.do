@@ -22,7 +22,7 @@ do"C:\Users\Arnaud\Documents\GitHub\folderanalysis\inequalities.do"
 ****************************************
 * Trends with R
 ****************************************
-use"panel_v5", clear
+use"panel_v4", clear
 
 
 ********** Prepa database

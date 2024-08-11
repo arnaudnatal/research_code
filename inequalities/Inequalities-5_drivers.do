@@ -25,7 +25,7 @@ do"C:\Users\Arnaud\Documents\GitHub\folderanalysis\inequalities.do"
 ****************************************
 * Stat desc
 ****************************************
-use"panel_v6", clear
+use"panel_v4", clear
 
 xtset panelvar time
 
@@ -94,8 +94,6 @@ cls
 replace assets_total=assets_total/1000
 replace assets_totalnoland=assets_totalnoland/1000
 replace annualincome_HH=annualincome_HH/1000
-replace loanamount_HH=loanamount_HH/1000
-replace shareform=shareform/100
 
 tabstat HHsize HH_count_child head_age, stat(mean) long by(year)
 tabstat HHsize HH_count_child head_age if caste==1, stat(mean) long by(year)
@@ -103,21 +101,21 @@ tabstat HHsize HH_count_child head_age if caste==2, stat(mean) long by(year)
 tabstat HHsize HH_count_child head_age if caste==3, stat(mean) long by(year)
 
 
-tabstat assets_total assets_totalnoland annualincome_HH shareform loanamount_HH if year==2010, stat(mean cv p50) long
-tabstat assets_total assets_totalnoland annualincome_HH shareform loanamount_HH if year==2016, stat(mean cv p50) long
-tabstat assets_total assets_totalnoland annualincome_HH shareform loanamount_HH if year==2020, stat(mean cv p50) long
+tabstat assets_total assets_totalnoland annualincome_HH if year==2010, stat(mean cv p50) long
+tabstat assets_total assets_totalnoland annualincome_HH if year==2016, stat(mean cv p50) long
+tabstat assets_total assets_totalnoland annualincome_HH if year==2020, stat(mean cv p50) long
 
-tabstat assets_total assets_totalnoland annualincome_HH shareform loanamount_HH if year==2010 & caste==1, stat(mean cv p50) long
-tabstat assets_total assets_totalnoland annualincome_HH shareform loanamount_HH if year==2016 & caste==1, stat(mean cv p50) long
-tabstat assets_total assets_totalnoland annualincome_HH shareform loanamount_HH if year==2020 & caste==1, stat(mean cv p50) long
+tabstat assets_total assets_totalnoland annualincome_HH if year==2010 & caste==1, stat(mean cv p50) long
+tabstat assets_total assets_totalnoland annualincome_HH if year==2016 & caste==1, stat(mean cv p50) long
+tabstat assets_total assets_totalnoland annualincome_HH if year==2020 & caste==1, stat(mean cv p50) long
 
-tabstat assets_total assets_totalnoland annualincome_HH shareform loanamount_HH if year==2010 & caste==2, stat(mean cv p50) long
-tabstat assets_total assets_totalnoland annualincome_HH shareform loanamount_HH if year==2016 & caste==2, stat(mean cv p50) long
-tabstat assets_total assets_totalnoland annualincome_HH shareform loanamount_HH if year==2020 & caste==2, stat(mean cv p50) long
+tabstat assets_total assets_totalnoland annualincome_HH if year==2010 & caste==2, stat(mean cv p50) long
+tabstat assets_total assets_totalnoland annualincome_HH if year==2016 & caste==2, stat(mean cv p50) long
+tabstat assets_total assets_totalnoland annualincome_HH if year==2020 & caste==2, stat(mean cv p50) long
 
-tabstat assets_total assets_totalnoland annualincome_HH shareform loanamount_HH if year==2010 & caste==3, stat(mean cv p50) long
-tabstat assets_total assets_totalnoland annualincome_HH shareform loanamount_HH if year==2016 & caste==3, stat(mean cv p50) long
-tabstat assets_total assets_totalnoland annualincome_HH shareform loanamount_HH if year==2020 & caste==3, stat(mean cv p50) long
+tabstat assets_total assets_totalnoland annualincome_HH if year==2010 & caste==3, stat(mean cv p50) long
+tabstat assets_total assets_totalnoland annualincome_HH if year==2016 & caste==3, stat(mean cv p50) long
+tabstat assets_total assets_totalnoland annualincome_HH if year==2020 & caste==3, stat(mean cv p50) long
 
 
 ****************************************
@@ -137,7 +135,7 @@ tabstat assets_total assets_totalnoland annualincome_HH shareform loanamount_HH 
 ****************************************
 * Drivers
 ****************************************
-use"panel_v6", clear
+use"panel_v4", clear
 
 
 *** Gen var
@@ -161,7 +159,7 @@ replace `x'=1 if `x'==. | `x'<1
 
 
 * Log
-foreach x in assets_total assets_totalnoland assets_housevalue assets_livestock assets_goods assets_ownland assets_gold annualincome_HH loanamount_HH assets_totalnoprop {
+foreach x in assets_total assets_totalnoland assets_housevalue assets_livestock assets_goods assets_ownland assets_gold annualincome_HH assets_totalnoprop {
 replace `x'=1 if `x'<1 | `x'==.
 gen log_`x'=log(`x')
 }
@@ -177,8 +175,6 @@ global head head_female head_age head_occ1 head_occ2 head_occ4 head_occ5 head_oc
 
 global shock dummymarriage dummydemonetisation lock_1 lock_2 lock_3 dummysell dummyexposure
 
-global debt shareform loanamount_HH_std log_loanamount_HH loanamount_HH
-
 global invar caste_2 caste_3 dalits village_2 village_3 village_4 village_5 village_6 village_7 village_8 village_9 village_10
 
 
@@ -188,18 +184,17 @@ mdesc $livelihood
 mdesc $head
 mdesc $shock
 mdesc $invar
-mdesc $debt
 
 
 
 ********* To keep
-keep HHID_panel panelvar year time fvi $family $livelihood $head $shock $debt $invar
+keep HHID_panel panelvar year time suminc_men suminc_women sharemen sharewomen $family $livelihood $head $shock $invar
 
 
 
 
 ********** Mean over time
-foreach x in $family $livelihood $head $shock $debt {
+foreach x in $family $livelihood $head $shock {
 bysort HHID_panel: egen mean_`x'=mean(`x')
 }
 
@@ -244,13 +239,6 @@ dummydemonetisation mean_dummydemonetisation ///
 lock_2 mean_lock_2 ///
 lock_3 mean_lock_3
 
-global debt ///
-shareform mean_shareform
-
-global debt2 ///
-log_loanamount_HH mean_log_loanamount_HH
-
-
 global invar ///
 caste_2 caste_3 ///
 village_2 village_3 village_4 village_5 village_6 village_7 village_8 village_9 village_10
@@ -286,7 +274,6 @@ label var mean_year2020 "Within year: 2020-21"
 
 label var log_annualincome_HH "Annual income (log)"
 label var log_assets_total "Assets (log)"
-label var log_loanamount_HH "Loan amount (log)"
 
 *** Macro
 global time ///
@@ -296,14 +283,13 @@ nobs2 nobs3
 
 
 ********** Multicollinerarity
-corr $livelihood $family $head $shock shareform mean_shareform loanamount_HH_std mean_loanamount_HH_std $invar $time
-
+corr $livelihood $family $head $shock $invar $time
 
 
 
 ********** Reg
 *** Spec 1
-glm fvi ///
+glm sharewomen ///
 $livelihood ///
 $invar ///
 $time ///
@@ -314,7 +300,7 @@ est store marg1
 
 
 *** Spec 2
-glm fvi ///
+glm sharewomen ///
 $livelihood ///
 $family ///
 $invar ///
@@ -325,7 +311,7 @@ margins, dydx($livelihood $family $invar) post
 est store marg2
 
 *** Spec 3
-glm fvi ///
+glm sharewomen ///
 $livelihood ///
 $family ///
 $head ///
@@ -338,7 +324,7 @@ est store marg3
 
 
 *** Spec 4
-glm fvi ///
+glm sharewomen ///
 $livelihood ///
 $family ///
 $head ///
@@ -351,50 +337,20 @@ margins, dydx($livelihood $family $head $shock $invar) post
 est store marg4
 
 
-*** Spec 5
-glm fvi ///
-$livelihood ///
-$family ///
-$head ///
-$shock ///
-$debt ///
-$invar ///
-$time ///
-, family(binomial) link(probit) cluster(panelvar)
-est store spec5
-margins, dydx($livelihood $family $head $shock $debt $invar) post
-est store marg5
-*/
-
-*** Spec 6
-glm fvi ///
-$livelihood ///
-$family ///
-$head ///
-$shock ///
-$debt ///
-$debt2 ///
-$invar ///
-$time ///
-, family(binomial) link(probit) cluster(panelvar)
-est store spec6
-margins, dydx($livelihood $family $head $shock $debt $debt2 $invar) post
-est store marg6
-
 
 
 
 
 
 ********** Margin
-esttab marg1 marg2 marg3 marg4 marg5 marg6, ///
+esttab marg1 marg2 marg3 marg4, ///
 	label b(3) p(3) eqlabels(none) alignment(S) ///
 	drop(mean_* village_*) ///
 	star(* 0.10 ** 0.05 *** 0.01) ///
 	cells("b(fmt(2)star)" "se(fmt(2)par)") ///
 	refcat(, nolabel)
 
-esttab marg1 marg2 marg3 marg4 marg5 marg6 using "margin.csv", replace ///
+esttab marg1 marg2 marg3 marg4 using "margin.csv", replace ///
 	label b(3) p(3) eqlabels(none) alignment(S) ///
 	drop(mean_* village_*) ///
 	star(* 0.10 ** 0.05 *** 0.01) ///
@@ -404,7 +360,7 @@ esttab marg1 marg2 marg3 marg4 marg5 marg6 using "margin.csv", replace ///
 
 	
 ********** Specifications
-esttab spec1 spec2 spec3 spec4 spec5 spec6 using "reg_full.csv", replace ///
+esttab spec1 spec2 spec3 spec4 using "reg_full.csv", replace ///
 	label b(3) p(3) eqlabels(none) alignment(S) ///
 	star(* 0.10 ** 0.05 *** 0.01) ///
 	cells("b(fmt(2)star)" "se(fmt(2)par)") ///
@@ -447,27 +403,6 @@ $invar ///
 $time ///
 , family(binomial) link(probit) cluster(panelvar)
 
-overfit: glm fvi ///
-$livelihood ///
-$family ///
-$head ///
-$shock ///
-$debt ///
-$invar ///
-$time ///
-, family(binomial) link(probit) cluster(panelvar)
-
-overfit: glm fvi ///
-$livelihood ///
-$family ///
-$head ///
-$shock ///
-$debt ///
-$debt2 ///
-$invar ///
-$time ///
-, family(binomial) link(probit) cluster(panelvar)
-
 
 ****************************************
 * END
@@ -475,99 +410,3 @@ $time ///
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-****************************************
-* Reg + compensation
-****************************************
-cls
-use"panel_v6", clear
-
-
-*** Gen var
-ta house, gen(house_)
-
-recode secondlockdownexposure dummysell(.=1)
-ta secondlockdownexposure, gen(lock_)
-label var lock_1 "Sec. lockdown: Before"
-label var lock_2 "Sec. lockdown: During"
-label var lock_3 "Sec. lockdown: After"
-label var dummysell "Sell assets to face lockdown: Yes"
-
-label var dummydemonetisation "Demonetisation: Yes"
-
-
-* Clean assets
-sum assets_housevalue assets_livestock assets_goods assets_ownland assets_gold
-foreach x in assets_housevalue assets_livestock assets_goods assets_ownland assets_gold {
-replace `x'=1 if `x'==. | `x'<1
-}
-
-
-* Log
-foreach x in assets_total assets_totalnoland assets_housevalue assets_livestock assets_goods assets_ownland assets_gold annualincome_HH loanamount_HH assets_totalnoprop {
-replace `x'=1 if `x'<1 | `x'==.
-gen log_`x'=log(`x')
-}
-
-
-
-*** Clean
-sort HHID_panel year
-keep if year==2020
-
-label define caste 1"Caste: Dalits" 2"Caste: Middle" 3"Caste: Upper"
-label values caste caste
-
-
-
-*** Compensation
-rename HHID HHID2020
-merge 1:m HHID2020 using "raw/NEEMSIS2-HH", keepusing(compensation compensationamount)
-duplicates drop
-drop _merge
-
-
-*** Macro
-global livelihood log_annualincome_HH log_assets_total
-
-global family HHsize HH_count_child
-
-global head head_female head_age head_occ1 head_occ2 head_occ4 head_occ5 head_occ6 head_occ7 head_educ2 head_educ3 head_nonmarried
-
-global shock dummymarriage dummydemonetisation lock_2 lock_3
-
-global debt shareform
-
-global debt2 log_loanamount_HH
-
-global invar caste_2 caste_3 village_2 village_3 village_4 village_5 village_6 village_7 village_8 village_9 village_10
-
-
-*** Reg
-glm fvi i.compensation $livelihood $family $head $shock $debt $debt2 $invar, family(binomial) link(probit)
-
-****************************************
-* END
