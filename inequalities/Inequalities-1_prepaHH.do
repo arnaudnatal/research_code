@@ -15,9 +15,6 @@ do"C:\Users\Arnaud\Documents\GitHub\folderanalysis\inequalities.do"
 
 
 
-
-
-
 ****************************************
 * 2010
 ****************************************
@@ -66,6 +63,15 @@ drop _merge
 
 * Add income
 merge 1:1 HHID2010 using "raw/RUME-occup_HH"
+drop _merge
+preserve
+use"raw/RUME-occupnew", clear
+drop if occupation==0
+collapse (sum) annualincome, by(HHID2010 occupation)
+reshape wide annualincome, i(HHID2010) j(occupation)
+save "w1tempinc", replace
+restore
+merge 1:1 HHID2010 using "w1tempinc"
 drop _merge
 
 * Add remittances
@@ -156,6 +162,15 @@ drop _merge
 
 * Add income
 merge 1:1 HHID2016 using "raw/NEEMSIS1-occup_HH"
+drop _merge
+preserve
+use"raw/NEEMSIS1-occupnew", clear
+drop if occupation==0
+collapse (sum) annualincome, by(HHID2016 occupation)
+reshape wide annualincome, i(HHID2016) j(occupation)
+save "w2tempinc", replace
+restore
+merge 1:1 HHID2016 using "w2tempinc"
 drop _merge
 
 * Add remittances
@@ -266,6 +281,15 @@ drop _merge
 * Add income
 merge 1:1 HHID2020 using "raw/NEEMSIS2-occup_HH"
 drop _merge
+preserve
+use"raw/NEEMSIS2-occupnew", clear
+drop if occupation==0
+collapse (sum) annualincome, by(HHID2020 occupation)
+reshape wide annualincome, i(HHID2020) j(occupation)
+save "w3tempinc", replace
+restore
+merge 1:1 HHID2020 using "w3tempinc"
+drop _merge
 
 * Add remittances
 merge 1:1 HHID2020 using "raw/NEEMSIS2-transferts_HH"
@@ -374,7 +398,7 @@ global quanti3 expenses_total expenses_food expenses_educ expenses_heal expenses
 global quanti4 assets_housevalue assets_livestock assets_goods assets_ownland assets_gold assets_total assets_totalnoland assets_totalnoprop assets_total1000 assets_totalnoland1000 assets_totalnoprop1000
 global quanti5 incomeagri_HH incomenonagri_HH annualincome_HH incagrise_HH incagricasual_HH incnonagricasual_HH incnonagriregnonquali_HH incnonagriregquali_HH incnonagrise_HH incnrega_HH
 global quanti6 remreceived_HH remsent_HH remittnet_HH
-global quant7 goldreadyamount
+global quant7 goldreadyamount annualincome1 annualincome2 annualincome3 annualincome4 annualincome5 annualincome6 annualincome7
 global quanti $quanti1 $quanti2 $quanti3 $quanti4 $quanti5 $quanti6 $quanti7
 
 
@@ -674,6 +698,14 @@ label var village_7 "Village: MANAM"
 label var village_8 "Village: NAT"
 label var village_9 "Village: ORA"
 label var village_10 "Village: SEM"
+label var nonworkersratio "Non-workers ratio"
+label var housetitle "House title: Yes"
+label var head_female "Head sex: Female"
+label var remittnet_HH "Net remittances (Rs.)"
+label var sexratio "Sex ratio"
+label var dependencyratio "Dependency ratio"
+
+
 
 save"panel_v2", replace
 ****************************************
@@ -725,11 +757,6 @@ label var loanamount_HH_std "Loan amount (std)"
 *** Order
 order HHID_panel year
 sort HHID_panel year
-
-*** Label
-label var housetitle "House title: Yes"
-label var head_female "Head sex: Female"
-
 
 
 save"panel_v3", replace
@@ -785,6 +812,17 @@ gen shareindiv=annualincome_indiv/annualincome_HH
 bysort HHID2010: egen test=sum(shareindiv)
 ta test
 drop test
+gen diffinc=suminc_men-suminc_women
+gen absdiffinc=abs(diffinc)
+gen absdiffinctoinc=absdiffinc/annualincome_HH
+gen diffshare=sharemen-sharewomen
+gen absdiffshare=abs(diffshare)
+gen type=.
+replace type=1 if diffshare<-0.05
+replace type=2 if diffshare>=-0.05 & diffshare<=0.05
+replace type=3 if diffshare>0.05
+label define type 1"W>M" 2"W=M" 3"W<M"
+label values type type
 
 * Panel
 merge m:m HHID2010 using"raw/keypanel-HH_wide", keepusing(HHID_panel)
@@ -835,6 +873,17 @@ gen shareindiv=annualincome_indiv/annualincome_HH
 bysort HHID2016: egen test=sum(shareindiv)
 ta test
 drop test
+gen diffinc=suminc_men-suminc_women
+gen absdiffinc=abs(diffinc)
+gen absdiffinctoinc=absdiffinc/annualincome_HH
+gen diffshare=sharemen-sharewomen
+gen absdiffshare=abs(diffshare)
+gen type=.
+replace type=1 if diffshare<-0.05
+replace type=2 if diffshare>=-0.05 & diffshare<=0.05
+replace type=3 if diffshare>0.05
+label define type 1"W>M" 2"W=M" 3"W<M"
+label values type type
 
 * Panel
 merge m:m HHID2016 using"raw/keypanel-HH_wide", keepusing(HHID_panel)
@@ -885,6 +934,17 @@ gen shareindiv=annualincome_indiv/annualincome_HH
 bysort HHID2020: egen test=sum(shareindiv)
 ta test
 drop test
+gen diffinc=suminc_men-suminc_women
+gen absdiffinc=abs(diffinc)
+gen absdiffinctoinc=absdiffinc/annualincome_HH
+gen diffshare=sharemen-sharewomen
+gen absdiffshare=abs(diffshare)
+gen type=.
+replace type=1 if diffshare<-0.05
+replace type=2 if diffshare>=-0.05 & diffshare<=0.05
+replace type=3 if diffshare>0.05
+label define type 1"W>M" 2"W=M" 3"W<M"
+label values type type
 
 * Panel
 merge m:m HHID2020 using"raw/keypanel-HH_wide", keepusing(HHID_panel)
@@ -933,7 +993,7 @@ compress
 save "ineqindiv", replace
 
 ********** Save HH
-keep HHID_panel year suminc_men suminc_women sharemen sharewomen
+keep HHID_panel year suminc_men suminc_women sharemen sharewomen diffinc absdiffinc diffshare absdiffshare type
 duplicates drop
 compress
 save "ineqHH", replace
@@ -949,5 +1009,126 @@ drop _merge
 order HHID_panel HHID panelvar year time dummypanel
 
 save "panel_v4", replace
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Supp for CRE
+****************************************
+use"panel_v4", clear
+
+
+* House
+ta house, gen(house_)
+
+* Lockdown
+recode secondlockdownexposure dummysell(.=1)
+ta secondlockdownexposure, gen(lock_)
+label var lock_1 "Sec. lockdown: Before"
+label var lock_2 "Sec. lockdown: During"
+label var lock_3 "Sec. lockdown: After"
+label var dummysell "Sell assets to face lockdown: Yes"
+label var dummydemonetisation "Demonetisation: Yes"
+
+* Clean assets
+sum assets_housevalue assets_livestock assets_goods assets_ownland assets_gold
+foreach x in assets_housevalue assets_livestock assets_goods assets_ownland assets_gold {
+replace `x'=1 if `x'==. | `x'<1
+}
+
+* Log
+foreach x in assets_total assets_totalnoland assets_housevalue assets_livestock assets_goods assets_ownland assets_gold annualincome_HH assets_totalnoprop {
+replace `x'=1 if `x'<1 | `x'==.
+gen log_`x'=log(`x')
+}
+
+* Mean over time
+global livelihood log_annualincome_HH log_assets_total log_assets_totalnoland remittnet_HH assets_total assets_totalnoland annualincome_HH log_assets_housevalue log_assets_livestock log_assets_goods log_assets_ownland log_assets_gold log_assets_totalnoprop
+global family HHsize HH_count_child stem housetitle ownland sexratio dependencyratio nonworkersratio
+global head head_female head_age head_occ1 head_occ2 head_occ4 head_occ5 head_occ6 head_occ7 head_educ2 head_educ3 head_nonmarried
+global shock dummymarriage dummydemonetisation lock_1 lock_2 lock_3 dummysell dummyexposure
+foreach x in $family $livelihood $head $shock {
+bysort HHID_panel: egen mean_`x'=mean(`x')
+}
+
+* Time var
+bysort HHID_panel: gen nobs=_N
+gen nobs1=nobs==1
+gen nobs2=nobs==2
+gen nobs3=nobs==3
+gen year2010=year==2010
+gen year2016=year==2016
+gen year2020=year==2020
+foreach x in year2010 year2016 year2020 {
+bysort HHID_panel: egen mean_`x'=mean(`x')
+}
+
+label var nobs1 "Nb obs: 1"
+label var nobs2 "Nb obs: 2"
+label var nobs3 "Nb obs: 3"
+label var year2010 "Year: 2010"
+label var year2016 "Year: 2016-17"
+label var year2020 "Year: 2020-21"
+label var mean_year2010 "Within year: 2010"
+label var mean_year2016 "Within year: 2016-17"
+label var mean_year2020 "Within year: 2020-21"
+label var log_annualincome_HH "Annual income (log)"
+label var log_assets_total "Assets (log)"
+label var log_assets_totalnoland "Assets without land (log)"
+
+
+save "panel_v5", replace
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Last for Gini
+****************************************
+use"panel_v5", clear
+
+recode annualincome1 annualincome2 annualincome3 annualincome4 annualincome5 annualincome6 annualincome7 (.=0)
+egen income=rowtotal(annualincome1 annualincome2 annualincome3 annualincome4 annualincome5 annualincome6 annualincome7)
+
+egen income_agri=rowtotal(annualincome1 annualincome2)
+egen income_nonagri=rowtotal(annualincome3 annualincome4 annualincome5 annualincome6 annualincome7)
+
+order annualincome1 annualincome2 annualincome3 annualincome4 annualincome5 annualincome6 annualincome7 income_agri income_nonagri income, last
+
+rename annualincome1 income_agriself
+rename annualincome2 income_agricasu
+rename annualincome3 income_casual
+rename annualincome4 income_regnonqu
+rename annualincome5 income_regquali
+rename annualincome6 income_selfempl
+rename annualincome7 income_nrega
+
+
+foreach x in income_agri income_nonagri income_agriself income_agricasu income_casual income_regnonqu income_regquali income_selfempl income_nrega {
+gen s`x'=`x'/income
+}
+
+order sincome_agriself sincome_agricasu sincome_casual sincome_regnonqu sincome_regquali sincome_selfempl sincome_nrega sincome_agri sincome_nonagri, after(income)
+
+save"panel_v6", replace
 ****************************************
 * END

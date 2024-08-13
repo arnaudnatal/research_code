@@ -22,43 +22,46 @@ do"C:\Users\Arnaud\Documents\GitHub\folderanalysis\inequalities.do"
 ****************************************
 * Trends with R
 ****************************************
-use"panel_v4", clear
+use"panel_v5", clear
 
-
-********** Prepa database
-preserve
-rename fvi index
+* Prepa database
+rename absdiffshare index
 tabstat index, stat(min max range)
 keep if dummypanel==1
 keep HHID_panel year index
-
 reshape wide index, i(HHID_panel) j(year)
 corr index2010 index2016 index2020
-export delimited "C:\Users\Arnaud\Documents\GitHub\research_code\measuringdebt\debtnew.csv", replace
-restore
 
 
+* Export pour R
+export delimited "index.csv", replace
 
 
-********** HAC graph
-rename fvi index
-tabstat index, stat(min max range)
-keep if dummypanel==1
-keep HHID_panel year index
-
-reshape wide index, i(HHID_panel) j(year)
+* HAC
 cluster wardslinkage index2010 index2016 index2020, measure(Euclidean)
 set graph off
 cluster dendrogram, cutnumber(50) xlab(,ang(90)) title("") ytitle("Height") yline(10) name(dendro, replace)
-graph export "graph/Cluster_dendro.pdf", as(pdf) replace
-set graph on
+*graph export "graph/Cluster_dendro.pdf", as(pdf) replace
+
+****************************************
+* END
 
 
 
 
 
-********** Import R results
-import delimited "C:\Users\Arnaud\Documents\GitHub\research_code\measuringdebt\indextrend.csv", clear
+
+
+
+
+
+
+****************************************
+* Results
+****************************************
+
+* Import R results
+import delimited "indextrend.csv", clear
 
 * Clean
 drop v1
@@ -76,113 +79,17 @@ reshape long index, i(HHID_panel) j(year)
 save"indextrend.dta", replace
 
 
-
-********** Merge
+* Merge
 use"panel_v5", clear
 
 merge 1:1 HHID_panel year using "indextrend"
 drop _merge
 
 
-*** Clean
-gen test=fvi-index
-ta test
-drop index
-drop test
 
-
-
-********** Draw lines
-
-xtset panelvar year
-
-*** Graph line
-forvalues i=1/3 {
-forvalues j=1/6 {
-set graph off
-sort HHID_panel year
-twoway (line fvi year if cl`j'==`i', c(L) lcolor(black%10)) ///
-, xlabel(2010 2016 2020) xmtick(2010(1)2020) xtitle("Year") ///
-ylabel(0(.2)1) ymtick(0(.1)1) ytitle("FVI") ///
-title("Cluster `i'") aspectratio() ///
-name(cl`j'_`i', replace)
-set graph on
-}
-}
-
-/*
-* Combine
-set graph off
-graph combine cl1_1 cl1_2 cl1_3, col(2) name(cl1_gph, replace)
-graph combine cl2_1 cl2_2 cl2_3, col(2) name(cl2_gph, replace)
-graph combine cl3_1 cl3_2 cl3_3, col(2) name(cl3_gph, replace)
-graph combine cl4_1 cl4_2 cl4_3, col(2) name(cl4_gph, replace)
-graph combine cl5_1 cl5_2 cl5_3, col(2) name(cl5_gph, replace)
-graph combine cl6_1 cl6_2 cl6_3, col(2) name(cl6_gph, replace)
-set graph on
-*/
-
-/*
-* Display
-graph display cl1_gph
-graph display cl2_gph
-graph display cl3_gph
-graph display cl4_gph
-graph display cl5_gph
-graph display cl6_gph
-*/
-
-/*
-Je n'aime pas cl2
-cl4 et cl6 sont identiques
-cl3 et cl4 sont identiques
-cl5 et cl3 sont mieux que cl1
-5 parait mieux que 3
-*/
-
-ta cl3
-ta cl5
-
-
-* Label 
-label define cl3 ///
-1"Non-vuln." ///
-2"Vuln." ///
-3"Trans. vuln."
-
-
-label define cl5 ///
-1"Vuln." ///
-2"Trans. vuln." ///
-3"Non-vuln." 
-
-label values cl3 cl3
-label values cl5 cl5
-
-
-
-*** Stat
-tabstat fvi if year==2010, stat(n mean cv p50) by(cl3)
-tabstat fvi if year==2016, stat(n mean cv p50) by(cl3)
-tabstat fvi if year==2020, stat(n mean cv p50) by(cl3)
-
-tabstat fvi if year==2010, stat(n mean cv p50) by(cl5)
-tabstat fvi if year==2016, stat(n mean cv p50) by(cl5)
-tabstat fvi if year==2020, stat(n mean cv p50) by(cl5)
-
-
-/*
-Je garde le 5
-*/
-
-drop cl1 cl2 cl3 cl4 cl6
-rename cl5 clt_fvi
-
-
-save"panel_v6", replace
+save "panel_v5_trends", replace
 ****************************************
 * END
-
 
 
 
@@ -199,7 +106,7 @@ save"panel_v6", replace
 * Graph 
 ****************************************
 cls
-use"panel_v6", clear
+use"panel_v5_trends", clear
 
 
 **********
