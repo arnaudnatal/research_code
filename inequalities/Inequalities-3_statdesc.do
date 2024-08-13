@@ -21,6 +21,7 @@ do"C:\Users\Arnaud\Documents\GitHub\folderanalysis\inequalities.do"
 use"panel_v6", clear
 
 * Lorenz curve
+/*
 preserve
 keep HHID_panel year income
 reshape wide income, i(HHID_panel) j(year)
@@ -28,11 +29,15 @@ reshape wide income, i(HHID_panel) j(year)
 lorenz estimate income2010 income2016 income2020, gini
 lorenz graph, noci overlay legend(pos(6) col(3) order(2 "2010" 3 "2016-17" 4 "2020-21")) xtitle("Population share") ytitle("Cumulative annual income proportion") xlabel(0(10)100) ylabel(0(.1)1)
 restore
+*/
 
 
 * Decomposition Gini by income source
-descogini income 
+preserve
+keep if year==2016
+descogini income income_agri income_nonagri
 descogini income income_agriself income_agricasu income_casual income_regnonqu income_regquali income_selfempl income_nrega
+restore
 
 
 /*

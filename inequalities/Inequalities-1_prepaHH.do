@@ -1129,6 +1129,11 @@ gen s`x'=`x'/income
 
 order sincome_agriself sincome_agricasu sincome_casual sincome_regnonqu sincome_regquali sincome_selfempl sincome_nrega sincome_agri sincome_nonagri, after(income)
 
+
+gen test=income_agri-incagrise_HH
+ta test
+
+
 save"panel_v6", replace
 ****************************************
 * END
