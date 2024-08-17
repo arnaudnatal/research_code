@@ -27,10 +27,18 @@ use"raw\RUME-HH.dta", clear
 keep HHID2010 INDID2010 name sex age relationshiptohead religion
 
 * Merge income
-merge m:1 HHID2010 using "raw\RUME-occup_HH", keepusing(annualincome_HH)
+merge m:1 HHID2010 using "raw\RUME-occup_HH", keepusing(annualincome_HH nbworker_HH nbnonworker_HH nonworkersratio)
 drop _merge
 
 merge 1:1 HHID2010 INDID2010 using "raw\RUME-occup_indiv"
+drop _merge
+
+* Family compo
+merge m:1 HHID2010 using "raw/RUME-family", keepusing(nbfemale nbmale HHsize HH_count_child HH_count_adult equiscale_HHsize equimodiscale_HHsize squareroot_HHsize typeoffamily sexratio)
+drop _merge
+
+* Merge KILM
+merge 1:1 HHID2010 INDID2010 using "raw\RUME-kilm", keepusing(employed)
 drop _merge
 
 * Panel
@@ -75,11 +83,19 @@ drop if livinghome>=3
 keep HHID2016 INDID2016 name sex age relationshiptohead
 
 * Merge income
-merge m:1 HHID2016 using "raw\NEEMSIS1-occup_HH", keepusing(annualincome_HH)
+merge m:1 HHID2016 using "raw\NEEMSIS1-occup_HH", keepusing(annualincome_HH nbworker_HH nbnonworker_HH nonworkersratio)
 drop _merge
 
 merge 1:1 HHID2016 INDID2016 using "raw\NEEMSIS1-occup_indiv", keepusing(working_pop mainocc_occupation_indiv mainocc_annualincome_indiv annualincome_indiv nboccupation_indiv)
 keep if _merge==3
+drop _merge
+
+* Family compo
+merge m:1 HHID2016 using "raw/NEEMSIS1-family", keepusing(nbfemale nbmale HHsize HH_count_child HH_count_adult equiscale_HHsize equimodiscale_HHsize squareroot_HHsize typeoffamily sexratio)
+drop _merge
+
+* Merge KILM
+merge 1:1 HHID2016 INDID2016 using "raw\NEEMSIS1-kilm", keepusing(employed)
 drop _merge
 
 * Ego
@@ -129,11 +145,19 @@ drop if livinghome>=3
 keep HHID2020 INDID2020 name sex age relationshiptohead
 
 * Merge income
-merge m:1 HHID2020 using "raw\NEEMSIS2-occup_HH", keepusing(annualincome_HH)
+merge m:1 HHID2020 using "raw\NEEMSIS2-occup_HH", keepusing(annualincome_HH nbworker_HH nbnonworker_HH nonworkersratio)
 drop _merge
 
 merge 1:1 HHID2020 INDID2020 using "raw\NEEMSIS2-occup_indiv", keepusing(working_pop mainocc_occupation_indiv mainocc_annualincome_indiv annualincome_indiv nboccupation_indiv)
 keep if _merge==3
+drop _merge
+
+* Family compo
+merge m:1 HHID2020 using "raw/NEEMSIS2-family", keepusing(nbfemale nbmale HHsize HH_count_child HH_count_adult equiscale_HHsize equimodiscale_HHsize squareroot_HHsize typeoffamily sexratio)
+drop _merge
+
+* Merge KILM
+merge 1:1 HHID2020 INDID2020 using "raw\NEEMSIS2-kilm", keepusing(employed)
 drop _merge
 
 * Ego
@@ -190,6 +214,49 @@ ta dummypanel
 order HHID_panel INDID_panel year dummypanel
 sort HHID_panel INDID_panel year
 
+
+* Caste
+*tostring year, replace
+merge m:1 HHID_panel year using "raw/Panel-Caste_HH_long", keepusing(caste)
+keep if _merge==3
+drop _merge
+ta caste
+label define castecode 1"Dalits" 2"Middle castes" 3"Upper castes"
+label values caste castecode
+fre caste
+
+
+* Working pop
+fre working_pop
+replace working_pop=2 if working_pop==1 & age>35 & (annualincome_indiv==. | annualincome_indiv==0)
+replace working_pop=3 if working_pop==1 & age>35 & annualincome_indiv!=. & annualincome_indiv!=0
+
+drop nbworker_HH nbnonworker_HH nonworkersratio
+
+gen wp_inactive=0
+replace wp_inactive=1 if working_pop==1
+
+gen wp_unoccupi=0
+replace wp_unoccupi=1 if working_pop==2
+
+gen wp_occupied=0
+replace wp_occupied=1 if working_pop==3
+
+foreach x in inactive unoccupi occupied {
+bysort HHID_panel year: egen wp_`x'_HH=sum(wp_`x')
+}
+gen wp_active_HH=wp_unoccupi_HH+wp_occupied_HH
+
+gen test=HHsize-wp_active_HH-wp_inactive_HH
+ta test
+drop test
+
+
+* Income per capita
+gen annualincome_pc=annualincome_HH/HHsize
+
+* Income per active
+gen annualincome_pa=annualincome_HH/wp_active_HH
 
 save"panelindiv_v0", replace
 ****************************************
