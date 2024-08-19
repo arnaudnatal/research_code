@@ -294,6 +294,7 @@ legend(order(1 "Agri self-employed" 2 "Agri casual" 3 "Casual" 4 "Regular" 5 "Se
 
 ***** Combine
 grc1leg sk gk rk share percentage, name(decompo, replace)
+graph export "Decompo.png", as(png) replace
 
 ****************************************
 * END
