@@ -69,9 +69,7 @@ rename hhid_panel HHID_panel
 rename cluster1 cl1
 rename cluster2 cl2
 rename cluster3 cl3
-rename cluster4 cl4
-rename cluster5 cl5
-rename cluster6 cl6
+
 
 * Reshape
 reshape long index, i(HHID_panel) j(year)
@@ -109,25 +107,10 @@ cls
 use"panel_v5_trends", clear
 
 
-**********
-preserve
-keep HHID_panel clt_fvi
-duplicates drop
-fre clt_fvi
-restore
-
-/*
-1 Vuln
-2 Trans vuln
-3 Non-vuln
-*/
-
-
-
 ********** Graph line
 *** Cl 1
 sort HHID_panel year
-twoway (line fvi year if clt_fvi==1, c(L) lcolor(black%10)) ///
+twoway (line absdiffshare year if cl2==1, c(L) lcolor(black%10)) ///
 , xlabel(2010 2016 2020) xmtick(2010(1)2020) xtitle("Year") ///
 ylabel(0(.2)1) ymtick(0(.1)1) ytitle("FVI") ///
 title("Cluster 1: Vulnerable") aspectratio() ///
@@ -135,7 +118,7 @@ name(cl_1, replace)
 
 *** Cl 2
 sort HHID_panel year
-twoway (line fvi year if clt_fvi==2, c(L) lcolor(black%10)) ///
+twoway (line absdiffshare year if cl2==2, c(L) lcolor(black%10)) ///
 , xlabel(2010 2016 2020) xmtick(2010(1)2020) xtitle("Year") ///
 ylabel(0(.2)1) ymtick(0(.1)1) ytitle("FVI") ///
 title("Cluster 2: Transitory vulnerable") aspectratio() ///
@@ -143,7 +126,7 @@ name(cl_2, replace)
 
 *** Cl 3
 sort HHID_panel year
-twoway (line fvi year if clt_fvi==3, c(L) lcolor(black%10)) ///
+twoway (line absdiffshare year if cl2==3, c(L) lcolor(black%10)) ///
 , xlabel(2010 2016 2020) xmtick(2010(1)2020) xtitle("Year") ///
 ylabel(0(.2)1) ymtick(0(.1)1) ytitle("FVI") ///
 title("Cluster 1: Non-vulnerable") aspectratio() ///
@@ -204,6 +187,13 @@ restore
 
 ****************************************
 * END
+
+
+
+
+
+
+
 
 
 

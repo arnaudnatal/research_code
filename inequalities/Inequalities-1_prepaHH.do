@@ -787,6 +787,8 @@ drop _merge
 * Share income by indiv and sex
 gen inc_men=annualincome_indiv  if sex==1
 gen inc_women=annualincome_indiv if sex==2
+drop annualincome_HH
+bysort HHID2010: egen annualincome_HH=sum(annualincome_indiv)
 bysort HHID2010: egen suminc_men=sum(inc_men)
 bysort HHID2010: egen suminc_women=sum(inc_women)
 gen test=annualincome_HH-suminc_men-suminc_women
@@ -1159,10 +1161,68 @@ use"panel_v5", clear
 gen incnonagrireg_HH=incnonagriregnonquali_HH+incnonagriregquali_HH
 order incnonagrireg_HH, after(incnrega_HH)
 
+* Monthly income
+gen monthlyincome_HH=annualincome_HH/12
+
+
 * Per capita
-foreach x in annualincome_HH_compo1 incomeagri_HH incomenonagri_HH annualincome_HH_compo2 incagrise_HH incagricasual_HH incnonagricasual_HH incnonagriregnonquali_HH incnonagriregquali_HH incnonagrise_HH incnrega_HH incnonagrireg_HH {
-gen `x'_pa=`x'/wp_active_HH
+foreach x in annualincome_HH_compo1 incomeagri_HH incomenonagri_HH annualincome_HH_compo2 incagrise_HH incagricasual_HH incnonagricasual_HH incnonagriregnonquali_HH incnonagriregquali_HH incnonagrise_HH incnrega_HH incnonagrireg_HH monthlyincome_HH {
+gen `x'_pc=`x'/HHsize
 }
+rename annualincome_HH_compo1_pc annualincome_compo1_pc
+rename incomeagri_HH_pc incomeagri_pc
+rename incomenonagri_HH_pc incomenonagri_pc
+rename annualincome_HH_compo2_pc annualincome_compo2_pc
+rename incagrise_HH_pc incagrise_pc
+rename incagricasual_HH_pc incagricasual_pc
+rename incnonagricasual_HH_pc incnonagricasual_pc
+rename incnonagriregnonquali_HH_pc incnonagriregnonquali_pc
+rename incnonagriregquali_HH_pc incnonagriregquali_pc
+rename incnonagrise_HH_pc incnonagrise_pc
+rename incnrega_HH_pc incnrega_pc
+rename incnonagrireg_HH_pc incnonagrireg_pc
+rename monthlyincome_HH_pc monthlyincome_pc
+
+
+* Modified per capita
+foreach x in annualincome_HH_compo1 incomeagri_HH incomenonagri_HH annualincome_HH_compo2 incagrise_HH incagricasual_HH incnonagricasual_HH incnonagriregnonquali_HH incnonagriregquali_HH incnonagrise_HH incnrega_HH incnonagrireg_HH monthlyincome_HH {
+gen `x'_mpc=`x'/equimodiscale_HHsize
+}
+rename annualincome_HH_compo1_mpc annualincome_compo1_mpc
+rename incomeagri_HH_mpc incomeagri_mpc
+rename incomenonagri_HH_mpc incomenonagri_mpc
+rename annualincome_HH_compo2_mpc annualincome_compo2_mpc
+rename incagrise_HH_mpc incagrise_mpc
+rename incagricasual_HH_mpc incagricasual_mpc
+rename incnonagricasual_HH_mpc incnonagricasual_mpc
+rename incnonagriregnonquali_HH_mpc incnonagriregnonquali_mpc
+rename incnonagriregquali_HH_mpc incnonagriregquali_mpc
+rename incnonagrise_HH_mpc incnonagrise_mpc
+rename incnrega_HH_mpc incnrega_mpc
+rename incnonagrireg_HH_mpc incnonagrireg_mpc
+rename monthlyincome_HH_mpc monthlyincome_mpc
+
+
+* Worker ratio
+drop nbworker_HH nbnonworker_HH nonworkersratio mean_nonworkersratio
+gen nonworkersratio=wp_unoccupi_HH/wp_occupied_HH
+replace nonworkersratio=wp_unoccupi_HH if nonworkersratio==.
+bysort HHID_panel: egen mean_nonworkersratio=mean(nonworkersratio)
+
+* Dummies occupation
+global inc incagrise_HH incagricasual_HH incnonagricasual_HH incnonagrireg_HH incnonagrise_HH incnrega_HH
+foreach x in $inc {
+gen d_`x'=0
+}
+foreach x in $inc {
+replace d_`x'=1 if `x'!=0 & `x'!=.
+}
+rename d_incagrise_HH d_agrise
+rename d_incagricasual_HH d_agricasual
+rename d_incnonagricasual_HH d_nonagricasual
+rename d_incnonagrireg_HH d_nonagrireg
+rename d_incnonagrise_HH d_nonagrise
+rename d_incnrega_HH d_nrega
 
 
 

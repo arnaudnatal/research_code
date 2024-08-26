@@ -50,10 +50,10 @@ interactive_clustering(index)
 clustseed1<-tsclust(
   series=index,
   type="partitional",
-  k=3,
+  k=7,
   distance="euclidean",
   centroid="pam",
-  seed=2,
+  seed=3,
   trace=TRUE,
   error.check=TRUE
 )
@@ -64,7 +64,7 @@ clustseed2<-tsclust(
   k=3,
   distance="euclidean",
   centroid="pam",
-  seed=3,
+  seed=4,
   trace=TRUE,
   error.check=TRUE
 )
@@ -75,42 +75,7 @@ clustseed3<-tsclust(
   k=3,
   distance="euclidean",
   centroid="pam",
-  seed=4,
-  trace=TRUE,
-  error.check=TRUE
-)
-
-clustseed4<-tsclust(
-  series=index,
-  type="partitional",
-  k=3,
-  distance="euclidean",
-  centroid="pam",
-  seed=12,
-  trace=TRUE,
-  error.check=TRUE
-)
-
-
-clustseed5<-tsclust(
-  series=index,
-  type="partitional",
-  k=3,
-  distance="euclidean",
-  centroid="pam",
-  seed=13,
-  trace=TRUE,
-  error.check=TRUE
-)
-
-
-clustseed6<-tsclust(
-  series=index,
-  type="partitional",
-  k=3,
-  distance="euclidean",
-  centroid="pam",
-  seed=14,
+  seed=23,
   trace=TRUE,
   error.check=TRUE
 )
@@ -121,12 +86,9 @@ clustseed6<-tsclust(
 cluster1<-clustseed1@cluster
 cluster2<-clustseed2@cluster
 cluster3<-clustseed3@cluster
-cluster4<-clustseed4@cluster
-cluster5<-clustseed5@cluster
-cluster6<-clustseed6@cluster
 
 
 #--- Step2
-data<-cbind(data, cluster1, cluster2, cluster3, cluster4, cluster5, cluster6)
+data<-cbind(data, cluster1, cluster2, cluster3)
 
 write.csv(data,"indextrend.csv")

@@ -253,10 +253,25 @@ drop test
 
 
 * Income per capita
-gen annualincome_pc=annualincome_HH/HHsize
+gen annualincome_mpc=annualincome_HH/equimodiscale_HHsize
 
-* Income per active
-gen annualincome_pa=annualincome_HH/wp_active_HH
+
+* Recode moc
+fre mainocc_occupation_indiv
+gen moc_indiv=mainocc_occupation_indiv
+fre moc_indiv
+recode moc_indiv (0=.) (5=4) (6=5) (7=6)
+label define moc_indiv 1"Agri self-employed" 2"Agri casual" 3"Non-agri casual" 4"Non-agri regular" 5"Non-agri self-employed" 6"MGNREGA"
+label values moc_indiv moc_indiv
+
+* Dalits
+gen dalits=.
+replace dalits=1 if caste==1
+replace dalits=0 if caste==2
+replace dalits=0 if caste==3
+label define dalits 0"Non-dalits" 1"Dalits"
+label values dalits dalits
+
 
 save"panelindiv_v0", replace
 ****************************************
