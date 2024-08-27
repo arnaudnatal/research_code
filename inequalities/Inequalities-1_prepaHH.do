@@ -1224,6 +1224,8 @@ rename d_incnonagrireg_HH d_nonagrireg
 rename d_incnonagrise_HH d_nonagrise
 rename d_incnrega_HH d_nrega
 
+* Share
+gen shareincnonagrireg_HH=shareincnonagriregnonquali_HH+shareincnonagriregquali_HH
 
 
 save "panel_v6", replace
