@@ -59,22 +59,20 @@ Il y a des différences de composition des ménages entre Dalits et non-Dalits d
 ***** Income level
 use"panel_v6", clear
 
-tabstat monthlyincome_mpc, stat(mean) by(year)
 replace monthlyincome_mpc=monthlyincome_mpc/1000
-foreach i in 2010 2016 2020 {
-sum monthlyincome_mpc if year==`i', det
-replace monthlyincome_mpc=`r(p99)' if monthlyincome_mpc>`r(p99)' & year==`i'
-}
+tabstat monthlyincome_mpc, stat(min p1 p5 p10 q p90 p95 p99 max) by(year)
 
-violinplot monthlyincome_mpc, over(time) mean horizontal left dscale(2.8) nowhiskers noline nomed ///
+local ub 18
+violinplot monthlyincome_mpc, over(time) horizontal left dscale(4) noline now ///
 fill(color(black%10)) ///
-box(t(f)) bcolors(plg1%30) ///
-mean(t(l)) meancolors(plr1) ///
+box(t(b)) bcolors(plb1) ///
+mean(t(m)) meancolors(plr1) ///
+med(t(m)) medcolors(ananas) ///
 title("Monthly income per capita") ///
-xtitle("1k rupees") xlabel(0(5)25) ///
-legend(order(4 "IQR" 8 "Mean") pos(6) col(3) on) ///
-aspectratio() scale(1.2) name(vio, replace)
-
+xtitle("1k rupees") xlabel(0(2)`ub') ///
+ylabel(,grid) ///
+legend(order(4 "IQR" 7 "Median" 10 "Mean") pos(6) col(3) on) ///
+aspectratio() scale(1.2) name(vio, replace) range(0 `ub')
 
 
 ***** Lorenz curves
@@ -88,7 +86,7 @@ lorenz graph, overlay noci legend(pos(6) col(3) order(1 "2010" 2 "2016-17" 3 "20
 
 
 ***** Combine
-graph combine vio lorenz, name(comb, replace) note("{it:Note:} The average monthly income per capita is 4600 rupees in 2010, 5600 rupees in 2016-17 and 6100 rupees in 2020-21. The Gini index is 0.31 in 2010, 0.42" "in 2016-17 and 0.48 in 2020-21.", size(vsmall))
+graph combine vio lorenz, name(comb, replace) note("{it:Note:} The average monthly income per capita is 4600 rupees in 2010, 5600 rupees in 2016-17 and 6100 rupees in 2020-21. The Gini index is 0.31 in 2010," "0.42 in 2016-17 and 0.48 in 2020-21.", size(vsmall))
 graph export "Income.png", as(png) replace
 
 
@@ -108,8 +106,118 @@ graph export "Income.png", as(png) replace
 
 
 
+
+
+
+
 ****************************************
-* Graph 2: By caste
+* Graph 2: Gini decomposition
+****************************************
+
+***** Decomposition Gini by income source
+use"panel_v6", clear
+
+global MPC annualincome_compo2_mpc incagrise_mpc incagricasual_mpc incnonagricasual_mpc incnonagrireg_mpc incnonagrise_mpc incnrega_mpc
+
+descogini $MPC if year==2010
+descogini $MPC if year==2016
+descogini $MPC if year==2020
+
+
+
+***** Graph
+import excel "Gini.xlsx", sheet("Sheet1") firstrow clear
+label define occupation 1"Agri self-employed" 2"Agri casual" 3"Casual" 4"Regular" 5"Self-employed" 6"MGNREGA"
+label values occupation occupation
+
+* Sk
+twoway ///
+(connected Sk year if occupation==1, yline(0, lcolor(black))) ///
+(connected Sk year if occupation==2) ///
+(connected Sk year if occupation==3) ///
+(connected Sk year if occupation==4) ///
+(connected Sk year if occupation==5) ///
+(connected Sk year if occupation==6) ///
+, title("Share in total income") ylabel(0(.1).5) ///
+xtitle("") xlabel(2010 2016 2020) ///
+legend(order(1 "Agri self-employed" 2 "Agri casual" 3 "Casual" 4 "Regular" 5 "Self-employed" 6 "MGNREGA") pos(6) col(3)) name(sk, replace)
+
+* Gk
+twoway ///
+(connected Gk year if occupation==1, yline(0, lcolor(black))) ///
+(connected Gk year if occupation==2) ///
+(connected Gk year if occupation==3) ///
+(connected Gk year if occupation==4) ///
+(connected Gk year if occupation==5) ///
+(connected Gk year if occupation==6) ///
+,title("Income source Gini") ylabel(0.4(.1)1) ///
+xtitle("") xlabel(2010 2016 2020) ///
+legend(order(1 "Agri self-employed" 2 "Agri casual" 3 "Casual" 4 "Regular" 5 "Self-employed" 6 "MGNREGA") pos(6) col(3)) name(gk, replace)
+
+* Rk
+twoway ///
+(connected Rk year if occupation==1, yline(0, lcolor(black))) ///
+(connected Rk year if occupation==2) ///
+(connected Rk year if occupation==3) ///
+(connected Rk year if occupation==4) ///
+(connected Rk year if occupation==5) ///
+(connected Rk year if occupation==6) ///
+, title("Gini correlation with income rankings") ylabel(-.4(.2)1) ///
+xtitle("") xlabel(2010 2016 2020) ///
+legend(order(1 "Agri self-employed" 2 "Agri casual" 3 "Casual" 4 "Regular" 5 "Self-employed" 6 "MGNREGA") pos(6) col(3)) name(rk, replace)
+
+* Share
+replace Share=0 if Share<0
+twoway ///
+(connected Share year if occupation==1, yline(0, lcolor(black))) ///
+(connected Share year if occupation==2) ///
+(connected Share year if occupation==3) ///
+(connected Share year if occupation==4) ///
+(connected Share year if occupation==5) ///
+(connected Share year if occupation==6) ///
+, title("Share in total-income inequality") ylabel(0(.1).6) ///
+xtitle("") xlabel(2010 2016 2020) ///
+legend(order(1 "Agri self-employed" 2 "Agri casual" 3 "Casual" 4 "Regular" 5 "Self-employed" 6 "MGNREGA") pos(6) col(3)) name(share, replace)
+
+* Percentage
+twoway ///
+(connected Percentage year if occupation==1, yline(0, lcolor(black))) ///
+(connected Percentage year if occupation==2) ///
+(connected Percentage year if occupation==3) ///
+(connected Percentage year if occupation==4) ///
+(connected Percentage year if occupation==5) ///
+(connected Percentage year if occupation==6) ///
+, title("% change in Gini") ylabel(-.2(.1).2) ///
+xtitle("") xlabel(2010 2016 2020) ///
+legend(order(1 "Agri self-employed" 2 "Agri casual" 3 "Casual" 4 "Regular" 5 "Self-employed" 6 "MGNREGA") pos(6) col(3)) name(percentage, replace)
+
+***** Combine
+grc1leg sk gk rk share percentage, name(decompo, replace)
+graph export "Decompo.png", as(png) replace
+
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Graph 3: Income by caste
 ****************************************
 
 use"panel_v6", clear
@@ -181,7 +289,7 @@ graph export "Income_caste.png", as(png) replace
 
 
 ****************************************
-* By occupation
+* Graph 3: Share of income by occupation
 ****************************************
 use"panel_v6", clear
 
@@ -313,109 +421,6 @@ graph export "Occ2.png", as(png) replace
 
 
 
-
-
-****************************************
-* Gini decomposition
-****************************************
-
-***** Decomposition Gini by income source
-use"panel_v6", clear
-
-global MPC annualincome_compo2_mpc incagrise_mpc incagricasual_mpc incnonagricasual_mpc incnonagrireg_mpc incnonagrise_mpc incnrega_mpc
-
-descogini $MPC if year==2010
-descogini $MPC if year==2016
-descogini $MPC if year==2020
-
-
-
-***** Graph
-import excel "Gini.xlsx", sheet("Sheet1") firstrow clear
-label define occupation 1"Agri self-employed" 2"Agri casual" 3"Casual" 4"Regular" 5"Self-employed" 6"MGNREGA"
-label values occupation occupation
-
-* Sk
-twoway ///
-(connected Sk year if occupation==1, yline(0, lcolor(black))) ///
-(connected Sk year if occupation==2) ///
-(connected Sk year if occupation==3) ///
-(connected Sk year if occupation==4) ///
-(connected Sk year if occupation==5) ///
-(connected Sk year if occupation==6) ///
-, title("Share in total income") ylabel(0(.1).5) ///
-xtitle("") xlabel(2010 2016 2020) ///
-legend(order(1 "Agri self-employed" 2 "Agri casual" 3 "Casual" 4 "Regular" 5 "Self-employed" 6 "MGNREGA") pos(6) col(3)) name(sk, replace)
-
-* Gk
-twoway ///
-(connected Gk year if occupation==1, yline(0, lcolor(black))) ///
-(connected Gk year if occupation==2) ///
-(connected Gk year if occupation==3) ///
-(connected Gk year if occupation==4) ///
-(connected Gk year if occupation==5) ///
-(connected Gk year if occupation==6) ///
-,title("Income source Gini") ylabel(0.4(.1)1) ///
-xtitle("") xlabel(2010 2016 2020) ///
-legend(order(1 "Agri self-employed" 2 "Agri casual" 3 "Casual" 4 "Regular" 5 "Self-employed" 6 "MGNREGA") pos(6) col(3)) name(gk, replace)
-
-* Rk
-twoway ///
-(connected Rk year if occupation==1, yline(0, lcolor(black))) ///
-(connected Rk year if occupation==2) ///
-(connected Rk year if occupation==3) ///
-(connected Rk year if occupation==4) ///
-(connected Rk year if occupation==5) ///
-(connected Rk year if occupation==6) ///
-, title("Gini correlation with income rankings") ylabel(-.4(.2)1) ///
-xtitle("") xlabel(2010 2016 2020) ///
-legend(order(1 "Agri self-employed" 2 "Agri casual" 3 "Casual" 4 "Regular" 5 "Self-employed" 6 "MGNREGA") pos(6) col(3)) name(rk, replace)
-
-* Share
-replace Share=0 if Share<0
-twoway ///
-(connected Share year if occupation==1, yline(0, lcolor(black))) ///
-(connected Share year if occupation==2) ///
-(connected Share year if occupation==3) ///
-(connected Share year if occupation==4) ///
-(connected Share year if occupation==5) ///
-(connected Share year if occupation==6) ///
-, title("Share in total-income inequality") ylabel(0(.1).6) ///
-xtitle("") xlabel(2010 2016 2020) ///
-legend(order(1 "Agri self-employed" 2 "Agri casual" 3 "Casual" 4 "Regular" 5 "Self-employed" 6 "MGNREGA") pos(6) col(3)) name(share, replace)
-
-* Percentage
-twoway ///
-(connected Percentage year if occupation==1, yline(0, lcolor(black))) ///
-(connected Percentage year if occupation==2) ///
-(connected Percentage year if occupation==3) ///
-(connected Percentage year if occupation==4) ///
-(connected Percentage year if occupation==5) ///
-(connected Percentage year if occupation==6) ///
-, title("% change in Gini") ylabel(-.2(.1).2) ///
-xtitle("") xlabel(2010 2016 2020) ///
-legend(order(1 "Agri self-employed" 2 "Agri casual" 3 "Casual" 4 "Regular" 5 "Self-employed" 6 "MGNREGA") pos(6) col(3)) name(percentage, replace)
-
-***** Combine
-grc1leg sk gk rk share percentage, name(decompo, replace)
-graph export "Decompo.png", as(png) replace
-
-****************************************
-* END
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ****************************************
 * Intra-HH
 ****************************************
@@ -423,41 +428,55 @@ cls
 use"panel_v6", clear
 
 
-* Desc
-foreach y in absdiffshare {
-tabstat `y', stat(n mean q) by(year)
+* Categories
+ta type year
+ta type year, col nofreq
 
-* By caste
-tabstat `y' if caste==1, stat(n mean q) by(year)
-tabstat `y' if caste==2, stat(n mean q) by(year)
-tabstat `y' if caste==3, stat(n mean q) by(year)
-
-* By poor
-tabstat `y' if poor_HH==0, stat(n mean q) by(year)
-tabstat `y' if poor_HH==1, stat(n mean q) by(year)
-
-* By assets
-tabstat `y' if assets_cat==1, stat(n mean q) by(year)
-tabstat `y' if assets_cat==2, stat(n mean q) by(year)
-tabstat `y' if assets_cat==3, stat(n mean q) by(year)
-
-* By income
-tabstat `y' if income_cat==1, stat(n mean q) by(year)
-tabstat `y' if income_cat==2, stat(n mean q) by(year)
-tabstat `y' if income_cat==3, stat(n mean q) by(year)
+cls
+foreach i in 2010 2016 2020 {
+foreach x in log_annualincome_HH log_assets_totalnoland remittnet_HH ownland housetitle HHsize HH_count_child sexratio nonworkersratio stem head_female head_age head_occ1 head_occ2 head_occ4 head_occ5 head_occ6 head_occ7 head_educ2 head_educ3 head_nonmarried dummymarriage dummydemonetisation lock_2 lock_3 caste_2 caste_3 village_2 village_3 village_4 village_5 village_6 village_7 village_8 village_9 village_10 {
+tabstat `x' if year==`i', stat(mean) by(type)
+}
 }
 
 
-* absdiffshare
-stripplot absdiffshare, over(time) ///
-stack width(0.01) jitter(1) refline(lp(dash)) ///
-box(barw(0.1)) boffset(-0.15) pctile(5) ///
-ms(oh oh oh) msize(small) mc(black%30) ///
-xla(0(.1)1, ang(h)) yla(, noticks) ///
-xmtick(0(.1)1) ///
-legend(order(1 "Mean" 4 "Whisker from 5% to 95%") pos(6) col(2) on) ///
-xtitle("Relative differences of income") ytitle("") ///
-title("Total") name(c0, replace)
+
+
+
+
+* Depth
+tabstat absdiffpercent if type==1, stat(n mean q) by(year)
+tabstat absdiffpercent if type==3, stat(n mean q) by(year)
+
+* Graph for M<W
+violinplot absdiffpercent if type==1, over(time) horizontal left dscale(2.8) noline range(-2 102) now ///
+fill(color(black%10)) ///
+box(t(b)) bcolors(plb1) ///
+mean(t(m)) meancolors(plr1) ///
+med(t(m)) medcolors(ananas) ///
+subtitle("Sample 1: Men income < women income") ///
+xtitle("Percent") xlabel(0(10)100) ///
+ylabel(,grid) ///
+legend(order(4 "IQR" 7 "Median" 10 "Mean") pos(6) col(3) on) ///
+note("{it:Note:} For 28 households in 2010, 48 in 2016-17 and 94 in 2020-21.", size(vsmall)) ///
+aspectratio() scale(1.2) name(vio1, replace)
+
+* Graph for M>W
+violinplot absdiffpercent if type==3, over(time) horizontal left dscale(2.8) noline range(-2 102) now ///
+fill(color(black%10)) ///
+box(t(b)) bcolors(plb1) ///
+mean(t(m)) meancolors(plr1) ///
+med(t(m)) medcolors(ananas) ///
+subtitle("Sample 2: Men income > women income") ///
+xtitle("Percent") xlabel(0(10)100) ///
+ylabel(,grid) ///
+legend(order(4 "IQR" 7 "Median" 10 "Mean") pos(6) col(3) on) ///
+note("{it:Note:} For 357 households in 2010, 412 in 2016-17 and 502 in 2020-21.", size(vsmall)) ///
+aspectratio() scale(1.2) name(vio2, replace)
+
+* Combine
+grc1leg vio1 vio2, title("Relative difference in incomes between men and women") name(comb, replace)
+graph export "Intra.png", as(png) replace
 
 
 

@@ -1227,6 +1227,9 @@ rename d_incnrega_HH d_nrega
 * Share
 gen shareincnonagrireg_HH=shareincnonagriregnonquali_HH+shareincnonagriregquali_HH
 
+* Percent
+gen absdiffpercent=absdiffshare*100
+gen diffpercent=diffshare*100
 
 save "panel_v6", replace
 ****************************************
