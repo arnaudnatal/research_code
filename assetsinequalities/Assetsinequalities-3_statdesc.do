@@ -4,7 +4,7 @@ cls
 *arnaud.natal@u-bordeaux.fr
 *August 8, 2024
 *-----
-gl link = "inequalities"
+gl link = "assetsinequalities"
 *Desc
 *-----
 *do "https://raw.githubusercontent.com/arnaudnatal/folderanalysis/main/$link.do"

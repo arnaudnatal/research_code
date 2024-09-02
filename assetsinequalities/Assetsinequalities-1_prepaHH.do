@@ -2,9 +2,9 @@
 cls
 *Arnaud NATAL
 *arnaud.natal@u-bordeaux.fr
-*August 8, 2024
+*September 2, 2024
 *-----
-gl link = "inequalities"
+gl link = "assetsinequalities"
 *Prepa HH
 *-----
 *do "https://raw.githubusercontent.com/arnaudnatal/folderanalysis/main/$link.do"
