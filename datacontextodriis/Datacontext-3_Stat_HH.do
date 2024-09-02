@@ -394,6 +394,13 @@ replace dummydebt=1 if nbloans_HH>0 & nbloans_HH!=.
 replace sizeownland=sizeownland*0.404686
 
 
+*** Stat
+tabstat ownland sizeownland, stat(n mean) by(year)
+tabstat ownland sizeownland if caste==1, stat(n mean) by(year)
+tabstat ownland sizeownland if caste==2, stat(n mean) by(year)
+tabstat ownland sizeownland if caste==3, stat(n mean) by(year)
+
+
 *** Total
 preserve
 collapse (mean) ownland sizeownland, by(time)
