@@ -395,10 +395,15 @@ replace sizeownland=sizeownland*0.404686
 
 
 *** Stat
-tabstat ownland sizeownland, stat(n mean) by(year)
-tabstat ownland sizeownland if caste==1, stat(n mean) by(year)
-tabstat ownland sizeownland if caste==2, stat(n mean) by(year)
-tabstat ownland sizeownland if caste==3, stat(n mean) by(year)
+ta ownland year, col nofreq
+ta ownland year if caste==1, col nofreq
+ta ownland year if caste==2, col nofreq
+ta ownland year if caste==3, col nofreq
+
+tabstat sizeownland, stat(n mean median) by(year)
+tabstat sizeownland if caste==1, stat(n mean median) by(year)
+tabstat sizeownland if caste==2, stat(n mean median) by(year)
+tabstat sizeownland if caste==3, stat(n mean median) by(year)
 
 
 *** Total
@@ -595,10 +600,17 @@ To ensure a good visibility, we recode the extrems values at p99
 of the pooled sample
 i.e., 25 changes
 */
-tabstat loanamount_HH, stat(mean)  by(year)
-tabstat loanamount_HH if caste==1, stat(mean)  by(year)
-tabstat loanamount_HH if caste==2, stat(mean)  by(year)
-tabstat loanamount_HH if caste==3, stat(mean)  by(year)
+
+cls
+ta dummydebt year, col nofreq
+ta dummydebt year if caste==1, col nofreq
+ta dummydebt year if caste==2, col nofreq
+ta dummydebt year if caste==3, col nofreq
+
+tabstat loanamount_HH, stat(mean median)  by(year)
+tabstat loanamount_HH if caste==1, stat(mean median)  by(year)
+tabstat loanamount_HH if caste==2, stat(mean median)  by(year)
+tabstat loanamount_HH if caste==3, stat(mean median)  by(year)
 *tabstat loanamount_HH, stat(p90 p95 p99 max)
 *replace loanamount_HH=80 if loanamount>80
 

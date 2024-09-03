@@ -524,6 +524,16 @@ tabstat annualincome_indiv if caste==1, stat(mean) by(year)
 tabstat annualincome_indiv if caste==2, stat(mean) by(year)
 tabstat annualincome_indiv if caste==3, stat(mean) by(year)
 
+
+*** Occupation
+cls
+ta mainocc_occupation_indiv year, col nofreq
+ta mainocc_occupation_indiv year if sex==1, col nofreq
+ta mainocc_occupation_indiv year if sex==2, col nofreq
+ta mainocc_occupation_indiv year if caste==1, col nofreq
+ta mainocc_occupation_indiv year if caste==2, col nofreq
+ta mainocc_occupation_indiv year if caste==3, col nofreq
+
 ****************************************
 * END
 
@@ -747,19 +757,17 @@ replace mainocc_annualincome_indiv=mainocc_annualincome_indiv/1000
 
 
 *** Income by occupation
-tabstat mainocc_annualincome_indiv if year==2010, stat(n mean) by(mainocc_occupation_indiv)
-tabstat mainocc_annualincome_indiv if year==2016, stat(n mean) by(mainocc_occupation_indiv)
-tabstat mainocc_annualincome_indiv if year==2020, stat(n mean) by(mainocc_occupation_indiv)
+cls
+foreach i in 2020 {
+*tabstat mainocc_annualincome_indiv if year==`i', stat(mean) by(mainocc_occupation_indiv)
+tabstat mainocc_annualincome_indiv if year==`i' & sex==1, stat(mean) by(mainocc_occupation_indiv)
+tabstat mainocc_annualincome_indiv if year==`i' & sex==2, stat(mean) by(mainocc_occupation_indiv)
+tabstat mainocc_annualincome_indiv if year==`i' & caste==1, stat(mean) by(mainocc_occupation_indiv)
+tabstat mainocc_annualincome_indiv if year==`i' & caste==2, stat(mean) by(mainocc_occupation_indiv)
+tabstat mainocc_annualincome_indiv if year==`i' & caste==3, stat(mean) by(mainocc_occupation_indiv)
+}
 
-/*
-      Agri self-employed |       128  39.08125
-     Agri casual workers |       320  14.50367
- Non-agri casual workers |       199  32.02854
-Non-agri regular non-qua |        76  53.26447
-Non-agri regular qualifi |        52     64.25
-  Non-agri self-employed |        30      26.3
-Public employment scheme |        70  4.257143
-*/
+
 
 set graph off
 
