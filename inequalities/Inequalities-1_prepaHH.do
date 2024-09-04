@@ -1280,6 +1280,16 @@ gen shareincnonagrireg_HH=shareincnonagriregnonquali_HH+shareincnonagriregquali_
 gen absdiffpercent=absdiffshare*100
 gen diffpercent=diffshare*100
 
+
+* Interaction à la main pour CRE
+
+foreach x in age occ1 occ2 occ3 occ4 occ5 occ6 occ7 educ1 educ2 educ3 nonmarried {
+gen head_femaleX`x'=head_female*head_`x'
+bysort HHID_panel: egen mean_head_femaleX`x'=mean(head_femaleX`x')
+}
+
+
+
 save "panel_v6", replace
 ****************************************
 * END

@@ -18,14 +18,24 @@ do"C:\Users\Arnaud\Documents\GitHub\folderanalysis\inequalities.do"
 
 
 
-****************************************
-* Drivers of inter-
-****************************************
-use"panel_v5", clear
 
+
+
+
+
+****************************************
+* Multi probit M, W, E
+****************************************
+use"panel_v6", clear
+
+/*
+Voir comment gérer les données de panel
+Réponse: Wooldridge, comme les autres CRE
+*/
 
 ********** Macro
 global livelihood ///
+log_annualincome_HH mean_log_annualincome_HH ///
 log_assets_totalnoland mean_log_assets_totalnoland ///
 remittnet_HH mean_remittnet_HH ///
 ownland mean_ownland ///
@@ -51,6 +61,18 @@ head_educ2 mean_head_educ2 ///
 head_educ3 mean_head_educ3 ///
 head_nonmarried mean_head_nonmarried
 
+global headX ///
+head_femaleXage mean_head_femaleXage ///
+head_femaleXocc1 mean_head_femaleXocc1 ///
+head_femaleXocc2 mean_head_femaleXocc2 ///
+head_femaleXocc4 mean_head_femaleXocc4 ///
+head_femaleXocc5 mean_head_femaleXocc5 ///
+head_femaleXocc6 mean_head_femaleXocc6 ///
+head_femaleXocc7 mean_head_femaleXocc7 ///
+head_femaleXeduc2 mean_head_femaleXeduc2 ///
+head_femaleXeduc3 mean_head_femaleXeduc3 ///
+head_femaleXnonmarried mean_head_femaleXnonmarried
+
 global shock ///
 dummymarriage mean_dummymarriage ///
 dummydemonetisation mean_dummydemonetisation ///
@@ -58,7 +80,7 @@ lock_2 mean_lock_2 ///
 lock_3 mean_lock_3
 
 global invar ///
-dalits ///
+caste_2 caste_3 ///
 village_2 village_3 village_4 village_5 village_6 village_7 village_8 village_9 village_10
 
 global time ///
@@ -66,82 +88,20 @@ year2016 mean_year2016 ///
 year2020 mean_year2020 ///
 nobs2 nobs3
 
+global marg log_annualincome_HH log_assets_totalnoland remittnet_HH ownland housetitle HHsize HH_count_child sexratio nonworkersratio stem head_female head_age head_occ1 head_occ2 head_occ4 head_occ5 head_occ6 head_occ7 head_educ2 head_educ3 head_nonmarried head_femaleXage head_femaleXocc1 head_femaleXocc2 head_femaleXocc4 head_femaleXocc5 head_femaleXocc6 head_femaleXocc7 head_femaleXeduc2 head_femaleXeduc3 head_femaleXnonmarried dummymarriage dummydemonetisation lock_2 lock_3 caste_2 caste_3 village_2 village_3 village_4 village_5 village_6 village_7 village_8 village_9 village_10
 
-********** Econo
-reg annualincome_HH $livelihood $family $head $shock $invar $time
-margins, dydx($livelihood $family $head $shock $invar) post
-
-
-****************************************
-* END
-
-
-
-
-
-
-
-
-
-
-
-****************************************
-* Multi probit M, W, E
-****************************************
-use"panel_v5", clear
-
-/*
-Voir comment gérer les données de panel
-*/
-
-********** Macro
-global livelihood ///
-log_annualincome_HH ///
-log_assets_totalnoland ///
-remittnet_HH ///
-ownland ///
-housetitle
-
-global family ///
-HHsize ///
-HH_count_child ///
-sexratio ///
-nonworkersratio ///
-stem
-
-global head ///
-head_female ///
-head_age ///
-head_occ1 ///
-head_occ2 ///
-head_occ4 ///
-head_occ5 ///
-head_occ6 ///
-head_occ7 ///
-head_educ2 ///
-head_educ3 ///
-head_nonmarried
-
-global shock ///
-dummymarriage ///
-dummydemonetisation ///
-lock_2 ///
-lock_3
-
-global invar ///
-caste_2 caste_3 ///
-village_2 village_3 village_4 village_5 village_6 village_7 village_8 village_9 village_10
 
 
 
 *
-mprobit type $livelihood $family $head $shock $invar, baselevel baseoutcome(2)
+fre type
+mlogit type $livelihood $family $head $headX $shock $invar $time, baselevel baseoutcome(2)
 est store mp1
 
 
 esttab mp1 using "mprobit.csv", replace ///
 	label b(3) p(3) eqlabels(none) alignment(S) ///
-	drop(_cons) ///
+	keep($marg) ///
 	star(* 0.10 ** 0.05 *** 0.01) ///
 	cells("b(fmt(2)star) se(fmt(2)par)") ///
 	refcat(, nolabel) ///

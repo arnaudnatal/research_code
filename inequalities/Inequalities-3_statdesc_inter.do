@@ -59,11 +59,12 @@ Il y a des différences de composition des ménages entre Dalits et non-Dalits d
 ***** Income level
 use"panel_v6", clear
 
-replace monthlyincome_mpc=monthlyincome_mpc/1000
-tabstat monthlyincome_mpc, stat(min p1 p5 p10 q p90 p95 p99 max) by(year)
+replace monthlyincome_pc=monthlyincome_mpc/1000
+tabstat monthlyincome_pc, stat(mean) by(year)
+tabstat monthlyincome_pc, stat(min p1 p5 p10 q p90 p95 p99 max) by(year)
 
 local ub 18
-violinplot monthlyincome_mpc, over(time) horizontal left dscale(4) noline now ///
+violinplot monthlyincome_pc, over(time) horizontal left dscale(4) noline now ///
 fill(color(black%10)) ///
 box(t(b)) bcolors(plb1) ///
 mean(t(m)) meancolors(plr1) ///
@@ -73,21 +74,55 @@ xtitle("1k rupees") xlabel(0(2)`ub') ///
 ylabel(,grid) ///
 legend(order(4 "IQR" 7 "Median" 10 "Mean") pos(6) col(3) on) ///
 aspectratio() scale(1.2) name(vio, replace) range(0 `ub')
+graph export "Violin.png", as(png) replace
 
 
 ***** Lorenz curves
 use"panel_v6", clear
 
-keep HHID_panel year monthlyincome_mpc
-reshape wide monthlyincome_mpc, i(HHID_panel) j(year)
-lorenz estimate monthlyincome_mpc2010 monthlyincome_mpc2016 monthlyincome_mpc2020, gini
+keep HHID_panel year monthlyincome_pc
+reshape wide monthlyincome_pc, i(HHID_panel) j(year)
+lorenz estimate monthlyincome_pc2010 monthlyincome_pc2016 monthlyincome_pc2020, gini
 lorenz graph, overlay noci legend(pos(6) col(3) order(1 "2010" 2 "2016-17" 3 "2020-21")) xtitle("Population share") ytitle("Cumulative income proportion") title("Lorenz curves") xlabel(0(10)100) ylabel(0(.1)1) nodiagonal aspectratio() scale(1.2) name(lorenz, replace)
+
+
+***** Decile
+use"panel_v6", clear
+replace monthlyincome_pc=monthlyincome_pc/1000
+
+foreach i in 2010 2016 2020 {
+xtile monthlyinc`i'=monthlyincome_pc if year==`i', n(10)
+}
+gen incgroup=.
+foreach i in 2010 2016 2020 {
+replace incgroup=monthlyinc`i' if year==`i'
+drop monthlyinc`i' 
+}
+
+collapse (sum) monthlyincome_pc, by(year incgroup)
+bysort year: egen totincome=sum(monthlyincome_pc)
+gen shareinc=monthlyincome_pc*100/totincome
+
+twoway ///
+(connected shareinc incgroup if year==2010) ///
+(connected shareinc incgroup if year==2016) ///
+(connected shareinc incgroup if year==2020) ///
+, title("Share of total income per capita by decile") ///
+ytitle("%") ylabel(0(5)35) ///
+xtitle("Decile of income per capita") xlabel(1(1)10) ///
+legend(order(1 "2010" 2 "2016-17" 3 "2020-21") pos(6) col(3)) name(decile, replace) scale(1.2)
 
 
 
 ***** Combine
-graph combine vio lorenz, name(comb, replace) note("{it:Note:} The average monthly income per capita is 4600 rupees in 2010, 5600 rupees in 2016-17 and 6100 rupees in 2020-21. The Gini index is 0.31 in 2010," "0.42 in 2016-17 and 0.48 in 2020-21.", size(vsmall))
+graph combine vio lorenz, name(comb, replace) note("{it:Note:} The average monthly income per capita is 4600 rupees in 2010, 5600 rupees in 2016-17 and 6000 rupees in 2020-21. The Gini index is 0.326 in 2010," "0.432 in 2016-17 and 0.495 in 2020-21.", size(vsmall))
 graph export "Income.png", as(png) replace
+
+graph combine vio decile, name(comb2, replace) note("{it:Note:} The average monthly income per capita is 4600 rupees in 2010, 5600 rupees in 2016-17 and 6000 rupees in 2020-21.", size(vsmall))
+graph export "Income2.png", as(png) replace
+
+grc1leg decile lorenz, name(comb3, replace) note("{it:Note:} The Gini index is 0.326 in 2010, 0.432 in 2016-17 and 0.495 in 2020-21.", size(vsmall)) leg(lorenz)
+graph export "Income3.png", as(png) replace
 
 
 ****************************************
@@ -117,18 +152,18 @@ graph export "Income.png", as(png) replace
 ***** Decomposition Gini by income source
 use"panel_v6", clear
 
-global MPC annualincome_compo2_mpc incagrise_mpc incagricasual_mpc incnonagricasual_mpc incnonagrireg_mpc incnonagrise_mpc incnrega_mpc
+global PC annualincome_compo2_pc incagrise_pc incagricasual_pc incnonagricasual_pc incnonagrireg_pc incnonagrise_pc incnrega_pc
 
-descogini $MPC if year==2010
-descogini $MPC if year==2016
-descogini $MPC if year==2020
+descogini $PC if year==2010
+descogini $PC if year==2016
+descogini $PC if year==2020
 
 * With pension and remittances
-global MPC annualincome_compo3_mpc incagrise_mpc incagricasual_mpc incnonagricasual_mpc incnonagrireg_mpc incnonagrise_mpc incnrega_mpc pension_mpc remreceived_mpc
+global PC annualincome_compo3_pc incagrise_pc incagricasual_pc incnonagricasual_pc incnonagrireg_pc incnonagrise_pc incnrega_pc pension_pc remreceived_pc
 
-descogini $MPC if year==2010
-descogini $MPC if year==2016
-descogini $MPC if year==2020
+descogini $PC if year==2010
+descogini $PC if year==2016
+descogini $PC if year==2020
 
 
 
@@ -229,8 +264,8 @@ graph export "Decompo.png", as(png) replace
 
 use"panel_v6", clear
 
-replace monthlyincome_mpc=monthlyincome_mpc/1000
-rename monthlyincome_mpc income_m
+replace monthlyincome_pc=monthlyincome_pc/1000
+rename monthlyincome_pc income_m
 gen income_se=income_m
 gen income_iqr=income_m
 
@@ -257,7 +292,7 @@ twoway ///
 (rarea income_ub income_lb year if caste==2, color(plr1%10)) ///
 (connected income_m year if caste==3, color(plg1)) ///
 (rarea income_ub income_lb year if caste==3, color(plg1%10)) ///
-, title("Monthly income per capita") ytitle("1k rupees") ylabel(4(1)10) ///
+, title("Monthly income per capita") ytitle("1k rupees") ylabel(1(1)7) ///
 xtitle("") ///
 legend(order(1 "Dalits" 3 "Middle castes" 5 "Upper castes") pos(6) col(3)) ///
 scale(1.2) name(incomecaste, replace)
@@ -268,7 +303,7 @@ twoway ///
 (connected growth year if caste==1, color(ply1)) ///
 (connected growth year if caste==2, color(plr1)) ///
 (connected growth year if caste==3, color(plg1)) ///
-, title("Growth rate (base 100 in 2010)") ytitle("") ylabel(100(10)160) ///
+, title("Growth rate (base 100 in 2010)") ytitle("") ylabel(100(10)170) ///
 xtitle("") ///
 legend(order(1 "Dalits" 2 "Middle castes" 3 "Upper castes") pos(6) col(3)) ///
 scale(1.2) name(growthcaste, replace)
@@ -420,74 +455,95 @@ graph export "Occ2.png", as(png) replace
 
 
 
-
-
-
-
-
-
-
-
 ****************************************
-* Intra-HH
+* Quintiles
 ****************************************
-cls
 use"panel_v6", clear
 
-
-* Categories
-ta type year
-ta type year, col nofreq
-
-cls
 foreach i in 2010 2016 2020 {
-foreach x in log_annualincome_HH log_assets_totalnoland remittnet_HH ownland housetitle HHsize HH_count_child sexratio nonworkersratio stem head_female head_age head_occ1 head_occ2 head_occ4 head_occ5 head_occ6 head_occ7 head_educ2 head_educ3 head_nonmarried dummymarriage dummydemonetisation lock_2 lock_3 caste_2 caste_3 village_2 village_3 village_4 village_5 village_6 village_7 village_8 village_9 village_10 {
-tabstat `x' if year==`i', stat(mean) by(type)
-}
+xtile q_inc_`i'=monthlyincome_pc if year==`i', n(5)
 }
 
+gen q_inc=.
+foreach i in 2010 2016 2020 {
+replace q_inc=q_inc_`i' if year==`i'
+drop q_inc_`i'
+}
 
-
-
-
-
-* Depth
-tabstat absdiffpercent if type==1, stat(n mean q) by(year)
-tabstat absdiffpercent if type==3, stat(n mean q) by(year)
-
-* Graph for M<W
-violinplot absdiffpercent if type==1, over(time) horizontal left dscale(2.8) noline range(-2 102) now ///
-fill(color(black%10)) ///
-box(t(b)) bcolors(plb1) ///
-mean(t(m)) meancolors(plr1) ///
-med(t(m)) medcolors(ananas) ///
-subtitle("Sample 1: Men income < women income") ///
-xtitle("Percent") xlabel(0(10)100) ///
-ylabel(,grid) ///
-legend(order(4 "IQR" 7 "Median" 10 "Mean") pos(6) col(3) on) ///
-note("{it:Note:} For 28 households in 2010, 48 in 2016-17 and 94 in 2020-21.", size(vsmall)) ///
-aspectratio() scale(1.2) name(vio1, replace)
-
-* Graph for M>W
-violinplot absdiffpercent if type==3, over(time) horizontal left dscale(2.8) noline range(-2 102) now ///
-fill(color(black%10)) ///
-box(t(b)) bcolors(plb1) ///
-mean(t(m)) meancolors(plr1) ///
-med(t(m)) medcolors(ananas) ///
-subtitle("Sample 2: Men income > women income") ///
-xtitle("Percent") xlabel(0(10)100) ///
-ylabel(,grid) ///
-legend(order(4 "IQR" 7 "Median" 10 "Mean") pos(6) col(3) on) ///
-note("{it:Note:} For 357 households in 2010, 412 in 2016-17 and 502 in 2020-21.", size(vsmall)) ///
-aspectratio() scale(1.2) name(vio2, replace)
-
-* Combine
-grc1leg vio1 vio2, title("Relative difference in incomes between men and women") name(comb, replace)
-graph export "Intra.png", as(png) replace
-
-
+ta q_inc caste if year==2010, row nofreq chi2
+ta q_inc caste if year==2016, row nofreq chi2
+ta q_inc caste if year==2020, row nofreq chi2
 
 ****************************************
 * END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Ineq mesures by group
+****************************************
+use"panel_v6", clear
+
+replace monthlyincome_pc=monthlyincome_pc/1000
+ta monthlyincome_pc
+
+***** Stat
+cls
+* 2010
+ineqdeco monthlyincome_pc if year==2010, by(caste)
+
+cls
+* 2016
+ineqdeco monthlyincome_pc if year==2016, by(caste)
+
+cls
+* 2020
+ineqdeco monthlyincome_pc if year==2020, by(caste)
+
+
+***** Std Err.
+ineqerr monthlyincome_pc if year==2010, reps(200)
+ineqerr monthlyincome_pc if year==2016, reps(200)
+ineqerr monthlyincome_pc if year==2020, reps(200)
+
+
+
+
+
+
+
+
+
+
+/*
+GE(0)=déviation logarithmique moyenne
+GE(1)=Theil
+GE(2)=Demi coeff de variation au carré
+
+between + within = overall pour GE, peut être passé en % ?
+
+L’interprétation du coefficient de Gini est très intuitive. En multipliant le coefficient par deux et par le revenu moyen, on obtient l’écart de revenu attendu entre deux individus choisis au hasard au sein de la population.
+*/
+
+****************************************
+* END
+
+
+
+
+
+
+
 
 
