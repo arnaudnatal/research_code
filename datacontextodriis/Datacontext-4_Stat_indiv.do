@@ -352,113 +352,85 @@ ta employed year if caste==1, col nofreq
 ta employed year if caste==2, col nofreq
 ta employed year if caste==3, col nofreq
 
-keep HHID_panel INDID_panel year employed caste sex
 
-rename employed occup1
-gen occup2=occup1
-recode occup2 (1=0) (0=1)
+****************************************
+* END
 
-********** Graph
-set graph off
-*** Total
+
+
+
+
+
+
+****************************************
+* Jalil note Dauphine
+****************************************
+cls
 preserve
-collapse (mean) occup1 occup2, by(year)
-reshape long occup, i(year) j(p)
-replace occup=occup*100
-label define p 1"Occupied" 2"Unoccupied"
-label values p p
-graph bar occup, stack over(p, lab(angle(45))) over(year, lab(angle(90))) ///
-asy ytitle("%") title("Total") legend(col(3) pos(6)) ///
-ylab(0(20)100) ymtick(0(10)100) ///
-bar(1, fcolor(gs14)) bar(2, fcolor(gs10)) bar(3, fcolor(gs5)) ///
-name(p_total, replace)
+use"NEEMSIS2-occupnew", clear
+ta kindofwork occupation
 restore
 
-*** Male
-preserve
-keep if sex==1
-collapse (mean) occup1 occup2, by(year)
-reshape long occup, i(year) j(p)
-replace occup=occup*100
-label define p 1"Occupied" 2"Unoccupied"
-label values p p
-graph bar occup, stack over(p, lab(angle(45))) over(year, lab(angle(90))) ///
-asy ytitle("%") title("Male") legend(col(3) pos(6)) ///
-ylab(0(20)100) ymtick(0(10)100) ///
-bar(1, fcolor(gs14)) bar(2, fcolor(gs10)) bar(3, fcolor(gs5)) ///
-name(p_male, replace)
-restore
 
-*** Female
-preserve
+
+
+* Sans la variable emploi de Cécile
+use"panel_indiv_v0.dta", clear
+
+replace mainocc_occupation_indiv=0 if age>15 & mainocc_occupation_indiv==.
+rename mainocc_occupation_indiv moc
+
+fre sex
 keep if sex==2
-collapse (mean) occup1 occup2, by(year)
-reshape long occup, i(year) j(p)
-replace occup=occup*100
-label define p 1"Occupied" 2"Unoccupied"
-label values p p
-graph bar occup, stack over(p, lab(angle(45))) over(year, lab(angle(90))) ///
-asy ytitle("%") title("Female") legend(col(3) pos(6)) ///
-ylab(0(20)100) ymtick(0(10)100) ///
-bar(1, fcolor(gs14)) bar(2, fcolor(gs10)) bar(3, fcolor(gs5)) ///
-name(p_female, replace)
-restore
+ta moc caste if year==2010
+ta moc caste if year==2016
+ta moc caste if year==2020
 
-*** Dalits
-preserve
-keep if caste==1
-collapse (mean) occup1 occup2, by(year)
-reshape long occup, i(year) j(p)
-replace occup=occup*100
-label define p 1"Occupied" 2"Unoccupied"
-label values p p
-graph bar occup, stack over(p, lab(angle(45))) over(year, lab(angle(90))) ///
-asy ytitle("%") title("Dalits") legend(col(3) pos(6)) ///
-ylab(0(20)100) ymtick(0(10)100) ///
-bar(1, fcolor(gs14)) bar(2, fcolor(gs10)) bar(3, fcolor(gs5)) ///
-name(p_dalits, replace)
-restore
+ta moc caste if year==2010, col nofreq
+ta moc caste if year==2016, col nofreq
+ta moc caste if year==2020, col nofreq
 
-*** Middle
-preserve
-keep if caste==2
-collapse (mean) occup1 occup2, by(year)
-reshape long occup, i(year) j(p)
-replace occup=occup*100
-label define p 1"Occupied" 2"Unoccupied"
-label values p p
-graph bar occup, stack over(p, lab(angle(45))) over(year, lab(angle(90))) ///
-asy ytitle("%") title("Middle") legend(col(3) pos(6)) ///
-ylab(0(20)100) ymtick(0(10)100) ///
-bar(1, fcolor(gs14)) bar(2, fcolor(gs10)) bar(3, fcolor(gs5)) ///
-name(p_middle, replace)
-restore
 
-*** Upper
-preserve
-keep if caste==3
-collapse (mean) occup1 occup2, by(year)
-reshape long occup, i(year) j(p)
-replace occup=occup*100
-label define p 1"Occupied" 2"Unoccupied"
-label values p p
-graph bar occup, stack over(p, lab(angle(45))) over(year, lab(angle(90))) ///
-asy ytitle("%") title("Upper") legend(col(3) pos(6)) ///
-ylab(0(20)100) ymtick(0(10)100) ///
-bar(1, fcolor(gs14)) bar(2, fcolor(gs10)) bar(3, fcolor(gs5)) ///
-name(p_upper, replace)
-restore
 
-set graph on
 
-*** Combine
-grc1leg p_total p_male p_female p_dalits p_middle p_upper, col(3) note("Individuals aged 15 and over.", size(vsmall)) name(p_comb, replace)
-graph export "Emp_share.pdf", as(pdf) replace
-graph export "Emp_share.png", as(png) replace
+
+
+
+* Variable emploi de Cécile
+use"panel_indiv_v0.dta", clear
+fre employed
+fre mainocc_occupation_indiv
+
+ta mainocc_occupation_indiv employed, m
+
+clonevar moc=mainocc_occupation_indiv
+replace moc=0 if employed==0
+
+ta employed
+ta mainocc_occupation_indiv
+ta moc
+ta moc employed, m
+
+fre sex
+keep if sex==2
+ta moc year if caste==1
+ta moc year if caste==2
+ta moc year if caste==3
+
+ta moc caste if year==2010, col nofreq
+ta moc caste if year==2016, col nofreq
+
+ta moc year if caste==1, col nofreq
+ta moc year if caste==2, col nofreq
+ta moc year if caste==3, col nofreq
+ta moc year
+ta moc year, col nofreq
 
 
 ****************************************
 * END
+
+
 
 
 
@@ -673,63 +645,6 @@ graph export "Occ_total.png", as(png) replace
 
 ****************************************
 * END
-
-
-
-
-
-
-
-
-
-
-
-****************************************
-* Employment only for employed=1
-****************************************
-cls
-use"panel_indiv_v0.dta", clear
-
-
-*** Selection Cécile
-drop if employed==.
-drop if employed==0
-ta year
-
-*** Selection Arnaud
-*drop if workingage==0
-*drop if mainocc_occupation_indiv==0
-ta year
-
-
-*** Graph bar
-fre mainocc_occupation_indiv
-ta mainocc_occupation_indiv, gen(perc)
-
-
-*** For poster
-preserve
-collapse (mean) perc*, by(year)
-reshape long perc, i(year) j(occ)
-replace perc=perc*100
-label define occupcode 1"Agri SE" 2"Agri casual" 3"Casual" 4"Reg non-quali" 5"Reg quali" 6"SE" 7"NREGA", modify
-label values occ occupcode
-graph bar perc, over(year, lab(angle())) over(occ, lab(angle())) ///
-asy ytitle("% for each year") title("Distribution of main occupations") legend(col(3) pos(6)) ///
-ylab(0(10)60) ///
-bar(1, fcolor(gs14)) bar(2, fcolor(gs10)) bar(3, fcolor(gs5)) ///
-name(occ, replace) ///
-blabel(total, format(%4.1f) size(vsmall)) ///
-legend(order(1 "2010" 2 "2016-17" 3 "2020-21"))
-graph export "Occ_post.png", as(png) replace
-restore
-
-
-****************************************
-* END
-
-
-
 
 
 

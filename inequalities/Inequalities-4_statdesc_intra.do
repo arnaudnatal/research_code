@@ -13,6 +13,53 @@ do"C:\Users\Arnaud\Documents\GitHub\folderanalysis\inequalities.do"
 
 
 
+****************************************
+* Gini by group
+****************************************
+cls
+use"panelindiv_v0", clear
+
+* By HH
+encode HHID_panel, gen(HHcode)
+order HHID_panel HHcode
+qui ineqdeco mainocc_annualincome_indiv if year==2010, by(HHcode)
+foreach x in ge0 ge1 ge2 within_ge0 within_ge1 within_ge2 between_ge0 between_ge1 between_ge2 {
+local `x'=round(r(`x'),0.001)
+}
+dis _skip(3) "GE(0)" _skip(2) "GE(1)" _skip(2) "GE(2)" _newline ///
+"O" _skip(2) "`ge0'" _skip(3)"`ge1'" _skip(3) "`ge2'"  _newline ///
+"W" _skip(2) "`within_ge0'" _skip(3) "`within_ge1'" _skip(3) "`within_ge2'"  _newline ///
+"B" _skip(2) "`between_ge0'" _skip(3) "`between_ge1'" _skip(3) "`between_ge2'"
+
+* By sex
+qui ineqdeco mainocc_annualincome_indiv if year==2010, by(sex)
+foreach x in ge0 ge1 ge2 within_ge0 within_ge1 within_ge2 between_ge0 between_ge1 between_ge2 {
+local `x'=round(r(`x'),0.001)
+}
+dis _skip(3) "GE(0)" _skip(2) "GE(1)" _skip(2) "GE(2)" _newline ///
+"O" _skip(2) "`ge0'" _skip(3)"`ge1'" _skip(3) "`ge2'"  _newline ///
+"W" _skip(2) "`within_ge0'" _skip(3) "`within_ge1'" _skip(3) "`within_ge2'"  _newline ///
+"B" _skip(2) "`between_ge0'" _skip(3) "`between_ge1'" _skip(3) "`between_ge2'"
+
+* By caste
+qui ineqdeco mainocc_annualincome_indiv if year==2010, by(caste)
+foreach x in ge0 ge1 ge2 within_ge0 within_ge1 within_ge2 between_ge0 between_ge1 between_ge2 {
+local `x'=round(r(`x'),0.001)
+}
+dis _skip(3) "GE(0)" _skip(2) "GE(1)" _skip(2) "GE(2)" _newline ///
+"O" _skip(2) "`ge0'" _skip(3)"`ge1'" _skip(3) "`ge2'"  _newline ///
+"W" _skip(2) "`within_ge0'" _skip(3) "`within_ge1'" _skip(3) "`within_ge2'"  _newline ///
+"B" _skip(2) "`between_ge0'" _skip(3) "`between_ge1'" _skip(3) "`between_ge2'"
+
+
+****************************************
+* END
+
+
+
+
+
+
 
 
 
