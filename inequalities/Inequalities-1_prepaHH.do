@@ -282,6 +282,11 @@ keep if _merge==3
 drop _merge
 rename HHID2020 HHID
 
+* GPS
+merge 1:1 HHID_panel using "raw/NEEMSIS2-GPS", keepusing(jatisdetails jatis)
+keep if _merge==3
+drop _merge
+
 * Year
 gen year=2020
 
@@ -314,7 +319,6 @@ use"temp_NEEMSIS2", clear
 
 append using "temp_NEEMSIS1"
 append using "temp_RUME"
-
 
 fre house
 label define house 1"Own house" 2"Joint house" 3"Family property" 4"Rental" 77"Others", modify
@@ -353,7 +357,7 @@ recode dummymarriage (.=0)
 
 * Caste
 *tostring year, replace
-merge 1:1 HHID_panel year using "raw/Panel-Caste_HH_long", keepusing(caste)
+merge 1:1 HHID_panel year using "raw/Panel-Caste_HH_long", keepusing(caste jatiscorr)
 keep if _merge==3
 drop _merge
 ta caste
@@ -1288,7 +1292,31 @@ gen head_femaleX`x'=head_female*head_`x'
 bysort HHID_panel: egen mean_head_femaleX`x'=mean(head_femaleX`x')
 }
 
+* Jatis and caste new
+drop jatisdetails jatis
+rename jatiscorr jatis
 
+merge 1:1 HHID_panel year using "raw/JatisCastePanel"
+keep if _merge==3
+drop _merge
+ta caste casten
+drop jatis caste
+rename casten caste
+rename jatisn jatis
+encode jatis, gen(jatis_code)
+drop jatis
+rename jatis_code jatis
+
+* 
+drop dalits caste_1 caste_2 caste_3
+gen dalits=.
+replace dalits=1 if caste==1
+replace dalits=0 if caste==2
+replace dalits=0 if caste==3
+
+ta caste, gen(caste_)
+
+order jatis caste caste_1 caste_2 caste_3 dalits, after(livingarea)
 
 save "panel_v6", replace
 ****************************************

@@ -264,19 +264,188 @@ recode moc_indiv (0=.) (5=4) (6=5) (7=6)
 label define moc_indiv 1"Agri self-employed" 2"Agri casual" 3"Non-agri casual" 4"Non-agri regular" 5"Non-agri self-employed" 6"MGNREGA"
 label values moc_indiv moc_indiv
 
-* Dalits
+* Jatis caste
+drop caste
+
+merge m:1 HHID_panel year using "raw/JatisCastePanel"
+keep if _merge==3
+drop _merge
+rename casten caste
+rename jatisn jatis
+encode jatis, gen(jatis_code)
+drop jatis
+rename jatis_code jatis
+
+* 
 gen dalits=.
 replace dalits=1 if caste==1
 replace dalits=0 if caste==2
 replace dalits=0 if caste==3
-label define dalits 0"Non-dalits" 1"Dalits"
-label values dalits dalits
 
+ta caste, gen(caste_)
+
+order jatis caste caste_1 caste_2 caste_3 dalits, after(age)
 
 save"panelindiv_v0", replace
 ****************************************
 * END
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Base occupations
+****************************************
+
+********** 2010
+use"raw\RUME-occupnew.dta", clear
+
+keep HHID2010 INDID2010 year occupationid occupationname kindofwork annualincome profession sector occupation construction_coolie construction_regular construction_qualified dummymainoccupation_indiv annualincome_indiv nboccupation_indiv
+
+* Indiv charact
+merge m:1 HHID2010 INDID2010 using"raw/RUME-HH", keepusing(name age sex dummyworkedpastyear relationshiptohead)
+keep if _merge==3
+drop _merge
+
+* Panel
+merge m:m HHID2010 using"raw/keypanel-HH_wide", keepusing(HHID_panel)
+keep if _merge==3
+drop _merge
+
+merge m:m HHID2010 INDID2010 using"raw/keypanel-Indiv_wide", keepusing(INDID_panel)
+keep if _merge==3
+drop _merge HHID2010 INDID2010
+
+order HHID_panel INDID_panel year age sex dummyworkedpastyear
+
+save"tempRUME", replace
+
+
+
+********** 2016
+use"raw\NEEMSIS1-occupnew.dta", clear
+
+keep HHID2016 INDID2016 year occupationid occupationname kindofwork annualincome profession sector occupation construction_coolie construction_regular construction_qualified dummymainoccupation_indiv annualincome_indiv nboccupation_indiv
+
+* Indiv charact
+merge m:1 HHID2016 INDID2016 using"raw/NEEMSIS1-HH", keepusing(name age sex dummyworkedpastyear livinghome relationshiptohead)
+keep if _merge==3
+drop _merge
+
+* Panel
+merge m:m HHID2016 using"raw/keypanel-HH_wide", keepusing(HHID_panel)
+keep if _merge==3
+drop _merge
+
+tostring INDID2016, replace
+merge m:m HHID2016 INDID2016 using"raw/keypanel-Indiv_wide", keepusing(INDID_panel)
+keep if _merge==3
+drop _merge HHID2016 INDID2016
+
+order HHID_panel INDID_panel year age sex dummyworkedpastyear
+
+save"tempNEEMSIS1", replace
+
+
+
+********** 2020
+use"raw\NEEMSIS2-occupnew.dta", clear
+
+keep HHID2020 INDID2020 year occupationid occupationname kindofwork annualincome profession sector occupation construction_coolie construction_regular construction_qualified dummymainoccupation_indiv annualincome_indiv nboccupation_indiv
+
+* Indiv charact
+merge m:1 HHID2020 INDID2020 using"raw/NEEMSIS2-HH", keepusing(name age sex dummyworkedpastyear livinghome dummylefthousehold relationshiptohead)
+keep if _merge==3
+drop _merge
+
+* Panel
+merge m:m HHID2020 using"raw/keypanel-HH_wide", keepusing(HHID_panel)
+keep if _merge==3
+drop _merge
+
+tostring INDID2020, replace
+merge m:m HHID2020 INDID2020 using"raw/keypanel-Indiv_wide", keepusing(INDID_panel)
+keep if _merge==3
+drop _merge HHID202 INDID2020
+
+order HHID_panel INDID_panel year age sex dummyworkedpastyear
+
+save"tempNEEMSIS2", replace
+
+
+***** Append
+use"tempRUME", clear
+
+append using "tempNEEMSIS1"
+append using "tempNEEMSIS2"
+
+
+save"panelocc_v0", replace
+
+
+
+***** Modifications
+use"panelocc_v0", clear
+
+foreach x in annualincome annualincome_indiv {
+replace `x'=`x'*(100/54) if year==2010
+replace `x'=`x'*(100/86) if year==2016
+replace `x'=(`x'/12)
+replace `x'=round(`x',0.01)
+}
+rename annualincome monthlyincome
+rename annualincome_indiv tot_monthlyincome
+
+drop construction_coolie construction_regular construction_qualified
+
+* Merge caste and jatis
+merge m:1 HHID_panel year using "raw/JatisCastePanel"
+keep if _merge==3
+drop _merge
+rename casten caste
+rename jatisn jatis
+order HHID_panel INDID_panel year name age sex relationshiptohead jatis caste livinghome dummylefthousehold
+
+save"panelocc_v1", replace
+
+
+***** Selection
+use"panelocc_v1", clear
+
+fre livinghome
+drop if livinghome==4
+
+fre dummylefthousehold
+
+drop livinghome dummylefthousehold dummyworkedpastyear occupationid
+
+sort HHID_panel INDID_panel year occupationname
+
+fre occupation
+list HHID_panel INDID_panel year kindofwork occupationname monthlyincome if occupation==0, clean noobs
+drop if occupation==0
+
+fre occupation
+codebook occupation
+label define occupcode 1"Agri self-employed" 2"Agri casual" 3"Casual" 4"Reg non-qualified" 5"Reg qualified" 6"Self-employed" 7"MGNREGA", replace
+fre occupation
+
+
+save"panelocc_v2", replace
+****************************************
+* END
 
 
 

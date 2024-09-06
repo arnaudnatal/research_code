@@ -16,6 +16,7 @@ do"C:\Users\Arnaud\Documents\GitHub\folderanalysis\inequalities.do"
 
 
 
+
 ****************************************
 * Evolution of HH composition
 ****************************************
@@ -55,10 +56,8 @@ Il y a des différences de composition des ménages entre Dalits et non-Dalits d
 
 
 ****************************************
-* Graph 1: Income level
+* Income and IQR 
 ****************************************
-
-***** Income level
 use"panel_v6", clear
 
 replace monthlyincome_pc=monthlyincome_mpc/1000
@@ -78,15 +77,20 @@ legend(order(4 "IQR" 7 "Median" 10 "Mean") pos(6) col(3) on) ///
 aspectratio() scale(1.2) name(vio, replace) range(0 `ub')
 graph export "Violin.png", as(png) replace
 
+****************************************
+* END
 
-***** Lorenz curves
-use"panel_v6", clear
 
-keep HHID_panel year monthlyincome_pc
-reshape wide monthlyincome_pc, i(HHID_panel) j(year)
-lorenz estimate monthlyincome_pc2010 monthlyincome_pc2016 monthlyincome_pc2020, gini
-lorenz graph, overlay noci legend(pos(6) col(3) order(1 "2010" 2 "2016-17" 3 "2020-21")) xtitle("Population share") ytitle("Cumulative income proportion") title("Lorenz curves") xlabel(0(10)100) ylabel(0(.1)1) nodiagonal aspectratio() scale(1.2) name(lorenz, replace)
 
+
+
+
+
+
+
+****************************************
+* Ineq income
+****************************************
 
 ***** Decile
 use"panel_v6", clear
@@ -115,16 +119,16 @@ xtitle("Decile of income per capita") xlabel(1(1)10) ///
 legend(order(1 "2010" 2 "2016-17" 3 "2020-21") pos(6) col(3)) name(decile, replace) scale(1.2)
 
 
+***** Lorenz curves
+use"panel_v6", clear
+
+keep HHID_panel year monthlyincome_pc
+reshape wide monthlyincome_pc, i(HHID_panel) j(year)
+lorenz estimate monthlyincome_pc2010 monthlyincome_pc2016 monthlyincome_pc2020, gini
+lorenz graph, overlay noci legend(pos(6) col(3) order(1 "2010" 2 "2016-17" 3 "2020-21")) xtitle("Population share") ytitle("Cumulative income proportion") title("Lorenz curves") xlabel(0(10)100) ylabel(0(.1)1) nodiagonal aspectratio() scale(1.2) name(lorenz, replace)
+
 
 ***** Combine
-/*
-graph combine vio lorenz, name(comb, replace) note("{it:Note:} The average monthly income per capita is 4600 rupees in 2010, 5600 rupees in 2016-17 and 6000 rupees in 2020-21. The Gini index is 0.326 in 2010," "0.432 in 2016-17 and 0.495 in 2020-21.", size(vsmall))
-graph export "Income.png", as(png) replace
-
-graph combine vio decile, name(comb2, replace) note("{it:Note:} The average monthly income per capita is 4600 rupees in 2010, 5600 rupees in 2016-17 and 6000 rupees in 2020-21.", size(vsmall))
-graph export "Income2.png", as(png) replace
-*/
-
 grc1leg decile lorenz, name(comb3, replace) note("{it:Note:} The Gini index is 0.326 in 2010, 0.432 in 2016-17 and 0.495 in 2020-21.", size(vsmall)) leg(lorenz)
 graph export "IneqInc.png", as(png) replace
 
@@ -150,7 +154,7 @@ graph export "IneqInc.png", as(png) replace
 
 
 ****************************************
-* Graph 2: Gini decomposition
+* Gini decomposition
 ****************************************
 
 ***** Decomposition Gini by income source
@@ -263,9 +267,8 @@ graph export "Decompo.png", as(png) replace
 
 
 ****************************************
-* Graph 3: Income by caste
+* Evolution of income level by caste
 ****************************************
-
 use"panel_v6", clear
 
 replace monthlyincome_pc=monthlyincome_pc/1000
@@ -334,133 +337,9 @@ graph export "Income_caste.png", as(png) replace
 
 
 
-****************************************
-* Income by decile for each year
-****************************************
-use"panel_v6", clear
-replace monthlyincome_pc=monthlyincome_pc/1000
-
-foreach i in 2010 2016 2020 {
-xtile monthlyinc`i'=monthlyincome_pc if year==`i', n(10)
-}
-gen incgroup=.
-foreach i in 2010 2016 2020 {
-replace incgroup=monthlyinc`i' if year==`i'
-drop monthlyinc`i' 
-}
-
-foreach x in incagrise incagricasual incnonagricasual incnonagrireg incnonagrise incnrega {
-replace share`x'_HH=share`x'_HH*100
-rename share`x'_HH s_`x'
-}
-
-
-collapse (mean) s_incagrise s_incagricasual s_incnonagricasual s_incnonagrireg s_incnonagrise s_incnrega, by(time incgroup)
-
-gen sum1=s_incagrise
-gen sum2=sum1+s_incagricasual
-gen sum3=sum2+s_incnonagricasual
-gen sum4=sum3+s_incnonagrireg
-gen sum5=sum4+s_incnonagrise
-gen sum6=sum5+s_incnrega
-
-* By year
-twoway ///
-(area sum1 incgroup if time==1) ///
-(rarea sum1 sum2 incgroup if time==1) ///
-(rarea sum2 sum3 incgroup if time==1) ///
-(rarea sum3 sum4 incgroup if time==1) ///
-(rarea sum4 sum5 incgroup if time==1) ///
-(rarea sum5 sum6 incgroup if time==1) ///
-, ///
-xlabel(1(1)10) xtitle("Decile of income per capita") ///
-ylabel(0(10)100) ytitle("%") ///
-title("2010") ///
-legend(order(1 "Agri self-employed" 2 "Agri casual" 3 "Casual" 4 "Regular" 5 "Self-employed" 6 "MGNREGA") pos(6) col(3)) ///
-name(compo1, replace)
-
-twoway ///
-(area sum1 incgroup if time==2) ///
-(rarea sum1 sum2 incgroup if time==2) ///
-(rarea sum2 sum3 incgroup if time==2) ///
-(rarea sum3 sum4 incgroup if time==2) ///
-(rarea sum4 sum5 incgroup if time==2) ///
-(rarea sum5 sum6 incgroup if time==2) ///
-, ///
-xlabel(1(1)10) xtitle("Decile of income per capita") ///
-ylabel(0(10)100) ytitle("%") ///
-title("2016-17") ///
-legend(order(1 "Agri self-employed" 2 "Agri casual" 3 "Casual" 4 "Regular" 5 "Self-employed" 6 "MGNREGA") pos(6) col(3)) ///
-name(compo2, replace)
-
-twoway ///
-(area sum1 incgroup if time==3) ///
-(rarea sum1 sum2 incgroup if time==3) ///
-(rarea sum2 sum3 incgroup if time==3) ///
-(rarea sum3 sum4 incgroup if time==3) ///
-(rarea sum4 sum5 incgroup if time==3) ///
-(rarea sum5 sum6 incgroup if time==3) ///
-, ///
-xlabel(1(1)10) xtitle("Decile of income per capita") ///
-ylabel(0(10)100) ytitle("%") ///
-title("2020-21") ///
-legend(order(1 "Agri self-employed" 2 "Agri casual" 3 "Casual" 4 "Regular" 5 "Self-employed" 6 "MGNREGA") pos(6) col(3)) ///
-name(compo3, replace)
-
-grc1leg compo1 compo2 compo3, col(3) name(compo, replace)
-graph export "Compositionincome.png", as(png) replace
-
-
 
 ****************************************
-* END
-
-
-
-
-
-
-
-
-
-
-
-****************************************
-* Income by decile for each year
-****************************************
-use"panelindiv_v0", clear
-
-drop if mainocc_occupation_indiv==0
-ta mainocc_occupation_indiv caste, col nofreq chi2
-
-ta mainocc_occupation_indiv, gen(occ)
-
-collapse (mean) occ*, by(caste year)
-forvalues i=1/7 {
-replace occ`i'=occ`i'*100
-}
-
-/*
-Faire le graphique pour montrer que les Dalits ont moins accès aux emploi SE et agri SE et regular contrairement aux autres.
-Faire un test du khi2
-*/
-
-
-
-****************************************
-* END
-
-
-
-
-
-
-
-
-
-
-****************************************
-* Quintiles
+* Quintiles of income by caste
 ****************************************
 use"panel_v6", clear
 
@@ -482,51 +361,55 @@ ta q_inc caste if year==2020, row nofreq chi2
 
 
 ***** Graph
-import excel "Quintiles2.xlsx", sheet("Sheet1") firstrow clear
+import excel "Quintiles.xlsx", sheet("Sheet1") firstrow clear
 label define time 1"2010" 2"2016-17" 3"2020-21"
 label values time time
-label define quintile 1"Q1" 2"Q2" 3"Q3" 4"Q4" 5"Q5" 6"Total"
+
+recode quintile (1=1) (2=3) (3=5) (4=7) (5=9) (6=12)
+
+label define quintile 1"Q1" 3"Q2" 5"Q3" 7"Q4" 9"Q5" 12"Total"
 label values quintile quintile
 
 gen sum1=share_dalits
 gen sum2=sum1+share_middle
 gen sum3=sum2+share_upper
 
+
 * By year
 twoway ///
-(bar sum1 quintile if time==1, barwidth(0.7)) ///
-(rbar sum1 sum2 quintile if time==1, barwidth(0.7)) ///
-(rbar sum2 sum3 quintile if time==1, barwidth(0.7)) ///
+(bar sum1 quintile if time==1, barwidth(1.9)) ///
+(rbar sum1 sum2 quintile if time==1, barwidth(1.9)) ///
+(rbar sum2 sum3 quintile if time==1, barwidth(1.9)) ///
 , ///
-xlabel(1(1)6,valuelabel) xtitle("") ///
+xlabel(1 3 5 7 9 12,valuelabel) xtitle("") ///
 ylabel(0(10)100) ytitle("%") ///
 title("2010") ///
 legend(order(1 "Dalits" 2 "Middle castes" 3 "Upper castes") pos(6) col(3)) ///
-note("Pearson Chi2(8)=8.07   Pr=0.43", size(small)) ///
+note("Pearson Chi2(8)=9.04   Pr=0.34", size(small)) ///
 name(compo1, replace)
 
 twoway ///
-(bar sum1 quintile if time==2, barwidth(0.7)) ///
-(rbar sum1 sum2 quintile if time==2, barwidth(0.7)) ///
-(rbar sum2 sum3 quintile if time==2, barwidth(0.7)) ///
+(bar sum1 quintile if time==2, barwidth(1.9)) ///
+(rbar sum1 sum2 quintile if time==2, barwidth(1.9)) ///
+(rbar sum2 sum3 quintile if time==2, barwidth(1.9)) ///
 , ///
-xlabel(1(1)6,valuelabel) xtitle("") ///
+xlabel(1 3 5 7 9 12,valuelabel) xtitle("") ///
 ylabel(0(10)100) ytitle("%") ///
 title("2016-17") ///
 legend(order(1 "Dalits" 2 "Middle castes" 3 "Upper castes") pos(6) col(3)) ///
-note("Pearson Chi2(8)=31.51   Pr=0.00", size(small)) ///
+note("Pearson Chi2(8)=29.90   Pr=0.00", size(small)) ///
 name(compo2, replace)
 
 twoway ///
-(bar sum1 quintile if time==3, barwidth(0.7)) ///
-(rbar sum1 sum2 quintile if time==3, barwidth(0.7)) ///
-(rbar sum2 sum3 quintile if time==3, barwidth(0.7)) ///
+(bar sum1 quintile if time==3, barwidth(1.9)) ///
+(rbar sum1 sum2 quintile if time==3, barwidth(1.9)) ///
+(rbar sum2 sum3 quintile if time==3, barwidth(1.9)) ///
 , ///
-xlabel(1(1)6,valuelabel) xtitle("") ///
+xlabel(1 3 5 7 9 12,valuelabel) xtitle("") ///
 ylabel(0(10)100) ytitle("%") ///
 title("2020-21") ///
 legend(order(1 "Dalits" 2 "Middle castes" 3 "Upper castes") pos(6) col(3)) ///
-note("Pearson Chi2(8)=39.96   Pr=0.00", size(small)) ///
+note("Pearson Chi2(8)=34.81   Pr=0.00", size(small)) ///
 name(compo3, replace)
 
 grc1leg compo1 compo2 compo3, col(3) name(comp, replace)
@@ -548,8 +431,101 @@ graph export "Quintile.png", as(png) replace
 
 
 
+
+
+
+
 ****************************************
-* Ineq mesures by group
+* Caste and occupations
+****************************************
+cls
+use"panelocc_v2", clear
+
+ta occupation caste, col nofreq chi2
+
+ta occupation caste if year==2010, row nofreq chi2
+ta occupation caste if year==2016, row nofreq chi2
+ta occupation caste if year==2020, row nofreq chi2
+
+
+***** Graph
+import excel "CastesOccupations.xlsx", sheet("Sheet1") firstrow clear
+label define time 1"2010" 2"2016-17" 3"2020-21"
+label values time time
+
+recode occupation (1=1) (2=3) (3=5) (4=7) (5=9) (6=11) (7=13) (8=16)
+
+label define occupation 1"Agri self-employed" 3"Agri casual" 5"Casual" 7"Reg non-quali" 9"Reg qualified" 11"Self-employed" 13"MGNREGA" 16"Total"
+label values occupation occupation
+
+gen sum1=share_dalits
+gen sum2=sum1+share_middle
+gen sum3=sum2+share_upper
+
+
+* By year
+twoway ///
+(bar sum1 occupation if time==1, barwidth(1.9)) ///
+(rbar sum1 sum2 occupation if time==1, barwidth(1.9)) ///
+(rbar sum2 sum3 occupation if time==1, barwidth(1.9)) ///
+, ///
+xlabel(1 3 5 7 9 11 13 16, angle(45) valuelabel) xtitle("") ///
+ylabel(0(10)100) ytitle("%") ///
+title("2010") ///
+legend(order(1 "Dalits" 2 "Middle castes" 3 "Upper castes") pos(6) col(3)) ///
+note("Pearson Chi2(12)=160.94   Pr=0.00", size(small)) ///
+name(compo1, replace)
+
+twoway ///
+(bar sum1 occupation if time==2, barwidth(1.9)) ///
+(rbar sum1 sum2 occupation if time==2, barwidth(1.9)) ///
+(rbar sum2 sum3 occupation if time==2, barwidth(1.9)) ///
+, ///
+xlabel(1 3 5 7 9 11 13 16, angle(45) valuelabel) xtitle("") ///
+ylabel(0(10)100) ytitle("%") ///
+title("2016-17") ///
+legend(order(1 "Dalits" 2 "Middle castes" 3 "Upper castes") pos(6) col(3)) ///
+note("Pearson Chi2(12)=240.48   Pr=0.00", size(small)) ///
+name(compo2, replace)
+
+twoway ///
+(bar sum1 occupation if time==3, barwidth(1.9)) ///
+(rbar sum1 sum2 occupation if time==3, barwidth(1.9)) ///
+(rbar sum2 sum3 occupation if time==3, barwidth(1.9)) ///
+, ///
+xlabel(1 3 5 7 9 11 13 16, angle(45) valuelabel) xtitle("") ///
+ylabel(0(10)100) ytitle("%") ///
+title("2020-21") ///
+legend(order(1 "Dalits" 2 "Middle castes" 3 "Upper castes") pos(6) col(3)) ///
+note("Pearson Chi2(8)=162.56   Pr=0.00", size(small)) ///
+name(compo3, replace)
+
+
+grc1leg compo1 compo2 compo3, col(3) name(comp, replace)
+graph export "Occupations.png", as(png) replace
+
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Decomposition GE by caste
 ****************************************
 use"panel_v6", clear
 
@@ -589,6 +565,11 @@ L’interprétation du coefficient de Gini est très intuitive. En multipliant l
 
 ****************************************
 * END
+
+
+
+
+
 
 
 
@@ -689,50 +670,91 @@ restore
 
 
 
+
+
+
+
+
+
+
 ****************************************
-* Graph ineq caste
+* Income by decile for each year
 ****************************************
-import excel "GE.xlsx", sheet("Sheet1") firstrow clear
+use"panel_v6", clear
+replace monthlyincome_pc=monthlyincome_pc/1000
 
-label define time 1"2010" 2"2016-17" 3"2020-21"
-label values time time
+foreach i in 2010 2016 2020 {
+xtile monthlyinc`i'=monthlyincome_pc if year==`i', n(10)
+}
+gen incgroup=.
+foreach i in 2010 2016 2020 {
+replace incgroup=monthlyinc`i' if year==`i'
+drop monthlyinc`i' 
+}
 
-label define ge 0"GE(0)" 1"GE(1)" 2"GE(2)"
-label values ge ge
+foreach x in incagrise incagricasual incnonagricasual incnonagrireg incnonagrise incnrega {
+replace share`x'_HH=share`x'_HH*100
+rename share`x'_HH s_`x'
+}
 
-replace type="1" if type=="o"
-replace type="2" if type=="w"
-replace type="3" if type=="b"
-replace type="4" if type=="mb"
-destring type, replace
-label define type 1"Overall" 2"Within" 3"Between" 4"Maximum between"
-label values type type
 
-label define type2 1"Level" 2"Share" 3"Base 100"
-label values type2 type2
+collapse (mean) s_incagrise s_incagricasual s_incnonagricasual s_incnonagrireg s_incnonagrise s_incnrega, by(time incgroup)
 
-* Share within
+gen sum1=s_incagrise
+gen sum2=sum1+s_incagricasual
+gen sum3=sum2+s_incnonagricasual
+gen sum4=sum3+s_incnonagrireg
+gen sum5=sum4+s_incnonagrise
+gen sum6=sum5+s_incnrega
+
+* By year
 twoway ///
-(connected value time if ge==0 & type==2 & type2==2) ///
-(connected value time if ge==1 & type==2 & type2==2) ///
-(connected value time if ge==2 & type==2 & type2==2) ///
-, title("Share") ///
-ytitle("%") ylabel(92(1)100) ///
-xtitle("") xlabel(1 2 3, valuelabel) ///
-legend(order(1 "GE(0)" 2 "GE(1)" 3 "GE(2)") pos(6) col(3)) name(sharew, replace)
+(area sum1 incgroup if time==1) ///
+(rarea sum1 sum2 incgroup if time==1) ///
+(rarea sum2 sum3 incgroup if time==1) ///
+(rarea sum3 sum4 incgroup if time==1) ///
+(rarea sum4 sum5 incgroup if time==1) ///
+(rarea sum5 sum6 incgroup if time==1) ///
+, ///
+xlabel(1(1)10) xtitle("Decile of income per capita") ///
+ylabel(0(10)100) ytitle("%") ///
+title("2010") ///
+legend(order(1 "Agri self-employed" 2 "Agri casual" 3 "Casual" 4 "Regular" 5 "Self-employed" 6 "MGNREGA") pos(6) col(3)) ///
+name(compo1, replace)
 
-* Base 100 within
 twoway ///
-(connected value time if ge==0 & type==2 & type2==3) ///
-(connected value time if ge==1 & type==2 & type2==3) ///
-(connected value time if ge==2 & type==2 & type2==3) ///
-, title("Share") ///
-ytitle("%") ylabel(92(1)100) ///
-xtitle("") xlabel(1 2 3, valuelabel) ///
-legend(order(1 "GE(0)" 2 "GE(1)" 3 "GE(2)") pos(6) col(3)) name(basew, replace)
+(area sum1 incgroup if time==2) ///
+(rarea sum1 sum2 incgroup if time==2) ///
+(rarea sum2 sum3 incgroup if time==2) ///
+(rarea sum3 sum4 incgroup if time==2) ///
+(rarea sum4 sum5 incgroup if time==2) ///
+(rarea sum5 sum6 incgroup if time==2) ///
+, ///
+xlabel(1(1)10) xtitle("Decile of income per capita") ///
+ylabel(0(10)100) ytitle("%") ///
+title("2016-17") ///
+legend(order(1 "Agri self-employed" 2 "Agri casual" 3 "Casual" 4 "Regular" 5 "Self-employed" 6 "MGNREGA") pos(6) col(3)) ///
+name(compo2, replace)
 
+twoway ///
+(area sum1 incgroup if time==3) ///
+(rarea sum1 sum2 incgroup if time==3) ///
+(rarea sum2 sum3 incgroup if time==3) ///
+(rarea sum3 sum4 incgroup if time==3) ///
+(rarea sum4 sum5 incgroup if time==3) ///
+(rarea sum5 sum6 incgroup if time==3) ///
+, ///
+xlabel(1(1)10) xtitle("Decile of income per capita") ///
+ylabel(0(10)100) ytitle("%") ///
+title("2020-21") ///
+legend(order(1 "Agri self-employed" 2 "Agri casual" 3 "Casual" 4 "Regular" 5 "Self-employed" 6 "MGNREGA") pos(6) col(3)) ///
+name(compo3, replace)
 
-
+grc1leg compo1 compo2 compo3, col(3) name(compo, replace)
+graph export "Compositionincome.png", as(png) replace
 
 ****************************************
 * END
+
+
+
