@@ -1318,6 +1318,17 @@ ta caste, gen(caste_)
 
 order jatis caste caste_1 caste_2 caste_3 dalits, after(livingarea)
 
+**
+codebook type
+label define type 1"(c) Women > Men" 2"(b) Men = Women" 3"(a) Men > Women", replace
+
+
+* 
+gen monthlyincome3_pc=annualincome_HH_compo3/(HHsize*12*1000)
+tabstat monthlyincome3_pc monthlyincome_pc, stat(n q)
+
+ta HHsize
+
 save "panel_v6", replace
 ****************************************
 * END

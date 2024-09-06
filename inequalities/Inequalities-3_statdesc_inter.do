@@ -60,18 +60,19 @@ Il y a des différences de composition des ménages entre Dalits et non-Dalits d
 ****************************************
 use"panel_v6", clear
 
-replace monthlyincome_pc=monthlyincome_mpc/1000
-tabstat monthlyincome_pc, stat(mean) by(year)
-tabstat monthlyincome_pc, stat(min p1 p5 p10 q p90 p95 p99 max) by(year)
+drop monthlyincome_pc
+rename monthlyincome3_pc monthlyincome_pc
 
-local ub 18
+tabstat monthlyincome_pc, stat(n mean q iqr) by(year)
+
+local ub 16
 violinplot monthlyincome_pc, over(time) horizontal left dscale(4) noline now ///
 fill(color(black%10)) ///
 box(t(b)) bcolors(plb1) ///
 mean(t(m)) meancolors(plr1) ///
 med(t(m)) medcolors(ananas) ///
 title("Monthly income per capita") ///
-xtitle("1k rupees") xlabel(0(2)`ub') ///
+xtitle("1k rupees") xlabel(0(1)`ub') ///
 ylabel(,grid) ///
 legend(order(4 "IQR" 7 "Median" 10 "Mean") pos(6) col(3) on) ///
 aspectratio() scale(1.2) name(vio, replace) range(0 `ub')
@@ -88,13 +89,17 @@ graph export "Violin.png", as(png) replace
 
 
 
+
+
 ****************************************
 * Ineq income
 ****************************************
 
 ***** Decile
 use"panel_v6", clear
-replace monthlyincome_pc=monthlyincome_pc/1000
+
+drop monthlyincome_pc
+rename monthlyincome3_pc monthlyincome_pc
 
 foreach i in 2010 2016 2020 {
 xtile monthlyinc`i'=monthlyincome_pc if year==`i', n(10)
@@ -114,13 +119,16 @@ twoway ///
 (connected shareinc incgroup if year==2016) ///
 (connected shareinc incgroup if year==2020) ///
 , title("Share of total income per capita by decile") ///
-ytitle("%") ylabel(0(5)35) ///
+ytitle("Percent") ylabel(0(5)35) ///
 xtitle("Decile of income per capita") xlabel(1(1)10) ///
 legend(order(1 "2010" 2 "2016-17" 3 "2020-21") pos(6) col(3)) name(decile, replace) scale(1.2)
 
 
 ***** Lorenz curves
 use"panel_v6", clear
+
+drop monthlyincome_pc
+rename monthlyincome3_pc monthlyincome_pc
 
 keep HHID_panel year monthlyincome_pc
 reshape wide monthlyincome_pc, i(HHID_panel) j(year)
@@ -129,7 +137,7 @@ lorenz graph, overlay noci legend(pos(6) col(3) order(1 "2010" 2 "2016-17" 3 "20
 
 
 ***** Combine
-grc1leg decile lorenz, name(comb3, replace) note("{it:Note:} The Gini index is 0.326 in 2010, 0.432 in 2016-17 and 0.495 in 2020-21.", size(vsmall)) leg(lorenz)
+grc1leg decile lorenz, name(comb3, replace) note("{it:Note:} The Gini index is 0.322 in 2010, 0.422 in 2016-17 and 0.485 in 2020-21.", size(vsmall)) leg(lorenz)
 graph export "IneqInc.png", as(png) replace
 
 
@@ -160,13 +168,9 @@ graph export "IneqInc.png", as(png) replace
 ***** Decomposition Gini by income source
 use"panel_v6", clear
 
-global PC annualincome_compo2_pc incagrise_pc incagricasual_pc incnonagricasual_pc incnonagrireg_pc incnonagrise_pc incnrega_pc
+drop monthlyincome_pc
+rename monthlyincome3_pc monthlyincome_pc
 
-descogini $PC if year==2010
-descogini $PC if year==2016
-descogini $PC if year==2020
-
-* With pension and remittances
 global PC annualincome_compo3_pc incagrise_pc incagricasual_pc incnonagricasual_pc incnonagrireg_pc incnonagrise_pc incnrega_pc pension_pc remreceived_pc
 
 descogini $PC if year==2010
@@ -174,72 +178,81 @@ descogini $PC if year==2016
 descogini $PC if year==2020
 
 
-
 ***** Graph
 import excel "Gini.xlsx", sheet("Sheet1") firstrow clear
-label define occupation 1"Agri self-employed" 2"Agri casual" 3"Casual" 4"Regular" 5"Self-employed" 6"MGNREGA"
+label define occupation 1"Agri self-employed" 2"Agri casual" 3"Casual" 4"Regular" 5"Self-employed" 6"MGNREGA" 7"Pensions" 8"Remittances"
 label values occupation occupation
 
 * Sk
 twoway ///
-(connected Sk year if occupation==1, yline(0, lcolor(black))) ///
-(connected Sk year if occupation==2) ///
-(connected Sk year if occupation==3) ///
-(connected Sk year if occupation==4) ///
-(connected Sk year if occupation==5) ///
-(connected Sk year if occupation==6) ///
+(connected Sk year if occupation==1, color(black)) ///
+(connected Sk year if occupation==2, color(plr1)) ///
+(connected Sk year if occupation==3, color(ply1)) ///
+(connected Sk year if occupation==4, color(plg1)) ///
+(connected Sk year if occupation==5, color(plb1)) ///
+(connected Sk year if occupation==6, color(pll1)) ///
+(connected Sk year if occupation==7, color(gs10)) ///
+(connected Sk year if occupation==8, color(black) lpattern(shortdash)) ///
 , title("Share in total income") ylabel(0(.1).5) ///
 xtitle("") xlabel(2010 2016 2020) ///
-legend(order(1 "Agri self-employed" 2 "Agri casual" 3 "Casual" 4 "Regular" 5 "Self-employed" 6 "MGNREGA") pos(6) col(3)) name(sk, replace)
+legend(order(1 "Agri self-employed" 2 "Agri casual" 3 "Casual" 4 "Regular" 5 "Self-employed" 6 "MGNREGA" 7 "Pension" 8 "Remittances") pos(6) col(4)) name(sk, replace)
 
 * Gk
 twoway ///
-(connected Gk year if occupation==1, yline(0, lcolor(black))) ///
-(connected Gk year if occupation==2) ///
-(connected Gk year if occupation==3) ///
-(connected Gk year if occupation==4) ///
-(connected Gk year if occupation==5) ///
-(connected Gk year if occupation==6) ///
+(connected Gk year if occupation==1, color(black)) ///
+(connected Gk year if occupation==2, color(plr1)) ///
+(connected Gk year if occupation==3, color(ply1)) ///
+(connected Gk year if occupation==4, color(plg1)) ///
+(connected Gk year if occupation==5, color(plb1)) ///
+(connected Gk year if occupation==6, color(pll1)) ///
+(connected Gk year if occupation==7, color(gs10)) ///
+(connected Gk year if occupation==8, color(black) lpattern(shortdash)) ///
 ,title("Income source Gini") ylabel(0.4(.1)1) ///
 xtitle("") xlabel(2010 2016 2020) ///
-legend(order(1 "Agri self-employed" 2 "Agri casual" 3 "Casual" 4 "Regular" 5 "Self-employed" 6 "MGNREGA") pos(6) col(3)) name(gk, replace)
+legend(order(1 "Agri self-employed" 2 "Agri casual" 3 "Casual" 4 "Regular" 5 "Self-employed" 6 "MGNREGA" 7 "Pension" 8 "Remittances") pos(6) col(4)) name(gk, replace)
 
 * Rk
 twoway ///
-(connected Rk year if occupation==1, yline(0, lcolor(black))) ///
-(connected Rk year if occupation==2) ///
-(connected Rk year if occupation==3) ///
-(connected Rk year if occupation==4) ///
-(connected Rk year if occupation==5) ///
-(connected Rk year if occupation==6) ///
+(connected Rk year if occupation==1, color(black)) ///
+(connected Rk year if occupation==2, color(plr1)) ///
+(connected Rk year if occupation==3, color(ply1)) ///
+(connected Rk year if occupation==4, color(plg1)) ///
+(connected Rk year if occupation==5, color(plb1)) ///
+(connected Rk year if occupation==6, color(pll1)) ///
+(connected Rk year if occupation==7, color(gs10)) ///
+(connected Rk year if occupation==8, color(black) lpattern(shortdash)) ///
 , title("Gini correlation with income rankings") ylabel(-.4(.2)1) ///
 xtitle("") xlabel(2010 2016 2020) ///
-legend(order(1 "Agri self-employed" 2 "Agri casual" 3 "Casual" 4 "Regular" 5 "Self-employed" 6 "MGNREGA") pos(6) col(3)) name(rk, replace)
+legend(order(1 "Agri self-employed" 2 "Agri casual" 3 "Casual" 4 "Regular" 5 "Self-employed" 6 "MGNREGA" 7 "Pension" 8 "Remittances") pos(6) col(4)) name(rk, replace)
 
 * Share
 replace Share=0 if Share<0
 twoway ///
-(connected Share year if occupation==1, yline(0, lcolor(black))) ///
-(connected Share year if occupation==2) ///
-(connected Share year if occupation==3) ///
-(connected Share year if occupation==4) ///
-(connected Share year if occupation==5) ///
-(connected Share year if occupation==6) ///
+(connected Share year if occupation==1, color(black)) ///
+(connected Share year if occupation==2, color(plr1)) ///
+(connected Share year if occupation==3, color(ply1)) ///
+(connected Share year if occupation==4, color(plg1)) ///
+(connected Share year if occupation==5, color(plb1)) ///
+(connected Share year if occupation==6, color(pll1)) ///
+(connected Share year if occupation==7, color(gs10)) ///
+(connected Share year if occupation==8, color(black) lpattern(shortdash)) ///
 , title("Share in total-income inequality") ylabel(0(.1).6) ///
 xtitle("") xlabel(2010 2016 2020) ///
-legend(order(1 "Agri self-employed" 2 "Agri casual" 3 "Casual" 4 "Regular" 5 "Self-employed" 6 "MGNREGA") pos(6) col(3)) name(share, replace)
+legend(order(1 "Agri self-employed" 2 "Agri casual" 3 "Casual" 4 "Regular" 5 "Self-employed" 6 "MGNREGA" 7 "Pension" 8 "Remittances") pos(6) col(4)) name(share, replace)
 
 * Percentage
 twoway ///
-(connected Percentage year if occupation==1, yline(0, lcolor(black))) ///
-(connected Percentage year if occupation==2) ///
-(connected Percentage year if occupation==3) ///
-(connected Percentage year if occupation==4) ///
-(connected Percentage year if occupation==5) ///
-(connected Percentage year if occupation==6) ///
-, title("% change in Gini") ylabel(-.2(.1).2) ///
+(connected Percentage year if occupation==1, color(black)) ///
+(connected Percentage year if occupation==2, color(plr1)) ///
+(connected Percentage year if occupation==3, color(ply1)) ///
+(connected Percentage year if occupation==4, color(plg1)) ///
+(connected Percentage year if occupation==5, color(plb1)) ///
+(connected Percentage year if occupation==6, color(pll1)) ///
+(connected Percentage year if occupation==7, color(gs10)) ///
+(connected Percentage year if occupation==8, color(black) lpattern(shortdash)) ///
+, title("Percent change in Gini") ylabel(-.2(.1).2) ///
 xtitle("") xlabel(2010 2016 2020) ///
-legend(order(1 "Agri self-employed" 2 "Agri casual" 3 "Casual" 4 "Regular" 5 "Self-employed" 6 "MGNREGA") pos(6) col(3)) name(percentage, replace)
+legend(order(1 "Agri self-employed" 2 "Agri casual" 3 "Casual" 4 "Regular" 5 "Self-employed" 6 "MGNREGA" 7 "Pension" 8 "Remittances") pos(6) col(4)) name(percentage, replace)
 
 ***** Combine
 grc1leg sk gk rk share percentage, name(decompo, replace)
@@ -271,7 +284,9 @@ graph export "Decompo.png", as(png) replace
 ****************************************
 use"panel_v6", clear
 
-replace monthlyincome_pc=monthlyincome_pc/1000
+drop monthlyincome_pc
+rename monthlyincome3_pc monthlyincome_pc
+
 rename monthlyincome_pc income_m
 gen income_se=income_m
 gen income_iqr=income_m
@@ -343,6 +358,9 @@ graph export "Income_caste.png", as(png) replace
 ****************************************
 use"panel_v6", clear
 
+drop monthlyincome_pc
+rename monthlyincome3_pc monthlyincome_pc
+
 foreach i in 2010 2016 2020 {
 xtile q_inc_`i'=monthlyincome_pc if year==`i', n(5)
 }
@@ -382,10 +400,10 @@ twoway ///
 (rbar sum2 sum3 quintile if time==1, barwidth(1.9)) ///
 , ///
 xlabel(1 3 5 7 9 12,valuelabel) xtitle("") ///
-ylabel(0(10)100) ytitle("%") ///
+ylabel(0(10)100) ytitle("Percent") ///
 title("2010") ///
 legend(order(1 "Dalits" 2 "Middle castes" 3 "Upper castes") pos(6) col(3)) ///
-note("Pearson Chi2(8)=9.04   Pr=0.34", size(small)) ///
+note("Pearson Chi2(8)=12.85   Pr=0.12", size(small)) ///
 name(compo1, replace)
 
 twoway ///
@@ -394,10 +412,10 @@ twoway ///
 (rbar sum2 sum3 quintile if time==2, barwidth(1.9)) ///
 , ///
 xlabel(1 3 5 7 9 12,valuelabel) xtitle("") ///
-ylabel(0(10)100) ytitle("%") ///
+ylabel(0(10)100) ytitle("Percent") ///
 title("2016-17") ///
 legend(order(1 "Dalits" 2 "Middle castes" 3 "Upper castes") pos(6) col(3)) ///
-note("Pearson Chi2(8)=29.90   Pr=0.00", size(small)) ///
+note("Pearson Chi2(8)=39.04   Pr=0.00", size(small)) ///
 name(compo2, replace)
 
 twoway ///
@@ -406,10 +424,10 @@ twoway ///
 (rbar sum2 sum3 quintile if time==3, barwidth(1.9)) ///
 , ///
 xlabel(1 3 5 7 9 12,valuelabel) xtitle("") ///
-ylabel(0(10)100) ytitle("%") ///
+ylabel(0(10)100) ytitle("Percent") ///
 title("2020-21") ///
 legend(order(1 "Dalits" 2 "Middle castes" 3 "Upper castes") pos(6) col(3)) ///
-note("Pearson Chi2(8)=34.81   Pr=0.00", size(small)) ///
+note("Pearson Chi2(8)=36.61   Pr=0.00", size(small)) ///
 name(compo3, replace)
 
 grc1leg compo1 compo2 compo3, col(3) name(comp, replace)
@@ -441,21 +459,33 @@ graph export "Quintile.png", as(png) replace
 cls
 use"panelocc_v2", clear
 
-ta occupation caste, col nofreq chi2
+ta year
 
-ta occupation caste if year==2010, row nofreq chi2
-ta occupation caste if year==2016, row nofreq chi2
-ta occupation caste if year==2020, row nofreq chi2
+fre occupation
+clonevar occupation2=occupation
+order occupation2, after(occupation)
+recode occupation2 (5=4) (6=5) (7=6)
+label define occupcode2 1"Agri SE" 2"Agri casual" 3"Casual" 4"Reg" 5"SE" 6"MGNREGA"
+label values occupation2 occupcode2
+
+ta occupation
+ta occupation2
+
+ta occupation2 caste, col nofreq chi2
+
+ta occupation2 caste if year==2010, row nofreq chi2
+ta occupation2 caste if year==2016, row nofreq chi2
+ta occupation2 caste if year==2020, row nofreq chi2
 
 
 ***** Graph
-import excel "CastesOccupations.xlsx", sheet("Sheet1") firstrow clear
+import excel "CastesOccupations2.xlsx", sheet("Sheet1") firstrow clear
 label define time 1"2010" 2"2016-17" 3"2020-21"
 label values time time
 
-recode occupation (1=1) (2=3) (3=5) (4=7) (5=9) (6=11) (7=13) (8=16)
+recode occupation (1=1) (2=3) (3=5) (4=7) (5=9) (6=11) (7=14)
 
-label define occupation 1"Agri self-employed" 3"Agri casual" 5"Casual" 7"Reg non-quali" 9"Reg qualified" 11"Self-employed" 13"MGNREGA" 16"Total"
+label define occupation 1"Agri SE" 3"Agri casual" 5"Casual" 7"Reg" 9"SE" 11"MGNREGA" 14"Total"
 label values occupation occupation
 
 gen sum1=share_dalits
@@ -469,8 +499,8 @@ twoway ///
 (rbar sum1 sum2 occupation if time==1, barwidth(1.9)) ///
 (rbar sum2 sum3 occupation if time==1, barwidth(1.9)) ///
 , ///
-xlabel(1 3 5 7 9 11 13 16, angle(45) valuelabel) xtitle("") ///
-ylabel(0(10)100) ytitle("%") ///
+xlabel(1 3 5 7 9 11 14, angle(45) valuelabel) xtitle("") ///
+ylabel(0(10)100) ytitle("Percent") ///
 title("2010") ///
 legend(order(1 "Dalits" 2 "Middle castes" 3 "Upper castes") pos(6) col(3)) ///
 note("Pearson Chi2(12)=160.94   Pr=0.00", size(small)) ///
@@ -481,8 +511,8 @@ twoway ///
 (rbar sum1 sum2 occupation if time==2, barwidth(1.9)) ///
 (rbar sum2 sum3 occupation if time==2, barwidth(1.9)) ///
 , ///
-xlabel(1 3 5 7 9 11 13 16, angle(45) valuelabel) xtitle("") ///
-ylabel(0(10)100) ytitle("%") ///
+xlabel(1 3 5 7 9 11 14, angle(45) valuelabel) xtitle("") ///
+ylabel(0(10)100) ytitle("Percent") ///
 title("2016-17") ///
 legend(order(1 "Dalits" 2 "Middle castes" 3 "Upper castes") pos(6) col(3)) ///
 note("Pearson Chi2(12)=240.48   Pr=0.00", size(small)) ///
@@ -493,8 +523,8 @@ twoway ///
 (rbar sum1 sum2 occupation if time==3, barwidth(1.9)) ///
 (rbar sum2 sum3 occupation if time==3, barwidth(1.9)) ///
 , ///
-xlabel(1 3 5 7 9 11 13 16, angle(45) valuelabel) xtitle("") ///
-ylabel(0(10)100) ytitle("%") ///
+xlabel(1 3 5 7 9 11 14, angle(45) valuelabel) xtitle("") ///
+ylabel(0(10)100) ytitle("Percent") ///
 title("2020-21") ///
 legend(order(1 "Dalits" 2 "Middle castes" 3 "Upper castes") pos(6) col(3)) ///
 note("Pearson Chi2(8)=162.56   Pr=0.00", size(small)) ///
@@ -529,8 +559,8 @@ graph export "Occupations.png", as(png) replace
 ****************************************
 use"panel_v6", clear
 
-replace monthlyincome_pc=monthlyincome_pc/1000
-ta monthlyincome_pc
+drop monthlyincome_pc
+rename monthlyincome3_pc monthlyincome_pc
 
 ***** Stat
 cls
@@ -582,8 +612,9 @@ L’interprétation du coefficient de Gini est très intuitive. En multipliant l
 ****************************************
 use"panel_v6", clear
 
-replace monthlyincome_pc=monthlyincome_pc/1000
-ta monthlyincome_pc
+drop monthlyincome_pc
+rename monthlyincome3_pc monthlyincome_pc
+
 
 cls
 foreach y in 2010 2016 2020 {
@@ -681,31 +712,41 @@ restore
 * Income by decile for each year
 ****************************************
 use"panel_v6", clear
-replace monthlyincome_pc=monthlyincome_pc/1000
 
+gen inc_total=annualincome_HH_compo3
+gen inc_agrise=incagrise_HH
+gen inc_agrica=incagricasual_HH
+gen inc_casual=incnonagricasual_HH
+gen inc_regul=incnonagrireg_HH
+gen inc_selfe=incnonagrise_HH
+gen inc_mgnrega=incnrega_HH
+gen inc_pensi=pension_HH
+gen inc_remit=remreceived_HH
+
+* Decile
 foreach i in 2010 2016 2020 {
-xtile monthlyinc`i'=monthlyincome_pc if year==`i', n(10)
+xtile incgrp`i'=inc_total if year==`i', n(10)
 }
 gen incgroup=.
 foreach i in 2010 2016 2020 {
-replace incgroup=monthlyinc`i' if year==`i'
-drop monthlyinc`i' 
+replace incgroup=incgrp`i' if year==`i'
+drop incgrp`i' 
 }
 
-foreach x in incagrise incagricasual incnonagricasual incnonagrireg incnonagrise incnrega {
-replace share`x'_HH=share`x'_HH*100
-rename share`x'_HH s_`x'
+foreach x in agrise agrica casual regul selfe mgnrega pensi remit {
+gen s_`x'=inc_`x'*100/inc_total
 }
 
+collapse (mean) s_agrise s_agrica s_casual s_regul s_selfe s_mgnrega s_pensi s_remit, by(time incgroup)
 
-collapse (mean) s_incagrise s_incagricasual s_incnonagricasual s_incnonagrireg s_incnonagrise s_incnrega, by(time incgroup)
-
-gen sum1=s_incagrise
-gen sum2=sum1+s_incagricasual
-gen sum3=sum2+s_incnonagricasual
-gen sum4=sum3+s_incnonagrireg
-gen sum5=sum4+s_incnonagrise
-gen sum6=sum5+s_incnrega
+gen sum1=s_agrise
+gen sum2=sum1+s_agrica
+gen sum3=sum2+s_casual
+gen sum4=sum3+s_regul
+gen sum5=sum4+s_selfe
+gen sum6=sum5+s_mgnrega
+gen sum7=sum6+s_pensi
+gen sum8=sum7+s_remit
 
 * By year
 twoway ///
@@ -715,11 +756,13 @@ twoway ///
 (rarea sum3 sum4 incgroup if time==1) ///
 (rarea sum4 sum5 incgroup if time==1) ///
 (rarea sum5 sum6 incgroup if time==1) ///
+(rarea sum6 sum7 incgroup if time==1) ///
+(rarea sum7 sum8 incgroup if time==1) ///
 , ///
 xlabel(1(1)10) xtitle("Decile of income per capita") ///
-ylabel(0(10)100) ytitle("%") ///
+ylabel(0(10)100) ytitle("Percent") ///
 title("2010") ///
-legend(order(1 "Agri self-employed" 2 "Agri casual" 3 "Casual" 4 "Regular" 5 "Self-employed" 6 "MGNREGA") pos(6) col(3)) ///
+legend(order(1 "Agri self-employed" 2 "Agri casual" 3 "Casual" 4 "Regular" 5 "Self-employed" 6 "MGNREGA" 7 "Pension" 8 "Remittances") pos(6) col(4)) ///
 name(compo1, replace)
 
 twoway ///
@@ -729,11 +772,13 @@ twoway ///
 (rarea sum3 sum4 incgroup if time==2) ///
 (rarea sum4 sum5 incgroup if time==2) ///
 (rarea sum5 sum6 incgroup if time==2) ///
+(rarea sum6 sum7 incgroup if time==2) ///
+(rarea sum7 sum8 incgroup if time==2) ///
 , ///
 xlabel(1(1)10) xtitle("Decile of income per capita") ///
-ylabel(0(10)100) ytitle("%") ///
+ylabel(0(10)100) ytitle("Percent") ///
 title("2016-17") ///
-legend(order(1 "Agri self-employed" 2 "Agri casual" 3 "Casual" 4 "Regular" 5 "Self-employed" 6 "MGNREGA") pos(6) col(3)) ///
+legend(order(1 "Agri self-employed" 2 "Agri casual" 3 "Casual" 4 "Regular" 5 "Self-employed" 6 "MGNREGA" 7 "Pension" 8 "Remittances") pos(6) col(4)) ///
 name(compo2, replace)
 
 twoway ///
@@ -743,18 +788,18 @@ twoway ///
 (rarea sum3 sum4 incgroup if time==3) ///
 (rarea sum4 sum5 incgroup if time==3) ///
 (rarea sum5 sum6 incgroup if time==3) ///
+(rarea sum6 sum7 incgroup if time==3) ///
+(rarea sum7 sum8 incgroup if time==3) ///
 , ///
 xlabel(1(1)10) xtitle("Decile of income per capita") ///
-ylabel(0(10)100) ytitle("%") ///
+ylabel(0(10)100) ytitle("Percent") ///
 title("2020-21") ///
-legend(order(1 "Agri self-employed" 2 "Agri casual" 3 "Casual" 4 "Regular" 5 "Self-employed" 6 "MGNREGA") pos(6) col(3)) ///
+legend(order(1 "Agri self-employed" 2 "Agri casual" 3 "Casual" 4 "Regular" 5 "Self-employed" 6 "MGNREGA" 7 "Pension" 8 "Remittances") pos(6) col(4)) ///
 name(compo3, replace)
+
 
 grc1leg compo1 compo2 compo3, col(3) name(compo, replace)
 graph export "Compositionincome.png", as(png) replace
 
 ****************************************
 * END
-
-
-
