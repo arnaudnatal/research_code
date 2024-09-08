@@ -53,10 +53,6 @@ drop _merge HHID2010 INDID2010
 gen year=2010
 order HHID_panel INDID_panel year
 
-* Merge inequalities
-merge 1:1 HHID_panel INDID_panel year using "ineqindiv", keepusing(shareindiv annualincome_indiv2 dayinc dayinc_usd_ppp poor_indiv sopl_indiv)
-keep if _merge==3
-drop _merge
 
 save"temp1",replace
 ****************************************
@@ -115,11 +111,6 @@ drop _merge HHID2016 INDID2016
 gen year=2016
 order HHID_panel INDID_panel year
 
-* Merge inequalities
-merge 1:1 HHID_panel INDID_panel year using "ineqindiv", keepusing(shareindiv annualincome_indiv2 dayinc dayinc_usd_ppp poor_indiv sopl_indiv)
-keep if _merge==3
-drop _merge
-
 save"temp2",replace
 ****************************************
 * END
@@ -177,11 +168,6 @@ drop _merge HHID2020 INDID2020
 gen year=2020
 order HHID_panel INDID_panel year
 
-* Merge inequalities
-merge 1:1 HHID_panel INDID_panel year using "ineqindiv", keepusing(shareindiv annualincome_indiv2 dayinc dayinc_usd_ppp poor_indiv sopl_indiv)
-keep if _merge==3
-drop _merge
-
 save"temp3",replace
 ****************************************
 * END
@@ -216,14 +202,6 @@ sort HHID_panel INDID_panel year
 
 
 * Caste
-*tostring year, replace
-merge m:1 HHID_panel year using "raw/Panel-Caste_HH_long", keepusing(caste)
-keep if _merge==3
-drop _merge
-ta caste
-label define castecode 1"Dalits" 2"Middle castes" 3"Upper castes"
-label values caste castecode
-fre caste
 
 
 * Working pop
@@ -252,10 +230,6 @@ ta test
 drop test
 
 
-* Income per capita
-gen annualincome_mpc=annualincome_HH/equimodiscale_HHsize
-
-
 * Recode moc
 fre mainocc_occupation_indiv
 gen moc_indiv=mainocc_occupation_indiv
@@ -265,8 +239,6 @@ label define moc_indiv 1"Agri self-employed" 2"Agri casual" 3"Non-agri casual" 4
 label values moc_indiv moc_indiv
 
 * Jatis caste
-drop caste
-
 merge m:1 HHID_panel year using "raw/JatisCastePanel"
 keep if _merge==3
 drop _merge

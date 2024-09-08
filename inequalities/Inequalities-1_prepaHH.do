@@ -92,10 +92,16 @@ drop test
 gen goldreadyamount=(goldquantity_HH-goldquantitypledge_HH)*2000
 tabstat assets_gold goldreadyamount, stat(n mean cv q)
 
-
 save"temp_RUME", replace
 ****************************************
 * END
+
+
+
+
+
+
+
 
 
 
@@ -184,6 +190,14 @@ tabstat assets_gold goldreadyamount, stat(n mean cv q)
 save"temp_NEEMSIS1", replace
 ****************************************
 * END
+
+
+
+
+
+
+
+
 
 
 
@@ -312,36 +326,42 @@ save"temp_NEEMSIS2", replace
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 ****************************************
 * Panel
 ****************************************
 use"temp_NEEMSIS2", clear
 
+* Append
 append using "temp_NEEMSIS1"
 append using "temp_RUME"
 
+* Housing pour selection
 fre house
 label define house 1"Own house" 2"Joint house" 3"Family property" 4"Rental" 77"Others", modify
 label values house house
 ta house year, m
-*2020
 list HHID_panel year if house==., clean noobs
-
 drop if HHID_panel=="GOV66" & year==2020  
 drop if HHID_panel=="KUV66" & year==2020
 drop if HHID_panel=="GOV64" & year==2020
 drop if HHID_panel=="GOV67" & year==2020
 drop if HHID_panel=="KUV67" & year==2020
 drop if HHID_panel=="GOV65" & year==2020
-
-
 fre housetitle
 label values housetitle housetitle
 ta housetitle year, m
-
-fre typeoffamily
-
-ta livingarea year
 
 * Dummy panel
 bysort HHID_panel: gen n=_N
@@ -355,20 +375,7 @@ sort HHID_panel year
 recode dummydemonetisation (.=0)
 recode dummymarriage (.=0)
 
-* Caste
-*tostring year, replace
-merge 1:1 HHID_panel year using "raw/Panel-Caste_HH_long", keepusing(caste jatiscorr)
-keep if _merge==3
-drop _merge
-ta caste
-label define castecode 1"Dalits" 2"Middle castes" 3"Upper castes"
-label values caste castecode
-fre caste
-
-* Income
-gen annualincome_HH_backup=annualincome_HH
-
-*** Quanti 
+* Quanti defalte and round
 global quanti1 head_mocc_annualincome head_annualincome 
 global quanti2 loanamount_HH imp1_ds_tot_HH imp1_is_tot_HH
 global quanti3 expenses_total expenses_food expenses_educ expenses_heal expenses_cere expenses_agri expenses_marr
@@ -377,44 +384,20 @@ global quanti5 remreceived_HH remsent_HH remittnet_HH pension_HH
 global quanti6 goldreadyamount incomeagri_HH incomenonagri_HH incagrise_HH incagricasual_HH incnonagricasual_HH incnonagriregnonquali_HH incnonagriregquali_HH incnonagrise_HH incnrega_HH
 global quanti $quanti1 $quanti2 $quanti3 $quanti4 $quanti5 $quanti6
 
-
-*** Deflate and round
 foreach x in $quanti {
 replace `x'=`x'*(100/54) if year==2010
 replace `x'=`x'*(100/86) if year==2016
 replace `x'=round(`x',1)
 }
 
-
-*** Clean
-/*
-foreach x in $quanti1 $quanti3 $quanti4 $quanti5 $quanti6  {
-recode `x' (.=0)
-}
-*/
-
+* Recode and replace
 recode dummyexposure (.=0)
 recode head_mocc_occupation (.=0)
 recode head_nboccupation (.=0)
-
-*
-gen annualincome_HH_compo1=incomeagri_HH+incomenonagri_HH
-gen test=annualincome_HH_compo1-(incomeagri_HH+incomenonagri_HH)
-ta test
-drop test
-
-*
-gen annualincome_HH_compo2=incagrise_HH+incagricasual_HH+incnonagricasual_HH+incnonagriregnonquali_HH+incnonagriregquali_HH+incnonagrise_HH+incnrega_HH
-gen test=annualincome_HH_compo2-(incagrise_HH+incagricasual_HH+incnonagricasual_HH+incnonagriregnonquali_HH+incnonagriregquali_HH+incnonagrise_HH+incnrega_HH)
-ta test
-drop test
+replace loanamount_HH=0 if loanamount_HH==.
 
 
-
-
-
-
-********** Selection
+* Selection
 drop if housetitle==.
 bysort HHID_panel: gen n=_N
 ta n
@@ -445,17 +428,11 @@ save"panel_v0", replace
 
 
 ****************************************
-* Construction
+* Construction variables
 ****************************************
 use"panel_v0", clear
 
-
-gen test=annualincome_HH_compo1-incomeagri_HH-incomenonagri_HH
-ta test
-drop test
-
 * DSR
-tabstat imp1_ds_tot_HH annualincome_HH, stat(min p1 p5 p10 q p90 p95 p99 max)
 gen dsr=imp1_ds_tot_HH/annualincome_HH
 replace dsr=0 if dsr==.
 
@@ -464,90 +441,18 @@ gen isr=imp1_is_tot_HH/annualincome_HH
 replace isr=0 if isr==.
 replace dsr=dsr*100
 replace isr=isr*100
-tabstat dsr isr, stat(n mean cv p50) by(year) long
-replace dsr=dsr/100
-replace isr=isr/100
 
 * DAR
-tabstat loanamount_HH assets_total assets_totalnoland assets_totalnoprop, stat(n mean cv p50) by(year)
 gen dar=loanamount_HH/assets_totalnoprop
 replace dar=0 if dar==.
-
-* DIR
-gen dir=loanamount_HH/annualincome_HH
-replace dir=0 if dir==.
-
-* LPC - Loans per capita
-gen lpc=nbloans_HH/squareroot_HHsize
-replace lpc=0 if lpc==.
-
-* LAPC - Loan amount per capita
-gen lapc=loanamount_HH/squareroot_HHsize
-replace lapc=0 if lapc==.
-
-
-* Poverty
-/*
-All is expressed in 2010 PPP
-However, new PL with 2017
-annualincome_HH is expressed in 2010 rupees
-annualincome_HH_backup is not deflated
-*/
-tabstat annualincome_HH annualincome_HH_backup, stat(n mean) by(year)
-* Deflate for 2017 PPP
-gen annualincome_HH2=annualincome_HH_backup
-replace annualincome_HH2=annualincome_HH2*(100/62.81) if year==2010
-replace annualincome_HH2=annualincome_HH2*(100/114.95) if year==2020
-replace annualincome_HH2=round(annualincome_HH2,1)
- 
-
-* Test
-tabstat annualincome_HH_backup annualincome_HH annualincome_HH2, stat(n mean) by(year)
-
-gen dailyincome_pc=(annualincome_HH2/365)/HHsize
-gen dailyuspppdincome_pc=dailyincome_pc/20.65
-gen rrgpl_ppp=((dailyuspppdincome_pc-2.15)/2.15)*(-1)
-
-rename rrgpl_ppp rrgpl
-drop annualincome_HH2 annualincome_HH_backup
-
-gen poor_HH=0
-replace poor_HH=1 if dailyuspppdincome_pc<=2.15
-gen sopl_HH=dailyuspppdincome_pc/2.15
-label define poor 0"Non-poor" 1"Poor"
-label values poor_HH poor
-
-save"panel_v1", replace
-****************************************
-* END
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-****************************************
-* Other
-****************************************
-use"panel_v1", clear
 
 * HH
 encode HHID_panel, gen(panelvar)
 
 * Village
 encode villageid, gen(vill)
+fre village villageid vill
+ta vill, gen(village_)
 
 * Stem
 gen stem=.
@@ -597,7 +502,7 @@ label define head_nonmarried 0"Married" 1"Non-married"
 label values head_nonmarried head_nonmarried
 fre head_nonmarried
 
-* Class
+* Class of assets
 tabstat assets_total, stat(q) by(year)
 foreach i in 2010 2016 2020 {
 xtile assets_`i'=assets_total if year==`i', n(3) 
@@ -611,9 +516,9 @@ ta assets_cat
 label define assets_cat 1"Wealth: Poor" 2"Wealth: Middle" 3"Wealth: Rich"
 label values assets_cat assets_cat
 fre assets_cat
-ta assets_cat caste, chi2 cchi2 exp
 ta assets_cat, gen(assets_cat)
 
+* Class of incomes
 tabstat annualincome_HH, stat(q) by(year)
 foreach i in 2010 2016 2020 {
 xtile income_`i'=annualincome_HH if year==`i', n(3) 
@@ -627,16 +532,7 @@ ta income_cat
 label define income_cat 1"Income: Poor" 2"Income: Middle" 3"Income: Rich"
 label values income_cat income_cat
 fre income_cat
-ta income_cat caste, chi2 cchi2 exp
 ta income_cat, gen(income_cat)
-
-* Dalits
-gen dalits=.
-replace dalits=1 if caste==1
-replace dalits=0 if caste==2
-replace dalits=0 if caste==3
-label define dalits 0"Non-dalits" 1"Dalits"
-label values dalits dalits
 
 * Time
 gen time=0
@@ -652,462 +548,10 @@ ta ownland year, col nofreq
 label define ownland 0"Own land: No" 1"Own land: Yes"
 label values ownland ownland
 
-* Village
-fre village villageid vill
-ta vill, gen(village_)
-
-* Caste
-fre caste
-ta caste, gen(caste_)
-
-* Label
-label var caste_2 "Caste: Middle"
-label var caste_3 "Caste: Upper"
-label var HHsize "Household size"
-label var HH_count_child "Number of childrens"
-label var stem "Family: Stem"
-label var ownland "Land owner: Yes"
-label var head_age "Head: Age (years)"
-label var head_occ1 "Head occ: Unoccupied"
-label var head_occ2 "Head occ: Agri SE"
-label var head_occ3 "Head occ: Agri casual"
-label var head_occ4 "Head occ: Casual"
-label var head_occ5 "Head occ: Regular"
-label var head_occ6 "Head occ: SE"
-label var head_occ7 "Head occ: NREGA"
-label var head_educ1 "Head edu: Below primary"
-label var head_educ2 "Head edu: Primary completed"
-label var head_educ3 "Head edu: High school or more"
-label var head_nonmarried "Head married: No"
-label var dummymarriage "Marriage: Yes"
-label var dummydemonetisation "Demonetisation: Yes"
-label var village_1 "Village: ELA"
-label var village_2 "Village: GOV" 
-label var village_3 "Village: KAR"
-label var village_4 "Village: KOR"
-label var village_5 "Village: KUV"
-label var village_6 "Village: MAN"
-label var village_7 "Village: MANAM"
-label var village_8 "Village: NAT"
-label var village_9 "Village: ORA"
-label var village_10 "Village: SEM"
-label var nonworkersratio "Non-workers ratio"
-label var housetitle "House title: Yes"
-label var head_female "Head sex: Female"
-label var remittnet_HH "Net remittances (Rs.)"
-label var sexratio "Sex ratio"
-label var dependencyratio "Dependency ratio"
-
-
-
-save"panel_v2", replace
-****************************************
-* END
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-****************************************
-* Construction: clean
-****************************************
-use"panel_v2", clear
-
-
-replace loanamount_HH=0 if loanamount_HH==.
-
-foreach x in loanamount_HH annualincome_HH assets_total imp1_ds_tot_HH imp1_is_tot_HH dsr isr dar dir expenses_total remreceived_HH remsent_HH remittnet_HH dailyincome_pc assets_gold goldquantity_HH goldreadyamount nbloans_HH lpc lapc {
+* Std
+foreach x in loanamount_HH annualincome_HH assets_total imp1_ds_tot_HH imp1_is_tot_HH dsr isr dar expenses_total remreceived_HH remsent_HH remittnet_HH assets_gold goldquantity_HH goldreadyamount nbloans_HH {
 egen `x'_std=std(`x')
 }
-
-*** Label
-label var dar_std "DAR (std)"
-label var dsr_std "DSR (std)"
-label var isr_std "ISR (std)"
-label var dailyincome_pc_std "Livelihood (std)"
-label var assets_total_std "Wealth (std)"
-label var nbloans_HH_std "Nb loans (std)"
-label var lpc_std "Loans pc (std)"
-label var lapc_std "Loan amount pc (std)"
-label var annualincome_HH_std "Annual income (std)"
-label var loanamount_HH_std "Loan amount (std)"
-
-*** Order
-order HHID_panel year
-sort HHID_panel year
-
-
-********** Add RUME pension
-preserve
-use"raw\RUME-occupnew", clear
-fre kindofwork
-keep if kindofwork==9
-keep HHID2010 INDID2010 kindofwork annualincome
-bysort HHID2010: egen pension_HH=sum(annualincome)
-keep HHID2010 pension_HH
-duplicates drop
-merge m:m HHID2010 using"raw/keypanel-HH_wide", keepusing(HHID_panel)
-keep if _merge==3
-drop HHID2010 _merge
-gen year=2010
-order HHID_panel year
-rename pension_HH pension_HH2010
-replace pension_HH2010=pension_HH2010*(100/54)
-save"_temppension2010", replace
-restore
-merge 1:1 HHID_panel year using "_temppension2010"
-drop _merge
-replace pension_HH=pension_HH2010 if year==2010 & pension_HH==.
-recode pension_HH (.=0)
-drop pension_HH2010
-
-
-save"panel_v3", replace
-****************************************
-* END
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-****************************************
-* HH inequalities
-****************************************
-
-********** RUME
-use"raw\RUME-HH.dta", clear
-
-* Selection
-keep HHID2010 INDID2010 name sex age relationshiptohead
-
-* Merge income
-merge m:1 HHID2010 using "raw\RUME-occup_HH", keepusing(annualincome_HH nbworker_HH nbnonworker_HH nonworkersratio)
-drop _merge
-
-merge 1:1 HHID2010 INDID2010 using "raw\RUME-occup_indiv", keepusing(working_pop mainocc_occupation_indiv mainocc_annualincome_indiv annualincome_indiv nboccupation_indiv)
-drop _merge
-
-* Share income by indiv and sex
-gen inc_men=annualincome_indiv  if sex==1
-gen inc_women=annualincome_indiv if sex==2
-drop annualincome_HH
-bysort HHID2010: egen annualincome_HH=sum(annualincome_indiv)
-bysort HHID2010: egen suminc_men=sum(inc_men)
-bysort HHID2010: egen suminc_women=sum(inc_women)
-gen test=annualincome_HH-suminc_men-suminc_women
-ta test
-drop test
-gen sharemen=suminc_men/annualincome_HH
-gen sharewomen=suminc_women/annualincome_HH
-gen shareindiv=annualincome_indiv/annualincome_HH
-bysort HHID2010: egen test=sum(shareindiv)
-ta test
-drop test
-gen diffinc=suminc_men-suminc_women
-gen absdiffinc=abs(diffinc)
-gen absdiffinctoinc=absdiffinc/annualincome_HH
-gen diffshare=sharemen-sharewomen
-gen absdiffshare=abs(diffshare)
-gen type=.
-replace type=1 if diffshare<-0.05
-replace type=2 if diffshare>=-0.05 & diffshare<=0.05
-replace type=3 if diffshare>0.05
-label define type 1"W>M" 2"W=M" 3"W<M"
-label values type type
-
-* Working pop
-fre working_pop
-replace working_pop=2 if working_pop==1 & age>35 & (annualincome_indiv==. | annualincome_indiv==0)
-replace working_pop=3 if working_pop==1 & age>35 & annualincome_indiv!=. & annualincome_indiv!=0
-
-drop nbworker_HH nbnonworker_HH nonworkersratio
-
-gen wp_inactive=0
-replace wp_inactive=1 if working_pop==1
-
-gen wp_unoccupi=0
-replace wp_unoccupi=1 if working_pop==2
-
-gen wp_occupied=0
-replace wp_occupied=1 if working_pop==3
-
-foreach x in inactive unoccupi occupied {
-bysort HHID2010: egen wp_`x'_HH=sum(wp_`x')
-}
-gen wp_active_HH=wp_unoccupi_HH+wp_occupied_HH
-
-* Panel
-merge m:m HHID2010 using"raw/keypanel-HH_wide", keepusing(HHID_panel)
-keep if _merge==3
-drop _merge
-
-merge 1:m HHID2010 INDID2010 using"raw/keypanel-Indiv_wide", keepusing(INDID_panel)
-keep if _merge==3
-drop _merge HHID2010 INDID2010
-
-gen year=2010
-order HHID_panel INDID_panel year
-
-save"temp1",replace
-
-
-
-
-********** NEEMSIS-1
-use"raw\NEEMSIS1-HH.dta", clear
-
-* Selection
-ta livinghome egoid
-drop if livinghome>=3
-keep HHID2016 INDID2016 name sex age relationshiptohead
-
-* Merge income
-merge m:1 HHID2016 using "raw\NEEMSIS1-occup_HH", keepusing(annualincome_HH nbworker_HH nbnonworker_HH nonworkersratio)
-drop _merge
-
-merge 1:1 HHID2016 INDID2016 using "raw\NEEMSIS1-occup_indiv", keepusing(working_pop mainocc_occupation_indiv mainocc_annualincome_indiv annualincome_indiv nboccupation_indiv)
-keep if _merge==3
-drop _merge
-
-* Share income by indiv and sex
-gen inc_men=annualincome_indiv  if sex==1
-gen inc_women=annualincome_indiv if sex==2
-bysort HHID2016: egen suminc_men=sum(inc_men)
-bysort HHID2016: egen suminc_women=sum(inc_women)
-gen test=annualincome_HH-suminc_men-suminc_women
-ta test
-drop test
-gen sharemen=suminc_men/annualincome_HH
-replace sharemen=0 if sharemen==.
-gen sharewomen=suminc_women/annualincome_HH
-replace sharewomen=0 if sharewomen==.
-gen shareindiv=annualincome_indiv/annualincome_HH
-bysort HHID2016: egen test=sum(shareindiv)
-ta test
-drop test
-gen diffinc=suminc_men-suminc_women
-gen absdiffinc=abs(diffinc)
-gen absdiffinctoinc=absdiffinc/annualincome_HH
-gen diffshare=sharemen-sharewomen
-gen absdiffshare=abs(diffshare)
-gen type=.
-replace type=1 if diffshare<-0.05
-replace type=2 if diffshare>=-0.05 & diffshare<=0.05
-replace type=3 if diffshare>0.05
-label define type 1"W>M" 2"W=M" 3"W<M"
-label values type type
-
-* Working pop
-fre working_pop
-replace working_pop=2 if working_pop==1 & age>35 & (annualincome_indiv==. | annualincome_indiv==0)
-replace working_pop=3 if working_pop==1 & age>35 & annualincome_indiv!=. & annualincome_indiv!=0
-
-drop nbworker_HH nbnonworker_HH nonworkersratio
-
-gen wp_inactive=0
-replace wp_inactive=1 if working_pop==1
-
-gen wp_unoccupi=0
-replace wp_unoccupi=1 if working_pop==2
-
-gen wp_occupied=0
-replace wp_occupied=1 if working_pop==3
-
-foreach x in inactive unoccupi occupied {
-bysort HHID2016: egen wp_`x'_HH=sum(wp_`x')
-}
-gen wp_active_HH=wp_unoccupi_HH+wp_occupied_HH
-
-* Panel
-merge m:m HHID2016 using"raw/keypanel-HH_wide", keepusing(HHID_panel)
-keep if _merge==3
-drop _merge
-
-tostring INDID2016, replace
-merge 1:m HHID2016 INDID2016 using"raw/keypanel-Indiv_wide", keepusing(INDID_panel)
-keep if _merge==3
-drop _merge HHID2016 INDID2016
-
-gen year=2016
-order HHID_panel INDID_panel year
-
-save"temp2",replace
-
-
-
-********** NEEMSIS-2
-use"raw\NEEMSIS2-HH.dta", clear
-
-* Selection
-drop if dummylefthousehold==1
-drop if livinghome>=3
-keep HHID2020 INDID2020 name sex age relationshiptohead
-
-* Merge income
-merge m:1 HHID2020 using "raw\NEEMSIS2-occup_HH", keepusing(annualincome_HH nbworker_HH nbnonworker_HH nonworkersratio)
-drop _merge
-
-merge 1:1 HHID2020 INDID2020 using "raw\NEEMSIS2-occup_indiv", keepusing(working_pop mainocc_occupation_indiv mainocc_annualincome_indiv annualincome_indiv nboccupation_indiv)
-keep if _merge==3
-drop _merge
-
-* Share income by indiv and sex
-gen inc_men=annualincome_indiv  if sex==1
-gen inc_women=annualincome_indiv if sex==2
-bysort HHID2020: egen suminc_men=sum(inc_men)
-bysort HHID2020: egen suminc_women=sum(inc_women)
-gen test=annualincome_HH-suminc_men-suminc_women
-ta test
-drop test
-gen sharemen=suminc_men/annualincome_HH
-replace sharemen=0 if sharemen==.
-gen sharewomen=suminc_women/annualincome_HH
-replace sharewomen=0 if sharewomen==.
-gen shareindiv=annualincome_indiv/annualincome_HH
-bysort HHID2020: egen test=sum(shareindiv)
-ta test
-drop test
-gen diffinc=suminc_men-suminc_women
-gen absdiffinc=abs(diffinc)
-gen absdiffinctoinc=absdiffinc/annualincome_HH
-gen diffshare=sharemen-sharewomen
-gen absdiffshare=abs(diffshare)
-gen type=.
-replace type=1 if diffshare<-0.05
-replace type=2 if diffshare>=-0.05 & diffshare<=0.05
-replace type=3 if diffshare>0.05
-label define type 1"W>M" 2"W=M" 3"W<M"
-label values type type
-
-* Working pop
-fre working_pop
-replace working_pop=2 if working_pop==1 & age>35 & (annualincome_indiv==. | annualincome_indiv==0)
-replace working_pop=3 if working_pop==1 & age>35 & annualincome_indiv!=. & annualincome_indiv!=0
-
-drop nbworker_HH nbnonworker_HH nonworkersratio
-
-gen wp_inactive=0
-replace wp_inactive=1 if working_pop==1
-
-gen wp_unoccupi=0
-replace wp_unoccupi=1 if working_pop==2
-
-gen wp_occupied=0
-replace wp_occupied=1 if working_pop==3
-
-foreach x in inactive unoccupi occupied {
-bysort HHID2020: egen wp_`x'_HH=sum(wp_`x')
-}
-gen wp_active_HH=wp_unoccupi_HH+wp_occupied_HH
-
-* Panel
-merge m:m HHID2020 using"raw/keypanel-HH_wide", keepusing(HHID_panel)
-keep if _merge==3
-drop _merge
-
-tostring INDID2020, replace
-merge 1:m HHID2020 INDID2020 using"raw/keypanel-Indiv_wide", keepusing(INDID_panel)
-keep if _merge==3
-drop _merge HHID2020 INDID2020
-
-gen year=2020
-order HHID_panel INDID_panel year
-
-save"temp3",replace
-
-
-
-********** Append + construction
-use"temp1", clear
-
-append using "temp2"
-append using "temp3"
-
-* Selection
-fre mainocc_occupation_indiv
-recode mainocc_occupation_indiv (0=.)
-replace annualincome_indiv=. if mainocc_occupation_indiv==.
-
-* Poverty indiv
-gen annualincome_indiv2=annualincome_indiv
-replace annualincome_indiv2=annualincome_indiv2*(100/62.81) if year==2010
-replace annualincome_indiv2=annualincome_indiv2*(100/114.95) if year==2020
-replace annualincome_indiv2=round(annualincome_indiv2,1)
-gen dayinc=annualincome_indiv2/365
-gen dayinc_usd_ppp=dayinc/20.65
-gen poor_indiv=0
-replace poor_indiv=1 if dayinc_usd_ppp<=2.15
-gen sopl_indiv=dayinc_usd_ppp/2.15
-label values poor_indiv poor
-
-compress
-
-
-********** Save indiv
-save "ineqindiv", replace
-
-********** Save HH
-keep HHID_panel year suminc_men suminc_women sharemen sharewomen diffinc absdiffinc diffshare absdiffshare type wp_inactive_HH wp_unoccupi_HH wp_occupied_HH wp_active_HH
-duplicates drop
-compress
-save "ineqHH", replace
-
-
-********** Merge
-use"panel_v3", clear
-
-merge 1:1 HHID_panel year using "ineqHH"
-keep if _merge==3
-drop _merge
-
-order HHID_panel HHID panelvar year time dummypanel
-
-save "panel_v4", replace
-****************************************
-* END
-
-
-
-
-
-
-
-
-
-
-
-
-****************************************
-* Supp for CRE
-****************************************
-use"panel_v4", clear
-
 
 * House
 ta house, gen(house_)
@@ -1154,6 +598,77 @@ foreach x in year2010 year2016 year2020 {
 bysort HHID_panel: egen mean_`x'=mean(`x')
 }
 
+
+save"panel_v1", replace
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Label
+****************************************
+use"panel_v1", clear
+
+* Label
+label var HHsize "Household size"
+label var HH_count_child "Number of childrens"
+label var stem "Family: Stem"
+label var ownland "Land owner: Yes"
+label var head_age "Head: Age (years)"
+label var head_occ1 "Head occ: Unoccupied"
+label var head_occ2 "Head occ: Agri SE"
+label var head_occ3 "Head occ: Agri casual"
+label var head_occ4 "Head occ: Casual"
+label var head_occ5 "Head occ: Regular"
+label var head_occ6 "Head occ: SE"
+label var head_occ7 "Head occ: NREGA"
+label var head_educ1 "Head edu: Below primary"
+label var head_educ2 "Head edu: Primary completed"
+label var head_educ3 "Head edu: High school or more"
+label var head_nonmarried "Head married: No"
+label var dummymarriage "Marriage: Yes"
+label var dummydemonetisation "Demonetisation: Yes"
+label var village_1 "Village: ELA"
+label var village_2 "Village: GOV" 
+label var village_3 "Village: KAR"
+label var village_4 "Village: KOR"
+label var village_5 "Village: KUV"
+label var village_6 "Village: MAN"
+label var village_7 "Village: MANAM"
+label var village_8 "Village: NAT"
+label var village_9 "Village: ORA"
+label var village_10 "Village: SEM"
+label var nonworkersratio "Non-workers ratio"
+label var housetitle "House title: Yes"
+label var head_female "Head sex: Female"
+label var remittnet_HH "Net remittances (Rs.)"
+label var sexratio "Sex ratio"
+label var dependencyratio "Dependency ratio"
+
+label var dar_std "DAR (std)"
+label var dsr_std "DSR (std)"
+label var isr_std "ISR (std)"
+label var assets_total_std "Wealth (std)"
+label var nbloans_HH_std "Nb loans (std)"
+label var annualincome_HH_std "Annual income (std)"
+label var loanamount_HH_std "Loan amount (std)"
+
 label var nobs1 "Nb obs: 1"
 label var nobs2 "Nb obs: 2"
 label var nobs3 "Nb obs: 3"
@@ -1167,8 +682,7 @@ label var log_annualincome_HH "Annual income (log)"
 label var log_assets_total "Assets (log)"
 label var log_assets_totalnoland "Assets without land (log)"
 
-
-save "panel_v5", replace
+save"panel_v2", replace
 ****************************************
 * END
 
@@ -1181,41 +695,314 @@ save "panel_v5", replace
 
 
 
+
+
+
+
+
+
+
 ****************************************
-* Per active / worker, etc.
+* Inequalities
 ****************************************
-use"panel_v5", clear
+
+
+********** RUME
+use"raw\RUME-HH.dta", clear
+
+* Selection
+keep HHID2010 INDID2010 name sex age relationshiptohead
+
+* Merge income
+merge m:1 HHID2010 using "raw\RUME-occup_HH", keepusing(annualincome_HH nbworker_HH nbnonworker_HH nonworkersratio)
+drop _merge
+
+merge 1:1 HHID2010 INDID2010 using "raw\RUME-occup_indiv", keepusing(working_pop mainocc_occupation_indiv mainocc_annualincome_indiv annualincome_indiv nboccupation_indiv)
+keep if _merge==3
+drop _merge
+
+* Panel
+merge m:m HHID2010 using"raw/keypanel-HH_wide", keepusing(HHID_panel)
+keep if _merge==3
+drop _merge
+
+tostring INDID2010, replace
+merge 1:m HHID2010 INDID2010 using"raw/keypanel-Indiv_wide", keepusing(INDID_panel)
+keep if _merge==3
+drop _merge HHID2010 INDID2010
+
+gen year=2010
+order HHID_panel INDID_panel year
+
+save"temp1",replace
+
+
+
+
+
+
+********** NEEMSIS-1
+use"raw\NEEMSIS1-HH.dta", clear
+
+* Selection
+ta livinghome egoid
+drop if livinghome>=3
+keep HHID2016 INDID2016 name sex age relationshiptohead
+
+* Merge income
+merge m:1 HHID2016 using "raw\NEEMSIS1-occup_HH", keepusing(annualincome_HH nbworker_HH nbnonworker_HH nonworkersratio)
+drop _merge
+
+merge 1:1 HHID2016 INDID2016 using "raw\NEEMSIS1-occup_indiv", keepusing(working_pop mainocc_occupation_indiv mainocc_annualincome_indiv annualincome_indiv nboccupation_indiv)
+keep if _merge==3
+drop _merge
+
+* Panel
+merge m:m HHID2016 using"raw/keypanel-HH_wide", keepusing(HHID_panel)
+keep if _merge==3
+drop _merge
+
+tostring INDID2016, replace
+merge 1:m HHID2016 INDID2016 using"raw/keypanel-Indiv_wide", keepusing(INDID_panel)
+keep if _merge==3
+drop _merge HHID2016 INDID2016
+
+gen year=2016
+order HHID_panel INDID_panel year
+
+save"temp2",replace
+
+
+
+
+
+
+
+********** NEEMSIS-2
+use"raw\NEEMSIS2-HH.dta", clear
+
+* Selection
+ta livinghome egoid
+drop if livinghome==3
+drop if livinghome==4
+drop if dummylefthousehold==1
+keep HHID2020 INDID2020 name sex age relationshiptohead
+
+* Merge income
+merge m:1 HHID2020 using "raw\NEEMSIS2-occup_HH", keepusing(annualincome_HH nbworker_HH nbnonworker_HH nonworkersratio)
+drop _merge
+
+merge 1:1 HHID2020 INDID2020 using "raw\NEEMSIS2-occup_indiv", keepusing(working_pop mainocc_occupation_indiv mainocc_annualincome_indiv annualincome_indiv nboccupation_indiv)
+keep if _merge==3
+drop _merge
+
+* Panel
+merge m:m HHID2020 using"raw/keypanel-HH_wide", keepusing(HHID_panel)
+keep if _merge==3
+drop _merge
+
+tostring INDID2020, replace
+merge 1:m HHID2020 INDID2020 using"raw/keypanel-Indiv_wide", keepusing(INDID_panel)
+keep if _merge==3
+drop _merge HHID2020 INDID2020
+
+gen year=2020
+order HHID_panel INDID_panel year
+
+save"temp3",replace
+
+
+
+
+
+
+********** Append
+use"temp1", clear
+
+append using "temp2"
+append using "temp3"
+
+
+* Quanti defalte and round
+foreach x in annualincome_HH mainocc_annualincome_indiv annualincome_indiv {
+replace `x'=`x'*(100/54) if year==2010
+replace `x'=`x'*(100/86) if year==2016
+replace `x'=round(`x',1)
+}
+
+save"ineqindiv", replace
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Construction inequalities
+****************************************
+use"ineqindiv", clear
+
+* Share income by sex
+gen inc_men=annualincome_indiv  if sex==1
+gen inc_women=annualincome_indiv if sex==2
+bysort HHID_panel year: egen suminc_men=sum(inc_men)
+bysort HHID_panel year: egen suminc_women=sum(inc_women)
+gen test=annualincome_HH-suminc_men-suminc_women
+ta test
+drop test
+gen sharemen=suminc_men/annualincome_HH
+replace sharemen=0 if sharemen==.
+gen sharewomen=suminc_women/annualincome_HH
+replace sharewomen=0 if sharewomen==.
+gen shareindiv=annualincome_indiv/annualincome_HH
+bysort HHID_panel year: egen test=sum(shareindiv)
+ta test
+drop test
+
+* Differences between sex
+gen diffinc=suminc_men-suminc_women
+gen absdiffinc=abs(diffinc)
+gen absdiffinctoinc=absdiffinc/annualincome_HH
+gen diffshare=sharemen-sharewomen
+gen absdiffshare=abs(diffshare)
+
+* Categories of HH
+gen type=.
+replace type=1 if diffshare<-0.05
+replace type=2 if diffshare>=-0.05 & diffshare<=0.05
+replace type=3 if diffshare>0.05
+label define type 1"(c) Women > Men" 2"(b) Men = Women" 3"(a) Men > Women"
+label values type type
+
+* Working pop
+fre working_pop
+replace working_pop=2 if working_pop==1 & age>35 & (annualincome_indiv==. | annualincome_indiv==0)
+replace working_pop=3 if working_pop==1 & age>35 & annualincome_indiv!=. & annualincome_indiv!=0
+
+* Inactive
+gen wp_inactive=0
+replace wp_inactive=1 if working_pop==1
+
+gen wp_inactive_men=0
+replace wp_inactive_men=1 if working_pop==1 & sex==1
+gen wp_inactive_women=0
+replace wp_inactive_women=1 if working_pop==1 & sex==2
+
+* Unoccupied
+gen wp_unoccupi=0
+replace wp_unoccupi=1 if working_pop==2
+
+gen wp_unoccupi_men=0
+replace wp_unoccupi_men=1 if working_pop==2 & sex==1
+gen wp_unoccupi_women=0
+replace wp_unoccupi_women=1 if working_pop==2 & sex==2
+
+* Occupied
+gen wp_occupied=0
+replace wp_occupied=1 if working_pop==3
+
+gen wp_occupied_men=0
+replace wp_occupied_men=1 if working_pop==3 & sex==1
+gen wp_occupied_women=0
+replace wp_occupied_women=1 if working_pop==3 & sex==2
+
+* Total by households
+foreach x in inactive inactive_men inactive_women unoccupi unoccupi_men unoccupi_women occupied occupied_men occupied_women {
+bysort HHID_panel year: egen wp_`x'_HH=sum(wp_`x')
+}
+gen wp_active_HH=wp_unoccupi_HH+wp_occupied_HH
+
+gen wp_active_men_HH=wp_unoccupi_men_HH+wp_occupied_men_HH
+gen wp_active_women_HH=wp_unoccupi_women_HH+wp_occupied_women_HH
+
+* Save indiv
+save "ineqindiv_v2", replace
+
+* Save HH
+keep HHID_panel year suminc_men suminc_women sharemen sharewomen diffinc absdiffinc diffshare absdiffshare type wp_inactive_HH wp_inactive_men_HH wp_inactive_women_HH wp_unoccupi_HH wp_unoccupi_men_HH wp_unoccupi_women_HH wp_occupied_HH wp_occupied_men_HH wp_occupied_women_HH wp_active_HH wp_active_men_HH wp_active_women_HH
+duplicates drop
+compress
+save "ineqHH", replace
+
+
+* Merge
+use"panel_v2", clear
+
+merge 1:1 HHID_panel year using "ineqHH"
+keep if _merge==3
+drop _merge
+
+order HHID_panel HHID panelvar year time dummypanel
+
+save "panel_v3", replace
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Construction 2
+****************************************
+use"panel_v3", clear
 
 * Regular
 gen incnonagrireg_HH=incnonagriregnonquali_HH+incnonagriregquali_HH
 order incnonagrireg_HH, after(incnrega_HH)
 
-* Compo 3 + share
-recode pension_HH (.=0)
-gen annualincome_HH_compo3=annualincome_HH_compo2+pension_HH+remreceived_HH
-ta pension_HH year if pension_HH!=0
+* Annual income 2 = SUM of income to have exact tot (sinon décalage arrondi)
+gen annualincome_HH2=incagrise_HH+incagricasual_HH+incnonagricasual_HH+incnonagrireg_HH+incnonagrise_HH+incnrega_HH
+order annualincome_HH2, after(annualincome_HH)
+tabstat annualincome_HH annualincome_HH2, stat(n mean)
 
+* Annual income 3 = labour + pensions + remittances
+gen annualincome_HH3=annualincome_HH2+pension_HH+remreceived_HH
 foreach x in incagrise_HH incagricasual_HH incnonagricasual_HH incnonagrireg_HH incnonagrise_HH incnrega_HH pension_HH remreceived_HH {
-gen share3_`x'=`x'*100/annualincome_HH_compo3
+gen share3_`x'=`x'*100/annualincome_HH3
 }
-gen test=100-(share3_incagrise_HH+share3_incagricasual_HH+share3_incnonagricasual_HH+share3_incnonagrireg_HH+share3_incnonagrise_HH+share3_incnrega_HH+share3_pension_HH+share3_remreceived_HH)
-ta test
-drop test
 
 * Monthly income
-gen monthlyincome_HH=annualincome_HH/12
+gen monthlyincome_HH=annualincome_HH3/12
 
 * Per capita
 foreach x in ///
-annualincome_HH_compo1 incomeagri_HH incomenonagri_HH /// 
-annualincome_HH_compo2 incagrise_HH incagricasual_HH incnonagricasual_HH incnonagriregnonquali_HH incnonagriregquali_HH incnonagrise_HH incnrega_HH incnonagrireg_HH monthlyincome_HH ///
-annualincome_HH_compo3 pension_HH remreceived_HH {
+annualincome_HH2 annualincome_HH3 ///
+incomeagri_HH incomenonagri_HH /// 
+incagrise_HH incagricasual_HH incnonagricasual_HH incnonagriregnonquali_HH incnonagriregquali_HH incnonagrise_HH incnrega_HH incnonagrireg_HH monthlyincome_HH ///
+pension_HH remreceived_HH {
 gen `x'_pc=`x'/HHsize
 }
-rename annualincome_HH_compo1_pc annualincome_compo1_pc
+rename annualincome_HH2_pc annualincome_pc
+rename annualincome_HH3_pc annualincome3_pc
 rename incomeagri_HH_pc incomeagri_pc
 rename incomenonagri_HH_pc incomenonagri_pc
-rename annualincome_HH_compo2_pc annualincome_compo2_pc
 rename incagrise_HH_pc incagrise_pc
 rename incagricasual_HH_pc incagricasual_pc
 rename incnonagricasual_HH_pc incnonagricasual_pc
@@ -1227,39 +1014,24 @@ rename incnonagrireg_HH_pc incnonagrireg_pc
 rename monthlyincome_HH_pc monthlyincome_pc
 rename remreceived_HH_pc remreceived_pc
 rename pension_HH_pc pension_pc
-rename annualincome_HH_compo3_pc annualincome_compo3_pc
 
+gen test=annualincome_pc-incagrise_pc-incagricasual_pc-incnonagricasual_pc-incnonagrireg_pc-incnonagrise_pc-incnrega_pc
+ta test
+drop test
 
-* Modified per capita
-foreach x in ///
-annualincome_HH_compo1 incomeagri_HH incomenonagri_HH /// 
-annualincome_HH_compo2 incagrise_HH incagricasual_HH incnonagricasual_HH incnonagriregnonquali_HH incnonagriregquali_HH incnonagrise_HH incnrega_HH incnonagrireg_HH monthlyincome_HH ///
-annualincome_HH_compo3 pension_HH remreceived_HH {
-gen `x'_mpc=`x'/equimodiscale_HHsize
-}
-rename annualincome_HH_compo1_mpc annualincome_compo1_mpc
-rename incomeagri_HH_mpc incomeagri_mpc
-rename incomenonagri_HH_mpc incomenonagri_mpc
-rename annualincome_HH_compo2_mpc annualincome_compo2_mpc
-rename incagrise_HH_mpc incagrise_mpc
-rename incagricasual_HH_mpc incagricasual_mpc
-rename incnonagricasual_HH_mpc incnonagricasual_mpc
-rename incnonagriregnonquali_HH_mpc incnonagriregnonquali_mpc
-rename incnonagriregquali_HH_mpc incnonagriregquali_mpc
-rename incnonagrise_HH_mpc incnonagrise_mpc
-rename incnrega_HH_mpc incnrega_mpc
-rename incnonagrireg_HH_mpc incnonagrireg_mpc
-rename monthlyincome_HH_mpc monthlyincome_mpc
-rename remreceived_HH_mpc remreceived_mpc
-rename pension_HH_mpc pension_mpc
-rename annualincome_HH_compo3_mpc annualincome_compo3_mpc
+gen test=annualincome3_pc-incagrise_pc-incagricasual_pc-incnonagricasual_pc-incnonagrireg_pc-incnonagrise_pc-incnrega_pc-pension_pc-remreceived_pc
+ta test
+drop test
 
+* 1000
+replace monthlyincome_pc=monthlyincome_pc/1000
 
 * Worker ratio
 drop nbworker_HH nbnonworker_HH nonworkersratio mean_nonworkersratio
 gen nonworkersratio=wp_unoccupi_HH/wp_occupied_HH
 replace nonworkersratio=wp_unoccupi_HH if nonworkersratio==.
 bysort HHID_panel: egen mean_nonworkersratio=mean(nonworkersratio)
+label var nonworkersratio "Non-workers ratio"
 
 * Dummies occupation
 global inc incagrise_HH incagricasual_HH incnonagricasual_HH incnonagrireg_HH incnonagrise_HH incnrega_HH pension_HH remreceived_HH
@@ -1277,58 +1049,107 @@ rename d_incnonagrise_HH d_nonagrise
 rename d_incnrega_HH d_nrega
 
 * Share
-gen shareincnonagrireg_HH=shareincnonagriregnonquali_HH+shareincnonagriregquali_HH
+drop shareincomeagri_HH shareincomenonagri_HH shareincagrise_HH shareincagricasual_HH shareincnonagricasual_HH shareincnonagriregnonquali_HH shareincnonagriregquali_HH shareincnonagrise_HH shareincnrega_HH
+gen s_agrise_HH=incagrise_HH/annualincome_HH3
+gen s_agrica_HH=incagricasual_HH/annualincome_HH3
+gen s_casual_HH=incnonagricasual_HH/annualincome_HH3
+gen s_regula_HH=incnonagrireg_HH/annualincome_HH3
+gen s_selfem_HH=incnonagrise_HH/annualincome_HH3
+gen s_mgnreg_HH=incnrega_HH/annualincome_HH3
+gen s_pensio_HH=pension_HH/annualincome_HH3
+gen s_remitt_HH=remreceived_HH/annualincome_HH3
 
-
-* Percent
-gen absdiffpercent=absdiffshare*100
-gen diffpercent=diffshare*100
-
-
-* Interaction à la main pour CRE
-
-foreach x in age occ1 occ2 occ3 occ4 occ5 occ6 occ7 educ1 educ2 educ3 nonmarried {
-gen head_femaleX`x'=head_female*head_`x'
-bysort HHID_panel: egen mean_head_femaleX`x'=mean(head_femaleX`x')
-}
-
-* Jatis and caste new
+* Jatis and caste
 drop jatisdetails jatis
-rename jatiscorr jatis
-
 merge 1:1 HHID_panel year using "raw/JatisCastePanel"
 keep if _merge==3
 drop _merge
-ta caste casten
-drop jatis caste
 rename casten caste
 rename jatisn jatis
 encode jatis, gen(jatis_code)
 drop jatis
 rename jatis_code jatis
 
-* 
-drop dalits caste_1 caste_2 caste_3
 gen dalits=.
 replace dalits=1 if caste==1
 replace dalits=0 if caste==2
 replace dalits=0 if caste==3
 
 ta caste, gen(caste_)
+label var caste_1 "Caste: Dalits"
+label var caste_2 "Caste: Middle castes"
+label var caste_3 "Caste: Upper castes"
 
 order jatis caste caste_1 caste_2 caste_3 dalits, after(livingarea)
 
-**
-codebook type
-label define type 1"(c) Women > Men" 2"(b) Men = Women" 3"(a) Men > Women", replace
-
-
-* 
-gen monthlyincome3_pc=annualincome_HH_compo3/(HHsize*12*1000)
-tabstat monthlyincome3_pc monthlyincome_pc, stat(n q)
-
-ta HHsize
-
-save "panel_v6", replace
+save "panel_v4", replace
 ****************************************
 * END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Construction 3
+****************************************
+use"panel_v4", clear
+
+gen intratodrop=0
+replace intratodrop=1 if annualincome_HH==1
+drop if intratodrop==1
+drop intratodrop
+
+* Part moyenne d'un homme et part moyenne d'une femme + écart
+gen mshare_men=((suminc_men/wp_occupied_men_HH)/annualincome_HH)*100
+gen mshare_women=((suminc_women/wp_occupied_women_HH)/annualincome_HH)*100
+
+* Difference entre les deux
+gen diff_mshare=mshare_men-mshare_women
+
+* Difference absolu pour l'économétrie
+gen absdiff_mshare=abs(diff_mshare)
+
+* Groupes 1
+gen grpHH=.
+replace grpHH=1 if wp_occupied_women_HH==0
+replace grpHH=2 if wp_occupied_men_HH==0
+replace grpHH=3 if diff_mshare!=. & diff_mshare<-5
+replace grpHH=4 if diff_mshare!=. & diff_mshare>=-5  & diff_mshare<=5
+replace grpHH=5 if diff_mshare!=. & diff_mshare>5
+label define grpHH 1"No women income" 2"No men income" 3"(c) Women > Men" 4"(b) Men = Women" 5"(a) Men > Women"
+label values grpHH grpHH
+
+* Group 2
+gen grpHH2=.
+replace grpHH2=1 if grpHH==3
+replace grpHH2=2 if grpHH==4
+replace grpHH2=3 if grpHH==5
+label define grpHH2 1"(c) Women > Men" 2"(b) Men = Women" 3"(a) Men > Women"
+label values grpHH2 grpHH2
+
+* Group 3
+gen grpHH3=.
+replace grpHH3=1 if grpHH==1
+replace grpHH3=2 if grpHH==2
+replace grpHH3=3 if grpHH>=3
+label define grpHH3 1"No women income" 2"No men income" 3"Income for both"
+label values grpHH3 grpHH3
+
+
+save "panel_v5", replace
+****************************************
+* END
+
+

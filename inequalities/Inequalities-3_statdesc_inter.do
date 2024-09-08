@@ -20,7 +20,7 @@ do"C:\Users\Arnaud\Documents\GitHub\folderanalysis\inequalities.do"
 ****************************************
 * Evolution of HH composition
 ****************************************
-use"panel_v6", clear
+use"panel_v4", clear
 
 ta stem year, col nofreq
 
@@ -58,10 +58,7 @@ Il y a des différences de composition des ménages entre Dalits et non-Dalits d
 ****************************************
 * Income and IQR 
 ****************************************
-use"panel_v6", clear
-
-drop monthlyincome_pc
-rename monthlyincome3_pc monthlyincome_pc
+use"panel_v4", clear
 
 tabstat monthlyincome_pc, stat(n mean q iqr) by(year)
 
@@ -75,7 +72,9 @@ title("Monthly income per capita") ///
 xtitle("1k rupees") xlabel(0(1)`ub') ///
 ylabel(,grid) ///
 legend(order(4 "IQR" 7 "Median" 10 "Mean") pos(6) col(3) on) ///
+note("{it:Note:} For 405 households in 2010, 492 in 2016-17, and 626 in 2020-21.", size(vsmall)) ///
 aspectratio() scale(1.2) name(vio, replace) range(0 `ub')
+
 graph export "Violin.png", as(png) replace
 
 ****************************************
@@ -96,10 +95,7 @@ graph export "Violin.png", as(png) replace
 ****************************************
 
 ***** Decile
-use"panel_v6", clear
-
-drop monthlyincome_pc
-rename monthlyincome3_pc monthlyincome_pc
+use"panel_v4", clear
 
 foreach i in 2010 2016 2020 {
 xtile monthlyinc`i'=monthlyincome_pc if year==`i', n(10)
@@ -125,10 +121,7 @@ legend(order(1 "2010" 2 "2016-17" 3 "2020-21") pos(6) col(3)) name(decile, repla
 
 
 ***** Lorenz curves
-use"panel_v6", clear
-
-drop monthlyincome_pc
-rename monthlyincome3_pc monthlyincome_pc
+use"panel_v4", clear
 
 keep HHID_panel year monthlyincome_pc
 reshape wide monthlyincome_pc, i(HHID_panel) j(year)
@@ -137,7 +130,7 @@ lorenz graph, overlay noci legend(pos(6) col(3) order(1 "2010" 2 "2016-17" 3 "20
 
 
 ***** Combine
-grc1leg decile lorenz, name(comb3, replace) note("{it:Note:} The Gini index is 0.322 in 2010, 0.422 in 2016-17 and 0.485 in 2020-21.", size(vsmall)) leg(lorenz)
+grc1leg decile lorenz, name(comb3, replace) note("{it:Note:} For 405 households in 2010, 492 in 2016-17, and 626 in 2020-21. The Gini index is 0.322 in 2010, 0.422 in 2016-17 and 0.485 in 2020-21.", size(vsmall)) leg(lorenz)
 graph export "IneqInc.png", as(png) replace
 
 
@@ -166,12 +159,9 @@ graph export "IneqInc.png", as(png) replace
 ****************************************
 
 ***** Decomposition Gini by income source
-use"panel_v6", clear
+use"panel_v4", clear
 
-drop monthlyincome_pc
-rename monthlyincome3_pc monthlyincome_pc
-
-global PC annualincome_compo3_pc incagrise_pc incagricasual_pc incnonagricasual_pc incnonagrireg_pc incnonagrise_pc incnrega_pc pension_pc remreceived_pc
+global PC annualincome3_pc incagrise_pc incagricasual_pc incnonagricasual_pc incnonagrireg_pc incnonagrise_pc incnrega_pc pension_pc remreceived_pc
 
 descogini $PC if year==2010
 descogini $PC if year==2016
@@ -255,7 +245,7 @@ xtitle("") xlabel(2010 2016 2020) ///
 legend(order(1 "Agri self-employed" 2 "Agri casual" 3 "Casual" 4 "Regular" 5 "Self-employed" 6 "MGNREGA" 7 "Pension" 8 "Remittances") pos(6) col(4)) name(percentage, replace)
 
 ***** Combine
-grc1leg sk gk rk share percentage, name(decompo, replace)
+grc1leg sk gk rk share percentage, name(decompo, replace) note("{it:Note:} For 405 households in 2010, 492 in 2016-17, and 626 in 2020-21.", size(vsmall))
 graph export "Decompo.png", as(png) replace
 
 ****************************************
@@ -282,10 +272,7 @@ graph export "Decompo.png", as(png) replace
 ****************************************
 * Evolution of income level by caste
 ****************************************
-use"panel_v6", clear
-
-drop monthlyincome_pc
-rename monthlyincome3_pc monthlyincome_pc
+use"panel_v4", clear
 
 rename monthlyincome_pc income_m
 gen income_se=income_m
@@ -332,7 +319,7 @@ scale(1.2) name(growthcaste, replace)
 
 
 ***** Combine
-grc1leg incomecaste growthcaste, name(combcaste, replace)
+grc1leg incomecaste growthcaste, name(combcaste, replace) note("{it:Note:} For 405 households in 2010, 492 in 2016-17, and 626 in 2020-21.", size(vsmall))
 graph export "Income_caste.png", as(png) replace
 
 
@@ -356,10 +343,7 @@ graph export "Income_caste.png", as(png) replace
 ****************************************
 * Quintiles of income by caste
 ****************************************
-use"panel_v6", clear
-
-drop monthlyincome_pc
-rename monthlyincome3_pc monthlyincome_pc
+use"panel_v4", clear
 
 foreach i in 2010 2016 2020 {
 xtile q_inc_`i'=monthlyincome_pc if year==`i', n(5)
@@ -430,7 +414,7 @@ legend(order(1 "Dalits" 2 "Middle castes" 3 "Upper castes") pos(6) col(3)) ///
 note("Pearson Chi2(8)=36.61   Pr=0.00", size(small)) ///
 name(compo3, replace)
 
-grc1leg compo1 compo2 compo3, col(3) name(comp, replace)
+grc1leg compo1 compo2 compo3, col(3) name(comp, replace) note("{it:Note:} For 405 households in 2010, 492 in 2016-17, and 626 in 2020-21.", size(vsmall))
 graph export "Quintile.png", as(png) replace
 
 ****************************************
@@ -531,7 +515,7 @@ note("Pearson Chi2(8)=162.56   Pr=0.00", size(small)) ///
 name(compo3, replace)
 
 
-grc1leg compo1 compo2 compo3, col(3) name(comp, replace)
+grc1leg compo1 compo2 compo3, col(3) name(comp, replace) note("{it:Note:} For 1343 occupations in 2010, 1952 in 2016-17, and 2616 in 2020-21.", size(vsmall))
 graph export "Occupations.png", as(png) replace
 
 ****************************************
@@ -557,7 +541,7 @@ graph export "Occupations.png", as(png) replace
 ****************************************
 * Decomposition GE by caste
 ****************************************
-use"panel_v6", clear
+use"panel_v4", clear
 
 drop monthlyincome_pc
 rename monthlyincome3_pc monthlyincome_pc
@@ -610,7 +594,7 @@ L’interprétation du coefficient de Gini est très intuitive. En multipliant l
 ****************************************
 * ELMO (2008)
 ****************************************
-use"panel_v6", clear
+use"panel_v4", clear
 
 drop monthlyincome_pc
 rename monthlyincome3_pc monthlyincome_pc
@@ -711,21 +695,11 @@ restore
 ****************************************
 * Income by decile for each year
 ****************************************
-use"panel_v6", clear
-
-gen inc_total=annualincome_HH_compo3
-gen inc_agrise=incagrise_HH
-gen inc_agrica=incagricasual_HH
-gen inc_casual=incnonagricasual_HH
-gen inc_regul=incnonagrireg_HH
-gen inc_selfe=incnonagrise_HH
-gen inc_mgnrega=incnrega_HH
-gen inc_pensi=pension_HH
-gen inc_remit=remreceived_HH
+use"panel_v4", clear
 
 * Decile
 foreach i in 2010 2016 2020 {
-xtile incgrp`i'=inc_total if year==`i', n(10)
+xtile incgrp`i'=annualincome_HH3 if year==`i', n(10)
 }
 gen incgroup=.
 foreach i in 2010 2016 2020 {
@@ -733,20 +707,20 @@ replace incgroup=incgrp`i' if year==`i'
 drop incgrp`i' 
 }
 
-foreach x in agrise agrica casual regul selfe mgnrega pensi remit {
-gen s_`x'=inc_`x'*100/inc_total
+foreach x in s_agrise_HH s_agrica_HH s_casual_HH s_regula_HH s_selfem_HH s_mgnreg_HH s_pensio_HH s_remitt_HH {
+replace `x'=`x'*100
 }
 
-collapse (mean) s_agrise s_agrica s_casual s_regul s_selfe s_mgnrega s_pensi s_remit, by(time incgroup)
+collapse (mean) s_agrise_HH s_agrica_HH s_casual_HH s_regula_HH s_selfem_HH s_mgnreg_HH s_pensio_HH s_remitt_HH, by(time incgroup)
 
-gen sum1=s_agrise
-gen sum2=sum1+s_agrica
-gen sum3=sum2+s_casual
-gen sum4=sum3+s_regul
-gen sum5=sum4+s_selfe
-gen sum6=sum5+s_mgnrega
-gen sum7=sum6+s_pensi
-gen sum8=sum7+s_remit
+gen sum1=s_agrise_HH
+gen sum2=sum1+s_agrica_HH
+gen sum3=sum2+s_casual_HH
+gen sum4=sum3+s_regula_HH
+gen sum5=sum4+s_selfem_HH
+gen sum6=sum5+s_mgnreg_HH
+gen sum7=sum6+s_pensio_HH
+gen sum8=sum7+s_remitt_HH
 
 * By year
 twoway ///

@@ -54,18 +54,27 @@ dis _skip(3) "GE(0)" _skip(2) "GE(1)" _skip(2) "GE(2)" _newline ///
 
 
 
+
+
+
 ****************************************
 * Trends in intra-
 ****************************************
-
-********** Categories
 cls
-use"panel_v6", clear
+use"panel_v5", clear
+
+ta year
 
 * Stat
-ta type year, col nofreq
+ta year grpHH
+ta year grpHH, row nofreq
 
-* Graph
+ta year grpHH2
+ta year grpHH2, row nofreq
+
+
+
+********** Graph total
 import excel "Shareintra.xlsx", sheet("Sheet1") firstrow clear
 gen time=1 if year==2010
 replace time=2 if year==2016
@@ -74,28 +83,86 @@ label define time 1"2010" 2"2016-17" 3"2020-21"
 label values time time
 drop year
 order time
-gen sum1=MsupW
-gen sum2=sum1+WeqM
-gen sum3=sum2+WsupM
+
+gen sum1=msup
+gen sum2=sum1+equal
+gen sum3=sum2+wsup
+gen sum4=sum3+nowoinc
+gen sum5=sum4+nomeinc
+
+twoway ///
+(bar sum1 time, barwidth(.95)) ///
+(rbar sum1 sum2 time, barwidth(.95)) ///
+(rbar sum2 sum3 time, barwidth(.95)) ///
+(rbar sum3 sum4 time, barwidth(.95)) ///
+(rbar sum4 sum5 time, barwidth(.95)) ///
+, ///
+title("Distribution of households by income of men" "and women for all households", size(small)) ///
+xlabel(1 2 3,valuelabel) xtitle("") ///
+ylabel(0(10)100) ytitle("Percent") ///
+legend(order(1 "(a) Men > Women" 2 "(b) Men = Women" 3 "(c) Women > Men" 4 "No income from women" 5 "No income from men") pos(6) col(3)) ///
+aspectratio() scale(1.2) name(barshare1, replace) note("{it:Note:} For 405 households in 2010, 492 in 2016-17, and 626 in 2020-21.", size(vsmall))
+
+
+*********** Graph income
+import excel "Shareintra.xlsx", sheet("Sheet2") firstrow clear
+gen time=1 if year==2010
+replace time=2 if year==2016
+replace time=3 if year==2020
+label define time 1"2010" 2"2016-17" 3"2020-21"
+label values time time
+drop year
+order time
+gen sum1=msup
+gen sum2=sum1+equal
+gen sum3=sum2+wsup
 
 twoway ///
 (bar sum1 time, barwidth(.95)) ///
 (rbar sum1 sum2 time, barwidth(.95)) ///
 (rbar sum2 sum3 time, barwidth(.95)) ///
 , ///
-title("Household type by gender distribution of income", size(small)) ///
+title("Distribution of households by income of men" "and women without zero income", size(small)) ///
 xlabel(1 2 3,valuelabel) xtitle("") ///
 ylabel(0(10)100) ytitle("Percent") ///
 legend(order(1 "(a) Men > Women" 2 "(b) Men = Women" 3 "(c) Women > Men") pos(6) col(2)) ///
-aspectratio() scale(1.2) name(barshare, replace)
+aspectratio() scale(1.2) name(barshare2, replace) note("{it:Note:} For 320 households in 2010, 426 in 2016-17, and 534 in 2020-21.", size(vsmall))
 
 
-********** Intensity
+********** Combine
+grc1leg barshare1 barshare2, name(comb, replace) 
+graph export "Intra.png", as(png) replace
+
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Intensity
+****************************************
 cls
-use"panel_v6", clear
+use"panel_v5", clear
 
-drop if type==2
-egen typetime=group(type time), label
+ta grpHH year
+ta grpHH2 year
+
+fre grpHH
+drop if grpHH2==.
+drop if grpHH2==2
+ta grpHH2 year
+
+egen typetime=group(grpHH2 time), label
 
 fre typetime
 label define typetime ///
@@ -103,24 +170,23 @@ label define typetime ///
 4"2010" 5"2016-17" 6"2020-21", replace
 label values typetime typetime
 
-violinplot absdiffpercent, over(typetime) horizontal left dscale(2.8) noline range(-2 102) now ///
-addplot(function y=-2.5, range(-2 102) lcolor(black) lpattern(shortdash)) ///
+* Stat
+tabstat absdiff_mshare if grpHH==3, stat(n mean q) by(year)
+tabstat absdiff_mshare if grpHH==5, stat(n mean q) by(year)
+
+* Graph
+violinplot absdiff_mshare, over(typetime) horizontal left dscale(2.8) noline range(0 100) now ///
+addplot(function y=-2.5, range(0 100) lcolor(black) lpattern(shortdash)) ///
 fill(color(black%10)) ///
 box(t(b)) bcolors(plb1) ///
 mean(t(m)) meancolors(plr1) ///
 med(t(m)) medcolors(ananas) ///
 title("Intra-household relative income gender gap", size(small)) ///
-xtitle("Percent") xlabel(0(10)100) ///
-ylabel(,grid) ytick(-2.5) ytitle("(a) Men > Women          (c) Women > Men") ///
+xtitle("Percentage point") xlabel(0(10)100) ///
+ylabel(,grid) ytick(-2.5) ytitle("(a) Men > Women       (c) Women > Men") ///
 legend(order(7 "IQR" 14 "Median" 20 "Mean") pos(6) col(3) on) ///
-aspectratio() scale(1.2) name(viodiff, replace)
-
-
-
-********** Combine
-graph combine barshare viodiff, name(comb, replace)
-graph export "Intra.png", as(png) replace
-
+aspectratio() scale(1.2) name(viodiff, replace) note("{it:Note:} For 298 households in 2010, 387 in 2016-17, and 493 in 2020-21.", size(vsmall))
+graph export "Intensityintra.png", as(png) replace
 
 ****************************************
 * END
@@ -140,119 +206,39 @@ graph export "Intra.png", as(png) replace
 
 
 
-
 ****************************************
-* Intensity of inequalities: Ecart relatif
-****************************************
-cls
-use"panel_v6", clear
-
-
-* Depth
-tabstat absdiffpercent if type==1, stat(n mean q) by(year)
-tabstat absdiffpercent if type==3, stat(n mean q) by(year)
-
-* Graph for M<W
-violinplot absdiffpercent if type==1, over(time) horizontal left dscale(2.8) noline range(-2 102) now ///
-fill(color(black%10)) ///
-box(t(b)) bcolors(plb1) ///
-mean(t(m)) meancolors(plr1) ///
-med(t(m)) medcolors(ananas) ///
-subtitle("Sample 1: Men income < women income") ///
-xtitle("Percent") xlabel(0(10)100) ///
-ylabel(,grid) ///
-legend(order(4 "IQR" 7 "Median" 10 "Mean") pos(6) col(3) on) ///
-note("{it:Note:} For 28 households in 2010, 48 in 2016-17 and 94 in 2020-21.", size(vsmall)) ///
-aspectratio() scale(1.2) name(vio1, replace)
-
-* Graph for M>W
-violinplot absdiffpercent if type==3, over(time) horizontal left dscale(2.8) noline range(-2 102) now ///
-fill(color(black%10)) ///
-box(t(b)) bcolors(plb1) ///
-mean(t(m)) meancolors(plr1) ///
-med(t(m)) medcolors(ananas) ///
-subtitle("Sample 2: Men income > women income") ///
-xtitle("Percent") xlabel(0(10)100) ///
-ylabel(,grid) ///
-legend(order(4 "IQR" 7 "Median" 10 "Mean") pos(6) col(3) on) ///
-note("{it:Note:} For 357 households in 2010, 412 in 2016-17 and 502 in 2020-21.", size(vsmall)) ///
-aspectratio() scale(1.2) name(vio2, replace)
-
-* Combine
-grc1leg vio1 vio2, col(1) title("Relative difference in income between men and women") name(comb, replace)
-graph export "Intra.png", as(png) replace
-
-
-***** Avec un seul graphique ?
-
-
-****************************************
-* END
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-****************************************
-* Intensity of inequalities: Part women
+* Deter path for all HH
 ****************************************
 cls
-use"panel_v6", clear
+use"panel_v5", clear
 
+* GrpHH
+fre grpHH
+clonevar grpHHbis=grpHH
+recode grpHHbis (4=3) (5=3)
+fre grpHHbis
+ta grpHH year, col nofreq
+recode grpHH (3=5) (5=3)
+ta grpHH, gen(grpHH_)
 
-* Depth
-tabstat sharewomen, stat(n mean q) by(year)
+* Caste
+ta grpHH caste, col nofreq 
+ta grpHH caste, exp cchi2 chi2
 
+* Head charact
+tabstat head_female head_nonmarried head_widowseparated head_age, stat(mean) by(grpHH)
 
-violinplot sharewomen, over(time) horizontal left dscale(2.8) noline range(-2 102) now ///
-fill(color(black%10)) ///
-box(t(b)) bcolors(plb1) ///
-mean(t(m)) meancolors(plr1) ///
-med(t(m)) medcolors(ananas) ///
-subtitle("Sample 1: Men income < women income") ///
-xtitle("Percent") xlabel(0(.1)1) ///
-ylabel(,grid) ///
-legend(order(4 "IQR" 7 "Median" 10 "Mean") pos(6) col(3) on) ///
-note("{it:Note:} For 28 households in 2010, 48 in 2016-17 and 94 in 2020-21.", size(vsmall)) ///
-aspectratio() scale(1.2) name(vio1, replace)
+* Family charact
+tabstat HHsize HH_count_child sexratio nbmale nbfemale stem wp_inactive_men_HH wp_inactive_women_HH wp_unoccupi_men_HH wp_unoccupi_women_HH wp_occupied_men_HH wp_occupied_women_HH wp_active_men_HH wp_active_women_HH, stat(mean) by(grpHH)
 
-
-
-****************************************
-* END
-
-
-
-
-
-
-
-
-
-****************************************
-* Diff between groups
-****************************************
+* Test de moyenne
 cls
-use"panel_v6", clear
-
-cls
-foreach i in 2010 2016 2020 {
-foreach x in log_annualincome_HH log_assets_totalnoland remittnet_HH ownland housetitle HHsize HH_count_child sexratio nonworkersratio stem head_female head_age head_occ1 head_occ2 head_occ4 head_occ5 head_occ6 head_occ7 head_educ2 head_educ3 head_nonmarried dummymarriage dummydemonetisation lock_2 lock_3 caste_2 caste_3 village_2 village_3 village_4 village_5 village_6 village_7 village_8 village_9 village_10 {
-tabstat `x' if year==`i', stat(mean) by(type)
-}
+foreach y in head_female head_nonmarried head_widowseparated head_age HHsize HH_count_child sexratio nbmale nbfemale stem wp_inactive_men_HH wp_inactive_women_HH wp_unoccupi_men_HH wp_unoccupi_women_HH wp_occupied_men_HH wp_occupied_women_HH wp_active_men_HH wp_active_women_HH {
+reg `y' ib(3).grpHHbis, noh baselevel
 }
 
 
+dunntest head_female, by(grpHH) ma(bonferroni)
+
 ****************************************
 * END
-
-

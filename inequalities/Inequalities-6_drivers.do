@@ -26,7 +26,12 @@ do"C:\Users\Arnaud\Documents\GitHub\folderanalysis\inequalities.do"
 ****************************************
 * Multi probit M, W, E
 ****************************************
-use"panel_v6", clear
+use"panel_v5", clear
+
+* Selection
+fre grpHH2
+drop if grpHH2==.
+fre grpHH2
 
 /*
 Voir comment gérer les données de panel
@@ -90,14 +95,14 @@ year2016 mean_year2016 ///
 year2020 mean_year2020 ///
 nobs2 nobs3
 
-global marg log_annualincome_HH log_assets_totalnoland remittnet_HH ownland housetitle HHsize HH_count_child sexratio nonworkersratio stem head_female head_age head_occ1 head_occ2 head_occ4 head_occ5 head_occ6 head_occ7 head_educ2 head_educ3 head_nonmarried dummymarriage dummydemonetisation lock_2 lock_3 caste_2 caste_3 village_2 village_3 village_4 village_5 village_6 village_7 village_8 village_9 village_10
+global marg log_annualincome_HH log_assets_totalnoland remittnet_HH ownland housetitle HHsize HH_count_child sexratio nonworkersratio stem head_female head_age head_occ1 head_occ2 head_occ4 head_occ5 head_occ6 head_occ7 head_educ2 head_educ3 head_nonmarried dummymarriage dummydemonetisation lock_2 lock_3 caste_2 caste_3
 
 
 
 
 *
-fre type
-mlogit type $livelihood $family $head $shock $invar $time, baselevel baseoutcome(2)
+fre grpHH2
+mlogit grpHH2 $livelihood $family $head $shock $invar $time, baselevel baseoutcome(2)
 est store mp1
 
 
@@ -135,6 +140,15 @@ esttab mp1 using "mprobit.csv", replace ///
 * Drivers of intra-
 ****************************************
 use"panel_v5", clear
+
+* Selection
+fre grpHH2
+drop if grpHH2==.
+drop if grpHH2==2
+fre grpHH2
+
+* Remettre en share
+replace absdiff_mshare=absdiff_mshare/100
 
 
 ********** Macro
@@ -182,21 +196,21 @@ nobs2 nobs3
 
 
 ********** Econo
-glm absdiffshare $livelihood $family $head $shock $invar $time, family(binomial) link(probit) cluster(panelvar)
+glm absdiff_mshare $livelihood $family $head $shock $invar $time, family(binomial) link(probit) cluster(panelvar)
 margins, dydx($livelihood $family $head $shock $invar $time) post
 est store mar1
 
-glm absdiffshare $livelihood $family $head $shock $invar $time if type==1, family(binomial) link(probit) cluster(panelvar)
+glm absdiff_mshare $livelihood $family $head $shock $invar $time if type==1, family(binomial) link(probit) cluster(panelvar)
 margins, dydx($livelihood $family $head $shock $invar $time) post
 est store mar2
 
-glm absdiffshare $livelihood $family $head $shock $invar $time if type==3, family(binomial) link(probit) cluster(panelvar)
+glm absdiff_mshare $livelihood $family $head $shock $invar $time if type==3, family(binomial) link(probit) cluster(panelvar)
 margins, dydx($livelihood $family $head $shock $invar $time) post
 est store mar3
 
 esttab mar1 mar2 mar3 using "Margins.csv", replace ///
 	label b(3) p(3) eqlabels(none) alignment(S) ///
-	drop(mean_* $time) ///
+	drop(mean_* village_2 village_3 village_4 village_5 village_6 village_7 village_8 village_9 village_10 $time) ///
 	star(* 0.10 ** 0.05 *** 0.01) ///
 	cells("b(fmt(2)star) se(fmt(2)par)") ///
 	refcat(, nolabel) ///
@@ -217,38 +231,5 @@ Donc forte inégalités intra chez les riches, faibles chez les pauvres.
 */
 
 
-********** Overfitting
-overfit: glm absdiffshare $livelihood $family $head $shock $invar $time, family(binomial) link(probit) cluster(panelvar)
-
-overfit: glm absdiffshare $livelihood $family $head $shock $invar $time if type==1, family(binomial) link(probit) cluster(panelvar)
-
-overfit: glm absdiffshare $livelihood $family $head $shock $invar $time if type==3, family(binomial) link(probit) cluster(panelvar)
-
-
-
-
 ****************************************
 * END
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

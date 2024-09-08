@@ -22,15 +22,18 @@ do"C:\Users\Arnaud\Documents\GitHub\folderanalysis\inequalities.do"
 ****************************************
 * Trends with R
 ****************************************
-use"panel_v6", clear
+use"panel_v5", clear
 
 * Prepa database
-rename diffshare index
+rename diff_mshare index
 tabstat index, stat(min max range)
 keep if dummypanel==1
 keep HHID_panel year index
 reshape wide index, i(HHID_panel) j(year)
 corr index2010 index2016 index2020
+drop if index2010==.
+drop if index2016==.
+drop if index2020==.
 
 
 * Export pour R
