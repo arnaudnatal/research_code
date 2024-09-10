@@ -8,7 +8,7 @@
 
 #--- Introduction
 rm(list = ls())
-setwd("C:/Users/Arnaud/Documents/MEGA/Research/Ongoing_Inequalities/Analysis")
+setwd("C:/Users/Arnaud/Documents/MEGA/Research/Ongoing_Assetsinequalities/Analysis")
 
 
 
