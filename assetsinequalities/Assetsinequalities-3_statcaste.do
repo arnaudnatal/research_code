@@ -228,6 +228,7 @@ ineqerr assets_total if year==2020, reps(200)
 * Pop and assets share
 ****************************************
 import excel "Statdesc.xlsx", sheet("GE_caste2") firstrow clear
+drop if year==.
 label define caste 1"Dalits" 2"Middle castes" 3"Upper castes"
 label values caste caste
 replace popshare=popshare*100
@@ -237,39 +238,12 @@ replace assetsshare=assetsshare*100
 gen ratio=assetsshare*100/popshare
 
 
-********** Graph with both shares
-* Dalits
-twoway ///
-(connected assetsshare year if caste==1) ///
-(connected popshare year if caste==1) ///
-, title("Dalits") ///
-ytitle("Percent") ylabel(0(10)60) ymtick(0(5)65) ///
-xtitle("") xlabel(2010 2016 2020) ///
-legend(order(1 "Share of total wealth held" 2 "Share of the population") pos(6) col(2)) name(g1, replace)
 
-* Middle castes
-twoway ///
-(connected assetsshare year if caste==2) ///
-(connected popshare year if caste==2) ///
-, title("Middle castes") ///
-ytitle("Percent") ylabel(0(10)60) ymtick(0(5)65) ///
-xtitle("") xlabel(2010 2016 2020) ///
-legend(order(1 "Share of total wealth held" 2 "Share of the population") pos(6) col(2)) name(g2, replace)
-
-* Upper castes
-twoway ///
-(connected assetsshare year if caste==3) ///
-(connected popshare year if caste==3) ///
-, title("Upper castes") ///
-ytitle("Percent") ylabel(0(10)60) ymtick(0(5)65) ///
-xtitle("") xlabel(2010 2016 2020) ///
-legend(order(1 "Share of total wealth held" 2 "Share of the population") pos(6) col(2)) name(g3, replace)
-
-* Combine
-grc1leg g1 g2 g3, col(3) name(comb1, replace)
+********** Graph bar
+graph bar (mean) popshare assetsshare, over(year) over(caste) ///
+ylabel(0(10)60) ymtick(0(5)65) ytitle("Percent") ///
+legend(order(1 "Share in the population" 2 "Share in the total wealth") col(2) pos(6))
 graph export "Shareincshareass.png", as(png) replace
-
-
 
 
 
