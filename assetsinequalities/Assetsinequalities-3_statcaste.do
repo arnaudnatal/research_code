@@ -383,43 +383,6 @@ ytitle("Percent") ylabel(82(2)96) ///
 xtitle("") xlabel(2010 2016 2020) ///
 legend(order(1 "GE(0)" 2 "GE(1)" 3 "GE(2)") pos(6) col(3)) name(sw, replace) scale(1.2)
 
-
-* Base 100 within
-twoway ///
-(connected w_GE0 year if type==2) ///
-(connected w_GE1 year if type==3) ///
-(connected w_GE2 year if type==2) ///
-, title("{it:Within} growth (base 100 in 2010) ") ///
-ytitle("") ylabel(94(2)108) ///
-xtitle("") xlabel(2010 2016 2020) ///
-legend(order(1 "GE(0)" 2 "GE(1)" 3 "GE(2)") pos(6) col(3)) name(bw, replace) scale(1.2)
-
-* Combine
-grc1leg sw bw, name(cw, replace)  note("{it:Note:} For 405 households in 2010, 492 in 2016-17, and 626 in 2020-21.", size(vsmall))
-graph export "Within_caste.png", as(png) replace
-
-****************************************
-* END
-
-
-
-
-
-
-
-
-
-
-
-
-
-****************************************
-* Graph between
-****************************************
-import excel "GE.xlsx", sheet("Sheet1") firstrow clear
-label define type 1"Level" 2"Base100"
-label values type type
-
 * Level between max
 twoway ///
 (connected bm_GE0 year if type==1) ///
@@ -431,23 +394,20 @@ xtitle("") xlabel(2010 2016 2020) ///
 legend(order(1 "GE(0)" 2 "GE(1)" 3 "GE(2)") pos(6) col(3)) name(sbm, replace) scale(1.2)
 
 
-* Base 100 between max
-twoway ///
-(connected bm_GE0 year if type==2) ///
-(connected bm_GE1 year if type==3) ///
-(connected bm_GE2 year if type==2) ///
-, title("{it:Between} growth (base 100 in 2010) ") ///
-ytitle("") ylabel(50(10)150) ///
-xtitle("") xlabel(2010 2016 2020) ///
-legend(order(1 "GE(0)" 2 "GE(1)" 3 "GE(2)") pos(6) col(3)) name(bbm, replace) scale(1.2)
-
 * Combine
-grc1leg sbm bbm, name(cbm, replace) note("{it:Note:} For 405 households in 2010, 492 in 2016-17, and 626 in 2020-21.", size(vsmall))
-graph export "Between_caste.png", as(png) replace
+grc1leg sw sbm, name(swbm, replace) note("{it:Note:} For 405 households in 2010, 492 in 2016-17, and 626 in 2020-21.", size(vsmall))
+graph export "WithinBetween_caste.png", as(png) replace
 
 
 ****************************************
 * END
+
+
+
+
+
+
+
 
 
 
