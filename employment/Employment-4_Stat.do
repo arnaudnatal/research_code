@@ -231,9 +231,6 @@ save"NEEMSIS23_v2", replace
 ****************************************
 use"RUME3_v2", clear
 
-* J'enlève les moins de 14 car rien à voir avec l'emploi
-drop if age<14
-
 * Catégories d'ages selon l'Inde
 gen catinde=.
 replace catinde=1 if age>14 & age<18
@@ -250,6 +247,7 @@ label values catilo catilo
 
 * Combine d'inactifs ?
 gen inactive=0
+replace inactive=1 if age<14
 replace inactive=1 if student==1
 
 * Employment ILO
@@ -293,9 +291,6 @@ save"RUME3_v3", replace
 ****************************************
 use"NEEMSIS13_v2", clear
 
-* J'enlève les moins de 14 car rien à voir avec l'emploi
-drop if age<14
-
 * Catégories d'ages selon l'Inde
 gen catinde=.
 replace catinde=1 if age>14 & age<18
@@ -311,13 +306,27 @@ label define catilo 1"Children" 2"Adults"
 label values catilo catilo
 
 * Combine d'inactifs ?
+fre reasonnotworkpastyear
 gen inactive=0
+replace inactive=1 if age<14
 replace inactive=1 if student==1
+replace inactive=1 if reasonnotworkpastyear==1
+
+gen inactivebis=0
+replace inactivebis=1 if age<14
+replace inactivebis=1 if student==1
+replace inactivebis=1 if reasonnotworkpastyear==1
+replace inactivebis=1 if reasonnotworkpastyear==3
+replace inactivebis=1 if reasonnotworkpastyear==4
+replace inactivebis=1 if reasonnotworkpastyear==5
+replace inactivebis=1 if reasonnotworkpastyear==6
+replace inactivebis=1 if reasonnotworkpastyear==8
+
 
 * Employment ILO
 gen employment_inc=.
 gen employment_stat=.
-label define employment 0"Unemployed" 1"Worker" 2"Unpaid worker"
+label define employment 0"Unemployed" 1"Worker" 2"Unpaid worker" 3"Housewife"
 
 replace employment_inc=0 if dummyworkedpastyear_inc==0 & unpaidemployment_inc==0
 replace employment_stat=0 if dummyworkedpastyear_stat==0 & unpaidemployment_stat==0
@@ -327,6 +336,9 @@ replace employment_stat=1 if dummyworkedpastyear_stat==1
 
 replace employment_inc=2 if dummyworkedpastyear_inc==0 & unpaidemployment_inc==1
 replace employment_stat=2 if dummyworkedpastyear_stat==0 & unpaidemployment_stat==1
+
+replace employment_inc=3 if dummyworkedpastyear_inc==0 & reasonnotworkpastyear==2
+replace employment_stat=3 if dummyworkedpastyear_stat==0 & reasonnotworkpastyear==2
 
 replace employment_inc=. if inactive==1
 replace employment_stat=. if inactive==1
@@ -372,9 +384,6 @@ save"NEEMSIS13_v3", replace
 ****************************************
 use"NEEMSIS23_v2", clear
 
-* J'enlève les moins de 14 car rien à voir avec l'emploi
-drop if age<14
-
 * Catégories d'ages selon l'Inde
 gen catinde=.
 replace catinde=1 if age>14 & age<18
@@ -391,6 +400,7 @@ label values catilo catilo
 
 * Combine d'inactifs ?
 gen inactive=0
+replace inactive=1 if age<14
 replace inactive=1 if student==1
 
 * Employment ILO
@@ -488,6 +498,26 @@ use"RUME3_v3", clear
 append using "NEEMSIS13_v4"
 append using "NEEMSIS23_v4"
 
+*
+codebook sex
+label define sex 1"Men" 2"Women", replace
+
+*
+egen yearsex=group(year sex), label
+ta yearsex
+order yearsex, after(sex)
+
+*
+egen yearcaste=group(year caste), label
+ta yearcaste
+order yearcaste, after(yearsex)
+
+*
+egen yearsexcaste=group(year sex caste), label
+ta yearsexcaste
+order yearsexcaste, after(yearcaste)
+
+
 save"totalindiv_v1", replace
 ****************************************
 * END
@@ -502,12 +532,54 @@ save"totalindiv_v1", replace
 ****************************************
 * Correction du chomage pour les égos
 ****************************************
+
+***** NEEMSIS-1
 use"totalindiv_v1", clear
+cls
+keep if year==2016
+recode readystartjob (88=.) (99=.)
+
+* Pour ceux qui ont travaillé l'an passé: Travaillé la semaine dernière ?
+ta workpastsevendays
+	* Si non : 
+	ta searchjob
+	ta startbusiness
+
+* Pour ceux qui n'ont pas travaillé l'an passé: Déjà travaillé ?
+ta everwork
+	* Si non :
+	ta searchjobsince15
+		* Si oui :
+		ta nbermonthsearchjob
+	ta businessafter15
+
+ta readystartjob
+ta workpastsixmonth
+	
+	
+***** NEEMSIS-2
+use"totalindiv_v1", clear
+cls
+keep if year==2020
+recode readystartjob (88=.) (99=.)
+
+* Pour ceux qui ont travaillé l'an passé: Travaillé la semaine dernière ?
+ta workpastsevendays
+	* Si non : 
+	ta searchjob
+	ta startbusiness
 
 
+* Pour ceux qui n'ont pas travaillé l'an passé: Déjà travaillé ?
+ta everwork
+	* Si non :
+	ta searchjobsince15
+		* Si oui :
+		ta nbermonthsearchjob
+	ta businessafter15
 
-
-
+ta readystartjob
+ta workpastsixmonth
 ****************************************
 * END
 
@@ -526,10 +598,37 @@ use"totalindiv_v1", clear
 ****************************************
 use"totalindiv_v1", clear
 
-ta employment_inc year, col nofreq
 
-ta employment_inc year if sex==1, col nofreq
-ta employment_inc year if sex==2 & caste==1, col nofreq
+
+
+* Inactive
+cls
+ta year inactive
+ta yearsex inactive
+ta yearcaste inactive
+ta yearsexcaste inactive
+
+cls
+ta year inactive, row nofreq
+ta yearsex inactive, row nofreq
+ta yearcaste inactive, row nofreq
+ta yearsexcaste inactive, row nofreq
+
+
+* Employment
+cls
+ta year employment_inc
+ta yearsex employment_inc
+ta yearcaste employment_inc
+ta yearsexcaste employment_inc
+
+cls
+ta year employment_inc, row nofreq
+ta yearsex employment_inc, row nofreq
+ta yearcaste employment_inc, row nofreq
+ta yearsexcaste employment_inc, row nofreq
+
+
 
 
 
