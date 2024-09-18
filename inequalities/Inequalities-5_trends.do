@@ -25,7 +25,7 @@ do"C:\Users\Arnaud\Documents\GitHub\folderanalysis\inequalities.do"
 use"panel_v5", clear
 
 * Prepa database
-rename diff_mshare index
+rename absdiff_mshare index
 tabstat index, stat(min max range)
 keep if dummypanel==1
 keep HHID_panel year index

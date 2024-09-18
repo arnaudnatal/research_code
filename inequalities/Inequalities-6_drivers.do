@@ -18,6 +18,43 @@ do"C:\Users\Arnaud\Documents\GitHub\folderanalysis\inequalities.do"
 
 
 
+****************************************
+* Stat desc
+****************************************
+use"panel_v5", clear
+
+* Selection
+fre grpHH2
+drop if grpHH2==.
+
+
+
+********** Macro
+global livelihood log_annualincome_HH log_assets_totalnoland remittnet_HH ownland housetitle 
+
+global family HHsize HH_count_child sexratio nonworkersratio stem
+
+global head head_female head_age head_occ1 head_occ2 head_occ3 head_occ4 head_occ5 head_occ6 head_occ7 head_educ1 head_educ2 head_educ3 head_nonmarried 
+
+global invar caste_1 caste_2 caste_3 
+
+tabstat $livelihood $family $head $invar, stat(mean) by(year)
+
+
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -32,25 +69,8 @@ use"panel_v5", clear
 fre grpHH2
 drop if grpHH2==.
 fre grpHH2
+recode grpHH2 (1=3) (3=1)
 
-/*
-Voir comment gérer les données de panel
-Réponse: Wooldridge, comme les autres CRE
-*/
-
-/*
-global headX ///
-head_femaleXage mean_head_femaleXage ///
-head_femaleXocc1 mean_head_femaleXocc1 ///
-head_femaleXocc2 mean_head_femaleXocc2 ///
-head_femaleXocc4 mean_head_femaleXocc4 ///
-head_femaleXocc5 mean_head_femaleXocc5 ///
-head_femaleXocc6 mean_head_femaleXocc6 ///
-head_femaleXocc7 mean_head_femaleXocc7 ///
-head_femaleXeduc2 mean_head_femaleXeduc2 ///
-head_femaleXeduc3 mean_head_femaleXeduc3 ///
-head_femaleXnonmarried mean_head_femaleXnonmarried
-*/
 
 ********** Macro
 global livelihood ///
@@ -98,6 +118,8 @@ global marg log_annualincome_HH log_assets_totalnoland remittnet_HH ownland hous
 fre grpHH2
 mlogit grpHH2 $livelihood $family $head $invar $time, baselevel baseoutcome(2)
 est store mp1
+predict p
+sort p
 
 
 esttab mp1 using "mprobit.csv", replace ///
@@ -108,7 +130,7 @@ esttab mp1 using "mprobit.csv", replace ///
 	refcat(, nolabel) ///
 	stats(N, fmt(0) ///
 	labels(`"Observations"'))
-
+	
 ****************************************
 * END
 
@@ -182,19 +204,21 @@ year2016 mean_year2016 ///
 year2020 mean_year2020 ///
 nobs2 nobs3
 
+ta grpHH2
 
 ********** Econo
 glm absdiff_mshare $livelihood $family $head $invar $time, family(binomial) link(probit) cluster(panelvar)
 margins, dydx($livelihood $family $head $invar $time) post
 est store mar1
 
-glm absdiff_mshare $livelihood $family $head $invar $time if type==1, family(binomial) link(probit) cluster(panelvar)
+glm absdiff_mshare $livelihood $family $head $invar $time if grpHH2==3, family(binomial) link(probit) cluster(panelvar)
 margins, dydx($livelihood $family $head $invar $time) post
 est store mar2
 
-glm absdiff_mshare $livelihood $family $head $invar $time if type==3, family(binomial) link(probit) cluster(panelvar)
+glm absdiff_mshare $livelihood $family $head $invar $time if grpHH2==1, family(binomial) link(probit) cluster(panelvar)
 margins, dydx($livelihood $family $head $invar $time) post
 est store mar3
+
 
 esttab mar1 mar2 mar3 using "Margins.csv", replace ///
 	label b(3) p(3) eqlabels(none) alignment(S) ///
@@ -205,6 +229,6 @@ esttab mar1 mar2 mar3 using "Margins.csv", replace ///
 	stats(N, fmt(0) ///
 	labels(`"Observations"'))
 
-
+	
 ****************************************
 * END
