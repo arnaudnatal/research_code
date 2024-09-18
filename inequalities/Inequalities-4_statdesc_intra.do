@@ -100,8 +100,8 @@ twoway ///
 title("Distribution of households by income of men" "and women for all households", size(small)) ///
 xlabel(1 2 3,valuelabel) xtitle("") ///
 ylabel(0(10)100) ytitle("Percent") ///
-legend(order(1 "(a) Men > Women" 2 "(b) Men = Women" 3 "(c) Women > Men" 4 "No income from women" 5 "No income from men") pos(6) col(3)) ///
-aspectratio() scale(1.2) name(barshare1, replace) note("{it:Note:} For 405 households in 2010, 492 in 2016-17, and 626 in 2020-21.", size(vsmall))
+legend(order(1 "(a) Men > Women" 2 "(b) Men = Women" 3 "(c) Women > Men" 4 "(d) No income from women" 5 "(e) No income from men") pos(6) col(3)) ///
+aspectratio() scale(1.2) name(barshare1, replace) note("{it:Note:} For 405 households in 2010, 491 in 2016-17, and 623 in 2020-21.", size(vsmall))
 
 
 *********** Graph income

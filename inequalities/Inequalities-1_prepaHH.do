@@ -1148,6 +1148,35 @@ label define grpHH3 1"No women income" 2"No men income" 3"Income for both"
 label values grpHH3 grpHH3
 
 
+* Famille avec au moins 2 femmes et 2 hommes travailleurs pour voir si la méthode de Jalil pourrait fonctionner
+gen morethan22=0
+replace morethan22=1 if wp_occupied_men_HH>=2 & wp_occupied_women_HH>=2 & wp_occupied_men_HH!=. & wp_occupied_women_HH!=.
+
+ta morethan22 year, col
+/*
+. ta morethan22 year, col
+
++-------------------+
+| Key               |
+|-------------------|
+|     frequency     |
+| column percentage |
++-------------------+
+
+           |               year
+morethan22 |      2010       2016       2020 |     Total
+-----------+---------------------------------+----------
+         0 |       383        417        539 |     1,339 
+           |     94.57      84.93      86.52 |     88.15 
+-----------+---------------------------------+----------
+         1 |        22         74         84 |       180 
+           |      5.43      15.07      13.48 |     11.85 
+-----------+---------------------------------+----------
+     Total |       405        491        623 |     1,519 
+           |    100.00     100.00     100.00 |    100.00 
+*/
+
+
 save "panel_v5", replace
 ****************************************
 * END

@@ -16,6 +16,8 @@ do "https://raw.githubusercontent.com/arnaudnatal/folderanalysis/main/$link.do"
 In India, the age of majority is 18.
 But children can start work at the age of 14 in specific occupations (no hazardous jobs).
 
+For ILO, working age is 15.
+
 In order to be classified as unemployed according to the ILO’s definition, a person aged 15 and over needs to fulfil three criteria:
 (i) not to have worked at all in the reference week,
 (ii) to be available to take up work within the next two weeks
@@ -32,460 +34,6 @@ En 2016-17 et 2020-21, il y a plusieurs personnes qui ont déclaré des emplois 
 
 
 
-****************************************
-* Employment RUME
-****************************************
-use"RUME1", clear
-
-fre kindofwork
-drop if kindofwork==9
-
-* Inc
-count if annualincome==0
-gen paidemployment_inc=1 if annualincome>0
-gen unpaidemployment_inc=1 if annualincome==0
-bysort HHID_panel INDID_panel: egen paidemployment_inc_indiv=sum(paidemployment_inc)
-bysort HHID_panel INDID_panel: egen unpaidemployment_inc_indiv=sum(unpaidemployment_inc)
-bysort HHID_panel INDID_panel: egen income_indiv=sum(annualincome)
-
-* Keep
-keep HHID_panel INDID_panel year paidemployment_inc_indiv unpaidemployment_inc_indiv income_indiv
-rename paidemployment_inc_indiv paidemployment_inc
-rename unpaidemployment_inc_indiv unpaidemployment_inc
-replace paidemployment_inc=1 if paidemployment_inc>1
-replace unpaidemployment_inc=1 if unpaidemployment_inc>1
-duplicates drop
-save"_temp1", replace
-
-use"RUME3", clear
-merge 1:1 HHID_panel INDID_panel using "_temp1", keepusing(paidemployment_inc unpaidemployment_inc income_indiv)
-drop _merge
-recode paidemployment_inc unpaidemployment_inc (.=0)
-gen dummyworkedpastyear_inc=0
-replace dummyworkedpastyear_inc=1 if paidemployment_inc==1
-
-* Clean
-drop villagename relationshiptohead HHID2010 INDID2010
-gen student=.
-replace student=0 if studentpresent==0
-replace student=1 if studentpresent==1
-drop studentpresent
-
-*
-ta age,m
-save"RUME3_v2", replace
-****************************************
-* RUME
-
-
-
-
-
-
-
-
-
-
-
-
-
-****************************************
-* Employment NEEMSIS-1
-****************************************
-use"NEEMSIS11", clear
-
-fre kindofwork
-
-* Inc
-count if annualincome==0
-gen paidemployment_inc=1 if annualincome>0
-gen unpaidemployment_inc=1 if annualincome==0
-bysort HHID_panel INDID_panel: egen paidemployment_inc_indiv=sum(paidemployment_inc)
-bysort HHID_panel INDID_panel: egen unpaidemployment_inc_indiv=sum(unpaidemployment_inc)
-bysort HHID_panel INDID_panel: egen income_indiv=sum(annualincome)
-
-* Status
-gen paidemployment_stat=1 if kindofwork==1 | kindofwork==2 | kindofwork==3 | kindofwork==4
-gen unpaidemployment_stat=1 if kindofwork==5 | kindofwork==6 | kindofwork==7 | kindofwork==8
-bysort HHID_panel INDID_panel: egen paidemployment_stat_indiv=sum(paidemployment_stat)
-bysort HHID_panel INDID_panel: egen unpaidemployment_stat_indiv=sum(unpaidemployment_stat)
-
-* Keep
-keep HHID_panel INDID_panel year paidemployment_inc_indiv unpaidemployment_inc_indiv paidemployment_stat_indiv unpaidemployment_stat_indiv income_indiv
-rename paidemployment_inc_indiv paidemployment_inc
-rename unpaidemployment_inc_indiv unpaidemployment_inc
-rename paidemployment_stat_indiv paidemployment_stat
-rename unpaidemployment_stat_indiv unpaidemployment_stat
-replace paidemployment_inc=1 if paidemployment_inc>1
-replace unpaidemployment_inc=1 if unpaidemployment_inc>1
-replace paidemployment_stat=1 if paidemployment_stat>1
-replace unpaidemployment_stat=1 if unpaidemployment_stat>1
-duplicates drop
-save"_temp2", replace
-
-use"NEEMSIS13", clear
-merge 1:1 HHID_panel INDID_panel using "_temp2", keepusing(paidemployment_inc unpaidemployment_inc paidemployment_stat unpaidemployment_stat income_indiv)
-drop _merge
-recode paidemployment_inc unpaidemployment_inc paidemployment_stat unpaidemployment_stat (.=0)
-gen dummyworkedpastyear_inc=0
-replace dummyworkedpastyear_inc=1 if paidemployment_inc==1
-gen dummyworkedpastyear_stat=0
-replace dummyworkedpastyear_stat=1 if paidemployment_stat==1
-
-* Clean
-drop villageid_new relationshiptohead HHID2016 INDID2016
-gen student=.
-replace student=0 if currentlyatschool==0
-replace student=1 if currentlyatschool==1
-drop currentlyatschool
-
-*
-ta age,m
-save"NEEMSIS13_v2", replace
-****************************************
-* RUME
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-****************************************
-* Employment NEEMSIS-2
-****************************************
-use"NEEMSIS21", clear
-
-fre kindofwork
-
-* Inc
-count if annualincome==0
-gen paidemployment_inc=1 if annualincome>0
-gen unpaidemployment_inc=1 if annualincome==0
-bysort HHID_panel INDID_panel: egen paidemployment_inc_indiv=sum(paidemployment_inc)
-bysort HHID_panel INDID_panel: egen unpaidemployment_inc_indiv=sum(unpaidemployment_inc)
-bysort HHID_panel INDID_panel: egen income_indiv=sum(annualincome)
-
-* Status
-gen paidemployment_stat=1 if kindofwork==1 | kindofwork==2 | kindofwork==3 | kindofwork==4
-gen unpaidemployment_stat=1 if kindofwork==5 | kindofwork==6 | kindofwork==7 | kindofwork==8
-bysort HHID_panel INDID_panel: egen paidemployment_stat_indiv=sum(paidemployment_stat)
-bysort HHID_panel INDID_panel: egen unpaidemployment_stat_indiv=sum(unpaidemployment_stat)
-
-* Keep
-keep HHID_panel INDID_panel year paidemployment_inc_indiv unpaidemployment_inc_indiv paidemployment_stat_indiv unpaidemployment_stat_indiv income_indiv
-rename paidemployment_inc_indiv paidemployment_inc
-rename unpaidemployment_inc_indiv unpaidemployment_inc
-rename paidemployment_stat_indiv paidemployment_stat
-rename unpaidemployment_stat_indiv unpaidemployment_stat
-replace paidemployment_inc=1 if paidemployment_inc>1
-replace unpaidemployment_inc=1 if unpaidemployment_inc>1
-replace paidemployment_stat=1 if paidemployment_stat>1
-replace unpaidemployment_stat=1 if unpaidemployment_stat>1
-duplicates drop
-save"_temp3", replace
-
-use"NEEMSIS23", clear
-merge 1:1 HHID_panel INDID_panel using "_temp3", keepusing(paidemployment_inc unpaidemployment_inc paidemployment_stat unpaidemployment_stat income_indiv)
-drop if _merge==2
-drop _merge
-recode paidemployment_inc unpaidemployment_inc paidemployment_stat unpaidemployment_stat (.=0)
-gen dummyworkedpastyear_inc=0
-replace dummyworkedpastyear_inc=1 if paidemployment_inc==1
-gen dummyworkedpastyear_stat=0
-replace dummyworkedpastyear_stat=1 if paidemployment_stat==1
-
-* Clean
-drop village_new relationshiptohead HHID2020 INDID2020
-gen student=.
-replace student=0 if currentlyatschool==0
-replace student=1 if currentlyatschool==1
-drop currentlyatschool
-
-*
-ta age,m
-save"NEEMSIS23_v2", replace
-****************************************
-* END
-
-
-
-
-
-
-
-
-
-
-
-
-****************************************
-* Status RUME
-****************************************
-use"RUME3_v2", clear
-
-* Catégories d'ages selon l'Inde
-gen catinde=.
-replace catinde=1 if age>14 & age<18
-replace catinde=2 if age>=18
-label define catinde 1"Adolescents" 2"Adults"
-label values catinde catinde
-
-* Catégories d'ages selon ILO
-gen catilo=.
-replace catilo=1 if age<15
-replace catilo=2 if age>=15
-label define catilo 1"Children" 2"Adults"
-label values catilo catilo
-
-* Combine d'inactifs ?
-gen inactive=0
-replace inactive=1 if age<14
-replace inactive=1 if student==1
-
-* Employment ILO
-gen employment_inc=.
-label define employment 0"Unemployed" 1"Worker" 2"Unpaid worker"
-
-replace employment_inc=0 if dummyworkedpastyear_inc==0 & unpaidemployment_inc==0
-
-replace employment_inc=1 if dummyworkedpastyear_inc==1
-
-replace employment_inc=2 if dummyworkedpastyear_inc==0 & unpaidemployment_inc==1
-
-replace employment_inc=. if inactive==1
-
-label values employment_inc employment
-
-ta inactive
-ta employment_inc
-ta income_indiv if employment_inc==0
-
-* Save
-save"RUME3_v3", replace
-
-****************************************
-* END
-
-
-
-
-
-
-
-
-
-
-
-
-
-****************************************
-* Status NEEMSIS-1
-****************************************
-use"NEEMSIS13_v2", clear
-
-* Catégories d'ages selon l'Inde
-gen catinde=.
-replace catinde=1 if age>14 & age<18
-replace catinde=2 if age>=18
-label define catinde 1"Adolescents" 2"Adults"
-label values catinde catinde
-
-* Catégories d'ages selon ILO
-gen catilo=.
-replace catilo=1 if age<15
-replace catilo=2 if age>=15
-label define catilo 1"Children" 2"Adults"
-label values catilo catilo
-
-* Combine d'inactifs ?
-fre reasonnotworkpastyear
-gen inactive=0
-replace inactive=1 if age<14
-replace inactive=1 if student==1
-replace inactive=1 if reasonnotworkpastyear==1
-
-gen inactivebis=0
-replace inactivebis=1 if age<14
-replace inactivebis=1 if student==1
-replace inactivebis=1 if reasonnotworkpastyear==1
-replace inactivebis=1 if reasonnotworkpastyear==3
-replace inactivebis=1 if reasonnotworkpastyear==4
-replace inactivebis=1 if reasonnotworkpastyear==5
-replace inactivebis=1 if reasonnotworkpastyear==6
-replace inactivebis=1 if reasonnotworkpastyear==8
-
-
-* Employment ILO
-gen employment_inc=.
-gen employment_stat=.
-label define employment 0"Unemployed" 1"Worker" 2"Unpaid worker" 3"Housewife"
-
-replace employment_inc=0 if dummyworkedpastyear_inc==0 & unpaidemployment_inc==0
-replace employment_stat=0 if dummyworkedpastyear_stat==0 & unpaidemployment_stat==0
-
-replace employment_inc=1 if dummyworkedpastyear_inc==1
-replace employment_stat=1 if dummyworkedpastyear_stat==1
-
-replace employment_inc=2 if dummyworkedpastyear_inc==0 & unpaidemployment_inc==1
-replace employment_stat=2 if dummyworkedpastyear_stat==0 & unpaidemployment_stat==1
-
-replace employment_inc=3 if dummyworkedpastyear_inc==0 & reasonnotworkpastyear==2
-replace employment_stat=3 if dummyworkedpastyear_stat==0 & reasonnotworkpastyear==2
-
-replace employment_inc=. if inactive==1
-replace employment_stat=. if inactive==1
-
-label values employment_inc employment
-label values employment_stat employment
-
-ta inactive
-ta employment_inc
-ta employment_stat
-ta income_indiv if employment_inc==0
-ta income_indiv if employment_inc==2
-
-*
-fre reasonnotworkpastyear
-
-* Save
-save"NEEMSIS13_v3", replace
-
-****************************************
-* END
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-****************************************
-* Status NEEMSIS-2
-****************************************
-use"NEEMSIS23_v2", clear
-
-* Catégories d'ages selon l'Inde
-gen catinde=.
-replace catinde=1 if age>14 & age<18
-replace catinde=2 if age>=18
-label define catinde 1"Adolescents" 2"Adults"
-label values catinde catinde
-
-* Catégories d'ages selon ILO
-gen catilo=.
-replace catilo=1 if age<15
-replace catilo=2 if age>=15
-label define catilo 1"Children" 2"Adults"
-label values catilo catilo
-
-* Combine d'inactifs ?
-gen inactive=0
-replace inactive=1 if age<14
-replace inactive=1 if student==1
-
-* Employment ILO
-gen employment_inc=.
-gen employment_stat=.
-label define employment 0"Unemployed" 1"Worker" 2"Unpaid worker"
-
-replace employment_inc=0 if dummyworkedpastyear_inc==0 & unpaidemployment_inc==0
-replace employment_stat=0 if dummyworkedpastyear_stat==0 & unpaidemployment_stat==0
-
-replace employment_inc=1 if dummyworkedpastyear_inc==1
-replace employment_stat=1 if dummyworkedpastyear_stat==1
-
-replace employment_inc=2 if dummyworkedpastyear_inc==0 & unpaidemployment_inc==1
-replace employment_stat=2 if dummyworkedpastyear_stat==0 & unpaidemployment_stat==1
-
-replace employment_inc=. if inactive==1
-replace employment_stat=. if inactive==1
-
-label values employment_inc employment
-label values employment_stat employment
-
-ta inactive
-ta employment_inc
-ta employment_stat
-ta income_indiv if employment_inc==0
-ta income_indiv if employment_inc==2
-
-*
-fre reasonnotworkpastyear
-
-* Save
-save"NEEMSIS23_v3", replace
-
-****************************************
-* END
-
-
-
-
-
-
-
-
-
-
-
-
-
-****************************************
-* Characteristics egos
-****************************************
-
-********** NEEMSIS-1
-use"NEEMSIS14", clear
-keep HHID_panel INDID_panel everwork workpastsevendays searchjob startbusiness searchjobsince15 businessafter15 nbermonthsearchjob readystartjob
-save "_tempego1", replace
-
-*
-use"NEEMSIS13_v3", clear
-merge 1:1 HHID_panel INDID_panel using"_tempego1"
-drop _merge
-save"NEEMSIS13_v4", replace
-
-
-********** NEEMSIS-2
-use"NEEMSIS24", clear
-keep HHID_panel INDID_panel everwork workpastsevendays searchjob startbusiness searchjobsince15 businessafter15 nbermonthsearchjob readystartjob
-save "_tempego2", replace
-
-*
-use"NEEMSIS23_v3", clear
-merge 1:1 HHID_panel INDID_panel using"_tempego2"
-drop if _merge==2
-drop _merge
-save"NEEMSIS23_v4", replace
-
-****************************************
-* END
-
-
-
-
-
-
 
 
 
@@ -493,30 +41,13 @@ save"NEEMSIS23_v4", replace
 ****************************************
 * Append
 ****************************************
-use"RUME3_v3", clear
+use"RUME3_v2", clear
 
-append using "NEEMSIS13_v4"
-append using "NEEMSIS23_v4"
+append using "NEEMSIS13_v3"
+append using "NEEMSIS23_v3"
 
-*
-codebook sex
-label define sex 1"Men" 2"Women", replace
-
-*
-egen yearsex=group(year sex), label
-ta yearsex
-order yearsex, after(sex)
-
-*
-egen yearcaste=group(year caste), label
-ta yearcaste
-order yearcaste, after(yearsex)
-
-*
-egen yearsexcaste=group(year sex caste), label
-ta yearsexcaste
-order yearsexcaste, after(yearcaste)
-
+* Label
+label var year "Year"
 
 save"totalindiv_v1", replace
 ****************************************
@@ -529,6 +60,181 @@ save"totalindiv_v1", replace
 
 
 
+****************************************
+* Append les occupations
+****************************************
+use"RUME2_v2", clear
+
+append using "NEEMSIS12_v2"
+append using "NEEMSIS22_v2"
+
+* Label
+label var year "Year"
+
+* Rename
+forvalues i=1/6 {
+rename kow`i' kindofwork`i'
+}
+
+rename occupationname1 occupationname_mainocc
+rename annualincome1 annualincome_mainocc
+rename occupation1 occupation_mainocc
+rename kindofwork1 kindofwork_mainocc
+
+
+save"totalocc", replace
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Merge les occupations
+****************************************
+use"totalindiv_v1", clear
+
+merge 1:1 HHID_panel INDID_panel year using "totalocc"
+drop if _merge==2
+drop _merge
+drop if year==.
+
+save"totalindiv_v2", replace
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Construction
+****************************************
+use"totalindiv_v2", clear
+
+sort HHID_panel INDID_panel year
+order HHID_panel INDID_panel year name sex jatis caste
+
+/*
+Pour analyser l'évolution de l'emploi et vérifier les chiffres, il y a plusieurs variables à régarder :
+- Age
+- Statut étudiant
+- Travailleur
+- Si oui, rémunéré ou non
+- Si non, pourquoi : chomeur, malade, retraite, housewife, etc.
+*/
+
+* Age
+ta age
+
+* Student
+fre student
+recode student (.=0)
+label define student 0"Not a student" 1"Student at present time"
+label values student student
+
+* Worker
+ta dummyworkedpastyear2
+label define dummyworkedpastyear2 0"Non-worker" 1"Worker"
+label values dummyworkedpastyear2 dummyworkedpastyear2
+ta dummyworkedpastyear2
+
+* Type of worker
+gen workertype=.
+replace workertype=1 if paidemployment==1
+replace workertype=2 if unpaidemployment==1
+label define workertype 1"Paid worker" 2"Unpaid worker"
+label values workertype workertype
+ta workertype
+
+* Type of worker (with cat instead of income for 2016 and 2020)
+gen workertype_cat=.
+replace workertype_cat=1 if paidemployment2==1
+replace workertype_cat=2 if unpaidemployment2==1
+replace workertype_cat=workertype if year==2010
+label define workertype_cat 1"Paid worker" 2"Unpaid worker"
+label values workertype_cat workertype_cat
+ta workertype_cat
+
+* Type of non-worker (only for 2016-2020)
+fre reasonnotworkpastyear
+gen nonworkertype=.
+replace nonworkertype=1 if reasonnotworkpastyear==1
+replace nonworkertype=2 if reasonnotworkpastyear==2
+replace nonworkertype=3 if reasonnotworkpastyear==3
+replace nonworkertype=3 if reasonnotworkpastyear==4
+replace nonworkertype=4 if reasonnotworkpastyear==5
+replace nonworkertype=4 if reasonnotworkpastyear==6
+replace nonworkertype=5 if reasonnotworkpastyear==8
+replace nonworkertype=6 if reasonnotworkpastyear==9
+replace nonworkertype=6 if reasonnotworkpastyear==10
+replace nonworkertype=6 if reasonnotworkpastyear==11
+replace nonworkertype=6 if reasonnotworkpastyear==12
+replace nonworkertype=6 if reasonnotworkpastyear==13
+replace nonworkertype=6 if reasonnotworkpastyear==14
+replace nonworkertype=6 if reasonnotworkpastyear==15
+replace nonworkertype=. if year==2010
+label define nonworkertype 1"In school" 2"Housewife" 3"Retirement" 4"Ill/disability" 5"Not want to work" 6"Unemployed"
+label values nonworkertype nonworkertype
+
+* Inactive vs real unemployed (only for 2016-2020)
+gen nonworkertype_cat=.
+replace nonworkertype_cat=1 if nonworkertype==1
+replace nonworkertype_cat=2 if nonworkertype==2
+replace nonworkertype_cat=1 if nonworkertype==3
+replace nonworkertype_cat=1 if nonworkertype==4
+replace nonworkertype_cat=1 if nonworkertype==5
+replace nonworkertype_cat=3 if nonworkertype==6
+replace nonworkertype_cat=. if year==2010
+label define nonworkertype_cat 1"Inactive" 2"Housewife" 3"Unemployed"
+label values nonworkertype_cat nonworkertype_cat
+
+* Selection des variables à garder
+global var HHID_panel INDID_panel year sex caste ///
+age student dummyworkedpastyear2 workertype workertype_cat nonworkertype nonworkertype_cat ///
+occupationname_mainocc annualincome_mainocc occupation_mainocc kindofwork_mainocc occupationname2 annualincome2 occupation2 kindofwork2 occupationname3 annualincome3 occupation3 kindofwork3 occupationname4 annualincome4 occupation4 kindofwork4 occupationname5 annualincome5 occupation5 kindofwork5 annualincome6 occupationname6 occupation6 kindofwork6
+
+keep $var
+order $var
+
+rename dummyworkedpastyear2 workedpastyear
+
+compress
+
+ta nonworkertype_cat
+
+
+save"Tosend/Panel-individuals-occupations.dta", replace
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+/*
 ****************************************
 * Correction du chomage pour les égos
 ****************************************
@@ -582,6 +288,14 @@ ta readystartjob
 ta workpastsixmonth
 ****************************************
 * END
+*/
+
+
+
+
+
+
+
 
 
 
@@ -594,43 +308,62 @@ ta workpastsixmonth
 
 
 ****************************************
-* Stat
+* Test Cécile
 ****************************************
-use"totalindiv_v1", clear
+use"totalindiv_v2", clear
 
+ta occupation1
+ta workedpastyear
 
+* Merger la variable de Cécile
+merge 1:1 HHID_panel INDID_panel year using "panel_indiv_v0", keepusing(employed)
+drop _merge
+rename employed employedC
 
+* Retrouver sa variable
+fre workedpastyear
+fre workertype
 
-* Inactive
-cls
-ta year inactive
-ta yearsex inactive
-ta yearcaste inactive
-ta yearsexcaste inactive
+gen employedA=.
+replace employedA=0 if workedpastyear==0
+replace employedA=0 if workertype_cat==2
+replace employedA=1 if workertype_cat==1
+replace employedA=. if age<15
 
-cls
-ta year inactive, row nofreq
-ta yearsex inactive, row nofreq
-ta yearcaste inactive, row nofreq
-ta yearsexcaste inactive, row nofreq
+* Stat global
+ta employedC year, col nofreq
+ta employedA year, col nofreq
 
+* By year
+ta employedC employedA if year==2010
+ta employedC employedA if year==2016
+ta employedC employedA if year==2020
 
-* Employment
-cls
-ta year employment_inc
-ta yearsex employment_inc
-ta yearcaste employment_inc
-ta yearsexcaste employment_inc
+* For 2016
+preserve
+keep if year==2016
+ta employedC employedA
+keep if employedC!=employedA
+sort employedC
+restore
 
-cls
-ta year employment_inc, row nofreq
-ta yearsex employment_inc, row nofreq
-ta yearcaste employment_inc, row nofreq
-ta yearsexcaste employment_inc, row nofreq
+* For 2020
+preserve
+keep if year==2020
+ta employedC employedA
+keep if employedC!=employedA
+restore
 
-
-
-
+ta employedC year if sex==2, col nofreq
+ta employedA year if sex==2, col nofreq
 
 ****************************************
 * END
+
+
+
+
+
+
+
+

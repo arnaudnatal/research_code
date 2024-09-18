@@ -150,16 +150,17 @@ graph export "IneqInc.png", as(png) replace
 
 
 
-
-
-
-
 ****************************************
 * Gini decomposition
 ****************************************
 
 ***** Decomposition Gini by income source
 use"panel_v4", clear
+
+* Check recours
+foreach x in d_agrise d_agricasual d_nonagricasual d_nonagrireg d_nonagrise d_nrega d_pension_HH d_remreceived_HH {
+ta `x' year, col nofreq
+}
 
 global PC annualincome3_pc incagrise_pc incagricasual_pc incnonagricasual_pc incnonagrireg_pc incnonagrise_pc incnrega_pc pension_pc remreceived_pc
 
@@ -242,10 +243,12 @@ twoway ///
 (connected Percentage year if occupation==8, color(black) lpattern(shortdash)) ///
 , title("Percent change in Gini") ylabel(-.2(.1).2) ///
 xtitle("") xlabel(2010 2016 2020) ///
-legend(order(1 "Agri self-employed" 2 "Agri casual" 3 "Casual" 4 "Regular" 5 "Self-employed" 6 "MGNREGA" 7 "Pension" 8 "Remittances") pos(6) col(4)) name(percentage, replace)
+legend(order(1 "Agri self-employed" 2 "Agri casual" 3 "Casual" 4 "Regular" 5 "Self-employed" 6 "MGNREGA" 7 "Pension" 8 "Remittances") pos(6) col(4)) name(percentage, replace) note("{it:Note:} For 405 households in 2010, 492 in 2016-17, and 626 in 2020-21.", size(vsmall))
+graph export "Percentagechange.png", as(png) replace
+
 
 ***** Combine
-grc1leg sk gk rk share percentage, name(decompo, replace) note("{it:Note:} For 405 households in 2010, 492 in 2016-17, and 626 in 2020-21.", size(vsmall))
+grc1leg sk gk rk share, name(decompo, replace) note("{it:Note:} For 405 households in 2010, 492 in 2016-17, and 626 in 2020-21.", size(vsmall))
 graph export "Decompo.png", as(png) replace
 
 ****************************************
@@ -416,6 +419,124 @@ name(compo3, replace)
 
 grc1leg compo1 compo2 compo3, col(3) name(comp, replace) note("{it:Note:} For 405 households in 2010, 492 in 2016-17, and 626 in 2020-21.", size(vsmall))
 graph export "Quintile.png", as(png) replace
+
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Caste and incomes
+****************************************
+use"panel_v4", clear
+
+* 2010
+cls
+preserve
+keep if year==2010
+foreach x in d_agrise d_agricasual d_nonagricasual d_nonagrireg d_nonagrise d_nrega d_pension_HH d_remreceived_HH {
+ta `x' caste, row nofreq
+}
+restore
+
+* 2016-17
+cls
+preserve
+keep if year==2016
+foreach x in d_agrise d_agricasual d_nonagricasual d_nonagrireg d_nonagrise d_nrega d_pension_HH d_remreceived_HH {
+ta `x' caste, row nofreq
+}
+restore
+
+* 2020-21
+cls
+preserve
+keep if year==2020
+foreach x in d_agrise d_agricasual d_nonagricasual d_nonagrireg d_nonagrise d_nrega d_pension_HH d_remreceived_HH {
+ta `x' caste, row nofreq
+}
+restore
+
+
+*****
+import excel "CasteIncomes.xlsx", sheet("Sheet1") firstrow clear
+label define time 1"2010" 2"2016-17" 3"2020-21"
+label values time time
+label define cat 1"Agri SE" 2"Agri casual" 3"Casual" 4"Reg" 5"SE" 6"MGNREGA" 7"Pensions" 8"Remittances" 9"Total"
+label values cat cat
+
+* Graph 1
+set graph off
+graph bar dalits middle upper if time==1, over(cat, label(angle(45))) title("2010") ytitle("Percentage") legend(order(1 "Dalits" 2 "Middle castes" 3 "Upper castes") col(3) pos(6)) name(g1, replace) ylabel(0(10)70) aspectratio(1.5) ysize(20) xsize(10)
+
+graph bar dalits middle upper if time==2, over(cat, label(angle(45))) title("2016-17") ytitle("Percentage") legend(order(1 "Dalits" 2 "Middle castes" 3 "Upper castes") col(3) pos(6)) name(g2, replace) ylabel(0(10)70) aspectratio(1.5) ysize(20) xsize(10)
+
+graph bar dalits middle upper if time==3, over(cat, label(angle(45))) title("2020-21") ytitle("Percentage") legend(order(1 "Dalits" 2 "Middle castes" 3 "Upper castes") col(3) pos(6)) name(g3, replace) ylabel(0(10)70) aspectratio(1.5) ysize(20) xsize(10)
+set graph on
+
+grc1leg g1 g2 g3, col(3) name(comb, replace)
+graph export "Castecatinc.png", as(png) replace
+
+
+* Graph 2
+gen sum1=dalits
+gen sum2=sum1+middle
+gen sum3=sum2+upper
+recode cat (1=1) (2=3) (3=5) (4=7) (5=9) (6=11) (7=13) (8=15) (9=18)
+
+label define cat 1"Agri SE" 3"Agri casual" 5"Casual" 7"Reg" 9"SE" 11"MGNREGA" 13"Pensions" 15"Remittances" 18"Total", replace
+label values cat cat
+
+twoway ///
+(bar sum1 cat if time==1, barwidth(1.9)) ///
+(rbar sum1 sum2 cat if time==1, barwidth(1.9)) ///
+(rbar sum2 sum3 cat if time==1, barwidth(1.9)) ///
+, ///
+xlabel(1 3 5 7 9 11 13 15 18, angle(45) valuelabel) xtitle("") ///
+ylabel(0(10)100) ytitle("Percent") ///
+title("2010") ///
+legend(order(1 "Dalits" 2 "Middle castes" 3 "Upper castes") pos(6) col(3)) ///
+name(compo1, replace)
+
+
+twoway ///
+(bar sum1 cat if time==2, barwidth(1.9)) ///
+(rbar sum1 sum2 cat if time==2, barwidth(1.9)) ///
+(rbar sum2 sum3 cat if time==2, barwidth(1.9)) ///
+, ///
+xlabel(1 3 5 7 9 11 13 15 18, angle(45) valuelabel) xtitle("") ///
+ylabel(0(10)100) ytitle("Percent") ///
+title("2016-17") ///
+legend(order(1 "Dalits" 2 "Middle castes" 3 "Upper castes") pos(6) col(3)) ///
+name(compo2, replace)
+
+
+twoway ///
+(bar sum1 cat if time==3, barwidth(1.9)) ///
+(rbar sum1 sum2 cat if time==3, barwidth(1.9)) ///
+(rbar sum2 sum3 cat if time==3, barwidth(1.9)) ///
+, ///
+xlabel(1 3 5 7 9 11 13 15 18, angle(45) valuelabel) xtitle("") ///
+ylabel(0(10)100) ytitle("Percent") ///
+title("2020-21") ///
+legend(order(1 "Dalits" 2 "Middle castes" 3 "Upper castes") pos(6) col(3)) ///
+name(compo3, replace)
+
+grc1leg compo1 compo2 compo3, col(3) name(comp, replace) note("{it:Note:} For 405 households in 2010, 492 in 2016-17, and 626 in 2020-21.", size(vsmall))
+graph export "Castecatinc2.png", as(png) replace
+
 
 ****************************************
 * END

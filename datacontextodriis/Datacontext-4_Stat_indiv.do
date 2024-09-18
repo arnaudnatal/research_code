@@ -345,6 +345,7 @@ restore
 ta employed
 drop if employed==.
 
+ta employed year
 ta employed year, col nofreq
 ta employed year if sex==1, col nofreq
 ta employed year if sex==2, col nofreq
