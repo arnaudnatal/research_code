@@ -13,6 +13,14 @@ do "https://raw.githubusercontent.com/arnaudnatal/folderanalysis/main/$link.do"
 
 
 
+/*
+Réunion avec Sébastien :
+prendre les 15-65 ans
+les étudiants sont inactifs
+les autres actifs
+mettre le chomage avec les occupations
+*/
+
 
 
 
@@ -317,5 +325,147 @@ restore
 
 log close
 translate "Tosend/Occupationprincipale.smcl" "Tosend/Occupationprincipale.pdf", translator(smcl2pdf)
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Réunion Sébastien
+****************************************
+use"Tosend/Panel-individuals-occupations.dta", clear
+
+
+********** Selection
+fre occupation_mainocc
+
+drop if age<15
+drop if age>65
+drop if student==1
+
+clonevar occupation_new=occupation_mainocc
+replace occupation_new=0 if occupation_new==.
+
+label define occupation_new 0"No occupation" 1"Agri SE" 2"Agri casual" 3"Casual" 4"Reg non-quali" 5"Reg quali" 6"SE" 7"MGNREGA"
+label values occupation_new occupation_new
+
+ta occupation_new
+
+log using "Tosend/Occupationprincipale_new.smcl", replace
+********** Gender
+
+***** Men
+preserve
+keep if sex==1
+ta occupation_new year, col
+restore
+
+***** Women
+preserve
+keep if sex==2
+ta occupation_new year, col
+restore
+
+
+
+
+********** Caste
+
+***** Dalits
+preserve
+keep if caste==1
+ta occupation_new year, col
+restore
+
+***** Middle castes
+preserve
+keep if caste==2
+ta occupation_new year, col
+restore
+
+***** Upper castes
+preserve
+keep if caste==3
+ta occupation_new year, col
+restore
+
+
+
+
+
+
+
+
+********** Gender X Caste
+
+***** Men X Dalits
+preserve
+keep if sex==1
+keep if caste==1
+ta occupation_new year, col
+restore
+
+***** Men X Middle castes
+preserve
+keep if sex==1
+keep if caste==2
+ta occupation_new year, col
+restore
+
+***** Men X Upper castes
+preserve
+keep if sex==1
+keep if caste==3
+ta occupation_new year, col
+restore
+
+***** Women X Dalits
+preserve
+keep if sex==2
+keep if caste==1
+ta occupation_new year, col
+restore
+
+***** Women X Middle castes
+preserve
+keep if sex==2
+keep if caste==2
+ta occupation_new year, col
+restore
+
+***** Women X Upper castes
+preserve
+keep if sex==2
+keep if caste==3
+ta occupation_new year, col
+restore
+
+log close
+translate "Tosend/Occupationprincipale_new.smcl" "Tosend/Occupationprincipale_new.pdf", translator(smcl2pdf)
 ****************************************
 * END
