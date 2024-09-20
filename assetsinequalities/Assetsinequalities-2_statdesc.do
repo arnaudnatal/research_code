@@ -299,3 +299,79 @@ graph export "Compositionassets.png", as(png) replace
 ****************************************
 * END
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Evolution over time
+****************************************
+use"panel_v1", clear
+
+keep HHID_panel year assets_total dalits
+rename assets_total assets
+reshape wide assets, i(HHID_panel) j(year)
+drop if assets2010==.
+drop if assets2016==.
+drop if assets2020==.
+ta assets2010
+ta assets2016
+ta assets2020
+
+foreach x in 2010 2016 2020 {
+xtile assets`x'_centile=assets`x', n(100)
+}
+
+gen evo1=assets2016_centile-assets2010_centile
+gen evo2=assets2020_centile-assets2016_centile
+
+gen evogrp=.
+replace evogrp=1 if evo1>0 & evo2>0
+replace evogrp=2 if evo1>=0 & evo2<=0
+replace evogrp=3 if evo1<0 & evo2<0
+replace evogrp=4 if evo1<=0 & evo2>=0
+
+label define evogrp 1"Inc-Inc" 2"Inc-Dec" 3"Dec-Dec" 4"Dec-Inc"
+label values evogrp evogrp
+ta evogrp
+
+tabstat assets2010 assets2016 assets2020, stat(n mean p50) by(dalits)
+
+tabstat assets2010_centile assets2016_centile assets2020_centile, stat(n mean p50) by(dalits)
+ta evogrp dalits, chi2 cchi2 exp
+
+* Pos 2010 2016
+twoway ///
+(scatter assets2016_centile assets2010_centile, mstyle(oh) mcolor(black%50)) ///
+(function y=x, range(0 100)) ///
+, name(gph1, replace)
+
+twoway ///
+(scatter assets2020_centile assets2016_centile, mstyle(oh) mcolor(black%50)) ///
+(function y=x, range(0 100)) ///
+, name(gph2, replace)
+
+graph combine gph1 gph2
+
+* Evo
+twoway ///
+(scatter evo2 evo1, xline(0) yline(0) mstyle(oh) mcolor(black%50))
+
+
+
+
+
+
+****************************************
+* END
