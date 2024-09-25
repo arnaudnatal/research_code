@@ -356,7 +356,7 @@ translate "Tosend/Occupationprincipale.smcl" "Tosend/Occupationprincipale.pdf", 
 
 
 ****************************************
-* Réunion Sébastien
+* Réunion Sébastien : occupations
 ****************************************
 use"Tosend/Panel-individuals-occupations.dta", clear
 
@@ -467,5 +467,127 @@ restore
 
 log close
 translate "Tosend/Occupationprincipale_new.smcl" "Tosend/Occupationprincipale_new.pdf", translator(smcl2pdf)
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Réunion Sébastien : inactifs
+****************************************
+use"Tosend/Panel-individuals-occupations.dta", clear
+
+
+********** Selection
+gen act=1
+replace act=0 if age<15
+replace act=0 if age>65
+replace act=0 if student==1
+
+log using "Tosend/Inact_new.smcl", replace
+********** Gender
+
+***** Men
+preserve
+keep if sex==1
+ta act year, col
+restore
+
+***** Women
+preserve
+keep if sex==2
+ta act year, col
+restore
+
+
+
+
+********** Caste
+
+***** Dalits
+preserve
+keep if caste==1
+ta act year, col
+restore
+
+***** Middle castes
+preserve
+keep if caste==2
+ta act year, col
+restore
+
+***** Upper castes
+preserve
+keep if caste==3
+ta act year, col
+restore
+
+
+
+
+
+
+
+
+********** Gender X Caste
+
+***** Men X Dalits
+preserve
+keep if sex==1
+keep if caste==1
+ta act year, col
+restore
+
+***** Men X Middle castes
+preserve
+keep if sex==1
+keep if caste==2
+ta act year, col
+restore
+
+***** Men X Upper castes
+preserve
+keep if sex==1
+keep if caste==3
+ta act year, col
+restore
+
+***** Women X Dalits
+preserve
+keep if sex==2
+keep if caste==1
+ta act year, col
+restore
+
+***** Women X Middle castes
+preserve
+keep if sex==2
+keep if caste==2
+ta act year, col
+restore
+
+***** Women X Upper castes
+preserve
+keep if sex==2
+keep if caste==3
+ta act year, col
+restore
+
+log close
+translate "Tosend/Inact_new.smcl" "Tosend/Inact_new.pdf", translator(smcl2pdf)
 ****************************************
 * END

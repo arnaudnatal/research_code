@@ -66,28 +66,6 @@ gen tar=totHH_givenamt_repa/assets_total
 replace tar=0 if tar==.
 
 
-* Poverty
-/*
-All is expressed in 2010 PPP
-However, new PL with 2017
-annualincome_HH is expressed in 2010 rupees
-annualincome_HH_backup is not deflated
-*/
-tabstat annualincome_HH annualincome_HH_backup, stat(n mean) by(year)
-* Deflate for 2017 PPP
-gen annualincome_HH2=annualincome_HH_backup
-replace annualincome_HH2=annualincome_HH2*(100/62.81) if year==2010
-replace annualincome_HH2=annualincome_HH2*(100/114.95) if year==2020
-replace annualincome_HH2=round(annualincome_HH2,1)
- 
-
-* Test
-tabstat annualincome_HH_backup annualincome_HH annualincome_HH2, stat(n mean) by(year)
-
-gen dailyincome_pc=(annualincome_HH2/365)/HHsize
-gen dailyuspppdincome_pc=dailyincome_pc/20.65
-
-
 save"panel_HH_v1", replace
 ****************************************
 * END
@@ -109,7 +87,7 @@ save"panel_HH_v1", replace
 
 
 ****************************************
-* Poverty and other
+* Variables
 ****************************************
 use"panel_HH_v1", clear
 
@@ -288,7 +266,7 @@ use"panel_v2", clear
 
 replace loanamount_HH=0 if loanamount_HH==.
 
-foreach x in loanamount_HH annualincome_HH assets_total imp1_ds_tot_HH imp1_is_tot_HH totHH_givenamt_repa dsr isr dar dir tdr tar expenses_total remreceived_HH remsent_HH remittnet_HH dailyincome_pc assets_gold goldquantity_HH goldreadyamount nbloans_HH {
+foreach x in loanamount_HH annualincome_HH assets_total imp1_ds_tot_HH imp1_is_tot_HH totHH_givenamt_repa dsr isr dar dir tdr tar expenses_total remreceived_HH remsent_HH remittnet_HH assets_gold goldquantity_HH goldreadyamount nbloans_HH {
 egen `x'_std=std(`x')
 }
 
@@ -298,7 +276,6 @@ label var dsr_std "DSR (std)"
 label var tdr_std "TDR (std)"
 label var tar_std "TAR (std)"
 label var isr_std "ISR (std)"
-label var dailyincome_pc_std "Livelihood (std)"
 label var assets_total_std "Wealth (std)"
 label var nbloans_HH_std "Nb loans (std)"
 

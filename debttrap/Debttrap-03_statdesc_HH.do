@@ -28,13 +28,11 @@ keep if dummyloans_HH==1
 
 * 
 ta dumHH_given_repa year, col nofreq
-ta dumHH_effective_repa year, col nofreq
 
 tabstat totHH_givenamt_repa if dumHH_given_repa==1, stat(n mean q) by(year)
 
-tabstat totHH_effectiveamt_repa if dumHH_effective_repa==1, stat(n mean q) by(year)
 
-tabstat tdr, stat(n mean q) by(year)
+tabstat tdr if dumHH_given_repa==1, stat(n mean q) by(year)
 
 
 probit dumHH_given_repa i.year i.caste

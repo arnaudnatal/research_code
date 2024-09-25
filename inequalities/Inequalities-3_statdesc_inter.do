@@ -144,6 +144,33 @@ graph export "IneqInc.png", as(png) replace
 
 
 
+****************************************
+* Evo of position
+****************************************
+use"panel_v4", clear
+
+keep HHID_panel year monthlyincome_pc
+rename monthlyincome_pc income
+
+reshape wide income, i(HHID_panel) j(year)
+
+foreach x in 2010 2016 2020 {
+xtile cent`x'=income`x', n(100)
+}
+
+sort cent2010
+
+* Graph 2010 2016
+twoway ///
+(scatter cent2016 cent2010) ///
+(function y=x, range(0 100)) ///
+, xtitle("Percentile of monthly income per capita in 2010") ///
+ytitle("Percentile of monthly income per capita in 2016-17") ///
+legend(off) name(g1, replace)
+
+
+****************************************
+* END
 
 
 
