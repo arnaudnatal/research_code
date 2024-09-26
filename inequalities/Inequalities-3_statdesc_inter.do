@@ -144,33 +144,150 @@ graph export "IneqInc.png", as(png) replace
 
 
 
+
+
+
+
+
+
+
 ****************************************
 * Evo of position
 ****************************************
 use"panel_v4", clear
 
-keep HHID_panel year monthlyincome_pc
+keep HHID_panel year monthlyincome_pc caste
 rename monthlyincome_pc income
 
 reshape wide income, i(HHID_panel) j(year)
 
 foreach x in 2010 2016 2020 {
 xtile cent`x'=income`x', n(100)
+xtile dec`x'=income`x', n(10)
+xtile quint`x'=income`x', n(5)
 }
 
-sort cent2010
 
+ta quint2016 quint2010, chi2 nofreq row
+ta quint2020 quint2016, chi2 nofreq row
+
+ta dec2016 dec2010, chi2 nofreq row
+ta dec2020 dec2016, chi2 nofreq row
+
+
+
+
+* Categories
+gen d1=cent2016-cent2010
+gen d2=cent2020-cent2016
+
+foreach i in 1 2 {
+gen catd`i'=.
+label define catd`i' 1"Increasing" 2"Stagnation" 3"Decreasing"
+label values catd`i' catd`i'
+replace catd`i'=1 if d`i'>=5 & d`i'!=.
+replace catd`i'=2 if d`i'<5 & d`i'>-5 & d`i'!=.
+replace catd`i'=3 if d`i'<=-5 & d`i'!=.
+}
+
+
+
+********** Centiles
 * Graph 2010 2016
+pwcorr cent2016 cent2010, sig
+spearman cent2016 cent2010, stats(rho p)
 twoway ///
-(scatter cent2016 cent2010) ///
+(scatter cent2016 cent2010, color(black%30)) ///
 (function y=x, range(0 100)) ///
 , xtitle("Percentile of monthly income per capita in 2010") ///
 ytitle("Percentile of monthly income per capita in 2016-17") ///
+note("{it:Note:} For 388 households." "Pearson's {it:p} = 0.1753" "Spearman's {it:p} = 0.1742", size(vsmall)) ///
 legend(off) name(g1, replace)
+
+* Graph 2016 2020
+pwcorr cent2020 cent2016, sig
+spearman cent2020 cent2016, stats(rho p)
+twoway ///
+(scatter cent2020 cent2016, color(black%30)) ///
+(function y=x, range(0 100)) ///
+, xtitle("Percentile of monthly income per capita in 2016-17") ///
+ytitle("Percentile of monthly income per capita in 2020-21") ///
+note("{it:Note:} For 485 households." "Pearson's {it:p} = 0.2390" "Spearman's {it:p} = 0.2374", size(vsmall)) ///
+legend(off) name(g2, replace)
+
+* Combine
+graph combine g1 g2, name(combpercentile, replace)
+graph export "Percentile.png", as(png) replace
+
+
+
+
+
+
+********** Quintiles
+import excel "Quintiles_trans.xlsx", sheet("Sheet1") firstrow clear
+
+recode qa (1=1) (2=3) (3=5) (4=7) (5=9) (6=12)
+
+label define qa 1"Q1" 3"Q2" 5"Q3" 7"Q4" 9"Q5" 12"Total"
+label values qa qa
+
+gen sum1=qb1
+gen sum2=sum1+qb2
+gen sum3=sum2+qb3
+gen sum4=sum3+qb4
+gen sum5=sum4+qb5
+
+* 2010 - 2016
+twoway ///
+(bar sum1 qa if time==1, barwidth(1.9)) ///
+(rbar sum1 sum2 qa if time==1, barwidth(1.9)) ///
+(rbar sum2 sum3 qa if time==1, barwidth(1.9)) ///
+(rbar sum3 sum4 qa if time==1, barwidth(1.9)) ///
+(rbar sum4 sum5 qa if time==1, barwidth(1.9)) ///
+, ///
+xlabel(1 3 5 7 9 12,valuelabel) xtitle("Quintiles in 2016-17") ///
+ylabel(0(10)100) ytitle("Percent") ///
+title("") ///
+legend(order(1 "Q1 in 2010" 2 "Q2 in 2010" 3 "Q3 in 2010" 4 "Q4 in 2010" 5 "Q5 in 2010") pos(6) col(2)) ///
+note("Pearson Chi2(16)=27.73   Pr=0.03", size(small)) ///
+name(compo1, replace)
+
+* 2016 - 2020
+twoway ///
+(bar sum1 qa if time==2, barwidth(1.9)) ///
+(rbar sum1 sum2 qa if time==2, barwidth(1.9)) ///
+(rbar sum2 sum3 qa if time==2, barwidth(1.9)) ///
+(rbar sum3 sum4 qa if time==2, barwidth(1.9)) ///
+(rbar sum4 sum5 qa if time==2, barwidth(1.9)) ///
+, ///
+xlabel(1 3 5 7 9 12,valuelabel) xtitle("Quintiles in 2020-21") ///
+ylabel(0(10)100) ytitle("Percent") ///
+title("") ///
+legend(order(1 "Q1 in 2016-17" 2 "Q2 in 2016-17" 3 "Q3 in 2016-17" 4 "Q4 in 2016-17" 5 "Q5 in 2016-17") pos(6) col(2)) ///
+note("Pearson Chi2(16)=48.99   Pr=0.00", size(small)) ///
+name(compo2, replace)
+
+* Combine
+graph combine compo1 compo2, name(perc, replace)
+
+
+
 
 
 ****************************************
 * END
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -691,8 +808,6 @@ graph export "Occupations.png", as(png) replace
 ****************************************
 use"panel_v4", clear
 
-drop monthlyincome_pc
-rename monthlyincome3_pc monthlyincome_pc
 
 ***** Stat
 cls
@@ -740,91 +855,356 @@ L’interprétation du coefficient de Gini est très intuitive. En multipliant l
 
 
 ****************************************
-* ELMO (2008)
+* ELMO (2008) : avec 3 groupes (les trois castes)
 ****************************************
 use"panel_v4", clear
 
-drop monthlyincome_pc
-rename monthlyincome3_pc monthlyincome_pc
-
-
-cls
-foreach y in 2010 2016 2020 {
+********** Pour 3 groupes
+* Prepa orga
+foreach year in 2010 2016 2020 {
 preserve
-quietly {
-keep if year==`y'
+keep if year==`year'
 sort monthlyincome_pc
 gen n=_n
+local maxge0=0
+local maxge1=0
+local maxge2=0
 
-* Local pour compter tout seul
-count if caste==1
-local D=r(N)
-
-count if caste==2
-local M=r(N)
-
-count if caste==3
-local U=r(N)
-
-* DMU
-gen comb1=.
-replace comb1=1 if n<=`D'
-replace comb1=2 if n>`D' & n<=(`D'+`M')
-replace comb1=3 if n>(`D'+`M')
-
-* DUM
-gen comb2=.
-replace comb2=1 if n<=`D'
-replace comb2=2 if n>`D' & n<=(`D'+`U')
-replace comb2=3 if n>(`D'+`U')
-
-* MDU
-gen comb3=.
-replace comb3=1 if n<=`M'
-replace comb3=2 if n>`M' & n<=(`M'+`D')
-replace comb3=3 if n>(`M'+`D')
-
-* MUD
-gen comb4=.
-replace comb4=1 if n<=`M'
-replace comb4=2 if n>`M' & n<=(`M'+`U')
-replace comb4=3 if n>(`M'+`U')
-
-* UMD
-gen comb5=.
-replace comb5=1 if n<=`U'
-replace comb5=2 if n>`U' & n<=(`U'+`M')
-replace comb5=3 if n>(`U'+`M')
-
-* UDM
-gen comb6=.
-replace comb6=1 if n<=`U'
-replace comb6=2 if n>`U' & n<=(`U'+`D')
-replace comb6=3 if n>(`U'+`D')
+* Création des groupes
+foreach x in 123 132 213 231 312 321 {
+quietly {
+gen comb`x'=.
+local c=0
+forvalues i=1/3 {
+local n`i'=substr("`x'",`i',1)
+}
+local j=1
+foreach i in `n1' `n2' `n3' {
+count if caste==`i'
+local c=r(N)+`c'
+dis `c'
+replace comb`x'=`j' if n<=`c' & comb`x'==.
+local j=`j'+1
+}
 }
 
-* Standard between to choose max
-dis "`y'" _newline
-forvalues i=1(1)6 {
-qui ineqdeco monthlyincome_pc if year==`y', by(comb`i')
-foreach x in ge0 ge1 ge2 within_ge0 within_ge1 within_ge2 between_ge0 between_ge1 between_ge2 {
-local `x'=round(r(`x'),0.001)
+* Ineqdeco pour chaque groupe
+qui ineqdeco monthlyincome_pc, by(comb`x')
+local ge0=r(between_ge0)
+if `ge0'>`maxge0' {
+	local maxge0=`ge0'
 }
-/*
-dis _skip(3) "GE(0)" _skip(2) "GE(1)" _skip(2) "GE(2)" _newline ///
-"O" _skip(2) "`ge0'" _skip(3)"`ge1'" _skip(3) "`ge2'"  _newline ///
-"W" _skip(2) "`within_ge0'" _skip(3) "`within_ge1'" _skip(3) "`within_ge2'"  _newline ///
-"B" _skip(2) "`between_ge0'" _skip(3) "`between_ge1'" _skip(3) "`between_ge2'"
-*/
-dis _skip(3) "GE(0)" _skip(2) "GE(1)" _skip(2) "GE(2)" _newline ///
-"B" _skip(2) "`between_ge0'" _skip(3) "`between_ge1'" _skip(3) "`between_ge2'"
+local ge1=r(between_ge1)
+if `ge1'>`maxge1' {
+	local maxge1=`ge1'
 }
+local ge2=r(between_ge2)
+if `ge2'>`maxge2' {
+	local maxge2=`ge2'
+}
+}
+dis `maxge0'
+dis `maxge1'
+dis `maxge2'
 restore
 }
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 ****************************************
+* Decomposition GE by jatis for Dalits
+****************************************
+macro drop _all 
+use"panel_v4", clear
+
+
+* Selection
+keep if caste==1
+ta year
+
+***** Stat
+cls
+* 2010
+ineqdeco monthlyincome_pc if year==2010, by(jatis)
+
+cls
+* 2016
+ineqdeco monthlyincome_pc if year==2016, by(jatis)
+
+cls
+* 2020
+ineqdeco monthlyincome_pc if year==2020, by(jatis)
+
+
+********** Pour 2 groupes
+* Prepa orga
+fre jatis
+recode jatis (1=1) (11=2)
+fre jatis
+foreach year in 2010 2016 2020 {
+preserve
+keep if year==`year'
+sort monthlyincome_pc
+gen n=_n
+local maxge0=0
+local maxge1=0
+local maxge2=0
+
+* Création des groupes
+foreach x in 12 21 {
+quietly {
+gen comb`x'=.
+local c=0
+forvalues i=1/2 {
+local n`i'=substr("`x'",`i',1)
+}
+local j=1
+foreach i in `n1' `n2' {
+count if jatis==`i'
+local c=r(N)+`c'
+dis `c'
+replace comb`x'=`j' if n<=`c' & comb`x'==.
+local j=`j'+1
+}
+}
+
+* Ineqdeco pour chaque groupe
+qui ineqdeco monthlyincome_pc, by(comb`x')
+local ge0=r(between_ge0)
+if `ge0'>`maxge0' {
+	local maxge0=`ge0'
+}
+local ge1=r(between_ge1)
+if `ge1'>`maxge1' {
+	local maxge1=`ge1'
+}
+local ge2=r(between_ge2)
+if `ge2'>`maxge2' {
+	local maxge2=`ge2'
+}
+}
+dis `maxge0'
+dis `maxge1'
+dis `maxge2'
+restore
+}
+****************************************
 * END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Decomposition GE by jatis for Middle
+****************************************
+macro drop _all 
+use"panel_v4", clear
+
+
+* Selection
+keep if caste==2
+ta year
+
+***** Stat
+cls
+* 2010
+ineqdeco monthlyincome_pc if year==2010, by(jatis)
+
+cls
+* 2016
+ineqdeco monthlyincome_pc if year==2016, by(jatis)
+
+cls
+* 2020
+ineqdeco monthlyincome_pc if year==2020, by(jatis)
+
+
+********** Pour 2 groupes
+* Prepa orga
+fre jatis
+recode jatis (2=1) (4=2) (7=3) (9=4) (12=5)
+fre jatis
+foreach year in 2010 2016 2020 {
+preserve
+keep if year==`year'
+sort monthlyincome_pc
+gen n=_n
+local maxge0=0
+local maxge1=0
+local maxge2=0
+
+* Création des groupes
+foreach x in ///
+12345 12354 12435 12453 12534 12543 13245 13254 13425 13452 13524 13542 14235 14253 14325 14352 14523 14532 15234 15243 15324 15342 15423 15432 21345 21354 21435 21453 21534 21543 23145 23154 23415 23451 23514 23541 24135 24153 24315 24351 24513 24531 25134 25143 25314 25341 25413 25431 31245 31254 31425 31452 31524 31542 32145 32154 32415 32451 32514 32541 34125 34152 34215 34251 34512 34521 35124 35142 35214 35241 35412 35421 41235 41253 41325 41352 41523 41532 42135 42153 42315 42351 42513 42531 43125 43152 43215 43251 43512 43521 45123 45132 45213 45231 45312 45321 51234 51243 51324 51342 51423 51432 52134 52143 52314 52341 52413 52431 53124 53142 53214 53241 53412 53421 54123 54132 54213 54231 54312 54321 {
+quietly {
+gen comb`x'=.
+local c=0
+forvalues i=1/5 {
+local n`i'=substr("`x'",`i',1)
+}
+local j=1
+foreach i in `n1' `n2' `n3' `n4' `n5' {
+count if jatis==`i'
+local c=r(N)+`c'
+dis `c'
+replace comb`x'=`j' if n<=`c' & comb`x'==.
+local j=`j'+1
+}
+}
+
+* Ineqdeco pour chaque groupe
+qui ineqdeco monthlyincome_pc, by(comb`x')
+local ge0=r(between_ge0)
+if `ge0'>`maxge0' {
+	local maxge0=`ge0'
+}
+local ge1=r(between_ge1)
+if `ge1'>`maxge1' {
+	local maxge1=`ge1'
+}
+local ge2=r(between_ge2)
+if `ge2'>`maxge2' {
+	local maxge2=`ge2'
+}
+}
+dis `maxge0'
+dis `maxge1'
+dis `maxge2'
+restore
+}
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Decomposition GE by jatis for Upper
+****************************************
+macro drop _all 
+use"panel_v4", clear
+
+* Selection
+keep if caste==3
+ta year
+
+***** Stat
+cls
+* 2010
+ineqdeco monthlyincome_pc if year==2010, by(jatis)
+
+cls
+* 2016
+ineqdeco monthlyincome_pc if year==2016, by(jatis)
+
+cls
+* 2020
+ineqdeco monthlyincome_pc if year==2020, by(jatis)
+
+
+********** Pour 2 groupes
+* Prepa orga
+fre jatis
+recode jatis (3=1) (5=2) (6=3) (8=4) (10=5)
+fre jatis
+foreach year in 2010 2016 2020 {
+preserve
+keep if year==`year'
+sort monthlyincome_pc
+gen n=_n
+local maxge0=0
+local maxge1=0
+local maxge2=0
+
+* Création des groupes
+foreach x in ///
+12345 12354 12435 12453 12534 12543 13245 13254 13425 13452 13524 13542 14235 14253 14325 14352 14523 14532 15234 15243 15324 15342 15423 15432 21345 21354 21435 21453 21534 21543 23145 23154 23415 23451 23514 23541 24135 24153 24315 24351 24513 24531 25134 25143 25314 25341 25413 25431 31245 31254 31425 31452 31524 31542 32145 32154 32415 32451 32514 32541 34125 34152 34215 34251 34512 34521 35124 35142 35214 35241 35412 35421 41235 41253 41325 41352 41523 41532 42135 42153 42315 42351 42513 42531 43125 43152 43215 43251 43512 43521 45123 45132 45213 45231 45312 45321 51234 51243 51324 51342 51423 51432 52134 52143 52314 52341 52413 52431 53124 53142 53214 53241 53412 53421 54123 54132 54213 54231 54312 54321 {
+quietly {
+gen comb`x'=.
+local c=0
+forvalues i=1/5 {
+local n`i'=substr("`x'",`i',1)
+}
+local j=1
+foreach i in `n1' `n2' `n3' `n4' `n5' {
+count if jatis==`i'
+local c=r(N)+`c'
+dis `c'
+replace comb`x'=`j' if n<=`c' & comb`x'==.
+local j=`j'+1
+}
+}
+
+* Ineqdeco pour chaque groupe
+qui ineqdeco monthlyincome_pc, by(comb`x')
+local ge0=r(between_ge0)
+if `ge0'>`maxge0' {
+	local maxge0=`ge0'
+}
+local ge1=r(between_ge1)
+if `ge1'>`maxge1' {
+	local maxge1=`ge1'
+}
+local ge2=r(between_ge2)
+if `ge2'>`maxge2' {
+	local maxge2=`ge2'
+}
+}
+dis `maxge0'
+dis `maxge1'
+dis `maxge2'
+restore
+}
+****************************************
+* END
+
+
 
 
 
