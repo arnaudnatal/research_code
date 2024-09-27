@@ -120,6 +120,104 @@ graph export "IneqAss.png", as(png) replace
 
 
 
+
+
+****************************************
+* Evo of position
+****************************************
+use"panel_v1", clear
+
+keep HHID_panel year assets_total caste
+rename assets_total assets
+
+reshape wide assets, i(HHID_panel) j(year)
+
+foreach x in 2010 2016 2020 {
+xtile cent`x'=assets`x', n(100)
+xtile dec`x'=assets`x', n(10)
+xtile quint`x'=assets`x', n(5)
+}
+
+
+ta quint2016 quint2010, chi2 nofreq row
+ta quint2020 quint2016, chi2 nofreq row
+
+ta dec2016 dec2010, chi2 nofreq row
+ta dec2020 dec2016, chi2 nofreq row
+
+
+
+
+* Categories
+gen d1=cent2016-cent2010
+gen d2=cent2020-cent2016
+
+foreach i in 1 2 {
+gen catd`i'=.
+label define catd`i' 1"Increasing" 2"Stagnation" 3"Decreasing"
+label values catd`i' catd`i'
+replace catd`i'=1 if d`i'>=5 & d`i'!=.
+replace catd`i'=2 if d`i'<5 & d`i'>-5 & d`i'!=.
+replace catd`i'=3 if d`i'<=-5 & d`i'!=.
+}
+
+
+
+********** Centiles
+* Graph 2010 2016
+pwcorr assets2010 assets2016, sig
+spearman assets2010 assets2016, stats(rho p)
+pwcorr cent2016 cent2010, sig
+spearman cent2016 cent2010, stats(rho p)
+twoway ///
+(scatter cent2016 cent2010, color(black%30)) ///
+(function y=x, range(0 100)) ///
+, xtitle("Percentile of wealth in 2010") ///
+ytitle("Percentile of wealth in 2016-17") ///
+note("{it:Note:} For 388 households." "Pearson's {it:p} = 0.3171" "Spearman's {it:p} = 0.3146", size(vsmall)) ///
+legend(off) name(g1, replace)
+
+* Graph 2016 2020
+pwcorr assets2020 assets2016, sig
+spearman assets2020 assets2016, stats(rho p)
+pwcorr cent2020 cent2016, sig
+spearman cent2020 cent2016, stats(rho p)
+twoway ///
+(scatter cent2020 cent2016, color(black%30)) ///
+(function y=x, range(0 100)) ///
+, xtitle("Percentile of wealth in 2016-17") ///
+ytitle("Percentile of wealth in 2020-21") ///
+note("{it:Note:} For 485 households." "Pearson's {it:p} = 0.6100" "Spearman's {it:p} = 0.6046", size(vsmall)) ///
+legend(off) name(g2, replace)
+
+* Combine
+graph combine g1 g2, name(combpercentile, replace)
+graph export "Percentile.png", as(png) replace
+
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ****************************************
 * Gini decomposition
 ****************************************
@@ -132,77 +230,6 @@ global assets assets_total assets_house assets_livestock assets_goods assets_lan
 descogini $assets if year==2010
 descogini $assets if year==2016
 descogini $assets if year==2020
-
-
-***** Graph
-import excel "Gini.xlsx", sheet("Sheet1") firstrow clear
-label define assets 1"House" 2"Livestock" 3"Durable goods" 4"Land" 5"Gold" 6"Saving"
-label values assets assets
-
-* Sk
-twoway ///
-(connected Sk year if assets==1, color(black)) ///
-(connected Sk year if assets==2, color(plr1)) ///
-(connected Sk year if assets==3, color(ply1)) ///
-(connected Sk year if assets==4, color(plg1)) ///
-(connected Sk year if assets==5, color(plb1)) ///
-(connected Sk year if assets==6, color(pll1)) ///
-, title("Share in total income") ylabel(0(.1).8) ///
-xtitle("") xlabel(2010 2016 2020) ///
-legend(order(1 "House" 2 "Livestock" 3 "Durable goods" 4 "Land" 5 "Gold" 6 "Saving") pos(6) col(3)) name(sk, replace)
-
-* Gk
-twoway ///
-(connected Gk year if assets==1, color(black)) ///
-(connected Gk year if assets==2, color(plr1)) ///
-(connected Gk year if assets==3, color(ply1)) ///
-(connected Gk year if assets==4, color(plg1)) ///
-(connected Gk year if assets==5, color(plb1)) ///
-(connected Gk year if assets==6, color(pll1)) ///
-,title("Income source Gini") ylabel(0.4(.1)1) ///
-xtitle("") xlabel(2010 2016 2020) ///
-legend(order(1 "House" 2 "Livestock" 3 "Durable goods" 4 "Land" 5 "Gold" 6 "Saving") pos(6) col(3)) name(gk, replace)
-
-* Rk
-twoway ///
-(connected Rk year if assets==1, color(black)) ///
-(connected Rk year if assets==2, color(plr1)) ///
-(connected Rk year if assets==3, color(ply1)) ///
-(connected Rk year if assets==4, color(plg1)) ///
-(connected Rk year if assets==5, color(plb1)) ///
-(connected Rk year if assets==6, color(pll1)) ///
-, title("Gini correlation with income rankings") ylabel(0(.2)1) ///
-xtitle("") xlabel(2010 2016 2020) ///
-legend(order(1 "House" 2 "Livestock" 3 "Durable goods" 4 "Land" 5 "Gold" 6 "Saving") pos(6) col(3)) name(rk, replace)
-
-* Share
-replace Share=0 if Share<0
-twoway ///
-(connected Share year if assets==1, color(black)) ///
-(connected Share year if assets==2, color(plr1)) ///
-(connected Share year if assets==3, color(ply1)) ///
-(connected Share year if assets==4, color(plg1)) ///
-(connected Share year if assets==5, color(plb1)) ///
-(connected Share year if assets==6, color(pll1)) ///
-, title("Share in total-income inequality") ylabel(0(.1)1) ///
-xtitle("") xlabel(2010 2016 2020) ///
-legend(order(1 "House" 2 "Livestock" 3 "Durable goods" 4 "Land" 5 "Gold" 6 "Saving") pos(6) col(3)) name(share, replace)
-
-* Percentage
-twoway ///
-(connected Percentage year if assets==1, color(black)) ///
-(connected Percentage year if assets==2, color(plr1)) ///
-(connected Percentage year if assets==3, color(ply1)) ///
-(connected Percentage year if assets==4, color(plg1)) ///
-(connected Percentage year if assets==5, color(plb1)) ///
-(connected Percentage year if assets==6, color(pll1)) ///
-, title("Percent change in Gini") ylabel(-.2(.1).2) ///
-xtitle("") xlabel(2010 2016 2020) ///
-legend(order(1 "House" 2 "Livestock" 3 "Durable goods" 4 "Land" 5 "Gold" 6 "Saving") pos(6) col(3)) name(percentage, replace)
-
-***** Combine
-grc1leg sk gk rk share percentage, name(decompo, replace) note("{it:Note:} For 405 households in 2010, 492 in 2016-17, and 626 in 2020-21.", size(vsmall))
-graph export "Decompo.png", as(png) replace
 
 ****************************************
 * END
@@ -295,83 +322,6 @@ name(compo3, replace)
 
 grc1leg compo1 compo2 compo3, col(3) name(compo, replace)
 graph export "Compositionassets.png", as(png) replace
-
-****************************************
-* END
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-****************************************
-* Evolution over time
-****************************************
-use"panel_v1", clear
-
-keep HHID_panel year assets_total dalits
-rename assets_total assets
-reshape wide assets, i(HHID_panel) j(year)
-drop if assets2010==.
-drop if assets2016==.
-drop if assets2020==.
-ta assets2010
-ta assets2016
-ta assets2020
-
-foreach x in 2010 2016 2020 {
-xtile assets`x'_centile=assets`x', n(100)
-}
-
-gen evo1=assets2016_centile-assets2010_centile
-gen evo2=assets2020_centile-assets2016_centile
-
-gen evogrp=.
-replace evogrp=1 if evo1>0 & evo2>0
-replace evogrp=2 if evo1>=0 & evo2<=0
-replace evogrp=3 if evo1<0 & evo2<0
-replace evogrp=4 if evo1<=0 & evo2>=0
-
-label define evogrp 1"Inc-Inc" 2"Inc-Dec" 3"Dec-Dec" 4"Dec-Inc"
-label values evogrp evogrp
-ta evogrp
-
-tabstat assets2010 assets2016 assets2020, stat(n mean p50) by(dalits)
-
-tabstat assets2010_centile assets2016_centile assets2020_centile, stat(n mean p50) by(dalits)
-ta evogrp dalits, chi2 cchi2 exp
-
-* Pos 2010 2016
-twoway ///
-(scatter assets2016_centile assets2010_centile, mstyle(oh) mcolor(black%50)) ///
-(function y=x, range(0 100)) ///
-, name(gph1, replace)
-
-twoway ///
-(scatter assets2020_centile assets2016_centile, mstyle(oh) mcolor(black%50)) ///
-(function y=x, range(0 100)) ///
-, name(gph2, replace)
-
-graph combine gph1 gph2
-
-* Evo
-twoway ///
-(scatter evo2 evo1, xline(0) yline(0) mstyle(oh) mcolor(black%50))
-
-
-
-
-
 
 ****************************************
 * END

@@ -185,168 +185,100 @@ graph export "Quintile.png", as(png) replace
 
 
 
+
+
+
+
+
 ****************************************
-* Decomposition GE by caste
+* Caste and wealth
 ****************************************
 use"panel_v1", clear
 
-
-***** Stat
-cls
 * 2010
-ineqdeco assets_total if year==2010, by(caste)
-
 cls
-* 2016
-ineqdeco assets_total if year==2016, by(caste)
-
-cls
-* 2020
-ineqdeco assets_total if year==2020, by(caste)
-
-
-***** Std Err.
-ineqerr assets_total if year==2010, reps(200)
-ineqerr assets_total if year==2016, reps(200)
-ineqerr assets_total if year==2020, reps(200)
-
-
-****************************************
-* END
-
-
-
-
-
-
-
-
-
-
-
-****************************************
-* Pop and assets share
-****************************************
-import excel "Statdesc.xlsx", sheet("GE_caste2") firstrow clear
-drop if year==.
-label define caste 1"Dalits" 2"Middle castes" 3"Upper castes"
-label values caste caste
-replace popshare=popshare*100
-replace assetsshare=assetsshare*100
-
-* Ratio détenu/population
-gen ratio=assetsshare*100/popshare
-
-
-
-********** Graph bar
-graph bar (mean) popshare assetsshare, over(year) over(caste) ///
-ylabel(0(10)60) ymtick(0(5)65) ytitle("Percent") ///
-legend(order(1 "Share in the population" 2 "Share in the total wealth") col(2) pos(6))
-graph export "Shareincshareass.png", as(png) replace
-
-
-
-********** Graph with ratio
-twoway ///
-(connected ratio year if caste==1, yline(100)) ///
-(connected ratio year if caste==2) ///
-(connected ratio year if caste==3) ///
-, title("Ratio between shares") ///
-ytitle("Percent") ylabel(40(20)160) ///
-xtitle("") xlabel(2010 2016 2020) ///
-legend(order(1 "Dalits" 2 "Middle castes" 3 "Upper castes") pos(6) col(3)) name(g, replace)
-
-graph export "Ratioshareincshareass.png", as(png) replace
-
-
-****************************************
-* END
-
-
-
-
-
-
-
-
-
-
-
-
-
-****************************************
-* ELMO (2008)
-****************************************
-use"panel_v1", clear
-
-cls
-foreach y in 2010 2016 2020 {
 preserve
-quietly {
-keep if year==`y'
-sort assets_total
-gen n=_n
-
-* Local pour compter tout seul
-count if caste==1
-local D=r(N)
-
-count if caste==2
-local M=r(N)
-
-count if caste==3
-local U=r(N)
-
-* DMU
-gen comb1=.
-replace comb1=1 if n<=`D'
-replace comb1=2 if n>`D' & n<=(`D'+`M')
-replace comb1=3 if n>(`D'+`M')
-
-* DUM
-gen comb2=.
-replace comb2=1 if n<=`D'
-replace comb2=2 if n>`D' & n<=(`D'+`U')
-replace comb2=3 if n>(`D'+`U')
-
-* MDU
-gen comb3=.
-replace comb3=1 if n<=`M'
-replace comb3=2 if n>`M' & n<=(`M'+`D')
-replace comb3=3 if n>(`M'+`D')
-
-* MUD
-gen comb4=.
-replace comb4=1 if n<=`M'
-replace comb4=2 if n>`M' & n<=(`M'+`U')
-replace comb4=3 if n>(`M'+`U')
-
-* UMD
-gen comb5=.
-replace comb5=1 if n<=`U'
-replace comb5=2 if n>`U' & n<=(`U'+`M')
-replace comb5=3 if n>(`U'+`M')
-
-* UDM
-gen comb6=.
-replace comb6=1 if n<=`U'
-replace comb6=2 if n>`U' & n<=(`U'+`D')
-replace comb6=3 if n>(`U'+`D')
-}
-
-* Standard between to choose max
-dis "`y'" _newline
-forvalues i=1(1)6 {
-qui ineqdeco assets_total if year==`y', by(comb`i')
-foreach x in ge0 ge1 ge2 within_ge0 within_ge1 within_ge2 between_ge0 between_ge1 between_ge2 {
-local `x'=round(r(`x'),0.001)
-}
-dis _skip(3) "GE(0)" _skip(2) "GE(1)" _skip(2) "GE(2)" _newline ///
-"B" _skip(2) "`between_ge0'" _skip(3) "`between_ge1'" _skip(3) "`between_ge2'"
+keep if year==2010
+foreach x in dum_house dum_livestock dum_goods dum_land dum_gold dum_savings {
+recode `x' (.=0)
+ta `x' caste, row nofreq
 }
 restore
+
+* 2016-17
+cls
+preserve
+keep if year==2016
+foreach x in dum_house dum_livestock dum_goods dum_land dum_gold dum_savings {
+recode `x' (.=0)
+ta `x' caste, row nofreq
 }
+restore
+
+* 2020-21
+cls
+preserve
+keep if year==2020
+foreach x in dum_house dum_livestock dum_goods dum_land dum_gold dum_savings {
+recode `x' (.=0)
+ta `x' caste, row nofreq
+}
+restore
+
+
+*****
+import excel "CasteWealth.xlsx", sheet("Sheet1") firstrow clear
+label define time 1"2010" 2"2016-17" 3"2020-21"
+label values time time
+label define cat 1"House" 2"Livestock" 3"Duable goods" 4"Land" 5"Gold" 6"Savings" 7"Total"
+label values cat cat
+
+* Graph 2
+gen sum1=dalits
+gen sum2=sum1+middle
+gen sum3=sum2+upper
+recode cat (1=1) (2=3) (3=5) (4=7) (5=9) (6=11) (7=14)
+
+label define cat 1"House" 3"Livestock" 5"Duable goods" 7"Land" 9"Gold" 11"Savings" 14"Total", replace
+label values cat cat
+
+twoway ///
+(bar sum1 cat if time==1, barwidth(1.9)) ///
+(rbar sum1 sum2 cat if time==1, barwidth(1.9)) ///
+(rbar sum2 sum3 cat if time==1, barwidth(1.9)) ///
+, ///
+xlabel(1 3 5 7 9 11 14, angle(45) valuelabel) xtitle("") ///
+ylabel(0(10)100) ytitle("Percent") ///
+title("2010") ///
+legend(order(1 "Dalits" 2 "Middle castes" 3 "Upper castes") pos(6) col(3)) ///
+name(compo1, replace)
+
+
+twoway ///
+(bar sum1 cat if time==2, barwidth(1.9)) ///
+(rbar sum1 sum2 cat if time==2, barwidth(1.9)) ///
+(rbar sum2 sum3 cat if time==2, barwidth(1.9)) ///
+, ///
+xlabel(1 3 5 7 9 11 14, angle(45) valuelabel) xtitle("") ///
+ylabel(0(10)100) ytitle("Percent") ///
+title("2016-17") ///
+legend(order(1 "Dalits" 2 "Middle castes" 3 "Upper castes") pos(6) col(3)) ///
+name(compo2, replace)
+
+
+twoway ///
+(bar sum1 cat if time==3, barwidth(1.9)) ///
+(rbar sum1 sum2 cat if time==3, barwidth(1.9)) ///
+(rbar sum2 sum3 cat if time==3, barwidth(1.9)) ///
+, ///
+xlabel(1 3 5 7 9 11 14, angle(45) valuelabel) xtitle("") ///
+ylabel(0(10)100) ytitle("Percent") ///
+title("2020-21") ///
+legend(order(1 "Dalits" 2 "Middle castes" 3 "Upper castes") pos(6) col(3)) ///
+name(compo3, replace)
+
+grc1leg compo1 compo2 compo3, col(3) name(comp, replace) note("{it:Note:} For 405 households in 2010, 492 in 2016-17, and 626 in 2020-21.", size(vsmall))
+graph export "Castecatwealth2.png", as(png) replace
 
 
 ****************************************
@@ -366,41 +298,72 @@ restore
 
 
 
+
+
+
 ****************************************
-* Graph within
+* Caste and wealth II
 ****************************************
-import excel "GE.xlsx", sheet("Sheet1") firstrow clear
-label define type 1"Level" 2"Base100"
-label values type type
+use"panel_v1", clear
 
-* Level within
-twoway ///
-(connected w_GE0 year if type==1) ///
-(connected w_GE1 year if type==1) ///
-(connected w_GE2 year if type==1) ///
-, title("Share of {it:within} inequalities") ///
-ytitle("Percent") ylabel(82(2)96) ///
-xtitle("") xlabel(2010 2016 2020) ///
-legend(order(1 "GE(0)" 2 "GE(1)" 3 "GE(2)") pos(6) col(3)) name(sw, replace) scale(1.2)
+* 2010
+cls
+preserve
+keep if year==2010
+foreach x in dum_house dum_livestock dum_goods dum_land dum_gold dum_savings {
+recode `x' (.=0)
+ta `x' caste, col nofreq
+}
+restore
 
-* Level between max
-twoway ///
-(connected bm_GE0 year if type==1) ///
-(connected bm_GE1 year if type==1) ///
-(connected bm_GE2 year if type==1) ///
-, title("Share of {it:between} inequalities") ///
-ytitle("Percent") ylabel(6(2)20) ///
-xtitle("") xlabel(2010 2016 2020) ///
-legend(order(1 "GE(0)" 2 "GE(1)" 3 "GE(2)") pos(6) col(3)) name(sbm, replace) scale(1.2)
+* 2016-17
+cls
+preserve
+keep if year==2016
+foreach x in dum_house dum_livestock dum_goods dum_land dum_gold dum_savings {
+recode `x' (.=0)
+ta `x' caste, col nofreq
+}
+restore
 
+* 2020-21
+cls
+preserve
+keep if year==2020
+foreach x in dum_house dum_livestock dum_goods dum_land dum_gold dum_savings {
+recode `x' (.=0)
+ta `x' caste, col nofreq
+}
+restore
 
-* Combine
-grc1leg sw sbm, name(swbm, replace) note("{it:Note:} For 405 households in 2010, 492 in 2016-17, and 626 in 2020-21.", size(vsmall))
-graph export "WithinBetween_caste.png", as(png) replace
+*****
+import excel "CasteWealth.xlsx", sheet("Sheet2") firstrow clear
+label define time 1"2010" 2"2016-17" 3"2020-21"
+label values time time
+label define cat 1"House" 2"Livestock" 3"Duable goods" 4"Land" 5"Gold" 6"Savings"
+label values cat cat
+
+* Graph 
+set graph off
+graph bar dalits middle upper if time==1, over(cat, label(angle(45))) title("2010") ytitle("Percentage") legend(order(1 "Dalits" 2 "Middle castes" 3 "Upper castes") col(3) pos(6)) name(g1, replace) ylabel(0(10)100)
+
+graph bar dalits middle upper if time==2, over(cat, label(angle(45))) title("2016-17") ytitle("Percentage") legend(order(1 "Dalits" 2 "Middle castes" 3 "Upper castes") col(3) pos(6)) name(g2, replace) ylabel(0(10)100)
+
+graph bar dalits middle upper if time==3, over(cat, label(angle(45))) title("2020-21") ytitle("Percentage") legend(order(1 "Dalits" 2 "Middle castes" 3 "Upper castes") col(3) pos(6)) name(g3, replace) ylabel(0(10)100)
+set graph on
+
+grc1leg g1 g2 g3, col(3) name(comb, replace)
+*graph export "Castecatinc.png", as(png) replace
 
 
 ****************************************
 * END
+
+
+
+
+
+
 
 
 

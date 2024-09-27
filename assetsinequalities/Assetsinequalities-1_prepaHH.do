@@ -511,7 +511,6 @@ rename jatis3 jatis
 order jatis, after(caste)
 
 
-
 save "panel_v1", replace
 ****************************************
 * END
