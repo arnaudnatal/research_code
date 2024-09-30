@@ -345,15 +345,15 @@ label values cat cat
 
 * Graph 
 set graph off
-graph bar dalits middle upper if time==1, over(cat, label(angle(45))) title("2010") ytitle("Percentage") legend(order(1 "Dalits" 2 "Middle castes" 3 "Upper castes") col(3) pos(6)) name(g1, replace) ylabel(0(10)100)
+graph bar dalits middle upper if time==1, over(cat, label(angle(45))) title("2010") ytitle("Percent") legend(order(1 "Dalits" 2 "Middle castes" 3 "Upper castes") col(3) pos(6)) name(g1, replace) ylabel(0(10)100)
 
-graph bar dalits middle upper if time==2, over(cat, label(angle(45))) title("2016-17") ytitle("Percentage") legend(order(1 "Dalits" 2 "Middle castes" 3 "Upper castes") col(3) pos(6)) name(g2, replace) ylabel(0(10)100)
+graph bar dalits middle upper if time==2, over(cat, label(angle(45))) title("2016-17") ytitle("Percent") legend(order(1 "Dalits" 2 "Middle castes" 3 "Upper castes") col(3) pos(6)) name(g2, replace) ylabel(0(10)100)
 
-graph bar dalits middle upper if time==3, over(cat, label(angle(45))) title("2020-21") ytitle("Percentage") legend(order(1 "Dalits" 2 "Middle castes" 3 "Upper castes") col(3) pos(6)) name(g3, replace) ylabel(0(10)100)
+graph bar dalits middle upper if time==3, over(cat, label(angle(45))) title("2020-21") ytitle("Percent") legend(order(1 "Dalits" 2 "Middle castes" 3 "Upper castes") col(3) pos(6)) name(g3, replace) ylabel(0(10)100)
 set graph on
 
 grc1leg g1 g2 g3, col(3) name(comb, replace)
-*graph export "Castecatinc.png", as(png) replace
+graph export "Castecatwealth3.png", as(png) replace
 
 
 ****************************************
