@@ -196,6 +196,21 @@ graph export "Hourlyincome.pdf", as(pdf) replace
 ********** WEC
 cls
 use"panel_laboursupplyindiv_v2", clear
+
+* verif des couples
+preserve
+keep if year==2020
+keep if executionwork!=.
+fre relationshiptohead
+keep if relationshiptohead==1 | relationshiptohead==2
+keep HHID_panel INDID_panel
+gen couple=1
+bysort HHID_panel: gen n=_n
+drop INDID_panel
+reshape wide couple, i(HHID_panel) j(n)
+keep if couple1!=. & couple2!=.
+restore
+
 drop if age<14
 keep if work==1
 rename mainocc_occupation_indiv occupation
