@@ -213,29 +213,41 @@ graph export "Percentile.png", as(png) replace
 
 
 
-
-
-
-
-
 ****************************************
-* Gini decomposition
+* Wealth ownership
 ****************************************
-
-***** Decomposition Gini by assets source
 use"panel_v1", clear
 
-global assets assets_total assets_house assets_livestock assets_goods assets_land assets_gold assets_savings
+* Collapse
+global var dum_house dum_livestock dum_goods dum_land dum_gold dum_savings
+recode $var (.=0)
+collapse (mean) $var, by(time)
+foreach x in $var {
+replace `x'=`x'*100
+}
 
-descogini $assets if year==2010
-descogini $assets if year==2016
-descogini $assets if year==2020
+rename dum_house share1
+rename dum_livestock share2
+rename dum_goods share3
+rename dum_land share4
+rename dum_gold share5
+rename dum_savings share6
+
+* Reshape
+reshape long share, i(time) j(cat)
+label define cat 1"House" 2"Livestock" 3"Durable goods" 4"Land" 5"Gold" 6"Savings"
+label values cat cat
+
+* Reshape 2
+reshape wide share, i(cat) j(time)
+
+* Graph 
+graph bar share1 share2 share3, over(cat, label(angle(45))) title("") ytitle("Percent") legend(order(1 "2010" 2 "2016-17" 3 "2020-21") col(3) pos(6)) name(g1, replace) ylabel(0(10)100)
+graph export "Wealthdum.png", as(png) replace
+
 
 ****************************************
 * END
-
-
-
 
 
 
@@ -325,3 +337,35 @@ graph export "Compositionassets.png", as(png) replace
 
 ****************************************
 * END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Gini decomposition
+****************************************
+
+***** Decomposition Gini by assets source
+use"panel_v1", clear
+
+global assets assets_total assets_house assets_livestock assets_goods assets_land assets_gold assets_savings
+
+descogini $assets if year==2010
+descogini $assets if year==2016
+descogini $assets if year==2020
+
+****************************************
+* END
+

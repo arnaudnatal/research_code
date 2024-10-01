@@ -52,7 +52,7 @@ twoway ///
 (rarea assets_ub assets_lb year if caste==2, color(plr1%10)) ///
 (connected assets_m year if caste==3, color(plg1)) ///
 (rarea assets_ub assets_lb year if caste==3, color(plg1%10)) ///
-, title("Assets") ytitle("1k rupees") ylabel(0(500)5000) ///
+, title("Wealth") ytitle("1k rupees") ylabel(0(500)5000) ///
 xtitle("") ///
 legend(order(1 "Dalits" 3 "Middle castes" 5 "Upper castes") pos(6) col(3)) ///
 scale(1.2) name(assetscaste, replace)
@@ -340,7 +340,7 @@ restore
 import excel "CasteWealth.xlsx", sheet("Sheet2") firstrow clear
 label define time 1"2010" 2"2016-17" 3"2020-21"
 label values time time
-label define cat 1"House" 2"Livestock" 3"Duable goods" 4"Land" 5"Gold" 6"Savings"
+label define cat 1"House" 2"Livestock" 3"Durable goods" 4"Land" 5"Gold" 6"Savings"
 label values cat cat
 
 * Graph 
