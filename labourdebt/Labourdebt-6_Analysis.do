@@ -150,18 +150,20 @@ est clear
 mdesc hoursamonth_indiv DSR_lag age edulevel relation2 sex marital remitt_std assets_std dummymarriage HHsize HH_count_child sexratio work nonworkersratio
 
 ********** Exclusion 4
+/*
 capture noisily xtheckmanfe hoursamonth_indiv DSR_lag i.HHFE ///
 , selection(work = c.nonworkersratio) ///
 id(panelvar) time(year) reps(500)
 est store excl_4
-/*
+*/
 capture noisily xtheckmanfe hoursamonth_indiv DSR_lag ///
 c.age i.edulevel i.relation2 i.sex i.marital ///
-remitt_std assets_std dummymarriage ///
+remitt_std assets_std ///
 HHsize HH_count_child sexratio ///
 , selection(work = c.nonworkersratio) ///
-id(panelvar) time(year) reps(500)
-*/
+id(panelvar) time(year) reps(200)
+est store excl_4
+
 
 
 ********** Tables

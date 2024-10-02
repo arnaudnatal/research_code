@@ -49,7 +49,7 @@ c.age i.edulevel i.relation2 i.sex i.marital ///
 remittnet_HH assets_total dummymarriage ///
 HHsize HH_count_child sexratio ///
 , selection(work = c.nonworkersratio) ///
-id(panelvar) time(year) reps(500)
+id(panelvar) time(year) reps(200)
 est store excl_4
 
 
