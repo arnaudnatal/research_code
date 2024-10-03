@@ -5,7 +5,7 @@ cls
 *December 5, 2023
 *-----
 gl link = "labourdebt"
-*Prepa database
+*Econo main
 *-----
 *do "https://raw.githubusercontent.com/arnaudnatal/folderanalysis/main/$link.do"
 do"C:\Users\Arnaud\Documents\GitHub\folderanalysis\labourdebt.do"
@@ -129,11 +129,11 @@ esttab excl_1 excl_2 excl_3 excl_5 excl_6 excl_7 using "IMR_test.csv", replace /
 
 
 
-
 ****************************************
 * Heckman total sample
 ****************************************
 use"panel_laboursupplyindiv_v2", clear
+
 
 
 ********** Selection
@@ -146,28 +146,22 @@ xtset panelvar year
 est clear
 
 
-********** Controls brut
-mdesc hoursamonth_indiv DSR_lag age edulevel relation2 sex marital remitt_std assets_std dummymarriage HHsize HH_count_child sexratio work nonworkersratio
 
-********** Exclusion 4
+**********
 /*
-capture noisily xtheckmanfe hoursamonth_indiv DSR_lag i.HHFE ///
-, selection(work = c.nonworkersratio) ///
-id(panelvar) time(year) reps(500)
-est store excl_4
+Garder 'seed(4)' car c'est le seed qui va le plus vite à converger.
 */
 capture noisily xtheckmanfe hoursamonth_indiv DSR_lag ///
 c.age i.edulevel i.relation2 i.sex i.marital ///
 remitt_std assets_std ///
-HHsize HH_count_child sexratio ///
+HHsize HH_count_child sexratio i.caste  i.villageid ///
 , selection(work = c.nonworkersratio) ///
-id(panelvar) time(year) reps(200)
-est store excl_4
-
+id(panelvar) time(year) reps(200) seed(4)
+est store m1
 
 
 ********** Tables
-esttab excl_4 using "Heckman_total.csv", replace ///
+esttab m1 using "Heckman_total.csv", replace ///
 	label b(3) p(3) eqlabels(none) alignment(S) ///
 	drop(_cons) ///
 	star(* 0.10 ** 0.05 *** 0.01) ///
@@ -178,59 +172,6 @@ esttab excl_4 using "Heckman_total.csv", replace ///
 	
 ****************************************
 * END
-
-
-
-
-
-
-
-
-
-
-
-****************************************
-* Heckman females
-****************************************
-use"panel_laboursupplyindiv_v2", clear
-
-
-********** Selection
-drop if age<14
-keep if sex==2
-
-
-********** Panel
-sort HHID_panel INDID_panel year
-xtset panelvar year
-est clear
-
-
-
-********** Exclusion 4
-capture noisily xtheckmanfe hoursamonth_indiv DSR_lag ///
-c.age i.edulevel i.relation2 i.sex i.marital ///
-remitt_std assets_std dummymarriage ///
-HHsize HH_count_child sexratio ///
-, selection(work = c.nonworkersratio) ///
-id(panelvar) time(year) reps(500)
-est store excl_4
-
-
-********** Tables
-esttab excl_4 using "Heckman_females.csv", replace ///
-	label b(3) p(3) eqlabels(none) alignment(S) ///
-	drop(_cons) ///
-	star(* 0.10 ** 0.05 *** 0.01) ///
-	cells("b(fmt(2)star)" "se(fmt(2)par)") ///
-	refcat(, nolabel) ///
-	stats(N, fmt(0) ///
-	labels(`"Observations"'))
-
-****************************************
-* END
-
-
 
 
 
@@ -261,76 +202,18 @@ xtset panelvar year
 est clear
 
 
-********** Exclusion 4
+********** 
 capture noisily xtheckmanfe hoursamonth_indiv DSR_lag ///
 c.age i.edulevel i.relation2 i.sex i.marital ///
-remitt_std assets_std dummymarriage ///
-HHsize HH_count_child sexratio ///
+remitt_std assets_std ///
+HHsize HH_count_child sexratio i.caste  i.villageid ///
 , selection(work = c.nonworkersratio) ///
-id(panelvar) time(year) reps(500)
-est store excl_4
-
+id(panelvar) time(year) reps(200) seed(4)
+est store m1
 
 
 ********** Tables
-esttab excl_4 using "Heckman_males.csv", replace ///
-	label b(3) p(3) eqlabels(none) alignment(S) ///
-	drop(_cons) ///
-	star(* 0.10 ** 0.05 *** 0.01) ///
-	cells("b(fmt(2)star)" "se(fmt(2)par)") ///
-	refcat(, nolabel) ///
-	stats(N, fmt(0) ///
-	labels(`"Observations"'))
-
-****************************************
-* END
-
-
-
-
-
-
-/*
-
-
-
-
-
-
-
-
-
-
-****************************************
-* Heckman type of jobs
-****************************************
-use"panel_laboursupplyindiv_v2", clear
-
-
-********** Selection
-drop if age<14
-
-********** Panel
-sort HHID_panel INDID_panel year
-xtset panelvar year
-est clear
-
-
-
-********** Exclusion 4
-foreach x in hours_agri hours_nonagri hours_selfemp hours_casu {
-capture noisily xtheckmanfe `x' DSR_lag ///
-c.age i.edulevel i.relation2 i.sex i.marital ///
-remitt_std assets_std dummymarriage ///
-HHsize HH_count_child sexratio ///
-, selection(work = c.nonworkersratio) ///
-id(panelvar) time(year) reps(500)
-est store excl_`x'
-}
-
-
-********** Tables
-esttab excl_* using "Heckman_jobs.csv", replace ///
+esttab m1 using "Heckman_males.csv", replace ///
 	label b(3) p(3) eqlabels(none) alignment(S) ///
 	drop(_cons) ///
 	star(* 0.10 ** 0.05 *** 0.01) ///
@@ -355,10 +238,8 @@ esttab excl_* using "Heckman_jobs.csv", replace ///
 
 
 
-
-
 ****************************************
-* Heckman type of jobs for females
+* Heckman females
 ****************************************
 use"panel_laboursupplyindiv_v2", clear
 
@@ -373,25 +254,20 @@ sort HHID_panel INDID_panel year
 xtset panelvar year
 est clear
 
-gen hours_reg=hours_regnonqu+hours_regquali
 
 
-
-********** Exclusion 4
-*foreach x in hours_agri hours_nonagri hours_selfemp hours_casu {
-foreach x in hours_self hours_agriself hours_casua hours_reg hours_nrega hours_agricasu {
-capture noisily xtheckmanfe `x' DSR_lag ///
+********** 
+capture noisily xtheckmanfe hoursamonth_indiv DSR_lag ///
 c.age i.edulevel i.relation2 i.sex i.marital ///
-remitt_std assets_std dummymarriage ///
-HHsize HH_count_child sexratio ///
+remitt_std assets_std ///
+HHsize HH_count_child sexratio i.caste  i.villageid ///
 , selection(work = c.nonworkersratio) ///
-id(panelvar) time(year) reps(500)
-est store excl_`x'
-}
+id(panelvar) time(year) reps(200) seed(4)
+est store m1
 
 
 ********** Tables
-esttab excl_* using "Heckman_jobs_females.csv", replace ///
+esttab m1 using "Heckman_females.csv", replace ///
 	label b(3) p(3) eqlabels(none) alignment(S) ///
 	drop(_cons) ///
 	star(* 0.10 ** 0.05 *** 0.01) ///
@@ -404,4 +280,9 @@ esttab excl_* using "Heckman_jobs_females.csv", replace ///
 * END
 
 
-do"$dofile\\Labourdebt-6_Supp_analysis1.do"
+
+
+
+
+
+
