@@ -34,7 +34,7 @@ est clear
 
 
 
-********** Exclusion 1
+********** Exclusion 1: Abraham 2017
 capture noisily xtheckmanfe hoursamonth_indiv DSR_lag ///
 c.age i.edulevel i.sex i.marital ///
 remitt_std assets_std ///
@@ -46,7 +46,7 @@ est store excl_1
 
 
 
-********** Exclusion 2
+********** Exclusion 2: Hussain & Mukhopadhyay 2023
 capture noisily xtheckmanfe hoursamonth_indiv DSR_lag ///
 c.age i.edulevel i.sex i.relation2 ///
 remitt_std assets_std ///
@@ -56,29 +56,7 @@ id(panelvar) time(year) reps(200)
 est store excl_2
 
 
-
-********** Exclusion 3
-capture noisily xtheckmanfe hoursamonth_indiv DSR_lag ///
-c.age i.edulevel i.relation2 i.sex i.marital ///
-remitt_std assets_std ///
-HHsize HH_count_child sexratio nonworkersratio  i.caste i.villageid ///
-, selection(work = i.dummyremrec) ///
-id(panelvar) time(year) reps(200)
-est store excl_3
-
-
-********** Exclusion 4
-capture noisily xtheckmanfe hoursamonth_indiv DSR_lag ///
-c.age i.edulevel i.relation2 i.sex i.marital ///
-remitt_std assets_std ///
-HHsize HH_count_child sexratio i.caste i.villageid ///
-, selection(work = c.nonworkersratio) ///
-id(panelvar) time(year) reps(200)
-est store excl_4
-
-
-
-********** Exclusion 5
+********** Exclusion 3: Hwang et al. 2019
 capture noisily xtheckmanfe hoursamonth_indiv DSR_lag ///
 i.edulevel i.relation2 i.sex i.marital ///
 remitt_std assets_std ///
@@ -90,7 +68,7 @@ est store excl_5
 
 
 
-********** Exclusion 6
+********** Exclusion 4: Klasen & Pieters 2015
 capture noisily xtheckmanfe hoursamonth_indiv DSR_lag ///
 c.age i.edulevel i.relation2 i.sex i.marital ///
 remitt_std assets_std ///
@@ -101,7 +79,17 @@ est store excl_6
 
 
 
-********** Exclusion 7
+********** Exclusion 5: Comola & Mello 2013
+capture noisily xtheckmanfe hoursamonth_indiv DSR_lag ///
+c.age i.edulevel i.relation2 i.sex i.marital ///
+remitt_std assets_std ///
+HHsize sexratio nonworkersratio i.caste i.villageid ///
+, selection(work = c.HH_count_child) ///
+id(panelvar) time(year) reps(200)
+est store excl_7
+
+
+********** Exclusion 6: Kuepie et al. 2009
 capture noisily xtheckmanfe hoursamonth_indiv DSR_lag ///
 c.age i.edulevel i.relation2 i.sex i.marital ///
 remitt_std assets_std ///

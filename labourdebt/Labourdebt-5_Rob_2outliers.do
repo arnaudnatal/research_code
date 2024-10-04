@@ -38,7 +38,7 @@ est clear
 foreach i in 2016 2020 {
 gen todrop`i'=1 if year==`i'
 qui sum hoursamonth_indiv if year==`i', det
-replace todrop`i'=0 if inrange(hoursamonth_indiv, r(p1), r(p99)) & year==`i'
+replace todrop`i'=0 if inrange(hoursamonth_indiv, r(p5), r(p95)) & year==`i'
 replace todrop`i'=0 if work==0 & year==`i'
 drop if todrop`i'==1
 drop todrop`i'
@@ -101,7 +101,7 @@ est clear
 foreach i in 2016 2020 {
 gen todrop`i'=1 if year==`i'
 qui sum hoursamonth_indiv if year==`i', det
-replace todrop`i'=0 if inrange(hoursamonth_indiv, r(p1), r(p99)) & year==`i'
+replace todrop`i'=0 if inrange(hoursamonth_indiv, r(p5), r(p95)) & year==`i'
 replace todrop`i'=0 if work==0 & year==`i'
 drop if todrop`i'==1
 drop todrop`i'
@@ -165,7 +165,7 @@ est clear
 foreach i in 2016 2020 {
 gen todrop`i'=1 if year==`i'
 qui sum hoursamonth_indiv if year==`i', det
-replace todrop`i'=0 if inrange(hoursamonth_indiv, r(p1), r(p99)) & year==`i'
+replace todrop`i'=0 if inrange(hoursamonth_indiv, r(p5), r(p95)) & year==`i'
 replace todrop`i'=0 if work==0 & year==`i'
 drop if todrop`i'==1
 drop todrop`i'

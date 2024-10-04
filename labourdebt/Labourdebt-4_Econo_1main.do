@@ -59,6 +59,20 @@ esttab m1 using "Heckman_total.csv", replace ///
 	stats(N, fmt(0) ///
 	labels(`"Observations"'))
 	
+	
+	
+	
+********** test probit à la main pour voir si le tableau est plus rapide à faire
+
+preserve
+keep if year==2016
+probit work DSR_lag ///
+c.age i.edulevel i.relation2 i.sex i.marital ///
+remitt_std assets_std ///
+HHsize HH_count_child sexratio i.caste  i.villageid c.nonworkersratio
+margins, dydx(DSR_lag c.age i.edulevel i.relation2 i.sex i.marital remitt_std assets_std HHsize HH_count_child sexratio i.caste  i.villageid c.nonworkersratio) atmeans post
+
+	
 ****************************************
 * END
 
