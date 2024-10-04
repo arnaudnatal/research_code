@@ -19,14 +19,9 @@ do"C:\Users\Arnaud\Documents\GitHub\folderanalysis\labourdebt.do"
 
 
 ****************************************
-* Lag Share dsr
+* Lag Share dsr total
 ****************************************
 use"panel_laboursupplyindiv_v2", clear
-
-
-********** Check year
-ta share_dsr year
-ta lag_share_dsr year
 
 
 ********** Selection
@@ -37,75 +32,16 @@ keep if year==2020
 ********** Sort
 sort HHID_panel INDID_panel year
 
-
-
-********** Total
+********** 
 heckman hoursamonth_indiv lag_share_dsr ///
 c.age i.edulevel i.relation2 i.sex i.marital ///
-c.remitt_std c.assets_std i.caste ///
-HHsize HH_count_child sexratio ///
-, select(work = c.nonworkersratio) ///
-clust(HHFE)
-est store reg1
+remitt_std assets_std ///
+HHsize HH_count_child sexratio i.caste  i.villageid ///
+, select(work = c.nonworkersratio)
+est store m1
 
 
-
-********** Males
-*
-preserve
-fre sex
-keep if sex==1
-set maxiter 53
-heckman hoursamonth_indiv lag_share_dsr ///
-c.age i.edulevel i.relation2 i.marital ///
-c.remitt_std c.assets_std i.caste ///
-HHsize HH_count_child sexratio ///
-, select(work = c.nonworkersratio) ///
-clust(HHFE)
-est store reg2
-restore
-*
-preserve
-fre sex
-keep if sex==1
-set maxiter 45
-heckman hoursamonth_indiv lag_share_dsr ///
-i.cat_age i.edulevel i.relation2 i.marital ///
-c.remitt_std c.assets_std i.caste ///
-HHsize HH_count_child sexratio ///
-, select(work = c.nonworkersratio) ///
-clust(HHFE)
-est store reg3
-restore
-
-
-
-********** Females
-preserve
-fre sex
-keep if sex==2
-heckman hoursamonth_indiv lag_share_dsr ///
-i.cat_age i.edulevel i.relation2 i.marital ///
-c.remitt_std c.assets_std i.caste ///
-HHsize HH_count_child sexratio ///
-, select(work = c.nonworkersratio) ///
-clust(HHFE)
-est store reg4
-
-set maxiter 56
-heckman hoursamonth_indiv lag_share_dsr ///
-c.age i.edulevel i.relation2 i.marital ///
-c.remitt_std c.assets_std i.caste ///
-HHsize HH_count_child sexratio ///
-, select(work = c.nonworkersratio) ///
-clust(HHFE)
-est store reg5
-
-restore
-
-
-********** Table
-esttab reg1 reg2 reg3 reg4 reg5 using "Indiv_Heckman.csv", replace ///
+esttab m1 using "ShareDSR_Heckman_total.csv", replace ///
 	label b(3) p(3) eqlabels(none) alignment(S) ///
 	keep(lag_share_dsr) ///
 	star(* 0.10 ** 0.05 *** 0.01) ///
@@ -113,7 +49,115 @@ esttab reg1 reg2 reg3 reg4 reg5 using "Indiv_Heckman.csv", replace ///
 	refcat(, nolabel) ///
 	stats(N, fmt(0) ///
 	labels(`"Observations"'))
-	
+
+
 ****************************************
 * END
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Lag Share dsr males
+****************************************
+use"panel_laboursupplyindiv_v2", clear
+
+
+********** Selection
+drop if age<14
+keep if year==2020
+fre sex
+keep if sex==1
+
+********** Sort
+sort HHID_panel INDID_panel year
+
+**********
+/*
+Pour que ca fonctionne, je dois enlever la variable de location et
+soit l'éducation
+soit le statut marital
+*/
+heckman hoursamonth_indiv lag_share_dsr ///
+c.age i.edulevel i.relation2 ///
+remitt_std assets_std ///
+HHsize HH_count_child sexratio i.caste ///
+, select(work = c.nonworkersratio)
+est store m1
+
+
+esttab m1 using "ShareDSR_Heckman_males.csv", replace ///
+	label b(3) p(3) eqlabels(none) alignment(S) ///
+	keep(lag_share_dsr) ///
+	star(* 0.10 ** 0.05 *** 0.01) ///
+	cells("b(fmt(2)star)" "se(fmt(2)par)") ///
+	refcat(, nolabel) ///
+	stats(N, fmt(0) ///
+	labels(`"Observations"'))
+
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Lag Share dsr females
+****************************************
+use"panel_laboursupplyindiv_v2", clear
+
+
+********** Selection
+drop if age<14
+keep if year==2020
+fre sex
+keep if sex==2
+
+********** Sort
+sort HHID_panel INDID_panel year
+
+
+********** 
+/*
+Pour que ca fonctionne, je dois enlever la variable de location et
+soit l'éducation + relation
+soit le statut marital + relation
+soit statut + education
+*/
+heckman hoursamonth_indiv lag_share_dsr ///
+c.age i.edulevel ///
+remitt_std assets_std ///
+HHsize HH_count_child sexratio i.caste ///
+, select(work = c.nonworkersratio)
+est store m1
+
+
+esttab m1 using "ShareDSR_Heckman_females.csv", replace ///
+	label b(3) p(3) eqlabels(none) alignment(S) ///
+	keep(lag_share_dsr) ///
+	star(* 0.10 ** 0.05 *** 0.01) ///
+	cells("b(fmt(2)star)" "se(fmt(2)par)") ///
+	refcat(, nolabel) ///
+	stats(N, fmt(0) ///
+	labels(`"Observations"'))
+
+****************************************
+* END

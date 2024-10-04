@@ -38,7 +38,7 @@ qui xtreg work DSR_lag ///
 c.age i.edulevel i.relation2 i.sex i.marital ///
 remitt_std assets_std ///
 HHsize HH_count_child sexratio i.caste i.villageid ///
-, fe cluster(HHFE)
+, fe
 est store work
 
 
@@ -48,7 +48,7 @@ xtreg hoursamonth_indiv DSR_lag ///
 c.age i.edulevel i.relation2 i.sex i.marital ///
 remitt_std assets_std ///
 HHsize HH_count_child sexratio i.caste i.villageid ///
-, fe cluster(HHFE)
+, fe
 est store hour
 
 
@@ -103,7 +103,7 @@ qui xtreg work DSR_lag ///
 c.age i.edulevel i.relation2 i.sex i.marital ///
 remitt_std assets_std ///
 HHsize HH_count_child sexratio i.caste i.villageid ///
-, fe cluster(HHFE)
+, fe
 est store work
 
 
@@ -113,7 +113,7 @@ xtreg hoursamonth_indiv DSR_lag ///
 c.age i.edulevel i.relation2 i.sex i.marital ///
 remitt_std assets_std ///
 HHsize HH_count_child sexratio i.caste i.villageid ///
-, fe cluster(HHFE)
+, fe
 est store hour
 
 
@@ -126,7 +126,6 @@ esttab work hour using "Craggs_males.csv", replace ///
 	refcat(, nolabel) ///
 	stats(N, fmt(0) ///
 	labels(`"Observations"'))
-restore
 
 ****************************************
 * END
@@ -168,7 +167,7 @@ qui xtreg work DSR_lag ///
 c.age i.edulevel i.relation2 i.sex i.marital ///
 remitt_std assets_std ///
 HHsize HH_count_child sexratio i.caste i.villageid ///
-, fe cluster(HHFE)
+, fe
 est store work
 
 
@@ -178,7 +177,7 @@ xtreg hoursamonth_indiv DSR_lag ///
 c.age i.edulevel i.relation2 i.sex i.marital ///
 remitt_std assets_std ///
 HHsize HH_count_child sexratio i.caste i.villageid ///
-, fe cluster(HHFE)
+, fe
 est store hour
 
 
@@ -192,7 +191,6 @@ esttab work hour using "Craggs_females.csv", replace ///
 	refcat(, nolabel) ///
 	stats(N, fmt(0) ///
 	labels(`"Observations"'))
-restore
 
 
 ****************************************

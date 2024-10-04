@@ -151,8 +151,9 @@ c.age i.edulevel i.relation2 i.sex i.marital ///
 remitt_std assets_std ///
 HHsize HH_count_child sexratio  i.villageid ///
 , selection(work = c.nonworkersratio) ///
-id(panelvar) time(year) reps(200) seed(X)
+id(panelvar) time(year) reps(200) seed(27)
 est store m1
+
 
 
 ********** Tables
