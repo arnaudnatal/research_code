@@ -321,6 +321,8 @@ gen dailyincome_pc=(annualincome_HH2/365)/HHsize
 gen dailyuspppdincome_pc=dailyincome_pc/20.65
 drop annualincome_HH_backup annualincome_HH2 dailyincome_pc
 
+
+
 save"panel_HH_v3", replace
 ****************************************
 * END

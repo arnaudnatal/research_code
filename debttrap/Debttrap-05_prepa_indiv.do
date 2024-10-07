@@ -316,6 +316,16 @@ sort HHID_panel INDID_panel year
 recode dummydemonetisation (.=0)
 recode dummymarriage (.=0)
 
+* Time
+gen time=0
+replace time=1 if year==2010
+replace time=2 if year==2016
+replace time=3 if year==2020
+
+label define time 1"2010" 2"2016-17" 3"2020-21"
+label values time time
+
+
 
 *** Quanti 
 global quanti1 head_mocc_annualincome head_annualincome 

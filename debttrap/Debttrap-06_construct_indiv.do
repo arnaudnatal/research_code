@@ -223,6 +223,7 @@ drop annualincome_indiv_backup annualincome_indiv2 dailyincome
 * Selection, je garde que les majeurs
 drop if age<18
 
+
 save"panel_indiv_v3", replace
 ****************************************
 * END

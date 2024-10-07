@@ -110,10 +110,10 @@ save"NEEMSIS2-loans.dta", replace
 ****************************************
 * Append
 ****************************************
-use"RUME-loans.dta", replace
+use"NEEMSIS2-loans", replace
 
 append using "NEEMSIS1-loans"
-append using "NEEMSIS2-loans"
+append using "RUME-loans"
 
 gen test=loanamount-loanamount2
 ta test
@@ -143,6 +143,7 @@ foreach x in loanamount loanbalance interestpaid totalrepaid principalpaid {
 replace `x'=`x'*(100/54) if year==2010
 replace `x'=`x'*(100/86) if year==2016
 replace `x'=round(`x',1)
+replace `x'=`x'/1000
 }
 
 
@@ -151,6 +152,29 @@ replace `x'=round(`x',1)
 fre loanreasongiven
 drop if loanreasongiven==12
 drop if loanreasongiven==77
+
+* New cat for lenders
+ta loanlender lender_cat
+fre lender4
+gen lender4cat=.
+replace lender4cat=1 if lender4==1
+replace lender4cat=1 if lender4==2
+replace lender4cat=1 if lender4==3
+replace lender4cat=1 if lender4==4
+replace lender4cat=1 if lender4==5
+replace lender4cat=2 if lender4==6
+replace lender4cat=1 if lender4==7
+replace lender4cat=2 if lender4==8
+replace lender4cat=2 if lender4==9
+replace lender4cat=1 if lender4==10
+
+label define lender4cat 1"Informal" 2"Formal"
+label values lender4cat lender4cat
+
+
+ta lender_cat lender4cat
+drop lender_cat
+
 
 save"panel_loans", replace
 ****************************************
