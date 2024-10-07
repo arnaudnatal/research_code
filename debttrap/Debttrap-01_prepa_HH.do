@@ -1,8 +1,8 @@
 *-------------------------
 cls
 *Arnaud NATAL
-*arnaud.natal@u-bordeaux.fr
-*November 20, 2023
+*arnaud.natal@ifpindia.org
+*October 7, 2024
 *-----
 gl link = "debttrap"
 *Prepa database
@@ -364,13 +364,12 @@ recode dummymarriage (.=0)
 
 * Caste
 *tostring year, replace
-merge 1:1 HHID_panel year using "raw/Panel-Caste_HH_long", keepusing(caste)
+merge 1:1 HHID_panel year using "raw/JatisCastePanel"
+rename jatisn jatis
+rename casten caste
 keep if _merge==3
 drop _merge
 ta caste
-label define castecode 1"Dalits" 2"Middle castes" 3"Upper castes"
-label values caste castecode
-fre caste
 
 
 *** Quanti 
@@ -388,8 +387,8 @@ gen annualincome_HH_backup=annualincome_HH
 
 *** Deflate and round
 foreach x in $quanti {
-replace `x'=`x'*(100/158) if year==2016
-replace `x'=`x'*(100/184) if year==2020
+replace `x'=`x'*(100/54) if year==2010
+replace `x'=`x'*(100/86) if year==2016
 replace `x'=round(`x',1)
 }
 

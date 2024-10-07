@@ -1,8 +1,8 @@
 *-------------------------
 cls
 *Arnaud NATAL
-*arnaud.natal@u-bordeaux.fr
-*November 20, 2023
+*arnaud.natal@ifpindia.org
+*October 7, 2024
 *-----
 gl link = "debttrap"
 *Prepa database
@@ -27,31 +27,29 @@ do"C:/Users/Arnaud/Documents/GitHub/folderanalysis/$link.do"
 use"panel_indiv_v0", clear
 
 * DSR
-tabstat imp1_ds_tot_indiv annualincome_indiv, stat(min p1 p5 p10 q p90 p95 p99 max)
-gen dsr=imp1_ds_tot_indiv/annualincome_indiv
-replace dsr=0 if dsr==.
+gen dsr_indiv=imp1_ds_tot_indiv/annualincome_indiv
+replace dsr_indiv=0 if dsr_indiv==.
 
-* ISR
-gen isr=imp1_is_tot_indiv/annualincome_indiv
-replace isr=0 if isr==.
+* GTDR
+gen gtdr_indiv=totindiv_givenamt_repa/loanamount_indiv
+replace gtdr_indiv=0 if gtdr_indiv==.
 
-replace dsr=dsr*100
-replace isr=isr*100
-tabstat dsr isr, stat(n mean cv p50) by(year) long
-replace dsr=dsr/100
-replace isr=isr/100
+* ETDR
+gen etdr_indiv=totindiv_effectiveamt_repa/loanamount_indiv
+replace etdr_indiv=0 if etdr_indiv==.
 
-* DIR
-gen dir=loanamount_indiv/annualincome_indiv
-replace dir=0 if dir==.
+* Share DSR
+gen share_dsr=imp1_ds_tot_indiv/imp1_ds_tot_HH
+replace share_dsr=0 if share_dsr==.
 
-* TDR
-gen tdr=totindiv_givenamt_repa/loanamount_indiv
-replace tdr=0 if tdr==.
+* Share GTDR
+gen share_gtdr=totindiv_givenamt_repa/totHH_givenamt_repa
+replace share_gtdr=0 if share_gtdr==.
 
-* TAR
-gen tar=totindiv_givenamt_repa/assets_total
-replace tar=0 if tar==.
+* Share ETDR
+gen share_etdr=totindiv_effectiveamt_repa/totHH_effectiveamt_repa
+replace share_etdr=0 if share_etdr==.
+
 
 save"panel_indiv_v1", replace
 ****************************************
@@ -71,7 +69,7 @@ save"panel_indiv_v1", replace
 
 
 ****************************************
-* Poverty and other
+* Explana
 ****************************************
 use"panel_indiv_v1", clear
 
@@ -91,53 +89,12 @@ label values stem stem
 ta stem typeoffamily
 
 * Trap
-gen dummytrap=0
-replace dummytrap=1 if tdr>0
+gen dummygtrap_indiv=0
+replace dummygtrap_indiv=1 if gtdr_indiv>0
 
-* Head sex
-fre head_sex
-gen head_female=.
-replace head_female=0 if head_sex==1
-replace head_female=1 if head_sex==2
+gen dummyetrap_indiv=0
+replace dummyetrap_indiv=1 if etdr_indiv>0
 
-ta head_sex head_female
-label define head_female 0"Male" 1"Female"
-label values head_female head_female
-
-* Head occupation
-fre head_mocc_occupation
-recode head_mocc_occupation (5=4)
-ta head_mocc_occupation, gen(head_occ)
-
-
-* Head edulevel
-fre head_edulevel
-recode head_edulevel (3=2) (4=2) (5=2)
-ta head_edulevel, gen(head_educ)
-
-
-* Head age
-tabstat head_age, stat(n mean sd q)
-gen head_agesq=head_age*head_age
-
-gen head_agecat=0
-replace head_agecat=1 if head_age<40
-replace head_agecat=2 if head_age>=40 & head_age<50
-replace head_agecat=3 if head_age>=50 & head_age<60
-replace head_agecat=4 if head_age>=60
-
-label define head_agecat 1"Less 40" 2"40-50" 3"50-60" 4"60 or more"
-label values head_agecat head_agecat
-ta head_agecat, gen(head_agecat)
-
-
-* Head maritalstatus
-fre head_maritalstatus
-gen head_nonmarried=head_maritalstatus
-recode head_nonmarried (1=0) (2=1) (3=1) (4=1) (.=0)
-label define head_nonmarried 0"Married" 1"Non-married"
-label values head_nonmarried head_nonmarried
-fre head_nonmarried
 
 * Class
 /*
@@ -202,18 +159,6 @@ label var HHsize "Household size"
 label var HH_count_child "Number of childrens"
 label var stem "Family: Stem"
 label var ownland "Land owner: Yes"
-label var head_age "Head: Age (years)"
-label var head_occ1 "Head occ: Unoccupied"
-label var head_occ2 "Head occ: Agri SE"
-label var head_occ3 "Head occ: Agri casual"
-label var head_occ4 "Head occ: Casual"
-label var head_occ5 "Head occ: Regular"
-label var head_occ6 "Head occ: SE"
-label var head_occ7 "Head occ: NREGA"
-label var head_educ1 "Head edu: Below primary"
-label var head_educ2 "Head edu: Primary completed"
-label var head_educ3 "Head edu: High school or more"
-label var head_nonmarried "Head married: No"
 label var shareform "Share formal debt"
 label var dummymarriage "Marriage: Yes"
 label var dummydemonetisation "Demonetisation: Yes"
@@ -228,10 +173,15 @@ label var village_8 "Village: NAT"
 label var village_9 "Village: ORA"
 label var village_10 "Village: SEM"
 
+* Drop head
+drop head_*
 
 save"panel_indiv_v2", replace
 ****************************************
 * END
+
+
+
 
 
 
@@ -248,26 +198,9 @@ use"panel_indiv_v2", clear
 
 replace loanamount_indiv=0 if loanamount_indiv==.
 
-foreach x in loanamount_indiv annualincome_indiv assets_total imp1_ds_tot_indiv imp1_is_tot_indiv totindiv_givenamt_repa dsr isr dir tdr tar expenses_total remreceived_indiv remsent_indiv remittnet_indiv assets_gold nbloans_indiv {
-egen `x'_std=std(`x')
-}
-
-*** Label
-label var dsr_std "DSR (std)"
-label var tdr_std "TDR (std)"
-label var tar_std "TAR (std)"
-label var isr_std "ISR (std)"
-label var assets_total_std "Wealth (std)"
-label var nbloans_indiv_std "Nb loans (std)"
-
-
-label var annualincome_indiv_std "Annual income (std)"
-label var loanamount_indiv_std "Loan amount (std)"
-
 
 *** Label
 label var housetitle "House title: Yes"
-label var head_female "Head sex: Female"
 
 
 *** Dummyloans
@@ -275,6 +208,20 @@ gen dummyloans_indiv=0
 replace dummyloans_indiv=1 if loanamount_indiv!=. & loanamount_indiv>0
 label values dummyloans_indiv yesno
 ta dummyloans_indiv year, col nofreq
+
+*** Povery
+tabstat annualincome_indiv annualincome_indiv_backup, stat(n mean) by(year)
+gen annualincome_indiv2=annualincome_indiv_backup
+replace annualincome_indiv2=annualincome_indiv2*(100/62.81) if year==2010
+replace annualincome_indiv2=annualincome_indiv2*(100/114.95) if year==2020
+replace annualincome_indiv2=round(annualincome_indiv2,1)
+gen dailyincome=annualincome_indiv2/365
+gen dailyuspppdincome=dailyincome/20.65
+drop annualincome_indiv_backup annualincome_indiv2 dailyincome
+
+
+* Selection, je garde que les majeurs
+drop if age<18
 
 save"panel_indiv_v3", replace
 ****************************************

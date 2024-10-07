@@ -1,8 +1,8 @@
 *-------------------------
 cls
 *Arnaud NATAL
-*arnaud.natal@u-bordeaux.fr
-*November 20, 2023
+*arnaud.natal@ifpindia.org
+*October 7, 2024
 *-----
 gl link = "debttrap"
 *Prepa database
@@ -56,14 +56,24 @@ replace dir=0 if dir==.
 gen dcr=loanamount_HH/expenses_total
 replace dcr=0 if dcr==.
 
-* TDR
-gen tdr=totHH_givenamt_repa/loanamount_HH
-replace tdr=0 if tdr==.
+
+* GTDR
+gen gtdr=totHH_givenamt_repa/loanamount_HH
+replace gtdr=0 if gtdr==.
+
+* GTAR
+gen gtar=totHH_givenamt_repa/assets_total
+replace gtar=0 if gtar==.
 
 
-* TAR
-gen tar=totHH_givenamt_repa/assets_total
-replace tar=0 if tar==.
+* ETDR
+gen etdr=totHH_effectiveamt_repa/loanamount_HH
+replace etdr=0 if etdr==.
+
+
+* ETAR
+gen etar=totHH_effectiveamt_repa/assets_total
+replace etar=0 if etar==.
 
 
 save"panel_HH_v1", replace
@@ -107,8 +117,11 @@ label values stem stem
 ta stem typeoffamily
 
 * Trap
-gen dummytrap=0
-replace dummytrap=1 if tdr>0
+gen dummygtrap=0
+replace dummygtrap=1 if gtdr>0
+
+gen dummyetrap=0
+replace dummyetrap=1 if etdr>0
 
 * Head sex
 fre head_sex
@@ -266,15 +279,13 @@ use"panel_v2", clear
 
 replace loanamount_HH=0 if loanamount_HH==.
 
-foreach x in loanamount_HH annualincome_HH assets_total imp1_ds_tot_HH imp1_is_tot_HH totHH_givenamt_repa dsr isr dar dir tdr tar expenses_total remreceived_HH remsent_HH remittnet_HH assets_gold goldquantity_HH goldreadyamount nbloans_HH {
+foreach x in loanamount_HH annualincome_HH assets_total imp1_ds_tot_HH imp1_is_tot_HH totHH_givenamt_repa dsr isr dar dir expenses_total remreceived_HH remsent_HH remittnet_HH assets_gold goldquantity_HH goldreadyamount nbloans_HH {
 egen `x'_std=std(`x')
 }
 
 *** Label
 label var dar_std "DAR (std)"
 label var dsr_std "DSR (std)"
-label var tdr_std "TDR (std)"
-label var tar_std "TAR (std)"
 label var isr_std "ISR (std)"
 label var assets_total_std "Wealth (std)"
 label var nbloans_HH_std "Nb loans (std)"
@@ -300,7 +311,15 @@ label values dummyloans_HH yesno
 ta dummyloans_HH year, col nofreq
 
 
-
+*** Povery
+tabstat annualincome_HH annualincome_HH_backup, stat(n mean) by(year)
+gen annualincome_HH2=annualincome_HH_backup
+replace annualincome_HH2=annualincome_HH2*(100/62.81) if year==2010
+replace annualincome_HH2=annualincome_HH2*(100/114.95) if year==2020
+replace annualincome_HH2=round(annualincome_HH2,1)
+gen dailyincome_pc=(annualincome_HH2/365)/HHsize
+gen dailyuspppdincome_pc=dailyincome_pc/20.65
+drop annualincome_HH_backup annualincome_HH2 dailyincome_pc
 
 save"panel_HH_v3", replace
 ****************************************

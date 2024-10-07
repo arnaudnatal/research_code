@@ -1,8 +1,8 @@
 *-------------------------
 cls
 *Arnaud NATAL
-*arnaud.natal@u-bordeaux.fr
-*November 20, 2023
+*arnaud.natal@ifpindia.org
+*October 07, 2024
 *-----
 gl link = "debttrap"
 *Prepa database
@@ -135,6 +135,22 @@ drop if HHID_panel=="GOV64" & year==2020
 drop if HHID_panel=="GOV67" & year==2020
 drop if HHID_panel=="KUV67" & year==2020
 drop if HHID_panel=="GOV65" & year==2020
+
+
+
+*** Deflate and round
+foreach x in loanamount loanbalance interestpaid totalrepaid principalpaid {
+replace `x'=`x'*(100/54) if year==2010
+replace `x'=`x'*(100/86) if year==2016
+replace `x'=round(`x',1)
+}
+
+
+
+* Selection loan
+fre loanreasongiven
+drop if loanreasongiven==12
+drop if loanreasongiven==77
 
 save"panel_loans", replace
 ****************************************
