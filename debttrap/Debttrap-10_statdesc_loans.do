@@ -42,8 +42,14 @@ tabstat loanamount if year==2020, stat(mean) by(loanreasongiven)
 *
 ta year if loanreasongiven==4
 ta lender4 year if loanreasongiven==4, col nofreq
-ta lender4cat year if loanreasongiven==4, col nofreq
+tabstat loanamount if loanreasongiven==4 & year==2010, stat(mean) by(lender4)
+tabstat loanamount if loanreasongiven==4 & year==2016, stat(mean) by(lender4)
+tabstat loanamount if loanreasongiven==4 & year==2020, stat(mean) by(lender4)
 
+
+tabstat loanamount if loanreasongiven==4 & year==2010, stat(mean) by(lender4cat)
+tabstat loanamount if loanreasongiven==4 & year==2016, stat(mean) by(lender4cat)
+tabstat loanamount if loanreasongiven==4 & year==2020, stat(mean) by(lender4cat)
 
 
 ********** Effective
