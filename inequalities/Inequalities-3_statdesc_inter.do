@@ -192,8 +192,20 @@ replace catd`i'=3 if d`i'<=-5 & d`i'!=.
 
 
 
-********** Centiles
-* Graph 2010 2016
+********** 2010 - 2016
+* Income
+pwcorr income2016 income2010, sig
+spearman income2016 income2010, stats(rho p)
+tabstat income2016 income2010, stat(p75 p90 p95 p99 max)
+twoway ///
+(scatter income2016 income2010 if income2016<30 & income2010<30, color(black%30)) ///
+(function y=x, range(0 25)) ///
+, xtitle("Monthly income per capita in 2010 (1k rupees)") ///
+ytitle("Monthly income per capita in 2016-17 (1k rupees)") ///
+note("{it:Note:} For 388 households." "Pearson's {it:p} = 0.1308" "Spearman's {it:p} = 0.1744", size(vsmall)) ///
+legend(off) name(g1, replace)
+
+* Centiles
 pwcorr cent2016 cent2010, sig
 spearman cent2016 cent2010, stats(rho p)
 twoway ///
@@ -202,9 +214,33 @@ twoway ///
 , xtitle("Percentile of monthly income per capita in 2010") ///
 ytitle("Percentile of monthly income per capita in 2016-17") ///
 note("{it:Note:} For 388 households." "Pearson's {it:p} = 0.1753" "Spearman's {it:p} = 0.1742", size(vsmall)) ///
-legend(off) name(g1, replace)
+legend(off) name(g2, replace)
 
-* Graph 2016 2020
+* Combine
+graph combine g1 g2, name(comb1, replace)
+/*
+Il y a de la mobilité sociale et les positions changes beaucoup
+*/
+
+*graph export "Percentile.png", as(png) replace
+
+
+
+
+********** 2016 - 2020
+* Income
+pwcorr income2020 income2016, sig
+spearman income2020 income2016, stats(rho p)
+tabstat income2020 income2016, stat(p75 p90 p95 p99 max)
+twoway ///
+(scatter income2020 income2016 if income2020<60 & income2016<30, color(black%30)) ///
+(function y=x, range(0 25)) ///
+, xtitle("Monthly income per capita in 2016-17 (1k rupees)") ///
+ytitle("Monthly income per capita in 2020-21 (1k rupees)") ///
+note("{it:Note:} For 485 households." "Pearson's {it:p} = 0.1478" "Spearman's {it:p} = 0.2369", size(vsmall)) ///
+legend(off) name(g3, replace)
+
+* Centiles
 pwcorr cent2020 cent2016, sig
 spearman cent2020 cent2016, stats(rho p)
 twoway ///
@@ -213,66 +249,15 @@ twoway ///
 , xtitle("Percentile of monthly income per capita in 2016-17") ///
 ytitle("Percentile of monthly income per capita in 2020-21") ///
 note("{it:Note:} For 485 households." "Pearson's {it:p} = 0.2390" "Spearman's {it:p} = 0.2374", size(vsmall)) ///
-legend(off) name(g2, replace)
+legend(off) name(g4, replace)
 
 * Combine
-graph combine g1 g2, name(combpercentile, replace)
-graph export "Percentile.png", as(png) replace
+graph combine g3 g4, name(comb2, replace)
+/*
+Il y a de la mobilité sociale et les positions changes beaucoup
+*/
 
-
-
-
-
-
-********** Quintiles
-import excel "Quintiles_trans.xlsx", sheet("Sheet1") firstrow clear
-
-recode qa (1=1) (2=3) (3=5) (4=7) (5=9) (6=12)
-
-label define qa 1"Q1" 3"Q2" 5"Q3" 7"Q4" 9"Q5" 12"Total"
-label values qa qa
-
-gen sum1=qb1
-gen sum2=sum1+qb2
-gen sum3=sum2+qb3
-gen sum4=sum3+qb4
-gen sum5=sum4+qb5
-
-* 2010 - 2016
-twoway ///
-(bar sum1 qa if time==1, barwidth(1.9)) ///
-(rbar sum1 sum2 qa if time==1, barwidth(1.9)) ///
-(rbar sum2 sum3 qa if time==1, barwidth(1.9)) ///
-(rbar sum3 sum4 qa if time==1, barwidth(1.9)) ///
-(rbar sum4 sum5 qa if time==1, barwidth(1.9)) ///
-, ///
-xlabel(1 3 5 7 9 12,valuelabel) xtitle("Quintiles in 2016-17") ///
-ylabel(0(10)100) ytitle("Percent") ///
-title("") ///
-legend(order(1 "Q1 in 2010" 2 "Q2 in 2010" 3 "Q3 in 2010" 4 "Q4 in 2010" 5 "Q5 in 2010") pos(6) col(2)) ///
-note("Pearson Chi2(16)=27.73   Pr=0.03", size(small)) ///
-name(compo1, replace)
-
-* 2016 - 2020
-twoway ///
-(bar sum1 qa if time==2, barwidth(1.9)) ///
-(rbar sum1 sum2 qa if time==2, barwidth(1.9)) ///
-(rbar sum2 sum3 qa if time==2, barwidth(1.9)) ///
-(rbar sum3 sum4 qa if time==2, barwidth(1.9)) ///
-(rbar sum4 sum5 qa if time==2, barwidth(1.9)) ///
-, ///
-xlabel(1 3 5 7 9 12,valuelabel) xtitle("Quintiles in 2020-21") ///
-ylabel(0(10)100) ytitle("Percent") ///
-title("") ///
-legend(order(1 "Q1 in 2016-17" 2 "Q2 in 2016-17" 3 "Q3 in 2016-17" 4 "Q4 in 2016-17" 5 "Q5 in 2016-17") pos(6) col(2)) ///
-note("Pearson Chi2(16)=48.99   Pr=0.00", size(small)) ///
-name(compo2, replace)
-
-* Combine
-graph combine compo1 compo2, name(perc, replace)
-
-
-
+*graph export "Percentile.png", as(png) replace
 
 
 ****************************************
