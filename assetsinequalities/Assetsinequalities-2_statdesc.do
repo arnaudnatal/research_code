@@ -27,7 +27,7 @@ do"C:\Users\Arnaud\Documents\GitHub\folderanalysis\assetsinequalities.do"
 ****************************************
 use"panel_v1", clear
 
-tabstat assets_total, stat(n mean q iqr) by(year)
+tabstat assets_total, stat(n mean q p90 p95 p99) by(year)
 
 violinplot assets_total, over(time) horizontal left dscale(4) noline now ///
 fill(color(black%10)) ///
@@ -35,11 +35,11 @@ box(t(b)) bcolors(plb1) ///
 mean(t(m)) meancolors(plr1) ///
 med(t(m)) medcolors(ananas) ///
 title("Total value of assets") ///
-xtitle("1k rupees") xlabel(0(500)4000) ///
+xtitle("1k rupees") xlabel(0(1000)7000) ///
 ylabel(,grid) ///
 legend(order(4 "IQR" 7 "Median" 10 "Mean") pos(6) col(3) on) ///
 note("{it:Note:} For 405 households in 2010, 492 in 2016-17, and 626 in 2020-21.", size(vsmall)) ///
-aspectratio() scale(1.2) name(vio, replace) range(0 4000)
+aspectratio() scale(1.2) name(vio, replace) range(0 7000)
 
 graph export "Violin.png", as(png) replace
 
@@ -123,7 +123,7 @@ graph export "IneqAss.png", as(png) replace
 
 
 ****************************************
-* Evo of position
+* Social mobility
 ****************************************
 use"panel_v1", clear
 
@@ -134,65 +134,128 @@ reshape wide assets, i(HHID_panel) j(year)
 
 foreach x in 2010 2016 2020 {
 xtile cent`x'=assets`x', n(100)
+xtile vingt`x'=assets`x', n(20)
 xtile dec`x'=assets`x', n(10)
 xtile quint`x'=assets`x', n(5)
 }
 
 
-ta quint2016 quint2010, chi2 nofreq row
-ta quint2020 quint2016, chi2 nofreq row
 
-ta dec2016 dec2010, chi2 nofreq row
-ta dec2020 dec2016, chi2 nofreq row
+* Diff abs for stat
+/*
+On considère que plus ou moins 20000 roupies c'est identique.
+*/
+tabstat assets2010 assets2016 assets2020, stat(n sd mean q)
+
+gen diff1=assets2016-assets2010
+gen absdiff1=abs(diff1)
+gen catdiff1=.
+label define catdiff1 1"Downward" 2"Immobility" 3"Upward"
+label values catdiff1 catdiff1
+replace catdiff1=1 if diff1<-20 & diff1!=.
+replace catdiff1=2 if diff1>=-20 & diff1<=20 & diff1!=.
+replace catdiff1=3 if diff1>20 & diff1!=.
+drop diff1
+
+gen diff2=assets2020-assets2016
+gen absdiff2=abs(diff2)
+gen catdiff2=.
+label define catdiff2 1"Downward" 2"Immobility" 3"Upward"
+label values catdiff2 catdiff2
+replace catdiff2=1 if diff2<-20 & diff2!=.
+replace catdiff2=2 if diff2>=-20 & diff2<=20 & diff2!=.
+replace catdiff2=3 if diff2>20 & diff2!=.
+drop diff2
 
 
 
 
-* Categories
-gen d1=cent2016-cent2010
-gen d2=cent2020-cent2016
+* Diff vingtile for stat
+gen diffv1=vingt2016-vingt2010
+gen absdiffv1=abs(diffv1)
+gen catdiffv1=.
+label define catdiffv1 1"Downward" 2"Immobility" 3"Upward"
+label values catdiffv1 catdiffv1
+replace catdiffv1=1 if diffv1<0 & diffv1!=.
+replace catdiffv1=2 if diffv1==0 & diffv1!=.
+replace catdiffv1=3 if diffv1>0 & diffv1!=.
+drop diffv1
 
-foreach i in 1 2 {
-gen catd`i'=.
-label define catd`i' 1"Increasing" 2"Stagnation" 3"Decreasing"
-label values catd`i' catd`i'
-replace catd`i'=1 if d`i'>=5 & d`i'!=.
-replace catd`i'=2 if d`i'<5 & d`i'>-5 & d`i'!=.
-replace catd`i'=3 if d`i'<=-5 & d`i'!=.
-}
+gen diffv2=vingt2020-vingt2016
+gen absdiffv2=abs(diffv2)
+gen catdiffv2=.
+label define catdiffv2 1"Downward" 2"Immobility" 3"Upward"
+label values catdiffv2 catdiffv2
+replace catdiffv2=1 if diffv2<0 & diffv2!=.
+replace catdiffv2=2 if diffv2==0 & diffv2!=.
+replace catdiffv2=3 if diffv2>0 & diffv2!=.
+drop diffv2
 
 
 
-********** Centiles
-* Graph 2010 2016
-pwcorr assets2010 assets2016, sig
-spearman assets2010 assets2016, stats(rho p)
-pwcorr cent2016 cent2010, sig
-spearman cent2016 cent2010, stats(rho p)
+
+
+********** 2010 - 2016
+* Stat
+pwcorr assets2016 assets2010, sig
+spearman assets2016 assets2010, stats(rho p)
+ta catdiff1
+ta catdiffv1
+tabstat absdiffv1, stat(n mean) by(catdiffv1)
+
+* Graph income
+tabstat assets2016 assets2010, stat(p75 p90 p95 p99 max)
+twoway ///
+(scatter assets2016 assets2010 if assets2016<7000 & assets2010<7000, color(black%30)) ///
+(function y=x, range(0 7000)) ///
+, xtitle("Wealth per household in 2010 (1k rupees)") ///
+ytitle("Wealth per household in 2016-17 (1k rupees)") ///
+xlabel(0(1000)7000) ylabel(0(1000)7000) ///
+scale(1.2) legend(off) name(g1, replace)
+
+* Graph centiles
 twoway ///
 (scatter cent2016 cent2010, color(black%30)) ///
 (function y=x, range(0 100)) ///
-, xtitle("Percentile of wealth in 2010") ///
-ytitle("Percentile of wealth in 2016-17") ///
-note("{it:Note:} For 388 households." "Pearson's {it:p} = 0.3171" "Spearman's {it:p} = 0.3146", size(vsmall)) ///
-legend(off) name(g1, replace)
+, xtitle("Percentile of wealth per household in 2010") ///
+ytitle("Percentile of wealth per household in 2016-17") ///
+scale(1.2) legend(off) name(g2, replace)
 
-* Graph 2016 2020
+* Combine
+graph combine g1 g2, name(comb1, replace) note("{it:Note:} For 388 households.", size(vsmall))
+graph export "socmob1.png", as(png) replace
+
+
+
+********** 2016 - 2020
+* Stat
 pwcorr assets2020 assets2016, sig
 spearman assets2020 assets2016, stats(rho p)
-pwcorr cent2020 cent2016, sig
-spearman cent2020 cent2016, stats(rho p)
+ta catdiff2
+ta catdiffv2
+tabstat absdiffv2, stat(n mean) by(catdiffv2)
+
+* Graph income
+twoway ///
+(scatter assets2020 assets2016 if assets2020<7000 & assets2016<7000, color(black%30)) ///
+(function y=x, range(0 7000)) ///
+, xtitle("Wealth per household in 2016-17 (1k rupees)") ///
+ytitle("Wealth per household in 2020-21 (1k rupees)") ///
+xlabel(0(1000)7000) ylabel(0(1000)7000) ///
+scale(1.2) legend(off) name(g3, replace)
+
+* Graph centiles
 twoway ///
 (scatter cent2020 cent2016, color(black%30)) ///
 (function y=x, range(0 100)) ///
-, xtitle("Percentile of wealth in 2016-17") ///
-ytitle("Percentile of wealth in 2020-21") ///
-note("{it:Note:} For 485 households." "Pearson's {it:p} = 0.6100" "Spearman's {it:p} = 0.6046", size(vsmall)) ///
-legend(off) name(g2, replace)
+, xtitle("Percentile of wealth per household in 2016-17") ///
+ytitle("Percentile of wealth per household in 2020-21") ///
+scale(1.2) legend(off) name(g4, replace)
 
 * Combine
-graph combine g1 g2, name(combpercentile, replace)
-graph export "Percentile.png", as(png) replace
+graph combine g3 g4, name(comb2, replace) note("{it:Note:} For 485 households.", size(vsmall)) 
+graph export "socmob2.png", as(png) replace
+
 
 ****************************************
 * END

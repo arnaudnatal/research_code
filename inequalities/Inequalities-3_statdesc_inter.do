@@ -152,7 +152,7 @@ graph export "IneqInc.png", as(png) replace
 
 
 ****************************************
-* Evo of position
+* Evo of position / Social mobility
 ****************************************
 use"panel_v4", clear
 
@@ -163,101 +163,138 @@ reshape wide income, i(HHID_panel) j(year)
 
 foreach x in 2010 2016 2020 {
 xtile cent`x'=income`x', n(100)
+xtile vingt`x'=income`x', n(20)
 xtile dec`x'=income`x', n(10)
 xtile quint`x'=income`x', n(5)
 }
 
 
-ta quint2016 quint2010, chi2 nofreq row
-ta quint2020 quint2016, chi2 nofreq row
-
-ta dec2016 dec2010, chi2 nofreq row
-ta dec2020 dec2016, chi2 nofreq row
+* Transition matrix
+ta quint2010 quint2016, row nofreq chi2
+ta quint2016 quint2020, row nofreq chi2
 
 
+* Diff abs for stat
+/*
+On considère que plus ou moins 100 roupies par tête par mois c'est identique.
+*/
+foreach x in 2010 2016 2020 {
+replace income`x'=income`x'*1000
+}
+tabstat income2010 income2016 income2020, stat(n sd mean q)
 
+gen diff1=income2016-income2010
+gen absdiff1=abs(diff1)
+gen catdiff1=.
+label define catdiff1 1"Downward" 2"Immobility" 3"Upward"
+label values catdiff1 catdiff1
+replace catdiff1=1 if diff1<-100 & diff1!=.
+replace catdiff1=2 if diff1>=-100 & diff1<=100 & diff1!=.
+replace catdiff1=3 if diff1>100 & diff1!=.
+drop diff1
 
-* Categories
-gen d1=cent2016-cent2010
-gen d2=cent2020-cent2016
+gen diff2=income2020-income2016
+gen absdiff2=abs(diff2)
+gen catdiff2=.
+label define catdiff2 1"Downward" 2"Immobility" 3"Upward"
+label values catdiff2 catdiff2
+replace catdiff2=1 if diff2<-100 & diff2!=.
+replace catdiff2=2 if diff2>=-100 & diff2<=100 & diff2!=.
+replace catdiff2=3 if diff2>100 & diff2!=.
+drop diff2
 
-foreach i in 1 2 {
-gen catd`i'=.
-label define catd`i' 1"Increasing" 2"Stagnation" 3"Decreasing"
-label values catd`i' catd`i'
-replace catd`i'=1 if d`i'>=5 & d`i'!=.
-replace catd`i'=2 if d`i'<5 & d`i'>-5 & d`i'!=.
-replace catd`i'=3 if d`i'<=-5 & d`i'!=.
+foreach x in 2010 2016 2020 {
+replace income`x'=income`x'/1000
 }
 
 
 
+* Diff quintile for stat
+gen diffq1=quint2016-quint2010
+gen absdiffq1=abs(diffq1)
+gen catdiffq1=.
+label define catdiffq1 1"Downward" 2"Immobility" 3"Upward"
+label values catdiffq1 catdiffq1
+replace catdiffq1=1 if diffq1<0 & diffq1!=.
+replace catdiffq1=2 if diffq1==0 & diffq1!=.
+replace catdiffq1=3 if diffq1>0 & diffq1!=.
+drop diffq1
+
+gen diffq2=quint2020-quint2016
+gen absdiffq2=abs(diffq2)
+gen catdiffq2=.
+label define catdiffq2 1"Downward" 2"Immobility" 3"Upward"
+label values catdiffq2 catdiffq2
+replace catdiffq2=1 if diffq2<0 & diffq2!=.
+replace catdiffq2=2 if diffq2==0 & diffq2!=.
+replace catdiffq2=3 if diffq2>0 & diffq2!=.
+drop diffq2
+
+ta catdiffq1
+ta catdiffq2
+
+
+
+
+
 ********** 2010 - 2016
-* Income
+* Stat
 pwcorr income2016 income2010, sig
 spearman income2016 income2010, stats(rho p)
+ta catdiff1
+ta catdiffv1
+tabstat absdiffv1, stat(n mean) by(catdiffv1)
+
+* Graph income
 tabstat income2016 income2010, stat(p75 p90 p95 p99 max)
 twoway ///
 (scatter income2016 income2010 if income2016<30 & income2010<30, color(black%30)) ///
 (function y=x, range(0 25)) ///
 , xtitle("Monthly income per capita in 2010 (1k rupees)") ///
 ytitle("Monthly income per capita in 2016-17 (1k rupees)") ///
-note("{it:Note:} For 388 households." "Pearson's {it:p} = 0.1308" "Spearman's {it:p} = 0.1744", size(vsmall)) ///
-legend(off) name(g1, replace)
+scale(1.2) legend(off) name(g1, replace)
 
-* Centiles
-pwcorr cent2016 cent2010, sig
-spearman cent2016 cent2010, stats(rho p)
+* Graph centiles
 twoway ///
 (scatter cent2016 cent2010, color(black%30)) ///
 (function y=x, range(0 100)) ///
 , xtitle("Percentile of monthly income per capita in 2010") ///
 ytitle("Percentile of monthly income per capita in 2016-17") ///
-note("{it:Note:} For 388 households." "Pearson's {it:p} = 0.1753" "Spearman's {it:p} = 0.1742", size(vsmall)) ///
-legend(off) name(g2, replace)
+scale(1.2) legend(off) name(g2, replace)
 
 * Combine
-graph combine g1 g2, name(comb1, replace)
-/*
-Il y a de la mobilité sociale et les positions changes beaucoup
-*/
-
-*graph export "Percentile.png", as(png) replace
-
+graph combine g1 g2, name(comb1, replace) note("{it:Note:} For 388 households.", size(vsmall))
+graph export "socmob1.png", as(png) replace
 
 
 
 ********** 2016 - 2020
-* Income
+* Stat
 pwcorr income2020 income2016, sig
 spearman income2020 income2016, stats(rho p)
-tabstat income2020 income2016, stat(p75 p90 p95 p99 max)
+ta catdiff2
+ta catdiffv2
+tabstat absdiffv2, stat(n mean) by(catdiffv2)
+
+* Graph income
 twoway ///
 (scatter income2020 income2016 if income2020<60 & income2016<30, color(black%30)) ///
 (function y=x, range(0 25)) ///
 , xtitle("Monthly income per capita in 2016-17 (1k rupees)") ///
 ytitle("Monthly income per capita in 2020-21 (1k rupees)") ///
-note("{it:Note:} For 485 households." "Pearson's {it:p} = 0.1478" "Spearman's {it:p} = 0.2369", size(vsmall)) ///
-legend(off) name(g3, replace)
+scale(1.2) legend(off) name(g3, replace)
 
-* Centiles
-pwcorr cent2020 cent2016, sig
-spearman cent2020 cent2016, stats(rho p)
+* Graph centiles
 twoway ///
 (scatter cent2020 cent2016, color(black%30)) ///
 (function y=x, range(0 100)) ///
 , xtitle("Percentile of monthly income per capita in 2016-17") ///
 ytitle("Percentile of monthly income per capita in 2020-21") ///
-note("{it:Note:} For 485 households." "Pearson's {it:p} = 0.2390" "Spearman's {it:p} = 0.2374", size(vsmall)) ///
-legend(off) name(g4, replace)
+scale(1.2) legend(off) name(g4, replace)
 
 * Combine
-graph combine g3 g4, name(comb2, replace)
-/*
-Il y a de la mobilité sociale et les positions changes beaucoup
-*/
-
-*graph export "Percentile.png", as(png) replace
+graph combine g3 g4, name(comb2, replace) note("{it:Note:} For 485 households.", size(vsmall)) 
+graph export "socmob2.png", as(png) replace
 
 
 ****************************************
