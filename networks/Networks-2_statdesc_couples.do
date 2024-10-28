@@ -108,7 +108,7 @@ save"NEEMSIS2-egoalter_v1", replace
 ****************************************
 use"NEEMSIS2-egoalter_v1", clear
 
-bysort HHID2020 namealter sex age castes educ occup: gen n=_N
+bysort HHID2020 namealter sex occup: gen n=_N
 ta n
 
 
@@ -128,7 +128,7 @@ ta n
 ****************************************
 * Stat desc
 ****************************************
-use"NEEMSIS2-egoalter_v0", clear
+use"NEEMSIS2-egoalter_v1", clear
 
 * Combien d'alters par individu ?
 bysort HHID2020 INDID2020: gen nbalterindiv=_n

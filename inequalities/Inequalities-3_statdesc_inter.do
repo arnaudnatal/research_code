@@ -158,7 +158,6 @@ use"panel_v4", clear
 
 keep HHID_panel year monthlyincome_pc caste
 rename monthlyincome_pc income
-
 reshape wide income, i(HHID_panel) j(year)
 
 foreach x in 2010 2016 2020 {
@@ -299,6 +298,178 @@ graph export "socmob2.png", as(png) replace
 
 ****************************************
 * END
+
+
+
+
+
+
+****************************************
+* Cowell and Flachaire (2018, QE)
+****************************************
+
+* 2010 - 2016-17
+use"panel_v4", clear
+keep HHID_panel year monthlyincome_pc
+rename monthlyincome_pc inc
+replace inc=inc*1000
+replace year=1 if year==2010
+replace year=2 if year==2016
+replace year=3 if year==2020
+reshape wide inc, i(HHID_panel) j(year)
+rename HHID_panel hhid
+drop inc3
+drop if inc1==.
+drop if inc2==.
+export delimited using "C:\Users\Arnaud\Documents\GitHub\research_code\inequalities\panelHHincome1.txt", delimiter(tab) replace
+
+
+* 2016-17 - 2020-21
+use"panel_v4", clear
+keep HHID_panel year monthlyincome_pc
+rename monthlyincome_pc inc
+replace inc=inc*1000
+replace year=1 if year==2010
+replace year=2 if year==2016
+replace year=3 if year==2020
+reshape wide inc, i(HHID_panel) j(year)
+rename HHID_panel hhid
+drop inc1
+drop if inc2==.
+drop if inc3==.
+rename inc2 inc1
+rename inc3 inc2
+export delimited using "C:\Users\Arnaud\Documents\GitHub\research_code\inequalities\panelHHincome2.txt", delimiter(tab) replace
+
+
+********** Graph rank
+import excel "CowellFlachaire2018QE.xlsx", sheet("rank") firstrow clear
+label define timeframe 1"2010 - 2016-17" 2"2016-17 - 2020-21"
+label values timeframe timeframe
+label define sample 1"Overall" 2"Downward" 3"Upward"
+label values sample sample
+drop if alpha<-0.5
+drop if alpha>1
+
+*** Overall
+preserve
+keep if sample==1
+twoway ///
+(connected index alpha if timeframe==1, color(plg1)) ///
+(rarea CI_upper CI_lower alpha if timeframe==1, color(plg1%10)) ///
+(connected index alpha if timeframe==2, color(plr1)) ///
+(rarea CI_upper CI_lower alpha if timeframe==2, color(plr1%10)) ///
+, title("Overall") ///
+ytitle("") ylabel() ///
+xtitle("α") xlabel(-.5(.5)1) ///
+legend(order(1 "2010 to 2016-17" 3 "2016-17 to 2020-21") pos(6) col(2)) ///
+scale(1.2) name(ove, replace)
+restore
+
+*** Downward
+preserve
+keep if sample==2
+twoway ///
+(connected index alpha if timeframe==1, color(plg1)) ///
+(rarea CI_upper CI_lower alpha if timeframe==1, color(plg1%10)) ///
+(connected index alpha if timeframe==2, color(plr1)) ///
+(rarea CI_upper CI_lower alpha if timeframe==2, color(plr1%10)) ///
+, title("Downward") ///
+ytitle("") ylabel() ///
+xtitle("α") xlabel(-.5(.5)1) ///
+legend(order(1 "2010 to 2016-17" 3 "2016-17 to 2020-21") pos(6) col(2)) ///
+scale(1.2) name(dow, replace)
+restore
+
+*** Upward
+preserve
+keep if sample==3
+twoway ///
+(connected index alpha if timeframe==1, color(plg1)) ///
+(rarea CI_upper CI_lower alpha if timeframe==1, color(plg1%10)) ///
+(connected index alpha if timeframe==2, color(plr1)) ///
+(rarea CI_upper CI_lower alpha if timeframe==2, color(plr1%10)) ///
+, title("Upward") ///
+ytitle("") ylabel() ///
+xtitle("α") xlabel(-.5(.5)1) ///
+legend(order(1 "2010 to 2016-17" 3 "2016-17 to 2020-21") pos(6) col(2)) ///
+scale(1.2) name(upw, replace)
+restore
+
+*** Combine
+grc1leg ove dow upw, col(3) title("Rank mobility") name(rank, replace)
+
+
+
+
+
+
+
+********** Graph income
+import excel "CowellFlachaire2018QE.xlsx", sheet("inc") firstrow clear
+label define timeframe 1"2010 - 2016-17" 2"2016-17 - 2020-21"
+label values timeframe timeframe
+label define sample 1"Overall" 2"Downward" 3"Upward"
+label values sample sample
+drop if alpha<-0.5
+drop if alpha>1
+
+*** Overall
+preserve
+keep if sample==1
+twoway ///
+(connected index alpha if timeframe==1, color(plg1)) ///
+(rarea CI_upper CI_lower alpha if timeframe==1, color(plg1%10)) ///
+(connected index alpha if timeframe==2, color(plr1)) ///
+(rarea CI_upper CI_lower alpha if timeframe==2, color(plr1%10)) ///
+, title("Overall") ///
+ytitle("") ylabel() ///
+xtitle("α") xlabel(-.5(.5)1) ///
+legend(order(1 "2010 to 2016-17" 3 "2016-17 to 2020-21") pos(6) col(2)) ///
+scale(1.2) name(ove, replace)
+restore
+
+*** Downward
+preserve
+keep if sample==2
+twoway ///
+(connected index alpha if timeframe==1, color(plg1)) ///
+(rarea CI_upper CI_lower alpha if timeframe==1, color(plg1%10)) ///
+(connected index alpha if timeframe==2, color(plr1)) ///
+(rarea CI_upper CI_lower alpha if timeframe==2, color(plr1%10)) ///
+, title("Downward") ///
+ytitle("") ylabel() ///
+xtitle("α") xlabel(-.5(.5)1) ///
+legend(order(1 "2010 to 2016-17" 3 "2016-17 to 2020-21") pos(6) col(2)) ///
+scale(1.2) name(dow, replace)
+restore
+
+*** Upward
+preserve
+keep if sample==3
+twoway ///
+(connected index alpha if timeframe==1, color(plg1)) ///
+(rarea CI_upper CI_lower alpha if timeframe==1, color(plg1%10)) ///
+(connected index alpha if timeframe==2, color(plr1)) ///
+(rarea CI_upper CI_lower alpha if timeframe==2, color(plr1%10)) ///
+, title("Upward") ///
+ytitle("") ylabel() ///
+xtitle("α") xlabel(-.5(.5)1) ///
+legend(order(1 "2010 to 2016-17" 3 "2016-17 to 2020-21") pos(6) col(2)) ///
+scale(1.2) name(upw, replace)
+restore
+
+*** Combine
+grc1leg ove dow upw, col(3) title("Income mobility") name(inc, replace)
+
+
+
+********** Graph combine
+grc1leg rank inc, col(1)
+
+****************************************
+* END
+
 
 
 
