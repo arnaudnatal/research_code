@@ -466,6 +466,7 @@ grc1leg ove dow upw, col(3) title("Income mobility") name(inc, replace)
 
 ********** Graph combine
 grc1leg rank inc, col(1)
+graph export "CFgraph.png", as(png) replace
 
 ****************************************
 * END

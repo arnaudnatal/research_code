@@ -32,7 +32,7 @@ CFp = function(p, a=0) {
 }
 
 # Read the data
-  data1 <- read.table("panelHHincome1.txt",header=TRUE)
+  data1 <- read.table("panelHHincome2.txt",header=TRUE)
   r1=rank(data1$inc1)/NROW(data1$inc1)
   r2=rank(data1$inc2)/NROW(data1$inc2)
 
