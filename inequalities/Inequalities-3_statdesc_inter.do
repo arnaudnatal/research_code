@@ -304,6 +304,16 @@ graph export "socmob2.png", as(png) replace
 
 
 
+
+
+
+
+
+
+
+
+
+
 ****************************************
 * Cowell and Flachaire (2018, QE)
 ****************************************
@@ -348,58 +358,21 @@ label define timeframe 1"2010 - 2016-17" 2"2016-17 - 2020-21"
 label values timeframe timeframe
 label define sample 1"Overall" 2"Downward" 3"Upward"
 label values sample sample
-drop if alpha<-0.5
-drop if alpha>1
+keep if sample==1
+drop if alpha==-1
+drop if alpha==2
 
 *** Overall
-preserve
-keep if sample==1
 twoway ///
 (connected index alpha if timeframe==1, color(plg1)) ///
 (rarea CI_upper CI_lower alpha if timeframe==1, color(plg1%10)) ///
 (connected index alpha if timeframe==2, color(plr1)) ///
 (rarea CI_upper CI_lower alpha if timeframe==2, color(plr1%10)) ///
-, title("Overall") ///
+, title("Rank mobility") ///
 ytitle("") ylabel() ///
-xtitle("α") xlabel(-.5(.5)1) ///
+xtitle("α") xlabel(-.5(.5)1.5) ///
 legend(order(1 "2010 to 2016-17" 3 "2016-17 to 2020-21") pos(6) col(2)) ///
-scale(1.2) name(ove, replace)
-restore
-
-*** Downward
-preserve
-keep if sample==2
-twoway ///
-(connected index alpha if timeframe==1, color(plg1)) ///
-(rarea CI_upper CI_lower alpha if timeframe==1, color(plg1%10)) ///
-(connected index alpha if timeframe==2, color(plr1)) ///
-(rarea CI_upper CI_lower alpha if timeframe==2, color(plr1%10)) ///
-, title("Downward") ///
-ytitle("") ylabel() ///
-xtitle("α") xlabel(-.5(.5)1) ///
-legend(order(1 "2010 to 2016-17" 3 "2016-17 to 2020-21") pos(6) col(2)) ///
-scale(1.2) name(dow, replace)
-restore
-
-*** Upward
-preserve
-keep if sample==3
-twoway ///
-(connected index alpha if timeframe==1, color(plg1)) ///
-(rarea CI_upper CI_lower alpha if timeframe==1, color(plg1%10)) ///
-(connected index alpha if timeframe==2, color(plr1)) ///
-(rarea CI_upper CI_lower alpha if timeframe==2, color(plr1%10)) ///
-, title("Upward") ///
-ytitle("") ylabel() ///
-xtitle("α") xlabel(-.5(.5)1) ///
-legend(order(1 "2010 to 2016-17" 3 "2016-17 to 2020-21") pos(6) col(2)) ///
-scale(1.2) name(upw, replace)
-restore
-
-*** Combine
-grc1leg ove dow upw, col(3) title("Rank mobility") name(rank, replace)
-
-
+scale(1.2) name(rank, replace)
 
 
 
@@ -411,61 +384,26 @@ label define timeframe 1"2010 - 2016-17" 2"2016-17 - 2020-21"
 label values timeframe timeframe
 label define sample 1"Overall" 2"Downward" 3"Upward"
 label values sample sample
-drop if alpha<-0.5
-drop if alpha>1
+keep if sample==1
+drop if alpha==-1
+drop if alpha==2
 
 *** Overall
-preserve
-keep if sample==1
 twoway ///
 (connected index alpha if timeframe==1, color(plg1)) ///
 (rarea CI_upper CI_lower alpha if timeframe==1, color(plg1%10)) ///
 (connected index alpha if timeframe==2, color(plr1)) ///
 (rarea CI_upper CI_lower alpha if timeframe==2, color(plr1%10)) ///
-, title("Overall") ///
+, title("Income mobility") ///
 ytitle("") ylabel() ///
-xtitle("α") xlabel(-.5(.5)1) ///
+xtitle("α") xlabel(-.5(.5)1.5) ///
 legend(order(1 "2010 to 2016-17" 3 "2016-17 to 2020-21") pos(6) col(2)) ///
-scale(1.2) name(ove, replace)
-restore
-
-*** Downward
-preserve
-keep if sample==2
-twoway ///
-(connected index alpha if timeframe==1, color(plg1)) ///
-(rarea CI_upper CI_lower alpha if timeframe==1, color(plg1%10)) ///
-(connected index alpha if timeframe==2, color(plr1)) ///
-(rarea CI_upper CI_lower alpha if timeframe==2, color(plr1%10)) ///
-, title("Downward") ///
-ytitle("") ylabel() ///
-xtitle("α") xlabel(-.5(.5)1) ///
-legend(order(1 "2010 to 2016-17" 3 "2016-17 to 2020-21") pos(6) col(2)) ///
-scale(1.2) name(dow, replace)
-restore
-
-*** Upward
-preserve
-keep if sample==3
-twoway ///
-(connected index alpha if timeframe==1, color(plg1)) ///
-(rarea CI_upper CI_lower alpha if timeframe==1, color(plg1%10)) ///
-(connected index alpha if timeframe==2, color(plr1)) ///
-(rarea CI_upper CI_lower alpha if timeframe==2, color(plr1%10)) ///
-, title("Upward") ///
-ytitle("") ylabel() ///
-xtitle("α") xlabel(-.5(.5)1) ///
-legend(order(1 "2010 to 2016-17" 3 "2016-17 to 2020-21") pos(6) col(2)) ///
-scale(1.2) name(upw, replace)
-restore
-
-*** Combine
-grc1leg ove dow upw, col(3) title("Income mobility") name(inc, replace)
+scale(1.2) name(inco, replace)
 
 
 
-********** Graph combine
-grc1leg rank inc, col(1)
+********** Combine
+grc1leg rank inco, name(comb, replace)
 graph export "CFgraph.png", as(png) replace
 
 ****************************************
