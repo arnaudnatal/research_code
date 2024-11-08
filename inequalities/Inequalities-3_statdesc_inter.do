@@ -51,6 +51,43 @@ Il y a des différences de composition des ménages entre Dalits et non-Dalits d
 
 
 
+****************************************
+* Attrition
+****************************************
+use"panel_v4", clear
+
+
+keep HHID_panel year monthlyincome_pc
+rename monthlyincome_pc income
+
+reshape wide income, i(HHID_panel) j(year)
+gen attrition2010=0
+replace attrition2010=1 if income2010!=. & income2016==.
+replace attrition2010=. if income2010==.
+label define attrition2010 0"Recovered in 2016-17" 1"Lost in 2016-17"
+label values attrition2010 attrition2010
+
+gen attrition2016=0
+replace attrition2016=1 if income2016!=. & income2020==.
+replace attrition2016=. if income2016==.
+label define attrition2016 0"Recovered in 2020-21" 1"Lost in 2020-21"
+label values attrition2016 attrition2016
+
+
+tabstat income2010, stat(n mean q) by(attrition2010)
+tabstat income2016, stat(n mean q) by(attrition2016)
+
+reg income2010 i.attrition2010
+reg income2016 i.attrition2016
+
+****************************************
+* END
+
+
+
+
+
+
 
 
 
@@ -161,52 +198,8 @@ rename monthlyincome_pc income
 reshape wide income, i(HHID_panel) j(year)
 
 foreach x in 2010 2016 2020 {
-xtile cent`x'=income`x', n(100)
-xtile vingt`x'=income`x', n(20)
-xtile dec`x'=income`x', n(10)
 xtile quint`x'=income`x', n(5)
 }
-
-
-* Transition matrix
-ta quint2010 quint2016, row nofreq chi2
-ta quint2016 quint2020, row nofreq chi2
-
-
-* Diff abs for stat
-/*
-On considère que plus ou moins 100 roupies par tête par mois c'est identique.
-*/
-foreach x in 2010 2016 2020 {
-replace income`x'=income`x'*1000
-}
-tabstat income2010 income2016 income2020, stat(n sd mean q)
-
-gen diff1=income2016-income2010
-gen absdiff1=abs(diff1)
-gen catdiff1=.
-label define catdiff1 1"Downward" 2"Immobility" 3"Upward"
-label values catdiff1 catdiff1
-replace catdiff1=1 if diff1<-100 & diff1!=.
-replace catdiff1=2 if diff1>=-100 & diff1<=100 & diff1!=.
-replace catdiff1=3 if diff1>100 & diff1!=.
-drop diff1
-
-gen diff2=income2020-income2016
-gen absdiff2=abs(diff2)
-gen catdiff2=.
-label define catdiff2 1"Downward" 2"Immobility" 3"Upward"
-label values catdiff2 catdiff2
-replace catdiff2=1 if diff2<-100 & diff2!=.
-replace catdiff2=2 if diff2>=-100 & diff2<=100 & diff2!=.
-replace catdiff2=3 if diff2>100 & diff2!=.
-drop diff2
-
-foreach x in 2010 2016 2020 {
-replace income`x'=income`x'/1000
-}
-
-
 
 * Diff quintile for stat
 gen diffq1=quint2016-quint2010
@@ -217,7 +210,6 @@ label values catdiffq1 catdiffq1
 replace catdiffq1=1 if diffq1<0 & diffq1!=.
 replace catdiffq1=2 if diffq1==0 & diffq1!=.
 replace catdiffq1=3 if diffq1>0 & diffq1!=.
-drop diffq1
 
 gen diffq2=quint2020-quint2016
 gen absdiffq2=abs(diffq2)
@@ -227,74 +219,22 @@ label values catdiffq2 catdiffq2
 replace catdiffq2=1 if diffq2<0 & diffq2!=.
 replace catdiffq2=2 if diffq2==0 & diffq2!=.
 replace catdiffq2=3 if diffq2>0 & diffq2!=.
-drop diffq2
 
+
+* Transition matrix
+ta quint2010 quint2016, row nofreq chi2
+ta quint2016 quint2020, row nofreq chi2
+
+* Immobility and upward and downward mobility
 ta catdiffq1
 ta catdiffq2
 
+ta catdiffq1 catdiffq2, row nofreq
+ta catdiffq1 catdiffq2, chi2 exp cchi2
 
 
-
-
-********** 2010 - 2016
-* Stat
-pwcorr income2016 income2010, sig
-spearman income2016 income2010, stats(rho p)
-ta catdiff1
-ta catdiffv1
-tabstat absdiffv1, stat(n mean) by(catdiffv1)
-
-* Graph income
-tabstat income2016 income2010, stat(p75 p90 p95 p99 max)
-twoway ///
-(scatter income2016 income2010 if income2016<30 & income2010<30, color(black%30)) ///
-(function y=x, range(0 25)) ///
-, xtitle("Monthly income per capita in 2010 (1k rupees)") ///
-ytitle("Monthly income per capita in 2016-17 (1k rupees)") ///
-scale(1.2) legend(off) name(g1, replace)
-
-* Graph centiles
-twoway ///
-(scatter cent2016 cent2010, color(black%30)) ///
-(function y=x, range(0 100)) ///
-, xtitle("Percentile of monthly income per capita in 2010") ///
-ytitle("Percentile of monthly income per capita in 2016-17") ///
-scale(1.2) legend(off) name(g2, replace)
-
-* Combine
-graph combine g1 g2, name(comb1, replace) note("{it:Note:} For 388 households.", size(vsmall))
-graph export "socmob1.png", as(png) replace
-
-
-
-********** 2016 - 2020
-* Stat
-pwcorr income2020 income2016, sig
-spearman income2020 income2016, stats(rho p)
-ta catdiff2
-ta catdiffv2
-tabstat absdiffv2, stat(n mean) by(catdiffv2)
-
-* Graph income
-twoway ///
-(scatter income2020 income2016 if income2020<60 & income2016<30, color(black%30)) ///
-(function y=x, range(0 25)) ///
-, xtitle("Monthly income per capita in 2016-17 (1k rupees)") ///
-ytitle("Monthly income per capita in 2020-21 (1k rupees)") ///
-scale(1.2) legend(off) name(g3, replace)
-
-* Graph centiles
-twoway ///
-(scatter cent2020 cent2016, color(black%30)) ///
-(function y=x, range(0 100)) ///
-, xtitle("Percentile of monthly income per capita in 2016-17") ///
-ytitle("Percentile of monthly income per capita in 2020-21") ///
-scale(1.2) legend(off) name(g4, replace)
-
-* Combine
-graph combine g3 g4, name(comb2, replace) note("{it:Note:} For 485 households.", size(vsmall)) 
-graph export "socmob2.png", as(png) replace
-
+tabstat absdiffq1 if catdiffq1!=2, stat(n mean) by(catdiffq1)
+tabstat absdiffq2 if catdiffq2!=2, stat(n mean) by(catdiffq2)
 
 ****************************************
 * END

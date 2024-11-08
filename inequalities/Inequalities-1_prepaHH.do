@@ -347,6 +347,10 @@ use"temp_NEEMSIS2", clear
 append using "temp_NEEMSIS1"
 append using "temp_RUME"
 
+
+*
+drop if HHID_panel=="KUV65"
+
 * Housing pour selection
 fre house
 label define house 1"Own house" 2"Joint house" 3"Family property" 4"Rental" 77"Others", modify
@@ -856,36 +860,13 @@ save"ineqindiv", replace
 use"ineqindiv", clear
 
 * Share income by sex
-gen inc_men=annualincome_indiv  if sex==1
-gen inc_women=annualincome_indiv if sex==2
+gen monthlyincome_indiv=annualincome_indiv/12
+gen monthlyincome_HH=annualincome_HH/12
+gen inc_men=monthlyincome_indiv  if sex==1
+gen inc_women=monthlyincome_indiv if sex==2
 bysort HHID_panel year: egen suminc_men=sum(inc_men)
 bysort HHID_panel year: egen suminc_women=sum(inc_women)
-gen test=annualincome_HH-suminc_men-suminc_women
-ta test
-drop test
-gen sharemen=suminc_men/annualincome_HH
-replace sharemen=0 if sharemen==.
-gen sharewomen=suminc_women/annualincome_HH
-replace sharewomen=0 if sharewomen==.
-gen shareindiv=annualincome_indiv/annualincome_HH
-bysort HHID_panel year: egen test=sum(shareindiv)
-ta test
-drop test
-
-* Differences between sex
-gen diffinc=suminc_men-suminc_women
-gen absdiffinc=abs(diffinc)
-gen absdiffinctoinc=absdiffinc/annualincome_HH
-gen diffshare=sharemen-sharewomen
-gen absdiffshare=abs(diffshare)
-
-* Categories of HH
-gen type=.
-replace type=1 if diffshare<-0.05
-replace type=2 if diffshare>=-0.05 & diffshare<=0.05
-replace type=3 if diffshare>0.05
-label define type 1"(c) Women > Men" 2"(b) Men = Women" 3"(a) Men > Women"
-label values type type
+gen test=monthlyincome_HH-suminc_men-suminc_women
 
 * Working pop
 fre working_pop
@@ -932,7 +913,7 @@ gen wp_active_women_HH=wp_unoccupi_women_HH+wp_occupied_women_HH
 save "ineqindiv_v2", replace
 
 * Save HH
-keep HHID_panel year suminc_men suminc_women sharemen sharewomen diffinc absdiffinc diffshare absdiffshare type wp_inactive_HH wp_inactive_men_HH wp_inactive_women_HH wp_unoccupi_HH wp_unoccupi_men_HH wp_unoccupi_women_HH wp_occupied_HH wp_occupied_men_HH wp_occupied_women_HH wp_active_HH wp_active_men_HH wp_active_women_HH
+keep HHID_panel year suminc_men suminc_women wp_inactive_HH wp_inactive_men_HH wp_inactive_women_HH wp_unoccupi_HH wp_unoccupi_men_HH wp_unoccupi_women_HH wp_occupied_HH wp_occupied_men_HH wp_occupied_women_HH wp_active_HH wp_active_men_HH wp_active_women_HH
 duplicates drop
 compress
 save "ineqHH", replace
@@ -1111,14 +1092,13 @@ replace intratodrop=1 if annualincome_HH==1
 drop if intratodrop==1
 drop intratodrop
 
-* Part moyenne d'un homme et part moyenne d'une femme + écart
+
+********** Part moyenne d'un homme et part moyenne d'une femme
+/*
+*
 gen mshare_men=((suminc_men/wp_occupied_men_HH)/annualincome_HH)*100
 gen mshare_women=((suminc_women/wp_occupied_women_HH)/annualincome_HH)*100
-
-* Difference entre les deux
 gen diff_mshare=mshare_men-mshare_women
-
-* Difference absolu pour l'économétrie
 gen absdiff_mshare=abs(diff_mshare)
 
 * Groupes 1
@@ -1146,9 +1126,55 @@ replace grpHH3=2 if grpHH==2
 replace grpHH3=3 if grpHH>=3
 label define grpHH3 1"No women income" 2"No men income" 3"Income for both"
 label values grpHH3 grpHH3
+*/
 
 
-* Famille avec au moins 2 femmes et 2 hommes travailleurs pour voir si la méthode de Jalil pourrait fonctionner
+********** Ecart entre le revenu moyen d'un homme et le revenu moyen d'une femme
+*
+gen av_men=suminc_men/wp_occupied_men_HH
+gen av_women=suminc_women/wp_occupied_women_HH
+gen diffav=av_men-av_women
+gen absdiffav=abs(diffav)
+tabstat av_men av_women absdiffav, stat(min p1 p5 p10 q p90 p95 p99 max)
+*
+gen monthlyincome=head_annualincome/12
+tabstat monthlyincome, stat(n mean sd median) by(year)
+drop monthlyincome
+*
+
+* Groupes 1
+gen alt_grpHH=.
+replace alt_grpHH=1 if wp_occupied_women_HH==0
+replace alt_grpHH=2 if wp_occupied_men_HH==0
+replace alt_grpHH=3 if diffav!=. & diffav<-730
+replace alt_grpHH=4 if diffav!=. & diffav>=-730  & diffav<=730
+replace alt_grpHH=5 if diffav!=. & diffav>730
+label define alt_grpHH 1"No women income" 2"No men income" 3"(c) Women > Men" 4"(b) Men = Women" 5"(a) Men > Women"
+label values alt_grpHH alt_grpHH
+
+* Group 2
+gen alt_grpHH2=.
+replace alt_grpHH2=1 if alt_grpHH==3
+replace alt_grpHH2=2 if alt_grpHH==4
+replace alt_grpHH2=3 if alt_grpHH==5
+label define alt_grpHH2 1"(c) Women > Men" 2"(b) Men = Women" 3"(a) Men > Women"
+label values alt_grpHH2 alt_grpHH2
+
+* Group 3
+gen alt_grpHH3=.
+replace alt_grpHH3=1 if alt_grpHH==1
+replace alt_grpHH3=2 if alt_grpHH==2
+replace alt_grpHH3=3 if alt_grpHH>=3
+label define alt_grpHH3 1"No women income" 2"No men income" 3"Income for both"
+label values alt_grpHH3 alt_grpHH3
+
+
+
+
+
+
+
+********** Famille avec au moins 2 femmes et 2 hommes travailleurs pour voir si la méthode de Jalil pourrait fonctionner
 gen morethan22=0
 replace morethan22=1 if wp_occupied_men_HH>=2 & wp_occupied_women_HH>=2 & wp_occupied_men_HH!=. & wp_occupied_women_HH!=.
 

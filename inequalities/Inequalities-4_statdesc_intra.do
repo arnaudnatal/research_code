@@ -66,11 +66,11 @@ use"panel_v5", clear
 ta year
 
 * Stat
-ta year grpHH
-ta year grpHH, row nofreq
+ta year alt_grpHH
+ta year alt_grpHH, row nofreq
 
-ta year grpHH2
-ta year grpHH2, row nofreq
+ta year alt_grpHH2
+ta year alt_grpHH2, row nofreq
 
 
 
@@ -101,7 +101,7 @@ title("Distribution of households by income of men" "and women for all household
 xlabel(1 2 3,valuelabel) xtitle("") ///
 ylabel(0(10)100) ytitle("Percent") ///
 legend(order(1 "(a) Men > Women" 2 "(b) Men = Women" 3 "(c) Women > Men" 4 "(d) No income from women" 5 "(e) No income from men") pos(6) col(3)) ///
-aspectratio() scale(1.2) name(barshare1, replace) note("{it:Note:} For 405 households in 2010, 491 in 2016-17, and 623 in 2020-21.", size(vsmall))
+aspectratio() scale(1.2) name(barshare1, replace) note("{it:Note:} For 405 households in 2010, 491 in 2016-17, and 622 in 2020-21.", size(vsmall))
 
 
 *********** Graph income
@@ -126,7 +126,7 @@ title("Distribution of households by income of men" "and women without zero inco
 xlabel(1 2 3,valuelabel) xtitle("") ///
 ylabel(0(10)100) ytitle("Percent") ///
 legend(order(1 "(a) Men > Women" 2 "(b) Men = Women" 3 "(c) Women > Men") pos(6) col(2)) ///
-aspectratio() scale(1.2) name(barshare2, replace) note("{it:Note:} For 320 households in 2010, 426 in 2016-17, and 534 in 2020-21.", size(vsmall))
+aspectratio() scale(1.2) name(barshare2, replace) note("{it:Note:} For 320 households in 2010, 426 in 2016-17, and 533 in 2020-21.", size(vsmall))
 
 
 ********** Combine
@@ -154,15 +154,15 @@ graph export "Intra.png", as(png) replace
 cls
 use"panel_v5", clear
 
-ta grpHH year
-ta grpHH2 year
+ta alt_grpHH year
+ta alt_grpHH2 year
 
-fre grpHH
-drop if grpHH2==.
-drop if grpHH2==2
-ta grpHH2 year
+fre alt_grpHH
+drop if alt_grpHH2==.
+drop if alt_grpHH2==2
+ta alt_grpHH2 year
 
-egen typetime=group(grpHH2 time), label
+egen typetime=group(alt_grpHH2 time), label
 
 fre typetime
 label define typetime ///
@@ -171,21 +171,22 @@ label define typetime ///
 label values typetime typetime
 
 * Stat
-tabstat absdiff_mshare if grpHH==3, stat(n mean q) by(year)
-tabstat absdiff_mshare if grpHH==5, stat(n mean q) by(year)
+replace absdiffav=absdiffav/1000
+tabstat absdiffav if alt_grpHH==3, stat(n mean q) by(year)
+tabstat absdiffav if alt_grpHH==5, stat(n mean q) by(year)
 
 * Graph
-violinplot absdiff_mshare, over(typetime) horizontal left dscale(2.8) noline range(0 100) now ///
-addplot(function y=-2.5, range(0 100) lcolor(black) lpattern(shortdash)) ///
+violinplot absdiffav, over(typetime) horizontal left dscale(2.8) noline range(0 12) now ///
+addplot(function y=-2.5, range(0 12) lcolor(black) lpattern(shortdash)) ///
 fill(color(black%10)) ///
 box(t(b)) bcolors(plb1) ///
 mean(t(m)) meancolors(plr1) ///
 med(t(m)) medcolors(ananas) ///
-title("Intra-household relative income gender gap", size(small)) ///
-xtitle("Percentage point") xlabel(0(10)100) ///
+title("Intra-household income gender gap", size(small)) ///
+xtitle("1k rupees") xlabel(0(1)12) ///
 ylabel(,grid) ytick(-2.5) ytitle("(a) Men > Women       (c) Women > Men") ///
 legend(order(7 "IQR" 14 "Median" 20 "Mean") pos(6) col(3) on) ///
-aspectratio() scale(1.2) name(viodiff, replace) note("{it:Note:} For 298 households in 2010, 387 in 2016-17, and 493 in 2020-21.", size(vsmall))
+aspectratio() scale(1.2) name(viodiff, replace) note("{it:Note:} For 289 households in 2010, 382 in 2016-17, and 454 in 2020-21.", size(vsmall))
 graph export "Intensityintra.png", as(png) replace
 
 ****************************************
@@ -213,32 +214,34 @@ cls
 use"panel_v5", clear
 
 * GrpHH
-fre grpHH
-clonevar grpHHbis=grpHH
-recode grpHHbis (4=3) (5=3)
-fre grpHHbis
-ta grpHH year, col nofreq
-recode grpHH (3=5) (5=3)
-ta grpHH, gen(grpHH_)
+fre alt_grpHH
+clonevar alt_grpHHbis=alt_grpHH
+recode alt_grpHHbis (4=3) (5=3)
+fre alt_grpHHbis
+ta alt_grpHH year, col nofreq
+recode alt_grpHH (3=5) (5=3)
+ta alt_grpHH, gen(alt_grpHH_)
 
 * Caste
-ta grpHH caste, col nofreq 
-ta grpHH caste, exp cchi2 chi2
+ta alt_grpHH caste, col nofreq 
+ta alt_grpHH caste, exp cchi2 chi2
 
 * Head charact
-tabstat head_female head_nonmarried head_widowseparated head_age, stat(mean) by(grpHH)
+tabstat head_female head_nonmarried head_widowseparated head_age, stat(mean) by(alt_grpHH)
 
 * Family charact
-tabstat HHsize HH_count_child sexratio nbmale nbfemale stem wp_inactive_men_HH wp_inactive_women_HH wp_unoccupi_men_HH wp_unoccupi_women_HH wp_occupied_men_HH wp_occupied_women_HH wp_active_men_HH wp_active_women_HH, stat(mean) by(grpHH)
+tabstat HHsize HH_count_child sexratio nbmale nbfemale stem wp_inactive_men_HH wp_inactive_women_HH wp_unoccupi_men_HH wp_unoccupi_women_HH wp_occupied_men_HH wp_occupied_women_HH wp_active_men_HH wp_active_women_HH, stat(mean) by(alt_grpHH)
 
 * Test de moyenne
 cls
 foreach y in head_female head_nonmarried head_widowseparated head_age HHsize HH_count_child sexratio nbmale nbfemale stem wp_inactive_men_HH wp_inactive_women_HH wp_unoccupi_men_HH wp_unoccupi_women_HH wp_occupied_men_HH wp_occupied_women_HH wp_active_men_HH wp_active_women_HH {
-reg `y' ib(3).grpHHbis, noh baselevel
+reg `y' ib(3).alt_grpHHbis, noh baselevel
 }
 
 
-dunntest head_female, by(grpHH) ma(bonferroni)
+dunntest head_female, by(alt_grpHH) ma(bonferroni)
 
 ****************************************
 * END
+
+

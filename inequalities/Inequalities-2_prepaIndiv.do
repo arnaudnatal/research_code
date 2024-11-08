@@ -190,6 +190,9 @@ use"temp1", clear
 append using "temp2"
 append using "temp3"
 
+*
+drop if HHID_panel=="KUV65"
+
 ta year
 
 * Dummy panel

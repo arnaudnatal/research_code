@@ -24,8 +24,8 @@ do"C:\Users\Arnaud\Documents\GitHub\folderanalysis\inequalities.do"
 use"panel_v5", clear
 
 * Selection
-fre grpHH2
-drop if grpHH2==.
+fre alt_grpHH2
+drop if alt_grpHH2==.
 
 
 
@@ -66,10 +66,10 @@ tabstat $livelihood $family $head $invar, stat(mean) by(year)
 use"panel_v5", clear
 
 * Selection
-fre grpHH2
-drop if grpHH2==.
-fre grpHH2
-recode grpHH2 (1=3) (3=1)
+fre alt_grpHH2
+drop if alt_grpHH2==.
+fre alt_grpHH2
+recode alt_grpHH2 (1=3) (3=1)
 
 
 ********** Macro
@@ -115,8 +115,8 @@ global marg log_annualincome_HH log_assets_totalnoland remittnet_HH ownland hous
 
 
 *
-fre grpHH2
-mlogit grpHH2 $livelihood $family $head $invar $time, baselevel baseoutcome(2)
+fre alt_grpHH2
+mlogit alt_grpHH2 $livelihood $family $head $invar $time, baselevel baseoutcome(2)
 est store mp1
 predict p
 sort p
@@ -158,13 +158,10 @@ esttab mp1 using "mprobit.csv", replace ///
 use"panel_v5", clear
 
 * Selection
-fre grpHH2
-drop if grpHH2==.
-drop if grpHH2==2
-fre grpHH2
-
-* Remettre en share
-replace absdiff_mshare=absdiff_mshare/100
+fre alt_grpHH2
+drop if alt_grpHH2==.
+drop if alt_grpHH2==2
+fre alt_grpHH2
 
 
 ********** Macro
@@ -204,18 +201,18 @@ year2016 mean_year2016 ///
 year2020 mean_year2020 ///
 nobs2 nobs3
 
-ta grpHH2
+ta alt_grpHH2
 
 ********** Econo
-glm absdiff_mshare $livelihood $family $head $invar $time, family(binomial) link(probit) cluster(panelvar)
+reg absdiffav $livelihood $family $head $invar $time, cluster(panelvar)
 margins, dydx($livelihood $family $head $invar $time) post
 est store mar1
 
-glm absdiff_mshare $livelihood $family $head $invar $time if grpHH2==3, family(binomial) link(probit) cluster(panelvar)
+reg absdiffav $livelihood $family $head $invar $time if alt_grpHH2==3, cluster(panelvar)
 margins, dydx($livelihood $family $head $invar $time) post
 est store mar2
 
-glm absdiff_mshare $livelihood $family $head $invar $time if grpHH2==1, family(binomial) link(probit) cluster(panelvar)
+reg absdiffav $livelihood $family $head $invar $time if alt_grpHH2==1, cluster(panelvar)
 margins, dydx($livelihood $family $head $invar $time) post
 est store mar3
 
