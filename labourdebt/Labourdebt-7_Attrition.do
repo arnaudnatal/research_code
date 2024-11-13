@@ -87,47 +87,27 @@ save"attrition", replace
 ****************************************
 use"attrition", clear
 
-***** Creation
-* DSR
+***** Var
 gen DSR=imp1_ds_tot_HH*100/annualincome_HH
-
-* ISR
-gen ISR=imp1_is_tot_HH*100/annualincome_HH
-
-* DAR
-gen DAR=loanamount_HH*100/annualincome_HH
+replace loanamount_HH=loanamount_HH/1000
+replace annualincome_HH=annualincome_HH/1000
 
 
-***** Analysis
-global varquanti dependencyratio sexratio head_age nbmale nbfemale HHsize HH_count_child HH_count_adult annualincome_HH ownland assets_total1000 nbloans_HH loanamount_HH DSR ISR DAR shareform
-global varquali head_sex head_relationshiptohead head_maritalstatus head_working_pop head_mocc_occupation head_edulevel
+***** Analysis 2010
+tabstat annualincome_HH loanamount_HH DSR if year==2010, stat(n mean median) by(attrition)
 
-* 2010
-cls
-foreach x in $varquali {
-ta `x' attrition if year==2010, col nofreq chi2
-}
-foreach x in $varquanti {
-reg `x' i.attrition if year==2010
-}
-/*
-Dans les ménages attrition il y a :
-moins d'enfants
-plus d'adultes
-*/
+reg annualincome_HH i.attrition if year==2010
+reg loanamount_HH i.attrition if year==2010
+reg DSR i.attrition if year==2010
 
 
-* 2016
-cls
-foreach x in $varquali {
-ta `x' attrition if year==2016, col nofreq chi2
-}
-foreach x in $varquanti {
-reg `x' i.attrition if year==2016
-}
-/*
-Dans les ménages attrition il y a :
-*/
+***** Analysis 2016-17
+tabstat annualincome_HH loanamount_HH DSR if year==2016, stat(n mean median) by(attrition)
+
+reg annualincome_HH i.attrition if year==2016
+reg loanamount_HH i.attrition if year==2016
+reg DSR i.attrition if year==2016
+
 
 
 ****************************************
