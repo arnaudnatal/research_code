@@ -572,6 +572,9 @@ label values ownland ownland
 ta house, gen(house_)
 
 
+
+
+
 ********** Others
 * Time
 gen time=0
@@ -1091,14 +1094,14 @@ rename d_incnrega_HH d_nrega
 
 * Share
 drop shareincomeagri_HH shareincomenonagri_HH shareincagrise_HH shareincagricasual_HH shareincnonagricasual_HH shareincnonagriregnonquali_HH shareincnonagriregquali_HH shareincnonagrise_HH shareincnrega_HH
-gen s_agrise_HH=incagrise_HH/annualincome_HH3
-gen s_agrica_HH=incagricasual_HH/annualincome_HH3
-gen s_casual_HH=incnonagricasual_HH/annualincome_HH3
-gen s_regula_HH=incnonagrireg_HH/annualincome_HH3
-gen s_selfem_HH=incnonagrise_HH/annualincome_HH3
-gen s_mgnreg_HH=incnrega_HH/annualincome_HH3
-gen s_pensio_HH=pension_HH/annualincome_HH3
-gen s_remitt_HH=remreceived_HH/annualincome_HH3
+gen s_agrise=incagrise_pc*100/annualincome3_pc
+gen s_agrica=incagricasual_pc*100/annualincome3_pc
+gen s_casual=incnonagricasual_pc*100/annualincome3_pc
+gen s_regula=incnonagrireg_pc*100/annualincome3_pc
+gen s_selfem=incnonagrise_pc*100/annualincome3_pc
+gen s_mgnreg=incnrega_pc*100/annualincome3_pc
+gen s_pensio=pension_pc*100/annualincome3_pc
+gen s_remitt=remreceived_pc*100/annualincome3_pc
 
 save "panel_v4", replace
 ****************************************

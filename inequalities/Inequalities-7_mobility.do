@@ -150,8 +150,10 @@ tabstat absdiffq2 if catdiffq2!=2, stat(n mean) by(catdiffq2)
 
 
 ****************************************
-* INCOME - Cowell and Flachaire (2018, QE)
+* Cowell and Flachaire (2018, QE)
 ****************************************
+
+********** Income
 
 * 2010 - 2016-17
 use"panel_v4", clear
@@ -186,6 +188,61 @@ rename inc2 inc1
 rename inc3 inc2
 export delimited using "C:\Users\Arnaud\Documents\GitHub\research_code\inequalities\panelHHincome2.txt", delimiter(tab) replace
 
+
+
+********** Assets
+
+* 2010 - 2016-17
+use"panel_v4", clear
+keep HHID_panel year assets_total
+rename assets_total ass
+replace ass=ass*1000
+replace year=1 if year==2010
+replace year=2 if year==2016
+replace year=3 if year==2020
+reshape wide ass, i(HHID_panel) j(year)
+rename HHID_panel hhid
+drop ass3
+drop if ass1==.
+drop if ass2==.
+drop if ass1==0
+drop if ass2==0
+export delimited using "C:\Users\Arnaud\Documents\GitHub\research_code\assetsinequalities\panelHHassets1.txt", delimiter(tab) replace
+
+
+* 2016-17 - 2020-21
+use"panel_v4", clear
+keep HHID_panel year assets_total
+rename assets_total ass
+replace ass=ass*1000
+replace year=1 if year==2010
+replace year=2 if year==2016
+replace year=3 if year==2020
+reshape wide ass, i(HHID_panel) j(year)
+rename HHID_panel hhid
+drop ass1
+drop if ass2==.
+drop if ass3==.
+rename ass2 ass1
+rename ass3 ass2
+drop if ass1==0
+drop if ass2==0
+export delimited using "C:\Users\Arnaud\Documents\GitHub\research_code\assetsinequalities\panelHHassets2.txt", delimiter(tab) replace
+
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+****************************************
+* Graph rank CF
+****************************************
 
 ********** Graph rank
 import excel "CowellFlachaire2018QE.xlsx", sheet("rank") firstrow clear
@@ -258,42 +315,6 @@ graph export "CFgraph.png", as(png) replace
 * WEALTH - Cowell and Flachaire (2018, QE)
 ****************************************
 
-* 2010 - 2016-17
-use"panel_v4", clear
-keep HHID_panel year assets_total
-rename assets_total ass
-replace ass=ass*1000
-replace year=1 if year==2010
-replace year=2 if year==2016
-replace year=3 if year==2020
-reshape wide ass, i(HHID_panel) j(year)
-rename HHID_panel hhid
-drop ass3
-drop if ass1==.
-drop if ass2==.
-drop if ass1==0
-drop if ass2==0
-export delimited using "C:\Users\Arnaud\Documents\GitHub\research_code\assetsinequalities\panelHHassets1.txt", delimiter(tab) replace
-
-
-* 2016-17 - 2020-21
-use"panel_v4", clear
-keep HHID_panel year assets_total
-rename assets_total ass
-replace ass=ass*1000
-replace year=1 if year==2010
-replace year=2 if year==2016
-replace year=3 if year==2020
-reshape wide ass, i(HHID_panel) j(year)
-rename HHID_panel hhid
-drop ass1
-drop if ass2==.
-drop if ass3==.
-rename ass2 ass1
-rename ass3 ass2
-drop if ass1==0
-drop if ass2==0
-export delimited using "C:\Users\Arnaud\Documents\GitHub\research_code\assetsinequalities\panelHHassets2.txt", delimiter(tab) replace
 
 
 ********** Graph rank

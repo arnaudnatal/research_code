@@ -63,10 +63,11 @@ Il y a des différences de composition des ménages entre Dalits et non-Dalits d
 use"panel_v4", clear
 
 
-keep HHID_panel year monthlyincome_pc
+keep HHID_panel year monthlyincome_pc assets_total
 rename monthlyincome_pc income
+rename assets_total assets
 
-reshape wide income, i(HHID_panel) j(year)
+reshape wide income assets, i(HHID_panel) j(year)
 gen attrition2010=0
 replace attrition2010=1 if income2010!=. & income2016==.
 replace attrition2010=. if income2010==.
@@ -79,12 +80,17 @@ replace attrition2016=. if income2016==.
 label define attrition2016 0"Recovered in 2020-21" 1"Lost in 2020-21"
 label values attrition2016 attrition2016
 
-
-tabstat income2010, stat(n mean q) by(attrition2010)
-tabstat income2016, stat(n mean q) by(attrition2016)
-
+* Income
+tabstat income2010, stat(n mean median) by(attrition2010)
+tabstat income2016, stat(n mean median) by(attrition2016)
 reg income2010 i.attrition2010
 reg income2016 i.attrition2016
+
+* Assets
+tabstat assets2010, stat(n mean median) by(attrition2010)
+tabstat assets2016, stat(n mean median) by(attrition2016)
+reg assets2010 i.attrition2010
+reg assets2016 i.attrition2016
 
 ****************************************
 * END
@@ -104,51 +110,28 @@ reg income2016 i.attrition2016
 
 
 ****************************************
-* Income and IQR 
+* Violin plot
 ****************************************
 use"panel_v4", clear
 
+
+********** Income
 tabstat monthlyincome_pc, stat(n mean q iqr) by(year)
 
-local ub 16
 violinplot monthlyincome_pc, over(time) horizontal left dscale(4) noline now ///
 fill(color(black%10)) ///
 box(t(b)) bcolors(plb1) ///
 mean(t(m)) meancolors(plr1) ///
 med(t(m)) medcolors(ananas) ///
 title("Monthly income per capita") ///
-xtitle("1k rupees") xlabel(0(1)`ub') ///
+xtitle("1k rupees") xlabel(0(2)16) ///
 ylabel(,grid) ///
 legend(order(4 "IQR" 7 "Median" 10 "Mean") pos(6) col(3) on) ///
-note("{it:Note:} For 405 households in 2010, 492 in 2016-17, and 626 in 2020-21.", size(vsmall)) ///
-aspectratio() scale(1.2) name(vio, replace) range(0 `ub')
-
-graph export "Violin.png", as(png) replace
-
-****************************************
-* END
+aspectratio() scale(1.2) name(inc, replace) range(0 16)
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-****************************************
-* Assets and IQR 
-****************************************
-use"panel_v4", clear
-
+********** Assets
 tabstat assets_total, stat(n mean q p90 p95 p99) by(year)
 
 violinplot assets_total, over(time) horizontal left dscale(4) noline now ///
@@ -160,10 +143,12 @@ title("Total value of assets") ///
 xtitle("1k rupees") xlabel(0(1000)7000) ///
 ylabel(,grid) ///
 legend(order(4 "IQR" 7 "Median" 10 "Mean") pos(6) col(3) on) ///
-note("{it:Note:} For 405 households in 2010, 492 in 2016-17, and 626 in 2020-21.", size(vsmall)) ///
-aspectratio() scale(1.2) name(vio, replace) range(0 7000)
+aspectratio() scale(1.2) name(ass, replace) range(0 7000)
 
-graph export "Violin.png", as(png) replace
+
+********** Combine
+grc1leg inc ass, col(2) note("{it:Note:} For 405 households in 2010, 492 in 2016-17, and 625 in 2020-21.", size(vsmall))
+graph export "graph/Violin.png", as(png) replace
 
 ****************************************
 * END
@@ -184,10 +169,10 @@ graph export "Violin.png", as(png) replace
 
 
 ****************************************
-* Ineq income
+* Decile
 ****************************************
 
-***** Decile
+***** Income
 use"panel_v4", clear
 
 foreach i in 2010 2016 2020 {
@@ -208,39 +193,12 @@ twoway ///
 (connected shareinc incgroup if year==2016) ///
 (connected shareinc incgroup if year==2020) ///
 , title("Share of total income per capita by decile") ///
-ytitle("Percent") ylabel(0(5)35) ///
+ytitle("Percent") ylabel(0(5)55) ///
 xtitle("Decile of income per capita") xlabel(1(1)10) ///
-legend(order(1 "2010" 2 "2016-17" 3 "2020-21") pos(6) col(3)) name(decile, replace) scale(1.2)
-graph export "Decileincome.png", as(png) replace
-
-***** Lorenz curves
-use"panel_v4", clear
-
-keep HHID_panel year monthlyincome_pc
-reshape wide monthlyincome_pc, i(HHID_panel) j(year)
-lorenz estimate monthlyincome_pc2010 monthlyincome_pc2016 monthlyincome_pc2020, gini
-lorenz graph, overlay noci legend(pos(6) col(3) order(1 "2010" 2 "2016-17" 3 "2020-21")) xtitle("Population share") ytitle("Cumulative income proportion") title("Lorenz curves") xlabel(0(10)100) ylabel(0(.1)1) nodiagonal aspectratio() scale(1.2) name(lorenz, replace)
+legend(order(1 "2010" 2 "2016-17" 3 "2020-21") pos(6) col(3)) name(inc, replace) scale(1.2)
 
 
-***** Combine
-grc1leg decile lorenz, name(comb3, replace) note("{it:Note:} For 405 households in 2010, 492 in 2016-17, and 626 in 2020-21. The Gini index is 0.322 in 2010, 0.422 in 2016-17 and 0.485 in 2020-21.", size(vsmall)) leg(lorenz)
-graph export "IneqInc.png", as(png) replace
-
-
-****************************************
-* END
-
-
-
-
-
-
-
-****************************************
-* Ineq Assets
-****************************************
-
-***** Decile
+***** Assets
 use"panel_v4", clear
 
 foreach i in 2010 2016 2020 {
@@ -263,22 +221,61 @@ twoway ///
 , title("Share of total assets by decile") ///
 ytitle("Percent") ylabel(0(5)55) ///
 xtitle("Decile of assets") xlabel(1(1)10) ///
-legend(order(1 "2010" 2 "2016-17" 3 "2020-21") pos(6) col(3)) name(decile, replace) scale(1.2)
+legend(order(1 "2010" 2 "2016-17" 3 "2020-21") pos(6) col(3)) name(ass, replace) scale(1.2)
 
 
-***** Lorenz curves
+
+***** Combine
+grc1leg inc ass, col(2) note("{it:Note:} For 405 households in 2010, 492 in 2016-17, and 625 in 2020-21.", size(vsmall))
+graph export "graph/Decile.png", as(png) replace
+
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Lorenz
+****************************************
+
+***** Income
+use"panel_v4", clear
+
+keep HHID_panel year monthlyincome_pc
+reshape wide monthlyincome_pc, i(HHID_panel) j(year)
+lorenz estimate monthlyincome_pc2010 monthlyincome_pc2016 monthlyincome_pc2020, gini
+lorenz graph, overlay noci legend(pos(6) col(3) order(1 "2010" 2 "2016-17" 3 "2020-21")) xtitle("Population share") ytitle("Cumulative income proportion") title("Income per capita") xlabel(0(10)100) ylabel(0(.1)1) nodiagonal aspectratio() scale(1.2) name(inc, replace) note("Gini index is 0.322 in 2010, 0.422 in 2016-17 and 0.485 in 2020-21.", size(vsmall))
+
+
+***** Assets
 use"panel_v4", clear
 
 keep HHID_panel year assets_total
 reshape wide assets_total, i(HHID_panel) j(year)
 lorenz estimate assets_total2010 assets_total2016 assets_total2020, gini
-lorenz graph, overlay noci legend(pos(6) col(3) order(1 "2010" 2 "2016-17" 3 "2020-21")) xtitle("Population share") ytitle("Cumulative assets proportion") title("Lorenz curves") xlabel(0(10)100) ylabel(0(.1)1) nodiagonal aspectratio() scale(1.2) name(lorenz, replace)
+lorenz graph, overlay noci legend(pos(6) col(3) order(1 "2010" 2 "2016-17" 3 "2020-21")) xtitle("Population share") ytitle("Cumulative assets proportion") title("Value of assets") xlabel(0(10)100) ylabel(0(.1)1) nodiagonal aspectratio() scale(1.2) name(ass, replace) note("Gini index is 0.580 in 2010, 0.660 in 2016-17 and 0.612 in 2020-21.", size(vsmall))
 
 
 ***** Combine
-grc1leg decile lorenz, name(comb3, replace) note("{it:Note:} For 405 households in 2010, 492 in 2016-17, and 626 in 2020-21. The Gini index is 0.580 in 2010, 0.660 in 2016-17 and 0.612 in 2020-21.", size(vsmall)) leg(lorenz)
-graph export "IneqAss.png", as(png) replace
-
+grc1leg inc ass, col(2) note("{it:Note:} For 405 households in 2010, 492 in 2016-17, and 625 in 2020-21.", size(vsmall))
+graph export "graph/Lorenz.png", as(png) replace
 
 ****************************************
 * END
@@ -327,104 +324,11 @@ reshape wide share, i(cat) j(time)
 
 * Graph 
 graph bar share1 share2 share3, over(cat, label(angle(45))) title("") ytitle("Percent") legend(order(1 "2010" 2 "2016-17" 3 "2020-21") col(3) pos(6)) name(g1, replace) ylabel(0(10)100)
-graph export "Wealthdum.png", as(png) replace
+graph export "graph/Assets_ownership.png", as(png) replace
 
 
 ****************************************
 * END
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-****************************************
-* Compo assets by decile for each year
-****************************************
-use"panel_v4", clear
-
-* Decile
-foreach i in 2010 2016 2020 {
-xtile assgrp`i'=assets_total if year==`i', n(10)
-}
-gen assgroup=.
-foreach i in 2010 2016 2020 {
-replace assgroup=assgrp`i' if year==`i'
-drop assgrp`i' 
-}
-
-collapse (mean) s_house s_livestock s_goods s_land s_gold s_savings, by(time assgroup)
-
-gen sum1=s_house
-gen sum2=sum1+s_livestock
-gen sum3=sum2+s_goods
-gen sum4=sum3+s_land
-gen sum5=sum4+s_gold
-gen sum6=sum5+s_savings
-
-* By year
-twoway ///
-(area sum1 assgroup if time==1) ///
-(rarea sum1 sum2 assgroup if time==1) ///
-(rarea sum2 sum3 assgroup if time==1) ///
-(rarea sum3 sum4 assgroup if time==1) ///
-(rarea sum4 sum5 assgroup if time==1) ///
-(rarea sum5 sum6 assgroup if time==1) ///
-, ///
-xlabel(1(1)10) xtitle("Decile of assets") ///
-ylabel(0(10)100) ytitle("Percent") ///
-title("2010") ///
-legend(order(1 "House" 2 "Livestock" 3 "Durable goods" 4 "Land" 5 "Gold" 6 "Saving") pos(6) col(3)) ///
-name(compo1, replace)
-
-twoway ///
-(area sum1 assgroup if time==2) ///
-(rarea sum1 sum2 assgroup if time==2) ///
-(rarea sum2 sum3 assgroup if time==2) ///
-(rarea sum3 sum4 assgroup if time==2) ///
-(rarea sum4 sum5 assgroup if time==2) ///
-(rarea sum5 sum6 assgroup if time==2) ///
-, ///
-xlabel(1(1)10) xtitle("Decile of assets") ///
-ylabel(0(10)100) ytitle("Percent") ///
-title("2016-17") ///
-legend(order(1 "House" 2 "Livestock" 3 "Durable goods" 4 "Land" 5 "Gold" 6 "Saving") pos(6) col(3)) ///
-name(compo2, replace)
-
-twoway ///
-(area sum1 assgroup if time==3) ///
-(rarea sum1 sum2 assgroup if time==3) ///
-(rarea sum2 sum3 assgroup if time==3) ///
-(rarea sum3 sum4 assgroup if time==3) ///
-(rarea sum4 sum5 assgroup if time==3) ///
-(rarea sum5 sum6 assgroup if time==3) ///
-, ///
-xlabel(1(1)10) xtitle("Decile of assets") ///
-ylabel(0(10)100) ytitle("Percent") ///
-title("2020-21") ///
-legend(order(1 "House" 2 "Livestock" 3 "Durable goods" 4 "Land" 5 "Gold" 6 "Saving") pos(6) col(3)) ///
-name(compo3, replace)
-
-
-grc1leg compo1 compo2 compo3, col(3) name(compo, replace)
-graph export "Compositionassets.png", as(png) replace
-
-****************************************
-* END
-
-
-
-
 
 
 
@@ -451,10 +355,10 @@ spearman assets_total monthlyincome_pc, stats(rho p)
 twoway ///
 (scatter assets_total monthlyincome_pc if assets_total<=7000 & monthlyincome_pc<=16, msymbol(oh) color(black%30)) ///
 , title("2010") ///
-xtitle("Monthly income per capita (1k rupees)") xlabel(0(2)16) ///
+xtitle("Monthly income p.c. (1k rupees)") xlabel(0(2)16) ///
 ytitle("Total value of assets (1k rupees)") ylabel(0(1000)7000) ///
 legend(off) ///
-note("{it:Note:} Pearson {it:p}=0.1744 and Spearman {it:p}=0.1036", size(vsmall)) ///
+note("Pearson {it:p}=0.174; Spearman {it:p}=0.104", size(vsmall)) ///
 name(g1, replace) scale(1.2) 
 
 
@@ -471,10 +375,10 @@ spearman assets_total monthlyincome_pc, stats(rho p)
 twoway ///
 (scatter assets_total monthlyincome_pc if assets_total<=7000 & monthlyincome_pc<=16, msymbol(oh) color(black%30)) ///
 , title("2016-17") ///
-xtitle("Monthly income per capita (1k rupees)") xlabel(0(2)16) ///
+xtitle("Monthly income p.c. (1k rupees)") xlabel(0(2)16) ///
 ytitle("Total value of assets (1k rupees)") ylabel(0(1000)7000) ///
 legend(off) ///
-note("{it:Note:} Pearson {it:p}=0.2801 and Spearman {it:p}=0.0697", size(vsmall)) ///
+note("Pearson {it:p}=0.280; Spearman {it:p}=0.070", size(vsmall)) ///
 name(g2, replace) scale(1.2) 
 
 
@@ -491,16 +395,17 @@ spearman assets_total monthlyincome_pc, stats(rho p)
 twoway ///
 (scatter assets_total monthlyincome_pc if assets_total<=7000 & monthlyincome_pc<=16, msymbol(oh) color(black%30)) ///
 , title("2020-21") ///
-xtitle("Monthly income per capita (1k rupees)") xlabel(0(2)16) ///
+xtitle("Monthly income p.c. (1k rupees)") xlabel(0(2)16) ///
 ytitle("Total value of assets (1k rupees)") ylabel(0(1000)7000) ///
 legend(off) ///
-note("{it:Note:} Pearson {it:p}=0.1635 and Spearman {it:p}=0.2445", size(vsmall)) ///
+note("Pearson {it:p}=0.164; Spearman {it:p}=0.245", size(vsmall)) ///
 name(g3, replace) scale(1.2) 
 
 
 
 ********** Combine
 graph combine g1 g2 g3, col(3)
+graph export "graph/Incass_split.png", as(png) replace
 
 
 
@@ -518,41 +423,9 @@ twoway ///
 xtitle("Monthly income per capita (1k rupees)") xlabel(0(2)16) ///
 ytitle("Total value of assets (1k rupees)") ylabel(0(1000)7000) ///
 legend(off) ///
-note("{it:Note:} Pearson {it:p}=0.1587 and Spearman {it:p}=0.1372", size(vsmall)) ///
+note("Pearson {it:p}=0.1587; Spearman {it:p}=0.1372", size(vsmall)) ///
 name(gp, replace) scale(1.2) 
-
-
-********** Matrices
-use"panel_v4", clear
-
-* Income
-foreach i in 2010 2016 2020 {
-xtile q_inc_`i'=monthlyincome_pc if year==`i', n(5)
-}
-gen q_inc=.
-foreach i in 2010 2016 2020 {
-replace q_inc=q_inc_`i' if year==`i'
-drop q_inc_`i'
-}
-
-
-* Assets
-foreach i in 2010 2016 2020 {
-xtile q_ass_`i'=assets_total if year==`i', n(5)
-}
-gen q_ass=.
-foreach i in 2010 2016 2020 {
-replace q_ass=q_ass_`i' if year==`i'
-drop q_ass_`i'
-}
-
-* Stat
-ta q_inc q_ass, row nofreq chi2
-
-ta q_inc q_ass if year==2010, row nofreq chi2
-ta q_inc q_ass if year==2016, row nofreq chi2
-ta q_inc q_ass if year==2020, row nofreq chi2
-
+graph export "graph/Incass_pooled.png", as(png) replace
 
 ****************************************
 * END

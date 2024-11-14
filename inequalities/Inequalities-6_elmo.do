@@ -14,6 +14,27 @@ do"C:\Users\Arnaud\Documents\GitHub\folderanalysis\inequalities.do"
 
 
 
+****************************************
+* Size
+****************************************
+use"panel_v4", clear
+
+ta jatis year if caste==1
+ta jatis year if caste==2
+ta jatis year if caste==3
+
+
+
+****************************************
+* END
+
+
+
+
+
+
+
+
 
 
 ****************************************
@@ -196,7 +217,7 @@ restore
 
 
 
-
+/*
 ****************************************
 * INCOME - Decomposition GE by jatis for Dalits
 ****************************************
@@ -276,7 +297,7 @@ restore
 }
 ****************************************
 * END
-
+*/
 
 
 
@@ -564,7 +585,7 @@ restore
 
 
 
-
+/*
 ****************************************
 * WEALTH - Decomposition GE by jatis for Dalits
 ****************************************
@@ -642,7 +663,7 @@ restore
 }
 ****************************************
 * END
-
+*/
 
 
 
