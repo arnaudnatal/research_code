@@ -207,7 +207,7 @@ drop if ass1==.
 drop if ass2==.
 drop if ass1==0
 drop if ass2==0
-export delimited using "C:\Users\Arnaud\Documents\GitHub\research_code\assetsinequalities\panelHHassets1.txt", delimiter(tab) replace
+export delimited using "C:\Users\Arnaud\Documents\GitHub\research_code\inequalities\panelHHassets1.txt", delimiter(tab) replace
 
 
 * 2016-17 - 2020-21
@@ -227,7 +227,7 @@ rename ass2 ass1
 rename ass3 ass2
 drop if ass1==0
 drop if ass2==0
-export delimited using "C:\Users\Arnaud\Documents\GitHub\research_code\assetsinequalities\panelHHassets2.txt", delimiter(tab) replace
+export delimited using "C:\Users\Arnaud\Documents\GitHub\research_code\inequalities\panelHHassets2.txt", delimiter(tab) replace
 
 ****************************************
 * END
@@ -240,12 +240,18 @@ export delimited using "C:\Users\Arnaud\Documents\GitHub\research_code\assetsine
 
 
 
+
+
+
+
+
+
 ****************************************
-* Graph rank CF
+* Graph CF
 ****************************************
 
-********** Graph rank
-import excel "CowellFlachaire2018QE.xlsx", sheet("rank") firstrow clear
+********** INCOME RANK
+import excel "CF_income.xlsx", sheet("rank") firstrow clear
 label define timeframe 1"2010 - 2016-17" 2"2016-17 - 2020-21"
 label values timeframe timeframe
 label define sample 1"Overall" 2"Downward" 3"Upward"
@@ -253,25 +259,23 @@ label values sample sample
 keep if sample==1
 drop if alpha==-1
 drop if alpha==2
-
-*** Overall
+*
 twoway ///
 (connected index alpha if timeframe==1, color(plg1)) ///
 (rarea CI_upper CI_lower alpha if timeframe==1, color(plg1%10)) ///
 (connected index alpha if timeframe==2, color(plr1)) ///
 (rarea CI_upper CI_lower alpha if timeframe==2, color(plr1%10)) ///
-, title("Rank mobility") ///
-ytitle("") ylabel() ///
+, title("Income rank mobility") ///
+ytitle("") ylabel(.2(.1).8) ///
 xtitle("α") xlabel(-.5(.5)1.5) ///
 legend(order(1 "2010 to 2016-17" 3 "2016-17 to 2020-21") pos(6) col(2)) ///
-scale(1.2) name(rank, replace)
+scale(1.2) name(incrank, replace)
 
 
 
 
-
-********** Graph income
-import excel "CowellFlachaire2018QE.xlsx", sheet("inc") firstrow clear
+********** WEALTH RANK
+import excel "CF_wealth.xlsx", sheet("rank") firstrow clear
 label define timeframe 1"2010 - 2016-17" 2"2016-17 - 2020-21"
 label values timeframe timeframe
 label define sample 1"Overall" 2"Downward" 3"Upward"
@@ -279,27 +283,41 @@ label values sample sample
 keep if sample==1
 drop if alpha==-1
 drop if alpha==2
+*
+twoway ///
+(connected index alpha if timeframe==1, color(plg1)) ///
+(rarea CI_upper CI_lower alpha if timeframe==1, color(plg1%10)) ///
+(connected index alpha if timeframe==2, color(plr1)) ///
+(rarea CI_upper CI_lower alpha if timeframe==2, color(plr1%10)) ///
+, title("Wealth rank mobility") ///
+ytitle("") ylabel(.2(.1).8) ///
+xtitle("α") xlabel(-.5(.5)1.5) ///
+legend(order(1 "2010 to 2016-17" 3 "2016-17 to 2020-21") pos(6) col(2)) ///
+scale(1.2) name(assrank, replace)
 
-*** Overall
+
+
+
+********** INCOME VALUE
+import excel "CF_income.xlsx", sheet("inc") firstrow clear
+label define timeframe 1"2010 - 2016-17" 2"2016-17 - 2020-21"
+label values timeframe timeframe
+label define sample 1"Overall" 2"Downward" 3"Upward"
+label values sample sample
+keep if sample==1
+drop if alpha==-1
+drop if alpha==2
+*
 twoway ///
 (connected index alpha if timeframe==1, color(plg1)) ///
 (rarea CI_upper CI_lower alpha if timeframe==1, color(plg1%10)) ///
 (connected index alpha if timeframe==2, color(plr1)) ///
 (rarea CI_upper CI_lower alpha if timeframe==2, color(plr1%10)) ///
 , title("Income mobility") ///
-ytitle("") ylabel() ///
+ytitle("") ylabel(0(1)3) ///
 xtitle("α") xlabel(-.5(.5)1.5) ///
 legend(order(1 "2010 to 2016-17" 3 "2016-17 to 2020-21") pos(6) col(2)) ///
-scale(1.2) name(inco, replace)
-
-
-
-********** Combine
-grc1leg rank inco, name(comb, replace)
-graph export "CFgraph.png", as(png) replace
-
-****************************************
-* END
+scale(1.2) name(incval, replace)
 
 
 
@@ -307,18 +325,8 @@ graph export "CFgraph.png", as(png) replace
 
 
 
-
-
-
-
-****************************************
-* WEALTH - Cowell and Flachaire (2018, QE)
-****************************************
-
-
-
-********** Graph rank
-import excel "CowellFlachaire2018QE.xlsx", sheet("rank") firstrow clear
+********** WEALTH VALUE
+import excel "CF_wealth.xlsx", sheet("ass") firstrow clear
 label define timeframe 1"2010 - 2016-17" 2"2016-17 - 2020-21"
 label values timeframe timeframe
 label define sample 1"Overall" 2"Downward" 3"Upward"
@@ -326,55 +334,100 @@ label values sample sample
 keep if sample==1
 drop if alpha==-1
 drop if alpha==2
-
-*** Overall
-twoway ///
-(connected index alpha if timeframe==1, color(plg1)) ///
-(rarea CI_upper CI_lower alpha if timeframe==1, color(plg1%10)) ///
-(connected index alpha if timeframe==2, color(plr1)) ///
-(rarea CI_upper CI_lower alpha if timeframe==2, color(plr1%10)) ///
-, title("Rank mobility") ///
-ytitle("") ylabel() ///
-xtitle("α") xlabel(-.5(.5)1.5) ///
-legend(order(1 "2010 to 2016-17" 3 "2016-17 to 2020-21") pos(6) col(2)) ///
-scale(1.2) name(rank, replace)
-
-
-
-
-
-
-********** Graph assets
-import excel "CowellFlachaire2018QE.xlsx", sheet("ass") firstrow clear
-label define timeframe 1"2010 - 2016-17" 2"2016-17 - 2020-21"
-label values timeframe timeframe
-label define sample 1"Overall" 2"Downward" 3"Upward"
-label values sample sample
-keep if sample==1
-drop if alpha==-1
-drop if alpha==2
-
-*** Overall
+*
 twoway ///
 (connected index alpha if timeframe==1, color(plg1)) ///
 (rarea CI_upper CI_lower alpha if timeframe==1, color(plg1%10)) ///
 (connected index alpha if timeframe==2, color(plr1)) ///
 (rarea CI_upper CI_lower alpha if timeframe==2, color(plr1%10)) ///
 , title("Wealth mobility") ///
-ytitle("") ylabel() ///
+ytitle("") ylabel(0(1)3) ///
 xtitle("α") xlabel(-.5(.5)1.5) ///
 legend(order(1 "2010 to 2016-17" 3 "2016-17 to 2020-21") pos(6) col(2)) ///
-scale(1.2) name(inco, replace)
+scale(1.2) name(assval, replace)
+
+
+
 
 
 
 ********** Combine
-grc1leg rank inco, name(comb, replace)
-graph export "CFgraph.png", as(png) replace
+grc1leg incrank assrank incval assval, col(2) name(combcomb, replace) note("{it:Note:} For 388 households in 2010 and 2016-17, and 485 in 2016-17 and 2020-21.", size(vsmall))
+graph export "graph/CFgraph.png", as(png) replace
 
 ****************************************
 * END
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Reldist
+****************************************
+use"panel_v4", clear
+
+/*
+doi: 10.1177/1536867X211063147
+*/
+
+gen assets=assets_total*1000
+gen income=monthlyincome_pc*1000
+
+keep HHID_panel year assets income
+reshape wide assets income, i(HHID_panel) j(year)
+
+
+
+*
+reldist cdf income2016 income2010
+reldist graph
+/*
+La valeur du 80e centile en 2010 est égale à la valeur du 60e en 2016-17.
+*/
+
+*
+reldist pdf income2016 income2010
+reldist graph
+
+reldist pdf income2020 income2016
+reldist graph
+/*
+Une densité relative supérieure à un signifie que le groupe 2016 est surreprésentée au niveau correspondant des gains salariaux, les valeurs inférieures à un signifient que le groupe 2016 est sous-représentée par rapport au groupe 2010.
+Nous pouvons maintenant voir directement que les differences distributionnelles les plus importantes se situent au bas de la distribution.
+Le groupe 2016 a une densité beaucoup plus importante que le groupe 2010 dans les régions situées en dessous du quantile de 10 % du groupe 2010 (facteur de surreprésentation jusqu'à 2). Aux quantiles supérieurs, le groupe 2016 est sur-représentée également.
+*/
+
+
+
+/*
+doi: 10.1016/j.econlet.2022.110738
+Enfin, la figure 2 montre la densité relative des femmes (avec les hommes comme groupe de référence). Si les deux distributions comparées sont identiques, les densités relatives seront égales à 1. Si la distribution de comparaison a tendance à avoir des valeurs plus faibles que la distribution de référence, la densité relative sera supérieure à 1 pour de faibles valeurs de r et inférieure à 1 pour de grandes valeurs de r, où r (y) et est la variable d'intérêt (voir Jann, 2021, pour plus de détails). La figure 2 présente les deux comparaisons de (a) ln gains et (b) GPA, montrant dans le premier panneau que les femmes sont surreprésentées en termes de gains inférieurs et de GPA inférieure et sous-représentées aux niveaux supérieurs. Les deuxièmes panneaux pour chaque variable comparent les distributions relatives lorsqu'elles sont ajustées (équilibrées) par niveau académique (à l'aide d'une fonction d'appariement logit) ; dans les deux diagrammes, les densités relatives ne sont pas statistiquement différentes de 1 (sauf aux niveaux de revenus les plus élevés). Cela suggère que la promotion d'un nombre relativement plus élevé de femmes à des grades supérieurs réduira de manière significative l'écart entre les salaires et la moyenne générale. Le tableau A.2 montre qu'en 2021, 48,9 % des membres masculins du personnel de l'Institut d'enseignement supérieur et de recherche (DUBS) étaient professeurs, alors que seulement 25,6 % des femmes avaient le grade de professeur titulaire. La figure A.2 montre la répartition des grades académiques par sexe pour les écoles de commerce du groupe Russel, avec 21,5 % de femmes professeurs en 2019/20.
+*/
+
+
+
+****************************************
+* END
 
 
 

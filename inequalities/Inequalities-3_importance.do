@@ -261,7 +261,6 @@ use"panel_v4", clear
 keep HHID_panel year monthlyincome_pc
 reshape wide monthlyincome_pc, i(HHID_panel) j(year)
 lorenz estimate monthlyincome_pc2010 monthlyincome_pc2016 monthlyincome_pc2020, gini
-lorenz graph, overlay noci legend(pos(6) col(3) order(1 "2010" 2 "2016-17" 3 "2020-21")) xtitle("Population share") ytitle("Cumulative income proportion") title("Income per capita") xlabel(0(10)100) ylabel(0(.1)1) nodiagonal aspectratio() scale(1.2) name(inc, replace) note("Gini index is 0.322 in 2010, 0.422 in 2016-17 and 0.485 in 2020-21.", size(vsmall))
 
 
 ***** Assets
@@ -270,10 +269,42 @@ use"panel_v4", clear
 keep HHID_panel year assets_total
 reshape wide assets_total, i(HHID_panel) j(year)
 lorenz estimate assets_total2010 assets_total2016 assets_total2020, gini
-lorenz graph, overlay noci legend(pos(6) col(3) order(1 "2010" 2 "2016-17" 3 "2020-21")) xtitle("Population share") ytitle("Cumulative assets proportion") title("Value of assets") xlabel(0(10)100) ylabel(0(.1)1) nodiagonal aspectratio() scale(1.2) name(ass, replace) note("Gini index is 0.580 in 2010, 0.660 in 2016-17 and 0.612 in 2020-21.", size(vsmall))
 
 
-***** Combine
+********** À la main pour les CI
+
+*** Income
+import excel "Lorenz.xlsx", sheet("Income") firstrow clear
+*
+twoway ///
+(line coef2010 pop, color(ply1)) ///
+(rarea ub2010 lb2010 pop, color(ply1%10)) ///
+(line coef2016 pop, color(plr1)) ///
+(rarea ub2016 lb2016 pop, color(plr1%10)) ///
+(line coef2020 pop, color(plg1)) ///
+(rarea ub2020 lb2020 pop, color(plg1%10)) ///
+, title("Income") ytitle("Cumulative income proportion") ylabel(0(.1)1) ///
+xtitle("Population share") xlabel(0(10)100) ///
+legend(order(1 "2010" 3 "2016-17" 5 "2020-21") pos(6) col(3)) ///
+scale(1.2) note("Gini index is 0.32 in 2010, 0.42 in 2016-17 and 0.48 in 2020-21.", size(vsmall)) name(inc, replace)
+
+*** Wealth
+import excel "Lorenz.xlsx", sheet("Wealth") firstrow clear
+*
+twoway ///
+(line coef2010 pop, color(ply1)) ///
+(rarea ub2010 lb2010 pop, color(ply1%10)) ///
+(line coef2016 pop, color(plr1)) ///
+(rarea ub2016 lb2016 pop, color(plr1%10)) ///
+(line coef2020 pop, color(plg1)) ///
+(rarea ub2020 lb2020 pop, color(plg1%10)) ///
+, title("Wealth") ytitle("Cumulative wealth proportion") ylabel(0(.1)1) ///
+xtitle("Population share") xlabel(0(10)100) ///
+legend(order(1 "2010" 3 "2016-17" 5 "2020-21") pos(6) col(3)) ///
+scale(1.2) note("Gini index is 0.58 in 2010, 0.66 in 2016-17 and 0.61 in 2020-21.", size(vsmall)) name(ass, replace)
+
+
+*** Combine
 grc1leg inc ass, col(2) note("{it:Note:} For 405 households in 2010, 492 in 2016-17, and 625 in 2020-21.", size(vsmall))
 graph export "graph/Lorenz.png", as(png) replace
 
@@ -330,102 +361,3 @@ graph export "graph/Assets_ownership.png", as(png) replace
 ****************************************
 * END
 
-
-
-
-
-
-
-
-
-
-****************************************
-* Corr between assets and income
-****************************************
-
-********** 2010
-use"panel_v4", clear
-keep if year==2010
-
-* Stat
-pwcorr assets_total monthlyincome_pc, sig
-spearman assets_total monthlyincome_pc, stats(rho p)
-
-* Graph
-twoway ///
-(scatter assets_total monthlyincome_pc if assets_total<=7000 & monthlyincome_pc<=16, msymbol(oh) color(black%30)) ///
-, title("2010") ///
-xtitle("Monthly income p.c. (1k rupees)") xlabel(0(2)16) ///
-ytitle("Total value of assets (1k rupees)") ylabel(0(1000)7000) ///
-legend(off) ///
-note("Pearson {it:p}=0.174; Spearman {it:p}=0.104", size(vsmall)) ///
-name(g1, replace) scale(1.2) 
-
-
-
-********** 2016-17
-use"panel_v4", clear
-keep if year==2016
-
-* Stat
-pwcorr assets_total monthlyincome_pc, sig
-spearman assets_total monthlyincome_pc, stats(rho p)
-
-* Graph
-twoway ///
-(scatter assets_total monthlyincome_pc if assets_total<=7000 & monthlyincome_pc<=16, msymbol(oh) color(black%30)) ///
-, title("2016-17") ///
-xtitle("Monthly income p.c. (1k rupees)") xlabel(0(2)16) ///
-ytitle("Total value of assets (1k rupees)") ylabel(0(1000)7000) ///
-legend(off) ///
-note("Pearson {it:p}=0.280; Spearman {it:p}=0.070", size(vsmall)) ///
-name(g2, replace) scale(1.2) 
-
-
-
-********** 2020-21
-use"panel_v4", clear
-keep if year==2020
-
-* Stat
-pwcorr assets_total monthlyincome_pc, sig
-spearman assets_total monthlyincome_pc, stats(rho p)
-
-* Graph
-twoway ///
-(scatter assets_total monthlyincome_pc if assets_total<=7000 & monthlyincome_pc<=16, msymbol(oh) color(black%30)) ///
-, title("2020-21") ///
-xtitle("Monthly income p.c. (1k rupees)") xlabel(0(2)16) ///
-ytitle("Total value of assets (1k rupees)") ylabel(0(1000)7000) ///
-legend(off) ///
-note("Pearson {it:p}=0.164; Spearman {it:p}=0.245", size(vsmall)) ///
-name(g3, replace) scale(1.2) 
-
-
-
-********** Combine
-graph combine g1 g2 g3, col(3)
-graph export "graph/Incass_split.png", as(png) replace
-
-
-
-********** Pooled
-use"panel_v4", clear
-
-* Stat
-pwcorr assets_total monthlyincome_pc, sig
-spearman assets_total monthlyincome_pc, stats(rho p)
-
-* Graph
-twoway ///
-(scatter assets_total monthlyincome_pc if assets_total<=7000 & monthlyincome_pc<=16, msymbol(oh) color(black%30)) ///
-, title("Pooled sample (2010, 2016-17, and 2020-21)") ///
-xtitle("Monthly income per capita (1k rupees)") xlabel(0(2)16) ///
-ytitle("Total value of assets (1k rupees)") ylabel(0(1000)7000) ///
-legend(off) ///
-note("Pearson {it:p}=0.1587; Spearman {it:p}=0.1372", size(vsmall)) ///
-name(gp, replace) scale(1.2) 
-graph export "graph/Incass_pooled.png", as(png) replace
-
-****************************************
-* END
