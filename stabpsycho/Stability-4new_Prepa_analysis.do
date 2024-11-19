@@ -24,7 +24,7 @@ use"panel_stab_v2_wide", clear
 
 
 ********** Selection
-keep if panel2016==1
+*keep if panel2016==1
 
 
 ********** To keep

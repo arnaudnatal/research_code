@@ -2,7 +2,7 @@
 cls
 *Arnaud NATAL
 *arnaud.natal@u-bordeaux.fr
-*April 23, 2021
+*March 19, 2024
 *-----
 gl link = "stabpsycho"
 *Stab
@@ -14,64 +14,13 @@ do "C:/Users/Arnaud/Documents/GitHub/folderanalysis/$link.do"
 
 
 
-****************************************
-* Personality traits construction
-****************************************
-cls
-use"panel_stab_v2", clear
-keep if year==2016
-
-
-********** Imputation for non corrected one
-global big5cr cr_curious cr_interestedbyart cr_repetitivetasks cr_inventive cr_liketothink cr_newideas cr_activeimagination cr_organized cr_makeplans cr_workhard cr_appointmentontime cr_putoffduties cr_easilydistracted cr_completeduties cr_enjoypeople cr_sharefeelings cr_shywithpeople cr_enthusiastic cr_talktomanypeople cr_talkative cr_expressingthoughts cr_workwithother cr_understandotherfeeling cr_trustingofother cr_rudetoother cr_toleratefaults cr_forgiveother cr_helpfulwithothers cr_managestress cr_nervous cr_changemood cr_feeldepressed cr_easilyupset cr_worryalot cr_staycalm cr_tryhard cr_stickwithgoals cr_goaftergoal cr_finishwhatbegin cr_finishtasks cr_keepworking
-
-foreach x in $big5cr{
-gen im`x'=`x'
-}
-
-forvalues j=1(1)3{
-forvalues i=1(1)2{
-foreach x in $big5cr{
-qui sum im`x' if sex==`i' & caste==`j' & egoid!=0 & egoid!=.
-replace im`x'=r(mean) if im`x'==. & sex==`i' & caste==`j' & egoid!=0 & egoid!=.
-}
-}
-}
-
-********** Traits
-global f1 imcr_easilyupset imcr_nervous imcr_feeldepressed imcr_worryalot imcr_changemood imcr_easilydistracted imcr_shywithpeople imcr_putoffduties imcr_rudetoother imcr_repetitivetasks
-global f2 imcr_makeplans imcr_appointmentontime imcr_completeduties imcr_enthusiastic imcr_organized imcr_workhard imcr_workwithother
-global f3 imcr_liketothink imcr_expressingthoughts imcr_activeimagination imcr_sharefeelings imcr_newideas imcr_inventive imcr_curious imcr_talktomanypeople imcr_talkative imcr_understandotherfeeling imcr_interestedbyart
-global f4 imcr_staycalm imcr_managestress
-global f5 imcr_forgiveother imcr_toleratefaults imcr_trustingofother imcr_enjoypeople imcr_helpfulwithothers
-
-egen f1_2016=rowmean($f1)
-egen f2_2016=rowmean($f2)
-egen f3_2016=rowmean($f3)
-egen f4_2016=rowmean($f4)
-egen f5_2016=rowmean($f5)
-
-save"$wave2~matching_v2.dta", replace
-****************************************
-* END
-
-
-
-
-
-
-
-
-
-
-
 
 
 ****************************************
 * Demonetisation database preparation
 ****************************************
 cls
-use "$wave2~matching_v2.dta", clear
+use "panel_stab_v2_pooled_long", clear
 
 ********** Username
 encode username, gen(username_code)
@@ -97,7 +46,8 @@ global treat dummydemonetisation
 
 
 ********** Prepare to R
-keep f1_2016 f2_2016 f3_2016 f4_2016 f5_2016 $var $treat villageid_2 villageid_3 villageid_4 villageid_5 villageid_6 villageid_7 villageid_8 villageid_9 villageid_10 HHID_panel INDID_panel egoid cr_OP cr_CO cr_EX cr_AG cr_ES cr_Grit lit_tt num_tt raven_tt annualincome_indiv assets_total1000 HHsize
+keep if year==2016
+keep fES fOPEX fCO $var $treat villageid_2 villageid_3 villageid_4 villageid_5 villageid_6 villageid_7 villageid_8 villageid_9 villageid_10 HHID_panel INDID_panel egoid annualincome_indiv assets_total1000 HHsize
 rename dummydemonetisation treat 
 
 
@@ -319,9 +269,6 @@ matrix list tot
 cls
 use "neemsis1_r.dta", clear
 
-merge 1:1 HHID_panel INDID_panel using "$wave2~matching_v2.dta", keepusing(caste)
-drop _merge
-
 
 global var age caste_2 caste_3 sex_2 mainocc_occupation_indiv_1 mainocc_occupation_indiv_2 mainocc_occupation_indiv_4 mainocc_occupation_indiv_5 mainocc_occupation_indiv_6 mainocc_occupation_indiv_7 mainocc_occupation_indiv_8 edulevel_2 edulevel_3 edulevel_4 edulevel_5 maritalstatus_2 annualincome_indiv HHsize villageid_2 villageid_3 villageid_4 villageid_5 villageid_6 villageid_7 villageid_8 villageid_9 villageid_10 username_code_1 username_code_2 username_code_3 username_code_4 username_code_5 username_code_7
 
@@ -349,19 +296,19 @@ label var HHsize "HH size"
 
 ***** Reg
 cls
-foreach x in f1_2016 f2_2016 f3_2016 f4_2016 f5_2016 {
+foreach x in fES fOPEX fCO {
 glm `x' treat $var [pw=weights], link(log) family(igaussian)
-est store regpw_`x'
+est store `x'w
 qui glm `x' treat $var, link(log) family(igaussian)
-est store reg_`x'
+est store `x'r
 }
 
-esttab regpw_f1_2016 regpw_f2_2016 regpw_f3_2016 regpw_f5_2016, drop(_cons $var)
+esttab fESw fOPEXw fCOw, drop(_cons $var)
 
 
 
 ***** Before weighting
-esttab reg_f1_2016 reg_f2_2016 reg_f3_2016 reg_f5_2016 using "reg_demo_nopw.tex", replace f ///
+esttab fESr fOPEXr fCOr using "reg_demo_nopw.tex", replace f ///
 	label booktabs b(3) p(3) eqlabels(none) alignment(S) collabels("\multicolumn{1}{c}{$\beta$ / Std. Err.}") ///
 	drop(_cons $var) ///
 	star(* 0.10 ** 0.05 *** 0.01) ///
@@ -371,24 +318,13 @@ esttab reg_f1_2016 reg_f2_2016 reg_f3_2016 reg_f5_2016 using "reg_demo_nopw.tex"
 
 
 ***** After weighting
-esttab regpw_f1_2016 regpw_f2_2016 regpw_f3_2016 regpw_f5_2016 using "reg_demo_pw.tex", replace f ///
+esttab fESw fOPEXw fCOw using "reg_demo_pw.tex", replace f ///
 	label booktabs b(3) p(3) eqlabels(none) alignment(S) collabels("\multicolumn{1}{c}{$\beta$ / Std. Err.}") ///
 	drop(_cons $var) ///
 	star(* 0.10 ** 0.05 *** 0.01) ///
 	cells("b(fmt(2)star)" "se(fmt(2)par)") ///
 	refcat(, nolabel) ///
 	stats(N r2 r2_a F p, fmt(0 2 2 2) layout("\multicolumn{1}{c}{@}" "\multicolumn{1}{S}{@}" "\multicolumn{1}{S}{@}" "\multicolumn{1}{S}{@}" "\multicolumn{1}{S}{@}") labels(`"Observations"' `"\(R^{2}\)"' `"Adjusted \(R^{2}\)"' `"F-stat"' `"p-value"'))
-
-	
-	
-***** Caste
-cls
-foreach x in f1_2016 f2_2016 f3_2016 f4_2016 f5_2016 {
-glm `x' i.treat##i.caste $var [pw=weights], link(log) family(igaussian)
-est store regpw_`x'
-}
-
-esttab regpw_f1_2016 regpw_f2_2016 regpw_f3_2016 regpw_f5_2016, drop(_cons $var) cells("b(fmt(2)star)" "se(fmt(2)par)")
 	
 ****************************************
 * END
@@ -409,10 +345,6 @@ esttab regpw_f1_2016 regpw_f2_2016 regpw_f3_2016 regpw_f5_2016, drop(_cons $var)
 ****************************************
 cls
 use "neemsis1_r.dta", clear
-
-merge 1:1 HHID_panel INDID_panel using "$wave2~matching_v2.dta", keepusing(caste)
-keep if _merge==3
-drop _merge
 
 
 global var age caste_2 caste_3 sex_2 mainocc_occupation_indiv_1 mainocc_occupation_indiv_2 mainocc_occupation_indiv_4 mainocc_occupation_indiv_5 mainocc_occupation_indiv_6 mainocc_occupation_indiv_7 mainocc_occupation_indiv_8 edulevel_2 edulevel_3 edulevel_4 edulevel_5 maritalstatus_2 annualincome_indiv HHsize villageid_2 villageid_3 villageid_4 villageid_5 villageid_6 villageid_7 villageid_8 villageid_9 villageid_10 username_code_1 username_code_2 username_code_3 username_code_4 username_code_5 username_code_7

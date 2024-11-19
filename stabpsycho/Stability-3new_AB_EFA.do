@@ -268,6 +268,7 @@ global facts fESs fOPEXs fCOs
 global cogn num_tt lit_tt raven_tt
 global perso $fact $facts $cogn
 
+save "panel_stab_v2_pooled_long", replace
 
 
 ********** Distribution of ars2
@@ -288,7 +289,6 @@ replace ars2rec=1 if ars2>1
 */
 
 keep HHID_panel INDID_panel year $perso $imcr_without
-
 
 
 ********** Rank order stability

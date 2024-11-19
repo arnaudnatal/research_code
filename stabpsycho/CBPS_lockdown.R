@@ -1,7 +1,7 @@
 rm(list=ls())
 
 # Open Data
-setwd("C:/Users/Arnaud/Documents/MEGA/Thesis/Thesis_5-Stability/Analysis")
+setwd("C:/Users/Arnaud/Documents/MEGA/Research/Ongoing_Stability/Analysis")
 par("mar")
 par(mar=c(1,1,1,1))
 

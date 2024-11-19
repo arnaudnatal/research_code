@@ -151,7 +151,7 @@ twoway ///
 (rarea sum4 sum5 assgroup if time==1) ///
 (rarea sum5 sum6 assgroup if time==1) ///
 , ///
-xlabel(1(1)10) xtitle("Decile of assets") ///
+xlabel(1(1)10) xtitle("Decile of wealth") ///
 ylabel(0(10)100) ytitle("Percent") ///
 title("2010") ///
 legend(order(1 "House" 2 "Livestock" 3 "Durable goods" 4 "Land" 5 "Gold" 6 "Saving") pos(6) col(3)) ///
@@ -165,7 +165,7 @@ twoway ///
 (rarea sum4 sum5 assgroup if time==2) ///
 (rarea sum5 sum6 assgroup if time==2) ///
 , ///
-xlabel(1(1)10) xtitle("Decile of assets") ///
+xlabel(1(1)10) xtitle("Decile of wealth") ///
 ylabel(0(10)100) ytitle("Percent") ///
 title("2016-17") ///
 legend(order(1 "House" 2 "Livestock" 3 "Durable goods" 4 "Land" 5 "Gold" 6 "Saving") pos(6) col(3)) ///
@@ -179,7 +179,7 @@ twoway ///
 (rarea sum4 sum5 assgroup if time==3) ///
 (rarea sum5 sum6 assgroup if time==3) ///
 , ///
-xlabel(1(1)10) xtitle("Decile of assets") ///
+xlabel(1(1)10) xtitle("Decile of wealth") ///
 ylabel(0(10)100) ytitle("Percent") ///
 title("2020-21") ///
 legend(order(1 "House" 2 "Livestock" 3 "Durable goods" 4 "Land" 5 "Gold" 6 "Saving") pos(6) col(3)) ///

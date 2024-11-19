@@ -139,7 +139,7 @@ fill(color(black%10)) ///
 box(t(b)) bcolors(plb1) ///
 mean(t(m)) meancolors(plr1) ///
 med(t(m)) medcolors(ananas) ///
-title("Total value of assets") ///
+title("Total value of wealth") ///
 xtitle("1k rupees") xlabel(0(1000)7000) ///
 ylabel(,grid) ///
 legend(order(4 "IQR" 7 "Median" 10 "Mean") pos(6) col(3) on) ///
@@ -218,7 +218,7 @@ twoway ///
 (connected shareass assgroup if year==2010) ///
 (connected shareass assgroup if year==2016) ///
 (connected shareass assgroup if year==2020) ///
-, title("Share of total assets by decile") ///
+, title("Share of total wealth by decile") ///
 ytitle("Percent") ylabel(0(5)55) ///
 xtitle("Decile of assets") xlabel(1(1)10) ///
 legend(order(1 "2010" 2 "2016-17" 3 "2020-21") pos(6) col(3)) name(ass, replace) scale(1.2)

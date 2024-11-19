@@ -38,7 +38,7 @@ twoway ///
 (scatter assets_total monthlyincome_pc if assets_total<=7000 & monthlyincome_pc<=16, msymbol(oh) color(black%30)) ///
 , title("2010") ///
 xtitle("Monthly income p.c. (1k rupees)") xlabel(0(2)16) ///
-ytitle("Total value of assets (1k rupees)") ylabel(0(1000)7000) ///
+ytitle("Total value of wealth (1k rupees)") ylabel(0(1000)7000) ///
 legend(off) ///
 note("Pearson {it:p}=0.174; Spearman {it:p}=0.104", size(vsmall)) ///
 name(g1, replace) scale(1.2) 
@@ -58,7 +58,7 @@ twoway ///
 (scatter assets_total monthlyincome_pc if assets_total<=7000 & monthlyincome_pc<=16, msymbol(oh) color(black%30)) ///
 , title("2016-17") ///
 xtitle("Monthly income p.c. (1k rupees)") xlabel(0(2)16) ///
-ytitle("Total value of assets (1k rupees)") ylabel(0(1000)7000) ///
+ytitle("Total value of wealth (1k rupees)") ylabel(0(1000)7000) ///
 legend(off) ///
 note("Pearson {it:p}=0.280; Spearman {it:p}=0.070", size(vsmall)) ///
 name(g2, replace) scale(1.2) 
@@ -78,7 +78,7 @@ twoway ///
 (scatter assets_total monthlyincome_pc if assets_total<=7000 & monthlyincome_pc<=16, msymbol(oh) color(black%30)) ///
 , title("2020-21") ///
 xtitle("Monthly income p.c. (1k rupees)") xlabel(0(2)16) ///
-ytitle("Total value of assets (1k rupees)") ylabel(0(1000)7000) ///
+ytitle("Total value of wealth (1k rupees)") ylabel(0(1000)7000) ///
 legend(off) ///
 note("Pearson {it:p}=0.164; Spearman {it:p}=0.245", size(vsmall)) ///
 name(g3, replace) scale(1.2) 
