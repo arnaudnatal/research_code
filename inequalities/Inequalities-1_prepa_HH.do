@@ -97,7 +97,100 @@ drop test
 gen goldreadyamount=(goldquantity_HH-goldquantitypledge_HH)*2000
 tabstat assets_gold goldreadyamount, stat(n mean cv q)
 
+
+* Nouvelles estimations des biens de consommation durables en 2010
+rename assets_goods assets_goodsold
+rename assets_total assets_totalold
+rename assets_totalnoland assets_totalnolandold
+rename assets_totalnoprop assets_totalnopropold
+rename assets_total1000 assets_totalold1000
+rename assets_totalnoland1000 assets_totalnolandold1000
+rename assets_totalnoprop1000 assets_totalnopropold1000
+
+rename assets_goodsbis assets_goods
+rename assets_totalbis assets_total
+rename assets_totalnolandbis assets_totalnoland
+rename assets_totalnopropbis assets_totalnoprop
+rename assets_totalbis1000 assets_total1000
+rename assets_totalnolandbis1000 assets_totalnoland1000
+rename assets_totalnopropbis1000 assets_totalnoprop1000
+
+preserve
+keep HHID assets_goods assets_goodsold assets_total assets_totalold
+gen diff=assets_goods-assets_goodsold
+gen test=assets_total-assets_totalold-diff
+ta test
+restore
+
+tabstat assets_goods assets_goodsold, stat(n mean)
+tabstat assets_total1000 assets_totalold1000, stat(n mean)
+
+
 save"temp_RUME", replace
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Estimation consumer good prices 2010
+****************************************
+
+* 2016-17
+use"raw/NEEMSIS1-HH", clear
+
+foreach x in car cookgas computer antenna bike fridge furniture tailormach phone landline DVD camera {
+gen `x'=(goodtotalamount_`x'/numbergoods_`x')*(100/158)
+}
+keep HHID2016 car cookgas computer antenna bike fridge furniture tailormach phone landline DVD camera
+duplicates drop
+rename HHID2016 HHID
+gen year=2016
+order HHID year, first
+
+save"_temp1", replace
+
+
+* 2020-21
+use"raw/NEEMSIS2-HH", clear
+
+foreach x in car cookgas computer antenna bike fridge furniture tailormach phone landline camera {
+gen `x'=(goodtotalamount_`x'/numbergoods_`x')*(100/184)
+}
+keep HHID2020 car cookgas computer antenna bike fridge furniture tailormach phone landline camera
+duplicates drop
+rename HHID2020 HHID
+gen year=2020
+order HHID year, first
+
+save"_temp2", replace
+
+* Pooled
+use"_temp1", clear
+
+append using "_temp2"
+ta year
+
+save"_temp3", replace
+
+
+* Stat
+use"_temp3", clear
+
+tabstat car cookgas computer antenna bike fridge furniture tailormach phone landline camera DVD, stat(n mean p50) by(year)
+
+
 ****************************************
 * END
 
@@ -122,6 +215,7 @@ save"temp_RUME", replace
 * 2016-17
 ****************************************
 use"raw/NEEMSIS1-HH", clear
+
 
 * Drop migrants
 fre livinghome

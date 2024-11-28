@@ -263,7 +263,7 @@ twoway ///
 , title("Wealth") ytitle("Cumulative wealth proportion") ylabel(0(.1)1) ///
 xtitle("Population share") xlabel(0(10)100) ///
 legend(order(1 "2010" 3 "2016-17" 5 "2020-21") pos(6) col(3)) ///
-scale(1.2) note("Gini index is 0.58 in 2010, 0.66 in 2016-17 and 0.61 in 2020-21.", size(vsmall)) name(ass, replace)
+scale(1.2) note("Gini index is 0.57 in 2010, 0.66 in 2016-17 and 0.61 in 2020-21.", size(vsmall)) name(ass, replace)
 
 
 *** Combine
