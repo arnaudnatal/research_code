@@ -17,54 +17,16 @@ do"C:\Users\Arnaud\Documents\GitHub\folderanalysis\inequalities.do"
 
 
 
-****************************************
-* Evolution of HH composition
-****************************************
-use"panel_v4", clear
-
-ta stem year, col nofreq
-
-tabstat HHsize HH_count_child HH_count_adult, stat(mean) by(year)
-tabstat HHsize HH_count_child HH_count_adult if dalits==1, stat(mean) by(year)
-tabstat HHsize HH_count_child HH_count_adult if dalits==0, stat(mean) by(year)
-
-cls
-foreach i in 2020 {
-reg HHsize dalits if year==`i'
-reg HH_count_child dalits if year==`i'
-reg HH_count_adult dalits if year==`i'
-}
-
-
-/*
-Il y a des différences de composition des ménages entre Dalits et non-Dalits donc on va s'intéresser au revenu par tête en tenant compte des équivalences scales. On prend celle de l'OCDE.
-*/
-
-
-****************************************
-* END
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 ****************************************
 * Attrition
 ****************************************
-use"panel_v4", clear
+use"panel_v3", clear
 
 
-keep HHID_panel year monthlyincome_pc assets_total
-rename monthlyincome_pc income
+keep HHID_panel year monthlyincome assets_total
+rename monthlyincome income
 rename assets_total assets
 
 reshape wide income assets, i(HHID_panel) j(year)
@@ -112,22 +74,22 @@ reg assets2016 i.attrition2016
 ****************************************
 * Violin plot
 ****************************************
-use"panel_v4", clear
+use"panel_v3", clear
 
 
 ********** Income
-tabstat monthlyincome_pc, stat(n mean q iqr) by(year)
+tabstat monthlyincome, stat(n mean q p90 p95 p99) by(year)
 
-violinplot monthlyincome_pc, over(time) horizontal left dscale(4) noline now ///
+violinplot monthlyincome, over(time) horizontal left dscale(4) noline now ///
 fill(color(black%10)) ///
 box(t(b)) bcolors(plb1) ///
 mean(t(m)) meancolors(plr1) ///
 med(t(m)) medcolors(ananas) ///
-title("Monthly income per capita") ///
-xtitle("1k rupees") xlabel(0(2)16) ///
+title("Monthly income") ///
+xtitle("1k rupees") xlabel(0(5)40) ///
 ylabel(,grid) ///
 legend(order(4 "IQR" 7 "Median" 10 "Mean") pos(6) col(3) on) ///
-aspectratio() scale(1.2) name(inc, replace) range(0 16)
+aspectratio() scale(1.2) name(inc, replace) range(0 40)
 
 
 
@@ -139,16 +101,16 @@ fill(color(black%10)) ///
 box(t(b)) bcolors(plb1) ///
 mean(t(m)) meancolors(plr1) ///
 med(t(m)) medcolors(ananas) ///
-title("Total value of wealth") ///
-xtitle("1k rupees") xlabel(0(1000)7000) ///
+title("Wealth") ///
+xtitle("1k rupees") xlabel(0(2000)10000) ///
 ylabel(,grid) ///
 legend(order(4 "IQR" 7 "Median" 10 "Mean") pos(6) col(3) on) ///
-aspectratio() scale(1.2) name(ass, replace) range(0 7000)
+aspectratio() scale(1.2) name(ass, replace) range(0 10000)
 
 
 ********** Combine
 grc1leg inc ass, col(2) note("{it:Note:} For 405 households in 2010, 492 in 2016-17, and 625 in 2020-21.", size(vsmall))
-graph export "graph/Violin.png", as(png) replace
+graph export "graph_HH/Violin_HH.png", as(png) replace
 
 ****************************************
 * END
@@ -173,10 +135,10 @@ graph export "graph/Violin.png", as(png) replace
 ****************************************
 
 ***** Income
-use"panel_v4", clear
+use"panel_v3", clear
 
 foreach i in 2010 2016 2020 {
-xtile monthlyinc`i'=monthlyincome_pc if year==`i', n(10)
+xtile monthlyinc`i'=monthlyincome if year==`i', n(10)
 }
 gen incgroup=.
 foreach i in 2010 2016 2020 {
@@ -184,22 +146,22 @@ replace incgroup=monthlyinc`i' if year==`i'
 drop monthlyinc`i' 
 }
 
-collapse (sum) monthlyincome_pc, by(year incgroup)
-bysort year: egen totincome=sum(monthlyincome_pc)
-gen shareinc=monthlyincome_pc*100/totincome
+collapse (sum) monthlyincome, by(year incgroup)
+bysort year: egen totincome=sum(monthlyincome)
+gen shareinc=monthlyincome*100/totincome
 
 twoway ///
 (connected shareinc incgroup if year==2010) ///
 (connected shareinc incgroup if year==2016) ///
 (connected shareinc incgroup if year==2020) ///
-, title("Share of total income per capita by decile") ///
-ytitle("Percent") ylabel(0(5)55) ///
-xtitle("Decile of income per capita") xlabel(1(1)10) ///
+, title("Share of total monthly income by decile") ///
+ytitle("Percent") ylabel(0(5)35) ///
+xtitle("Decile of monthly income") xlabel(1(1)10) ///
 legend(order(1 "2010" 2 "2016-17" 3 "2020-21") pos(6) col(3)) name(inc, replace) scale(1.2)
 
 
 ***** Assets
-use"panel_v4", clear
+use"panel_v3", clear
 
 foreach i in 2010 2016 2020 {
 xtile assets_total`i'=assets_total if year==`i', n(10)
@@ -220,14 +182,14 @@ twoway ///
 (connected shareass assgroup if year==2020) ///
 , title("Share of total wealth by decile") ///
 ytitle("Percent") ylabel(0(5)55) ///
-xtitle("Decile of assets") xlabel(1(1)10) ///
+xtitle("Decile of wealth") xlabel(1(1)10) ///
 legend(order(1 "2010" 2 "2016-17" 3 "2020-21") pos(6) col(3)) name(ass, replace) scale(1.2)
 
 
 
 ***** Combine
 grc1leg inc ass, col(2) note("{it:Note:} For 405 households in 2010, 492 in 2016-17, and 625 in 2020-21.", size(vsmall))
-graph export "graph/Decile.png", as(png) replace
+graph export "graph_HH/Decile_HH.png", as(png) replace
 
 ****************************************
 * END
@@ -256,15 +218,15 @@ graph export "graph/Decile.png", as(png) replace
 ****************************************
 
 ***** Income
-use"panel_v4", clear
+use"panel_v3", clear
 
-keep HHID_panel year monthlyincome_pc
-reshape wide monthlyincome_pc, i(HHID_panel) j(year)
-lorenz estimate monthlyincome_pc2010 monthlyincome_pc2016 monthlyincome_pc2020, gini
+keep HHID_panel year monthlyincome
+reshape wide monthlyincome, i(HHID_panel) j(year)
+lorenz estimate monthlyincome2010 monthlyincome2016 monthlyincome2020, gini
 
 
 ***** Assets
-use"panel_v4", clear
+use"panel_v3", clear
 
 keep HHID_panel year assets_total
 reshape wide assets_total, i(HHID_panel) j(year)
@@ -274,7 +236,7 @@ lorenz estimate assets_total2010 assets_total2016 assets_total2020, gini
 ********** À la main pour les CI
 
 *** Income
-import excel "Lorenz.xlsx", sheet("Income") firstrow clear
+import excel "Lorenz.xlsx", sheet("Income_HH") firstrow clear
 *
 twoway ///
 (line coef2010 pop, color(ply1)) ///
@@ -283,13 +245,13 @@ twoway ///
 (rarea ub2016 lb2016 pop, color(plr1%10)) ///
 (line coef2020 pop, color(plg1)) ///
 (rarea ub2020 lb2020 pop, color(plg1%10)) ///
-, title("Income") ytitle("Cumulative income proportion") ylabel(0(.1)1) ///
+, title("Monthly income") ytitle("Cumulative income proportion") ylabel(0(.1)1) ///
 xtitle("Population share") xlabel(0(10)100) ///
 legend(order(1 "2010" 3 "2016-17" 5 "2020-21") pos(6) col(3)) ///
-scale(1.2) note("Gini index is 0.32 in 2010, 0.42 in 2016-17 and 0.48 in 2020-21.", size(vsmall)) name(inc, replace)
+scale(1.2) note("Gini index is 0.32 in 2010, 0.43 in 2016-17 and 0.48 in 2020-21.", size(vsmall)) name(inc, replace)
 
 *** Wealth
-import excel "Lorenz.xlsx", sheet("Wealth") firstrow clear
+import excel "Lorenz.xlsx", sheet("Wealth_HH") firstrow clear
 *
 twoway ///
 (line coef2010 pop, color(ply1)) ///
@@ -306,7 +268,7 @@ scale(1.2) note("Gini index is 0.58 in 2010, 0.66 in 2016-17 and 0.61 in 2020-21
 
 *** Combine
 grc1leg inc ass, col(2) note("{it:Note:} For 405 households in 2010, 492 in 2016-17, and 625 in 2020-21.", size(vsmall))
-graph export "graph/Lorenz.png", as(png) replace
+graph export "graph_HH/Lorenz_HH.png", as(png) replace
 
 ****************************************
 * END
@@ -328,22 +290,22 @@ graph export "graph/Lorenz.png", as(png) replace
 ****************************************
 * Wealth ownership
 ****************************************
-use"panel_v4", clear
+use"panel_v3", clear
 
 * Collapse
-global var dum_house dum_livestock dum_goods dum_land dum_gold dum_savings
+global var d_house d_livestock d_goods d_land d_gold d_savings
 recode $var (.=0)
 collapse (mean) $var, by(time)
 foreach x in $var {
 replace `x'=`x'*100
 }
 
-rename dum_house share1
-rename dum_livestock share2
-rename dum_goods share3
-rename dum_land share4
-rename dum_gold share5
-rename dum_savings share6
+rename d_house share1
+rename d_livestock share2
+rename d_goods share3
+rename d_land share4
+rename d_gold share5
+rename d_savings share6
 
 * Reshape
 reshape long share, i(time) j(cat)

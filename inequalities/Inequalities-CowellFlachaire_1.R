@@ -21,11 +21,11 @@ Mboot = matrix(0,nboot,nalpha)
 source("mobility.r")  # load the functions used to compute mobility indices 
 
 # Read the data
-  data1 <- read.table("panelHHincome2.txt",header=TRUE)
-  data <- data1[data1$inc1>0 & data1$inc2>0,]
+  data1 <- read.table("wealthpc2_upp.txt",header=TRUE)
+  data <- data1[data1$var1>0 & data1$var2>0,]
   attach(data)
-  i1=inc1
-  i2=inc2
+  i1=var1
+  i2=var2
 
 Z=cbind(i1,i2) 
 
@@ -217,7 +217,7 @@ res_inc=res[,1:4]
 #########################################################################
 
 res_rank
-write.xlsx(res_rank, 'CF_detrank.xlsx')
+write.xlsx(res_rank, 'CF_rank.xlsx')
 
 res_inc
-write.xlsx(res_inc, 'CF_detinc.xlsx')
+write.xlsx(res_inc, 'CF_level.xlsx')

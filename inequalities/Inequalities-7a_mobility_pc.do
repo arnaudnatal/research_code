@@ -21,7 +21,7 @@ do"C:\Users\Arnaud\Documents\GitHub\folderanalysis\inequalities.do"
 ****************************************
 * INCOME - Social mobility
 ****************************************
-use"panel_v4", clear
+use"panel_v3", clear
 
 keep HHID_panel year monthlyincome_pc caste
 rename monthlyincome_pc income
@@ -35,20 +35,21 @@ xtile quint`x'=income`x', n(5)
 gen diffq1=quint2016-quint2010
 gen absdiffq1=abs(diffq1)
 gen catdiffq1=.
-label define catdiffq1 1"Downward" 2"Immobility" 3"Upward"
+label define catdiffq1 1"Immobility" 2"Upward" 3"Downward" 
 label values catdiffq1 catdiffq1
-replace catdiffq1=1 if diffq1<0 & diffq1!=.
-replace catdiffq1=2 if diffq1==0 & diffq1!=.
-replace catdiffq1=3 if diffq1>0 & diffq1!=.
+replace catdiffq1=1 if diffq1==0 & diffq1!=.
+replace catdiffq1=2 if diffq1>0 & diffq1!=.
+replace catdiffq1=3 if diffq1<0 & diffq1!=.
 
 gen diffq2=quint2020-quint2016
 gen absdiffq2=abs(diffq2)
 gen catdiffq2=.
-label define catdiffq2 1"Downward" 2"Immobility" 3"Upward"
+label define catdiffq2 1"Immobility" 2"Upward" 3"Downward" 
 label values catdiffq2 catdiffq2
-replace catdiffq2=1 if diffq2<0 & diffq2!=.
-replace catdiffq2=2 if diffq2==0 & diffq2!=.
-replace catdiffq2=3 if diffq2>0 & diffq2!=.
+replace catdiffq2=1 if diffq2==0 & diffq2!=.
+replace catdiffq2=2 if diffq2>0 & diffq2!=.
+replace catdiffq2=3 if diffq2<0 & diffq2!=.
+
 
 
 * Transition matrix
@@ -62,8 +63,8 @@ ta catdiffq2
 ta catdiffq1 catdiffq2, row nofreq
 ta catdiffq1 catdiffq2, chi2 exp cchi2
 
-tabstat absdiffq1 if catdiffq1!=2, stat(n mean) by(catdiffq1)
-tabstat absdiffq2 if catdiffq2!=2, stat(n mean) by(catdiffq2)
+tabstat absdiffq1 if catdiffq1!=1, stat(n mean) by(catdiffq1)
+tabstat absdiffq2 if catdiffq2!=1, stat(n mean) by(catdiffq2)
 
 ****************************************
 * END
@@ -82,10 +83,10 @@ tabstat absdiffq2 if catdiffq2!=2, stat(n mean) by(catdiffq2)
 ****************************************
 * WEALTH - Social mobility
 ****************************************
-use"panel_v4", clear
+use"panel_v3", clear
 
-keep HHID_panel year assets_total caste
-rename assets_total assets
+keep HHID_panel year assets_total_pc caste
+rename assets_total_pc assets
 reshape wide assets, i(HHID_panel) j(year)
 
 foreach x in 2010 2016 2020 {
@@ -96,20 +97,20 @@ xtile quint`x'=assets`x', n(5)
 gen diffq1=quint2016-quint2010
 gen absdiffq1=abs(diffq1)
 gen catdiffq1=.
-label define catdiffq1 1"Downward" 2"Immobility" 3"Upward"
+label define catdiffq1 1"Immobility" 2"Upward" 3"Downward" 
 label values catdiffq1 catdiffq1
-replace catdiffq1=1 if diffq1<0 & diffq1!=.
-replace catdiffq1=2 if diffq1==0 & diffq1!=.
-replace catdiffq1=3 if diffq1>0 & diffq1!=.
+replace catdiffq1=1 if diffq1==0 & diffq1!=.
+replace catdiffq1=2 if diffq1>0 & diffq1!=.
+replace catdiffq1=3 if diffq1<0 & diffq1!=.
 
 gen diffq2=quint2020-quint2016
 gen absdiffq2=abs(diffq2)
 gen catdiffq2=.
-label define catdiffq2 1"Downward" 2"Immobility" 3"Upward"
+label define catdiffq2 1"Immobility" 2"Upward" 3"Downward" 
 label values catdiffq2 catdiffq2
-replace catdiffq2=1 if diffq2<0 & diffq2!=.
-replace catdiffq2=2 if diffq2==0 & diffq2!=.
-replace catdiffq2=3 if diffq2>0 & diffq2!=.
+replace catdiffq2=1 if diffq2==0 & diffq2!=.
+replace catdiffq2=2 if diffq2>0 & diffq2!=.
+replace catdiffq2=3 if diffq2<0 & diffq2!=.
 
 
 * Transition matrix
@@ -120,11 +121,10 @@ ta quint2016 quint2020, row nofreq chi2
 ta catdiffq1
 ta catdiffq2
 
-ta catdiffq1 catdiffq2, row nofreq
-ta catdiffq1 catdiffq2, chi2 exp cchi2
+ta catdiffq1 catdiffq2, row nofreq chi2
 
-tabstat absdiffq1 if catdiffq1!=2, stat(n mean) by(catdiffq1)
-tabstat absdiffq2 if catdiffq2!=2, stat(n mean) by(catdiffq2)
+tabstat absdiffq1 if catdiffq1!=1, stat(n mean) by(catdiffq1)
+tabstat absdiffq2 if catdiffq2!=1, stat(n mean) by(catdiffq2)
 
 ****************************************
 * END
@@ -156,7 +156,7 @@ tabstat absdiffq2 if catdiffq2!=2, stat(n mean) by(catdiffq2)
 ********** Income
 
 * 2010 - 2016-17
-use"panel_v4", clear
+use"panel_v3", clear
 keep HHID_panel year monthlyincome_pc
 rename monthlyincome_pc inc
 replace inc=inc*1000
@@ -168,11 +168,13 @@ rename HHID_panel hhid
 drop inc3
 drop if inc1==.
 drop if inc2==.
-export delimited using "C:\Users\Arnaud\Documents\GitHub\research_code\inequalities\panelHHincome1.txt", delimiter(tab) replace
+rename inc1 var1
+rename inc2 var2
+export delimited using "C:\Users\Arnaud\Documents\GitHub\research_code\inequalities\incomepc1.txt", delimiter(tab) replace
 
 
 * 2016-17 - 2020-21
-use"panel_v4", clear
+use"panel_v3", clear
 keep HHID_panel year monthlyincome_pc
 rename monthlyincome_pc inc
 replace inc=inc*1000
@@ -184,18 +186,18 @@ rename HHID_panel hhid
 drop inc1
 drop if inc2==.
 drop if inc3==.
-rename inc2 inc1
-rename inc3 inc2
-export delimited using "C:\Users\Arnaud\Documents\GitHub\research_code\inequalities\panelHHincome2.txt", delimiter(tab) replace
+rename inc2 var1
+rename inc3 var2
+export delimited using "C:\Users\Arnaud\Documents\GitHub\research_code\inequalities\incomepc2.txt", delimiter(tab) replace
 
 
 
 ********** Assets
 
 * 2010 - 2016-17
-use"panel_v4", clear
-keep HHID_panel year assets_total
-rename assets_total ass
+use"panel_v3", clear
+keep HHID_panel year assets_total_pc
+rename assets_total_pc ass
 replace ass=ass*1000
 replace year=1 if year==2010
 replace year=2 if year==2016
@@ -207,13 +209,15 @@ drop if ass1==.
 drop if ass2==.
 drop if ass1==0
 drop if ass2==0
-export delimited using "C:\Users\Arnaud\Documents\GitHub\research_code\inequalities\panelHHassets1.txt", delimiter(tab) replace
+rename ass1 var1
+rename ass2 var2
+export delimited using "C:\Users\Arnaud\Documents\GitHub\research_code\inequalities\wealthpc1.txt", delimiter(tab) replace
 
 
 * 2016-17 - 2020-21
-use"panel_v4", clear
-keep HHID_panel year assets_total
-rename assets_total ass
+use"panel_v3", clear
+keep HHID_panel year assets_total_pc
+rename assets_total_pc ass
 replace ass=ass*1000
 replace year=1 if year==2010
 replace year=2 if year==2016
@@ -223,11 +227,11 @@ rename HHID_panel hhid
 drop ass1
 drop if ass2==.
 drop if ass3==.
-rename ass2 ass1
-rename ass3 ass2
-drop if ass1==0
-drop if ass2==0
-export delimited using "C:\Users\Arnaud\Documents\GitHub\research_code\inequalities\panelHHassets2.txt", delimiter(tab) replace
+rename ass2 var1
+rename ass3 var2
+drop if var1==0
+drop if var2==0
+export delimited using "C:\Users\Arnaud\Documents\GitHub\research_code\inequalities\wealthpc2.txt", delimiter(tab) replace
 
 ****************************************
 * END
@@ -265,7 +269,7 @@ twoway ///
 (rarea CI_upper CI_lower alpha if timeframe==1, color(plg1%10)) ///
 (connected index alpha if timeframe==2, color(plr1)) ///
 (rarea CI_upper CI_lower alpha if timeframe==2, color(plr1%10)) ///
-, title("Income rank mobility") ///
+, title("Monthly income per capita rank mobility") ///
 ytitle("") ylabel(.2(.1).8) ///
 xtitle("α") xlabel(-.5(.5)1.5) ///
 legend(order(1 "2010 to 2016-17" 3 "2016-17 to 2020-21") pos(6) col(2)) ///
@@ -289,7 +293,7 @@ twoway ///
 (rarea CI_upper CI_lower alpha if timeframe==1, color(plg1%10)) ///
 (connected index alpha if timeframe==2, color(plr1)) ///
 (rarea CI_upper CI_lower alpha if timeframe==2, color(plr1%10)) ///
-, title("Wealth rank mobility") ///
+, title("Wealth per capita rank mobility") ///
 ytitle("") ylabel(.2(.1).8) ///
 xtitle("α") xlabel(-.5(.5)1.5) ///
 legend(order(1 "2010 to 2016-17" 3 "2016-17 to 2020-21") pos(6) col(2)) ///
@@ -313,7 +317,7 @@ twoway ///
 (rarea CI_upper CI_lower alpha if timeframe==1, color(plg1%10)) ///
 (connected index alpha if timeframe==2, color(plr1)) ///
 (rarea CI_upper CI_lower alpha if timeframe==2, color(plr1%10)) ///
-, title("Income mobility") ///
+, title("Monthly income per capita mobility") ///
 ytitle("") ylabel(0(1)3) ///
 xtitle("α") xlabel(-.5(.5)1.5) ///
 legend(order(1 "2010 to 2016-17" 3 "2016-17 to 2020-21") pos(6) col(2)) ///
@@ -340,7 +344,7 @@ twoway ///
 (rarea CI_upper CI_lower alpha if timeframe==1, color(plg1%10)) ///
 (connected index alpha if timeframe==2, color(plr1)) ///
 (rarea CI_upper CI_lower alpha if timeframe==2, color(plr1%10)) ///
-, title("Wealth mobility") ///
+, title("Wealth per capita mobility") ///
 ytitle("") ylabel(0(1)3) ///
 xtitle("α") xlabel(-.5(.5)1.5) ///
 legend(order(1 "2010 to 2016-17" 3 "2016-17 to 2020-21") pos(6) col(2)) ///
@@ -353,7 +357,7 @@ scale(1.2) name(assval, replace)
 
 ********** Combine
 grc1leg incrank assrank incval assval, col(2) name(combcomb, replace) note("{it:Note:} For 388 households in 2010 and 2016-17, and 485 in 2016-17 and 2020-21.", size(vsmall))
-graph export "graph/CFgraph.png", as(png) replace
+graph export "graph_pc/CFgraph_pc.png", as(png) replace
 
 ****************************************
 * END
@@ -384,13 +388,13 @@ graph export "graph/CFgraph.png", as(png) replace
 ****************************************
 * Reldist
 ****************************************
-use"panel_v4", clear
+use"panel_v3", clear
 
 /*
 doi: 10.1177/1536867X211063147
 */
 
-gen assets=assets_total*1000
+gen assets=assets_total_pc*1000
 gen income=monthlyincome_pc*1000
 
 keep HHID_panel year assets income
