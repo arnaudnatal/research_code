@@ -588,17 +588,23 @@ use"NEEMSIS-marriage.dta", clear
 * Selection
 keep if sex==1
 
+pwcorr marriagedowry1000 educexp_female_HH
+pwcorr marriagedowry1000 educexp_female_HH if caste==1
+pwcorr marriagedowry1000 educexp_female_HH if caste==2
+pwcorr marriagedowry1000 educexp_female_HH if caste==3
+
+
 * Reg
 reg marriagedowry1000 i.year i.edulevel i.working_pop i.caste i.ownland c.assets_totalnoland c.annualincome_HH c.shareincomeagri_HH i.intercaste c.nbmarr_male c.nbmarr_female c.educexp_female_HH, baselevel
 est store reg1
 
-reg marriagedowry1000 i.year i.edulevel i.working_pop i.caste i.ownland c.assets_totalnoland c.annualincome_HH c.shareincomeagri_HH i.interjatis c.nbmarr_male c.nbmarr_female c.educexp_male_HH, baselevel
+reg marriagedowry1000 i.year i.edulevel i.working_pop i.caste i.ownland c.assets_totalnoland c.annualincome_HH c.shareincomeagri_HH i.interjatis c.nbmarr_male c.nbmarr_female c.educexp_female_HH, baselevel
 est store reg2
 
-reg marriagedowry1000 i.year i.edulevel i.working_pop i.caste i.ownland c.assets_totalnoland c.annualincome_HH c.shareincomeagri_HH i.intercaste c.nbmarr_male c.nbmarr_female c.educexp_male_HH i.marriagespousefamily, baselevel
+reg marriagedowry1000 i.year i.edulevel i.working_pop i.caste i.ownland c.assets_totalnoland c.annualincome_HH c.shareincomeagri_HH i.intercaste c.nbmarr_male c.nbmarr_female c.educexp_female_HH i.marriagespousefamily, baselevel
 est store reg3
 
-reg marriagedowry1000 i.year i.edulevel i.working_pop i.caste i.ownland c.assets_totalnoland c.annualincome_HH c.shareincomeagri_HH i.interjatis c.nbmarr_male c.nbmarr_female c.educexp_male_HH i.marriagespousefamily, baselevel
+reg marriagedowry1000 i.year i.edulevel i.working_pop i.caste i.ownland c.assets_totalnoland c.annualincome_HH c.shareincomeagri_HH i.interjatis c.nbmarr_male c.nbmarr_female c.educexp_female_HH i.marriagespousefamily, baselevel
 est store reg4
 
 esttab reg1 reg2 reg3 reg4 using "_reg.csv", replace ///
@@ -611,6 +617,40 @@ esttab reg1 reg2 reg3 reg4 using "_reg.csv", replace ///
 	labels(`"Observations"'))
 
 
+	
+	
+
+	
+cls
+********** Determinants of absolut dowry from the male side STD
+use"NEEMSIS-marriage.dta", clear
+
+* Selection
+keep if sex==1
+
+* Std assets et educ pour comparer les coefficients
+ta educexp_female_HH
+replace educexp_female_HH=educexp_female_HH/1000
+
+* Sans educ. R2=.2203 (.1592) = +4.06 (+3.98)
+reg marriagedowry1000 i.year i.edulevel i.working_pop i.caste c.assets_totalnoland c.annualincome_HH c.shareincomeagri_HH i.intercaste c.nbmarr_male c.nbmarr_female i.ownland, baselevel
+
+* Sans la terre. R2=.2365 (.1766) = +2.44 (+2.24)
+reg marriagedowry1000 i.year i.edulevel i.working_pop i.caste c.assets_totalnoland c.annualincome_HH c.shareincomeagri_HH i.intercaste c.nbmarr_male c.nbmarr_female c.educexp_female_HH, baselevel
+
+* Avec les deux. R2=.2609 (.1990)
+reg marriagedowry1000 i.year i.edulevel i.working_pop i.caste c.assets_totalnoland c.annualincome_HH c.shareincomeagri_HH i.intercaste c.nbmarr_male c.nbmarr_female i.ownland c.educexp_female_HH, baselevel
+
+
+
+	
+	
+	
+	
+	
+	
+	
+	
 
 
 
@@ -641,10 +681,8 @@ pwcorr educexp_male_HH marrdow_male_HH if caste==2, star(0.05)
 pwcorr educexp_male_HH marrdow_male_HH if caste==3, star(0.05)
 pwcorr educexp_male_HH marrdow_male_HH if caste==1 | caste==2, star(0.05)
 
-
-
 * Expenses in education of females
-pwcorr educexp_female_HH marrdow_male_HH, star(0.05)
+pwcorr educexp_female_HH marrdow_male_HH, star(0.01)
 pwcorr educexp_female_HH marrdow_male_HH if caste==1, star(0.05)
 pwcorr educexp_female_HH marrdow_male_HH if caste==2, star(0.05)
 pwcorr educexp_female_HH marrdow_male_HH if caste==3, star(0.05)

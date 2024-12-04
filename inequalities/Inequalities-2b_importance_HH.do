@@ -25,11 +25,13 @@ do"C:\Users\Arnaud\Documents\GitHub\folderanalysis\inequalities.do"
 use"panel_v3", clear
 
 
-keep HHID_panel year monthlyincome assets_total
+keep HHID_panel year monthlyincome assets_total HHsize caste
 rename monthlyincome income
 rename assets_total assets
+rename HHsize size
 
-reshape wide income assets, i(HHID_panel) j(year)
+reshape wide income assets size caste, i(HHID_panel) j(year)
+
 gen attrition2010=0
 replace attrition2010=1 if income2010!=. & income2016==.
 replace attrition2010=. if income2010==.
@@ -53,6 +55,12 @@ tabstat assets2010, stat(n mean median) by(attrition2010)
 tabstat assets2016, stat(n mean median) by(attrition2016)
 reg assets2010 i.attrition2010
 reg assets2016 i.attrition2016
+
+* HH size
+tabstat size2010, stat(n mean median) by(attrition2010)
+tabstat size2016, stat(n mean median) by(attrition2016)
+reg size2010 i.attrition2010
+reg size2016 i.attrition2016
 
 ****************************************
 * END
