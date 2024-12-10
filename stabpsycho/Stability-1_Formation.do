@@ -141,6 +141,7 @@ gen year=2020
 
 * COVID
 merge m:1 HHID2020 using "raw\NEEMSIS2-covid.dta", keepusing(dummyexposure dummysell secondlockdownexposure)
+keep if _merge==3
 drop _merge
 /*
 ERREUR
@@ -172,35 +173,43 @@ dummyexposu |
 
 * Caste
 merge 1:1 HHID2020 INDID2020 using "raw\NEEMSIS2-caste.dta", keepusing(jatiscorr caste)
+keep if _merge==3
 drop _merge
 
 * Education
 merge 1:1 HHID2020 INDID2020 using "raw\NEEMSIS2-education.dta", keepusing(edulevel)
+keep if _merge==3
 drop _merge
 
 * Occupations
 merge 1:1 HHID2020 INDID2020 using "raw\NEEMSIS2-occup_indiv.dta", keepusing(mainocc_profession_indiv mainocc_occupation_indiv mainocc_sector_indiv mainocc_occupationname_indiv annualincome_indiv)
+keep if _merge==3
 drop _merge
 
 * Occupations HH
 merge m:1 HHID2020 using "raw\NEEMSIS2-occup_HH.dta", keepusing(annualincome_HH)
+keep if _merge==3
 drop _merge
 
 * Assets
 merge m:1 HHID2020 using "raw\NEEMSIS2-assets.dta", keepusing(assets_total1000 assets_totalnoland1000 assets_sizeownland expenses_heal shareexpenses_heal)
+keep if _merge==3
 drop _merge
 
 * Family
 merge m:1 HHID2020 using "raw\NEEMSIS2-family.dta", keepusing(HHsize typeoffamily)
+keep if _merge==3
 drop _merge
 
 * Villages
 merge m:1 HHID2020 using "raw\NEEMSIS2-villages.dta", keepusing(village_new)
+keep if _merge==3
 rename village_new villagename
 drop _merge
 
 * Debt
 merge m:1 HHID2020 using "raw\NEEMSIS2-loans_HH", keepusing(loanamount_HH imp1_ds_tot_HH)
+drop if _merge==2
 drop _merge
 
 * Panel HH
@@ -217,6 +226,7 @@ destring INDID2020, replace
 
 * PTCS
 merge 1:1 HHID2020 INDID2020 using "raw\NEEMSIS2-PTCS.dta", keepusing(ra1 rab1 rb1 ra2 rab2 rb2 ra3 rab3 rb3 ra4 rab4 rb4 ra5 rab5 rb5 ra6 rab6 rb6 ra7 rab7 rb7 ra8 rab8 rb8 ra9 rab9 rb9 ra10 rab10 rb10 ra11 rab11 rb11 ra12 rab12 rb12 set_a set_ab set_b raven_tt refuse num_tt lit_tt)
+drop if _merge==2
 drop _merge
 
 * Ego

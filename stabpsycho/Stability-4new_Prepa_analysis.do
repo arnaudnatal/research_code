@@ -16,6 +16,48 @@ do "C:/Users/Arnaud/Documents/GitHub/folderanalysis/$link.do"
 
 
 
+****************************************
+* Sample
+****************************************
+use"panel_stab_v2_wide", clear
+
+keep HHID_panel INDID_panel dummydemonetisation2016 dummyexposure2020 egoid2016 egoid2020
+
+*
+gen present2016=1 if egoid2016!=.
+gen present2020=1 if egoid2020!=.
+drop egoid2016 egoid2020
+
+*
+rename dummydemonetisation2016 demonetisation
+rename dummyexposure2020 lockdown
+
+*
+gen panel=0
+replace panel=1 if present2016==1 & present2020==1
+
+*
+order HHID_panel INDID_panel present2016 present2020 panel
+
+* 
+ta demonetisation if present2016==1
+ta demonetisation if panel==1
+
+*
+ta lockdown if present2020==1, m
+ta lockdown if panel==1, m
+
+****************************************
+* END
+
+
+
+
+
+
+
+
+
 
 ****************************************
 * Formation

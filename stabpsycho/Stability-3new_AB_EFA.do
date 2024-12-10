@@ -20,6 +20,16 @@ do "C:/Users/Arnaud/Documents/GitHub/folderanalysis/$link.do"
 
 
 
+
+
+
+
+
+
+
+
+
+
 ****************************************
 * Acquiescence bias
 ****************************************
@@ -101,11 +111,8 @@ esttab ars1_1 ars1_2 ars2_1 ars2_2, ///
 ****************************************
 use"panel_stab_v2", clear
 
-ta year
 
-
-
-********** Imputation for corrected one
+*********** Imputation 
 global big5cr ///
 cr_curious cr_interestedbyart cr_repetitivetasks cr_inventive cr_liketothink cr_newideas cr_activeimagination ///
 cr_organized cr_makeplans cr_workhard cr_appointmentontime cr_putoffduties cr_easilydistracted cr_completeduties ///
@@ -114,13 +121,21 @@ cr_workwithother cr_understandotherfeeling cr_trustingofother cr_rudetoother cr_
 cr_managestress cr_nervous cr_changemood cr_feeldepressed cr_easilyupset cr_worryalot cr_staycalm ///
 cr_tryhard cr_stickwithgoals cr_goaftergoal cr_finishwhatbegin cr_finishtasks cr_keepworking
 
-foreach x in $big5cr{
+global big5 ///
+curious interestedbyart repetitivetasks inventive liketothink newideas activeimagination ///
+organized makeplans workhard appointmentontime putoffduties easilydistracted completeduties ///
+enjoypeople sharefeelings shywithpeople enthusiastic talktomanypeople talkative expressingthoughts ///
+workwithother understandotherfeeling trustingofother rudetoother toleratefaults forgiveother helpfulwithothers ///
+managestress nervous changemood feeldepressed easilyupset worryalot staycalm ///
+tryhard stickwithgoals goaftergoal finishwhatbegin finishtasks keepworking
+
+foreach x in $big5cr $big5{
 gen im`x'=`x'
 }
 
 forvalues j=1(1)3{
 forvalues i=1(1)2{
-foreach x in $big5cr{
+foreach x in $big5cr $big5{
 qui sum im`x' if sex==`i' & caste==`j' & egoid!=0 & egoid!=.
 replace im`x'=r(mean) if im`x'==. & sex==`i' & caste==`j' & egoid!=0 & egoid!=.
 }
@@ -130,6 +145,8 @@ replace im`x'=r(mean) if im`x'==. & sex==`i' & caste==`j' & egoid!=0 & egoid!=.
 
 
 ********** Macro
+
+***** Corr
 global imcr_OP imcr_curious imcr_interestedbyart imcr_repetitivetasks imcr_inventive imcr_liketothink imcr_newideas imcr_activeimagination 
 
 global imcr_CO imcr_organized imcr_makeplans imcr_workhard imcr_appointmentontime imcr_putoffduties imcr_easilydistracted imcr_completeduties
@@ -143,91 +160,169 @@ global imcr_ES imcr_managestress imcr_nervous imcr_changemood imcr_feeldepressed
 global imcr_Grit imcr_tryhard imcr_stickwithgoals imcr_goaftergoal imcr_finishwhatbegin imcr_finishtasks imcr_keepworking
 
 
+***** Non corr
+global imOP imcurious iminterestedbyart imrepetitivetasks iminventive imliketothink imnewideas imactiveimagination 
+
+global imCO imorganized immakeplans imworkhard imappointmentontime imputoffduties imeasilydistracted imcompleteduties
+
+global imEX imenjoypeople imsharefeelings imshywithpeople imenthusiastic imtalktomanypeople imtalkative imexpressingthoughts 
+
+global imAG imworkwithother imunderstandotherfeeling imtrustingofother imrudetoother imtoleratefaults imforgiveother imhelpfulwithothers
+
+global imES immanagestress imnervous imchangemood imfeeldepressed imeasilyupset imworryalot imstaycalm
+
+global imGrit imtryhard imstickwithgoals imgoaftergoal imfinishwhatbegin imfinishtasks imkeepworking
 
 
 
-********** Without Grit
+
+
+
+********** EFA corr
+
+***** Nb factors
 global imcr_without $imcr_OP $imcr_CO $imcr_EX $imcr_AG $imcr_ES
-
-
-*****
 factortest $imcr_without
 factor $imcr_without, pcf
 
-
-***** How many factors to keep?
-* Kaiser criterion (eigenvalue>1) : 8  (without Grit)
+* Kaiser criterion (eigenvalue>1)
 
 * Catell screeplot
 *screeplot, neigen(15) yline(1)
 
 * Velicer Minimum Average Partial Correlation
-*ssc install minap
 minap $imcr_without
-* Without Grit 3
 
 * Horn Parallel Analysis
-*ssc instal paran 
 *paran $imcr_without, factor(pcf)
-* Without Grit 6
 
-*****
-*
+
+
+***** EFA
 cls
 factor $imcr_without, pcf fa(3)
 rotate, quartimin
-predict f1without_alt_ES f2without_alt_OPEX f3without_alt_CO
-*putexcel set "new/EFA_pooled.xlsx", modify sheet("Rotated")
+predict f1corr f2corr f3corr
+*putexcel set "new/EFA_pooled.xlsx", modify sheet("Corr")
 *putexcel (D2)=matrix(e(r_L))
+rename f1corr fsES
+rename f2corr fsOPEX
+rename f3corr fsCO
 
-
-***** Factors
+***** Macro
 * F1
-global f1without imcr_enjoypeople imcr_rudetoother imcr_shywithpeople imcr_repetitivetasks imcr_putoffduties imcr_feeldepressed imcr_changemood imcr_easilyupset imcr_nervous imcr_worryalot
-
+global f1corr imcr_workwithother imcr_enjoypeople imcr_rudetoother imcr_shywithpeople imcr_repetitivetasks imcr_putoffduties imcr_feeldepressed imcr_changemood imcr_easilyupset imcr_nervous imcr_worryalot imcr_easilydistracted
 
 * F2
-global f2without imcr_interestedbyart imcr_curious imcr_talkative imcr_expressingthoughts imcr_sharefeelings imcr_inventive imcr_liketothink imcr_newideas
-
+global f2corr imcr_understandotherfeeling imcr_talktomanypeople imcr_interestedbyart imcr_curious imcr_talkative imcr_expressingthoughts imcr_sharefeelings imcr_inventive imcr_liketothink imcr_newideas imcr_activeimagination
 
 * F3
-global f3without imcr_organized imcr_enthusiastic imcr_appointmentontime imcr_workhard imcr_completeduties imcr_makeplans
+global f3corr imcr_organized imcr_enthusiastic imcr_appointmentontime imcr_workhard imcr_completeduties imcr_makeplans
 
 
-
-
-
-
-********** Factors construction
-
-***** Without
+***** Construction
 *
-omegacoef $f1without
-egen f1without=rowmean($f1without)
-replace f1without=0 if f1without<0 & f1without!=. 
-replace f1without=6 if f1without>6 & f1without!=.
-rename f1without f1without_ES
+omegacoef $f1corr
+egen f1corr_ES=rowmean($f1corr)
 *
-omegacoef $f2without
-egen f2without=rowmean($f2without)
-replace f2without=0 if f2without<0 & f2without!=. 
-replace f2without=6 if f2without>6 & f2without!=. 
-rename f2without f2without_OPEX
+omegacoef $f2corr
+egen f2corr_OPEX=rowmean($f2corr)
 *
-omegacoef $f3without
-egen f3without=rowmean($f3without)
-replace f3without=0 if f3without<0 & f3without!=. 
-replace f3without=6 if f3without>6 & f3without!=. 
-rename f3without f3without_CO
+omegacoef $f3corr
+egen f3corr_CO=rowmean($f3corr)
 
-sum ars2
+
+
+
+
+
+
+
+
+********** EFA non corr
+
+***** Nb factors
+global imwithout $imOP $imCO $imEX $imAG $imES
+factortest $imwithout
+factor $imwithout, pcf
+
+* Kaiser criterion (eigenvalue>1)
+
+* Catell screeplot
+*screeplot, neigen(15) yline(1)
+
+* Velicer Minimum Average Partial Correlation
+minap $imwithout
+
+* Horn Parallel Analysis
+*paran $imwithout, factor(pcf)
+
+
+
+***** EFA
+cls
+factor $imwithout, pcf fa(3)
+rotate, quartimin
+predict f1noncorr f2noncorr f3noncorr
+*putexcel set "new/EFA_pooled.xlsx", modify sheet("Noncorr")
+*putexcel (D2)=matrix(e(r_L))
+drop f1noncorr f2noncorr f3noncorr
+
 /*
-la correction peut aller de -1.4 à +1.7
-Donc le score finale des traits de personnalité va théoriquement de [1;4], mais avec les corrections, il va de [-0.4;5.7].
-On recode le -0.4 à 0 pour ne pas avoir de valeur négatives.
-Donc le score finale va de [0;5.7].
+***** Macro
+* F1
+global f1noncorr
+* F2
+global f2noncorr
 
+* F3
+global f3noncorr
+
+
+***** Construction
+*
+omegacoef $f1noncorr
+egen f1noncorr_ES=rowmean($f1noncorr)
+*
+omegacoef $f2corr
+egen f2noncorr_OPEX=rowmean($f2noncorr)
+*
+omegacoef $f3corr
+egen f3noncorr_CO=rowmean($f3noncorr)
 */
+
+
+
+
+
+
+
+
+
+********** Big Five mode
+omegacoef $imcr_OP
+egen crOP=rowmean($imcr_OP)
+
+omegacoef $imcr_CO
+egen crCO=rowmean($imcr_CO)
+
+omegacoef $imcr_EX
+egen crEX=rowmean($imcr_EX)
+
+omegacoef $imcr_AG
+egen crAG=rowmean($imcr_AG)
+
+omegacoef $imcr_ES
+egen crES=rowmean($imcr_ES)
+
+
+
+
+
+********** Correlation between factors and traits
+corr f1corr_ES f2corr_OPEX f3corr_CO crOP crCO crEX crAG crES
+spearman f1corr_ES f2corr_OPEX f3corr_CO crOP crCO crEX crAG crES, stats(rho p)
+
 
 save "panel_stab_v2_pooled", replace
 ****************************************
@@ -256,22 +351,21 @@ use "panel_stab_v2_pooled", clear
 
 
 ********** Clean
-rename f1without_ES fES
-rename f2without_OP fOPEX
-rename f3without_CO fCO
-rename f1without_alt_ES fESs
-rename f2without_alt_OP fOPEXs
-rename f3without_alt_CO fCOs
+rename f1corr_ES fES
+rename f2corr_OP fOPEX
+rename f3corr_CO fCO
 
 global fact fES fOPEX fCO
-global facts fESs fOPEXs fCOs
+global b5 crOP crCO crEX crAG crES
+global fs fsES fsOPEX fsCO
 global cogn num_tt lit_tt raven_tt
-global perso $fact $facts $cogn
+global perso $fact $b5 $fs $cogn
 
 save "panel_stab_v2_pooled_long", replace
 
 
 ********** Distribution of ars2
+/*
 twoway (kdensity ars2, bwidth(0.1) xline(0)) ///
 , ///
 xtitle("Acquiescence score") ytitle("Density") ///
@@ -279,42 +373,13 @@ note("Kernel: Epanechnikov" "Bandwidth: 0.1", size(vsmall)) ///
 name(acqscore, replace)
 graph save "new/AcqScore", replace
 graph export "new/AcqScore.pdf", as(pdf) replace
-
-tabstat ars2, stat(min p1 p5 p10 q p90 p95 p99 max)
-
-/*
-gen ars2rec=ars2
-replace ars2rec=-1 if ars2<-1
-replace ars2rec=1 if ars2>1
 */
-
-keep HHID_panel INDID_panel year $perso $imcr_without
-
-
-********** Rank order stability
-
-***** ID
-egen unique_id=group(HHID_panel INDID_panel)
-gen wave=1 if year==2016
-replace wave=2 if year==2020
-fre wave
-
-***** Stat
-cls
-icc fES unique_id
-icc fOPEX unique_id
-icc fCO unique_id
-
-
 
 
 ********** Reshape
-drop unique_id wave
+keep HHID_panel INDID_panel year $perso $imcr_without
 reshape wide $perso $imcr_without, i(HHID_panel INDID_panel) j(year)
 
-pwcorr fES2016 fES2020, star(.05)
-pwcorr fOPEX2016 fOPEX2020, star(.05)
-pwcorr fCO2016 fCO2020, star(.05)
 
 foreach x in $perso {
 order `x'2020, after(`x'2016)
@@ -389,33 +454,63 @@ replace dumdiff_`x'=1 if catdiff_`x'==1 | catdiff_`x'==3
 label values dumdiff_`x' dumvar2
 }
 
-
-
-********** Stat
-
-preserve
-drop if fES2016==.
-drop if fES2020==.
-
-ta catdiff_fES
-*ta catvar_fES
-
-ta catdiff_fOPEX
-*ta catvar_fOPEX
-
-ta catdiff_fCO
-*ta catvar_fCO
-restore
-/*
-Le plus pertinent, selon moi, c'est de regarder la simple différence sur les moyennes plutôt que la variation et le score.
-*/
-
-
-* Stat desc
-sum fES2016 fES2020 fOPEX2016 fOPEX2020 fCO2016 fCO2020
-
-
 save "panel_stab_v2_pooled_wide", replace
 ****************************************
 * END
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Attrition
+****************************************
+use"panel_stab_v2_pooled_wide", clear
+
+
+keep HHID_panel fES2016 fES2020 fOPEX2016 fOPEX2020 fCO2016 fCO2020 
+
+gen attrition2016=0
+replace attrition2016=1 if fES2016!=. & fES2020==.
+replace attrition2016=. if fES2016==.
+label define attrition2016 0"Recovered in 2020-21" 1"Lost in 2020-21"
+label values attrition2016 attrition2016
+
+
+* ES
+tabstat fES2016 fOPEX2016 fCO2016, stat(n mean median) by(attrition2016)
+reg fES2016 i.attrition2016
+reg fOPEX2016 i.attrition2016
+reg fCO2016 i.attrition2016
+
+
+****************************************
+* END
