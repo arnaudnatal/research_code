@@ -23,31 +23,58 @@ est clear
 graph drop _all
 
 ***** Mean level
-sum fES2016 fES2020
-ttest fES2016==fES2020
 label var fES2016 "2016-17" 
 label var fES2020 "2020-21" 
 violinplot fES2016 fES2020, vert mean title("Emotional stability score") ylabel(0(1)6) ymtick(0(.5)6) yscale(range(-.5 .)) nowhiskers name(es, replace) scale(1.2)
+violinplot fES2016 fES2020, horizontal left dscale(2.8) noline range(0 6) now ///
+fill(color(black%10)) ///
+box(t(b)) bcolors(plb1) ///
+mean(t(m)) meancolors(plr1) ///
+med(t(m)) medcolors(ananas) ///
+title("Emotional stability score") ///
+xtitle("") xlabel(0(1)6) ///
+ylabel(,grid) ytick() ytitle("") ///
+legend(order(3 "IQR" 6 "Median" 8 "Mean") pos(6) col(3) on) ///
+aspectratio() scale(1.2) name(esb, replace)
 
-sum fOPEX2016 fOPEX2020
-ttest fOPEX2016==fOPEX2020
 label var fOPEX2016 "2016-17" 
 label var fOPEX2020 "2020-21" 
 violinplot fOPEX2016 fOPEX2020, vert mean title("Plasticity score") ylabel(0(1)6) ymtick(0(.5)6) yscale(range(-.5 .)) nowhiskers name(opex, replace) scale(1.2)
+violinplot fOPEX2016 fOPEX2020, horizontal left dscale(2.8) noline range(0 6) now ///
+fill(color(black%10)) ///
+box(t(b)) bcolors(plb1) ///
+mean(t(m)) meancolors(plr1) ///
+med(t(m)) medcolors(ananas) ///
+title("Plasticity score") ///
+xtitle("") xlabel(0(1)6) ///
+ylabel(,grid) ytick() ytitle("") ///
+legend(order(3 "IQR" 6 "Median" 8 "Mean") pos(6) col(3) on) ///
+aspectratio() scale(1.2) name(opexb, replace)
 
-sum fCO2016 fCO2020
-ttest fCO2016==fCO2020
 label var fCO2016 "2016-17" 
 label var fCO2020 "2020-21" 
 violinplot fCO2016 fCO2020, vert mean title("Conscientiousness score") ylabel(0(1)6) ymtick(0(.5)6) yscale(range(-.5 .)) nowhiskers name(co, replace) scale(1.2)
+violinplot fCO2016 fCO2020, horizontal left dscale(2.8) noline range(0 6) now ///
+fill(color(black%10)) ///
+box(t(b)) bcolors(plb1) ///
+mean(t(m)) meancolors(plr1) ///
+med(t(m)) medcolors(ananas) ///
+title("Conscientiousness score") ///
+xtitle("") xlabel(0(1)6) ///
+ylabel(,grid) ytick() ytitle("") ///
+legend(order(3 "IQR" 6 "Median" 8 "Mean") pos(6) col(3) on) ///
+aspectratio() scale(1.2) name(cob, replace)
+
+
 
 * Combine
 graph combine es opex co, name(comb, replace) col(3) note("{it:Note:} The grey box is the interquartile range, the white circle is the median, the small horizontal line is the mean.", size(vsmall))
-graph save "new/violins.gph", replace
-graph export "new/violins.pdf", as(pdf) replace
 graph export "new/violins.png", as(png) replace
-graph export "new/violins.eps", as(eps) replace
+graph export "new/violins.pdf", as(pdf) replace
 
+
+* graph combine esb opexb cob, name(combb, replace) col(3) note("{it:Note:} The grey box is the interquartile range, the white circle is the median, the small horizontal line is the mean.", size(vsmall))
+* graph export "new/violinsb.png", as(png) replace
 
 
 
@@ -90,10 +117,8 @@ name(co, replace) scale(1.2)
 
 * Combine
 graph combine es opex co, name(comb2, replace) col(3)
-graph save "new/scatters.gph", replace
-graph export "new/scatters.pdf", as(pdf) replace
 graph export "new/scatters.png", as(png) replace
-graph export "new/scatters.eps", as(eps) replace
+graph export "new/scatters.pdf", as(pdf) replace
 
 
 ****************************************
@@ -132,9 +157,9 @@ violinplot fsCO2016 fsCO2020, vert mean title("Conscientiousness fscore") ylabel
 
 * Combine
 graph combine fses fsopex fsco, name(comb, replace) col(3) note("{it:Note:} The grey box is the interquartile range, the white circle is the median, the small horizontal line is the mean.", size(vsmall))
-graph save "new/violins_fs.gph", replace
-graph export "new/violins_fs.pdf", as(pdf) replace
 graph export "new/violinsfs.png", as(png) replace
+graph export "new/violinsfs.pdf", as(pdf) replace
+
 
 ****************************************
 * END
@@ -188,10 +213,9 @@ violinplot crES2016 crES2020, vert mean title("ES score") ylabel(0(1)6) ymtick(0
 
 * Combine
 graph combine op co ex ag es, name(comb, replace) col(3) note("{it:Note:} The grey box is the interquartile range, the white circle is the median, the small horizontal line is the mean.", size(vsmall))
-graph save "new/violins_b5.gph", replace
-graph export "new/violins_b5.pdf", as(pdf) replace
 graph export "new/violins_b5.png", as(png) replace
-graph export "new/violins_b5.eps", as(eps) replace
+graph export "new/violins_b5.pdf", as(pdf) replace
+
 
 ****************************************
 * END
@@ -249,10 +273,8 @@ label values trait trait
 ta trait cat, row nofreq
 *
 tabplot cat trait, note("") title("") subtitle("Percent given trait", size(small)) xtitle("") ytitle("") xlabel(,angle()) percent(trait) showval(mlabsize(vsmall)) frame(100) name(cat, replace)
-graph save "new/traitstab.gph", replace
-graph export "new/traitstab.pdf", as(pdf) replace
 graph export "new/traitstab.png", as(png) replace
-graph export "new/traitstab.eps", as(eps) replace
+graph export "new/traitstab.pdf", as(pdf) replace
 
 ****************************************
 * END
@@ -280,8 +302,69 @@ tabstat abs_diff_fOPEX if catdiff_fOPEX!=2, stat(n mean sd p10 q p90) by(catdiff
 tabstat abs_diff_fCO if catdiff_fCO!=2, stat(n mean sd p10 q p90) by(catdiff_fCO)
 
 
+
+
+***** Graph
+*
+label var abs_diff_fES "Absolut difference between 2016-17 and 2020-21"
+violinplot abs_diff_fES if catdiff_fES!=2, over(catdiff_fES) vert mean title("Emotional stability") ylabel(0(1)6) ymtick(0(.5)6) yscale(range(-.5 .)) nowhiskers name(es, replace) scale(1.2)
+
+*
+label var abs_diff_fOPEX "Absolut difference between 2016-17 and 2020-21"
+violinplot abs_diff_fOPEX if catdiff_fOPEX!=2, over(catdiff_fOPEX) vert mean title("Plasticity") ylabel(0(1)6) ymtick(0(.5)6) yscale(range(-.5 .)) nowhiskers name(opex, replace) scale(1.2)
+
+*
+label var abs_diff_fCO "Absolut difference between 2016-17 and 2020-21"
+violinplot abs_diff_fCO if catdiff_fCO!=2, over(catdiff_fCO) vert mean title("Conscientiousness") ylabel(0(1)6) ymtick(0(.5)6) yscale(range(-.5 .)) nowhiskers name(co, replace) scale(1.2)
+
+*
+graph combine es opex co, name(comb, replace) col(3) note("{it:Note:} The grey box is the interquartile range, the white circle is the median, the small horizontal line is the mean.", size(vsmall))
+graph export "new/intensity.png", as(png) replace
+graph export "new/intensity.pdf", as(pdf) replace
+
+
+
+
+***** Graph bis
+use "panel_stab_pooled_wide_v3", clear
+
+foreach x in ES PL CO {
+preserve
+rename abs_diff_fOPEX abs_diff_fPL
+rename catdiff_fOPEX catdiff_fPL
+keep HHID_panel INDID_panel abs_diff_f`x' catdiff_f`x'
+drop if catdiff_f`x'==2
+decode catdiff_f`x', gen(cat)
+drop catdiff_f`x'
+rename abs_diff_f`x' val
+replace cat="`x' - Decrease" if cat=="Decrease"
+replace cat="`x' - Increase" if cat=="Increase"
+save "_temp`x'", replace
+restore
+}
+
+use"_tempES", clear
+append using "_tempPL"
+append using "_tempCO"
+
+violinplot val, over(cat) horizontal left dscale(2.8) noline range(0 3.5) now ///
+fill(color(black%10)) ///
+box(t(b)) bcolors(plb1) ///
+mean(t(m)) meancolors(plr1) ///
+med(t(m)) medcolors(ananas) ///
+title("Intensity of instability for unstable individuals") ///
+xtitle("Absolut difference between 2016-17 and 2020-21") xlabel(0(.5)3.5) ///
+ylabel(,grid) ytick() ytitle("") ///
+legend(order(7 "IQR" 14 "Median" 20 "Mean") pos(6) col(3) on) ///
+aspectratio() scale(1.2) name(viodiff, replace) note("{it:Note:} CO is conscientiousness, ES is emotional stability, PL is plasticity.", size(vsmall))
+
 ****************************************
 * END
+
+
+
+
+
 
 
 
@@ -346,6 +429,13 @@ replace item=substr(item,1,13)
 replace item="appointmento" if item=="appointmenton"
 
 
+***** Table
+fre trait
+ta item cat if trait==1, row nofreq
+ta item cat if trait==2, row nofreq
+ta item cat if trait==3, row nofreq
+
+
 ***** Graphs
 set graph off
 tabplot cat item if trait==1, note("") title("Emotional stability") subtitle("Percent given item", size(small)) xtitle("") ytitle("") xlabel(,angle(90)) percent(item) showval(mlabsize(tiny)) frame(100) name(g1, replace)
@@ -358,10 +448,8 @@ set graph on
 
 ***** Combine
 graph combine g1 g2 g3, col(3) name(comb1, replace)
-graph export "new/evo_items.pdf", as(pdf) replace 
-graph save "new/evo_items.gph", replace
 graph export "new/evo_items.png", as(png) replace 
-graph export "new/evo_items.eps", as(eps) replace 
+graph export "new/evo_items.png", as(pdf) replace 
 
 
 ****************************************
