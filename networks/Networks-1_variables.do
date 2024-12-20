@@ -352,3 +352,166 @@ save "Analysis/Main_analyses.dta", replace
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Clean
+****************************************
+cls
+use"Analysis/Main_analyses_DG", clear
+
+*** Occupation
+rename mainocc_occupation_indiv occupation
+recode occupation (.=0)
+
+*** HH FE
+encode HHID2020, gen(HHFE)
+order HHFE, after(HHID2020)
+
+*** Income and wealth
+recode annualincome_HH (.=1) (0=1)
+recode assets_total (.=1) (0=1)
+gen logincome=log(annualincome_HH)
+gen logassets=log(assets_total)
+egen stdincome=std(annualincome_HH)
+egen stdassets=std(assets_total)
+
+*** Debt
+recode nbloans_HH nbloans_indiv (.=0)
+
+*
+save"Analysis/Main_analyses_v2", replace
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Anaysis
+****************************************
+cls
+use"Analysis/Main_analyses_v2", clear
+
+
+*** Taille du réseau
+ta netsize_all
+reg netsize_all fES fOPEX fCO i.sex i.caste i.edulevel i.occupation c.age c.nbloans_indiv i.villageid c.stdassets c.stdincome, cluster(HHFE)
+est store reg1
+
+
+*** Durée des relations
+ta duration_corr
+reg duration_corr fES fOPEX fCO i.sex i.caste i.edulevel i.occupation c.age c.nbloans_indiv i.villageid c.stdassets c.stdincome, cluster(HHFE)
+est store reg2
+
+
+*** Force des relations
+ta strength_mca
+reg strength_mca fES fOPEX fCO i.sex i.caste i.edulevel i.occupation c.age c.nbloans_indiv i.villageid c.stdassets c.stdincome, cluster(HHFE)
+est store reg3
+
+
+*** Homo/hétéro caste
+ta IQV_caste
+/*
+- Pour la caste, envisager de faire une binaire : 0 = 100% homo, 1 = un peu d'hétéro ? Car 72 % de "0"
+- Idem pour la jatis
+- Pour le reste, il y a au max 30% de 0, donc ça passe je pense
+*/
+
+
+*** Homo/hétéro sexe
+ta IQV_gender
+reg IQV_gender fES fOPEX fCO i.sex i.caste i.edulevel i.occupation c.age c.nbloans_indiv i.villageid c.stdassets c.stdincome, cluster(HHFE)
+est store reg4
+
+
+*** Homo/hétéro educ
+ta IQV_educ
+reg IQV_educ fES fOPEX fCO i.sex i.caste i.edulevel i.occupation c.age c.nbloans_indiv i.villageid c.stdassets c.stdincome, cluster(HHFE)
+est store reg5
+
+
+*** Homo/hétéro occup
+ta IQV_occup
+reg IQV_occup fES fOPEX fCO i.sex i.caste i.edulevel i.occupation c.age c.nbloans_indiv i.villageid c.stdassets c.stdincome, cluster(HHFE)
+est store reg6
+
+
+*** Homophily caste
+ta same_caste_pct
+reg same_caste_pct fES fOPEX fCO i.sex i.caste i.edulevel i.occupation c.age c.nbloans_indiv i.villageid c.stdassets c.stdincome, cluster(HHFE)
+est store reg7
+/*
+Envisager une catégorielle car 2/3 de "1".
+*/
+
+
+*** Homophily sex
+ta same_gender_pct
+reg same_gender_pct fES fOPEX fCO i.sex i.caste i.edulevel i.occupation c.age c.nbloans_indiv i.villageid c.stdassets c.stdincome, cluster(HHFE)
+est store reg8
+/*
+Envisager une catégorielle car 1/3 de "1".
+*/
+
+
+*** Homophily occup
+ta same_occup_pct
+reg same_occup_pct fES fOPEX fCO i.sex i.caste i.edulevel i.occupation c.age c.nbloans_indiv i.villageid c.stdassets c.stdincome, cluster(HHFE)
+est store reg9
+
+
+*** Nombre d'amis
+ta friend_pct
+reg friend_pct fES fOPEX fCO i.sex i.caste i.edulevel i.occupation c.age c.nbloans_indiv i.villageid c.stdassets c.stdincome, cluster(HHFE)
+est store reg10
+
+
+*** Multiplexity
+ta multiplexityF_pct
+reg multiplexityF_pct fES fOPEX fCO i.sex i.caste i.edulevel i.occupation c.age c.nbloans_indiv i.villageid c.stdassets c.stdincome, cluster(HHFE)
+est store reg11
+
+
+***
+esttab reg* using "Analysis/reg.csv", replace ///
+	b(3) p(3) eqlabels(none) alignment(S) ///
+	keep(fES fOPEX fCO) ///
+	star(* 0.10 ** 0.05 *** 0.01) ///
+	cells("b(fmt(2)star)" "t(fmt(2)par)") ///
+	refcat(, nolabel) ///
+	stats(N, fmt(0) ///
+	labels(`"Observations"'))
+****************************************
+* END
+
+

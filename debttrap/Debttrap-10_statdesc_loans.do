@@ -19,6 +19,63 @@ do"C:/Users/Arnaud/Documents/GitHub/folderanalysis/$link.do"
 
 
 
+****************************************
+* Stat desc
+****************************************
+
+*********** Effective
+use"panel_loans", replace
+
+ta effective_repa year, col 
+ta effective_repa year if sex==1, col 
+ta effective_repa year if sex==2, col 
+
+keep if sex==2
+fre sex
+ta effective_repa year, col 
+
+
+
+
+*********** Plan to repay
+use"panel_loans", replace
+
+ta plantorep_borr year, col 
+ta plantorep_borr year if sex==1, col 
+ta plantorep_borr year if sex==2, col 
+
+keep if sex==2
+fre sex
+ta plantorep_borr year, col 
+
+
+
+*********** Settle loan strat
+use"panel_loans", replace
+
+ta settlestrat_borr year, col 
+ta settlestrat_borr year if sex==1, col 
+ta settlestrat_borr year if sex==2, col 
+
+keep if sex==2
+fre sex
+ta settlestrat_borr year, col 
+
+
+
+
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
 
 
 

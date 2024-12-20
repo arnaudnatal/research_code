@@ -18,6 +18,40 @@ do"C:/Users/Arnaud/Documents/GitHub/folderanalysis/$link.do"
 
 
 ****************************************
+* Stat Isabelle
+****************************************
+use"panel_indiv_v3", clear
+
+ta dumindiv_effective_repa year, col 
+ta dumindiv_effective_repa year if sex==1, col 
+ta dumindiv_effective_repa year if sex==2, col 
+
+keep if sex==2
+fre sex
+ta dumindiv_effective_repa year, col 
+
+
+
+
+
+
+
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
 * Stat desc
 ****************************************
 use"panel_indiv_v3", clear
@@ -31,6 +65,21 @@ keep if dummyloans_indiv==1
 ta dumindiv_given_repa year, col
 tabstat totindiv_givenamt_repa if dumindiv_given_repa==1, stat(n mean q) by(year)
 tabstat gtdr_indiv if dumindiv_given_repa==1, stat(n mean q) by(year)
+
+fre sex
+* Given for male
+ta dumindiv_given_repa year if sex==1, col
+tabstat totindiv_givenamt_repa if dumindiv_given_repa==1 & sex==1, stat(n mean q) by(year)
+tabstat gtdr_indiv if dumindiv_given_repa==1 & sex==1, stat(n mean q) by(year)
+
+
+* Given for female
+ta dumindiv_given_repa year if sex==2, col
+tabstat totindiv_givenamt_repa if dumindiv_given_repa==1 & sex==2, stat(n mean q) by(year)
+tabstat gtdr_indiv if dumindiv_given_repa==1 & sex==2, stat(n mean q) by(year)
+
+
+
 
 
 * Effective
