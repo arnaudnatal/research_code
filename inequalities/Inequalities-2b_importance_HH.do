@@ -325,7 +325,7 @@ reshape wide share, i(cat) j(time)
 
 * Graph 
 graph bar share1 share2 share3, over(cat, label(angle(45))) title("") ytitle("Percent") legend(order(1 "2010" 2 "2016-17" 3 "2020-21") col(3) pos(6)) name(g1, replace) ylabel(0(10)100)
-graph export "graph/Assets_ownership.png", as(png) replace
+graph export "graph_HH/Assets_ownership.png", as(png) replace
 
 
 ****************************************

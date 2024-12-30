@@ -259,7 +259,7 @@ descogini $HH if year==2020
 
 
 ***** Graph
-import excel "Gini.xlsx", sheet("Income") firstrow clear
+import excel "Gini.xlsx", sheet("Income_HH") firstrow clear
 label define occupation 1"Agri self" 2"Agri casual" 3"Casual" 4"Regular" 5"Self-emp" 6"MGNREGA" 7"Pensions" 8"Remitt"
 label values occupation occupation
 
@@ -295,7 +295,7 @@ descogini $assets if year==2016
 descogini $assets if year==2020
 
 ***** Graph
-import excel "Gini.xlsx", sheet("Wealth") firstrow clear
+import excel "Gini.xlsx", sheet("Wealth_HH") firstrow clear
 label define assets 1"House" 2"Livestock" 3"Durable goods" 4"Land" 5"Gold" 6"Saving"
 label values assets assets
 
