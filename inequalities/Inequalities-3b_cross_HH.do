@@ -41,7 +41,7 @@ twoway ///
 xtitle("Monthly income (1k rupees)") xlabel(0(10)40) ///
 ytitle("Wealth (1k rupees)") ylabel(0(2000)10000) ///
 legend(off) ///
-note("Pearson {it:p}=0.169; Spearman {it:p}=0.114", size(vsmall)) ///
+note("Pearson {it:p}=0.169; Spearman {it:p}=0.115", size(vsmall)) ///
 name(g1, replace) scale(1.2) 
 
 

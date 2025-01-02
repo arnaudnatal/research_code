@@ -389,7 +389,7 @@ graph bar dalits middle upper if time==3, over(cat, label(angle(45))) title("202
 set graph on
 
 grc1leg g1 g2 g3, col(3) name(inc, replace) note("{it:Note:} For 405 households in 2010, 492 in 2016-17, and 625 in 2020-21.", size(vsmall))
-graph export "graph_HH/Source_caste_inc.png", as(png)
+graph export "graph_HH/Source_caste_inc.png", as(png) replace
 
 
 ********** Assets
@@ -409,7 +409,7 @@ graph bar dalits middle upper if time==3, over(cat, label(angle(45))) title("202
 set graph on
 
 grc1leg g1 g2 g3, col(3) name(ass, replace) note("{it:Note:} For 405 households in 2010, 492 in 2016-17, and 625 in 2020-21.", size(vsmall))
-graph export "graph_HH/Source_caste_ass.png", as(png)
+graph export "graph_HH/Source_caste_ass.png", as(png) replace
 
 
 ****************************************

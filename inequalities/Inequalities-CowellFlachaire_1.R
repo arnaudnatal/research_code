@@ -21,7 +21,7 @@ Mboot = matrix(0,nboot,nalpha)
 source("mobility.r")  # load the functions used to compute mobility indices 
 
 # Read the data
-  data1 <- read.table("wealthpc2_upp.txt",header=TRUE)
+  data1 <- read.table("wealthhh2_upp.txt",header=TRUE)
   data <- data1[data1$var1>0 & data1$var2>0,]
   attach(data)
   i1=var1

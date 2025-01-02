@@ -297,7 +297,7 @@ ineqdeco monthlyincome if year==2020, by(jatis)
 ********** Pour 2 groupes
 * Prepa orga
 fre jatis
-recode jatis (2=1) (4=2) (7=3) (9=4) (12=5)
+recode jatis (3=1) (4=2) (5=3) (6=4) (7=5)
 fre jatis
 foreach year in 2010 2016 2020 {
 preserve

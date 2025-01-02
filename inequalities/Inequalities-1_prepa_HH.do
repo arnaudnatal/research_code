@@ -99,6 +99,7 @@ tabstat assets_gold goldreadyamount, stat(n mean cv q)
 
 
 * Nouvelles estimations des biens de consommation durables en 2010
+/*
 rename assets_goods assets_goodsold
 rename assets_total assets_totalold
 rename assets_totalnoland assets_totalnolandold
@@ -114,16 +115,7 @@ rename assets_totalnopropbis assets_totalnoprop
 rename assets_totalbis1000 assets_total1000
 rename assets_totalnolandbis1000 assets_totalnoland1000
 rename assets_totalnopropbis1000 assets_totalnoprop1000
-
-preserve
-keep HHID assets_goods assets_goodsold assets_total assets_totalold
-gen diff=assets_goods-assets_goodsold
-gen test=assets_total-assets_totalold-diff
-ta test
-restore
-
-tabstat assets_goods assets_goodsold, stat(n mean)
-tabstat assets_total1000 assets_totalold1000, stat(n mean)
+*/
 
 
 save"temp_RUME", replace
