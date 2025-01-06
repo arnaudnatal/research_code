@@ -17,69 +17,6 @@ do"C:\Users\Arnaud\Documents\GitHub\folderanalysis\networks.do"
 
 
 
-****************************************
-* Réseaux de dette
-****************************************
-cls
-use"raw/NEEMSIS2-alters", clear
-
-*
-fre networkpurpose*
-keep if networkpurpose1==1
-compress
-
-
-*
-drop if HHID2020=="uuid:ff95bdde-6012-4cf6-b7e8-be866fbaa68b"
-drop if HHID2020=="uuid:7373bf3a-f7a4-4d1a-8c12-ccb183b1f4db"
-drop if HHID2020=="uuid:d4b98efb-0cc6-4e82-996a-040ced0cbd52"
-drop if HHID2020=="uuid:1091f83c-d157-4891-b1ea-09338e91f3ef"
-drop if HHID2020=="uuid:aea57b03-83a6-44f0-b59e-706b911484c4"
-drop if HHID2020=="uuid:21f161fd-9a0c-4436-a416-7e75fad830d7"
-drop if HHID2020=="uuid:b3e4fe70-f2aa-4e0f-bb6e-8fb57bb6f409"
-
-* Caste and jatis
-fre castes
-rename castes jatis
-fre jatis
-gen caste=.
-label define caste 1"Dalits" 2"Middle castes" 3"Upper castes" 88"Don't know"
-label values caste caste
-order caste, after(jatis)
-replace caste=1 if jatis==2
-replace caste=1 if jatis==3
-
-replace caste=2 if jatis==1
-replace caste=2 if jatis==5
-replace caste=2 if jatis==7
-replace caste=2 if jatis==8
-replace caste=2 if jatis==10
-replace caste=2 if jatis==12
-replace caste=2 if jatis==15
-replace caste=2 if jatis==16
-
-replace caste=3 if jatis==4
-replace caste=3 if jatis==6
-replace caste=3 if jatis==9
-replace caste=3 if jatis==11
-replace caste=3 if jatis==13
-replace caste=3 if jatis==14
-
-replace caste=88 if jatis==66
-replace caste=88 if jatis==88
-
-ta jatis caste
-
-
-save"Analysis/Debtnetworks", replace
-****************************************
-* END
-
-
-
-
-
-
 
 
 
@@ -132,39 +69,120 @@ replace caste=88 if jatis==88
 
 ta jatis caste
 
-
+********** Save hh
 save"Analysis/Alters", replace
+
+
+* Add details of hhmember
+keep if dummyhh==1
+/*
+sex, age, caste, jatis, educ, occup
+*/
+keep HHID2020 INDID2020 alterid hhmember
+rename INDID2020 ego_INDID2020
+rename hhmember INDID2020
+label val INDID2020
+compress
+format ego_INDID2020 %4.0g
+format INDID2020 %4.0g
+
+* Sex caste age education
+merge m:1 HHID2020 INDID2020 using "raw/NEEMSIS2-HH", keepusing(sex caste age currentlyatschool classcompleted everattendedschool reasonnotworkpastyear)
+keep if _merge==3
+drop _merge
+
+* Occupation indiv
+preserve
+use "raw/NEEMSIS2-occupnew", clear
+keep if dummymainocc==1
+keep HHID2020 INDID2020 kindofwork_new
+rename kindofwork_new occupation
+save"_tempocc", replace
+restore
+
+merge m:1 HHID2020 INDID2020 using "raw/NEEMSIS2-occup_indiv", keepusing(dummyworkedpastyear working_pop)
+keep if _merge==3
+drop _merge
+
+merge m:1 HHID2020 INDID2020 using "_tempocc"
+drop if _merge==2
+drop _merge
+
+* Clean
+ta caste
+
+fre classcompleted
+gen educ=.
+replace educ=1 if classcompleted==1
+replace educ=1 if classcompleted==2
+replace educ=1 if classcompleted==3
+replace educ=1 if classcompleted==4
+replace educ=1 if classcompleted==5
+replace educ=2 if classcompleted==6
+replace educ=2 if classcompleted==7
+replace educ=2 if classcompleted==8
+replace educ=3 if classcompleted==9
+replace educ=3 if classcompleted==10
+replace educ=4 if classcompleted==12
+replace educ=5 if classcompleted==15
+replace educ=5 if classcompleted==16
+replace educ=6 if everattendedschool==0
+recode educ (.=6)
+
+fre occupation
+gen occup=.
+replace occup=1 if occupation==1
+replace occup=2 if occupation==2
+replace occup=3 if occupation==3
+replace occup=4 if occupation==4
+replace occup=5 if occupation==5
+replace occup=6 if occupation==6
+replace occup=7 if occupation==7
+replace occup=8 if occupation==8
+replace occup=10 if currentlyatschool==1
+
+fre reasonnotworkpastyear
+replace occup=10 if reasonnotworkpastyear==1
+replace occup=12 if reasonnotworkpastyear==2
+replace occup=12 if reasonnotworkpastyear==4
+replace occup=12 if reasonnotworkpastyear==8
+replace occup=12 if reasonnotworkpastyear==9
+replace occup=12 if reasonnotworkpastyear==10
+replace occup=12 if reasonnotworkpastyear==11
+replace occup=9 if working_pop==2 
+
+drop everattendedschool classcompleted currentlyatschool reasonnotworkpastyear dummyworkedpastyear working_pop occupation
+
+rename INDID2020 alter_INDID2020
+rename ego_INDID2020 INDID2020
+
+foreach x in sex age caste educ occup {
+rename `x' `x'_alter
+}
+
+save"_tempreste", replace
+
+
+********** Append les deux bases
+use"Analysis/Alters", clear 
+
+ta dummyhh
+
+merge 1:1 alterid using "_tempreste", keepusing(sex_alter age_alter caste_alter educ_alter occup_alter)
+drop _merge
+
+foreach x in sex age caste educ occup {
+replace `x'=`x'_alter if `x'==. & `x'_alter!=.
+}
+
+drop sex_alter age_alter caste_alter educ_alter occup_alter
+
+drop if egoid==0
+
+save"Analysis/Alters_v2", replace
 ****************************************
 * END
 
-
-
-
-
-
-
-
-
-****************************************
-* Loans
-****************************************
-cls
-use"raw/NEEMSIS2-loans_mainloans_new", clear
-
-
-*
-drop if HHID2020=="uuid:ff95bdde-6012-4cf6-b7e8-be866fbaa68b"
-drop if HHID2020=="uuid:7373bf3a-f7a4-4d1a-8c12-ccb183b1f4db"
-drop if HHID2020=="uuid:d4b98efb-0cc6-4e82-996a-040ced0cbd52"
-drop if HHID2020=="uuid:1091f83c-d157-4891-b1ea-09338e91f3ef"
-drop if HHID2020=="uuid:aea57b03-83a6-44f0-b59e-706b911484c4"
-drop if HHID2020=="uuid:21f161fd-9a0c-4436-a416-7e75fad830d7"
-drop if HHID2020=="uuid:b3e4fe70-f2aa-4e0f-bb6e-8fb57bb6f409"
-
-
-save"Analysis/Loans", replace
-****************************************
-* END
 
 
 
@@ -353,27 +371,6 @@ save "Analysis/Main_analyses.dta", replace
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ****************************************
 * Clean
 ****************************************
@@ -401,117 +398,13 @@ recode nbloans_HH nbloans_indiv (.=0)
 
 *
 save"Analysis/Main_analyses_v2", replace
+
+
+*** Personnalité et réseaux
+drop if egoid==0
+
+
+save"Analysis/Main_analyses_v3", replace
 ****************************************
 * END
-
-
-
-
-
-
-
-
-
-
-
-****************************************
-* Anaysis
-****************************************
-cls
-use"Analysis/Main_analyses_v2", clear
-
-
-*** Taille du réseau
-ta netsize_all
-reg netsize_all fES fOPEX fCO i.sex i.caste i.edulevel i.occupation c.age c.nbloans_indiv i.villageid c.stdassets c.stdincome, cluster(HHFE)
-est store reg1
-
-
-*** Durée des relations
-ta duration_corr
-reg duration_corr fES fOPEX fCO i.sex i.caste i.edulevel i.occupation c.age c.nbloans_indiv i.villageid c.stdassets c.stdincome, cluster(HHFE)
-est store reg2
-
-
-*** Force des relations
-ta strength_mca
-reg strength_mca fES fOPEX fCO i.sex i.caste i.edulevel i.occupation c.age c.nbloans_indiv i.villageid c.stdassets c.stdincome, cluster(HHFE)
-est store reg3
-
-
-*** Homo/hétéro caste
-ta IQV_caste
-/*
-- Pour la caste, envisager de faire une binaire : 0 = 100% homo, 1 = un peu d'hétéro ? Car 72 % de "0"
-- Idem pour la jatis
-- Pour le reste, il y a au max 30% de 0, donc ça passe je pense
-*/
-
-
-*** Homo/hétéro sexe
-ta IQV_gender
-reg IQV_gender fES fOPEX fCO i.sex i.caste i.edulevel i.occupation c.age c.nbloans_indiv i.villageid c.stdassets c.stdincome, cluster(HHFE)
-est store reg4
-
-
-*** Homo/hétéro educ
-ta IQV_educ
-reg IQV_educ fES fOPEX fCO i.sex i.caste i.edulevel i.occupation c.age c.nbloans_indiv i.villageid c.stdassets c.stdincome, cluster(HHFE)
-est store reg5
-
-
-*** Homo/hétéro occup
-ta IQV_occup
-reg IQV_occup fES fOPEX fCO i.sex i.caste i.edulevel i.occupation c.age c.nbloans_indiv i.villageid c.stdassets c.stdincome, cluster(HHFE)
-est store reg6
-
-
-*** Homophily caste
-ta same_caste_pct
-reg same_caste_pct fES fOPEX fCO i.sex i.caste i.edulevel i.occupation c.age c.nbloans_indiv i.villageid c.stdassets c.stdincome, cluster(HHFE)
-est store reg7
-/*
-Envisager une catégorielle car 2/3 de "1".
-*/
-
-
-*** Homophily sex
-ta same_gender_pct
-reg same_gender_pct fES fOPEX fCO i.sex i.caste i.edulevel i.occupation c.age c.nbloans_indiv i.villageid c.stdassets c.stdincome, cluster(HHFE)
-est store reg8
-/*
-Envisager une catégorielle car 1/3 de "1".
-*/
-
-
-*** Homophily occup
-ta same_occup_pct
-reg same_occup_pct fES fOPEX fCO i.sex i.caste i.edulevel i.occupation c.age c.nbloans_indiv i.villageid c.stdassets c.stdincome, cluster(HHFE)
-est store reg9
-
-
-*** Nombre d'amis
-ta friend_pct
-reg friend_pct fES fOPEX fCO i.sex i.caste i.edulevel i.occupation c.age c.nbloans_indiv i.villageid c.stdassets c.stdincome, cluster(HHFE)
-est store reg10
-
-
-*** Multiplexity
-ta multiplexityF_pct
-reg multiplexityF_pct fES fOPEX fCO i.sex i.caste i.edulevel i.occupation c.age c.nbloans_indiv i.villageid c.stdassets c.stdincome, cluster(HHFE)
-est store reg11
-
-
-***
-esttab reg* using "Analysis/reg.csv", replace ///
-	b(3) p(3) eqlabels(none) alignment(S) ///
-	keep(fES fOPEX fCO) ///
-	star(* 0.10 ** 0.05 *** 0.01) ///
-	cells("b(fmt(2)star)" "t(fmt(2)par)") ///
-	refcat(, nolabel) ///
-	stats(N, fmt(0) ///
-	labels(`"Observations"'))
-****************************************
-* END
-
 
