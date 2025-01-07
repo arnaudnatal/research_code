@@ -177,7 +177,7 @@ replace `x'=`x'_alter if `x'==. & `x'_alter!=.
 
 drop sex_alter age_alter caste_alter educ_alter occup_alter
 
-drop if egoid==0
+*drop if egoid==0
 
 save"Analysis/Alters_v2", replace
 ****************************************
@@ -298,14 +298,42 @@ drop if dummylefthousehold==1
 drop if livinghome==3
 drop if livinghome==4
 
-keep HHID2020 INDID2020 egoid name age sex villageid villagearea religion caste jatis relationshiptohead maritalstatus canread
+keep HHID2020 INDID2020 egoid name age sex villageid villagearea religion caste jatis relationshiptohead maritalstatus canread classcompleted everattendedschool
 
 * Education
-count
-merge 1:1 HHID2020 INDID2020 using "raw/NEEMSIS2-education", keepusing(edulevel)
-keep if _merge==3
+fre classcompleted
+gen educ=.
+replace educ=1 if classcompleted==1
+replace educ=1 if classcompleted==2
+replace educ=1 if classcompleted==3
+replace educ=1 if classcompleted==4
+replace educ=1 if classcompleted==5
+replace educ=2 if classcompleted==6
+replace educ=2 if classcompleted==7
+replace educ=2 if classcompleted==8
+replace educ=3 if classcompleted==9
+replace educ=3 if classcompleted==10
+replace educ=4 if classcompleted==12
+replace educ=5 if classcompleted==15
+replace educ=5 if classcompleted==16
+replace educ=6 if everattendedschool==0
+recode educ (.=6)
+label define educ 1"Primary or below" 2"Upper primary" 3"High school" 4"Senior secondary" 5"Bachelor and above" 6"No education"
+label values educ educ
+drop classcompleted everattendedschool
+
+
+* Kindofwork
+preserve
+use"raw/NEEMSIS2-occupnew", clear
+keep if dummymainocc==1
+keep HHID2020 INDID2020 kindofwork_new
+rename kindofwork_new occup
+save"_temp", replace
+restore
+merge 1:1 HHID2020 INDID2020 using "_temp"
+drop if _merge==2
 drop _merge
-count
 
 * Occupation indiv
 count
@@ -375,11 +403,24 @@ save "Analysis/Main_analyses.dta", replace
 * Clean
 ****************************************
 cls
-use"Analysis/Main_analyses_DG", clear
+use"Analysis/Main_analyses", clear
+
+
+*** Networks
+merge 1:1 HHID2020 INDID2020 using "Analysis/Main_analyses_DG", keepusing(netsize_all duration_corr strength_mca family_pct friend_pct labour_pct wkp_pct same_gender_pct same_caste_pct same_jatis_pct same_age_pct same_jobstatut_pct same_occup_pct same_educ_pct same_location_pct same_situation_pct IQV_caste IQV_jatis IQV_age IQV_occup IQV_educ IQV_gender multiplexityF_pct meetweekly_pct very_intimate_pct reciprocity_pct money_never_pct debt_netsize debt_duration_corr debt_strength_mca debt_family_pct debt_friend_pct debt_labour_pct debt_wkp_pct debt_same_gender_pct debt_same_caste_pct debt_same_jatis_pct debt_same_age_pct debt_same_jobstatut_pct debt_same_occup_pct debt_same_educ_pct debt_same_location_pct debt_same_situation_pct debt_IQV_caste debt_IQV_jatis debt_IQV_age debt_IQV_occup debt_IQV_educ debt_IQV_gender debt_multiplexityF_pct debt_meetweekly_pct debt_very_intimate_pct debt_reciprocity_pct debt_money_never_pct)
+keep if _merge==3
+drop _merge
+
 
 *** Occupation
 rename mainocc_occupation_indiv occupation
 recode occupation (.=0)
+
+ta occupation
+ta occup
+recode occup (.=12)
+codebook occup
+label define kindofwork 12"Unoccupied working age individuals", modify
 
 *** HH FE
 encode HHID2020, gen(HHFE)
@@ -401,10 +442,152 @@ save"Analysis/Main_analyses_v2", replace
 
 
 *** Personnalité et réseaux
-drop if egoid==0
+*drop if egoid==0
 
 
 save"Analysis/Main_analyses_v3", replace
 ****************************************
 * END
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Alters add ego characteristics
+****************************************
+cls
+use"Analysis/Alters_v2", clear
+
+preserve
+use"Analysis/Main_analyses_v3", clear
+global var villageid villagearea sex age caste canread educ dummyworkedpastyear working_pop occup locus locuscat fES fOPEX fCO
+keep HHID2020 INDID2020 egoid $var
+foreach x in $var {
+rename `x' ego_`x'
+}
+ta egoid
+save"_temp", replace
+restore
+
+
+merge m:1 HHID2020 INDID2020 using "_temp"
+keep if _merge==3
+drop _merge
+
+/*
+HHID2020									INDID2020	egoid
+uuid:0e75c80d-e953-475e-b5bd-4a5f3b9755e6	1			1
+uuid:0eacf77c-4f63-4ffc-80c9-f6b9da59fdba	7			3
+uuid:22d52dbd-161f-4111-bd4f-9731398a878c	4			3
+uuid:607b5085-73ed-4c37-9c6f-55e6d4ac7875	1			1
+uuid:6bd1eaa0-9117-47c2-8c61-29d5102daf1f	18			3
+uuid:72cbd9f1-7b7e-456b-a173-8bde0c64afbd	7			3
+uuid:a807111d-42b8-4fca-95f3-6eec9cef337b	1			1
+uuid:b33ac02d-ffe0-4a63-8b4a-1ac442b86cf7	1			1
+uuid:c184574f-8651-4c3f-bc5d-345417c2f287	4			3
+uuid:e53470cf-5e62-48df-9042-145dcbaed9e6	3			3
+*/
+
+
+save"Analysis/Alters_v3", replace
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+****************************************
+* Keep only egos
+****************************************
+cls
+
+***** Alters
+use"Analysis/Alters_v3", clear
+
+drop if egoid==0
+drop if sex==.
+
+save"Analysis/Alters_v4", replace
+
+
+***** Egos
+use"Analysis/Main_analyses_v3", clear
+
+drop if egoid==0
+
+save"Analysis/Main_analyses_v4", replace
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Nouvelles variables à partir de celles de Damien
+****************************************
+use"Analysis/Main_analyses_v4", clear
+
+
+***** Hetero
+cls
+foreach x in IQV_caste IQV_jatis IQV_age IQV_occup IQV_educ IQV_gender {
+ta `x'
+}
+
+*** Dummy
+label define hetero 0"Homo (100%)" 1"Hetero"
+foreach x in caste jatis age occup educ gender {
+gen hetero_`x'=IQV_`x'
+replace hetero_`x'=1 if hetero_`x'!=0 & hetero_`x'>0 & hetero_`x'!=.
+label values hetero_`x' hetero
+}
+
+
+***** Homophily
+cls
+foreach x in same_gender_pct same_caste_pct same_jatis_pct same_age_pct same_jobstatut_pct same_occup_pct same_educ_pct same_location_pct same_situation_pct {
+ta `x'
+}
+
+*** Dummy
+label define same 0"Different" 1"Same" 2"Mix"
+foreach x in gender caste jatis age jobstatut occup educ location situation {
+gen same_`x'=same_`x'_pct
+replace same_`x'=2 if same_`x'!=0 & same_`x'!=1 & same_`x'!=.
+label values same_`x' same
+}
+
+
+save"Analysis/Main_analyses_v5", replace
+****************************************
+* END
