@@ -579,13 +579,46 @@ foreach x in same_gender_pct same_caste_pct same_jatis_pct same_age_pct same_job
 ta `x'
 }
 
-*** Dummy
+*** Categorical
 label define same 0"Different" 1"Same" 2"Mix"
 foreach x in gender caste jatis age jobstatut occup educ location situation {
 gen same_`x'=same_`x'_pct
 replace same_`x'=2 if same_`x'!=0 & same_`x'!=1 & same_`x'!=.
 label values same_`x' same
 }
+
+
+*** Dummy
+label define dsame 0"Perfect homophily" 1"Heterophily"
+foreach x in gender caste jatis age jobstatut occup educ location situation {
+gen dsame_`x'=same_`x'
+recode dsame_`x' (0=1) (1=0) (2=1)
+label values dsame_`x' dsame
+}
+
+tab1 dsame_*
+
+ta same_gender_pct dsame_gender
+
+*** Social identity
+gen female=0
+replace female=1 if sex==2
+
+gen dalit=0
+replace dalit=1 if caste==1
+
+order female, after(sex)
+order dalit, after(caste)
+
+
+*** Std
+foreach x in fES fOPEX fCO locus {
+egen `x'std=std(`x')
+rename `x' `x'_raw
+rename `x'std `x'
+}
+
+
 
 
 save"Analysis/Main_analyses_v5", replace

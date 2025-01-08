@@ -211,20 +211,20 @@ use"Analysis/Main_analyses_v5", clear
 
 *** Continuous
 cls
-pwcorr fES fOPEX fCO locus netsize_all duration_corr strength_mca IQV_caste IQV_gender IQV_age IQV_occup IQV_educ  same_caste_pct same_gender_pct friend_pct multiplexityF_pct, sig
+pwcorr fES fOPEX fCO locus netsize_all duration_corr strength_mca IQV_caste IQV_gender IQV_age IQV_occup IQV_educ same_caste_pct same_gender_pct friend_pct multiplexityF_pct, sig
 
 * By sex
-pwcorr fES fOPEX fCO locus netsize_all duration_corr strength_mca IQV_caste IQV_gender IQV_age IQV_occup IQV_educ  same_caste_pct same_gender_pct friend_pct multiplexityF_pct if sex==1, sig
+pwcorr fES fOPEX fCO locus netsize_all duration_corr strength_mca IQV_caste IQV_gender IQV_age IQV_occup IQV_educ same_caste_pct same_gender_pct friend_pct multiplexityF_pct if sex==1, sig
 
-pwcorr fES fOPEX fCO locus netsize_all duration_corr strength_mca IQV_caste IQV_gender IQV_age IQV_occup IQV_educ  same_caste_pct same_gender_pct friend_pct multiplexityF_pct if sex==2, sig
+pwcorr fES fOPEX fCO locus netsize_all duration_corr strength_mca IQV_caste IQV_gender IQV_age IQV_occup IQV_educ same_caste_pct same_gender_pct friend_pct multiplexityF_pct if sex==2, sig
 
 
 * By caste
-pwcorr fES fOPEX fCO locus netsize_all duration_corr strength_mca IQV_caste IQV_gender IQV_age IQV_occup IQV_educ  same_caste_pct same_gender_pct friend_pct multiplexityF_pct if caste==1, sig
+pwcorr fES fOPEX fCO locus netsize_all duration_corr strength_mca IQV_caste IQV_gender IQV_age IQV_occup IQV_educ same_caste_pct same_gender_pct friend_pct multiplexityF_pct if caste==1, sig
 
-pwcorr fES fOPEX fCO locus netsize_all duration_corr strength_mca IQV_caste IQV_gender IQV_age IQV_occup IQV_educ  same_caste_pct same_gender_pct friend_pct multiplexityF_pct if caste==2, sig
+pwcorr fES fOPEX fCO locus netsize_all duration_corr strength_mca IQV_caste IQV_gender IQV_age IQV_occup IQV_educ same_caste_pct same_gender_pct friend_pct multiplexityF_pct if caste==2, sig
 
-pwcorr fES fOPEX fCO locus netsize_all duration_corr strength_mca IQV_caste IQV_gender IQV_age IQV_occup IQV_educ  same_caste_pct same_gender_pct friend_pct multiplexityF_pct if caste==3, sig
+pwcorr fES fOPEX fCO locus netsize_all duration_corr strength_mca IQV_caste IQV_gender IQV_age IQV_occup IQV_educ same_caste_pct same_gender_pct friend_pct multiplexityF_pct if caste==3, sig
 
 
 
@@ -250,17 +250,21 @@ tabstat fES fOPEX fCO locus, stat(mean) by(`x')
 
 
 ****************************************
-* Networks and personality (corr cont)
+* Distribution des futurs Y
 ****************************************
 use"Analysis/Main_analyses_v5", clear
 
-/*
-Regression
+*** Taille du réseau
+ta netsize_all
+hist netsize_all, w(1) d percent
+* Poisson
 
-Regarder la littérature pour voir comment les autres font
-*/
 
+*** Diversité du réseau
+ta IQV_caste
+kdensity IQV_caste
 
+kdensity IQV_gender
 
 
 
