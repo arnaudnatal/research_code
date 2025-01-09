@@ -17,27 +17,75 @@ do"C:/Users/Arnaud/Documents/GitHub/folderanalysis/$link.do"
 
 
 
+
+
+
+
+
 ****************************************
-* Stat Isabelle
+* Stat desc
 ****************************************
 use"panel_indiv_v3", clear
 
-ta dumindiv_effective_repa year, col 
-ta dumindiv_effective_repa year if sex==1, col 
-ta dumindiv_effective_repa year if sex==2, col 
+********** Transfo pour simplifier les stat
+replace totindiv_givenamt_repa=totindiv_givenamt_repa/1000
+replace totindiv_effectiveamt_repa=totindiv_effectiveamt_repa/1000
 
-keep if sex==2
-fre sex
-ta dumindiv_effective_repa year, col 
+replace gtdr_indiv=gtdr_indiv*100
+replace etdr_indiv=etdr_indiv*100
+replace gtir_indiv=gtir_indiv*100
+replace etir_indiv=etir_indiv*100
+
+********** Dummy loans
+ta dummyloans_indiv year, m
+ta dummyloans_indiv year, col
+keep if dummyloans_indiv==1
+
+
+********** Given
+*** Total
+ta dumindiv_given_repa year, col
+tabstat totindiv_givenamt_repa if dumindiv_given_repa==1, stat(mean med) by(year)
+tabstat gtdr_indiv if dumindiv_given_repa==1, stat(mean med) by(year)
+tabstat gtir_indiv if dumindiv_given_repa==1, stat(mean med) by(year)
+
+*** Men
+ta dumindiv_given_repa year if sex==1, col
+tabstat totindiv_givenamt_repa if dumindiv_given_repa==1 & sex==1, stat(mean med) by(year)
+tabstat gtdr_indiv if dumindiv_given_repa==1 & sex==1, stat(mean med) by(year)
+tabstat gtir_indiv if dumindiv_given_repa==1 & sex==1, stat(mean med) by(year)
+
+*** Women
+ta dumindiv_given_repa year if sex==2, col
+tabstat totindiv_givenamt_repa if dumindiv_given_repa==1 & sex==2, stat(mean med) by(year)
+tabstat gtdr_indiv if dumindiv_given_repa==1 & sex==2, stat(mean med) by(year)
+tabstat gtir_indiv if dumindiv_given_repa==1 & sex==2, stat(mean med) by(year)
 
 
 
+********** Effective
+*** Total
+ta dumindiv_effective_repa year, col
+tabstat totindiv_effectiveamt_repa if dumindiv_effective_repa==1, stat(mean med) by(year)
+tabstat etdr_indiv if dumindiv_effective_repa==1, stat(mean med) by(year)
+tabstat etir_indiv if dumindiv_effective_repa==1, stat(mean med) by(year)
 
+*** Men
+ta dumindiv_effective_repa year if sex==1, col
+tabstat totindiv_effectiveamt_repa if dumindiv_effective_repa==1 & sex==1, stat(mean med) by(year)
+tabstat etdr_indiv if dumindiv_effective_repa==1 & sex==1, stat(mean med) by(year)
+tabstat etir_indiv if dumindiv_effective_repa==1 & sex==1, stat(mean med) by(year)
 
-
+*** Women
+ta dumindiv_effective_repa year if sex==2, col
+tabstat totindiv_effectiveamt_repa if dumindiv_effective_repa==1 & sex==2, stat(mean med) by(year)
+tabstat etdr_indiv if dumindiv_effective_repa==1 & sex==2, stat(mean med) by(year)
+tabstat etir_indiv if dumindiv_effective_repa==1 & sex==2, stat(mean med) by(year)
 
 ****************************************
 * END
+
+
 
 
 
@@ -56,36 +104,37 @@ ta dumindiv_effective_repa year, col
 ****************************************
 use"panel_indiv_v3", clear
 
-*
-ta dummyloans_indiv year, m
-ta dummyloans_indiv year, col
+********** Cas concret pour être sûr de la sélection
+preserve
+keep if year==2020
+bysort HHID_panel: gen n=_N
+ta n
+keep if n==6
+drop n
+sort HHID_panel INDID_panel
+ta etdr
+keep if etdr>.6
+keep HHID_panel INDID_panel sex etdr etdr_indiv share_etdr totindiv_givenamt_repa totindiv_effectiveamt_repa dumHH_given_repa dumHH_effective_repa totHH_givenamt_repa totHH_effectiveamt_repa dummyloans_indiv loanamount_indiv loanamount_HH
+restore
+
+
+********** Transfo pour mieux lire les stat desc
+replace share_gtdr=share_gtdr*100
+replace share_etdr=share_etdr*100
+
+
+********** Share for indebted households
+keep if dummyloans_HH==1
+tabstat share_gtdr share_etdr if year==2016, stat(n mean med) by(sex)
+tabstat share_gtdr share_etdr if year==2020, stat(n mean med) by(sex)
+
+
+********** Share for indebted individuals
 keep if dummyloans_indiv==1
-
-* Given
-ta dumindiv_given_repa year, col
-tabstat totindiv_givenamt_repa if dumindiv_given_repa==1, stat(n mean q) by(year)
-tabstat gtdr_indiv if dumindiv_given_repa==1, stat(n mean q) by(year)
-
-fre sex
-* Given for male
-ta dumindiv_given_repa year if sex==1, col
-tabstat totindiv_givenamt_repa if dumindiv_given_repa==1 & sex==1, stat(n mean q) by(year)
-tabstat gtdr_indiv if dumindiv_given_repa==1 & sex==1, stat(n mean q) by(year)
+tabstat share_gtdr share_etdr if year==2016, stat(n mean med) by(sex)
+tabstat share_gtdr share_etdr if year==2020, stat(n mean med) by(sex)
 
 
-* Given for female
-ta dumindiv_given_repa year if sex==2, col
-tabstat totindiv_givenamt_repa if dumindiv_given_repa==1 & sex==2, stat(n mean q) by(year)
-tabstat gtdr_indiv if dumindiv_given_repa==1 & sex==2, stat(n mean q) by(year)
-
-
-
-
-
-* Effective
-ta dumindiv_effective_repa year, col
-tabstat totindiv_effectiveamt_repa if dumindiv_effective_repa==1, stat(n mean q) by(year)
-tabstat etdr_indiv if dumindiv_effective_repa==1, stat(n mean q) by(year)
 
 
 ****************************************

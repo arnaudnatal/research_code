@@ -47,7 +47,6 @@ tabstat loanamount_HH assets_total assets_totalnoland assets_totalnoprop, stat(n
 gen dar=loanamount_HH/assets_totalnoprop
 replace dar=0 if dar==.
 
-
 * DIR
 gen dir=loanamount_HH/annualincome_HH
 replace dir=0 if dir==.
@@ -55,7 +54,6 @@ replace dir=0 if dir==.
 * DCR
 gen dcr=loanamount_HH/expenses_total
 replace dcr=0 if dcr==.
-
 
 * GTDR
 gen gtdr=totHH_givenamt_repa/loanamount_HH
@@ -65,11 +63,9 @@ replace gtdr=0 if gtdr==.
 gen gtar=totHH_givenamt_repa/assets_total
 replace gtar=0 if gtar==.
 
-
 * ETDR
 gen etdr=totHH_effectiveamt_repa/loanamount_HH
 replace etdr=0 if etdr==.
-
 
 * ETAR
 gen etar=totHH_effectiveamt_repa/assets_total

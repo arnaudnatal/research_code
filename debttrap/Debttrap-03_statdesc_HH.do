@@ -29,15 +29,16 @@ keep if dummyloans_HH==1
 
 * Given
 ta dumHH_given_repa year, col
-tabstat totHH_givenamt_repa if dumHH_given_repa==1, stat(n mean q) by(year)
-tabstat gtdr if dumHH_given_repa==1, stat(n mean q) by(year)
+tabstat totHH_givenamt_repa if dumHH_given_repa==1, stat(mean med) by(year)
+tabstat gtdr if dumHH_given_repa==1, stat(mean med) by(year)
+tabstat gtar if dumHH_given_repa==1, stat(mean med) by(year)
 
-/*
+
 * Effective
 ta dumHH_effective_repa year, col
-tabstat totHH_effectiveamt_repa if dumHH_effective_repa==1, stat(n mean q) by(year)
-tabstat etdr if dumHH_effective_repa==1, stat(n mean q) by(year)
-*/
+tabstat totHH_effectiveamt_repa if dumHH_effective_repa==1, stat(mean med) by(year)
+tabstat etdr if dumHH_given_repa==1, stat(mean med) by(year)
+tabstat etar if dumHH_given_repa==1, stat(mean med) by(year)
 
 ****************************************
 * END

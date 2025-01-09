@@ -38,6 +38,14 @@ replace gtdr_indiv=0 if gtdr_indiv==.
 gen etdr_indiv=totindiv_effectiveamt_repa/loanamount_indiv
 replace etdr_indiv=0 if etdr_indiv==.
 
+* GTIR
+gen gtir_indiv=totindiv_givenamt_repa/annualincome_indiv
+replace gtir_indiv=0 if gtir_indiv==.
+
+* ETIR
+gen etir_indiv=totindiv_effectiveamt_repa/annualincome_indiv
+replace etir_indiv=0 if etir_indiv==.
+
 * Share DSR
 gen share_dsr=imp1_ds_tot_indiv/imp1_ds_tot_HH
 replace share_dsr=0 if share_dsr==.
@@ -128,6 +136,7 @@ label define dalits 0"Non-dalits" 1"Dalits"
 label values dalits dalits
 
 * Time
+/*
 gen time=0
 replace time=1 if year==2010
 replace time=2 if year==2016
@@ -135,6 +144,7 @@ replace time=3 if year==2020
 
 label define time 1"2010" 2"2016-17" 3"2020-21"
 label values time time
+*/
 
 * Dummy ownland
 recode ownland (.=0)
