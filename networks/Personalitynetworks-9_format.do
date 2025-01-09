@@ -20,13 +20,20 @@ do"C:\Users\Arnaud\Documents\GitHub\folderanalysis\networks.do"
 *************************************
 
 * Size
+
 * IQVcaste_probit IQVcaste_glm
 * IQVgender_probit IQVgender_glm
 * IQVage_probit IQVage_glm
 * IQVoccup_probit IQVoccup_glm
 * IQVeduc_probit IQVeduc_glm
 
-local yvar IQVeduc_glm
+* diffcaste_probit diffcaste_glm
+* diffgender_probit diffgender_glm
+* diffage_probit diffage_glm
+* difflocation_probit difflocation_glm
+
+
+local yvar difflocation_glm
 
 
 

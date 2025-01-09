@@ -254,19 +254,88 @@ tabstat fES fOPEX fCO locus, stat(mean) by(`x')
 ****************************************
 use"Analysis/Main_analyses_v5", clear
 
-*** Taille du réseau
+***** Taille du réseau
 ta netsize_all
+/*
 hist netsize_all, w(1) d percent
-* Poisson
+graph export "Size.png", replace
+*/
 
 
-*** Diversité du réseau
+***** Diversité
+* Caste
 ta IQV_caste
-kdensity IQV_caste
+tabstat IQV_caste, stat(n mean)
+ta hetero_caste
+tabstat IQV_caste if hetero_caste==1, stat(n mean)
 
-kdensity IQV_gender
+* Sex
+ta IQV_gender
+tabstat IQV_gender, stat(n mean)
+ta hetero_gender
+tabstat IQV_gender if hetero_gender==1, stat(n mean)
+
+* Age
+ta IQV_age
+tabstat IQV_age, stat(n mean)
+ta hetero_age
+tabstat IQV_age if hetero_age==1, stat(n mean)
+
+* Occup
+ta IQV_occup
+tabstat IQV_occup, stat(n mean)
+ta hetero_occup
+tabstat IQV_occup if hetero_occup==1, stat(n mean)
+
+* Educ
+ta IQV_educ
+tabstat IQV_educ, stat(n mean)
+ta hetero_educ
+tabstat IQV_educ if hetero_educ==1, stat(n mean)
 
 
+***** Homophilie
+* Caste
+ta same_caste_pct
+tabstat same_caste_pct, stat(n mean)
+
+* Sex
+ta same_gender_pct
+tabstat same_gender_pct, stat(n mean)
+
+* Age
+ta same_age_pct
+tabstat same_age_pct, stat(n mean)
+
+* Location
+ta same_location_pct
+tabstat same_location_pct, stat(n mean)
+
+
+***** Heterophilie
+* Caste
+ta diffcaste
+tabstat diffcaste, stat(n mean)
+ta ddiffcaste
+tabstat diffcaste if ddiffcaste==1, stat(n mean)
+
+* Gender
+ta diffgender
+tabstat diffgender, stat(n mean)
+ta ddiffgender
+tabstat diffgender if ddiffgender==1, stat(n mean)
+
+* Age
+ta diffage
+tabstat diffage, stat(n mean)
+ta ddiffage
+tabstat diffage if ddiffage==1, stat(n mean)
+
+* Location
+ta difflocation
+tabstat difflocation, stat(n mean)
+ta ddifflocation
+tabstat difflocation if ddifflocation==1, stat(n mean)
 
 
 ****************************************

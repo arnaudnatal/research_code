@@ -588,17 +588,21 @@ label values same_`x' same
 }
 
 
-*** Dummy
-label define dsame 0"Perfect homophily" 1"Heterophily"
+*** Homophily --> Heterophily pour faire une catégorielle "logique"
 foreach x in gender caste jatis age jobstatut occup educ location situation {
-gen dsame_`x'=same_`x'
-recode dsame_`x' (0=1) (1=0) (2=1)
-label values dsame_`x' dsame
+gen diff`x'=abs(same_`x'_pct-1)
 }
 
-tab1 dsame_*
+label define ddiff 0"Perfect homophily" 1"Heterophily"
+foreach x in gender caste jatis age jobstatut occup educ location situation {
+gen ddiff`x'=diff`x'
+replace ddiff`x'=1 if diff`x'>0 & diff`x'!=.
+label values ddiff`x' ddiff
+}
 
-ta same_gender_pct dsame_gender
+
+
+
 
 *** Social identity
 gen female=0
