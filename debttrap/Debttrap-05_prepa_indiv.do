@@ -25,7 +25,7 @@ do"C:/Users/Arnaud/Documents/GitHub/folderanalysis/$link.do"
 use"raw/NEEMSIS1-HH", clear
 
 * To keep
-keep HHID2016 INDID2016 villagearea villageid dummydemonetisation dummymarriage ownland house housetitle name sex age relationshiptohead livinghome
+keep HHID2016 INDID2016 villagearea villageid dummydemonetisation dummymarriage ownland house housetitle name sex age relationshiptohead livinghome maritalstatus
 fre house housetitle
 duplicates drop
 decode villagearea, gen(vi)
@@ -145,7 +145,7 @@ drop if dummylefthousehold==1
 fre house
 
 * To keep
-keep HHID2020 INDID2020 villagearea villageid village_new dummymarriage ownland ownland house housetitle name sex age relationshiptohead livinghome
+keep HHID2020 INDID2020 villagearea villageid village_new dummymarriage ownland ownland house housetitle name sex age relationshiptohead livinghome maritalstatus
 fre house housetitle
 destring house housetitle, replace
 destring ownland, replace

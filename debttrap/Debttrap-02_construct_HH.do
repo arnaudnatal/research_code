@@ -319,6 +319,15 @@ drop annualincome_HH_backup annualincome_HH2 dailyincome_pc
 
 
 
+*** Trap rename
+rename dumHH_effective_repa eff_trap
+rename dumHH_given_repa giv_trap
+rename totHH_effectiveamt_repa eff_trapamount
+rename totHH_givenamt_repa giv_trapamount
+
+replace eff_trapamount=eff_trapamount/1000
+replace giv_trapamount=giv_trapamount/1000
+
 save"panel_HH_v3", replace
 ****************************************
 * END

@@ -184,7 +184,9 @@ label var village_9 "Village: ORA"
 label var village_10 "Village: SEM"
 
 * Drop head
+rename head_sex sexhead
 drop head_*
+rename sexhead headsex
 
 save"panel_indiv_v2", replace
 ****************************************

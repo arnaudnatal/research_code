@@ -119,21 +119,26 @@ restore
 
 
 ********** Transfo pour mieux lire les stat desc
-replace share_gtdr=share_gtdr*100
 replace share_etdr=share_etdr*100
+replace share_gtdr=share_gtdr*100
 
 
 ********** Share for indebted households
 keep if dummyloans_HH==1
-tabstat share_gtdr share_etdr if year==2016, stat(n mean med) by(sex)
-tabstat share_gtdr share_etdr if year==2020, stat(n mean med) by(sex)
+tabstat share_etdr if year==2016, stat(n mean q) by(sex)
+tabstat share_etdr if year==2020, stat(n mean q) by(sex)
 
 
 ********** Share for indebted individuals
 keep if dummyloans_indiv==1
-tabstat share_gtdr share_etdr if year==2016, stat(n mean med) by(sex)
-tabstat share_gtdr share_etdr if year==2020, stat(n mean med) by(sex)
+tabstat share_etdr if year==2016, stat(n mean q) by(sex)
+tabstat share_etdr if year==2020, stat(n mean q) by(sex)
 
+
+********** Share for trapped individuals
+keep if dumindiv_effective_repa==1
+tabstat share_etdr if year==2016, stat(n mean q) by(sex)
+tabstat share_etdr if year==2020, stat(n mean q) by(sex)
 
 
 

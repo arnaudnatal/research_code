@@ -28,20 +28,404 @@ ta dummyloans_HH year, col
 keep if dummyloans_HH==1
 
 * Given
-ta dumHH_given_repa year, col
-tabstat totHH_givenamt_repa if dumHH_given_repa==1, stat(mean med) by(year)
-tabstat gtdr if dumHH_given_repa==1, stat(mean med) by(year)
-tabstat gtar if dumHH_given_repa==1, stat(mean med) by(year)
+ta giv_trap year, col
+tabstat giv_trapamount if giv_trap==1, stat(mean med) by(year)
+tabstat gtdr if giv_trap==1, stat(mean med) by(year)
+tabstat gtar if giv_trap==1, stat(mean med) by(year)
 
 
 * Effective
-ta dumHH_effective_repa year, col
-tabstat totHH_effectiveamt_repa if dumHH_effective_repa==1, stat(mean med) by(year)
-tabstat etdr if dumHH_given_repa==1, stat(mean med) by(year)
-tabstat etar if dumHH_given_repa==1, stat(mean med) by(year)
+ta eff_trap year, col
+tabstat eff_trapamount if eff_trap==1, stat(mean med) by(year)
+tabstat etdr if eff_trap==1, stat(mean med) by(year)
+tabstat etar if eff_trap==1, stat(mean med) by(year)
 
 ****************************************
 * END
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Caste and trap
+****************************************
+
+********** Given trap
+use"panel_HH_v3", clear
+
+*** Dummy
+ta giv_trap caste if year==2010, col nofreq chi2
+ta giv_trap caste if year==2016, col nofreq chi2
+ta giv_trap caste if year==2020, col nofreq chi2
+
+*** Amount
+keep if giv_trap==1
+tabstat giv_trapamount if year==2010, stat(n mean q) by(caste)
+tabstat giv_trapamount if year==2016, stat(n mean q) by(caste)
+tabstat giv_trapamount if year==2020, stat(n mean q) by(caste)
+
+*** Ratio dette
+replace gtdr=gtdr*100
+tabstat gtdr if year==2010, stat(n mean q) by(caste)
+tabstat gtdr if year==2016, stat(n mean q) by(caste)
+tabstat gtdr if year==2020, stat(n mean q) by(caste)
+
+*** Ratio actifs
+replace gtar=gtar*100
+tabstat gtar if year==2010, stat(n mean q) by(caste)
+tabstat gtar if year==2016, stat(n mean q) by(caste)
+tabstat gtar if year==2020, stat(n mean q) by(caste)
+
+
+
+
+********** Effective trap
+use"panel_HH_v3", clear
+
+*** Dummy
+ta eff_trap caste if year==2010, col nofreq chi2
+ta eff_trap caste if year==2016, col nofreq chi2
+ta eff_trap caste if year==2020, col nofreq chi2
+
+*** Amount
+keep if eff_trap==1
+tabstat eff_trapamount if year==2010, stat(n mean q) by(caste)
+tabstat eff_trapamount if year==2016, stat(n mean q) by(caste)
+tabstat eff_trapamount if year==2020, stat(n mean q) by(caste)
+
+*** Ratio dette
+replace etdr=etdr*100
+tabstat etdr if year==2010, stat(n mean q) by(caste)
+tabstat etdr if year==2016, stat(n mean q) by(caste)
+tabstat etdr if year==2020, stat(n mean q) by(caste)
+
+*** Ratio actifs
+replace etar=etar*100
+tabstat etar if year==2010, stat(n mean q) by(caste)
+tabstat etar if year==2016, stat(n mean q) by(caste)
+tabstat etar if year==2020, stat(n mean q) by(caste)
+
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Income and trap
+****************************************
+
+********** Given trap
+use"panel_HH_v3", clear
+
+replace annualincome_HH=annualincome_HH/1000
+
+*** Dummy
+tabstat annualincome_HH if year==2010, stat(n mean q) by(giv_trap)
+tabstat annualincome_HH if year==2016, stat(n mean q) by(giv_trap)
+tabstat annualincome_HH if year==2020, stat(n mean q) by(giv_trap)
+
+*** Amount
+keep if giv_trap==1
+pwcorr giv_trapamount annualincome_HH if year==2010, sig
+pwcorr giv_trapamount annualincome_HH if year==2016, sig
+pwcorr giv_trapamount annualincome_HH if year==2020, sig
+spearman giv_trapamount annualincome_HH if year==2010, stats(rho p)
+spearman giv_trapamount annualincome_HH if year==2016, stats(rho p)
+spearman giv_trapamount annualincome_HH if year==2020, stats(rho p)
+
+*** Ratio dette
+replace gtdr=gtdr*100
+pwcorr gtdr annualincome_HH if year==2010, sig
+pwcorr gtdr annualincome_HH if year==2016, sig
+pwcorr gtdr annualincome_HH if year==2020, sig
+spearman gtdr annualincome_HH if year==2010, stats(rho p)
+spearman gtdr annualincome_HH if year==2016, stats(rho p)
+spearman gtdr annualincome_HH if year==2020, stats(rho p)
+
+*** Ratio actifs
+replace gtar=gtar*100
+pwcorr gtar annualincome_HH if year==2010, sig
+pwcorr gtar annualincome_HH if year==2016, sig
+pwcorr gtar annualincome_HH if year==2020, sig
+spearman gtar annualincome_HH if year==2010, stats(rho p)
+spearman gtar annualincome_HH if year==2016, stats(rho p)
+spearman gtar annualincome_HH if year==2020, stats(rho p)
+
+
+
+
+
+
+
+********** Effective trap
+use"panel_HH_v3", clear
+
+replace annualincome_HH=annualincome_HH/1000
+
+*** Dummy
+tabstat annualincome_HH if year==2010, stat(n mean q) by(eff_trap)
+tabstat annualincome_HH if year==2016, stat(n mean q) by(eff_trap)
+tabstat annualincome_HH if year==2020, stat(n mean q) by(eff_trap)
+
+*** Amount
+keep if eff_trap==1
+pwcorr eff_trapamount annualincome_HH if year==2010, sig
+pwcorr eff_trapamount annualincome_HH if year==2016, sig
+pwcorr eff_trapamount annualincome_HH if year==2020, sig
+spearman eff_trapamount annualincome_HH if year==2010, stats(rho p)
+spearman eff_trapamount annualincome_HH if year==2016, stats(rho p)
+spearman eff_trapamount annualincome_HH if year==2020, stats(rho p)
+
+*** Ratio dette
+replace etdr=etdr*100
+pwcorr etdr annualincome_HH if year==2010, sig
+pwcorr etdr annualincome_HH if year==2016, sig
+pwcorr etdr annualincome_HH if year==2020, sig
+spearman etdr annualincome_HH if year==2010, stats(rho p)
+spearman etdr annualincome_HH if year==2016, stats(rho p)
+spearman etdr annualincome_HH if year==2020, stats(rho p)
+
+*** Ratio actifs
+replace etar=etar*100
+pwcorr etar annualincome_HH if year==2010, sig
+pwcorr etar annualincome_HH if year==2016, sig
+pwcorr etar annualincome_HH if year==2020, sig
+spearman etar annualincome_HH if year==2010, stats(rho p)
+spearman etar annualincome_HH if year==2016, stats(rho p)
+spearman etar annualincome_HH if year==2020, stats(rho p)
+
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Wealth and trap
+****************************************
+
+********** Given trap
+use"panel_HH_v3", clear
+
+*** Dummy
+tabstat assets_total1000 if year==2010, stat(n mean q) by(giv_trap)
+tabstat assets_total1000 if year==2016, stat(n mean q) by(giv_trap)
+tabstat assets_total1000 if year==2020, stat(n mean q) by(giv_trap)
+
+*** Amount
+keep if giv_trap==1
+pwcorr giv_trapamount assets_total1000 if year==2010, sig
+pwcorr giv_trapamount assets_total1000 if year==2016, sig
+pwcorr giv_trapamount assets_total1000 if year==2020, sig
+spearman giv_trapamount assets_total1000 if year==2010, stats(rho p)
+spearman giv_trapamount assets_total1000 if year==2016, stats(rho p)
+spearman giv_trapamount assets_total1000 if year==2020, stats(rho p)
+
+*** Ratio dette
+replace gtdr=gtdr*100
+pwcorr gtdr assets_total1000 if year==2010, sig
+pwcorr gtdr assets_total1000 if year==2016, sig
+pwcorr gtdr assets_total1000 if year==2020, sig
+spearman gtdr assets_total1000 if year==2010, stats(rho p)
+spearman gtdr assets_total1000 if year==2016, stats(rho p)
+spearman gtdr assets_total1000 if year==2020, stats(rho p)
+
+*** Ratio actifs
+replace gtar=gtar*100
+pwcorr gtar assets_total1000 if year==2010, sig
+pwcorr gtar assets_total1000 if year==2016, sig
+pwcorr gtar assets_total1000 if year==2020, sig
+spearman gtar assets_total1000 if year==2010, stats(rho p)
+spearman gtar assets_total1000 if year==2016, stats(rho p)
+spearman gtar assets_total1000 if year==2020, stats(rho p)
+
+
+
+
+
+
+
+********** Effective trap
+use"panel_HH_v3", clear
+
+*** Dummy
+tabstat assets_total1000 if year==2010, stat(n mean q) by(eff_trap)
+tabstat assets_total1000 if year==2016, stat(n mean q) by(eff_trap)
+tabstat assets_total1000 if year==2020, stat(n mean q) by(eff_trap)
+
+*** Amount
+keep if eff_trap==1
+pwcorr eff_trapamount assets_total1000 if year==2010, sig
+pwcorr eff_trapamount assets_total1000 if year==2016, sig
+pwcorr eff_trapamount assets_total1000 if year==2020, sig
+spearman eff_trapamount assets_total1000 if year==2010, stats(rho p)
+spearman eff_trapamount assets_total1000 if year==2016, stats(rho p)
+spearman eff_trapamount assets_total1000 if year==2020, stats(rho p)
+
+*** Ratio dette
+replace etdr=etdr*100
+pwcorr etdr assets_total1000 if year==2010, sig
+pwcorr etdr assets_total1000 if year==2016, sig
+pwcorr etdr assets_total1000 if year==2020, sig
+spearman etdr assets_total1000 if year==2010, stats(rho p)
+spearman etdr assets_total1000 if year==2016, stats(rho p)
+spearman etdr assets_total1000 if year==2020, stats(rho p)
+
+*** Ratio actifs
+replace etar=etar*100
+pwcorr etar assets_total1000 if year==2010, sig
+pwcorr etar assets_total1000 if year==2016, sig
+pwcorr etar assets_total1000 if year==2020, sig
+spearman etar assets_total1000 if year==2010, stats(rho p)
+spearman etar assets_total1000 if year==2016, stats(rho p)
+spearman etar assets_total1000 if year==2020, stats(rho p)
+
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* DSR and trap
+****************************************
+
+********** Given trap
+use"panel_HH_v3", clear
+
+replace dsr=dsr*100
+
+*** Dummy
+tabstat dsr if year==2010, stat(n mean q) by(giv_trap)
+tabstat dsr if year==2016, stat(n mean q) by(giv_trap)
+tabstat dsr if year==2020, stat(n mean q) by(giv_trap)
+
+*** Amount
+keep if giv_trap==1
+pwcorr giv_trapamount dsr if year==2010, sig
+pwcorr giv_trapamount dsr if year==2016, sig
+pwcorr giv_trapamount dsr if year==2020, sig
+spearman giv_trapamount dsr if year==2010, stats(rho p)
+spearman giv_trapamount dsr if year==2016, stats(rho p)
+spearman giv_trapamount dsr if year==2020, stats(rho p)
+
+*** Ratio dette
+replace gtdr=gtdr*100
+pwcorr gtdr dsr if year==2010, sig
+pwcorr gtdr dsr if year==2016, sig
+pwcorr gtdr dsr if year==2020, sig
+spearman gtdr dsr if year==2010, stats(rho p)
+spearman gtdr dsr if year==2016, stats(rho p)
+spearman gtdr dsr if year==2020, stats(rho p)
+
+*** Ratio actifs
+replace gtar=gtar*100
+pwcorr gtar dsr if year==2010, sig
+pwcorr gtar dsr if year==2016, sig
+pwcorr gtar dsr if year==2020, sig
+spearman gtar dsr if year==2010, stats(rho p)
+spearman gtar dsr if year==2016, stats(rho p)
+spearman gtar dsr if year==2020, stats(rho p)
+
+
+
+
+
+
+
+********** Effective trap
+use"panel_HH_v3", clear
+
+*** Dummy
+tabstat dsr if year==2010, stat(n mean q) by(eff_trap)
+tabstat dsr if year==2016, stat(n mean q) by(eff_trap)
+tabstat dsr if year==2020, stat(n mean q) by(eff_trap)
+
+*** Amount
+keep if eff_trap==1
+pwcorr eff_trapamount dsr if year==2010, sig
+pwcorr eff_trapamount dsr if year==2016, sig
+pwcorr eff_trapamount dsr if year==2020, sig
+spearman eff_trapamount dsr if year==2010, stats(rho p)
+spearman eff_trapamount dsr if year==2016, stats(rho p)
+spearman eff_trapamount dsr if year==2020, stats(rho p)
+
+*** Ratio dette
+replace etdr=etdr*100
+pwcorr etdr dsr if year==2010, sig
+pwcorr etdr dsr if year==2016, sig
+pwcorr etdr dsr if year==2020, sig
+spearman etdr dsr if year==2010, stats(rho p)
+spearman etdr dsr if year==2016, stats(rho p)
+spearman etdr dsr if year==2020, stats(rho p)
+
+*** Ratio actifs
+replace etar=etar*100
+pwcorr etar dsr if year==2010, sig
+pwcorr etar dsr if year==2016, sig
+pwcorr etar dsr if year==2020, sig
+spearman etar dsr if year==2010, stats(rho p)
+spearman etar dsr if year==2016, stats(rho p)
+spearman etar dsr if year==2020, stats(rho p)
+
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
