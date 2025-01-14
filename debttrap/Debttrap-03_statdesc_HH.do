@@ -22,7 +22,8 @@ do"C:/Users/Arnaud/Documents/GitHub/folderanalysis/$link.do"
 ****************************************
 use"panel_HH_v3", clear
 
-*
+********** Total
+* Sample size
 ta dummyloans_HH year, m
 ta dummyloans_HH year, col
 keep if dummyloans_HH==1
@@ -31,14 +32,11 @@ keep if dummyloans_HH==1
 ta giv_trap year, col
 tabstat giv_trapamount if giv_trap==1, stat(mean med) by(year)
 tabstat gtdr if giv_trap==1, stat(mean med) by(year)
-tabstat gtar if giv_trap==1, stat(mean med) by(year)
-
 
 * Effective
 ta eff_trap year, col
 tabstat eff_trapamount if eff_trap==1, stat(mean med) by(year)
 tabstat etdr if eff_trap==1, stat(mean med) by(year)
-tabstat etar if eff_trap==1, stat(mean med) by(year)
 
 ****************************************
 * END
@@ -59,63 +57,202 @@ tabstat etar if eff_trap==1, stat(mean med) by(year)
 * Caste and trap
 ****************************************
 
-********** Given trap
+
+********** Dalits
+use"panel_HH_v3", clear
+fre dalits
+keep if dalits==1
+
+* Sample size
+ta dummyloans_HH year, m
+ta dummyloans_HH year, col
+keep if dummyloans_HH==1
+
+* Given
+ta giv_trap year, col
+tabstat giv_trapamount if giv_trap==1, stat(mean med) by(year)
+tabstat gtdr if giv_trap==1, stat(mean med) by(year)
+
+* Effective
+ta eff_trap year, col
+tabstat eff_trapamount if eff_trap==1, stat(mean med) by(year)
+tabstat etdr if eff_trap==1, stat(mean med) by(year)
+
+
+
+********** Non-Dalits
+use"panel_HH_v3", clear
+fre dalits
+keep if dalits==0
+
+* Sample size
+ta dummyloans_HH year, m
+ta dummyloans_HH year, col
+keep if dummyloans_HH==1
+
+* Given
+ta giv_trap year, col
+tabstat giv_trapamount if giv_trap==1, stat(mean med) by(year)
+tabstat gtdr if giv_trap==1, stat(mean med) by(year)
+
+* Effective
+ta eff_trap year, col
+tabstat eff_trapamount if eff_trap==1, stat(mean med) by(year)
+tabstat etdr if eff_trap==1, stat(mean med) by(year)
+
+
+
+
+********** Diff
 use"panel_HH_v3", clear
 
-*** Dummy
-ta giv_trap caste if year==2010, col nofreq chi2
-ta giv_trap caste if year==2016, col nofreq chi2
-ta giv_trap caste if year==2020, col nofreq chi2
+keep if dummyloans_HH==1
 
-*** Amount
-keep if giv_trap==1
-tabstat giv_trapamount if year==2010, stat(n mean q) by(caste)
-tabstat giv_trapamount if year==2016, stat(n mean q) by(caste)
-tabstat giv_trapamount if year==2020, stat(n mean q) by(caste)
+* Proba given
+probit giv_trap i.dalits if year==2010
+probit giv_trap i.dalits if year==2016
+probit giv_trap i.dalits if year==2020
 
-*** Ratio dette
-replace gtdr=gtdr*100
-tabstat gtdr if year==2010, stat(n mean q) by(caste)
-tabstat gtdr if year==2016, stat(n mean q) by(caste)
-tabstat gtdr if year==2020, stat(n mean q) by(caste)
+* Given amount
+reg giv_trapamount i.dalits if giv_trap==1 & year==2010
+reg giv_trapamount i.dalits if giv_trap==1 & year==2016
+reg giv_trapamount i.dalits if giv_trap==1 & year==2020
 
-*** Ratio actifs
-replace gtar=gtar*100
-tabstat gtar if year==2010, stat(n mean q) by(caste)
-tabstat gtar if year==2016, stat(n mean q) by(caste)
-tabstat gtar if year==2020, stat(n mean q) by(caste)
+* Given ratio amount
+reg gtdr i.dalits if giv_trap==1 & year==2010
+reg gtdr i.dalits if giv_trap==1 & year==2016
+reg gtdr i.dalits if giv_trap==1 & year==2020
 
 
+* Proba effective
+probit eff_trap i.dalits if year==2010
+probit eff_trap i.dalits if year==2016
+probit eff_trap i.dalits if year==2020
 
+* Effective amount
+reg eff_trapamount i.dalits if eff_trap==1 & year==2010
+reg eff_trapamount i.dalits if eff_trap==1 & year==2016
+reg eff_trapamount i.dalits if eff_trap==1 & year==2020
 
-********** Effective trap
-use"panel_HH_v3", clear
-
-*** Dummy
-ta eff_trap caste if year==2010, col nofreq chi2
-ta eff_trap caste if year==2016, col nofreq chi2
-ta eff_trap caste if year==2020, col nofreq chi2
-
-*** Amount
-keep if eff_trap==1
-tabstat eff_trapamount if year==2010, stat(n mean q) by(caste)
-tabstat eff_trapamount if year==2016, stat(n mean q) by(caste)
-tabstat eff_trapamount if year==2020, stat(n mean q) by(caste)
-
-*** Ratio dette
-replace etdr=etdr*100
-tabstat etdr if year==2010, stat(n mean q) by(caste)
-tabstat etdr if year==2016, stat(n mean q) by(caste)
-tabstat etdr if year==2020, stat(n mean q) by(caste)
-
-*** Ratio actifs
-replace etar=etar*100
-tabstat etar if year==2010, stat(n mean q) by(caste)
-tabstat etar if year==2016, stat(n mean q) by(caste)
-tabstat etar if year==2020, stat(n mean q) by(caste)
+* Effective ratio amount
+reg etdr i.dalits if eff_trap==1 & year==2010
+reg etdr i.dalits if eff_trap==1 & year==2016
+reg etdr i.dalits if eff_trap==1 & year==2020
 
 ****************************************
 * END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Land ownership and trap
+****************************************
+
+
+********** No land
+use"panel_HH_v3", clear
+fre ownland
+keep if ownland==0
+
+* Sample size
+ta dummyloans_HH year, m
+ta dummyloans_HH year, col
+keep if dummyloans_HH==1
+
+* Given
+ta giv_trap year, col
+tabstat giv_trapamount if giv_trap==1, stat(mean med) by(year)
+tabstat gtdr if giv_trap==1, stat(mean med) by(year)
+
+* Effective
+ta eff_trap year, col
+tabstat eff_trapamount if eff_trap==1, stat(mean med) by(year)
+tabstat etdr if eff_trap==1, stat(mean med) by(year)
+
+
+
+********** Landowner
+use"panel_HH_v3", clear
+fre ownland
+keep if ownland==1
+
+* Sample size
+ta dummyloans_HH year, m
+ta dummyloans_HH year, col
+keep if dummyloans_HH==1
+
+* Given
+ta giv_trap year, col
+tabstat giv_trapamount if giv_trap==1, stat(mean med) by(year)
+tabstat gtdr if giv_trap==1, stat(mean med) by(year)
+
+* Effective
+ta eff_trap year, col
+tabstat eff_trapamount if eff_trap==1, stat(mean med) by(year)
+tabstat etdr if eff_trap==1, stat(mean med) by(year)
+
+
+
+
+********** Diff
+use"panel_HH_v3", clear
+
+keep if dummyloans_HH==1
+
+* Proba given
+probit giv_trap i.ownland if year==2010
+probit giv_trap i.ownland if year==2016
+probit giv_trap i.ownland if year==2020
+
+* Given amount
+reg giv_trapamount i.ownland if giv_trap==1 & year==2010
+reg giv_trapamount i.ownland if giv_trap==1 & year==2016
+reg giv_trapamount i.ownland if giv_trap==1 & year==2020
+
+* Given ratio amount
+reg gtdr i.ownland if giv_trap==1 & year==2010
+reg gtdr i.ownland if giv_trap==1 & year==2016
+reg gtdr i.ownland if giv_trap==1 & year==2020
+
+
+* Proba effective
+probit eff_trap i.ownland if year==2010
+probit eff_trap i.ownland if year==2016
+probit eff_trap i.ownland if year==2020
+
+* Effective amount
+reg eff_trapamount i.ownland if eff_trap==1 & year==2010
+reg eff_trapamount i.ownland if eff_trap==1 & year==2016
+reg eff_trapamount i.ownland if eff_trap==1 & year==2020
+
+* Effective ratio amount
+reg etdr i.ownland if eff_trap==1 & year==2010
+reg etdr i.ownland if eff_trap==1 & year==2016
+reg etdr i.ownland if eff_trap==1 & year==2020
+
+****************************************
+* END
+
+
+
+
+
+
+
+
+
 
 
 
@@ -143,6 +280,7 @@ replace annualincome_HH=annualincome_HH/1000
 tabstat annualincome_HH if year==2010, stat(n mean q) by(giv_trap)
 tabstat annualincome_HH if year==2016, stat(n mean q) by(giv_trap)
 tabstat annualincome_HH if year==2020, stat(n mean q) by(giv_trap)
+
 
 *** Amount
 keep if giv_trap==1
@@ -443,467 +581,962 @@ spearman etar dsr if year==2020, stats(rho p)
 
 
 ****************************************
-* Evo DSR
+* Income and trap
 ****************************************
+
+********** Given trap
 use"panel_HH_v3", clear
 
-*
-ta dummyloans_HH year, m
-ta dummyloans_HH year, col
 keep if dummyloans_HH==1
+replace annualincome_HH=annualincome_HH/1000
+keep HHID_panel year giv_trap annualincome_HH
+rename annualincome_HH contvar
+rename giv_trap catvar
+gen contvar1=contvar if year==2010 & catvar==0
+gen contvar2=contvar if year==2010 & catvar==1
+gen contvar3=contvar if year==2016 & catvar==0
+gen contvar4=contvar if year==2016 & catvar==1
+gen contvar5=contvar if year==2020 & catvar==0
+gen contvar6=contvar if year==2020 & catvar==1
+
+***** Macro for formatting database
+global var contvar1 contvar2 contvar3 contvar4 contvar5 contvar6
+local i=1
+foreach x in $var {
+preserve
+rename `x' var
+keep var
+collapse (mean) m_var=var (sd) sd_var=var (count) n_var=var
+gen sample=`i'
+order sample
+* M
+gen max_var=m_var+invttail(n_var-1,0.025)*(sd_var/sqrt(n_var))
+gen min_var=m_var-invttail(n_var-1,0.025)*(sd_var/sqrt(n_var))
+save"_temp`i'", replace
+restore
+local i=`i'+1
+}
+
+***** Append
+use "_temp1", clear
+
+forvalues i=2/6 {
+append using "_temp`i'"
+}
+
+gen year=.
+replace year=2010 if sample==1
+replace year=2010 if sample==2
+replace year=2016 if sample==3
+replace year=2016 if sample==4
+replace year=2020 if sample==5
+replace year=2020 if sample==6
+
+replace sample=1 if sample==3
+replace sample=2 if sample==4
+replace sample=1 if sample==5
+replace sample=2 if sample==6
+
+order sample year
+
+label define sample 1"Non-trapped" 2"Trapped", replace
+label values sample sample
 
 
-* DSR
-tabstat dsr, stat(n q p90 p95 p99 max) by(year)
+***** Graph
+* 2010
+preserve
+keep if year==2010
+twoway ///
+(bar m_var sample, barwidth(.8)) ///
+(rspike max_var min_var sample) ///
+, ylabel(0(40)240) ymtick(0(20)240) ///
+xlabel(1 2,valuelabel angle(0)) ///
+ytitle("Annual income (1k rupees)") xtitle("") ///
+title("2010") ///
+legend(off) scale(1.2) /// 
+name(g1, replace)
+restore
+
+* 2016
+preserve
+keep if year==2016
+twoway ///
+(bar m_var sample, barwidth(.8)) ///
+(rspike max_var min_var sample) ///
+, ylabel(0(40)240) ymtick(0(20)240) ///
+xlabel(1 2,valuelabel angle(0)) ///
+ytitle("Annual income (1k rupees)") xtitle("") ///
+title("2016-17") ///
+legend(off) scale(1.2) /// 
+name(g2, replace)
+restore
+
+* 2010
+preserve
+keep if year==2020
+twoway ///
+(bar m_var sample, barwidth(.8)) ///
+(rspike max_var min_var sample) ///
+, ylabel(0(40)240) ymtick(0(20)240) ///
+xlabel(1 2,valuelabel angle(0)) ///
+ytitle("Annual income (1k rupees)") xtitle("") ///
+title("2020-21") ///
+legend(off) scale(1.2) /// 
+name(g3, replace)
+restore
+
+* Combine
+graph combine g1 g2 g3, col(3)
+graph export "graph/Given_proba_income.png", as(png) replace
+
+
+
+
+
+
+
+********** Effective trap
+use"panel_HH_v3", clear
+
+keep if dummyloans_HH==1
+replace annualincome_HH=annualincome_HH/1000
+keep HHID_panel year eff_trap annualincome_HH
+rename annualincome_HH contvar
+rename eff_trap catvar
+gen contvar1=contvar if year==2010 & catvar==0
+gen contvar2=contvar if year==2010 & catvar==1
+gen contvar3=contvar if year==2016 & catvar==0
+gen contvar4=contvar if year==2016 & catvar==1
+gen contvar5=contvar if year==2020 & catvar==0
+gen contvar6=contvar if year==2020 & catvar==1
+
+***** Macro for formatting database
+global var contvar1 contvar2 contvar3 contvar4 contvar5 contvar6
+local i=1
+foreach x in $var {
+preserve
+rename `x' var
+keep var
+collapse (mean) m_var=var (sd) sd_var=var (count) n_var=var
+gen sample=`i'
+order sample
+* M
+gen max_var=m_var+invttail(n_var-1,0.025)*(sd_var/sqrt(n_var))
+gen min_var=m_var-invttail(n_var-1,0.025)*(sd_var/sqrt(n_var))
+save"_temp`i'", replace
+restore
+local i=`i'+1
+}
+
+***** Append
+use "_temp1", clear
+
+forvalues i=2/6 {
+append using "_temp`i'"
+}
+
+gen year=.
+replace year=2010 if sample==1
+replace year=2010 if sample==2
+replace year=2016 if sample==3
+replace year=2016 if sample==4
+replace year=2020 if sample==5
+replace year=2020 if sample==6
+
+replace sample=1 if sample==3
+replace sample=2 if sample==4
+replace sample=1 if sample==5
+replace sample=2 if sample==6
+
+order sample year
+
+label define sample 1"Non-trapped" 2"Trapped", replace
+label values sample sample
+
+
+***** Graph
+* 2010
+preserve
+keep if year==2010
+twoway ///
+(bar m_var sample, barwidth(.8)) ///
+(rspike max_var min_var sample) ///
+, ylabel(0(40)240) ymtick(0(20)240) ///
+xlabel(1 2,valuelabel angle(0)) ///
+ytitle("Annual income (1k rupees)") xtitle("") ///
+title("2010") ///
+legend(off) scale(1.2) /// 
+name(g1, replace)
+restore
+
+* 2016
+preserve
+keep if year==2016
+twoway ///
+(bar m_var sample, barwidth(.8)) ///
+(rspike max_var min_var sample) ///
+, ylabel(0(40)240) ymtick(0(20)240) ///
+xlabel(1 2,valuelabel angle(0)) ///
+ytitle("Annual income (1k rupees)") xtitle("") ///
+title("2016-17") ///
+legend(off) scale(1.2) /// 
+name(g2, replace)
+restore
+
+* 2010
+preserve
+keep if year==2020
+twoway ///
+(bar m_var sample, barwidth(.8)) ///
+(rspike max_var min_var sample) ///
+, ylabel(0(40)240) ymtick(0(20)240) ///
+xlabel(1 2,valuelabel angle(0)) ///
+ytitle("Annual income (1k rupees)") xtitle("") ///
+title("2020-21") ///
+legend(off) scale(1.2) /// 
+name(g3, replace)
+restore
+
+* Combine
+graph combine g1 g2 g3, col(3)
+graph export "graph/Effective_proba_income.png", as(png) replace
+
+
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Wealth (with land) and trap
+****************************************
+
+********** Given trap
+use"panel_HH_v3", clear
+
+keep if dummyloans_HH==1
+keep HHID_panel year giv_trap assets_total1000
+rename assets_total1000 contvar
+rename giv_trap catvar
+gen contvar1=contvar if year==2010 & catvar==0
+gen contvar2=contvar if year==2010 & catvar==1
+gen contvar3=contvar if year==2016 & catvar==0
+gen contvar4=contvar if year==2016 & catvar==1
+gen contvar5=contvar if year==2020 & catvar==0
+gen contvar6=contvar if year==2020 & catvar==1
+
+***** Macro for formatting database
+global var contvar1 contvar2 contvar3 contvar4 contvar5 contvar6
+local i=1
+foreach x in $var {
+preserve
+rename `x' var
+keep var
+collapse (mean) m_var=var (sd) sd_var=var (count) n_var=var
+gen sample=`i'
+order sample
+* M
+gen max_var=m_var+invttail(n_var-1,0.025)*(sd_var/sqrt(n_var))
+gen min_var=m_var-invttail(n_var-1,0.025)*(sd_var/sqrt(n_var))
+save"_temp`i'", replace
+restore
+local i=`i'+1
+}
+
+***** Append
+use "_temp1", clear
+
+forvalues i=2/6 {
+append using "_temp`i'"
+}
+
+gen year=.
+replace year=2010 if sample==1
+replace year=2010 if sample==2
+replace year=2016 if sample==3
+replace year=2016 if sample==4
+replace year=2020 if sample==5
+replace year=2020 if sample==6
+
+replace sample=1 if sample==3
+replace sample=2 if sample==4
+replace sample=1 if sample==5
+replace sample=2 if sample==6
+
+order sample year
+
+label define sample 1"Non-trapped" 2"Trapped", replace
+label values sample sample
+
+
+***** Graph
+* 2010
+preserve
+keep if year==2010
+twoway ///
+(bar m_var sample, barwidth(.8)) ///
+(rspike max_var min_var sample) ///
+, ylabel(0(400)2800) ymtick(0(200)2800) ///
+xlabel(1 2,valuelabel angle(0)) ///
+ytitle("Wealth (1k rupees)") xtitle("") ///
+title("2010") ///
+legend(off) scale(1.2) /// 
+name(g1, replace)
+restore
+
+* 2016
+preserve
+keep if year==2016
+twoway ///
+(bar m_var sample, barwidth(.8)) ///
+(rspike max_var min_var sample) ///
+, ylabel(0(400)2800) ymtick(0(200)2800) ///
+xlabel(1 2,valuelabel angle(0)) ///
+ytitle("Wealth (1k rupees)") xtitle("") ///
+title("2016-17") ///
+legend(off) scale(1.2) /// 
+name(g2, replace)
+restore
+
+* 2010
+preserve
+keep if year==2020
+twoway ///
+(bar m_var sample, barwidth(.8)) ///
+(rspike max_var min_var sample) ///
+, ylabel(0(400)2800) ymtick(0(200)2800) ///
+xlabel(1 2,valuelabel angle(0)) ///
+ytitle("Wealth (1k rupees)") xtitle("") ///
+title("2020-21") ///
+legend(off) scale(1.2) /// 
+name(g3, replace)
+restore
+
+* Combine
+graph combine g1 g2 g3, col(3)
+graph export "graph/Given_proba_wealth.png", as(png) replace
+
+
+
+
+
+
+
+********** Effective trap
+use"panel_HH_v3", clear
+
+keep if dummyloans_HH==1
+keep HHID_panel year eff_trap assets_total1000
+rename assets_total1000 contvar
+rename eff_trap catvar
+gen contvar1=contvar if year==2010 & catvar==0
+gen contvar2=contvar if year==2010 & catvar==1
+gen contvar3=contvar if year==2016 & catvar==0
+gen contvar4=contvar if year==2016 & catvar==1
+gen contvar5=contvar if year==2020 & catvar==0
+gen contvar6=contvar if year==2020 & catvar==1
+
+***** Macro for formatting database
+global var contvar1 contvar2 contvar3 contvar4 contvar5 contvar6
+local i=1
+foreach x in $var {
+preserve
+rename `x' var
+keep var
+collapse (mean) m_var=var (sd) sd_var=var (count) n_var=var
+gen sample=`i'
+order sample
+* M
+gen max_var=m_var+invttail(n_var-1,0.025)*(sd_var/sqrt(n_var))
+gen min_var=m_var-invttail(n_var-1,0.025)*(sd_var/sqrt(n_var))
+save"_temp`i'", replace
+restore
+local i=`i'+1
+}
+
+***** Append
+use "_temp1", clear
+
+forvalues i=2/6 {
+append using "_temp`i'"
+}
+
+gen year=.
+replace year=2010 if sample==1
+replace year=2010 if sample==2
+replace year=2016 if sample==3
+replace year=2016 if sample==4
+replace year=2020 if sample==5
+replace year=2020 if sample==6
+
+replace sample=1 if sample==3
+replace sample=2 if sample==4
+replace sample=1 if sample==5
+replace sample=2 if sample==6
+
+order sample year
+
+label define sample 1"Non-trapped" 2"Trapped", replace
+label values sample sample
+
+
+***** Graph
+* 2010
+preserve
+keep if year==2010
+twoway ///
+(bar m_var sample, barwidth(.8)) ///
+(rspike max_var min_var sample) ///
+, ylabel(0(400)3200) ymtick(0(200)3200) ///
+xlabel(1 2,valuelabel angle(0)) ///
+ytitle("Wealth (1k rupees)") xtitle("") ///
+title("2010") ///
+legend(off) scale(1.2) /// 
+name(g1, replace)
+restore
+
+* 2016
+preserve
+keep if year==2016
+twoway ///
+(bar m_var sample, barwidth(.8)) ///
+(rspike max_var min_var sample) ///
+, ylabel(0(400)3200) ymtick(0(200)3200) ///
+xlabel(1 2,valuelabel angle(0)) ///
+ytitle("Wealth (1k rupees)") xtitle("") ///
+title("2016-17") ///
+legend(off) scale(1.2) /// 
+name(g2, replace)
+restore
+
+* 2010
+preserve
+keep if year==2020
+twoway ///
+(bar m_var sample, barwidth(.8)) ///
+(rspike max_var min_var sample) ///
+, ylabel(0(400)3200) ymtick(0(200)3200) ///
+xlabel(1 2,valuelabel angle(0)) ///
+ytitle("Wealth (1k rupees)") xtitle("") ///
+title("2020-21") ///
+legend(off) scale(1.2) /// 
+name(g3, replace)
+restore
+
+* Combine
+graph combine g1 g2 g3, col(3)
+graph export "graph/Effective_proba_wealth.png", as(png) replace
+
+
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Wealth (without land) and trap
+****************************************
+
+********** Given trap
+use"panel_HH_v3", clear
+
+keep if dummyloans_HH==1
+keep HHID_panel year giv_trap assets_totalnoland1000
+rename assets_totalnoland1000 contvar
+rename giv_trap catvar
+gen contvar1=contvar if year==2010 & catvar==0
+gen contvar2=contvar if year==2010 & catvar==1
+gen contvar3=contvar if year==2016 & catvar==0
+gen contvar4=contvar if year==2016 & catvar==1
+gen contvar5=contvar if year==2020 & catvar==0
+gen contvar6=contvar if year==2020 & catvar==1
+
+***** Macro for formatting database
+global var contvar1 contvar2 contvar3 contvar4 contvar5 contvar6
+local i=1
+foreach x in $var {
+preserve
+rename `x' var
+keep var
+collapse (mean) m_var=var (sd) sd_var=var (count) n_var=var
+gen sample=`i'
+order sample
+* M
+gen max_var=m_var+invttail(n_var-1,0.025)*(sd_var/sqrt(n_var))
+gen min_var=m_var-invttail(n_var-1,0.025)*(sd_var/sqrt(n_var))
+save"_temp`i'", replace
+restore
+local i=`i'+1
+}
+
+***** Append
+use "_temp1", clear
+
+forvalues i=2/6 {
+append using "_temp`i'"
+}
+
+gen year=.
+replace year=2010 if sample==1
+replace year=2010 if sample==2
+replace year=2016 if sample==3
+replace year=2016 if sample==4
+replace year=2020 if sample==5
+replace year=2020 if sample==6
+
+replace sample=1 if sample==3
+replace sample=2 if sample==4
+replace sample=1 if sample==5
+replace sample=2 if sample==6
+
+order sample year
+
+label define sample 1"Non-trapped" 2"Trapped", replace
+label values sample sample
+
+
+***** Graph
+* 2010
+preserve
+keep if year==2010
+twoway ///
+(bar m_var sample, barwidth(.8)) ///
+(rspike max_var min_var sample) ///
+, ylabel(0(80)640) ymtick(0(40)640) ///
+xlabel(1 2,valuelabel angle(0)) ///
+ytitle("Wealth (1k rupees)") xtitle("") ///
+title("2010") ///
+legend(off) scale(1.2) /// 
+name(g1, replace)
+restore
+
+* 2016
+preserve
+keep if year==2016
+twoway ///
+(bar m_var sample, barwidth(.8)) ///
+(rspike max_var min_var sample) ///
+, ylabel(0(80)640) ymtick(0(40)640) ///
+xlabel(1 2,valuelabel angle(0)) ///
+ytitle("Wealth (1k rupees)") xtitle("") ///
+title("2016-17") ///
+legend(off) scale(1.2) /// 
+name(g2, replace)
+restore
+
+* 2010
+preserve
+keep if year==2020
+twoway ///
+(bar m_var sample, barwidth(.8)) ///
+(rspike max_var min_var sample) ///
+, ylabel(0(80)640) ymtick(0(40)640) ///
+xlabel(1 2,valuelabel angle(0)) ///
+ytitle("Wealth (1k rupees)") xtitle("") ///
+title("2020-21") ///
+legend(off) scale(1.2) /// 
+name(g3, replace)
+restore
+
+* Combine
+graph combine g1 g2 g3, col(3)
+graph export "graph/Given_proba_wealthnl.png", as(png) replace
+
+
+
+
+
+
+
+********** Effective trap
+use"panel_HH_v3", clear
+
+keep if dummyloans_HH==1
+keep HHID_panel year eff_trap assets_totalnoland1000
+rename assets_totalnoland1000 contvar
+rename eff_trap catvar
+gen contvar1=contvar if year==2010 & catvar==0
+gen contvar2=contvar if year==2010 & catvar==1
+gen contvar3=contvar if year==2016 & catvar==0
+gen contvar4=contvar if year==2016 & catvar==1
+gen contvar5=contvar if year==2020 & catvar==0
+gen contvar6=contvar if year==2020 & catvar==1
+
+***** Macro for formatting database
+global var contvar1 contvar2 contvar3 contvar4 contvar5 contvar6
+local i=1
+foreach x in $var {
+preserve
+rename `x' var
+keep var
+collapse (mean) m_var=var (sd) sd_var=var (count) n_var=var
+gen sample=`i'
+order sample
+* M
+gen max_var=m_var+invttail(n_var-1,0.025)*(sd_var/sqrt(n_var))
+gen min_var=m_var-invttail(n_var-1,0.025)*(sd_var/sqrt(n_var))
+save"_temp`i'", replace
+restore
+local i=`i'+1
+}
+
+***** Append
+use "_temp1", clear
+
+forvalues i=2/6 {
+append using "_temp`i'"
+}
+
+gen year=.
+replace year=2010 if sample==1
+replace year=2010 if sample==2
+replace year=2016 if sample==3
+replace year=2016 if sample==4
+replace year=2020 if sample==5
+replace year=2020 if sample==6
+
+replace sample=1 if sample==3
+replace sample=2 if sample==4
+replace sample=1 if sample==5
+replace sample=2 if sample==6
+
+order sample year
+
+label define sample 1"Non-trapped" 2"Trapped", replace
+label values sample sample
+
+
+***** Graph
+* 2010
+preserve
+keep if year==2010
+twoway ///
+(bar m_var sample, barwidth(.8)) ///
+(rspike max_var min_var sample) ///
+, ylabel(0(80)640) ymtick(0(40)640) ///
+xlabel(1 2,valuelabel angle(0)) ///
+ytitle("Wealth (1k rupees)") xtitle("") ///
+title("2010") ///
+legend(off) scale(1.2) /// 
+name(g1, replace)
+restore
+
+* 2016
+preserve
+keep if year==2016
+twoway ///
+(bar m_var sample, barwidth(.8)) ///
+(rspike max_var min_var sample) ///
+, ylabel(0(80)640) ymtick(0(40)640) ///
+xlabel(1 2,valuelabel angle(0)) ///
+ytitle("Wealth (1k rupees)") xtitle("") ///
+title("2016-17") ///
+legend(off) scale(1.2) /// 
+name(g2, replace)
+restore
+
+* 2010
+preserve
+keep if year==2020
+twoway ///
+(bar m_var sample, barwidth(.8)) ///
+(rspike max_var min_var sample) ///
+, ylabel(0(80)640) ymtick(0(40)640) ///
+xlabel(1 2,valuelabel angle(0)) ///
+ytitle("Wealth (1k rupees)") xtitle("") ///
+title("2020-21") ///
+legend(off) scale(1.2) /// 
+name(g3, replace)
+restore
+
+* Combine
+graph combine g1 g2 g3, col(3)
+graph export "graph/Effective_proba_wealthnl.png", as(png) replace
+
+
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* DSR and trap
+****************************************
+
+********** Given trap
+use"panel_HH_v3", clear
+
+keep if dummyloans_HH==1
+keep HHID_panel year giv_trap dsr
 replace dsr=dsr*100
-tabstat dsr, stat(n q p90 p95 p99 max) by(year)
-
-violinplot dsr, over(time) horizontal left dscale(4) noline now ///
-fill(color(black%10)) ///
-box(t(b)) bcolors(plb1) ///
-mean(t(m)) meancolors(plr1) ///
-med(t(m)) medcolors(ananas) ///
-title("") ///
-xtitle("Percent") xlabel(0(20)180) ///
-ylabel(,grid) ///
-legend(order(4 "IQR" 7 "Median" 10 "Mean") pos(6) col(3) on) ///
-note("{it:Note:} For 405 households in 2010, 487 in 2016-17, and 622 in 2020-21.", size(vsmall)) ///
-aspectratio() scale(1.2) name(dsr, replace) range(0 180)
-graph export "DSR.png", as(png) replace
-
-
-
-
-****************************************
-* END
-
-
-
-
-
-
-
-
-
-
-
-****************************************
-* Changes over time
-****************************************
-use"panel_HH_v3", clear
-
-*
-ta dummyloans_HH year, m
-ta dummyloans_HH year, col
-keep if dummyloans_HH==1
-
-keep HHID_panel year dumHH_given_repa
-rename dumHH_given_repa trap
-
-reshape wide trap, i(HHID_panel) j(year)
-
-* Stat
-ta trap2010 trap2016
-ta trap2016 trap2020
-
-
-****************************************
-* END
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-****************************************
-* Nb of HH concerned
-****************************************
-use"panel_HH_v3", clear
-
-* Prepa data
-gen total=1
-collapse (sum) total dummyloans_HH dumHH_given_repa, by(time)
-rename dummyloans_HH indebt
-rename dumHH_given_repa intrap
-gen sum1=intra*100/indebt
-gen sum2=100
-
-
-* 2010 - 2016
-twoway ///
-(bar sum1 time, barwidth(.9)) ///
-(rbar sum1 sum2 time, barwidth(.9)) ///
-, ///
-xlabel(1 2 3,valuelabel) xtitle("") ///
-ylabel(0(10)100) ytitle("Percent") ///
-title("") ///
-legend(order(1 "In a trap" 2 "Not in a trap") pos(6) col(2)) ///
-note("{it:Note:} For 405 households in 2010, 487 in 2016-17, and 622 in 2020-21.", size(small)) ///
-name(intrap, replace)
-graph export "Intrap_HH.png", as(png) replace
-
-
-****************************************
-* END
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-****************************************
-* Amount and ratio with graph
-****************************************
-use"panel_HH_v3", clear
-
-* Selection
-keep if dummyloans_HH==1
-keep if dumHH_given_repa==1
-
-
-* Amount
-tabstat totHH_givenamt_repa, stat(n q p90 p95 p99 max) by(year)
-replace totHH_givenamt_repa=totHH_givenamt_repa/1000
-tabstat totHH_givenamt_repa, stat(n q p90 p95 p99 max) by(year)
-
-violinplot totHH_givenamt_repa, over(time) horizontal left dscale(4) noline now ///
-fill(color(black%10)) ///
-box(t(b)) bcolors(plb1) ///
-mean(t(m)) meancolors(plr1) ///
-med(t(m)) medcolors(ananas) ///
-title("Amount of debt dedicated to" "debt repayment") ///
-xtitle("1k rupees") xlabel(0(20)200) ///
-ylabel(,grid) ///
-legend(order(4 "IQR" 7 "Median" 10 "Mean") pos(6) col(3) on) ///
-note("{it:Note:} For 75 households in 2010, 80 in 2016-17, and 285 in 2020-21.", size(vsmall)) ///
-aspectratio() scale(1.2) name(amount, replace) range(0 200)
-
-
-* Ratio
-tabstat gtdr, stat(n q p90 p95 p99 max) by(year)
-replace gtdr=gtdr*100
-tabstat gtdr, stat(n q p90 p95 p99 max) by(year)
-
-violinplot gtdr, over(time) horizontal left dscale(4) noline now ///
-fill(color(black%10)) ///
-box(t(b)) bcolors(plb1) ///
-mean(t(m)) meancolors(plr1) ///
-med(t(m)) medcolors(ananas) ///
-title("Ratio of debt dedicated to debt" "repayment to total debt") ///
-xtitle("Percent") xlabel(0(10)100) ///
-ylabel(,grid) ///
-legend(order(4 "IQR" 7 "Median" 10 "Mean") pos(6) col(3) on) ///
-note("{it:Note:} For 75 households in 2010, 80 in 2016-17, and 285 in 2020-21.", size(vsmall)) ///
-aspectratio() scale(1.2) name(ratio, replace) range(0 100)
-
-grc1leg amount ratio
-graph export "Trap_HH.png", as(png) replace
-
-****************************************
-* END
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-****************************************
-* Debt composition
-****************************************
-use"panel_HH_v3", clear
-
-
-* Decile of debt
-foreach i in 2010 2016 2020 {
-xtile loangrp`i'=loanamount_HH if year==`i', n(10)
-}
-gen loangroup=.
-foreach i in 2010 2016 2020 {
-replace loangroup=loangrp`i' if year==`i'
-drop loangrp`i' 
-}
-
-* Decile of income
-foreach i in 2010 2016 2020 {
-xtile incgrp`i'=annualincome_HH if year==`i', n(10)
-}
-gen incgroup=.
-foreach i in 2010 2016 2020 {
-replace incgroup=incgrp`i' if year==`i'
-drop incgrp`i' 
-}
-
-* Share use
-foreach x in agri fami heal repa hous inve cere marr educ rela deat nore othe {
-rename totHH_givenamt_`x' `x'
-}
-drop nore othe
-egen s2=rowtotal(agri fami heal repa hous inve cere marr educ rela deat)
-foreach x in agri fami heal repa hous inve cere marr educ rela deat {
-gen s_`x'=`x'*100/s2
-}
-egen test=rowtotal(s_agri s_fami s_heal s_repa s_hous s_inve s_cere s_marr s_educ s_rela s_deat)
-ta test year
-drop test s2
-
-
-********** By decile of debt
+rename dsr contvar
+rename giv_trap catvar
+gen contvar1=contvar if year==2010 & catvar==0
+gen contvar2=contvar if year==2010 & catvar==1
+gen contvar3=contvar if year==2016 & catvar==0
+gen contvar4=contvar if year==2016 & catvar==1
+gen contvar5=contvar if year==2020 & catvar==0
+gen contvar6=contvar if year==2020 & catvar==1
+
+***** Macro for formatting database
+global var contvar1 contvar2 contvar3 contvar4 contvar5 contvar6
+local i=1
+foreach x in $var {
 preserve
-collapse (mean) s_agri s_fami s_heal s_repa s_hous s_inve s_cere s_marr s_educ s_rela s_deat, by(year loangroup)
-
-gen sum1=s_agri
-gen sum2=sum1+s_fami
-gen sum3=sum2+s_heal
-gen sum4=sum3+s_repa
-gen sum5=sum4+s_hous
-gen sum6=sum5+s_inve
-gen sum7=sum6+s_cere
-gen sum8=sum7+s_marr
-gen sum9=sum8+s_educ
-gen sum10=sum9+s_rela
-gen sum11=sum10+s_deat
-
-foreach x in 2010 2016 2020 {
-twoway ///
-(area sum1 loangroup if year==`x') ///
-(rarea sum1 sum2 loangroup if year==`x') ///
-(rarea sum2 sum3 loangroup if year==`x') ///
-(rarea sum3 sum4 loangroup if year==`x') ///
-(rarea sum4 sum5 loangroup if year==`x') ///
-(rarea sum5 sum6 loangroup if year==`x') ///
-(rarea sum6 sum7 loangroup if year==`x') ///
-(rarea sum7 sum8 loangroup if year==`x') ///
-(rarea sum8 sum9 loangroup if year==`x') ///
-(rarea sum9 sum10 loangroup if year==`x') ///
-(rarea sum10 sum11 loangroup if year==`x') ///
-, ///
-xlabel(1(1)10) xtitle("Decile of loan amount per household") ///
-ylabel(0(10)100) ytitle("Percent") ///
-title("`x'") ///
-legend(order(1 "Agriculture" 2 "Family" 3 "Health" 4 "Repay previous" 5 "Housing" 6 "Investment" 7 "Ceremonies" 8 "Marriage" 9 "Education" 10 "Relatives" 11 " Deaths") pos(6) col(5)) ///
-name(compo`x', replace)
+rename `x' var
+keep var
+collapse (mean) m_var=var (sd) sd_var=var (count) n_var=var
+gen sample=`i'
+order sample
+* M
+gen max_var=m_var+invttail(n_var-1,0.025)*(sd_var/sqrt(n_var))
+gen min_var=m_var-invttail(n_var-1,0.025)*(sd_var/sqrt(n_var))
+save"_temp`i'", replace
+restore
+local i=`i'+1
 }
-grc1leg compo2010 compo2016 compo2020, name(compo_loan, replace) col(3)
-*graph export "Compo_loan.png", replace
+
+***** Append
+use "_temp1", clear
+
+forvalues i=2/6 {
+append using "_temp`i'"
+}
+
+gen year=.
+replace year=2010 if sample==1
+replace year=2010 if sample==2
+replace year=2016 if sample==3
+replace year=2016 if sample==4
+replace year=2020 if sample==5
+replace year=2020 if sample==6
+
+replace sample=1 if sample==3
+replace sample=2 if sample==4
+replace sample=1 if sample==5
+replace sample=2 if sample==6
+
+order sample year
+
+label define sample 1"Non-trapped" 2"Trapped", replace
+label values sample sample
+
+
+***** Graph
+* 2010
+preserve
+keep if year==2010
+twoway ///
+(bar m_var sample, barwidth(.8)) ///
+(rspike max_var min_var sample) ///
+, ylabel(0(10)80) ymtick(0(5)80) ///
+xlabel(1 2,valuelabel angle(0)) ///
+ytitle("DSR (%)") xtitle("") ///
+title("2010") ///
+legend(off) scale(1.2) /// 
+name(g1, replace)
 restore
 
-
-
-********** By decile of income
+* 2016
 preserve
-collapse (mean) s_agri s_fami s_heal s_repa s_hous s_inve s_cere s_marr s_educ s_rela s_deat, by(year incgroup)
-
-gen sum1=s_agri
-gen sum2=sum1+s_fami
-gen sum3=sum2+s_heal
-gen sum4=sum3+s_repa
-gen sum5=sum4+s_hous
-gen sum6=sum5+s_inve
-gen sum7=sum6+s_cere
-gen sum8=sum7+s_marr
-gen sum9=sum8+s_educ
-gen sum10=sum9+s_rela
-gen sum11=sum10+s_deat
-
-foreach x in 2010 2016 2020 {
+keep if year==2016
 twoway ///
-(area sum1 incgroup if year==`x') ///
-(rarea sum1 sum2 incgroup if year==`x') ///
-(rarea sum2 sum3 incgroup if year==`x') ///
-(rarea sum3 sum4 incgroup if year==`x') ///
-(rarea sum4 sum5 incgroup if year==`x') ///
-(rarea sum5 sum6 incgroup if year==`x') ///
-(rarea sum6 sum7 incgroup if year==`x') ///
-(rarea sum7 sum8 incgroup if year==`x') ///
-(rarea sum8 sum9 incgroup if year==`x') ///
-(rarea sum9 sum10 incgroup if year==`x') ///
-(rarea sum10 sum11 incgroup if year==`x') ///
-, ///
-xlabel(1(1)10) xtitle("Decile of income per household") ///
-ylabel(0(10)100) ytitle("Percent") ///
-title("`x'") ///
-legend(order(1 "Agriculture" 2 "Family" 3 "Health" 4 "Repay previous" 5 "Housing" 6 "Investment" 7 "Ceremonies" 8 "Marriage" 9 "Education" 10 "Relatives" 11 " Deaths") pos(6) col(5)) ///
-name(compo`x', replace)
-}
-grc1leg compo2010 compo2016 compo2020, name(compo_income, replace) col(3)
-*graph export "Compo_loan.png", replace
+(bar m_var sample, barwidth(.8)) ///
+(rspike max_var min_var sample) ///
+, ylabel(0(10)80) ymtick(0(5)80) ///
+xlabel(1 2,valuelabel angle(0)) ///
+ytitle("DSR (%)") xtitle("") ///
+title("2016-17") ///
+legend(off) scale(1.2) /// 
+name(g2, replace)
 restore
 
+* 2010
+preserve
+keep if year==2020
+twoway ///
+(bar m_var sample, barwidth(.8)) ///
+(rspike max_var min_var sample) ///
+, ylabel(0(10)80) ymtick(0(5)80) ///
+xlabel(1 2,valuelabel angle(0)) ///
+ytitle("DSR (%)") xtitle("") ///
+title("2020-21") ///
+legend(off) scale(1.2) /// 
+name(g3, replace)
+restore
+
+* Combine
+graph combine g1 g2 g3, col(3)
+graph export "graph/Given_proba_dsr.png", as(png) replace
+
+
+
+
+
+
+
+********** Effective trap
+use"panel_HH_v3", clear
+
+keep if dummyloans_HH==1
+keep HHID_panel year eff_trap dsr
+replace dsr=dsr*100
+rename dsr contvar
+rename eff_trap catvar
+gen contvar1=contvar if year==2010 & catvar==0
+gen contvar2=contvar if year==2010 & catvar==1
+gen contvar3=contvar if year==2016 & catvar==0
+gen contvar4=contvar if year==2016 & catvar==1
+gen contvar5=contvar if year==2020 & catvar==0
+gen contvar6=contvar if year==2020 & catvar==1
+
+***** Macro for formatting database
+global var contvar1 contvar2 contvar3 contvar4 contvar5 contvar6
+local i=1
+foreach x in $var {
+preserve
+rename `x' var
+keep var
+collapse (mean) m_var=var (sd) sd_var=var (count) n_var=var
+gen sample=`i'
+order sample
+* M
+gen max_var=m_var+invttail(n_var-1,0.025)*(sd_var/sqrt(n_var))
+gen min_var=m_var-invttail(n_var-1,0.025)*(sd_var/sqrt(n_var))
+save"_temp`i'", replace
+restore
+local i=`i'+1
+}
+
+***** Append
+use "_temp1", clear
+
+forvalues i=2/6 {
+append using "_temp`i'"
+}
+
+gen year=.
+replace year=2010 if sample==1
+replace year=2010 if sample==2
+replace year=2016 if sample==3
+replace year=2016 if sample==4
+replace year=2020 if sample==5
+replace year=2020 if sample==6
+
+replace sample=1 if sample==3
+replace sample=2 if sample==4
+replace sample=1 if sample==5
+replace sample=2 if sample==6
+
+order sample year
+
+label define sample 1"Non-trapped" 2"Trapped", replace
+label values sample sample
+
+
+***** Graph
+* 2010
+preserve
+keep if year==2010
+twoway ///
+(bar m_var sample, barwidth(.8)) ///
+(rspike max_var min_var sample) ///
+, ylabel(0(10)80) ymtick(0(8)80) ///
+xlabel(1 2,valuelabel angle(0)) ///
+ytitle("DSR (%)") xtitle("") ///
+title("2010") ///
+legend(off) scale(1.2) /// 
+name(g1, replace)
+restore
+
+* 2016
+preserve
+keep if year==2016
+twoway ///
+(bar m_var sample, barwidth(.8)) ///
+(rspike max_var min_var sample) ///
+, ylabel(0(10)80) ymtick(0(8)80) ///
+xlabel(1 2,valuelabel angle(0)) ///
+ytitle("DSR (%)") xtitle("") ///
+title("2016-17") ///
+legend(off) scale(1.2) /// 
+name(g2, replace)
+restore
+
+* 2010
+preserve
+keep if year==2020
+twoway ///
+(bar m_var sample, barwidth(.8)) ///
+(rspike max_var min_var sample) ///
+, ylabel(0(10)80) ymtick(0(8)80) ///
+xlabel(1 2,valuelabel angle(0)) ///
+ytitle("DSR (%)") xtitle("") ///
+title("2020-21") ///
+legend(off) scale(1.2) /// 
+name(g3, replace)
+restore
+
+* Combine
+graph combine g1 g2 g3, col(3)
+graph export "graph/Effective_proba_dsr.png", as(png) replace
+
+
 ****************************************
 * END
 
-
-
-
-
-
-
-
-
-
-
-
-
-****************************************
-* By caste and class
-****************************************
-
-********** By caste
-use"panel_HH_v3", clear
-
-* Selection 1
-ta dummyloans_HH year, m
-ta dummyloans_HH year, col
-keep if dummyloans_HH==1
-
-* Recourse to debt trap
-ta dumHH_given_repa caste if year==2010, chi2 col nofreq
-ta dumHH_given_repa caste if year==2016, chi2 col nofreq
-ta dumHH_given_repa caste if year==2020, chi2 col nofreq
-
-* Selection 2
-keep if dumHH_given_repa==1
-
-* Amount of the trap
-tabstat totHH_givenamt_repa if year==2010, stat(n mean q) by(caste)
-tabstat totHH_givenamt_repa if year==2016, stat(n mean q) by(caste)
-tabstat totHH_givenamt_repa if year==2020, stat(n mean q) by(caste)
-
-* Ratio
-tabstat gtdr if year==2010, stat(n mean q) by(caste)
-tabstat gtdr if year==2016, stat(n mean q) by(caste)
-tabstat gtdr if year==2020, stat(n mean q) by(caste)
-
-
-
-
-********** By class
-use"panel_HH_v3", clear
-
-* Selection 1
-ta dummyloans_HH year, m
-ta dummyloans_HH year, col
-keep if dummyloans_HH==1
-
-* Recourse to debt trap
-ta dumHH_given_repa assets_cat if year==2010, chi2 col nofreq
-ta dumHH_given_repa assets_cat if year==2016, chi2 col nofreq
-ta dumHH_given_repa assets_cat if year==2020, chi2 col nofreq
-
-* Selection 2
-keep if dumHH_given_repa==1
-
-* Amount of the trap
-tabstat totHH_givenamt_repa if year==2010, stat(n mean q) by(assets_cat)
-tabstat totHH_givenamt_repa if year==2016, stat(n mean q) by(assets_cat)
-tabstat totHH_givenamt_repa if year==2020, stat(n mean q) by(assets_cat)
-
-* Ratio
-tabstat gtdr if year==2010, stat(n mean q) by(assets_cat)
-tabstat gtdr if year==2016, stat(n mean q) by(assets_cat)
-tabstat gtdr if year==2020, stat(n mean q) by(assets_cat)
-
-
-
-
-********** By income
-use"panel_HH_v3", clear
-
-* Selection 1
-ta dummyloans_HH year, m
-ta dummyloans_HH year, col
-keep if dummyloans_HH==1
-
-* Recourse to debt trap
-ta dumHH_given_repa assets_cat if year==2010, chi2 col nofreq
-ta dumHH_given_repa assets_cat if year==2016, chi2 col nofreq
-ta dumHH_given_repa assets_cat if year==2020, chi2 col nofreq
-
-* Selection 2
-keep if dumHH_given_repa==1
-
-* Amount of the trap
-tabstat totHH_givenamt_repa if year==2010, stat(n mean q) by(assets_cat)
-tabstat totHH_givenamt_repa if year==2016, stat(n mean q) by(assets_cat)
-tabstat totHH_givenamt_repa if year==2020, stat(n mean q) by(assets_cat)
-
-* Ratio
-tabstat gtdr if year==2010, stat(n mean q) by(assets_cat)
-tabstat gtdr if year==2016, stat(n mean q) by(assets_cat)
-tabstat gtdr if year==2020, stat(n mean q) by(assets_cat)
-
-****************************************
-* END
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-****************************************
-* Determinants
-****************************************
-use"panel_HH_v3", clear
-
-*Craggs
-
-* Tobit
-
-* Zero inflated model
-
-
-
-****************************************
-* END
 
 

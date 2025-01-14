@@ -193,7 +193,7 @@ replace dalits=1 if caste==1
 replace dalits=0 if caste==2
 replace dalits=0 if caste==3
 
-label define dalits 0"Non-dalits" 1"Dalits"
+label define dalits 1"Dalits" 0"Non-dalits"
 label values dalits dalits
 
 * Time
@@ -327,6 +327,10 @@ rename totHH_givenamt_repa giv_trapamount
 
 replace eff_trapamount=eff_trapamount/1000
 replace giv_trapamount=giv_trapamount/1000
+
+replace gtdr=gtdr*100
+replace etdr=etdr*100
+
 
 save"panel_HH_v3", replace
 ****************************************
