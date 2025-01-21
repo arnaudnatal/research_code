@@ -2,7 +2,7 @@
 cls
 *Arnaud NATAL
 *arnaud.natal@ifpindia.org
-*October 07, 2024
+*January 21, 2025
 *-----
 gl link = "debttrap"
 *Prepa database
@@ -35,7 +35,7 @@ keep if _merge==3
 drop _merge
 gen year=2010
 
-save"RUME-loans.dta", replace
+save"_temp_RUME-loans.dta", replace
 ****************************************
 * END
 
@@ -74,7 +74,7 @@ drop INDID2016
 ta loanreasongiven effective_repa
 
 
-save"NEEMSIS1-loans.dta", replace
+save"_temp_NEEMSIS1-loans.dta", replace
 ****************************************
 * END
 
@@ -96,6 +96,7 @@ save"NEEMSIS1-loans.dta", replace
 use"raw/NEEMSIS2-loans_mainloans_new.dta", replace
 
 drop effective_*
+ta loaneffectivereason loan_database, m
 ta loaneffectivereason, gen(effective_)
 rename effective_1 effective_agri
 rename effective_2 effective_fami
@@ -137,7 +138,7 @@ duplicates drop
 restore
 
 
-save"NEEMSIS2-loans.dta", replace
+save"_temp_NEEMSIS2-loans.dta", replace
 ****************************************
 * END
 
@@ -154,10 +155,10 @@ save"NEEMSIS2-loans.dta", replace
 ****************************************
 * Append
 ****************************************
-use"NEEMSIS2-loans", replace
+use"_temp_NEEMSIS2-loans", replace
 
-append using "NEEMSIS1-loans"
-append using "RUME-loans"
+append using "_temp_NEEMSIS1-loans"
+append using "_temp_RUME-loans"
 
 gen test=loanamount-loanamount2
 ta test
@@ -214,12 +215,7 @@ label values lender4cat lender4cat
 ta lender_cat lender4cat
 drop lender_cat
 
-* Merge sex
-merge m:1 HHID_panel INDID_panel year using "panel_indiv_v0", keepusing(sex)
-drop if _merge==2
-fre sex
-drop _merge
-order HHID_panel INDID_panel year sex
+order HHID_panel INDID_panel year
 
 * Given pour repayer
 fre loanreasongiven
@@ -230,9 +226,17 @@ ta effective_repa year, col
 ta loanreasongiven effective_repa if year==2016
 ta loanreasongiven effective_repa if year==2020
 
+*
+drop if HHID_panel=="GOV66" & year==2020  
+drop if HHID_panel=="KUV66" & year==2020
+drop if HHID_panel=="GOV64" & year==2020
+drop if HHID_panel=="GOV67" & year==2020
+drop if HHID_panel=="KUV67" & year==2020
+drop if HHID_panel=="GOV65" & year==2020
 
 
-save"panel_loans", replace
+
+save"panel_loans_v0", replace
 ****************************************
 * END
 
@@ -249,7 +253,7 @@ save"panel_loans", replace
 ****************************************
 * HH level
 ****************************************
-use"panel_loans", clear
+use"panel_loans_v0", clear
 
 * Total
 bysort HHID_panel year: egen lamount_HH=sum(loanamount)
@@ -282,7 +286,7 @@ bysort HHID_panel year: egen lnbeffectiverepa_HH=sum(effective_repa)
 keep HHID_panel year lamount_HH lbalance_HH lnb_HH lamountgivenrepa_HH lbalancegivenrepa_HH lnbgivenrepa_HH lamounteffectiverepa_HH lbalanceeffectiverepa_HH lnbeffectiverepa_HH
 
 duplicates drop
-save"trap_HH", replace
+save"_temp_trap_HH", replace
 ****************************************
 * END
 
@@ -307,7 +311,7 @@ save"trap_HH", replace
 ****************************************
 * Indiv level
 ****************************************
-use"panel_loans", clear
+use"panel_loans_v0", clear
 
 drop if year==2010
 
@@ -342,7 +346,7 @@ bysort HHID_panel INDID_panel year: egen lnbeffectiverepa_indiv=sum(effective_re
 keep HHID_panel INDID_panel year lamount_indiv lbalance_indiv lnb_indiv lamountgivenrepa_indiv lbalancegivenrepa_indiv lnbgivenrepa_indiv lamounteffectiverepa_indiv lbalanceeffectiverepa_indiv lnbeffectiverepa_indiv
 
 duplicates drop
-save"trap_indiv", replace
+save"_temp_trap_indiv", replace
 ****************************************
 * END
 
