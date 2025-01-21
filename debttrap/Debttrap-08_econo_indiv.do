@@ -237,7 +237,7 @@ esttab prg1 prg2 glg1 glg2 using "Given_reg.csv", replace ///
 	star(* 0.10 ** 0.05 *** 0.01) ///
 	cells("b(fmt(2)star)" "se(fmt(2)par)") ///
 	refcat(, nolabel) ///
-	stats(N N_clust, fmt(0 0)	labels(`"Observations"' `"Number of clust"'))
+	stats(N N_clust r2_p, fmt(0 0 2)	labels(`"Observations"' `"Number of clust"'))
 
 
 
@@ -271,6 +271,13 @@ est store gle2
 restore
 
 
+
+esttab pre1 pre2 gle1 gle2 using "Effective_reg.csv", replace ///
+	label b(3) p(3) eqlabels(none) alignment(S) ///
+	star(* 0.10 ** 0.05 *** 0.01) ///
+	cells("b(fmt(2)star)" "se(fmt(2)par)") ///
+	refcat(, nolabel) ///
+	stats(N N_clust r2_p, fmt(0 0 2)	labels(`"Observations"' `"Number of clust"'))
 
 
 

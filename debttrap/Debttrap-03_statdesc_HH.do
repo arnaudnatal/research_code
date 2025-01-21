@@ -134,6 +134,10 @@ reg eff_trapamount i.dalits if eff_trap==1 & year==2010
 reg eff_trapamount i.dalits if eff_trap==1 & year==2016
 reg eff_trapamount i.dalits if eff_trap==1 & year==2020
 
+sqreg eff_trapamount i.dalits if eff_trap==1 & year==2016, quantile(.5) reps(100)
+
+
+
 * Effective ratio amount
 reg etdr i.dalits if eff_trap==1 & year==2010
 reg etdr i.dalits if eff_trap==1 & year==2016
@@ -268,7 +272,7 @@ reg etdr i.ownland if eff_trap==1 & year==2020
 
 
 ****************************************
-* Income and trap
+* Income and trap dummy
 ****************************************
 
 ********** Given trap
@@ -277,9 +281,18 @@ use"panel_HH_v3", clear
 replace annualincome_HH=annualincome_HH/1000
 
 *** Dummy
-tabstat annualincome_HH if year==2010, stat(n mean q) by(giv_trap)
-tabstat annualincome_HH if year==2016, stat(n mean q) by(giv_trap)
-tabstat annualincome_HH if year==2020, stat(n mean q) by(giv_trap)
+tabstat annualincome_HH if year==2010, stat(n mean med) by(giv_trap)
+tabstat annualincome_HH if year==2016, stat(n mean med) by(giv_trap)
+tabstat annualincome_HH if year==2020, stat(n mean med) by(giv_trap)
+
+*** Diff
+reg annualincome_HH i.giv_trap if year==2010
+reg annualincome_HH i.giv_trap if year==2016
+reg annualincome_HH i.giv_trap if year==2020
+
+
+
+
 
 
 *** Amount
@@ -300,17 +313,6 @@ spearman gtdr annualincome_HH if year==2010, stats(rho p)
 spearman gtdr annualincome_HH if year==2016, stats(rho p)
 spearman gtdr annualincome_HH if year==2020, stats(rho p)
 
-*** Ratio actifs
-replace gtar=gtar*100
-pwcorr gtar annualincome_HH if year==2010, sig
-pwcorr gtar annualincome_HH if year==2016, sig
-pwcorr gtar annualincome_HH if year==2020, sig
-spearman gtar annualincome_HH if year==2010, stats(rho p)
-spearman gtar annualincome_HH if year==2016, stats(rho p)
-spearman gtar annualincome_HH if year==2020, stats(rho p)
-
-
-
 
 
 
@@ -321,9 +323,15 @@ use"panel_HH_v3", clear
 replace annualincome_HH=annualincome_HH/1000
 
 *** Dummy
-tabstat annualincome_HH if year==2010, stat(n mean q) by(eff_trap)
-tabstat annualincome_HH if year==2016, stat(n mean q) by(eff_trap)
-tabstat annualincome_HH if year==2020, stat(n mean q) by(eff_trap)
+tabstat annualincome_HH if year==2010, stat(n mean med) by(eff_trap)
+tabstat annualincome_HH if year==2016, stat(n mean med) by(eff_trap)
+tabstat annualincome_HH if year==2020, stat(n mean med) by(eff_trap)
+
+*** Diff
+reg annualincome_HH i.eff_trap if year==2010
+reg annualincome_HH i.eff_trap if year==2016
+reg annualincome_HH i.eff_trap if year==2020
+
 
 *** Amount
 keep if eff_trap==1
@@ -342,15 +350,6 @@ pwcorr etdr annualincome_HH if year==2020, sig
 spearman etdr annualincome_HH if year==2010, stats(rho p)
 spearman etdr annualincome_HH if year==2016, stats(rho p)
 spearman etdr annualincome_HH if year==2020, stats(rho p)
-
-*** Ratio actifs
-replace etar=etar*100
-pwcorr etar annualincome_HH if year==2010, sig
-pwcorr etar annualincome_HH if year==2016, sig
-pwcorr etar annualincome_HH if year==2020, sig
-spearman etar annualincome_HH if year==2010, stats(rho p)
-spearman etar annualincome_HH if year==2016, stats(rho p)
-spearman etar annualincome_HH if year==2020, stats(rho p)
 
 ****************************************
 * END
@@ -379,9 +378,16 @@ spearman etar annualincome_HH if year==2020, stats(rho p)
 use"panel_HH_v3", clear
 
 *** Dummy
-tabstat assets_total1000 if year==2010, stat(n mean q) by(giv_trap)
-tabstat assets_total1000 if year==2016, stat(n mean q) by(giv_trap)
-tabstat assets_total1000 if year==2020, stat(n mean q) by(giv_trap)
+tabstat assets_total1000 if year==2010, stat(n mean med) by(giv_trap)
+tabstat assets_total1000 if year==2016, stat(n mean med) by(giv_trap)
+tabstat assets_total1000 if year==2020, stat(n mean med) by(giv_trap)
+
+*** Diff
+reg assets_total1000 i.giv_trap if year==2010
+reg assets_total1000 i.giv_trap if year==2016
+reg assets_total1000 i.giv_trap if year==2020
+
+
 
 *** Amount
 keep if giv_trap==1
@@ -401,17 +407,6 @@ spearman gtdr assets_total1000 if year==2010, stats(rho p)
 spearman gtdr assets_total1000 if year==2016, stats(rho p)
 spearman gtdr assets_total1000 if year==2020, stats(rho p)
 
-*** Ratio actifs
-replace gtar=gtar*100
-pwcorr gtar assets_total1000 if year==2010, sig
-pwcorr gtar assets_total1000 if year==2016, sig
-pwcorr gtar assets_total1000 if year==2020, sig
-spearman gtar assets_total1000 if year==2010, stats(rho p)
-spearman gtar assets_total1000 if year==2016, stats(rho p)
-spearman gtar assets_total1000 if year==2020, stats(rho p)
-
-
-
 
 
 
@@ -420,9 +415,16 @@ spearman gtar assets_total1000 if year==2020, stats(rho p)
 use"panel_HH_v3", clear
 
 *** Dummy
-tabstat assets_total1000 if year==2010, stat(n mean q) by(eff_trap)
-tabstat assets_total1000 if year==2016, stat(n mean q) by(eff_trap)
-tabstat assets_total1000 if year==2020, stat(n mean q) by(eff_trap)
+tabstat assets_total1000 if year==2010, stat(n mean med) by(eff_trap)
+tabstat assets_total1000 if year==2016, stat(n mean med) by(eff_trap)
+tabstat assets_total1000 if year==2020, stat(n mean med) by(eff_trap)
+
+*** Diff
+reg assets_total1000 i.eff_trap if year==2010
+reg assets_total1000 i.eff_trap if year==2016
+reg assets_total1000 i.eff_trap if year==2020
+
+
 
 *** Amount
 keep if eff_trap==1
@@ -442,14 +444,6 @@ spearman etdr assets_total1000 if year==2010, stats(rho p)
 spearman etdr assets_total1000 if year==2016, stats(rho p)
 spearman etdr assets_total1000 if year==2020, stats(rho p)
 
-*** Ratio actifs
-replace etar=etar*100
-pwcorr etar assets_total1000 if year==2010, sig
-pwcorr etar assets_total1000 if year==2016, sig
-pwcorr etar assets_total1000 if year==2020, sig
-spearman etar assets_total1000 if year==2010, stats(rho p)
-spearman etar assets_total1000 if year==2016, stats(rho p)
-spearman etar assets_total1000 if year==2020, stats(rho p)
 
 ****************************************
 * END
@@ -476,9 +470,17 @@ use"panel_HH_v3", clear
 replace dsr=dsr*100
 
 *** Dummy
-tabstat dsr if year==2010, stat(n mean q) by(giv_trap)
-tabstat dsr if year==2016, stat(n mean q) by(giv_trap)
-tabstat dsr if year==2020, stat(n mean q) by(giv_trap)
+tabstat dsr if year==2010, stat(n mean med) by(giv_trap)
+tabstat dsr if year==2016, stat(n mean med) by(giv_trap)
+tabstat dsr if year==2020, stat(n mean med) by(giv_trap)
+
+*** Diff
+reg dsr i.giv_trap if year==2010
+reg dsr i.giv_trap if year==2016
+reg dsr i.giv_trap if year==2020
+
+
+
 
 *** Amount
 keep if giv_trap==1
@@ -498,15 +500,6 @@ spearman gtdr dsr if year==2010, stats(rho p)
 spearman gtdr dsr if year==2016, stats(rho p)
 spearman gtdr dsr if year==2020, stats(rho p)
 
-*** Ratio actifs
-replace gtar=gtar*100
-pwcorr gtar dsr if year==2010, sig
-pwcorr gtar dsr if year==2016, sig
-pwcorr gtar dsr if year==2020, sig
-spearman gtar dsr if year==2010, stats(rho p)
-spearman gtar dsr if year==2016, stats(rho p)
-spearman gtar dsr if year==2020, stats(rho p)
-
 
 
 
@@ -516,10 +509,18 @@ spearman gtar dsr if year==2020, stats(rho p)
 ********** Effective trap
 use"panel_HH_v3", clear
 
+replace dsr=dsr*100
+
 *** Dummy
-tabstat dsr if year==2010, stat(n mean q) by(eff_trap)
-tabstat dsr if year==2016, stat(n mean q) by(eff_trap)
-tabstat dsr if year==2020, stat(n mean q) by(eff_trap)
+tabstat dsr if year==2010, stat(n mean med) by(eff_trap)
+tabstat dsr if year==2016, stat(n mean med) by(eff_trap)
+tabstat dsr if year==2020, stat(n mean med) by(eff_trap)
+
+*** Diff
+reg dsr i.eff_trap if year==2010
+reg dsr i.eff_trap if year==2016
+reg dsr i.eff_trap if year==2020
+
 
 *** Amount
 keep if eff_trap==1
@@ -539,14 +540,6 @@ spearman etdr dsr if year==2010, stats(rho p)
 spearman etdr dsr if year==2016, stats(rho p)
 spearman etdr dsr if year==2020, stats(rho p)
 
-*** Ratio actifs
-replace etar=etar*100
-pwcorr etar dsr if year==2010, sig
-pwcorr etar dsr if year==2016, sig
-pwcorr etar dsr if year==2020, sig
-spearman etar dsr if year==2010, stats(rho p)
-spearman etar dsr if year==2016, stats(rho p)
-spearman etar dsr if year==2020, stats(rho p)
 
 ****************************************
 * END
