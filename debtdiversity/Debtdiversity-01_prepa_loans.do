@@ -4,7 +4,7 @@ cls
 *arnaud.natal@ifpindia.org
 *January 21, 2025
 *-----
-gl link = "debttrap"
+gl link = "debtdiversity"
 *Prepa database
 *-----
 *do "https://raw.githubusercontent.com/arnaudnatal/folderanalysis/main/$link.do"
@@ -32,7 +32,7 @@ gen dummymainloan=0
 replace dummymainloan=1 if borrowerservices!=.
 ta dummymainloan
 
-keep HHID2010 loanid loanreasongiven loanlender loansettled loanamount lender_cat reason_cat lender4 loanamount2 loanbalance2 interestpaid2 totalrepaid2 principalpaid2 effective_repa plantorep_* dummymainloan
+keep HHID2010 loanid loanreasongiven loanlender loansettled loanamount lender_cat reason_cat lender4 loanamount2 loanbalance2 interestpaid2 totalrepaid2 principalpaid2 effective_repa plantorep_* dummymainloan othlendserv_*
 
 merge m:m HHID2010 using "raw/keypanel-HH_wide.dta", keepusing(HHID_panel)
 keep if _merge==3
@@ -68,7 +68,7 @@ ta dummymainloan
 
 ta loan_database
 drop if loan_database=="MARRIAGE"
-keep HHID2016 INDID2016 loanid loanreasongiven loanlender loansettled loanamount lender_cat reason_cat lender4 loanamount2 loanbalance2 interestpaid2 totalrepaid2 principalpaid2 effective_repa loan_database plantorep_* settlestrat_* dummymainloan
+keep HHID2016 INDID2016 loanid loanreasongiven loanlender loansettled loanamount lender_cat reason_cat lender4 loanamount2 loanbalance2 interestpaid2 totalrepaid2 principalpaid2 effective_repa loan_database plantorep_* settlestrat_* dummymainloan othlendserv_*
 
 merge m:m HHID2016 using "raw/keypanel-HH_wide.dta", keepusing(HHID_panel)
 keep if _merge==3
@@ -131,7 +131,7 @@ gen effective_repa2=effective_repa
 replace effective_repa2=1 if loaneffectivereason2==4 & effective_repa2!=. & effective_repa2!=1
 ta effective_repa2
 
-keep HHID2020 INDID2020 loanid loanreasongiven loanlender loansettled loanamount lender_cat reason_cat lender4 loanamount2 loanbalance2 interestpaid2 totalrepaid2 principalpaid2 effective_repa loan_database plantorep_* settlestrat_* dummymainloan
+keep HHID2020 INDID2020 loanid loanreasongiven loanlender loansettled loanamount lender_cat reason_cat lender4 loanamount2 loanbalance2 interestpaid2 totalrepaid2 principalpaid2 effective_repa loan_database plantorep_* settlestrat_* dummymainloan othlendserv_*
 
 merge m:m HHID2020 using "raw/keypanel-HH_wide.dta", keepusing(HHID_panel)
 keep if _merge==3
@@ -276,7 +276,7 @@ drop dummylefthousehold livinghome
 
 * INDID
 drop HHID2010 HHID2016 HHID2020 INDID2016 INDID2020
-order HHID_panel INDID_panel year loanid loanamount loanreasongiven loanlender dummymainloan
+order HHID_panel INDID_panel year loanid loanamount loanreasongiven loanlender dummymainloan othlendserv_6
 
 save"panel_loans_v0", replace
 ****************************************
@@ -291,7 +291,7 @@ save"panel_loans_v0", replace
 
 
 
-
+/*
 ****************************************
 * HH level
 ****************************************
@@ -331,6 +331,7 @@ duplicates drop
 save"_temp_trap_HH", replace
 ****************************************
 * END
+*/
 
 
 
@@ -348,8 +349,7 @@ save"_temp_trap_HH", replace
 
 
 
-
-
+/*
 ****************************************
 * Indiv level
 ****************************************
@@ -391,6 +391,4 @@ duplicates drop
 save"_temp_trap_indiv", replace
 ****************************************
 * END
-
-
-do"$dofile\Debttrap-02_prepa_HH"
+*/

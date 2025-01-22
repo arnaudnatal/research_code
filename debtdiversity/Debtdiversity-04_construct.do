@@ -4,7 +4,7 @@ cls
 *arnaud.natal@ifpindia.org
 *January 21, 2025
 *-----
-gl link = "debttrap"
+gl link = "debtdiversity"
 *Prepa database
 *-----
 *do "https://raw.githubusercontent.com/arnaudnatal/folderanalysis/main/$link.do"
@@ -34,7 +34,50 @@ drop if livinghome==3
 drop if livinghome==4
 drop livinghome
 
+
+* Cat of amount
+xtile catloanamount=loanamount, n(5)
+label define catloanamount 1"A: Vlow" 2"A: Low" 3"A: Int" 4"A: High" 5"A: Vhigh"
+label values catloanamount catloanamount
+
+tabstat loanamount, stat(min max) by(catloanamount)
+
+ta catloanamount year, col nofreq chi2
+
+order catloanamount, after(loanamount)
+
+
+********** Prepa for R
+*
+fre catloanamount
+*
+fre loanreasongiven
+recode loanreasongiven (8=7) (11=7)
+drop if loanreasongiven==12
+drop if loanreasongiven==77
+label define loanreasongiven 1"R: Agri" 2"R: Fam" 3"R: Heal" 4"R: Rep" 5"R: Hou" 6"R: Inv" 7"R: Cere" 9"R: Educ" 10"R: Rela", modify
+*
+fre reason_cat
+label define reason_cat 1"R: Eco" 2"R: Cur" 3"R: Hum" 4"R: Soc" 5"R: Hou", modify
+*
+fre lender4
+recode lender4 (5=10)
+label define lender4 1"L: WKP" 2"L: Rel" 3"L: Lab" 4"L: Paw" 6"L: Mon" 7"L: Fri" 8"L: Mic" 9"R: Ban" 10"L: Nei", modify
+*
+fre lender4cat
+label define lender4cat 1"L: Inf" 2"L: For", modify
+
 save"panel_loans_v1", replace
+
+
+********** R
+keep lender4 loanreasongiven catloanamount
+rename lender4 lender
+rename loanreasongiven reason
+rename catloanamount amount
+export delimited using "Loan_mca.csv", replace
+
+
 ****************************************
 * END
 
@@ -57,44 +100,6 @@ use"panel_indiv_v0", clear
 * DSR
 gen dsr_indiv=(imp1_ds_tot_indiv*100)/annualincome_indiv
 replace dsr_indiv=0 if dsr_indiv==.
-
-* GTDR
-gen gtdr_indiv=(lamountgivenrepa_indiv*100)/lamount_indiv
-replace gtdr_indiv=0 if gtdr_indiv==.
-
-* GTIR
-gen gtir_indiv=(lamountgivenrepa_indiv*100)/annualincome_indiv
-replace gtir_indiv=0 if gtir_indiv==.
-
-* GBTR
-gen gbtdr_indiv=(lbalancegivenrepa_indiv*100)/lbalance_indiv
-replace gbtdr_indiv=0 if gbtdr_indiv==.
-
-* GBTIR
-gen gbtir_indiv=(lbalancegivenrepa_indiv*100)/annualincome_indiv
-replace gbtir_indiv=0 if gbtir_indiv==.
-
-* Share DSR
-gen share_dsr=(imp1_ds_tot_indiv*100)/imp1_ds_tot_HH
-replace share_dsr=0 if share_dsr==.
-
-* Share given
-gen share_giventrap=(lamountgivenrepa_indiv*100)/lamountgivenrepa_HH
-replace share_giventrap=0 if share_giventrap==.
-
-* Trap
-gen dummytrap_indiv=0
-replace dummytrap_indiv=1 if gtdr_indiv>0
-
-* Dummyloans
-gen dummyloans_indiv=0
-replace dummyloans_indiv=1 if lamount_indiv!=. & lamount_indiv>0
-label values dummyloans_indiv yesno
-ta dummyloans_indiv year, col nofreq
-
-* Loan amount
-replace lamount_indiv=0 if lamount_indiv==.
-
 
 
 ********** Controls
@@ -252,42 +257,6 @@ replace dsr=0 if dsr==.
 gen isr=(imp1_is_tot_HH*100)/annualincome_HH
 replace isr=0 if isr==.
 
-* DAR
-gen dar=(lamount_HH*100)/(assets_total1000*1000)
-replace dar=0 if dar==.
-
-* DIR
-gen dir=(lamount_HH*100)/annualincome_HH
-replace dir=0 if dir==.
-
-* GTDR
-gen gtdr_HH=(lamountgivenrepa_HH*100)/lamount_HH
-replace gtdr_HH=0 if gtdr_HH==.
-
-* GTIR
-gen gtir_HH=(lamountgivenrepa_HH*100)/annualincome_HH
-replace gtir_HH=0 if gtir_HH==.
-
-* GBTR
-gen gbtdr_HH=(lbalancegivenrepa_HH*100)/lbalance_HH
-replace gbtdr_HH=0 if gbtdr_HH==.
-
-* GBTIR
-gen gbtir_HH=(lbalancegivenrepa_HH*100)/annualincome_HH
-replace gbtir_HH=0 if gbtir_HH==.
-
-* Trap
-gen dummytrap_HH=0
-replace dummytrap_HH=1 if gtdr_HH>0
-
-* Loanamount
-replace lamount_HH=0 if lamount_HH==.
-
-* Dummyloans
-gen dummyloans_HH=0
-replace dummyloans_HH=1 if lamount_HH!=. & lamount_HH>0
-label values dummyloans_HH yesno
-
 
 
 
@@ -418,136 +387,3 @@ save"panel_HH_v1", replace
 ****************************************
 * END
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-****************************************
-* Indiv level : rename trap
-****************************************
-use"panel_indiv_v1", clear
-
-
-********** Clean
-drop nbloans_HH loanamount_HH imp1_ds_tot_HH imp1_is_tot_HH
-
-
-********** Rename
-* Indiv
-rename lamount_indiv loanamount_indiv
-rename lbalance_indiv loanbalance_indiv
-rename lnb_indiv nbloan_indiv
-
-rename lamountgivenrepa_indiv trapamount_indiv
-rename lbalancegivenrepa_indiv balancetrapamount_indiv
-rename lnbgivenrepa_indiv nbloantrap_indiv
-
-rename lamounteffectiverepa_indiv eff_trapamount_indiv
-rename lbalanceeffectiverepa_indiv eff_balancetrapamount_indiv
-rename lnbeffectiverepa_indiv eff_nbloantrap_indiv
-
-* HH
-rename lamount_HH loanamount_HH
-rename lbalance_HH loanbalance_HH
-rename lnb_HH nbloan_HH
-
-rename lamountgivenrepa_HH trapamount_HH
-rename lbalancegivenrepa_HH balancetrapamount_HH
-rename lnbgivenrepa_HH nbloantrap_HH
-
-rename lamounteffectiverepa_HH eff_trapamount_HH
-rename lbalanceeffectiverepa_HH eff_balancetrapamount_HH
-rename lnbeffectiverepa_HH eff_nbloantrap_HH
-
-
-********** 1k rupees
-/*
-foreach x in loanamount_indiv loanbalance_indiv trapamount_indiv balancetrapamount_indiv eff_trapamount_indiv eff_balancetrapamount_indiv {
-replace `x'=`x'/1000
-}
-
-foreach x in loanamount_HH loanbalance_HH trapamount_HH balancetrapamount_HH eff_trapamount_HH eff_balancetrapamount_HH {
-replace `x'=`x'/1000
-}
-*/
-* Already done with the loan data
-
-
-
-********** Order
-order HHID_panel INDID_panel HHID INDID year 
-sort HHID_panel INDID_panel year
-
-
-save"panel_indiv_v2", replace
-****************************************
-* END
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-****************************************
-* HH level : rename trap
-****************************************
-use"panel_HH_v1", clear
-
-
-
-********** Rename
-rename lamount_HH loanamount_HH
-rename lbalance_HH loanbalance_HH
-rename lnb_HH nbloan_HH
-
-rename lamountgivenrepa_HH trapamount_HH
-rename lbalancegivenrepa_HH balancetrapamount_HH
-rename lnbgivenrepa_HH nbloantrap_HH
-
-rename lamounteffectiverepa_HH eff_trapamount_HH
-rename lbalanceeffectiverepa_HH eff_balancetrapamount_HH
-rename lnbeffectiverepa_HH eff_nbloantrap_HH
-
-
-
-********** 1k rupees
-/*
-foreach x in loanamount_HH loanbalance_HH trapamount_HH balancetrapamount_HH eff_trapamount_HH eff_balancetrapamount_HH {
-replace `x'=`x'/1000
-}
-*/
-* Already done with the loan data
-
-
-********** Order
-order HHID_panel HHID year 
-sort HHID_panel year
-
-
-save"panel_HH_v2", replace
-****************************************
-* END

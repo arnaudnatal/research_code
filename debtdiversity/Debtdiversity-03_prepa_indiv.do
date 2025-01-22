@@ -4,7 +4,7 @@ cls
 *arnaud.natal@ifpindia.org
 *January 21, 2025
 *-----
-gl link = "debttrap"
+gl link = "debtdiversity"
 *Prepa database
 *-----
 *do "https://raw.githubusercontent.com/arnaudnatal/folderanalysis/main/$link.do"
@@ -229,12 +229,6 @@ replace `x'=`x'*(100/86) if year==2016
 replace `x'=round(`x',1)
 }
 
-
-********** Merge trap
-merge 1:1 HHID_panel INDID_panel year using "_temp_trap_indiv"
-drop _merge
-
-
 ********** Merge HH charact
 merge m:1 HHID_panel year using "panel_HH_v0"
 drop if _merge==2
@@ -257,6 +251,3 @@ ta caste
 save"panel_indiv_v0", replace
 ****************************************
 * END
-
-
-do"$dofile\Debttrap-04_construct"
