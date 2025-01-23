@@ -32,7 +32,7 @@ gen dummymainloan=0
 replace dummymainloan=1 if borrowerservices!=.
 ta dummymainloan
 
-keep HHID2010 loanid loanreasongiven loanlender loansettled loanamount lender_cat reason_cat lender4 loanamount2 loanbalance2 interestpaid2 totalrepaid2 principalpaid2 effective_repa plantorep_* dummymainloan othlendserv_*
+keep HHID2010 loanid loanreasongiven loanlender loansettled loanamount lender_cat reason_cat lender4 loanamount2 loanbalance2 interestpaid2 totalrepaid2 principalpaid2 effective_repa plantorep_* dummymainloan othlendserv_* dummyinterest guarantee_*
 
 merge m:m HHID2010 using "raw/keypanel-HH_wide.dta", keepusing(HHID_panel)
 keep if _merge==3
@@ -40,6 +40,7 @@ drop _merge
 gen year=2010
 
 fre lender4
+fre loanid
 
 save"_temp_RUME-loans.dta", replace
 ****************************************
@@ -62,13 +63,22 @@ save"_temp_RUME-loans.dta", replace
 ****************************************
 use"raw/NEEMSIS1-loans_mainloans_new.dta", replace
 
+* 
+ta loanid loan_database, m
+tostring loanid, replace
+replace loanid=goldid if loanid=="." & goldid!=""
+replace loanid=marriageid if loanid=="." & marriageid!=""
+ta loanid loan_database, m
+drop goldid marriageid
+
+*
 gen dummymainloan=0
 replace dummymainloan=1 if borrowerservices!=""
 ta dummymainloan
 
 ta loan_database
 drop if loan_database=="MARRIAGE"
-keep HHID2016 INDID2016 loanid loanreasongiven loanlender loansettled loanamount lender_cat reason_cat lender4 loanamount2 loanbalance2 interestpaid2 totalrepaid2 principalpaid2 effective_repa loan_database plantorep_* settlestrat_* dummymainloan othlendserv_*
+keep HHID2016 INDID2016 loanid loanreasongiven loanlender loansettled loanamount lender_cat reason_cat lender4 loanamount2 loanbalance2 interestpaid2 totalrepaid2 principalpaid2 effective_repa loan_database plantorep_* settlestrat_* dummymainloan othlendserv_* dummyinterest guarantee_*
 
 merge m:m HHID2016 using "raw/keypanel-HH_wide.dta", keepusing(HHID_panel)
 keep if _merge==3
@@ -79,9 +89,6 @@ tostring INDID2016, replace
 merge m:m HHID_panel INDID2016 using "raw/keypanel-Indiv_wide.dta", keepusing(INDID_panel)
 keep if _merge==3
 drop _merge
-
-* Loanid
-tostring loanid, replace
 
 save"_temp_NEEMSIS1-loans.dta", replace
 ****************************************
@@ -104,6 +111,15 @@ save"_temp_NEEMSIS1-loans.dta", replace
 ****************************************
 use"raw/NEEMSIS2-loans_mainloans_new.dta", replace
 
+* 
+ta loanid loan_database, m
+tostring loanid, replace
+replace loanid=goldid if loanid=="." & goldid!=""
+replace loanid=marriageid if loanid=="." & marriageid!=""
+ta loanid loan_database, m
+drop goldid marriageid
+
+*
 drop dummymainloan
 gen dummymainloan=0
 replace dummymainloan=1 if borrowerservices!=""
@@ -131,7 +147,7 @@ gen effective_repa2=effective_repa
 replace effective_repa2=1 if loaneffectivereason2==4 & effective_repa2!=. & effective_repa2!=1
 ta effective_repa2
 
-keep HHID2020 INDID2020 loanid loanreasongiven loanlender loansettled loanamount lender_cat reason_cat lender4 loanamount2 loanbalance2 interestpaid2 totalrepaid2 principalpaid2 effective_repa loan_database plantorep_* settlestrat_* dummymainloan othlendserv_*
+keep HHID2020 INDID2020 loanid loanreasongiven loanlender loansettled loanamount lender_cat reason_cat lender4 loanamount2 loanbalance2 interestpaid2 totalrepaid2 principalpaid2 effective_repa loan_database plantorep_* settlestrat_* dummymainloan othlendserv_* dummyinterest guarantee_*
 
 merge m:m HHID2020 using "raw/keypanel-HH_wide.dta", keepusing(HHID_panel)
 keep if _merge==3
@@ -142,9 +158,6 @@ tostring INDID2020, replace
 merge m:m HHID_panel INDID2020 using "raw/keypanel-Indiv_wide.dta", keepusing(INDID_panel)
 keep if _merge==3
 drop _merge
-
-* Loanid
-tostring loanid, replace
 
 * How many HH?
 preserve
@@ -276,7 +289,29 @@ drop dummylefthousehold livinghome
 
 * INDID
 drop HHID2010 HHID2016 HHID2020 INDID2016 INDID2020
-order HHID_panel INDID_panel year loanid loanamount loanreasongiven loanlender dummymainloan othlendserv_6
+order HHID_panel INDID_panel loanid year loanamount loanreasongiven loanlender dummymainloan othlendserv_6
+
+* Check duplicates
+preserve
+keep if year==2010
+keep HHID_panel loanid
+duplicates tag, gen(tag)
+ta tag
+restore
+
+preserve
+keep if year==2016
+keep HHID_panel INDID_panel loanid
+duplicates tag, gen(tag)
+ta tag
+restore
+
+preserve
+keep if year==2020
+keep HHID_panel INDID_panel loanid
+duplicates tag, gen(tag)
+ta tag
+restore
 
 save"panel_loans_v0", replace
 ****************************************

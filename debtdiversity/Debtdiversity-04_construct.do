@@ -23,28 +23,35 @@ do"C:/Users/Arnaud/Documents/GitHub/folderanalysis/$link.do"
 ****************************************
 use"panel_loans_v0", clear
 
-merge m:1 HHID_panel INDID_panel year using "panel_indiv_v0", keepusing(caste sex livinghome)
+* Merge sex and drop died
+merge m:1 HHID_panel INDID_panel year using "panel_indiv_v0", keepusing(sex livinghome)
 drop if _merge==2
 drop _merge
-
-order HHID_panel INDID_panel year caste sex livinghome
-
 ta livinghome year
 drop if livinghome==3
 drop if livinghome==4
 drop livinghome
 
+* Merge caste
+merge m:1 HHID_panel year using "panel_HH_v0", keepusing(caste)
+drop if _merge==2
+drop _merge
+order HHID_panel INDID_panel year caste sex 
 
 * Cat of amount
 xtile catloanamount=loanamount, n(5)
 label define catloanamount 1"A: Vlow" 2"A: Low" 3"A: Int" 4"A: High" 5"A: Vhigh"
 label values catloanamount catloanamount
-
 tabstat loanamount, stat(min max) by(catloanamount)
-
-ta catloanamount year, col nofreq chi2
-
 order catloanamount, after(loanamount)
+
+* Cat of amount for main loans
+xtile catmainloanamount=loanamount if dummymainloan==1, n(5)
+label define catmainloanamount 1"A: Vlow" 2"A: Low" 3"A: Int" 4"A: High" 5"A: Vhigh"
+label values catmainloanamount catmainloanamount
+tabstat loanamount, stat(min max) by(catmainloanamount)
+order catmainloanamount, after(catloanamount)
+ta catmainloanamount catloanamount
 
 
 ********** Prepa for R
@@ -62,24 +69,344 @@ label define reason_cat 1"R: Eco" 2"R: Cur" 3"R: Hum" 4"R: Soc" 5"R: Hou", modif
 *
 fre lender4
 recode lender4 (5=10)
-label define lender4 1"L: WKP" 2"L: Rel" 3"L: Lab" 4"L: Paw" 6"L: Mon" 7"L: Fri" 8"L: Mic" 9"R: Ban" 10"L: Nei", modify
+label define lender4 1"L: WKP" 2"L: Rel" 3"L: Lab" 4"L: Paw" 6"L: Mon" 7"L: Fri" 8"L: Mic" 9"L: Ban" 10"L: Nei", modify
 *
 fre lender4cat
 label define lender4cat 1"L: Inf" 2"L: For", modify
+*
+gen otherlenderservice=0
+replace otherlenderservice=1 if othlendserv_poli==1 | othlendserv_guar==1 | othlendserv_gene==1 | othlendserv_othe==1
+label var otherlenderservice "LenServ: Y"
+label define otherlenderservice 0"LenServ: N" 1"LenServ: Y"
+label values otherlenderservice otherlenderservice
+ta otherlenderservice
+*
+gen guarantee=0
+replace guarantee=1 if guarantee_docu==1
+replace guarantee=1 if guarantee_chit==1
+replace guarantee=1 if guarantee_shg==1
+replace guarantee=1 if guarantee_pers==1
+replace guarantee=1 if guarantee_jewe==1
+replace guarantee=1 if guarantee_other==1
+replace guarantee=1 if guarantee_doc==1
+replace guarantee=1 if guarantee_othe==1
+replace guarantee=1 if guarantee_both==1
+replace guarantee=0 if guarantee_none==1
+label var guarantee "Guar: Y"
+label define guarantee 0"Guar: N" 1"Guar: Y"
+label values guarantee guarantee
+*
+fre dummyinterest
+recode dummyinterest (88=0)
+label var dummyinterest "Int: Y"
+label define dummyinterest 0"Int: N" 1"Int: Y", replace
+label values dummyinterest dummyinterest
+*
+
 
 save"panel_loans_v1", replace
+****************************************
+* END
 
 
-********** R
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Long lender
+****************************************
+use"panel_loans_v1", clear
+
+fre dummyinterest
+drop if dummyinterest==88
+
+********** All loans
+/*
+preserve
 keep lender4 loanreasongiven catloanamount
 rename lender4 lender
 rename loanreasongiven reason
 rename catloanamount amount
-export delimited using "Loan_mca.csv", replace
+export delimited using "Allloans.csv", replace
+restore
+*/
 
+preserve
+keep lender4 reason_cat catloanamount
+rename lender4 lender
+rename reason_cat reason
+rename catloanamount amount
+export delimited using "Allloans_2.csv", replace
+restore
+
+
+
+********** Finance loan
+/*
+preserve
+drop if loan_database=="GOLD"
+drop if loan_database=="MARRIAGE"
+keep lender4 loanreasongiven catloanamount otherlenderservice
+rename lender4 lender
+rename loanreasongiven reason
+rename catloanamount amount
+rename otherlenderservice services
+export delimited using "Financeloans.csv", replace
+restore
+*/
+
+preserve
+drop if loan_database=="GOLD"
+drop if loan_database=="MARRIAGE"
+keep lender4 reason_cat catloanamount otherlenderservice
+rename lender4 lender
+rename reason_cat reason
+rename catloanamount amount
+rename otherlenderservice services
+export delimited using "Financeloans_2.csv", replace
+restore
+
+
+
+********** Finance loans 2020-21
+/*
+preserve
+drop if loan_database=="GOLD"
+drop if loan_database=="MARRIAGE"
+keep if year==2020
+keep lender4 loanreasongiven catloanamount dummyinterest guarantee otherlenderservice
+rename lender4 lender
+rename loanreasongiven reason
+rename catloanamount amount
+rename dummyinterest interest
+rename otherlenderservice services
+export delimited using "Financeloans2020.csv", replace
+restore
+*/
+
+/*
+preserve
+drop if loan_database=="GOLD"
+drop if loan_database=="MARRIAGE"
+keep if year==2020
+keep lender4 reason_cat catloanamount dummyinterest guarantee otherlenderservice
+rename lender4 lender
+rename reason_cat reason
+rename catloanamount amount
+rename dummyinterest interest
+rename otherlenderservice services
+export delimited using "Financeloans2020_2.csv", replace
+restore
+*/
+
+********** Main loans
+/*
+preserve
+keep if dummymainloan==1
+keep lender4 loanreasongiven catloanamount dummyinterest guarantee
+rename lender4 lender
+rename loanreasongiven reason
+rename catloanamount amount
+rename dummyinterest interest 
+export delimited using "Mainloans.csv", replace
+restore
+*/
+
+/*
+preserve
+keep if dummymainloan==1
+keep lender4 reason_cat catloanamount dummyinterest guarantee
+rename lender4 lender
+rename reason_cat reason
+rename catloanamount amount
+rename dummyinterest interest 
+export delimited using "Mainloans_2.csv", replace
+restore
+*/
+
+/*
+preserve
+keep if dummymainloan==1
+keep lender4 loanreasongiven catloanamount dummyinterest guarantee otherlenderservice
+rename lender4 lender
+rename loanreasongiven reason
+rename catloanamount amount
+rename dummyinterest interest 
+export delimited using "Mainloans_3.csv", replace
+restore
+*/
+
+preserve
+keep if dummymainloan==1
+keep lender4 reason_cat catmainloanamount dummyinterest guarantee otherlenderservice
+rename lender4 lender
+rename reason_cat reason
+rename catmainloanamount amount
+rename dummyinterest interest
+rename otherlenderservice services
+export delimited using "Mainloans_4.csv", replace
+restore
 
 ****************************************
 * END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+****************************************
+* Short lender
+****************************************
+use"panel_loans_v1", clear
+
+fre dummyinterest
+drop if dummyinterest==88
+
+********** All loans
+preserve
+keep lender4cat loanreasongiven catloanamount
+rename lender4cat lender
+rename loanreasongiven reason
+rename catloanamount amount
+export delimited using "SL_Allloans.csv", replace
+restore
+
+preserve
+keep lender4cat reason_cat catloanamount
+rename lender4cat lender
+rename reason_cat reason
+rename catloanamount amount
+export delimited using "SL_Allloans_2.csv", replace
+restore
+
+
+
+********** Finance loan
+preserve
+drop if loan_database=="GOLD"
+drop if loan_database=="MARRIAGE"
+keep lender4cat loanreasongiven catloanamount otherlenderservice
+rename lender4cat lender
+rename loanreasongiven reason
+rename catloanamount amount
+rename otherlenderservice services
+export delimited using "SL_Financeloans.csv", replace
+restore
+
+preserve
+drop if loan_database=="GOLD"
+drop if loan_database=="MARRIAGE"
+keep lender4cat reason_cat catloanamount otherlenderservice
+rename lender4cat lender
+rename reason_cat reason
+rename catloanamount amount
+rename otherlenderservice services
+export delimited using "SL_Financeloans_2.csv", replace
+restore
+
+
+
+********** Finance loans 2020-21
+preserve
+drop if loan_database=="GOLD"
+drop if loan_database=="MARRIAGE"
+keep if year==2020
+keep lender4cat loanreasongiven catloanamount dummyinterest guarantee otherlenderservice
+rename lender4cat lender
+rename loanreasongiven reason
+rename catloanamount amount
+rename dummyinterest interest
+rename otherlenderservice services
+export delimited using "SL_Financeloans2020.csv", replace
+restore
+
+preserve
+drop if loan_database=="GOLD"
+drop if loan_database=="MARRIAGE"
+keep if year==2020
+keep lender4cat reason_cat catloanamount dummyinterest guarantee otherlenderservice
+rename lender4cat lender
+rename reason_cat reason
+rename catloanamount amount
+rename dummyinterest interest
+rename otherlenderservice services
+export delimited using "SL_Financeloans2020_2.csv", replace
+restore
+
+
+********** Main loans
+preserve
+keep if dummymainloan==1
+keep lender4cat loanreasongiven catloanamount dummyinterest guarantee
+rename lender4cat lender
+rename loanreasongiven reason
+rename catloanamount amount
+rename dummyinterest interest 
+export delimited using "SL_Mainloans.csv", replace
+restore
+
+preserve
+keep if dummymainloan==1
+keep lender4cat reason_cat catloanamount dummyinterest guarantee
+rename lender4cat lender
+rename reason_cat reason
+rename catloanamount amount
+rename dummyinterest interest 
+export delimited using "SL_Mainloans_2.csv", replace
+restore
+
+preserve
+keep if dummymainloan==1
+keep lender4cat loanreasongiven catloanamount dummyinterest guarantee otherlenderservice
+rename lender4cat lender
+rename loanreasongiven reason
+rename catloanamount amount
+rename dummyinterest interest 
+export delimited using "SL_Mainloans_3.csv", replace
+restore
+
+preserve
+keep if dummymainloan==1
+keep lender4cat reason_cat catloanamount dummyinterest guarantee otherlenderservice
+rename lender4cat lender
+rename reason_cat reason
+rename catloanamount amount
+rename dummyinterest interest 
+export delimited using "SL_Mainloans_4.csv", replace
+restore
+
+****************************************
+* END
+*/
+
+
+
+
+
+
+
+
+
+
 
 
 
