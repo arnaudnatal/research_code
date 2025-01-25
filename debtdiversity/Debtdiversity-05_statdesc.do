@@ -33,6 +33,11 @@ use"panel_loans_v1", replace
 ta loanreasongiven year
 ta loanreasongiven year, col nofreq
 
+* Lender
+ta lender4 year
+ta lender4 year, col nofreq m
+
+
 * Amount by reason
 tabstat loanamount if year==2010, stat(mean) by(loanreasongiven)
 tabstat loanamount if year==2016, stat(mean) by(loanreasongiven)

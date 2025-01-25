@@ -128,122 +128,31 @@ use"panel_loans_v1", clear
 fre dummyinterest
 drop if dummyinterest==88
 
-********** All loans
-/*
-preserve
-keep lender4 loanreasongiven catloanamount
-rename lender4 lender
-rename loanreasongiven reason
-rename catloanamount amount
-export delimited using "Allloans.csv", replace
-restore
-*/
+ta lender4 year, col nofreq
 
+
+********** All loans
 preserve
 keep lender4 reason_cat catloanamount
 rename lender4 lender
 rename reason_cat reason
 rename catloanamount amount
-export delimited using "Allloans_2.csv", replace
+export delimited using "Allloans.csv", replace
 restore
 
 
-
-********** Finance loan
-/*
+********** All loans details
 preserve
-drop if loan_database=="GOLD"
-drop if loan_database=="MARRIAGE"
-keep lender4 loanreasongiven catloanamount otherlenderservice
+keep lender4 loanreasongiven catloanamount
 rename lender4 lender
 rename loanreasongiven reason
 rename catloanamount amount
-rename otherlenderservice services
-export delimited using "Financeloans.csv", replace
-restore
-*/
-
-preserve
-drop if loan_database=="GOLD"
-drop if loan_database=="MARRIAGE"
-keep lender4 reason_cat catloanamount otherlenderservice
-rename lender4 lender
-rename reason_cat reason
-rename catloanamount amount
-rename otherlenderservice services
-export delimited using "Financeloans_2.csv", replace
+ta reason
+export delimited using "Allloans2.csv", replace
 restore
 
-
-
-********** Finance loans 2020-21
-/*
-preserve
-drop if loan_database=="GOLD"
-drop if loan_database=="MARRIAGE"
-keep if year==2020
-keep lender4 loanreasongiven catloanamount dummyinterest guarantee otherlenderservice
-rename lender4 lender
-rename loanreasongiven reason
-rename catloanamount amount
-rename dummyinterest interest
-rename otherlenderservice services
-export delimited using "Financeloans2020.csv", replace
-restore
-*/
-
-/*
-preserve
-drop if loan_database=="GOLD"
-drop if loan_database=="MARRIAGE"
-keep if year==2020
-keep lender4 reason_cat catloanamount dummyinterest guarantee otherlenderservice
-rename lender4 lender
-rename reason_cat reason
-rename catloanamount amount
-rename dummyinterest interest
-rename otherlenderservice services
-export delimited using "Financeloans2020_2.csv", replace
-restore
-*/
 
 ********** Main loans
-/*
-preserve
-keep if dummymainloan==1
-keep lender4 loanreasongiven catloanamount dummyinterest guarantee
-rename lender4 lender
-rename loanreasongiven reason
-rename catloanamount amount
-rename dummyinterest interest 
-export delimited using "Mainloans.csv", replace
-restore
-*/
-
-/*
-preserve
-keep if dummymainloan==1
-keep lender4 reason_cat catloanamount dummyinterest guarantee
-rename lender4 lender
-rename reason_cat reason
-rename catloanamount amount
-rename dummyinterest interest 
-export delimited using "Mainloans_2.csv", replace
-restore
-*/
-
-/*
-preserve
-keep if dummymainloan==1
-keep lender4 loanreasongiven catloanamount dummyinterest guarantee otherlenderservice
-rename lender4 lender
-rename loanreasongiven reason
-rename catloanamount amount
-rename dummyinterest interest 
-export delimited using "Mainloans_3.csv", replace
-restore
-*/
-
 preserve
 keep if dummymainloan==1
 keep lender4 reason_cat catmainloanamount dummyinterest guarantee otherlenderservice
@@ -252,155 +161,11 @@ rename reason_cat reason
 rename catmainloanamount amount
 rename dummyinterest interest
 rename otherlenderservice services
-export delimited using "Mainloans_4.csv", replace
+export delimited using "Mainloans.csv", replace
 restore
 
 ****************************************
 * END
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*
-****************************************
-* Short lender
-****************************************
-use"panel_loans_v1", clear
-
-fre dummyinterest
-drop if dummyinterest==88
-
-********** All loans
-preserve
-keep lender4cat loanreasongiven catloanamount
-rename lender4cat lender
-rename loanreasongiven reason
-rename catloanamount amount
-export delimited using "SL_Allloans.csv", replace
-restore
-
-preserve
-keep lender4cat reason_cat catloanamount
-rename lender4cat lender
-rename reason_cat reason
-rename catloanamount amount
-export delimited using "SL_Allloans_2.csv", replace
-restore
-
-
-
-********** Finance loan
-preserve
-drop if loan_database=="GOLD"
-drop if loan_database=="MARRIAGE"
-keep lender4cat loanreasongiven catloanamount otherlenderservice
-rename lender4cat lender
-rename loanreasongiven reason
-rename catloanamount amount
-rename otherlenderservice services
-export delimited using "SL_Financeloans.csv", replace
-restore
-
-preserve
-drop if loan_database=="GOLD"
-drop if loan_database=="MARRIAGE"
-keep lender4cat reason_cat catloanamount otherlenderservice
-rename lender4cat lender
-rename reason_cat reason
-rename catloanamount amount
-rename otherlenderservice services
-export delimited using "SL_Financeloans_2.csv", replace
-restore
-
-
-
-********** Finance loans 2020-21
-preserve
-drop if loan_database=="GOLD"
-drop if loan_database=="MARRIAGE"
-keep if year==2020
-keep lender4cat loanreasongiven catloanamount dummyinterest guarantee otherlenderservice
-rename lender4cat lender
-rename loanreasongiven reason
-rename catloanamount amount
-rename dummyinterest interest
-rename otherlenderservice services
-export delimited using "SL_Financeloans2020.csv", replace
-restore
-
-preserve
-drop if loan_database=="GOLD"
-drop if loan_database=="MARRIAGE"
-keep if year==2020
-keep lender4cat reason_cat catloanamount dummyinterest guarantee otherlenderservice
-rename lender4cat lender
-rename reason_cat reason
-rename catloanamount amount
-rename dummyinterest interest
-rename otherlenderservice services
-export delimited using "SL_Financeloans2020_2.csv", replace
-restore
-
-
-********** Main loans
-preserve
-keep if dummymainloan==1
-keep lender4cat loanreasongiven catloanamount dummyinterest guarantee
-rename lender4cat lender
-rename loanreasongiven reason
-rename catloanamount amount
-rename dummyinterest interest 
-export delimited using "SL_Mainloans.csv", replace
-restore
-
-preserve
-keep if dummymainloan==1
-keep lender4cat reason_cat catloanamount dummyinterest guarantee
-rename lender4cat lender
-rename reason_cat reason
-rename catloanamount amount
-rename dummyinterest interest 
-export delimited using "SL_Mainloans_2.csv", replace
-restore
-
-preserve
-keep if dummymainloan==1
-keep lender4cat loanreasongiven catloanamount dummyinterest guarantee otherlenderservice
-rename lender4cat lender
-rename loanreasongiven reason
-rename catloanamount amount
-rename dummyinterest interest 
-export delimited using "SL_Mainloans_3.csv", replace
-restore
-
-preserve
-keep if dummymainloan==1
-keep lender4cat reason_cat catloanamount dummyinterest guarantee otherlenderservice
-rename lender4cat lender
-rename reason_cat reason
-rename catloanamount amount
-rename dummyinterest interest 
-export delimited using "SL_Mainloans_4.csv", replace
-restore
-
-****************************************
-* END
-*/
-
-
-
-
 
 
 
