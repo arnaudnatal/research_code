@@ -90,18 +90,74 @@ save"panel_loans_v1_clust_v2", replace
 ****************************************
 use"panel_loans_v1_clust_v2", clear
 
-ta clustloan1 year, col nofreq
+* Merger income and assets
+preserve
+use"panel_HH_v1", clear
+keep HHID_panel year annualincome_HH assets_total1000
+*
+foreach y in 2010 2016 2020 {
+xtile catincome`y'=annualincome_HH if year==`y', n(5)
+recode catincome`y' (3=2) (4=2) (5=3)
+}
+gen catincome=.
+foreach y in 2010 2016 2020 {
+replace catincome=catincome`y' if year==`y'
+drop catincome`y'
+}
+ta catincome
+*
+foreach y in 2010 2016 2020 {
+xtile catwealth`y'=assets_total1000 if year==`y', n(5)
+recode catwealth`y' (3=2) (4=2) (5=3)
+}
+gen catwealth=.
+foreach y in 2010 2016 2020 {
+replace catwealth=catwealth`y' if year==`y'
+drop catwealth`y'
+}
+ta catwealth
+*
+keep HHID_panel year catincome catwealth
+save"_tempcat", replace
+restore
 
-fre clustloan1
-ta loanreasongiven reason_cat if clustloan1==3  // Family
-ta loanreasongiven reason_cat if clustloan1==4  // Family + Ceremonies
-ta loanreasongiven reason_cat if clustloan1==7  // 
-ta loanreasongiven reason_cat if clustloan1==8
-ta loanreasongiven reason_cat if clustloan1==10  // Family
+merge m:1 HHID_panel year using "_tempcat"
+keep if _merge==3
+drop _merge
 
 
-ta clustloan2 year, col nofreq
-ta clustloan3 year, col nofreq
+
+********** Evo over time
+*
+ta clustloan1 year, col nofreq chi2
+
+*
+ta clustloan1 caste, col nofreq chi2
+ta clustloan1 caste if year==2010, col nofreq chi2
+ta clustloan1 caste if year==2016, col nofreq chi2
+ta clustloan1 caste if year==2020, col nofreq chi2
+
+*
+ta clustloan1 catincome, col nofreq chi2
+ta clustloan1 catincome if year==2010, col nofreq chi2
+ta clustloan1 catincome if year==2016, col nofreq chi2
+ta clustloan1 catincome if year==2020, col nofreq chi2
+
+*
+ta clustloan1 catwealth, col nofreq chi2
+ta clustloan1 catwealth if year==2010, col nofreq chi2
+ta clustloan1 catwealth if year==2016, col nofreq chi2
+ta clustloan1 catwealth if year==2020, col nofreq chi2
+
+*
+ta clustloan1 sex if year!=2010, col nofreq chi2
+ta clustloan1 sex if year==2016, col nofreq chi2
+ta clustloan1 sex if year==2020, col nofreq chi2
+
+*
+
+
+
 
 
 ****************************************

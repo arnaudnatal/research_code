@@ -19,21 +19,15 @@ do"C:\Users\Arnaud\Documents\GitHub\folderanalysis\networks.do"
 * Format
 *************************************
 
-* Size
+foreach var in caste gender age occup educ {
 
-* IQVcaste_probit IQVcaste_glm
-* IQVgender_probit IQVgender_glm
-* IQVage_probit IQVage_glm
-* IQVoccup_probit IQVoccup_glm
-* IQVeduc_probit IQVeduc_glm
+foreach y in ///
+ddiff`var'_probit diff`var'_glm hetero_`var'_probit IQV_`var'_glm ///
+debt_ddiff`var'_probit debt_diff`var'_glm debt_hetero_`var'_probit debt_IQV_`var'_glm ///
+talk_ddiff`var'_probit talk_diff`var'_glm talk_hetero_`var'_probit talk_IQV_`var'_glm ///
+relative_ddiff`var'_probit relative_diff`var'_glm relative_hetero_`var'_probit relative_IQV_`var'_glm {
 
-* diffcaste_probit diffcaste_glm
-* diffgender_probit diffgender_glm
-* diffage_probit diffage_glm
-* difflocation_probit difflocation_glm
-
-
-local yvar difflocation_glm
+local yvar `y'
 
 
 
@@ -270,6 +264,26 @@ order n v1 v2 bl0
 drop _merge
 
 ***
+insobs 1
+replace n=0 if n==.
+sort n
+replace v2="All" if n==0
+
+replace v3="Man" if n==0
+replace nstr3="Woman" if n==0
+
+replace v4="Dalits" if n==0
+replace nstr41="Middle castes" if n==0
+replace nstr42="Upper castes" if n==0
+
+replace v5="Dalits man" if n==0
+replace nstr51="Middle castes man" if n==0
+replace nstr52="Upper castes man" if n==0
+replace nstr53="Dalits woman" if n==0
+replace nstr54="Middle castes woman" if n==0
+replace nstr55="Upper castes woman" if n==0
+
+***
 export excel using "Margins.xlsx", sheet("`yvar'") sheetmodify cell(A7) nolabel
 
 erase"marg1.dta"
@@ -278,6 +292,9 @@ erase"trait2.dta"
 erase"trait3.dta"
 erase"trait4.dta"
 erase"`yvar'_margin.csv"
+
+}
+}
 
 *************************************
 * END
