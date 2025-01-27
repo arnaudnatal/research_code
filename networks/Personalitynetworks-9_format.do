@@ -26,8 +26,6 @@ talk_ddiffcaste_probit talk_diffcaste_glm talk_diffcaste_frac ///
 debt_ddiffcaste_probit debt_diffcaste_glm debt_diffcaste_frac ///
 talk_ddiffgender_probit talk_diffgender_glm talk_diffgender_frac ///
 debt_ddiffgender_probit debt_diffgender_glm debt_diffgender_frac ///
-talk_ddifflocation_probit talk_difflocation_glm talk_difflocation_frac ///
-debt_ddifflocation_probit debt_difflocation_glm debt_difflocation_frac ///
  {
 
 local yvar `y'

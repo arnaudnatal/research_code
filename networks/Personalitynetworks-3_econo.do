@@ -58,24 +58,24 @@ global persoXsexXcaste c.fES##i.female##i.caste c.fOPEX##i.female##i.caste c.fCO
 ********** Force 1 (mca)
 foreach y in strength_debt strength_talk {
 
-glm `y' $perso i.female i.caste $cont, family(binomial) link(probit) cluster(HHFE)
+qui glm `y' $perso i.female i.caste $cont, family(binomial) link(probit) cluster(HHFE)
 est store reg1`y'
-margins, dydx($perso) atmeans post
+qui margins, dydx($perso) atmeans post
 est store marg1`y'
 
-glm `y' $persoXsex $cont, family(binomial) link(probit) cluster(HHFE)
+qui glm `y' $persoXsex $cont, family(binomial) link(probit) cluster(HHFE)
 est store reg2`y'
-margins, dydx($perso) at(female=(0 1)) atmeans post
+qui margins, dydx($perso) at(female=(0 1)) atmeans post
 est store marg2`y'
 
-glm `y' $persoXcaste $cont, family(binomial) link(probit) cluster(HHFE)
+qui glm `y' $persoXcaste $cont, family(binomial) link(probit) cluster(HHFE)
 est store reg3`y'
-margins, dydx($perso) at(caste=(1 2 3)) atmeans post
+qui margins, dydx($perso) at(caste=(1 2 3)) atmeans post
 est store marg3`y'
 
-glm `y' $persoXsexXcaste $cont, family(binomial) link(probit) cluster(HHFE)
+qui glm `y' $persoXsexXcaste $cont, family(binomial) link(probit) cluster(HHFE)
 est store reg4`y'
-margins, dydx($perso) at(female=(0 1) caste=(1 2 3)) atmeans post
+qui margins, dydx($perso) at(female=(0 1) caste=(1 2 3)) atmeans post
 est store marg4`y'
 
 esttab reg1`y' reg2`y' reg3`y' reg4`y' using "`y'_glm.csv", ///
@@ -85,13 +85,12 @@ esttab reg1`y' reg2`y' reg3`y' reg4`y' using "`y'_glm.csv", ///
 	stats(N, fmt(0) labels(`"Observations"')) ///
 	starlevels(* 0.10 ** 0.05 *** 0.01) ///
 	replace	
-	
+
 esttab marg1`y' marg2`y' marg3`y' marg4`y' using "`y'_glm_margin.csv", ///
 	cells("b(fmt(2) star)" se(par fmt(2))) ///
 	legend varlabels(_cons constant) ///
 	starlevels(* 0.10 ** 0.05 *** 0.01) ///
 	replace		
-
 }
 
 
@@ -101,24 +100,24 @@ esttab marg1`y' marg2`y' marg3`y' marg4`y' using "`y'_glm_margin.csv", ///
 ********** Force 2 (duration)
 foreach y in debt_duration_afe talk_duration_afe {
 
-reg `y' $perso i.female i.caste $cont, cluster(HHFE)
+qui reg `y' $perso i.female i.caste $cont, cluster(HHFE)
 est store reg1`y'
-margins, dydx($perso) atmeans post
+qui margins, dydx($perso) atmeans post
 est store marg1`y'
 
-reg `y' $persoXsex $cont, cluster(HHFE)
+qui reg `y' $persoXsex $cont, cluster(HHFE)
 est store reg2`y'
-margins, dydx($perso) at(female=(0 1)) atmeans post
+qui margins, dydx($perso) at(female=(0 1)) atmeans post
 est store marg2`y'
 
-reg `y' $persoXcaste $cont, cluster(HHFE)
+qui reg `y' $persoXcaste $cont, cluster(HHFE)
 est store reg3`y'
-margins, dydx($perso) at(caste=(1 2 3)) atmeans post
+qui margins, dydx($perso) at(caste=(1 2 3)) atmeans post
 est store marg3`y'
 
-reg `y' $persoXsexXcaste $cont, cluster(HHFE)
+qui reg `y' $persoXsexXcaste $cont, cluster(HHFE)
 est store reg4`y'
-margins, dydx($perso) at(female=(0 1) caste=(1 2 3)) atmeans post
+qui margins, dydx($perso) at(female=(0 1) caste=(1 2 3)) atmeans post
 est store marg4`y'
 
 esttab reg1`y' reg2`y' reg3`y' reg4`y' using "`y'_reg.csv", ///
@@ -128,13 +127,12 @@ esttab reg1`y' reg2`y' reg3`y' reg4`y' using "`y'_reg.csv", ///
 	stats(N, fmt(0) labels(`"Observations"')) ///
 	starlevels(* 0.10 ** 0.05 *** 0.01) ///
 	replace	
-	
+
 esttab marg1`y' marg2`y' marg3`y' marg4`y' using "`y'_reg_margin.csv", ///
 	cells("b(fmt(2) star)" se(par fmt(2))) ///
 	legend varlabels(_cons constant) ///
 	starlevels(* 0.10 ** 0.05 *** 0.01) ///
 	replace		
-
 }
 
 
@@ -150,28 +148,28 @@ esttab marg1`y' marg2`y' marg3`y' marg4`y' using "`y'_reg_margin.csv", ///
 
 
 ********** Homophily en une étape
-foreach var in caste gender location {
+foreach var in caste gender {
 
 foreach y in debt_diff talk_diff {
 
-glm `y'`var' $perso i.female i.caste $cont, family(binomial) link(probit) cluster(HHFE)
+qui glm `y'`var' $perso i.female i.caste $cont, family(binomial) link(probit) cluster(HHFE)
 est store reg1`y'
-margins, dydx($perso) atmeans post
+qui margins, dydx($perso) atmeans post
 est store marg1`y'
 
-glm `y'`var' $persoXsex $cont, family(binomial) link(probit) cluster(HHFE)
+qui glm `y'`var' $persoXsex $cont, family(binomial) link(probit) cluster(HHFE)
 est store reg2`y'
-margins, dydx($perso) at(female=(0 1)) atmeans post
+qui margins, dydx($perso) at(female=(0 1)) atmeans post
 est store marg2`y'
 
-glm `y'`var' $persoXcaste $cont, family(binomial) link(probit) cluster(HHFE)
+qui glm `y'`var' $persoXcaste $cont, family(binomial) link(probit) cluster(HHFE)
 est store reg3`y'
-margins, dydx($perso) at(caste=(1 2 3)) atmeans post
+qui margins, dydx($perso) at(caste=(1 2 3)) atmeans post
 est store marg3`y'
 
-glm `y'`var' $persoXsexXcaste $cont, family(binomial) link(probit) cluster(HHFE)
+qui glm `y'`var' $persoXsexXcaste $cont, family(binomial) link(probit) cluster(HHFE)
 est store reg4`y'
-margins, dydx($perso) at(female=(0 1) caste=(1 2 3)) atmeans post
+qui margins, dydx($perso) at(female=(0 1) caste=(1 2 3)) atmeans post
 est store marg4`y'
 
 esttab reg1`y' reg2`y' reg3`y' reg4`y' using "`y'`var'_frac.csv", ///
@@ -181,13 +179,12 @@ esttab reg1`y' reg2`y' reg3`y' reg4`y' using "`y'`var'_frac.csv", ///
 	stats(N, fmt(0) labels(`"Observations"')) ///
 	starlevels(* 0.10 ** 0.05 *** 0.01) ///
 	replace	
-	
+
 esttab marg1`y' marg2`y' marg3`y' marg4`y' using "`y'`var'_frac_margin.csv", ///
 	cells("b(fmt(2) star)" se(par fmt(2))) ///
 	legend varlabels(_cons constant) ///
 	starlevels(* 0.10 ** 0.05 *** 0.01) ///
 	replace		
-
 }
 }
 
@@ -198,39 +195,39 @@ esttab marg1`y' marg2`y' marg3`y' marg4`y' using "`y'`var'_frac_margin.csv", ///
 
 
 ********** Homophily en deux étapes
-foreach var in caste gender location {
+foreach var in caste gender {
 
 ********** Step 1: Probit
 foreach y in debt_ddiff talk_ddiff {
 
-probit `y'`var' $perso i.female i.caste $cont, vce(cl HHFE)
+qui probit `y'`var' $perso i.female i.caste $cont, vce(cl HHFE)
 est store reg1`y'
-margins, dydx($perso) atmeans post
+qui margins, dydx($perso) atmeans post
 est store marg1`y'
 
-probit `y'`var' $persoXsex $cont, vce(cl HHFE)
+qui probit `y'`var' $persoXsex $cont, vce(cl HHFE)
 est store reg2`y'
-margins, dydx($perso) at(female=(0 1)) atmeans post
+qui margins, dydx($perso) at(female=(0 1)) atmeans post
 est store marg2`y'
 
-probit `y'`var' $persoXcaste $cont, vce(cl HHFE)
+qui probit `y'`var' $persoXcaste $cont, vce(cl HHFE)
 est store reg3`y'
-margins, dydx($perso) at(caste=(1 2 3)) atmeans post
+qui margins, dydx($perso) at(caste=(1 2 3)) atmeans post
 est store marg3`y'
 
-probit `y'`var' $persoXsexXcaste $cont, vce(cl HHFE)
+qui probit `y'`var' $persoXsexXcaste $cont, vce(cl HHFE)
 est store reg4`y'
-margins, dydx($perso) at(female=(0 1) caste=(1 2 3)) atmeans post
+qui margins, dydx($perso) at(female=(0 1) caste=(1 2 3)) atmeans post
 est store marg4`y'
 
-esttab reg1`y' reg2`y' reg3`y' reg4`y' using "`yar'`var'_probit.csv", ///
+esttab reg1`y' reg2`y' reg3`y' reg4`y' using "`y'`var'_probit.csv", ///
 	cells("b(fmt(2) star)" se(par fmt(2))) ///
 	drop($contdrop _cons) ///
 	legend label varlabels(_cons constant) ///
 	stats(N, fmt(0) labels(`"Observations"')) ///
 	starlevels(* 0.10 ** 0.05 *** 0.01) ///
 	replace	
-	
+
 esttab marg1`y' marg2`y' marg3`y' marg4`y' using "`y'`var'_probit_margin.csv", ///
 	cells("b(fmt(2) star)" se(par fmt(2))) ///
 	legend varlabels(_cons constant) ///
@@ -240,343 +237,48 @@ esttab marg1`y' marg2`y' marg3`y' marg4`y' using "`y'`var'_probit_margin.csv", /
 
 
 ********** Step 2: GLM
-foreach y in debt_diff talk_diff {
+foreach y in debt talk {
 
 preserve
-keep if ddiff`var'==1
+keep if `y'_ddiff`var'==1
 
-glm `y'`var' $perso i.female i.caste $cont, family(binomial) link(probit) cluster(HHFE)
+qui glm `y'_diff`var' $perso i.female i.caste $cont, family(binomial) link(probit) cluster(HHFE)
 est store reg1`y'
-margins, dydx($perso) atmeans post
+qui margins, dydx($perso) atmeans post
 est store marg1`y'
 
-glm `y'`var' $persoXsex $cont, family(binomial) link(probit) cluster(HHFE)
+qui glm `y'_diff`var' $persoXsex $cont, family(binomial) link(probit) cluster(HHFE)
 est store reg2`y'
-margins, dydx($perso) at(female=(0 1)) atmeans post
+qui margins, dydx($perso) at(female=(0 1)) atmeans post
 est store marg2`y'
 
-glm `y'`var' $persoXcaste $cont, family(binomial) link(probit) cluster(HHFE)
+qui glm `y'_diff`var' $persoXcaste $cont, family(binomial) link(probit) cluster(HHFE)
 est store reg3`y'
-margins, dydx($perso) at(caste=(1 2 3)) atmeans post
+qui margins, dydx($perso) at(caste=(1 2 3)) atmeans post
 est store marg3`y'
 
-glm `y'`var' $persoXsexXcaste $cont, family(binomial) link(probit) cluster(HHFE)
+qui glm `y'_diff`var' $persoXsexXcaste $cont, family(binomial) link(probit) cluster(HHFE)
 est store reg4`y'
-margins, dydx($perso) at(female=(0 1) caste=(1 2 3)) atmeans post
+qui margins, dydx($perso) at(female=(0 1) caste=(1 2 3)) atmeans post
 est store marg4`y'
 
-esttab reg1`y' reg2`y' reg3`y' reg4`y' using "`y'`var'_glm.csv", ///
+esttab reg1`y' reg2`y' reg3`y' reg4`y' using "`y'_diff`var'_glm.csv", ///
 	cells("b(fmt(2) star)" se(par fmt(2))) ///
 	drop($contdrop _cons) ///
 	legend label varlabels(_cons constant) ///
 	stats(N, fmt(0) labels(`"Observations"')) ///
 	starlevels(* 0.10 ** 0.05 *** 0.01) ///
 	replace	
-	
-esttab marg1`y' marg2`y' marg3`y' marg4`y' using "`y'`var'_glm_margin.csv", ///
+
+esttab marg1`y' marg2`y' marg3`y' marg4`y' using "`y'_diff`var'_glm_margin.csv", ///
 	cells("b(fmt(2) star)" se(par fmt(2))) ///
 	legend varlabels(_cons constant) ///
 	starlevels(* 0.10 ** 0.05 *** 0.01) ///
 	replace		
-
-restore
-}
-}
-
-
-
-
-
-
-
-
-
-	
-****************************************
-* END
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*
-****************************************
-* Taille du réseau
-****************************************
-
-foreach y in all debt relative talk {
-
-poisson netsize_`y' $perso i.female i.caste $cont, vce(cl HHFE)
-est store reg1`y'
-margins, dydx($perso) atmeans post
-est store marg1`y'
-
-poisson netsize_`y' $persoXsex $cont, vce(cl HHFE)
-est store reg2`y'
-margins, dydx($perso) at(female=(0 1)) atmeans post
-est store marg2`y'
-
-poisson netsize_`y' $persoXcaste $cont, vce(cl HHFE)
-est store reg3`y'
-margins, dydx($perso) at(caste=(1 2 3)) atmeans post
-est store marg3`y'
-
-poisson netsize_`y' $persoXsexXcaste $cont, vce(cl HHFE)
-est store reg4`y'
-margins, dydx($perso) at(female=(0 1) caste=(1 2 3)) atmeans post
-est store marg4`y'
-
-esttab reg1`y' reg2`y' reg3`y' reg4`y' using "Size_`y'.csv", ///
-	cells("b(fmt(2) star)" se(par fmt(2))) ///
-	drop($contdrop _cons) ///
-	legend label varlabels(_cons constant) ///
-	stats(N, fmt(0) labels(`"Observations"')) ///
-	starlevels(* 0.10 ** 0.05 *** 0.01) ///
-	replace	
-	
-esttab marg1`y' marg2`y' marg3`y' marg4`y' using "Size_`y'_margin.csv", ///
-	cells("b(fmt(2) star)" se(par fmt(2))) ///
-	legend varlabels(_cons constant) ///
-	starlevels(* 0.10 ** 0.05 *** 0.01) ///
-	replace
-	
-}
-	
-****************************************
-* END
-*/
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*
-****************************************
-* Diversité du réseau
-****************************************
-foreach var in caste gender age occup educ {
-
-********** Step 1: Probit
-foreach y in hetero debt_hetero relative_hetero talk_hetero {
-
-probit `y'_`var' $perso i.female i.caste $cont, vce(cl HHFE)
-est store reg1`y'
-margins, dydx($perso) atmeans post
-est store marg1`y'
-
-probit `y'_`var' $persoXsex $cont, vce(cl HHFE)
-est store reg2`y'
-margins, dydx($perso) at(female=(0 1)) atmeans post
-est store marg2`y'
-
-probit `y'_`var' $persoXcaste $cont, vce(cl HHFE)
-est store reg3`y'
-margins, dydx($perso) at(caste=(1 2 3)) atmeans post
-est store marg3`y'
-
-probit `y'_`var' $persoXsexXcaste $cont, vce(cl HHFE)
-est store reg4`y'
-margins, dydx($perso) at(female=(0 1) caste=(1 2 3)) atmeans post
-est store marg4`y'
-
-esttab reg1`y' reg2`y' reg3`y' reg4`y' using "`y'_`var'_probit.csv", ///
-	cells("b(fmt(2) star)" se(par fmt(2))) ///
-	drop($contdrop _cons) ///
-	legend label varlabels(_cons constant) ///
-	stats(N, fmt(0) labels(`"Observations"')) ///
-	starlevels(* 0.10 ** 0.05 *** 0.01) ///
-	replace	
-	
-esttab marg1`y' marg2`y' marg3`y' marg4`y' using "`y'_`var'_probit_margin.csv", ///
-	cells("b(fmt(2) star)" se(par fmt(2))) ///
-	legend varlabels(_cons constant) ///
-	starlevels(* 0.10 ** 0.05 *** 0.01) ///
-	replace		
-}
-
-
-
-********** Step 2: GLM
-foreach y in IQV debt_IQV relative_IQV talk_IQV {
-
-preserve
-keep if `y'_`var'!=0
-
-glm `y'_`var' $perso i.female i.caste $cont, family(binomial) link(probit) cluster(HHFE)
-est store reg1`y'
-margins, dydx($perso) atmeans post
-est store marg1`y'
-
-glm `y'_`var' $persoXsex $cont, family(binomial) link(probit) cluster(HHFE)
-est store reg2`y'
-margins, dydx($perso) at(female=(0 1)) atmeans post
-est store marg2`y'
-
-glm `y'_`var' $persoXcaste $cont, family(binomial) link(probit) cluster(HHFE)
-est store reg3`y'
-margins, dydx($perso) at(caste=(1 2 3)) atmeans post
-est store marg3`y'
-
-glm `y'_`var' $persoXsexXcaste $cont, family(binomial) link(probit) cluster(HHFE)
-est store reg4`y'
-margins, dydx($perso) at(female=(0 1) caste=(1 2 3)) atmeans post
-est store marg4`y'
-
-esttab reg1`y' reg2`y' reg3`y' reg4`y' using "`y'_`var'_glm.csv", ///
-	cells("b(fmt(2) star)" se(par fmt(2))) ///
-	drop($contdrop _cons) ///
-	legend label varlabels(_cons constant) ///
-	stats(N, fmt(0) labels(`"Observations"')) ///
-	starlevels(* 0.10 ** 0.05 *** 0.01) ///
-	replace	
-	
-esttab marg1`y' marg2`y' marg3`y' marg4`y' using "`y'_`var'_glm_margin.csv", ///
-	cells("b(fmt(2) star)" se(par fmt(2))) ///
-	legend varlabels(_cons constant) ///
-	starlevels(* 0.10 ** 0.05 *** 0.01) ///
-	replace		
-
 restore
 }
 }
 	
 ****************************************
 * END
-*/
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*
-****************************************
-* Hétérophilie du réseau
-****************************************
-foreach var in caste gender age occup educ {
-
-********** Step 1: Probit
-foreach y in ddiff debt_ddiff relative_ddiff talk_ddiff {
-
-probit `y'`var' $perso i.female i.caste $cont, vce(cl HHFE)
-est store reg1`y'
-margins, dydx($perso) atmeans post
-est store marg1`y'
-
-probit `y'`var' $persoXsex $cont, vce(cl HHFE)
-est store reg2`y'
-margins, dydx($perso) at(female=(0 1)) atmeans post
-est store marg2`y'
-
-probit `y'`var' $persoXcaste $cont, vce(cl HHFE)
-est store reg3`y'
-margins, dydx($perso) at(caste=(1 2 3)) atmeans post
-est store marg3`y'
-
-probit `y'`var' $persoXsexXcaste $cont, vce(cl HHFE)
-est store reg4`y'
-margins, dydx($perso) at(female=(0 1) caste=(1 2 3)) atmeans post
-est store marg4`y'
-
-esttab reg1`y' reg2`y' reg3`y' reg4`y' using "`yar'`var'_probit.csv", ///
-	cells("b(fmt(2) star)" se(par fmt(2))) ///
-	drop($contdrop _cons) ///
-	legend label varlabels(_cons constant) ///
-	stats(N, fmt(0) labels(`"Observations"')) ///
-	starlevels(* 0.10 ** 0.05 *** 0.01) ///
-	replace	
-	
-esttab marg1`y' marg2`y' marg3`y' marg4`y' using "`y'`var'_probit_margin.csv", ///
-	cells("b(fmt(2) star)" se(par fmt(2))) ///
-	legend varlabels(_cons constant) ///
-	starlevels(* 0.10 ** 0.05 *** 0.01) ///
-	replace		
-}
-
-
-********** Step 2: GLM
-foreach y in diff debt_diff relative_diff talk_diff {
-
-preserve
-keep if ddiff`var'==1
-
-glm `y'`var' $perso i.female i.caste $cont, family(binomial) link(probit) cluster(HHFE)
-est store reg1`y'
-margins, dydx($perso) atmeans post
-est store marg1`y'
-
-glm `y'`var' $persoXsex $cont, family(binomial) link(probit) cluster(HHFE)
-est store reg2`y'
-margins, dydx($perso) at(female=(0 1)) atmeans post
-est store marg2`y'
-
-glm `y'`var' $persoXcaste $cont, family(binomial) link(probit) cluster(HHFE)
-est store reg3`y'
-margins, dydx($perso) at(caste=(1 2 3)) atmeans post
-est store marg3`y'
-
-glm `y'`var' $persoXsexXcaste $cont, family(binomial) link(probit) cluster(HHFE)
-est store reg4`y'
-margins, dydx($perso) at(female=(0 1) caste=(1 2 3)) atmeans post
-est store marg4`y'
-
-esttab reg1`y' reg2`y' reg3`y' reg4`y' using "`y'`var'_glm.csv", ///
-	cells("b(fmt(2) star)" se(par fmt(2))) ///
-	drop($contdrop _cons) ///
-	legend label varlabels(_cons constant) ///
-	stats(N, fmt(0) labels(`"Observations"')) ///
-	starlevels(* 0.10 ** 0.05 *** 0.01) ///
-	replace	
-	
-esttab marg1`y' marg2`y' marg3`y' marg4`y' using "`y'`var'_glm_margin.csv", ///
-	cells("b(fmt(2) star)" se(par fmt(2))) ///
-	legend varlabels(_cons constant) ///
-	starlevels(* 0.10 ** 0.05 *** 0.01) ///
-	replace		
-
-restore
-}
-}
-
-****************************************
-* END
-*/
