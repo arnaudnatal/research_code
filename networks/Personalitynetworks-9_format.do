@@ -19,13 +19,16 @@ do"C:\Users\Arnaud\Documents\GitHub\folderanalysis\networks.do"
 * Format
 *************************************
 
-foreach var in caste gender age occup educ {
-
 foreach y in ///
-ddiff`var'_probit diff`var'_glm hetero_`var'_probit IQV_`var'_glm ///
-debt_ddiff`var'_probit debt_diff`var'_glm debt_hetero_`var'_probit debt_IQV_`var'_glm ///
-talk_ddiff`var'_probit talk_diff`var'_glm talk_hetero_`var'_probit talk_IQV_`var'_glm ///
-relative_ddiff`var'_probit relative_diff`var'_glm relative_hetero_`var'_probit relative_IQV_`var'_glm {
+strength_talk_glm talk_duration_afe_reg ///
+strength_debt_glm debt_duration_afe_reg ///
+talk_ddiffcaste_probit talk_diffcaste_glm talk_diffcaste_frac ///
+debt_ddiffcaste_probit debt_diffcaste_glm debt_diffcaste_frac ///
+talk_ddiffgender_probit talk_diffgender_glm talk_diffgender_frac ///
+debt_ddiffgender_probit debt_diffgender_glm debt_diffgender_frac ///
+talk_ddifflocation_probit talk_difflocation_glm talk_difflocation_frac ///
+debt_ddifflocation_probit debt_difflocation_glm debt_difflocation_frac ///
+ {
 
 local yvar `y'
 
@@ -293,7 +296,6 @@ erase"trait3.dta"
 erase"trait4.dta"
 erase"`yvar'_margin.csv"
 
-}
 }
 
 *************************************

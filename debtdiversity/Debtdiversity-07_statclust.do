@@ -61,16 +61,25 @@ ta clustloan2 `x', row nofreq
 ****************************************
 use"panel_loans_v1_clust", clear
 
-label define clustloan1 1"Housing" 2"Moneylenders" 3"Small non-eco invest" 4"Daily pawn" 5"Small human invest" 6"Invest" 7"Social" 8"Emergency" 9"TBD" 10"Daily WKP"
+label define clustloan1 1"cl.1: Housing" 2"cl.2: Moneylenders" 3"cl.3: Small non-eco invest" 4"cl.4: Daily pawn" 5"cl.5: Small human invest" 6"cl.6: Invest" 7"cl.7: Social" 8"cl.8: Emergency" 9"cl.9: TBD" 10"cl.10: Daily WKP"
 label values clustloan1 clustloan1
 
 *label define clustloan2 1"Housing" 2"Emergency" 3"H invest" 4"Smoothing" 5"Daily" 6"Smoothing" 7"Daily" 8"S invest" 9"Emergency"
 *label values clustloan2 clustloan2
 
 
-
-
 save"panel_loans_v1_clust_v2", replace
+
+keep HHID_panel INDID_panel loanid year sex caste clustloan1 ///
+lender4 reason_cat catloanamount
+rename lender4 lender
+rename reason_cat reason
+rename catloanamount amount
+
+order HHID_panel INDID_panel loanid year sex caste clustloan1 ///
+lender reason amount
+
+save"Loans_HCPC", replace
 ****************************************
 * END
 

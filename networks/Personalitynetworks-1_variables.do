@@ -151,7 +151,7 @@ replace occup=12 if reasonnotworkpastyear==10
 replace occup=12 if reasonnotworkpastyear==11
 replace occup=9 if working_pop==2 
 
-drop everattendedschool classcompleted currentlyatschool reasonnotworkpastyear dummyworkedpastyear working_pop occupation
+drop everattendedschool classcompleted currentlyatschool reasonnotworkpastyear dummyworkedpastyear working_pop occupation 
 
 rename INDID2020 alter_INDID2020
 rename ego_INDID2020 INDID2020
@@ -159,6 +159,8 @@ rename ego_INDID2020 INDID2020
 foreach x in sex age caste educ occup {
 rename `x' `x'_alter
 }
+
+
 
 save"_tempreste", replace
 
@@ -441,6 +443,15 @@ gen logincome=log(annualincome_HH)
 gen logassets=log(assets_total)
 egen stdincome=std(annualincome_HH)
 egen stdassets=std(assets_total)
+
+*** Marital
+fre maritalstatus
+gen married=.
+replace married=0 if maritalstatus==2
+replace married=0 if maritalstatus==3
+replace married=1 if maritalstatus==1
+ta maritalstatus married
+drop maritalstatus
 
 *** Debt
 recode nbloans_HH nbloans_indiv (.=0)
@@ -803,12 +814,7 @@ count
 
 clear
 
-
-
-
 use"Analysis/Main_analyses_v6", clear
-
-
 ****************************************
 * END
 

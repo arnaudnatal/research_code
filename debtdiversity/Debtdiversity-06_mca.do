@@ -30,6 +30,10 @@ rename lender4 lender
 rename reason_cat reason
 rename catloanamount amount
 
+fre lender
+fre reason
+fre amount
+
 * Macro
 global var lender reason amount
 
