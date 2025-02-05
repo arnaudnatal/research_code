@@ -32,8 +32,8 @@ predict debt_duration_afe, res
 
 
 * Controls
-global cont c.age i.married i.occupation i.educ i.villageid c.stdincome c.stdassets
-global contdrop age *occupation *educ *villageid *married stdincome stdassets
+global cont c.age i.married i.occupation i.educ //i.villageid c.stdincome c.stdassets
+global contdrop age *occupation *educ *married //*villageid stdincome stdassets
 
 global perso fES fOPEX fCO locus
 global persoXsex c.fES##i.female c.fOPEX##i.female c.fCO##i.female c.locus##i.female

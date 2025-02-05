@@ -21,24 +21,56 @@ do"C:\Users\Arnaud\Documents\GitHub\folderanalysis\networks.do"
 ****************************************
 * Macro
 ****************************************
-use"Analysis/Main_analyses_v6", clear
+use"Analysis/Main_analyses_v7", clear
 
 * Durée nette de l'age
 reg talk_duration age
 predict talk_duration_afe, res
+egen talk_duration_afe_std=std(talk_duration_afe)
+drop talk_duration_afe
+rename talk_duration_afe_std talk_duration_afe
 
 reg debt_duration age
 predict debt_duration_afe, res
+egen debt_duration_afe_std=std(debt_duration_afe)
+drop debt_duration_afe
+rename debt_duration_afe_std debt_duration_afe
 
 
 * Controls
 global cont c.age i.married i.occupation i.educ i.villageid c.stdincome c.stdassets
 global contdrop age *occupation *educ *villageid *married stdincome stdassets
 
+/*
+fES fOPEX fCO locus
+ES2016 CO2016 PL2016 AG2016
+pES2016 pPL2016 pCO2016
+*/
+
+
+/*
+global perso pES2016 pPL2016 pCO2016
+global persoXsex c.pES2016##i.female c.pPL2016##i.female c.pCO2016##i.female
+global persoXcaste c.pES2016##i.caste c.pPL2016##i.caste c.pCO2016##i.caste
+global persoXsexXcaste c.pES2016##i.female##i.caste c.pPL2016##i.female##i.caste c.pCO2016##i.female##i.caste
+*/
+
+
+global perso ES2016 CO2016 PL2016 AG2016
+global persoXsex c.ES2016##i.female c.CO2016##i.female c.PL2016##i.female c.AG2016##i.female
+global persoXcaste c.ES2016##i.caste c.CO2016##i.caste c.PL2016##i.caste c.AG2016##i.caste
+global persoXsexXcaste c.ES2016##i.female##i.caste c.CO2016##i.female##i.caste c.PL2016##i.female##i.caste c.AG2016##i.female##i.caste
+
+
+
+/*
 global perso fES fOPEX fCO locus
 global persoXsex c.fES##i.female c.fOPEX##i.female c.fCO##i.female c.locus##i.female
 global persoXcaste c.fES##i.caste c.fOPEX##i.caste c.fCO##i.caste c.locus##i.caste
 global persoXsexXcaste c.fES##i.female##i.caste c.fOPEX##i.female##i.caste c.fCO##i.female##i.caste c.locus##i.female##i.caste
+*/
+
+
 
 ****************************************
 * END

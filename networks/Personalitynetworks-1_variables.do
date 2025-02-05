@@ -17,16 +17,13 @@ do"C:\Users\Arnaud\Documents\GitHub\folderanalysis\networks.do"
 
 
 
-
-
-
-
 ****************************************
 * Enlever les 6 ménages pour lesquels il nous manque des infos
 ****************************************
 cls
-use"raw/NEEMSIS2-alters", clear
+use"raw/NEEMSIS2-alters_new", clear
 
+rename ALTERID alterid
 
 *
 drop if HHID2020=="uuid:ff95bdde-6012-4cf6-b7e8-be866fbaa68b"
@@ -37,9 +34,19 @@ drop if HHID2020=="uuid:aea57b03-83a6-44f0-b59e-706b911484c4"
 drop if HHID2020=="uuid:21f161fd-9a0c-4436-a416-7e75fad830d7"
 drop if HHID2020=="uuid:b3e4fe70-f2aa-4e0f-bb6e-8fb57bb6f409"
 
+
+* Enlever les 8 personnes avec un souci de livinghome
+drop if HHID2020=="uuid:0e75c80d-e953-475e-b5bd-4a5f3b9755e6" & INDID2020==1
+drop if HHID2020=="uuid:22d52dbd-161f-4111-bd4f-9731398a878c" & INDID2020==4
+drop if HHID2020=="uuid:607b5085-73ed-4c37-9c6f-55e6d4ac7875" & INDID2020==1
+drop if HHID2020=="uuid:72cbd9f1-7b7e-456b-a173-8bde0c64afbd" & INDID2020==7
+drop if HHID2020=="uuid:a807111d-42b8-4fca-95f3-6eec9cef337b" & INDID2020==1
+drop if HHID2020=="uuid:b33ac02d-ffe0-4a63-8b4a-1ac442b86cf7" & INDID2020==1
+drop if HHID2020=="uuid:c184574f-8651-4c3f-bc5d-345417c2f287" & INDID2020==4
+drop if HHID2020=="uuid:e53470cf-5e62-48df-9042-145dcbaed9e6" & INDID2020==3
+
+
 * Caste and jatis
-fre castes
-rename castes jatis
 fre jatis
 gen caste=.
 label define caste 1"Dalits" 2"Middle castes" 3"Upper castes" 88"Don't know"
@@ -170,7 +177,7 @@ use"Analysis/Alters", clear
 
 ta dummyhh
 
-merge 1:1 alterid using "_tempreste", keepusing(sex_alter age_alter caste_alter educ_alter occup_alter)
+merge 1:1 HHID2020 INDID2020 alterid using "_tempreste", keepusing(sex_alter age_alter caste_alter educ_alter occup_alter)
 drop _merge
 
 foreach x in sex age caste educ occup {
@@ -203,6 +210,17 @@ save"Analysis/Alters_v2", replace
 cls
 use"raw/NEEMSIS2-PTCS", clear
 
+* Enlever les 8 personnes avec un souci de livinghome
+drop if HHID2020=="uuid:0e75c80d-e953-475e-b5bd-4a5f3b9755e6" & INDID2020==1
+drop if HHID2020=="uuid:22d52dbd-161f-4111-bd4f-9731398a878c" & INDID2020==4
+drop if HHID2020=="uuid:607b5085-73ed-4c37-9c6f-55e6d4ac7875" & INDID2020==1
+drop if HHID2020=="uuid:72cbd9f1-7b7e-456b-a173-8bde0c64afbd" & INDID2020==7
+drop if HHID2020=="uuid:a807111d-42b8-4fca-95f3-6eec9cef337b" & INDID2020==1
+drop if HHID2020=="uuid:b33ac02d-ffe0-4a63-8b4a-1ac442b86cf7" & INDID2020==1
+drop if HHID2020=="uuid:c184574f-8651-4c3f-bc5d-345417c2f287" & INDID2020==4
+drop if HHID2020=="uuid:e53470cf-5e62-48df-9042-145dcbaed9e6" & INDID2020==3
+
+
 
 ********** Imputation
 * Add indiv charact
@@ -233,23 +251,73 @@ replace im`x'=r(mean) if im`x'==. & sex==`i' & caste==`j' & egoid!=0 & egoid!=.
 }
 
 
+/*
+********** Keep
+keep HHID2020 INDID2020 egoid imcr_* locuscontrol1 locuscontrol2 locuscontrol3 locuscontrol4_rv locuscontrol5_rv locuscontrol6_rv
+
+rename locuscontrol1 locus1
+rename locuscontrol2 locus2
+rename locuscontrol3 locus3
+rename locuscontrol4_rv locus4
+rename locuscontrol5_rv locus5
+rename locuscontrol6_rv locus6
+
+
+global var imcr_curious imcr_interestedbyart imcr_repetitivetasks imcr_inventive imcr_liketothink imcr_newideas imcr_activeimagination imcr_organized imcr_makeplans imcr_workhard imcr_appointmentontime imcr_putoffduties imcr_easilydistracted imcr_completeduties imcr_enjoypeople imcr_sharefeelings imcr_shywithpeople imcr_enthusiastic imcr_talktomanypeople imcr_talkative imcr_expressingthoughts imcr_workwithother imcr_understandotherfeeling imcr_trustingofother imcr_rudetoother imcr_toleratefaults imcr_forgiveother imcr_helpfulwithothers imcr_managestress imcr_nervous imcr_changemood imcr_feeldepressed imcr_easilyupset imcr_worryalot imcr_staycalm 
+
+*imcr_tryhard imcr_stickwithgoals imcr_goaftergoal imcr_finishwhatbegin imcr_finishtasks imcr_keepworking
+*locus1 locus2 locus3 locus4 locus5 locus6
+
+
+**********
+factortest $var
+factor $var, pcf factor(2)
+rotate, quartimin
+
+
+* Kaiser criterion (eigenvalue>1)
+* 14
+
+* Velicer Minimum Average Partial Correlation
+minap $var
+* 3
+
+* Horn Parallel Analysis
+paran $var, factor(pcf)
+* 8
+
+* Catell screeplot
+*screeplot, neigen(15) yline(1)
+
+
+putexcel set "EFA.xlsx", modify sheet(Sheet1)
+putexcel (E2)=matrix(e(r_L))
+*/
+
+
+
+
+
 ********** Construction
 *** ES
 egen fES=rowmean(imcr_enjoypeople imcr_rudetoother imcr_shywithpeople imcr_repetitivetasks imcr_putoffduties imcr_feeldepressed imcr_changemood imcr_easilyupset imcr_nervous imcr_worryalot)
 replace fES=0 if fES<0 & fES!=. 
 replace fES=6 if fES>6 & fES!=.
+alpha imcr_enjoypeople imcr_rudetoother imcr_shywithpeople imcr_repetitivetasks imcr_putoffduties imcr_feeldepressed imcr_changemood imcr_easilyupset imcr_nervous imcr_worryalot
 
 
 *** OPEX
 egen fOPEX=rowmean(imcr_interestedbyart imcr_curious imcr_talkative imcr_expressingthoughts imcr_sharefeelings imcr_inventive imcr_liketothink imcr_newideas)
 replace fOPEX=0 if fOPEX<0 & fOPEX!=. 
 replace fOPEX=6 if fOPEX>6 & fOPEX!=. 
+alpha imcr_interestedbyart imcr_curious imcr_talkative imcr_expressingthoughts imcr_sharefeelings imcr_inventive imcr_liketothink imcr_newideas
 
 
 *** CO
 egen fCO=rowmean(imcr_organized imcr_enthusiastic imcr_appointmentontime imcr_workhard imcr_completeduties imcr_makeplans)
 replace fCO=0 if fCO<0 & fCO!=. 
-replace fCO=6 if fCO>6 & fCO!=. 
+replace fCO=6 if fCO>6 & fCO!=.
+alpha imcr_organized imcr_enthusiastic imcr_appointmentontime imcr_workhard imcr_completeduties imcr_makeplans
 
 *
 drop if HHID2020=="uuid:ff95bdde-6012-4cf6-b7e8-be866fbaa68b"
@@ -285,6 +353,17 @@ save"_tempptcs", replace
 ****************************************
 cls
 use"raw/NEEMSIS2-HH", clear
+
+
+* Enlever les 8 personnes avec un souci de livinghome
+drop if HHID2020=="uuid:0e75c80d-e953-475e-b5bd-4a5f3b9755e6" & INDID2020==1
+drop if HHID2020=="uuid:22d52dbd-161f-4111-bd4f-9731398a878c" & INDID2020==4
+drop if HHID2020=="uuid:607b5085-73ed-4c37-9c6f-55e6d4ac7875" & INDID2020==1
+drop if HHID2020=="uuid:72cbd9f1-7b7e-456b-a173-8bde0c64afbd" & INDID2020==7
+drop if HHID2020=="uuid:a807111d-42b8-4fca-95f3-6eec9cef337b" & INDID2020==1
+drop if HHID2020=="uuid:b33ac02d-ffe0-4a63-8b4a-1ac442b86cf7" & INDID2020==1
+drop if HHID2020=="uuid:c184574f-8651-4c3f-bc5d-345417c2f287" & INDID2020==4
+drop if HHID2020=="uuid:e53470cf-5e62-48df-9042-145dcbaed9e6" & INDID2020==3
 
 *
 drop if HHID2020=="uuid:ff95bdde-6012-4cf6-b7e8-be866fbaa68b"
@@ -391,6 +470,10 @@ count
 save "Analysis/Main_analyses.dta", replace
 ****************************************
 * END
+
+
+
+
 
 
 
@@ -593,6 +676,23 @@ save"Analysis/Main_analyses_v4", replace
 use"Analysis/Main_analyses_v4", clear
 
 
+********** Panel
+merge m:m HHID2020 using "raw/keypanel-HH_wide", keepusing(HHID_panel)
+keep if _merge==3
+drop _merge
+order HHID_panel
+
+tostring INDID2020, replace
+merge 1:m HHID_panel INDID2020 using "raw/keypanel-Indiv_wide", keepusing(INDID_panel)
+keep if _merge==3
+drop _merge
+order HHID_panel INDID_panel
+destring INDID2020, replace
+
+
+
+
+
 ***** Hetero
 cls
 foreach x in IQV_caste IQV_jatis IQV_age IQV_occup IQV_educ IQV_gender {
@@ -785,6 +885,61 @@ save"Analysis/Main_analyses_v6", replace
 * END
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Personality traits lag
+****************************************
+use"Analysis/Main_analyses_v6", clear
+
+
+********** JDS (i.e., no pooled PCA)
+preserve
+use"raw/JDS-cognition2016", clear
+rename base_f1_std ES2016
+rename base_f2_std CO2016
+rename base_f3_std PL2016
+rename base_f5_std AG2016
+save"_tempcognition2016", replace
+restore
+merge 1:1 HHID_panel INDID_panel using "_tempcognition2016"
+drop if _merge==2
+drop _merge
+
+
+********** Stability (i.e., pooled PCA)
+preserve
+use"raw/WP-stabilitypooled", clear
+rename f1corr_ES pES2016
+rename f2corr_OPEX pPL2016
+rename f3corr_CO pCO2016
+keep if year==2016
+drop year
+save"_tempcognition2016", replace
+restore
+merge 1:1 HHID_panel INDID_panel using "_tempcognition2016"
+drop if _merge==2
+drop _merge
+
+
+********** Cleaning
+drop imcr_*
+
+
+
+save"Analysis/Main_analyses_v7", replace
+****************************************
+* END
 
 
 

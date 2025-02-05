@@ -216,11 +216,12 @@ global hhcont ///
 size_HH mean_size_HH ///
 nbchildren_HH mean_nbchildren_HH ///
 income_std mean_income_std ///
-assets_std mean_assets_std ///
+assets_std mean_assets_std 
+/*
 shock1 mean_shock1 ///
 shock2 mean_shock2 ///
 shock3 mean_shock3
-
+*/
 global invar ///
 village_2 village_3 village_4 village_5 village_6 village_7 village_8 village_9 village_10
 
@@ -240,6 +241,9 @@ overfit: probit dummytrap i.women i.dalits ///
 $indivcont $hhcont $invar $time ///
 , vce(cl panelvar)
 est store inc1
+/*
+Ok, pas de souci d'overfit
+*/
 
 
 
