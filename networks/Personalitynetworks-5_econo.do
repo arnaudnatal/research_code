@@ -23,6 +23,7 @@ do"C:\Users\Arnaud\Documents\GitHub\folderanalysis\networks.do"
 ****************************************
 use"Analysis/Main_analyses_v7", clear
 
+/*
 * Durée nette de l'age
 reg talk_duration age
 predict talk_duration_afe, res
@@ -35,7 +36,7 @@ predict debt_duration_afe, res
 egen debt_duration_afe_std=std(debt_duration_afe)
 drop debt_duration_afe
 rename debt_duration_afe_std debt_duration_afe
-
+*/
 
 * Controls
 global cont c.age i.married i.occupation i.educ i.villageid c.stdincome c.stdassets
@@ -55,20 +56,18 @@ global persoXcaste c.pES2016##i.caste c.pPL2016##i.caste c.pCO2016##i.caste
 global persoXsexXcaste c.pES2016##i.female##i.caste c.pPL2016##i.female##i.caste c.pCO2016##i.female##i.caste
 */
 
-
+/*
 global perso ES2016 CO2016 PL2016 AG2016
 global persoXsex c.ES2016##i.female c.CO2016##i.female c.PL2016##i.female c.AG2016##i.female
 global persoXcaste c.ES2016##i.caste c.CO2016##i.caste c.PL2016##i.caste c.AG2016##i.caste
 global persoXsexXcaste c.ES2016##i.female##i.caste c.CO2016##i.female##i.caste c.PL2016##i.female##i.caste c.AG2016##i.female##i.caste
+*/
 
-
-
-/*
 global perso fES fOPEX fCO locus
 global persoXsex c.fES##i.female c.fOPEX##i.female c.fCO##i.female c.locus##i.female
 global persoXcaste c.fES##i.caste c.fOPEX##i.caste c.fCO##i.caste c.locus##i.caste
 global persoXsexXcaste c.fES##i.female##i.caste c.fOPEX##i.female##i.caste c.fCO##i.female##i.caste c.locus##i.female##i.caste
-*/
+
 
 
 
@@ -86,7 +85,7 @@ global persoXsexXcaste c.fES##i.female##i.caste c.fOPEX##i.female##i.caste c.fCO
 * Reg retenus
 ****************************************
 
-
+/*
 ********** Force 1 (mca)
 foreach y in strength_debt strength_talk {
 
@@ -124,11 +123,11 @@ esttab marg1`y' marg2`y' marg3`y' marg4`y' using "`y'_glm_margin.csv", ///
 	starlevels(* 0.10 ** 0.05 *** 0.01) ///
 	replace		
 }
+*/
 
 
 
-
-
+/*
 ********** Force 2 (duration)
 foreach y in debt_duration_afe talk_duration_afe {
 
@@ -166,7 +165,7 @@ esttab marg1`y' marg2`y' marg3`y' marg4`y' using "`y'_reg_margin.csv", ///
 	starlevels(* 0.10 ** 0.05 *** 0.01) ///
 	replace		
 }
-
+*/
 
 
 

@@ -111,6 +111,7 @@ log using "Overfit.log", replace
 ****************************************
 
 ********** Force 1 (mca)
+/*
 overfit: glm strength_debt $perso i.female i.caste $cont, family(binomial) link(probit) cluster(HHFE)
 overfit: glm strength_debt $persoXsex $cont, family(binomial) link(probit) cluster(HHFE)
 overfit: glm strength_debt $persoXcaste $cont, family(binomial) link(probit) cluster(HHFE)
@@ -120,9 +121,10 @@ overfit: glm strength_talk $perso i.female i.caste $cont, family(binomial) link(
 overfit: glm strength_talk $persoXsex $cont, family(binomial) link(probit) cluster(HHFE)
 overfit: glm strength_talk $persoXcaste $cont, family(binomial) link(probit) cluster(HHFE)
 overfit: glm strength_talk $persoXsexXcaste $cont, family(binomial) link(probit) cluster(HHFE)
-
+*/
 
 ********** Force 2 (duration)
+/*
 overfit: reg debt_duration_afe $perso i.female i.caste $cont, cluster(HHFE)
 overfit: reg debt_duration_afe $persoXsex $cont, cluster(HHFE)
 overfit: reg debt_duration_afe $persoXcaste $cont, cluster(HHFE)
@@ -132,7 +134,7 @@ overfit: reg talk_duration_afe $perso i.female i.caste $cont, cluster(HHFE)
 overfit: reg talk_duration_afe $persoXsex $cont, cluster(HHFE)
 overfit: reg talk_duration_afe $persoXcaste $cont, cluster(HHFE)
 overfit: reg talk_duration_afe $persoXsexXcaste $cont, cluster(HHFE)
-
+*/
 
 ********** Homophily en une étape
 overfit: glm debt_diffcaste $perso i.female i.caste $cont, family(binomial) link(probit) cluster(HHFE)

@@ -18,10 +18,12 @@ do"C:\Users\Arnaud\Documents\GitHub\folderanalysis\networks.do"
 *************************************
 * Format
 *************************************
-
-foreach y in ///
+/*
 strength_talk_glm talk_duration_afe_reg ///
 strength_debt_glm debt_duration_afe_reg ///
+*/
+
+foreach y in ///
 talk_ddiffcaste_probit talk_diffcaste_glm talk_diffcaste_frac ///
 debt_ddiffcaste_probit debt_diffcaste_glm debt_diffcaste_frac ///
 talk_ddiffgender_probit talk_diffgender_glm talk_diffgender_frac ///

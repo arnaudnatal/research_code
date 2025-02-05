@@ -688,20 +688,8 @@ save "Analysis\Fullnetwork_traits_DG.dta", replace
 ****************************************
 use "Analysis\Fullnetwork_traits_DG.dta", clear
 
-
-keep  ID_HH HHID2020 INDID2020 netsize_debt netsize_relative netsize_talk strength_debt strength_talk strength_relative talk_duration relative_duration debt_duration talk_family_pct relative_family_pct debt_family_pct talk_samegender_pct relative_samegender_pct debt_samegender_pct talk_samecaste_pct relative_samecaste_pct debt_samecaste_pct talk_samejatis_pct relative_samejatis_pct debt_samejatis_pct talk_sameage_pct relative_sameage_pct debt_sameage_pct talk_samejobstatut_pct relative_samejobstatut_pct debt_samejobstatut_pct talk_sameoccup_pct relative_sameoccup_pct debt_sameoccup_pct talk_sameeduc_pct relative_sameeduc_pct debt_sameeduc_pct talk_samelocation_pct relative_samelocation_pct debt_samelocation_pct talk_samewealth_pct relative_samewealth_pct debt_samewealth_pct talk_IQV_caste talk_IQV_jatis talk_IQV_age talk_IQV_occup talk_IQV_educ talk_IQV_gender talk_IQV_location relative_IQV_caste relative_IQV_jatis relative_IQV_age relative_IQV_occup relative_IQV_educ relative_IQV_gender relative_IQV_location debt_IQV_caste debt_IQV_jatis debt_IQV_age debt_IQV_occup debt_IQV_educ debt_IQV_gender debt_IQV_location debt_multiplex_pct debt_multiplexR_pct talk_multiplexR_pct relative_multiplexR_pct talk_meetweekly_pct talk_veryintimate_pct talk_reciprocity_pct talk_money_pct relative_meetweekly_pct relative_veryintimate_pct relative_reciprocity_pct relative_money_pct debt_meetweekly_pct debt_veryintimate_pct debt_reciprocity_pct debt_money_pct
+keep HHID2020 INDID2020 netsize_debt netsize_relative netsize_talk       talk_family_pct relative_family_pct debt_family_pct talk_samegender_pct relative_samegender_pct debt_samegender_pct talk_samecaste_pct relative_samecaste_pct debt_samecaste_pct talk_samejatis_pct relative_samejatis_pct debt_samejatis_pct talk_sameage_pct relative_sameage_pct debt_sameage_pct talk_samejobstatut_pct relative_samejobstatut_pct debt_samejobstatut_pct talk_sameoccup_pct relative_sameoccup_pct debt_sameoccup_pct talk_sameeduc_pct relative_sameeduc_pct debt_sameeduc_pct talk_samelocation_pct relative_samelocation_pct debt_samelocation_pct talk_IQV_caste talk_IQV_jatis talk_IQV_age talk_IQV_occup talk_IQV_educ talk_IQV_gender talk_IQV_location relative_IQV_caste relative_IQV_jatis relative_IQV_age relative_IQV_occup relative_IQV_educ relative_IQV_gender relative_IQV_location debt_IQV_caste debt_IQV_jatis debt_IQV_age debt_IQV_occup debt_IQV_educ debt_IQV_gender debt_IQV_location debt_multiplex_pct debt_multiplexR_pct talk_multiplexR_pct relative_multiplexR_pct
 
 save "Analysis\Fullnetwork_traits_DG_tomerge.dta", replace
-
-use "Analysis\Main_analyses_DG.dta"
-drop _merge	
-merge m:1 HHID2020 INDID2020 using "Analysis\Fullnetwork_traits_DG_tomerge.dta"
-drop if _merge==1
-drop _merge
-save "Analysis\Analysis\Main_analyses_DG_debttalkrela.dta", replace
-
-
-
-
 ****************************************
 * END
