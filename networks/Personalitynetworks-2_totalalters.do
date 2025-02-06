@@ -17,12 +17,9 @@ do"C:\Users\Arnaud\Documents\GitHub\folderanalysis\networks.do"
 ****************************************
 * Var alters
 ****************************************
-use "Analysis\Alters_v2.dta", clear
+use "Analysis\Alters_v2.dta", replace
 
-save "Analysis\NEEMSIS2-alters_full.dta", replace
-
-
-********** Merger Ego
+***** Merger les caracteristiques des Egos
 preserve
 use "Analysis\Main_analyses.dta", replace
 keep HHID2020 INDID2020 villageid villagearea name religion sex age jatis caste educ mainocc_occupation_indiv 
@@ -32,7 +29,6 @@ rename `var' `var'_ego
 rename mainocc_occupation_indiv_ego occup_ego
 save "Analysis\Infosegos.dta", replace
 restore
-
 merge m:1 HHID2020 INDID2020 using "Analysis\Infosegos.dta"
 keep if _merge==3
 drop _merge
@@ -40,253 +36,53 @@ drop _merge
 save "Analysis\Alters_DG.dta", replace
 
 
-********** Drop les alters problématiques
-drop if pbalter==1
-drop pbalter
+***** Multiplexité
+fre networkpurpose1
+recode networkpurpose1 networkpurpose2 networkpurpose3 networkpurpose4 networkpurpose5 networkpurpose6 networkpurpose7 networkpurpose8 networkpurpose9 (2=1) (5=3) (6=3) (7=3) (8=3) (13=12)
 
-
-********** Type of network
-codebook networkpurpose1, tabulate(13)
-gen debt_network=cond( ///
-networkpurpose1==1 | ///
-networkpurpose2==1 | ///
-networkpurpose3==1 | ///
-networkpurpose4==1 | ///
-networkpurpose5==1 | ///
-networkpurpose6==1 | ///
-networkpurpose7==1 | ///
-networkpurpose8==1 | ///
-networkpurpose9==1 | ///
-networkpurpose1==2 | ///
-networkpurpose2==2 | ///
-networkpurpose3==2 | ///
-networkpurpose4==2 | ///
-networkpurpose5==2 | ///
-networkpurpose6==2 | ///
-networkpurpose7==2 | ///
-networkpurpose8==2 | ///
-networkpurpose9==2 ///
+foreach i in 1 3 4 9 10 11 12 {
+gen net`i'=cond( ///
+networkpurpose1==`i' | ///
+networkpurpose2==`i' | ///
+networkpurpose3==`i' | ///
+networkpurpose4==`i' | ///
+networkpurpose5==`i' | ///
+networkpurpose6==`i' | ///
+networkpurpose7==`i' | ///
+networkpurpose8==`i' | ///
+networkpurpose9==`i' ///
 ,1,0)
-tab debt_network
+}
 
-gen relative_network=cond( ///
-networkpurpose1==11 | ///
-networkpurpose2==11 | ///
-networkpurpose3==11 | ///
-networkpurpose4==11 | ///
-networkpurpose5==11 | ///
-networkpurpose6==11 | ///
-networkpurpose7==11 | ///
-networkpurpose8==11 | ///
-networkpurpose9==11 ///
-,1,0)
-tab relative_network 
-
-gen talk_network=cond( ///
-networkpurpose1==9 | ///
-networkpurpose2==9 | ///
-networkpurpose3==9 | ///
-networkpurpose4==9 | ///
-networkpurpose5==9 | ///
-networkpurpose6==9 | ///
-networkpurpose7==9 | ///
-networkpurpose8==9 | ///
-networkpurpose9==9 ///
-,1,0)
-tab talk_network
-
-gen interperso_network=cond(relative_network==1 |talk_network==1,1,0) 
-tab interperso_network
-
-gen labour_network=cond(inlist(networkpurpose1,3,5,6,7,8) | ///
-inlist(networkpurpose2,3,5,6,7,8) | ///
-inlist(networkpurpose3,3,5,6,7,8) | ///
-inlist(networkpurpose4,3,5,6,7,8) | ///
-inlist(networkpurpose5,3,5,6,7,8) | ///
-inlist(networkpurpose6,3,5,6,7,8) | ///
-inlist(networkpurpose7,3,5,6,7,8) | ///
-inlist(networkpurpose8,3,5,6,7,8) | ///
-inlist(networkpurpose9,3,5,6,7,8) ///
-,1,0)
-tab labour_network
-
-gen covid_network=cond(inlist(networkpurpose1,12,13) | ///
-inlist(networkpurpose2,12,13) | ///
-inlist(networkpurpose3,12,13) | ///
-inlist(networkpurpose4,12,13) | ///
-inlist(networkpurpose5,12,13) | ///
-inlist(networkpurpose6,12,13) | ///
-inlist(networkpurpose7,12,13) | ///
-inlist(networkpurpose8,12,13) | ///
-inlist(networkpurpose9,12,13) ///
-,1,0)
-tab covid_network
-
-gen asso_network=cond(inlist(networkpurpose1,4) | ///
-inlist(networkpurpose2,4) | ///
-inlist(networkpurpose3,4) | ///
-inlist(networkpurpose4,4) | ///
-inlist(networkpurpose5,4) | ///
-inlist(networkpurpose6,4) | ///
-inlist(networkpurpose7,4) | ///
-inlist(networkpurpose8,4) | ///
-inlist(networkpurpose9,4) ///
-,1,0)
-tab asso_network
-
-gen medical_network=cond(inlist(networkpurpose1,10) | ///
-inlist(networkpurpose2,10) | ///
-inlist(networkpurpose3,10) | ///
-inlist(networkpurpose4,10) | ///
-inlist(networkpurpose5,10) | ///
-inlist(networkpurpose6,10) | ///
-inlist(networkpurpose7,10) | ///
-inlist(networkpurpose8,10) | ///
-inlist(networkpurpose9,10) ///
-,1,0)
-tab medical_network
-
-
-********** Correction sur les friends
-*Correction 09/12/24
-tab relative_network friend
-replace friend=0 if relative_network==1
-*si close_relative alors famille_etendu==1
-gen family=cond(dummyfam==1 | relative_network==1,1,0)
-
-gen role=cond(family==0 & friend==0 & labourrelation==0 & wkp==0,1,0)
-tab role
-
-tab networkpurpose1 role
-gen lender=cond(role==1 & networkpurpose1==1,1,0)
-replace role=0 if lender==1
-tab meet if role==1 & networkpurpose1!=1
-replace labourrelation=1 if role==1 & meet==1
-replace role=0 if labourrelation==1 & role==1
-replace friend=1 if networkpurpose1==10 & role==1
-replace role=0 if friend==1 & role==1
-drop if role==1
-
-drop role
-gen role=cond(lender==0 & (family==0 |  family==.) & (friend==0 | friend==.) & (labourrelation==0 | labourrelation==.) & (wkp==0 | wkp==.),1,0)
-tab role
-
-tab networkpurpose1 role
-replace lender=1 if role==1 & networkpurpose1==1
-replace role=0 if lender==1
-tab meet if role==1 & networkpurpose1!=1
-replace labourrelation=1 if role==1 & meet==1
-replace role=0 if labourrelation==1 & role==1
-replace friend=1 if networkpurpose1==10 & role==1
-replace role=0 if friend==1 & role==1
-drop if role==1
-drop role
-
-* Missing friend : 
-replace friend=0 if friend==.
-replace friend=0 if family==1
-gen other_relation=cond(family==0 & friend==0,1,0)
-ta other_relation
-
-*11836 alters
-
-********** Alters clean 
-preserve
-drop debt_network relative_network talk_network interperso_network labour_network covid_network asso_network medical_network
-egen HHINDID=group(HHID2020 INDID2020)
-order HHINDID HHID2020 INDID2020 egoid alterid
-save"Analysis/NEEMSIS2-alters_clean", replace
-restore
-
-
-
-********** Alters clean subgroups
-preserve
-drop if interperso_network==0 & debt_network==0 & labour_network==0
-drop interperso_network covid_network asso_network medical_network
-egen HHINDID=group(HHID2020 INDID2020)
-order HHINDID HHID2020 INDID2020 egoid alterid
-save"Analysis/NEEMSIS2-alters_subclean", replace
-restore
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-***Network size 
-	*Overall
-bys HHID2020 INDID2020 : gen netsize_labour=total(labour_network)
-	*Debt
-bys HHID2020 INDID2020 : egen netsize_debt=total(debt_network)
-	*Close relative
-bys HHID2020 INDID2020 : egen netsize_relative=total(relative_network)
-	*Talk the most
-bys HHID2020 INDID2020 : egen netsize_talk=total(talk_network)
-
-***Multiplexity (fonctions): comparaison réseaux interperso et debt 
-	*Number of functions provided by alters / number of distinct types of ties
-gen multiplexity_dum=cond(debt_network==1 & interperso_network==1,1,0)
-replace multiplexity_dum=. if debt_network==0
-*52.2% des alters des réseaux debt sont multiplexes = relations de dette et interpersonnelle combinées
-bys HHID2020 INDID2020 : egen debt_multiplexity_n=total(multiplexity_dum)
-
-***Multiplexity (nature de la relation) 
-egen multiplexityR_nb=rowtotal(friend family other_relation labourrelation)
+*
+egen multiplexityR_nb=rowtotal(net1 net3 net4 net9 net10 net11 net12)
 tab multiplexityR_nb
 gen multiplexityR_dum=cond(multiplexityR_nb>1,1,0)
 
-bys HHID2020 INDID2020 : egen debt_multiplexityR_n=total(multiplexityR_dum) if debt_network==1
-bys HHID2020 INDID2020 : egen talk_multiplexityR_n=total(multiplexityR_dum) if talk_network==1
-bys HHID2020 INDID2020 : egen close_multiplexityR_n=total(multiplexityR_dum) if relative_network==1
 
-*Composition : 
-
-foreach var in talk relative debt {
-bys HHID2020 INDID2020 : egen `var'_family_n=total(family) if `var'_network==1
-}
+***** Network size 
+bys HHID2020 INDID2020 : egen netsize_all=sum(1)
 
 
-/*
-***Tie strenght
-	*Meet frequency : overall average + average by categories
+
+
+***** Meet frequency
 tab	meetfrequency
 gen meetfrequency_weekly=cond(meetfrequency==1,1,0)
+bys HHID2020 INDID2020 : egen meetweekly_n=total(meetfrequency_weekly)
 
-gen talk=talk_network
-gen relative=relative_network
-gen debt=debt_network
 
-foreach var in talk relative debt {
-bys HHID2020 INDID2020 : egen `var'_meetweekly_n=total(meetfrequency_weekly) if `var'_network==1
-}
-
-	*Intimacy
+***** Intimacy
 tab	 intimacy
 gen very_intimate=cond(intimacy==3,1,0)
-foreach var in talk relative debt {
-bys HHID2020 INDID2020 : egen `var'_veryintimate_n=total(very_intimate) if `var'_network==1
-}
+bys HHID2020 INDID2020 : egen veryintimate_n=total(very_intimate)
 
-	*Invitation
-tab	invite  reciprocity1 
+***** Invitation
+tab	invite reciprocity1 
 gen invite_reciprocity=cond(invite==1 & reciprocity1==1,1,0)
-foreach var in talk relative debt {
-bys HHID2020 INDID2020 : egen `var'_reciprocity_n=total(invite_reciprocity) if `var'_network==1
-}
+bys HHID2020 INDID2020 : egen reciprocity_n=total(invite_reciprocity)
 
-	*Duration 
-	*How to deal with measurment errors ? duration>100
-kdensity duration if duration<100
+***** Duration 
 gen duration_cat=1 if duration<5
 replace duration_cat=2 if duration>=5 & duration<10
 replace duration_cat=3 if duration>=10 & duration<15
@@ -295,34 +91,23 @@ replace duration_cat=5 if duration>=20 & duration<25
 replace duration_cat=6 if duration>=25 & duration<30
 replace duration_cat=7 if duration>=30 
 tab duration_cat
-
 gen duration_corr=cond(duration<100,duration,.) 
-foreach var in talk relative debt {
-bys HHID2020 INDID2020 : egen `var'_duration=mean(duration_corr) if `var'_network==1
-}
+bys HHID2020 INDID2020 : egen duration_n=mean(duration_corr)
 
-*Exchange money
+***** Exchange money
 tab money
 gen money_often=cond(money==1 | money==2,1,0)
-foreach var in talk relative debt {
-bys HHID2020 INDID2020 : egen `var'_money_often_n=total(money_often) if `var'_network==1
-}
+bys HHID2020 INDID2020 : egen money_often_n=total(money_often)
 
-* Strenght 
+**** Strenght 
 mca meetfrequency intimacy invite_reciprocity duration_cat money 
 predict dim1
 sum dim1
-gen strength_mca=(dim1-(-6.226403))/(.7470417-(-6.226403))
+gen strength_mca=(dim1-`r(min)')/(`r(max)'-`r(min)')
 sum strength_mca
-
-gen strength_debt=strength_mca if debt_network==1
-gen strength_talk=strength_mca if talk_network==1
-gen strength_relative=strength_mca if relative_network==1
-*/
 
 
 save "Analysis\Alters_DG.dta", replace
-
 ****************************************
 * END
 
@@ -342,34 +127,25 @@ save "Analysis\Alters_DG.dta", replace
 ****************************************
 use "Analysis\Alters_DG.dta", clear
 
-*1) Homophily / Heterophily + Homogeneity / Heterogeneity
-	*Gender 
-gen same_gender=cond(sex==sex_ego,1,0)
-foreach var in talk relative debt {
-bys HHID2020 INDID2020 : egen `var'_same_gender_n=total(same_gender) if `var'_network==1
-}
 
-	*Caste / jatis
+***** Gender 
+gen same_gender=cond(sex==sex_ego,1,0)
+bys HHID2020 INDID2020 : egen same_gender_n=total(same_gender)
+
+***** Caste / jatis
 gen same_caste=cond(caste==caste_ego,1,0)
-* Si caste=Don't know alors on part du principe que ce n'est pas la même caste
-foreach var in talk relative debt {
-bys HHID2020 INDID2020 : egen `var'_same_caste_n=total(same_caste) if `var'_network==1
-}
+bys HHID2020 INDID2020 : egen same_caste_n=total(same_caste)
 
 tab caste, gen(caste)
 *Si caste=Don't know, on part du principe que c'est l'inférieur
 replace caste1=1 if caste4==1
-foreach var in talk relative debt {
-bys HHID2020 INDID2020 : egen `var'_lowcaste_n=total(caste1) if `var'_network==1
-bys HHID2020 INDID2020 : egen `var'_midcaste_n=total(caste2) if `var'_network==1
-bys HHID2020 INDID2020 : egen `var'_upcaste_n=total(caste3) if `var'_network==1
-}
+bys HHID2020 INDID2020 : egen lowcaste_n=total(caste1)
+bys HHID2020 INDID2020 : egen midcaste_n=total(caste2)
+bys HHID2020 INDID2020 : egen upcaste_n=total(caste3)
 
 label values jatis_ego castes
 gen same_jatis=cond(jatis==jatis_ego,1,0)
-foreach var in talk relative debt {
-bys HHID2020 INDID2020 : egen `var'_samejatis_n=total(same_jatis) if `var'_network==1
-}
+bys HHID2020 INDID2020 : egen samejatis_n=total(same_jatis)
 
 tab jatis, gen(jatis)
 replace jatis18=1 if jatis17==1
@@ -377,12 +153,9 @@ drop jatis17
 foreach var in jatis1 jatis2 jatis3 jatis4 jatis5 jatis6 jatis7 jatis8 jatis9 jatis10 jatis11 jatis12 jatis13 jatis14 jatis15 jatis16 jatis18 {
 bys HHID2020 INDID2020 : egen `var'_n=total(`var')
 }
-foreach var1 in talk relative debt {
-	foreach var2 in jatis1 jatis2 jatis3 jatis4 jatis5 jatis6 jatis7 jatis8 jatis9 jatis10 jatis11 jatis12 jatis13 jatis14 jatis15 jatis16 jatis18 {
-	bys HHID2020 INDID2020 : egen `var1'_`var2'_n=total(`var2') if `var1'_network==1
-	}
-}
-	* Age
+
+
+***** Age
 tab age 
 tab age_ego
 gen age_ego_tranche=1 if age_ego>=15 & age_ego<26
@@ -392,18 +165,15 @@ replace age_ego_tranche=4 if age_ego>=46 & age_ego<56
 replace age_ego_tranche=5 if age_ego>=56 & age_ego<66
 replace age_ego_tranche=6 if age_ego>=66
 gen same_age=cond(age==age_ego_tranche,1,0)
-foreach var in talk relative debt {
-bys HHID2020 INDID2020 : egen `var'_sameage_n=total(same_age) if `var'_network==1
-}
+bys HHID2020 INDID2020 : egen sameage_n=total(same_age)
 
 tab age, gen(age)
-foreach var1 in talk relative debt {
-	foreach var2 in age1 age2 age3 age4 age5 age6 {
-	bys HHID2020 INDID2020 : egen `var1'_`var2'_n=total(`var2') if `var1'_network==1
-	}
+foreach var in age1 age2 age3 age4 age5 age6 {
+bys HHID2020 INDID2020 : egen `var'_n=total(`var')
 }
 
-	*Occupation : couper croiser les différentes modalités ? 
+
+***** Occupation
 tab occup_ego 
 gen occup_ego_type=1 if occup_ego==. 
 replace occup_ego_type=2 if occup_ego==1 
@@ -426,11 +196,8 @@ tab same_jobstatut
 gen same_occup=cond(occup_ego_type==occup_alter_type,1,0)
 tab same_occup
 
-foreach var in talk relative debt {
-bys HHID2020 INDID2020 : egen `var'_samejobstatut_n=total(same_jobstatut) if `var'_network==1
-bys HHID2020 INDID2020 : egen `var'_sameoccup_n=total(same_occup) if `var'_network==1
-}
-
+bys HHID2020 INDID2020 : egen samejobstatut_n=total(same_jobstatut)
+bys HHID2020 INDID2020 : egen sameoccup_n=total(same_occup)
 
 tab occup_alter_type, gen(occup_alter_type)
 
@@ -439,14 +206,13 @@ rename occup_alter_type2 alteroccup2
 rename occup_alter_type3 alteroccup3
 rename occup_alter_type4 alteroccup4
 
-foreach var1 in talk relative debt {
-	foreach var2 in alteroccup1 alteroccup2 alteroccup3 alteroccup4 {
-	bys HHID2020 INDID2020 : egen `var1'_`var2'_n=total(`var2') if `var1'_network==1
-	}
+foreach var in alteroccup1 alteroccup2 alteroccup3 alteroccup4 {
+bys HHID2020 INDID2020 : egen `var'_n=total(`var')
 }
 
 
-	*Educ
+
+***** Educ
 codebook educ educ_ego
 gen same_educ=cond(educ==5 & (educ_ego==4 | educ_ego==5),1,.)
 replace same_educ=cond((educ==6 | educ==1) & (educ_ego==0 | educ_ego==1),1,same_educ)
@@ -455,38 +221,31 @@ replace same_educ=cond((educ==3 ) & (educ_ego==2),1,same_educ)
 replace same_educ=cond((educ==4 ) & (educ_ego==3),1,same_educ)
 replace same_educ=cond(same_educ==. | educ==88 ,0,same_educ)
 tab same_educ
-foreach var in talk relative debt {
-bys HHID2020 INDID2020 : egen `var'_sameeduc_n=total(same_educ) if `var'_network==1
-}
-
+bys HHID2020 INDID2020 : egen sameeduc_n=total(same_educ)
 
 tab educ,gen(educ)
-foreach var1 in talk relative debt {
-	foreach var2 in educ1 educ2 educ3 educ4 educ5 educ6 educ7 {
-	bys HHID2020 INDID2020 : egen `var1'_`var2'_n=total(`var2') if `var1'_network==1
-	}
+foreach var in educ1 educ2 educ3 educ4 educ5 educ6 educ7 {
+bys HHID2020 INDID2020 : egen `var'_n=total(`var')
 }
 
-	*Living place :
+***** Living place
 gen same_location=cond(inlist(living,1,2),1,0)
-replace same_location=1 if relative_network==1 & living==.
-foreach var in talk relative debt {
-bys HHID2020 INDID2020 : egen `var'_sameloc_n=total(same_location) if `var'_network==1
-}
+bys HHID2020 INDID2020 : egen sameloc_n=total(same_location)
 
-/*
-	*Comparison of living standard
+
+***** Comparison of living standard
 tab compared
 gen same_situation=cond(compared==2,1,0)
-foreach var in talk relative debt {
-bys HHID2020 INDID2020 : egen `var'_samesituation_n=total(same_situation) if `var'_network==1
-}
+bys HHID2020 INDID2020 : egen samesituation_n=total(same_situation)
 gen better_situation=cond(compared==1,1,0)
-*/
+
+
+
+********** Cleaning
+drop net1 net3 net4 net9 net10 net11 net12 very_intimate invite_reciprocity duration_cat dim1 meetfrequency_weekly money_often same_gender same_caste caste1 caste2 caste3 caste4 same_jatis jatis1 jatis2 jatis3 jatis4 jatis5 jatis6 jatis7 jatis8 jatis9 jatis10 jatis11 jatis12 jatis13 jatis14 jatis15 jatis16 jatis18 age_ego_tranche same_age age1 age2 age3 age4 age5 age6 age7 age8 age9 age10 age11 age12 age13 age14 age15 age16 age17 age18 age19 age20 age21 age22 age23 age24 age25 age26 age27 age28 age29 age30 age31 age32 age33 age34 age35 age36 age37 age38 age39 age40 age41 age42 age43 age44 age45 age46 age47 age48 age49 age50 age51 age52 age53 age54 age55 age56 same_jobstatut same_occup alteroccup1 alteroccup2 alteroccup3 alteroccup4 same_educ educ1 educ2 educ3 educ4 educ5 educ6 educ7 same_location same_situation better_situation
 
 
 save "Analysis\Alters_DG.dta", replace
-
 ****************************************
 * END
 
@@ -509,7 +268,7 @@ use "Analysis\Alters_DG.dta", replace
 
 *Whole network characteristics 
 collapse (mean) ///
-netsize_debt netsize_relative netsize_talk debt_multiplexity_n debt_multiplexityR_n talk_multiplexityR_n close_multiplexityR_n talk_family_n relative_family_n debt_family_n talk_same_gender_n relative_same_gender_n debt_same_gender_n talk_same_caste_n relative_same_caste_n debt_same_caste_n talk_lowcaste_n talk_midcaste_n talk_upcaste_n relative_lowcaste_n relative_midcaste_n relative_upcaste_n debt_lowcaste_n debt_midcaste_n debt_upcaste_n talk_samejatis_n relative_samejatis_n debt_samejatis_n talk_sameage_n relative_sameage_n debt_sameage_n talk_jatis1_n talk_jatis2_n talk_jatis3_n talk_jatis4_n talk_jatis5_n talk_jatis6_n talk_jatis7_n talk_jatis8_n talk_jatis9_n talk_jatis10_n talk_jatis11_n talk_jatis12_n talk_jatis13_n talk_jatis14_n talk_jatis15_n talk_jatis16_n talk_jatis18_n relative_jatis1_n relative_jatis2_n relative_jatis3_n relative_jatis4_n relative_jatis5_n relative_jatis6_n relative_jatis7_n relative_jatis8_n relative_jatis9_n relative_jatis10_n relative_jatis11_n relative_jatis12_n relative_jatis13_n relative_jatis14_n relative_jatis15_n relative_jatis16_n relative_jatis18_n debt_jatis1_n debt_jatis2_n debt_jatis3_n debt_jatis4_n debt_jatis5_n debt_jatis6_n debt_jatis7_n debt_jatis8_n debt_jatis9_n debt_jatis10_n debt_jatis11_n debt_jatis12_n debt_jatis13_n debt_jatis14_n debt_jatis15_n debt_jatis16_n debt_jatis18_n talk_age1_n talk_age2_n talk_age3_n talk_age4_n talk_age5_n talk_age6_n relative_age1_n relative_age2_n relative_age3_n relative_age4_n relative_age5_n relative_age6_n debt_age1_n debt_age2_n debt_age3_n debt_age4_n debt_age5_n debt_age6_n talk_samejobstatut_n talk_sameoccup_n relative_samejobstatut_n relative_sameoccup_n debt_samejobstatut_n debt_sameoccup_n talk_alteroccup1_n talk_alteroccup2_n talk_alteroccup3_n talk_alteroccup4_n relative_alteroccup1_n relative_alteroccup2_n relative_alteroccup3_n relative_alteroccup4_n debt_alteroccup1_n debt_alteroccup2_n debt_alteroccup3_n debt_alteroccup4_n talk_sameeduc_n relative_sameeduc_n debt_sameeduc_n talk_educ1_n talk_educ2_n talk_educ3_n talk_educ4_n talk_educ5_n talk_educ6_n talk_educ7_n relative_educ1_n relative_educ2_n relative_educ3_n relative_educ4_n relative_educ5_n relative_educ6_n relative_educ7_n debt_educ1_n debt_educ2_n debt_educ3_n debt_educ4_n debt_educ5_n debt_educ6_n debt_educ7_n talk_sameloc_n relative_sameloc_n debt_sameloc_n  ///
+netsize_all debt_multiplexity_n debt_multiplexityR_n talk_multiplexityR_n close_multiplexityR_n talk_family_n relative_family_n debt_family_n talk_same_gender_n relative_same_gender_n debt_same_gender_n talk_same_caste_n relative_same_caste_n debt_same_caste_n talk_lowcaste_n talk_midcaste_n talk_upcaste_n relative_lowcaste_n relative_midcaste_n relative_upcaste_n debt_lowcaste_n debt_midcaste_n debt_upcaste_n talk_samejatis_n relative_samejatis_n debt_samejatis_n talk_sameage_n relative_sameage_n debt_sameage_n talk_jatis1_n talk_jatis2_n talk_jatis3_n talk_jatis4_n talk_jatis5_n talk_jatis6_n talk_jatis7_n talk_jatis8_n talk_jatis9_n talk_jatis10_n talk_jatis11_n talk_jatis12_n talk_jatis13_n talk_jatis14_n talk_jatis15_n talk_jatis16_n talk_jatis18_n relative_jatis1_n relative_jatis2_n relative_jatis3_n relative_jatis4_n relative_jatis5_n relative_jatis6_n relative_jatis7_n relative_jatis8_n relative_jatis9_n relative_jatis10_n relative_jatis11_n relative_jatis12_n relative_jatis13_n relative_jatis14_n relative_jatis15_n relative_jatis16_n relative_jatis18_n debt_jatis1_n debt_jatis2_n debt_jatis3_n debt_jatis4_n debt_jatis5_n debt_jatis6_n debt_jatis7_n debt_jatis8_n debt_jatis9_n debt_jatis10_n debt_jatis11_n debt_jatis12_n debt_jatis13_n debt_jatis14_n debt_jatis15_n debt_jatis16_n debt_jatis18_n talk_age1_n talk_age2_n talk_age3_n talk_age4_n talk_age5_n talk_age6_n relative_age1_n relative_age2_n relative_age3_n relative_age4_n relative_age5_n relative_age6_n debt_age1_n debt_age2_n debt_age3_n debt_age4_n debt_age5_n debt_age6_n talk_samejobstatut_n talk_sameoccup_n relative_samejobstatut_n relative_sameoccup_n debt_samejobstatut_n debt_sameoccup_n talk_alteroccup1_n talk_alteroccup2_n talk_alteroccup3_n talk_alteroccup4_n relative_alteroccup1_n relative_alteroccup2_n relative_alteroccup3_n relative_alteroccup4_n debt_alteroccup1_n debt_alteroccup2_n debt_alteroccup3_n debt_alteroccup4_n talk_sameeduc_n relative_sameeduc_n debt_sameeduc_n talk_educ1_n talk_educ2_n talk_educ3_n talk_educ4_n talk_educ5_n talk_educ6_n talk_educ7_n relative_educ1_n relative_educ2_n relative_educ3_n relative_educ4_n relative_educ5_n relative_educ6_n relative_educ7_n debt_educ1_n debt_educ2_n debt_educ3_n debt_educ4_n debt_educ5_n debt_educ6_n debt_educ7_n talk_sameloc_n relative_sameloc_n debt_sameloc_n  ///
 , by (HHID2020 INDID2020) 	
 		
 save "Analysis\Fullnetwork_traits_DG.dta", replace

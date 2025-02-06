@@ -23,13 +23,14 @@ do"C:\Users\Arnaud\Documents\GitHub\folderanalysis\networks.do"
 ****************************************
 use"Analysis/Main_analyses_v6", clear
 
+/*
 * Durée nette de l'age
 reg talk_duration age
 predict talk_duration_afe, res
 
 reg debt_duration age
 predict debt_duration_afe, res
-
+*/
 
 * Controls
 global cont c.age i.married i.occupation i.educ //i.villageid c.stdincome c.stdassets
@@ -53,7 +54,7 @@ global persoXsexXcaste c.fES##i.female##i.caste c.fOPEX##i.female##i.caste c.fCO
 ****************************************
 * Reg retenus
 ****************************************
-
+/*
 ********** Check sample size
 count if strength_debt!=.
 count if strength_talk!=. 
@@ -87,7 +88,7 @@ preserve
 keep if talk_ddiffgender==1
 count if talk_diffgender!=.
 restore
-
+*/
 
 ****************************************
 * END

@@ -54,37 +54,6 @@ save"panel_loans_v1", replace
 use"panel_indiv_v0", clear
 
 ********** Debt
-* DSR
-gen dsr_indiv=(imp1_ds_tot_indiv*100)/annualincome_indiv
-replace dsr_indiv=0 if dsr_indiv==.
-
-* GTDR
-gen gtdr_indiv=(lamountgivenrepa_indiv*100)/lamount_indiv
-replace gtdr_indiv=0 if gtdr_indiv==.
-
-* GTIR
-gen gtir_indiv=(lamountgivenrepa_indiv*100)/annualincome_indiv
-replace gtir_indiv=0 if gtir_indiv==.
-
-* GBTR
-gen gbtdr_indiv=(lbalancegivenrepa_indiv*100)/lbalance_indiv
-replace gbtdr_indiv=0 if gbtdr_indiv==.
-
-* GBTIR
-gen gbtir_indiv=(lbalancegivenrepa_indiv*100)/annualincome_indiv
-replace gbtir_indiv=0 if gbtir_indiv==.
-
-* Share DSR
-gen share_dsr=(imp1_ds_tot_indiv*100)/imp1_ds_tot_HH
-replace share_dsr=0 if share_dsr==.
-
-* Share given
-gen share_giventrap=(lamountgivenrepa_indiv*100)/lamountgivenrepa_HH
-replace share_giventrap=0 if share_giventrap==.
-
-* Trap
-gen dummytrap_indiv=0
-replace dummytrap_indiv=1 if gtdr_indiv>0
 
 * Dummyloans
 gen dummyloans_indiv=0
@@ -94,7 +63,51 @@ ta dummyloans_indiv year, col nofreq
 
 * Loan amount
 replace lamount_indiv=0 if lamount_indiv==.
+replace lamount_indiv=. if dummyloans_indiv==0
 
+* DSR
+gen dsr_indiv=(imp1_ds_tot_indiv*100)/annualincome_indiv
+replace dsr_indiv=0 if dsr_indiv==.
+replace dsr_indiv=. if dummyloans_indiv==0
+
+* GTDR
+gen gtdr_indiv=(lamountgivenrepa_indiv*100)/lamount_indiv
+replace gtdr_indiv=0 if gtdr_indiv==.
+replace gtdr_indiv=. if dummyloans_indiv==0
+
+* GTIR
+gen gtir_indiv=(lamountgivenrepa_indiv*100)/annualincome_indiv
+replace gtir_indiv=0 if gtir_indiv==.
+replace gtir_indiv=. if dummyloans_indiv==0
+
+* GBTR
+gen gbtdr_indiv=(lbalancegivenrepa_indiv*100)/lbalance_indiv
+replace gbtdr_indiv=0 if gbtdr_indiv==.
+replace gbtdr_indiv=. if dummyloans_indiv==0
+
+* GBTIR
+gen gbtir_indiv=(lbalancegivenrepa_indiv*100)/annualincome_indiv
+replace gbtir_indiv=0 if gbtir_indiv==.
+replace gbtir_indiv=. if dummyloans_indiv==0
+
+* Share DSR
+gen share_dsr=(imp1_ds_tot_indiv*100)/imp1_ds_tot_HH
+replace share_dsr=0 if share_dsr==.
+replace share_dsr=. if dummyloans_indiv==0
+
+* Share given
+gen share_giventrap=(lamountgivenrepa_indiv*100)/lamountgivenrepa_HH
+replace share_giventrap=0 if share_giventrap==.
+replace share_giventrap=. if dummyloans_indiv==0
+
+ta share_giventrap
+
+* Trap
+gen dummytrap_indiv=0
+replace dummytrap_indiv=1 if gtdr_indiv>0
+replace dummytrap_indiv=. if dummyloans_indiv==0
+
+ta dummytrap_indiv
 
 
 ********** Controls

@@ -236,8 +236,9 @@ nobs2
 
 ********** Incidence
 keep if dummyloans==1
+
 *
-overfit: probit dummytrap i.women i.dalits ///
+probit dummytrap i.women i.dalits ///
 $indivcont $hhcont $invar $time ///
 , vce(cl panelvar)
 est store inc1
@@ -250,7 +251,7 @@ Ok, pas de souci d'overfit
 ********** Intensity
 keep if dummytrap==1
 *
-overfit: glm sharetrap i.women i.dalits ///
+glm sharetrap i.women i.dalits ///
 $indivcont $hhcont $invar $time ///
 , family(binomial) link(probit) cluster(panelvar)
 est store int1
