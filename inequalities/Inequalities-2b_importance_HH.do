@@ -167,6 +167,16 @@ ytitle("Percent") ylabel(0(5)35) ///
 xtitle("Decile of monthly income") xlabel(1(1)10) ///
 legend(order(1 "2010" 2 "2016-17" 3 "2020-21") pos(6) col(3)) name(inc, replace) scale(1.2)
 
+* French for MSH
+twoway ///
+(connected shareinc incgroup if year==2010) ///
+(connected shareinc incgroup if year==2016) ///
+(connected shareinc incgroup if year==2020) ///
+, title("Part du revenu total détenue par" "chaque décile de revenu") ///
+ytitle("%") ylabel(0(5)35) ///
+xtitle("Décile de revenu") xlabel(1(1)10) ///
+legend(order(1 "2010" 2 "2016-2017" 3 "2020-2021") pos(6) col(3)) name(frinc, replace) scale(1.2)
+
 
 ***** Assets
 use"panel_v3", clear
@@ -193,11 +203,24 @@ ytitle("Percent") ylabel(0(5)55) ///
 xtitle("Decile of wealth") xlabel(1(1)10) ///
 legend(order(1 "2010" 2 "2016-17" 3 "2020-21") pos(6) col(3)) name(ass, replace) scale(1.2)
 
+* Fr for MSH
+twoway ///
+(connected shareass assgroup if year==2010) ///
+(connected shareass assgroup if year==2016) ///
+(connected shareass assgroup if year==2020) ///
+, title("Part du patrimoine total détenue par" "chaque décile de patrimoine") ///
+ytitle("%") ylabel(0(5)55) ///
+xtitle("Décile de patrimoine") xlabel(1(1)10) ///
+legend(order(1 "2010" 2 "2016-2017" 3 "2020-2021") pos(6) col(3)) name(frass, replace) scale(1.2)
+
 
 
 ***** Combine
 grc1leg inc ass, col(2) note("{it:Note:} For 405 households in 2010, 492 in 2016-17, and 625 in 2020-21.", size(vsmall))
 graph export "graph_HH/Decile_HH.png", as(png) replace
+
+grc1leg frinc frass, col(2) note("{it:Note :} Pour 405 ménages en 2010, 492 en 2016-2017 et 625 en 2020-2021.", size(vsmall))
+graph export "graph_HH/FR_Decile_HH.png", as(png) replace
 
 ****************************************
 * END

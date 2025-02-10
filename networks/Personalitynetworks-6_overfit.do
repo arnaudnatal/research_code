@@ -23,23 +23,22 @@ do"C:\Users\Arnaud\Documents\GitHub\folderanalysis\networks.do"
 ****************************************
 use"Analysis/Main_analyses_v6", clear
 
-/*
 * Durée nette de l'age
-reg talk_duration age
-predict talk_duration_afe, res
+foreach y in duration debt_duration relative_duration talk_duration labour_duration {
+reg `y' age
+predict `y'_afe, res
+egen `y'_afe_std=std(`y'_afe)
+drop `y'_afe
+rename `y'_afe_std `y'_afe
+}
 
-reg debt_duration age
-predict debt_duration_afe, res
-*/
+
 
 * Controls
-global cont c.age i.married i.occupation i.educ //i.villageid c.stdincome c.stdassets
-global contdrop age *occupation *educ *married //*villageid stdincome stdassets
+global cont c.age i.married i.occupation i.educ i.villageid c.stdincome c.stdassets
+global contdrop age *occupation *educ *villageid *married stdincome stdassets
 
 global perso fES fOPEX fCO locus
-global persoXsex c.fES##i.female c.fOPEX##i.female c.fCO##i.female c.locus##i.female
-global persoXcaste c.fES##i.caste c.fOPEX##i.caste c.fCO##i.caste c.locus##i.caste
-global persoXsexXcaste c.fES##i.female##i.caste c.fOPEX##i.female##i.caste c.fCO##i.female##i.caste c.locus##i.female##i.caste
 
 ****************************************
 * END
@@ -50,48 +49,46 @@ global persoXsexXcaste c.fES##i.female##i.caste c.fOPEX##i.female##i.caste c.fCO
 
 
 
-
+log using "Samplesize.log", replace
 ****************************************
-* Reg retenus
+* Sample size
 ****************************************
-/*
-********** Check sample size
-count if strength_debt!=.
-count if strength_talk!=. 
 
-count if debt_duration_afe!=.
-count if talk_duration_afe!=.
+********** Pooled sample
+sum strength_mca
+fre ddiffcaste ddiffjatis ddiffgender
+sum diffcaste if ddiffcaste==1
+sum diffjatis if ddiffjatis==1
+sum diffgender if ddiffgender==1
 
-count if debt_diffcaste!=.
-count if talk_diffcaste!=.
-count if debt_diffgender!=.
-count if talk_diffgender!=.
 
-ta debt_ddiffcaste
-ta talk_ddiffcaste
-ta debt_ddiffgender
-ta talk_ddiffgender
+********** Debt
+sum debt_strength
+fre debt_ddiffcaste debt_ddiffjatis debt_ddiffgender
+sum debt_diffcaste if debt_ddiffcaste==1
+sum debt_diffjatis if debt_ddiffjatis==1
+sum debt_diffgender if debt_ddiffgender==1
 
-preserve
-keep if debt_ddiffcaste==1
-count if debt_diffcaste!=.
-restore
-preserve
-keep if talk_ddiffcaste==1
-count if talk_diffcaste!=.
-restore
-preserve
-keep if debt_ddiffgender==1
-count if debt_diffgender!=.
-restore
-preserve
-keep if talk_ddiffgender==1
-count if talk_diffgender!=.
-restore
-*/
+
+********** Talk the most
+sum talk_strength
+fre talk_ddiffcaste talk_ddiffjatis talk_ddiffgender
+sum talk_diffcaste if talk_ddiffcaste==1
+sum talk_diffjatis if talk_ddiffjatis==1
+sum talk_diffgender if talk_ddiffgender==1
+
+
+********** Relatives
+sum relative_strength
+fre relative_ddiffcaste relative_ddiffjatis relative_ddiffgender
+sum relative_diffcaste if relative_ddiffcaste==1
+sum relative_diffjatis if relative_ddiffjatis==1
+sum relative_diffgender if relative_ddiffgender==1
+
 
 ****************************************
 * END
+log close
 
 
 
@@ -111,111 +108,109 @@ log using "Overfit.log", replace
 * Overfit
 ****************************************
 
-********** Force 1 (mca)
-/*
-overfit: glm strength_debt $perso i.female i.caste $cont, family(binomial) link(probit) cluster(HHFE)
-overfit: glm strength_debt $persoXsex $cont, family(binomial) link(probit) cluster(HHFE)
-overfit: glm strength_debt $persoXcaste $cont, family(binomial) link(probit) cluster(HHFE)
-overfit: glm strength_debt $persoXsexXcaste $cont, family(binomial) link(probit) cluster(HHFE)
-
-overfit: glm strength_talk $perso i.female i.caste $cont, family(binomial) link(probit) cluster(HHFE)
-overfit: glm strength_talk $persoXsex $cont, family(binomial) link(probit) cluster(HHFE)
-overfit: glm strength_talk $persoXcaste $cont, family(binomial) link(probit) cluster(HHFE)
-overfit: glm strength_talk $persoXsexXcaste $cont, family(binomial) link(probit) cluster(HHFE)
-*/
-
-********** Force 2 (duration)
-/*
-overfit: reg debt_duration_afe $perso i.female i.caste $cont, cluster(HHFE)
-overfit: reg debt_duration_afe $persoXsex $cont, cluster(HHFE)
-overfit: reg debt_duration_afe $persoXcaste $cont, cluster(HHFE)
-overfit: reg debt_duration_afe $persoXsexXcaste $cont, cluster(HHFE)
-
-overfit: reg talk_duration_afe $perso i.female i.caste $cont, cluster(HHFE)
-overfit: reg talk_duration_afe $persoXsex $cont, cluster(HHFE)
-overfit: reg talk_duration_afe $persoXcaste $cont, cluster(HHFE)
-overfit: reg talk_duration_afe $persoXsexXcaste $cont, cluster(HHFE)
-*/
-
-********** Homophily en une étape
-overfit: glm debt_diffcaste $perso i.female i.caste $cont, family(binomial) link(probit) cluster(HHFE)
-overfit: glm debt_diffcaste $persoXsex $cont, family(binomial) link(probit) cluster(HHFE)
-overfit: glm debt_diffcaste $persoXcaste $cont, family(binomial) link(probit) cluster(HHFE)
-overfit: glm debt_diffcaste $persoXsexXcaste $cont, family(binomial) link(probit) cluster(HHFE)
-
-overfit: glm talk_diffcaste $perso i.female i.caste $cont, family(binomial) link(probit) cluster(HHFE)
-overfit: glm talk_diffcaste $persoXsex $cont, family(binomial) link(probit) cluster(HHFE)
-overfit: glm talk_diffcaste $persoXcaste $cont, family(binomial) link(probit) cluster(HHFE)
-overfit: glm talk_diffcaste $persoXsexXcaste $cont, family(binomial) link(probit) cluster(HHFE)
-
-overfit: glm debt_diffgender $perso i.female i.caste $cont, family(binomial) link(probit) cluster(HHFE)
-overfit: glm debt_diffgender $persoXsex $cont, family(binomial) link(probit) cluster(HHFE)
-overfit: glm debt_diffgender $persoXcaste $cont, family(binomial) link(probit) cluster(HHFE)
-overfit: glm debt_diffgender $persoXsexXcaste $cont, family(binomial) link(probit) cluster(HHFE)
-
-overfit: glm talk_diffgender $perso i.female i.caste $cont, family(binomial) link(probit) cluster(HHFE)
-overfit: glm talk_diffgender $persoXsex $cont, family(binomial) link(probit) cluster(HHFE)
-overfit: glm talk_diffgender $persoXcaste $cont, family(binomial) link(probit) cluster(HHFE)
-overfit: glm talk_diffgender $persoXsexXcaste $cont, family(binomial) link(probit) cluster(HHFE)
+********** Force
+*
+overfit: glm strength_mca $perso i.female i.caste $cont, family(binomial) link(probit) cluster(HHFE)
+*
+overfit: glm debt_strength $perso i.female i.caste $cont, family(binomial) link(probit) cluster(HHFE)
+*
+overfit: glm talk_strength $perso i.female i.caste $cont, family(binomial) link(probit) cluster(HHFE)
+*
+overfit: glm relative_strength $perso i.female i.caste $cont, family(binomial) link(probit) cluster(HHFE)
 
 
 
 
+********** Homophily pooled
+*
+overfit: probit ddiffcaste $perso i.female i.caste $cont, vce(cl HHFE)
+preserve
+keep if ddiffcaste==1
+overfit: glm diffcaste $perso i.female i.caste $cont, family(binomial) link(probit) cluster(HHFE)
+restore
+*
+overfit: probit ddiffjatis $perso i.female i.caste $cont, vce(cl HHFE)
+preserve
+keep if ddiffjatis==1
+overfit: glm diffjatis $perso i.female i.caste $cont, family(binomial) link(probit) cluster(HHFE)
+restore
+*
+overfit: probit ddiffgender $perso i.female i.caste $cont, vce(cl HHFE)
+preserve
+keep if ddiffgender==1
+overfit: glm diffgender $perso i.female i.caste $cont, family(binomial) link(probit) cluster(HHFE)
+restore
 
-********** Homophily en deux étapes
 
-*** Step 1: Probit
+
+
+********** Homophily debt
+*
 overfit: probit debt_ddiffcaste $perso i.female i.caste $cont, vce(cl HHFE)
-overfit: probit debt_ddiffcaste $persoXsex $cont, vce(cl HHFE)
-overfit: probit debt_ddiffcaste $persoXcaste $cont, vce(cl HHFE)
-overfit: probit debt_ddiffcaste $persoXsexXcaste $cont, vce(cl HHFE)
-
-overfit: probit talk_ddiffcaste $perso i.female i.caste $cont, vce(cl HHFE)
-overfit: probit talk_ddiffcaste $persoXsex $cont, vce(cl HHFE)
-overfit: probit talk_ddiffcaste $persoXcaste $cont, vce(cl HHFE)
-overfit: probit talk_ddiffcaste $persoXsexXcaste $cont, vce(cl HHFE)
-
-overfit: probit debt_ddiffgender $perso i.female i.caste $cont, vce(cl HHFE)
-overfit: probit debt_ddiffgender $persoXsex $cont, vce(cl HHFE)
-overfit: probit debt_ddiffgender $persoXcaste $cont, vce(cl HHFE)
-overfit: probit debt_ddiffgender $persoXsexXcaste $cont, vce(cl HHFE)
-
-overfit: probit talk_ddiffgender $perso i.female i.caste $cont, vce(cl HHFE)
-overfit: probit talk_ddiffgender $persoXsex $cont, vce(cl HHFE)
-overfit: probit talk_ddiffgender $persoXcaste $cont, vce(cl HHFE)
-overfit: probit talk_ddiffgender $persoXsexXcaste $cont, vce(cl HHFE)
-
-
-
-*** Step 2: GLM
 preserve
 keep if debt_ddiffcaste==1
 overfit: glm debt_diffcaste $perso i.female i.caste $cont, family(binomial) link(probit) cluster(HHFE)
-overfit: glm debt_diffcaste $persoXsex $cont, family(binomial) link(probit) cluster(HHFE)
-overfit: glm debt_diffcaste $persoXcaste $cont, family(binomial) link(probit) cluster(HHFE)
-overfit: glm debt_diffcaste $persoXsexXcaste $cont, family(binomial) link(probit) cluster(HHFE)
 restore
+*
+overfit: probit debt_ddiffjatis $perso i.female i.caste $cont, vce(cl HHFE)
 preserve
-keep if talk_ddiffcaste==1
-overfit: glm talk_diffcaste $perso i.female i.caste $cont, family(binomial) link(probit) cluster(HHFE)
-overfit: glm talk_diffcaste $persoXsex $cont, family(binomial) link(probit) cluster(HHFE)
-overfit: glm talk_diffcaste $persoXcaste $cont, family(binomial) link(probit) cluster(HHFE)
-overfit: glm talk_diffcaste $persoXsexXcaste $cont, family(binomial) link(probit) cluster(HHFE)
+keep if debt_ddiffjatis==1
+overfit: glm debt_diffjatis $perso i.female i.caste $cont, family(binomial) link(probit) cluster(HHFE)
 restore
+*
+overfit: probit debt_ddiffgender $perso i.female i.caste $cont, vce(cl HHFE)
 preserve
 keep if debt_ddiffgender==1
 overfit: glm debt_diffgender $perso i.female i.caste $cont, family(binomial) link(probit) cluster(HHFE)
-overfit: glm debt_diffgender $persoXsex $cont, family(binomial) link(probit) cluster(HHFE)
-overfit: glm debt_diffgender $persoXcaste $cont, family(binomial) link(probit) cluster(HHFE)
-overfit: glm debt_diffgender $persoXsexXcaste $cont, family(binomial) link(probit) cluster(HHFE)
 restore
+
+
+
+
+********** Homophily talk
+*
+overfit: probit talk_ddiffcaste $perso i.female i.caste $cont, vce(cl HHFE)
+preserve
+keep if talk_ddiffcaste==1
+overfit: glm talk_diffcaste $perso i.female i.caste $cont, family(binomial) link(probit) cluster(HHFE)
+restore
+*
+overfit: probit talk_ddiffjatis $perso i.female i.caste $cont, vce(cl HHFE)
+preserve
+keep if talk_ddiffjatis==1
+overfit: glm talk_diffjatis $perso i.female i.caste $cont, family(binomial) link(probit) cluster(HHFE)
+restore
+*
+overfit: probit talk_ddiffgender $perso i.female i.caste $cont, vce(cl HHFE)
 preserve
 keep if talk_ddiffgender==1
 overfit: glm talk_diffgender $perso i.female i.caste $cont, family(binomial) link(probit) cluster(HHFE)
-overfit: glm talk_diffgender $persoXsex $cont, family(binomial) link(probit) cluster(HHFE)
-overfit: glm talk_diffgender $persoXcaste $cont, family(binomial) link(probit) cluster(HHFE)
-overfit: glm talk_diffgender $persoXsexXcaste $cont, family(binomial) link(probit) cluster(HHFE)
 restore
+
+
+
+
+********** Homophily relatives
+*
+overfit: probit relative_ddiffcaste $perso i.female i.caste $cont, vce(cl HHFE)
+preserve
+keep if relative_ddiffcaste==1
+overfit: glm relative_diffcaste $perso i.female i.caste $cont, family(binomial) link(probit) cluster(HHFE)
+restore
+*
+overfit: probit relative_ddiffjatis $perso i.female i.caste $cont, vce(cl HHFE)
+preserve
+keep if relative_ddiffjatis==1
+overfit: glm relative_diffjatis $perso i.female i.caste $cont, family(binomial) link(probit) cluster(HHFE)
+restore
+*
+overfit: probit relative_ddiffgender $perso i.female i.caste $cont, vce(cl HHFE)
+preserve
+keep if relative_ddiffgender==1
+overfit: glm relative_diffgender $perso i.female i.caste $cont, family(binomial) link(probit) cluster(HHFE)
+restore
+
+
 ****************************************
 * END
 log close

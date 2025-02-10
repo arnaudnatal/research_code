@@ -128,6 +128,113 @@ graph export "graph_HH/Compo_income_HH.png", as(png) replace
 
 
 
+****************************************
+* Compo income FRENCH for MSH
+****************************************
+use"panel_v3", clear
+
+
+* Decile
+foreach i in 2010 2016 2020 {
+xtile incgrp`i'=annualincome if year==`i', n(10)
+}
+gen incgroup=.
+foreach i in 2010 2016 2020 {
+replace incgroup=incgrp`i' if year==`i'
+drop incgrp`i' 
+}
+rename monthlyincome income
+
+collapse (mean) s_agrise s_agrica s_casual s_regula s_selfem s_mgnreg s_pensio s_remitt income, by(time incgroup)
+
+gen sum1=s_agrise
+gen sum2=sum1+s_agrica
+gen sum3=sum2+s_casual
+gen sum4=sum3+s_regula
+gen sum5=sum4+s_selfem
+gen sum6=sum5+s_mgnreg
+gen sum7=sum6+s_pensio
+gen sum8=sum7+s_remitt
+
+* By year
+twoway ///
+(area sum1 incgroup if time==1) ///
+(rarea sum1 sum2 incgroup if time==1) ///
+(rarea sum2 sum3 incgroup if time==1) ///
+(rarea sum3 sum4 incgroup if time==1) ///
+(rarea sum4 sum5 incgroup if time==1) ///
+(rarea sum5 sum6 incgroup if time==1) ///
+(rarea sum6 sum7 incgroup if time==1) ///
+(rarea sum7 sum8 incgroup if time==1) ///
+, ///
+xlabel(1(1)10) xtitle("Décile de revenu") ///
+ylabel(0(10)100) ytitle("%") ///
+title("2010") ///
+legend(order(1 "Agr. indép." 2 "Agr. occas." 3 "Occas." 4 "Régul." 5 "Indép." 6 "NREGA" 7 "Retraite" 8 "Trans. de fonds") pos(6) col(4)) ///
+name(compo1, replace)
+
+twoway ///
+(area sum1 incgroup if time==2) ///
+(rarea sum1 sum2 incgroup if time==2) ///
+(rarea sum2 sum3 incgroup if time==2) ///
+(rarea sum3 sum4 incgroup if time==2) ///
+(rarea sum4 sum5 incgroup if time==2) ///
+(rarea sum5 sum6 incgroup if time==2) ///
+(rarea sum6 sum7 incgroup if time==2) ///
+(rarea sum7 sum8 incgroup if time==2) ///
+, ///
+xlabel(1(1)10) xtitle("Décile de revenu") ///
+ylabel(0(10)100) ytitle("%") ///
+title("2016-2017") ///
+legend(order(1 "Agr. indép." 2 "Agr. occas." 3 "Occas." 4 "Régul." 5 "Indép." 6 "NREGA" 7 "Retraite" 8 "Trans. de fonds") pos(6) col(4)) ///
+name(compo2, replace)
+
+twoway ///
+(area sum1 incgroup if time==3) ///
+(rarea sum1 sum2 incgroup if time==3) ///
+(rarea sum2 sum3 incgroup if time==3) ///
+(rarea sum3 sum4 incgroup if time==3) ///
+(rarea sum4 sum5 incgroup if time==3) ///
+(rarea sum5 sum6 incgroup if time==3) ///
+(rarea sum6 sum7 incgroup if time==3) ///
+(rarea sum7 sum8 incgroup if time==3) ///
+, ///
+xlabel(1(1)10) xtitle("Décile de revenu") ///
+ylabel(0(10)100) ytitle("%") ///
+title("2020-21") ///
+legend(order(1 "Agr. indép." 2 "Agr. occas." 3 "Occas." 4 "Régul." 5 "Indép." 6 "NREGA" 7 "Retraite" 8 "Trans. de fonds") pos(6) col(4)) ///
+name(compo3, replace)
+
+
+grc1leg compo1 compo2 compo3, col(3) name(inc, replace)
+graph export "graph_HH/FR_Compo_income_HH.png", as(png) replace
+
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -225,6 +332,98 @@ graph export "graph_HH/Compo_assets_HH.png", as(png) replace
 
 ****************************************
 * END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Compo assets FRENCH for MSH
+****************************************
+use"panel_v3", clear
+
+* Decile
+foreach i in 2010 2016 2020 {
+xtile assgrp`i'=assets_total if year==`i', n(10)
+}
+gen assgroup=.
+foreach i in 2010 2016 2020 {
+replace assgroup=assgrp`i' if year==`i'
+drop assgrp`i' 
+}
+rename assets_total assets
+
+collapse (mean) s_house s_livestock s_goods s_land s_gold s_savings assets, by(time assgroup)
+
+gen sum1=s_house
+gen sum2=sum1+s_livestock
+gen sum3=sum2+s_goods
+gen sum4=sum3+s_land
+gen sum5=sum4+s_gold
+gen sum6=sum5+s_savings
+
+
+* By year
+twoway ///
+(area sum1 assgroup if time==1) ///
+(rarea sum1 sum2 assgroup if time==1) ///
+(rarea sum2 sum3 assgroup if time==1) ///
+(rarea sum3 sum4 assgroup if time==1) ///
+(rarea sum4 sum5 assgroup if time==1) ///
+(rarea sum5 sum6 assgroup if time==1) ///
+, ///
+xlabel(1(1)10) xtitle("Décile de patrimoine") ///
+ylabel(0(10)100) ytitle("%") ///
+title("2010") ///
+legend(order(1 "Habitat" 2 "Bétail" 3 "Biens" 4 "Terre" 5 "Or" 6 "Épargne") pos(6) col(3)) ///
+name(compo1, replace)
+
+twoway ///
+(area sum1 assgroup if time==2) ///
+(rarea sum1 sum2 assgroup if time==2) ///
+(rarea sum2 sum3 assgroup if time==2) ///
+(rarea sum3 sum4 assgroup if time==2) ///
+(rarea sum4 sum5 assgroup if time==2) ///
+(rarea sum5 sum6 assgroup if time==2) ///
+, ///
+xlabel(1(1)10) xtitle("Décile de patrimoine") ///
+ylabel(0(10)100) ytitle("%") ///
+title("2016-2017") ///
+legend(order(1 "Habitat" 2 "Bétail" 3 "Biens" 4 "Terre" 5 "Or" 6 "Épargne") pos(6) col(3)) ///
+name(compo2, replace)
+
+twoway ///
+(area sum1 assgroup if time==3) ///
+(rarea sum1 sum2 assgroup if time==3) ///
+(rarea sum2 sum3 assgroup if time==3) ///
+(rarea sum3 sum4 assgroup if time==3) ///
+(rarea sum4 sum5 assgroup if time==3) ///
+(rarea sum5 sum6 assgroup if time==3) ///
+, ///
+xlabel(1(1)10) xtitle("Décile de patrimoine") ///
+ylabel(0(10)100) ytitle("%") ///
+title("2020-2021") ///
+legend(order(1 "Habitat" 2 "Bétail" 3 "Biens" 4 "Terre" 5 "Or" 6 "Épargne") pos(6) col(3)) ///
+name(compo3, replace)
+
+
+grc1leg compo1 compo2 compo3, col(3) name(compo, replace)
+graph export "graph_HH/FR_Compo_assets_HH.png", as(png) replace
+
+****************************************
+* END
+
+
+
 
 
 

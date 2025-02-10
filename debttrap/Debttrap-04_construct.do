@@ -478,6 +478,12 @@ rename lnbeffectiverepa_indiv eff_nbloantrap_indiv
 rename lamount_HH loanamount_HH
 rename lbalance_HH loanbalance_HH
 rename lnb_HH nbloan_HH
+gen dummyloans_HH=.
+replace dummyloans_HH=0 if nbloan_HH==0
+replace dummyloans_HH=0 if nbloan_HH==.
+replace dummyloans_HH=1 if nbloan_HH>0
+ta dummyloans_HH year
+drop dummyloans_HH
 
 rename lamountgivenrepa_HH trapamount_HH
 rename lbalancegivenrepa_HH balancetrapamount_HH

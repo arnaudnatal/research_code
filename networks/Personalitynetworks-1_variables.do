@@ -470,3 +470,212 @@ count
 save "Analysis/Main_analyses.dta", replace
 ****************************************
 * END
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Prepa alters
+****************************************
+use "Analysis\Alters_v2.dta", clear
+
+save "Analysis\NEEMSIS2-alters_full.dta", replace
+
+
+********** Merger Ego
+preserve
+use "Analysis\Main_analyses.dta", replace
+keep HHID2020 INDID2020 villageid villagearea name religion sex age jatis caste educ mainocc_occupation_indiv 
+foreach var in villageid villagearea name religion sex age jatis caste educ mainocc_occupation_indiv  {
+rename `var' `var'_ego
+}
+rename mainocc_occupation_indiv_ego occup_ego
+save "Analysis\Infosegos.dta", replace
+restore
+
+merge m:1 HHID2020 INDID2020 using "Analysis\Infosegos.dta"
+keep if _merge==3
+drop _merge
+
+save "Analysis\Alters_DG.dta", replace
+
+
+********** Drop les alters problématiques
+drop if pbalter==1
+drop pbalter
+
+
+********** Type of network
+codebook networkpurpose1, tabulate(13)
+gen debt_network=cond( ///
+networkpurpose1==1 | ///
+networkpurpose2==1 | ///
+networkpurpose3==1 | ///
+networkpurpose4==1 | ///
+networkpurpose5==1 | ///
+networkpurpose6==1 | ///
+networkpurpose7==1 | ///
+networkpurpose8==1 | ///
+networkpurpose9==1 | ///
+networkpurpose1==2 | ///
+networkpurpose2==2 | ///
+networkpurpose3==2 | ///
+networkpurpose4==2 | ///
+networkpurpose5==2 | ///
+networkpurpose6==2 | ///
+networkpurpose7==2 | ///
+networkpurpose8==2 | ///
+networkpurpose9==2 ///
+,1,0)
+tab debt_network
+
+gen relative_network=cond( ///
+networkpurpose1==11 | ///
+networkpurpose2==11 | ///
+networkpurpose3==11 | ///
+networkpurpose4==11 | ///
+networkpurpose5==11 | ///
+networkpurpose6==11 | ///
+networkpurpose7==11 | ///
+networkpurpose8==11 | ///
+networkpurpose9==11 ///
+,1,0)
+tab relative_network 
+
+gen talk_network=cond( ///
+networkpurpose1==9 | ///
+networkpurpose2==9 | ///
+networkpurpose3==9 | ///
+networkpurpose4==9 | ///
+networkpurpose5==9 | ///
+networkpurpose6==9 | ///
+networkpurpose7==9 | ///
+networkpurpose8==9 | ///
+networkpurpose9==9 ///
+,1,0)
+tab talk_network
+
+gen interperso_network=cond(relative_network==1 |talk_network==1,1,0) 
+tab interperso_network
+
+gen labour_network=cond(inlist(networkpurpose1,3,5,6,7,8) | ///
+inlist(networkpurpose2,3,5,6,7,8) | ///
+inlist(networkpurpose3,3,5,6,7,8) | ///
+inlist(networkpurpose4,3,5,6,7,8) | ///
+inlist(networkpurpose5,3,5,6,7,8) | ///
+inlist(networkpurpose6,3,5,6,7,8) | ///
+inlist(networkpurpose7,3,5,6,7,8) | ///
+inlist(networkpurpose8,3,5,6,7,8) | ///
+inlist(networkpurpose9,3,5,6,7,8) ///
+,1,0)
+tab labour_network
+
+gen covid_network=cond(inlist(networkpurpose1,12,13) | ///
+inlist(networkpurpose2,12,13) | ///
+inlist(networkpurpose3,12,13) | ///
+inlist(networkpurpose4,12,13) | ///
+inlist(networkpurpose5,12,13) | ///
+inlist(networkpurpose6,12,13) | ///
+inlist(networkpurpose7,12,13) | ///
+inlist(networkpurpose8,12,13) | ///
+inlist(networkpurpose9,12,13) ///
+,1,0)
+tab covid_network
+
+gen asso_network=cond(inlist(networkpurpose1,4) | ///
+inlist(networkpurpose2,4) | ///
+inlist(networkpurpose3,4) | ///
+inlist(networkpurpose4,4) | ///
+inlist(networkpurpose5,4) | ///
+inlist(networkpurpose6,4) | ///
+inlist(networkpurpose7,4) | ///
+inlist(networkpurpose8,4) | ///
+inlist(networkpurpose9,4) ///
+,1,0)
+tab asso_network
+
+gen medical_network=cond(inlist(networkpurpose1,10) | ///
+inlist(networkpurpose2,10) | ///
+inlist(networkpurpose3,10) | ///
+inlist(networkpurpose4,10) | ///
+inlist(networkpurpose5,10) | ///
+inlist(networkpurpose6,10) | ///
+inlist(networkpurpose7,10) | ///
+inlist(networkpurpose8,10) | ///
+inlist(networkpurpose9,10) ///
+,1,0)
+tab medical_network
+
+
+********** Correction sur les friends
+*Correction 09/12/24
+tab relative_network friend
+replace friend=0 if relative_network==1
+*si close_relative alors famille_etendu==1
+gen family=cond(dummyfam==1 | relative_network==1,1,0)
+
+gen role=cond(family==0 & friend==0 & labourrelation==0 & wkp==0,1,0)
+tab role
+
+tab networkpurpose1 role
+gen lender=cond(role==1 & networkpurpose1==1,1,0)
+replace role=0 if lender==1
+tab meet if role==1 & networkpurpose1!=1
+replace labourrelation=1 if role==1 & meet==1
+replace role=0 if labourrelation==1 & role==1
+replace friend=1 if networkpurpose1==10 & role==1
+replace role=0 if friend==1 & role==1
+drop if role==1
+
+drop role
+gen role=cond(lender==0 & (family==0 |  family==.) & (friend==0 | friend==.) & (labourrelation==0 | labourrelation==.) & (wkp==0 | wkp==.),1,0)
+tab role
+
+tab networkpurpose1 role
+replace lender=1 if role==1 & networkpurpose1==1
+replace role=0 if lender==1
+tab meet if role==1 & networkpurpose1!=1
+replace labourrelation=1 if role==1 & meet==1
+replace role=0 if labourrelation==1 & role==1
+replace friend=1 if networkpurpose1==10 & role==1
+replace role=0 if friend==1 & role==1
+drop if role==1
+drop role
+
+* Missing friend : 
+replace friend=0 if friend==.
+replace friend=0 if family==1
+gen other_relation=cond(family==0 & friend==0,1,0)
+ta other_relation
+
+*11836 alters
+
+********** Alters clean 
+preserve
+drop debt_network relative_network talk_network interperso_network labour_network covid_network asso_network medical_network
+egen HHINDID=group(HHID2020 INDID2020)
+order HHINDID HHID2020 INDID2020 egoid alterid
+save"Analysis/NEEMSIS2-alters_clean", replace
+restore
+
+
+
+********** Alters clean subgroups
+preserve
+drop if interperso_network==0 & debt_network==0 & labour_network==0
+drop interperso_network covid_network asso_network medical_network
+egen HHINDID=group(HHID2020 INDID2020)
+order HHINDID HHID2020 INDID2020 egoid alterid
+save"Analysis/NEEMSIS2-alters_subclean", replace
+restore
+
+****************************************
+* END

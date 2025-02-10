@@ -235,13 +235,20 @@ nobs2
 
 
 ********** Incidence
-keep if dummyloans==1
-
-*
+* All individuals within indebted households
+recode dummytrap (.=0)
 probit dummytrap i.women i.dalits ///
 $indivcont $hhcont $invar $time ///
 , vce(cl panelvar)
 est store inc1
+
+
+* Only indebted individuals
+keep if dummyloans==1
+probit dummytrap i.women i.dalits ///
+$indivcont $hhcont $invar $time ///
+, vce(cl panelvar)
+est store inc2
 /*
 Ok, pas de souci d'overfit
 */
