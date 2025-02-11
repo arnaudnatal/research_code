@@ -18,19 +18,244 @@ do"C:/Users/Arnaud/Documents/GitHub/folderanalysis/$link.do"
 
 
 
+****************************************
+* Incidence of debt trap
+****************************************
+use"panel_HH_v2", clear
+
+keep if dummyloans_HH==1
+ta year
+ta dummytrap_HH year
+
+tabplot dummytrap_HH year, percent(year) showval frame(100) ///
+fcolor(plg1*0.4) lcolor(plg1) ///
+subtitle("") ///
+xtitle("") ytitle("Debt trap?") ///
+xlabel(1 "2010" 2 "2016-17" 3 "2020-21") ylabel(1 "Yes" 2 "No") ///
+note("{it:Note:} Percent given year.", size(small)) ///
+scale(1.2)
+
+
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Intensity of debt trap
+****************************************
+use"panel_HH_v2", clear
+
+keep if dummytrap_HH==1
+ta year
+
+********** Absolut intensity (amount)
+tabstat trapamount_HH, stat(n mean q p90 p95 p99 max) by(year)
+violinplot trapamount_HH, over(time) horizontal left dscale(4) noline now ///
+fill(color(black%10)) ///
+box(t(b)) bcolors(plg1) ///
+mean(t(m)) meancolors(plr1) ///
+med(t(m)) medcolors(ananas) ///
+title("Debt trap amount") ///
+xtitle("1k rupees") xlabel(0(20)200) ///
+ylabel(,grid) ///
+legend(order(4 "IQR" 7 "Median" 10 "Mean") pos(6) col(3) on) ///
+aspectratio() scale(1.2) name(abs, replace) range(0 200)
+
+
+********** Relative intensity (percent to debt)
+tabstat gtdr_HH, stat(n mean q) by(year)
+violinplot gtdr_HH, over(time) horizontal left dscale(4) noline now ///
+fill(color(black%10)) ///
+box(t(b)) bcolors(plg1) ///
+mean(t(m)) meancolors(plr1) ///
+med(t(m)) medcolors(ananas) ///
+title("Debt trap amount to debt amount") ///
+xtitle("Percent") xlabel(0(10)100) ///
+ylabel(,grid) ///
+legend(order(4 "IQR" 7 "Median" 10 "Mean") pos(6) col(3) on) ///
+aspectratio() scale(1.2) name(rel, replace) range(0 100)
+
+
+********** Relative intensity (percent to income)
+tabstat gtir_HH, stat(n mean q p90 p95 max) by(year)
+violinplot gtir_HH, over(time) horizontal left dscale(4) noline now ///
+fill(color(black%10)) ///
+box(t(b)) bcolors(plg1) ///
+mean(t(m)) meancolors(plr1) ///
+med(t(m)) medcolors(ananas) ///
+title("Debt trap amount to annual income") ///
+xtitle("Percent") xlabel(0(20)200) ///
+ylabel(,grid) ///
+legend(order(4 "IQR" 7 "Median" 10 "Mean") pos(6) col(3) on) ///
+aspectratio() scale(1.2) name(rel2, replace) range(0 200)
+
+
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Income and trap
+****************************************
+use"panel_HH_v2", clear
+
+keep if dummyloans_HH==1
+gen monthlyincome=annualincome_HH/12
+replace monthlyincome=monthlyincome/1000
+
+
+***** 2010
+twoway ///
+(kdensity monthlyincome if year==2010 & dummytrap_HH==0, bwidth(2)) ///
+(kdensity monthlyincome if year==2010 &  dummytrap_HH==1, bwidth(2)) ///
+, xtitle("Monthly income (1k rupees)") ytitle("Density") ///
+title("2010") ///
+legend(order(1 "Not in a debt trap" 2 "Debt trapped") pos(6) col(2)) ///
+scale(1.2) aspectratio(1.5) name(g1, replace)
+
+***** 2016-17
+twoway ///
+(kdensity monthlyincome if year==2016 & dummytrap_HH==0, bwidth(2)) ///
+(kdensity monthlyincome if year==2016 &  dummytrap_HH==1, bwidth(2)) ///
+, xtitle("Monthly income (1k rupees)") ytitle("Density") ///
+title("2016-17") ///
+legend(order(1 "Not in a debt trap" 2 "Debt trapped") pos(6) col(2)) ///
+scale(1.2) aspectratio(1.5) name(g2, replace)
+
+
+***** 2020-21
+twoway ///
+(kdensity monthlyincome if year==2020 & dummytrap_HH==0, bwidth(2)) ///
+(kdensity monthlyincome if year==2020 &  dummytrap_HH==1, bwidth(2)) ///
+, xtitle("Monthly income (1k rupees)") ytitle("Density") ///
+title("2020-21") ///
+legend(order(1 "Not in a debt trap" 2 "Debt trapped") pos(6) col(2)) ///
+scale(1.2) aspectratio(1.5) name(g3, replace)
+
+
+***** Combine
+grc1leg g1 g2 g3, col(3) ///
+note("Kernel: Epanechnikov" "Bandwidth=2", size(small)) ///
+name(comb,replace)
+
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Assets and trap
+****************************************
+use"panel_HH_v2", clear
+
+keep if dummyloans_HH==1
+
+***** 2010
+twoway ///
+(kdensity assets_total1000 if year==2010 & dummytrap_HH==0, bwidth(800)) ///
+(kdensity assets_total1000 if year==2010 &  dummytrap_HH==1, bwidth(800)) ///
+, xtitle("Total wealth (1k rupees)") ytitle("Density") ///
+title("2010") ///
+legend(order(1 "Not in a debt trap" 2 "Debt trapped") pos(6) col(2)) ///
+scale(1.2) aspectratio(1.5) name(g1, replace)
+
+***** 2016-17
+twoway ///
+(kdensity assets_total1000 if year==2016 & dummytrap_HH==0, bwidth(800)) ///
+(kdensity assets_total1000 if year==2016 &  dummytrap_HH==1, bwidth(800)) ///
+, xtitle("Total wealth (1k rupees)") ytitle("Density") ///
+title("2016-17") ///
+legend(order(1 "Not in a debt trap" 2 "Debt trapped") pos(6) col(2)) ///
+scale(1.2) aspectratio(1.5) name(g2, replace)
+
+
+***** 2020-21
+twoway ///
+(kdensity assets_total1000 if year==2020 & dummytrap_HH==0, bwidth(800)) ///
+(kdensity assets_total1000 if year==2020 &  dummytrap_HH==1, bwidth(800)) ///
+, xtitle("Total wealth (1k rupees)") ytitle("Density") ///
+title("2020-21") ///
+legend(order(1 "Not in a debt trap" 2 "Debt trapped") pos(6) col(2)) ///
+scale(1.2) aspectratio(1.5) name(g3, replace)
+
+
+***** Combine
+grc1leg g1 g2 g3, col(3) ///
+note("Kernel: Epanechnikov" "Bandwidth=2", size(small)) ///
+name(comb,replace)
+
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ****************************************
 * Income and trap
 ****************************************
 
 ********** Given trap
-use"panel_HH_v3", clear
+use"panel_HH_v2", clear
 
 keep if dummyloans_HH==1
 replace annualincome_HH=annualincome_HH/1000
-keep HHID_panel year giv_trap annualincome_HH
+keep HHID_panel year dummytrap_HH annualincome_HH
 rename annualincome_HH contvar
-rename giv_trap catvar
+rename dummytrap_HH catvar
 gen contvar1=contvar if year==2010 & catvar==0
 gen contvar2=contvar if year==2010 & catvar==1
 gen contvar3=contvar if year==2016 & catvar==0

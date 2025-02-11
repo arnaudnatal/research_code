@@ -26,6 +26,21 @@ do"C:\Users\Arnaud\Documents\GitHub\folderanalysis\inequalities.do"
 use"panel_v3", clear
 
 
+***** Gini and interdecile by caste
+lorenz estimate assets_total if caste==1, over(year) gini
+lorenz estimate assets_total if caste==2, over(year) gini
+lorenz estimate assets_total if caste==3, over(year) gini
+
+
+tabstat assets_total if time==1 & caste==1, stat(p10 p90)
+
+forvalues y=1/3 {
+qui sum assets_total if time==`y' & caste==3, det
+dis `r(p90)'/`r(p10)'
+}
+
+
+
 ***** Stat
 cls
 * 2010

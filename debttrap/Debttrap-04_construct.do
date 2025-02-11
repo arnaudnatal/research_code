@@ -274,20 +274,33 @@ gen dir=(lamount_HH*100)/annualincome_HH
 replace dir=0 if dir==.
 
 * GTDR
+ta lamountgivenrepa_HH
+ta lamount_HH
 gen gtdr_HH=(lamountgivenrepa_HH*100)/lamount_HH
 replace gtdr_HH=0 if gtdr_HH==.
 
 * GTIR
+ta lamountgivenrepa_HH
+ta annualincome_HH
+replace annualincome_HH=annualincome_HH/1000
 gen gtir_HH=(lamountgivenrepa_HH*100)/annualincome_HH
 replace gtir_HH=0 if gtir_HH==.
+ta gtir_HH
+replace annualincome_HH=annualincome_HH*1000
 
 * GBTR
 gen gbtdr_HH=(lbalancegivenrepa_HH*100)/lbalance_HH
 replace gbtdr_HH=0 if gbtdr_HH==.
+ta gbtdr_HH
+
 
 * GBTIR
+replace annualincome_HH=annualincome_HH/1000
 gen gbtir_HH=(lbalancegivenrepa_HH*100)/annualincome_HH
 replace gbtir_HH=0 if gbtir_HH==.
+ta gbtir_HH
+tabstat gbtir_HH if dummytrap_HH==1, stat(n mean q) by(year) 
+replace annualincome_HH=annualincome_HH*1000
 
 * Trap
 gen dummytrap_HH=0

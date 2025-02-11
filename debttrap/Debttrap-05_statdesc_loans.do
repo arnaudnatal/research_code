@@ -57,6 +57,12 @@ tabstat loanamount if loanreasongiven==4 & year==2016, stat(mean) by(lender4cat)
 tabstat loanamount if loanreasongiven==4 & year==2020, stat(mean) by(lender4cat)
 
 
+* Test
+gen repa=0
+replace repa=1 if loanreasongiven==4
+ta lender4 repa, chi2 cchi2 exp
+
+
 * Reason given and effective reason
 drop if year==2010
 count
