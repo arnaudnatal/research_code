@@ -40,6 +40,7 @@ tabstat loanamount if year==2020, stat(mean) by(loanreasongiven)
 
 * Lender
 ta year if loanreasongiven==4
+ta lender4 year if loanreasongiven==4
 ta lender4 year if loanreasongiven==4, col nofreq
 
 * Lender cat
@@ -96,21 +97,14 @@ ta loanreasongiven year if plantorep_borr==1, col nofreq
 ta lender4 year if plantorep_borr==1, col nofreq
 
 
-***** Settle
-drop if year==2010 
-cls
-foreach x in settlestrat_inco settlestrat_sche settlestrat_borr settlestrat_sell settlestrat_land settlestrat_cons settlestrat_addi settlestrat_work settlestrat_supp settlestrat_harv settlestrat_othe {
-ta `x' year, col nofreq
-}
-* Which loans are repaid with debt?
-ta loanreasongiven year if settlestrat_borr==1, col nofreq
-ta lender4 year if settlestrat_borr==1, col nofreq
+***** Graph
+import excel "_statgraph.xlsx", sheet("repa_reason") firstrow clear
 
+label define mod 1"Agriculture" 2"Family" 3"Health" 4"Repay previous loan" 5"House expenses" 6"Investment" 7"Ceremonies" 8"Marriage" 9"Education" 10"Relatives" 11"Death" 77"Other"
+label values mod mod
+drop lab
 
-
-* Plan vs settle stra
-ta plantorep_borr settlestrat_borr if year==2016, row
-ta plantorep_borr settlestrat_borr if year==2020, row
+graph bar y1 y2 y3, over(mod, lab(angle(45)) gap(100)) legend(order(1 "2010" 2 "2016-17" 3 "2020-21") pos(6) col(3))
 
 ****************************************
 * END
