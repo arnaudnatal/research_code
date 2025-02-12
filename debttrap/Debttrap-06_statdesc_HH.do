@@ -136,89 +136,6 @@ qreg gtdr_HH i.dalits, quantile(.5)
 
 
 
-****************************************
-* Share, amount, and ratio by land ownership
-****************************************
-
-********** No land
-use"panel_HH_v2", clear
-fre ownland
-keep if ownland==0
-*
-ta dummyloans_HH year, m
-ta dummyloans_HH year, col
-keep if dummyloans_HH==1
-*
-ta dummytrap_HH year, col
-tabstat trapamount_HH if dummytrap_HH==1, stat(mean med) by(year)
-tabstat gtdr_HH if dummytrap_HH==1, stat(mean med) by(year)
-
-
-
-********** Land owner
-use"panel_HH_v2", clear
-fre ownland
-keep if ownland==1
-*
-ta dummyloans_HH year, m
-ta dummyloans_HH year, col
-keep if dummyloans_HH==1
-*
-ta dummytrap_HH year, col
-tabstat trapamount_HH if dummytrap_HH==1, stat(mean med) by(year)
-tabstat gtdr_HH if dummytrap_HH==1, stat(mean med) by(year)
-
-
-********** Diff 2010
-use"panel_HH_v2", clear
-keep if dummyloans_HH==1
-keep if year==2010
-*
-probit dummytrap_HH i.ownland
-*
-keep if dummytrap_HH==1
-reg trapamount_HH i.ownland
-qreg trapamount_HH i.ownland, quantile(.5)
-reg gtdr_HH i.ownland
-qreg gtdr_HH i.ownland, quantile(.5)
-
-
-********** Diff 2016-17
-use"panel_HH_v2", clear
-keep if dummyloans_HH==1
-keep if year==2016
-*
-probit dummytrap_HH i.ownland
-*
-keep if dummytrap_HH==1
-reg trapamount_HH i.ownland
-qreg trapamount_HH i.ownland, quantile(.5)
-reg gtdr_HH i.ownland
-qreg gtdr_HH i.ownland, quantile(.5)
-
-
-********** Diff 2020-21
-use"panel_HH_v2", clear
-keep if dummyloans_HH==1
-keep if year==2020
-*
-probit dummytrap_HH i.ownland
-*
-keep if dummytrap_HH==1
-reg trapamount_HH i.ownland
-qreg trapamount_HH i.ownland, quantile(.5)
-reg gtdr_HH i.ownland
-qreg gtdr_HH i.ownland, quantile(.5)
-
-****************************************
-* END
-
-
-
-
-
-
-
 
 
 
@@ -234,22 +151,23 @@ qreg gtdr_HH i.ownland, quantile(.5)
 ****************************************
 use"panel_HH_v2", clear
 
-replace annualincome_HH=annualincome_HH/1000
+gen monthlyincome=annualincome_HH/12
+replace monthlyincome=monthlyincome/1000
 
 
 ********** Income
 *
-tabstat annualincome_HH if year==2010, stat(n mean med) by(dummytrap_HH)
-reg annualincome_HH i.dummytrap_HH if year==2010
-qreg annualincome_HH i.dummytrap_HH if year==2010, quantile(.5)
+tabstat monthlyincome if year==2010, stat(n mean med) by(dummytrap_HH)
+reg monthlyincome i.dummytrap_HH if year==2010
+qreg monthlyincome i.dummytrap_HH if year==2010, quantile(.5)
 *
-tabstat annualincome_HH if year==2016, stat(n mean med) by(dummytrap_HH)
-reg annualincome_HH i.dummytrap_HH if year==2016
-qreg annualincome_HH i.dummytrap_HH if year==2016, quantile(.5)
+tabstat monthlyincome if year==2016, stat(n mean med) by(dummytrap_HH)
+reg monthlyincome i.dummytrap_HH if year==2016
+qreg monthlyincome i.dummytrap_HH if year==2016, quantile(.5)
 *
-tabstat annualincome_HH if year==2020, stat(n mean med) by(dummytrap_HH)
-reg annualincome_HH i.dummytrap_HH if year==2020
-qreg annualincome_HH i.dummytrap_HH if year==2020, quantile(.5)
+tabstat monthlyincome if year==2020, stat(n mean med) by(dummytrap_HH)
+reg monthlyincome i.dummytrap_HH if year==2020
+qreg monthlyincome i.dummytrap_HH if year==2020, quantile(.5)
 
 
 ********** Wealth
@@ -280,6 +198,21 @@ qreg dsr i.dummytrap_HH if year==2016, quantile(.5)
 tabstat dsr if year==2020, stat(n mean med) by(dummytrap_HH)
 reg dsr i.dummytrap_HH if year==2020
 qreg dsr i.dummytrap_HH if year==2020, quantile(.5)
+
+
+********** ISR
+*
+tabstat isr if year==2010, stat(n mean med) by(dummytrap_HH)
+reg isr i.dummytrap_HH if year==2010
+qreg isr i.dummytrap_HH if year==2010, quantile(.5)
+*
+tabstat isr if year==2016, stat(n mean med) by(dummytrap_HH)
+reg isr i.dummytrap_HH if year==2016
+qreg isr i.dummytrap_HH if year==2016, quantile(.5)
+*
+tabstat isr if year==2020, stat(n mean med) by(dummytrap_HH)
+reg isr i.dummytrap_HH if year==2020
+qreg isr i.dummytrap_HH if year==2020, quantile(.5)
 
 
 ****************************************
@@ -334,6 +267,16 @@ pwcorr trapamount_HH dsr if year==2020, sig
 spearman trapamount_HH dsr if year==2020, stats(rho p)
 
 
+********** ISR
+pwcorr trapamount_HH isr if year==2010, sig
+spearman trapamount_HH isr if year==2010, stats(rho p)
+*
+pwcorr trapamount_HH isr if year==2016, sig
+spearman trapamount_HH isr if year==2016, stats(rho p)
+*
+pwcorr trapamount_HH isr if year==2020, sig
+spearman trapamount_HH isr if year==2020, stats(rho p)
+
 ****************************************
 * END
 
@@ -384,6 +327,17 @@ spearman gtdr_HH dsr if year==2016, stats(rho p)
 *
 pwcorr gtdr_HH dsr if year==2020, sig
 spearman gtdr_HH dsr if year==2020, stats(rho p)
+
+
+********** ISR
+pwcorr gtdr_HH isr if year==2010, sig
+spearman gtdr_HH isr if year==2010, stats(rho p)
+*
+pwcorr gtdr_HH isr if year==2016, sig
+spearman gtdr_HH isr if year==2016, stats(rho p)
+*
+pwcorr gtdr_HH isr if year==2020, sig
+spearman gtdr_HH isr if year==2020, stats(rho p)
 
 ****************************************
 * END

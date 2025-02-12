@@ -299,7 +299,6 @@ replace annualincome_HH=annualincome_HH/1000
 gen gbtir_HH=(lbalancegivenrepa_HH*100)/annualincome_HH
 replace gbtir_HH=0 if gbtir_HH==.
 ta gbtir_HH
-tabstat gbtir_HH if dummytrap_HH==1, stat(n mean q) by(year) 
 replace annualincome_HH=annualincome_HH*1000
 
 * Trap

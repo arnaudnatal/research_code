@@ -220,7 +220,7 @@ grc1leg inc ass, col(2) note("{it:Note:} For 405 households in 2010, 492 in 2016
 graph export "graph_HH/Decile_HH.png", as(png) replace
 
 grc1leg frinc frass, col(2) note("{it:Note :} Pour 405 ménages en 2010, 492 en 2016-2017 et 625 en 2020-2021.", size(vsmall))
-graph export "graph_HH/FR_Decile_HH.png", as(png) replace
+graph export "graph_HH/FR_Decile_HH.png", as(png) replace width(1920) 
 
 ****************************************
 * END

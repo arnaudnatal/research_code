@@ -141,6 +141,23 @@ rename HHID2016 HHID
 gen year=2016
 
 save"_temp_NEEMSIS1", replace
+
+********** Daily income hh level
+use"raw/NEEMSIS1-occupations", clear
+
+gen daysayear=daysamonth*monthsayear
+gen dailyincome=annualincome/daysayear
+
+bysort HHID2016: egen daysayear_HH=sum(daysayear)
+bysort HHID2016: egen annualincome_HH=sum(annualincome)
+bysort HHID2016: egen dailyincome_HH=sum(dailyincome)
+
+keep HHID2016 daysayear_HH annualincome_HH dailyincome_HH
+duplicates drop
+gen dailyincome2_HH=annualincome_HH/daysayear_HH
+
+clear all
+
 ****************************************
 * END
 
@@ -290,6 +307,9 @@ sort HHID_panel year
 * Shock
 recode dummydemonetisation (.=0)
 recode dummymarriage (.=0)
+fre secondlockdownexposure
+recode secondlockdownexposure (.=1)
+
 
 * Caste
 merge 1:1 HHID_panel year using "raw/JatisCastePanel"

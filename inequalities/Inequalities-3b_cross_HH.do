@@ -175,7 +175,7 @@ name(g3, replace) scale(1.2)
 
 ********** Combine
 graph combine g1 g2 g3, col(3) note("{it:Note :} Chaque point représente un ménage. Pour 405 ménages en 2010, 492 en 2016-2017, et 625 en 2020-2021.", size(vsmall))
-graph export "graph_HH/FR_Incass_split_HH.png", as(png) replace
+graph export "graph_HH/FR_Incass_split_HH.png", as(png) replace width(1920) 
 
 ****************************************
 * END

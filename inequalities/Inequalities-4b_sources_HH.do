@@ -201,13 +201,13 @@ twoway ///
 , ///
 xlabel(1(1)10) xtitle("Décile de revenu") ///
 ylabel(0(10)100) ytitle("%") ///
-title("2020-21") ///
+title("2020-2021") ///
 legend(order(1 "Agr. indép." 2 "Agr. occas." 3 "Occas." 4 "Régul." 5 "Indép." 6 "NREGA" 7 "Retraite" 8 "Trans. de fonds") pos(6) col(4)) ///
 name(compo3, replace)
 
 
 grc1leg compo1 compo2 compo3, col(3) name(inc, replace)
-graph export "graph_HH/FR_Compo_income_HH.png", as(png) replace
+graph export "graph_HH/FR_Compo_income_HH.png", as(png) replace width(1920) 
 
 ****************************************
 * END
@@ -417,7 +417,7 @@ name(compo3, replace)
 
 
 grc1leg compo1 compo2 compo3, col(3) name(compo, replace)
-graph export "graph_HH/FR_Compo_assets_HH.png", as(png) replace
+graph export "graph_HH/FR_Compo_assets_HH.png", as(png) replace width(1920) 
 
 ****************************************
 * END

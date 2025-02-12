@@ -116,25 +116,26 @@ replace headwoman=1 if headsex==2
 drop headsex
 
 * Shock 1
-fre dummydemonetisation
-rename dummydemonetisation shock1
+fre dummymarriage
+rename dummymarriage shock1
 recode shock1 (.=0)
-label var shock1 "Shock 1 (=1)"
+label var shock1 "Marriage (=1)"
 
 * Shock 2
-fre secondlockdownexposure
-gen shock2=0 if secondlockdownexposure==1
-replace shock2=0 if secondlockdownexposure==2
-replace shock2=1 if secondlockdownexposure==3
+fre dummydemonetisation
+rename dummydemonetisation shock2
 recode shock2 (.=0)
-drop secondlockdownexposure
-label var shock2 "Shock 2 (=1)"
+label var shock2 "Demonetisation (=1)"
 
 * Shock 3
-fre dummymarriage
-rename dummymarriage shock3
+fre secondlockdownexposure
+gen shock3=0 if secondlockdownexposure==1
+replace shock3=0 if secondlockdownexposure==2
+replace shock3=1 if secondlockdownexposure==3
 recode shock3 (.=0)
-label var shock3 "Shock 3 (=1)"
+drop secondlockdownexposure
+label var shock3 "After 2nd lockdown (=1)"
+
 
 
 ********** Order
@@ -192,7 +193,7 @@ save"panel_indiv_v2_econo", replace
 
 
 ****************************************
-* Econo
+* PROBIT 
 ****************************************
 use"panel_indiv_v2_econo", clear
 
@@ -201,7 +202,6 @@ use"panel_indiv_v2_econo", clear
 ********** Macro
 global indivcont ///
 age mean_age ///
-agesq mean_agesq ///
 married mean_married ///
 edu_2 mean_edu_2 ///
 edu_3 mean_edu_3 ///
@@ -217,11 +217,12 @@ size_HH mean_size_HH ///
 nbchildren_HH mean_nbchildren_HH ///
 income_std mean_income_std ///
 assets_std mean_assets_std 
-/*
+
+global shocks ///
 shock1 mean_shock1 ///
 shock2 mean_shock2 ///
 shock3 mean_shock3
-*/
+
 global invar ///
 village_2 village_3 village_4 village_5 village_6 village_7 village_8 village_9 village_10
 
@@ -230,43 +231,73 @@ year2020 mean_year2020 ///
 nobs2
 
 
-
-
-
-
-********** Incidence
-* All individuals within indebted households
+********** Sample
+* Only trapped HH
+keep if trapamount_HH!=0
+ta dummytrap year, col
 recode dummytrap (.=0)
-probit dummytrap i.women i.dalits ///
-$indivcont $hhcont $invar $time ///
-, vce(cl panelvar)
-est store inc1
+ta dummytrap year, col
 
 
-* Only indebted individuals
-keep if dummyloans==1
-probit dummytrap i.women i.dalits ///
-$indivcont $hhcont $invar $time ///
-, vce(cl panelvar)
-est store inc2
+********** Final
+* Overfit
 /*
-Ok, pas de souci d'overfit
-*/
-
-
-
-********** Intensity
-keep if dummytrap==1
-*
-glm sharetrap i.women i.dalits ///
+overfit: probit dummytrap i.women i.dalits ///
 $indivcont $hhcont $invar $time ///
-, family(binomial) link(probit) cluster(panelvar)
-est store int1
+, vce(cl panelvar)
+*/
+* Probit
+probit dummytrap i.women i.dalits ///
+$indivcont $hhcont $invar $time ///
+, vce(cl panelvar)
+est store pro1
+* Margins
+margins, dydx(women dalits age married edu_2 edu_3 moccup_1 moccup_2 moccup_4 moccup_5 moccup_6 moccup_7 size_HH nbchildren_HH income_std assets_std) atmeans post
+est store marg1
+
+
+
+********** HH cluster
+* Probit
+probit dummytrap i.women i.dalits ///
+$indivcont $hhcont $invar $time ///
+, vce(cl HHFE)
+est store pro2
+* Margins
+margins, dydx(women dalits age married edu_2 edu_3 moccup_1 moccup_2 moccup_4 moccup_5 moccup_6 moccup_7 size_HH nbchildren_HH income_std assets_std) atmeans post
+est store marg2
+
+
+
+********** Shocks
+* Probit
+probit dummytrap i.women i.dalits ///
+$indivcont $hhcont $shocks $invar $time ///
+, vce(cl panelvar)
+est store pro3
+* Margins
+margins, dydx(women dalits age married edu_2 edu_3 moccup_1 moccup_2 moccup_4 moccup_5 moccup_6 moccup_7 size_HH nbchildren_HH income_std assets_std shock1 shock2 shock3) atmeans post
+est store marg3
+
+
+
+********** HH FE
+* Probit
+probit dummytrap i.women i.dalits ///
+$indivcont $hhcont $invar $time i.HHFE ///
+, vce(cl panelvar)
+est store pro4
+* Margins
+margins, dydx(women dalits age married edu_2 edu_3 moccup_1 moccup_2 moccup_4 moccup_5 moccup_6 moccup_7 size_HH nbchildren_HH income_std assets_std) atmeans post
+est store marg4
+
+
+
 
 
 
 ********** Table
-esttab inc1 int1 using "Trap_reg.csv", replace ///
+esttab pro1 pro2 pro3 pro4 using "Trap_pro.csv", replace ///
 	label b(3) p(3) eqlabels(none) alignment(S) ///
 	star(* 0.10 ** 0.05 *** 0.01) ///
 	drop(mean_* village_* year* nobs*) ///
@@ -276,4 +307,307 @@ esttab inc1 int1 using "Trap_reg.csv", replace ///
 
 ****************************************
 * END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* FRACTIONAL PROBIT 
+****************************************
+use"panel_indiv_v2_econo", clear
+
+
+********** Macro
+global indivcont ///
+age mean_age ///
+married mean_married ///
+edu_2 mean_edu_2 ///
+edu_3 mean_edu_3 ///
+moccup_1 mean_moccup_1 ///
+moccup_2 mean_moccup_2 ///
+moccup_4 mean_moccup_4 ///
+moccup_5 mean_moccup_5 ///
+moccup_6 mean_moccup_6 ///
+moccup_7 mean_moccup_7 ///
+
+global hhcont ///
+size_HH mean_size_HH ///
+nbchildren_HH mean_nbchildren_HH ///
+income_std mean_income_std ///
+assets_std mean_assets_std 
+
+global shocks ///
+shock1 mean_shock1 ///
+shock2 mean_shock2 ///
+shock3 mean_shock3
+
+global invar ///
+village_2 village_3 village_4 village_5 village_6 village_7 village_8 village_9 village_10
+
+global time ///
+year2020 mean_year2020 ///
+nobs2
+
+
+********** Sample
+* Only trapped HH
+keep if trapamount_HH!=0
+ta dummytrap year, col
+recode dummytrap (.=0)
+ta dummytrap year, col
+keep if dummytrap==1
+ta year
+
+
+
+
+********** Final
+* Overfit
+/*
+overfit: glm sharetrap i.women i.dalits ///
+$indivcont $hhcont $invar $time ///
+, family(binomial) link(probit) cluster(panelvar)
+*/
+* Frac
+glm sharetrap i.women i.dalits ///
+$indivcont $hhcont $invar $time ///
+, family(binomial) link(probit) cluster(panelvar)
+est store fra1
+* Margins
+margins, dydx(women dalits age married edu_2 edu_3 moccup_1 moccup_2 moccup_4 moccup_5 moccup_6 moccup_7 size_HH nbchildren_HH income_std assets_std) atmeans post
+est store marg1
+
+
+
+
+
+********** HH cluster
+* Frac
+glm sharetrap i.women i.dalits ///
+$indivcont $hhcont $invar $time ///
+, family(binomial) link(probit) cluster(HHFE)
+est store fra2
+* Margins
+margins, dydx(women dalits age married edu_2 edu_3 moccup_1 moccup_2 moccup_4 moccup_5 moccup_6 moccup_7 size_HH nbchildren_HH income_std assets_std) atmeans post
+est store marg2
+
+
+
+
+********** Shocks
+* Frac
+glm sharetrap i.women i.dalits ///
+$indivcont $hhcont $shocks $invar $time ///
+, family(binomial) link(probit) cluster(panelvar)
+est store fra3
+* Margins
+margins, dydx(women dalits age married edu_2 edu_3 moccup_1 moccup_2 moccup_4 moccup_5 moccup_6 moccup_7 size_HH nbchildren_HH income_std assets_std shock1 shock2 shock3) atmeans post
+est store marg3
+
+
+
+/*
+********** HH FE
+* Frac
+glm sharetrap i.women i.dalits ///
+$indivcont $hhcont $invar $time i.HHFE ///
+, family(binomial) link(probit) cluster(panelvar)
+est store fra4
+* Margins
+margins, dydx(women dalits age married edu_2 edu_3 moccup_1 moccup_2 moccup_4 moccup_5 moccup_6 moccup_7 size_HH nbchildren_HH income_std assets_std) atmeans post
+est store marg4
+*/
+
+
+
+
+
+
+********** Table
+esttab fra1 fra2 fra3 using "Trap_fra.csv", replace ///
+	label b(3) p(3) eqlabels(none) alignment(S) ///
+	star(* 0.10 ** 0.05 *** 0.01) ///
+	drop(mean_* village_* year* nobs*) ///
+	cells("b(fmt(2)star)" "se(fmt(2)par)") ///
+	refcat(, nolabel) ///
+	stats(N N_clust r2_p, fmt(0 0 2)	labels(`"Observations"' `"Number of clust"'))
+	
+	
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Graphs PROBIT
+****************************************
+
+********** Final
+import excel "_marggraph.xlsx", sheet("probit_final") firstrow clear
+labmask cat, values(lab)
+drop lab
+*
+twoway ///
+(rcap max min cat, horiz xline(0)) ///
+(scatter cat dydx, msymbol(S)) ///
+, ylabel(1/18,value) ///
+ytitle("") xtitle("Marginal effect") ///
+legend(order(1 "95% CI" 2 "Effect") pos(6) col(2)) ///
+scale(1.2) name(probit_final, replace)
+graph export "graph/probit_final.png", as(png) replace
+
+
+********** HH clust
+import excel "_marggraph.xlsx", sheet("probit_HHclus") firstrow clear
+labmask cat, values(lab)
+drop lab
+*
+twoway ///
+(rcap max min cat, horiz xline(0)) ///
+(scatter cat dydx, msymbol(S)) ///
+, ylabel(1/18,value) ///
+ytitle("") xtitle("Marginal effect") ///
+legend(order(1 "95% CI" 2 "Effect") pos(6) col(2)) ///
+scale(1.2) name(probit_final, replace)
+graph export "graph/probit_HHclus.png", as(png) replace
+
+
+********** Shocks
+import excel "_marggraph.xlsx", sheet("probit_shocks") firstrow clear
+labmask cat, values(lab)
+drop lab
+*
+twoway ///
+(rcap max min cat, horiz xline(0)) ///
+(scatter cat dydx, msymbol(S)) ///
+, ylabel(1/21,value) ///
+ytitle("") xtitle("Marginal effect") ///
+legend(order(1 "95% CI" 2 "Effect") pos(6) col(2)) ///
+scale(1.2) name(probit_final, replace)
+graph export "graph/probit_shocks.png", as(png) replace
+
+
+********** HH FE
+import excel "_marggraph.xlsx", sheet("probit_HHFE") firstrow clear
+labmask cat, values(lab)
+drop lab
+*
+twoway ///
+(rcap max min cat, horiz xline(0)) ///
+(scatter cat dydx, msymbol(S)) ///
+, ylabel(1/18,value) ///
+ytitle("") xtitle("Marginal effect") ///
+legend(order(1 "95% CI" 2 "Effect") pos(6) col(2)) ///
+scale(1.2) name(probit_final, replace)
+graph export "graph/probit_HHFE.png", as(png) replace
+
+	
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Graphs FRACTIONAL PROBIT
+****************************************
+
+********** Final
+import excel "_marggraph.xlsx", sheet("fracprob_final") firstrow clear
+labmask cat, values(lab)
+drop lab
+*
+twoway ///
+(rcap max min cat, horiz xline(0)) ///
+(scatter cat dydx, msymbol(S)) ///
+, ylabel(1/18,value) ///
+ytitle("") xtitle("Marginal effect") ///
+legend(order(1 "95% CI" 2 "Effect") pos(6) col(2)) ///
+scale(1.2) name(probit_final, replace)
+graph export "graph/fracprob_final.png", as(png) replace
+
+
+********** HH clust
+import excel "_marggraph.xlsx", sheet("fracprob_HHclus") firstrow clear
+labmask cat, values(lab)
+drop lab
+*
+twoway ///
+(rcap max min cat, horiz xline(0)) ///
+(scatter cat dydx, msymbol(S)) ///
+, ylabel(1/18,value) ///
+ytitle("") xtitle("Marginal effect") ///
+legend(order(1 "95% CI" 2 "Effect") pos(6) col(2)) ///
+scale(1.2) name(probit_final, replace)
+graph export "graph/fracprob_HHclus.png", as(png) replace
+
+
+********** Shocks
+import excel "_marggraph.xlsx", sheet("fracprob_shocks") firstrow clear
+labmask cat, values(lab)
+drop lab
+*
+twoway ///
+(rcap max min cat, horiz xline(0)) ///
+(scatter cat dydx, msymbol(S)) ///
+, ylabel(1/21,value) ///
+ytitle("") xtitle("Marginal effect") ///
+legend(order(1 "95% CI" 2 "Effect") pos(6) col(2)) ///
+scale(1.2) name(probit_final, replace)
+graph export "graph/fracprob_shocks.png", as(png) replace
+
+
+	
+****************************************
+* END
+
+
 
