@@ -22,7 +22,7 @@ use"panel_indiv_v2", clear
 
 
 ********** Selection
-keep HHID_panel INDID_panel year sex age edulevel relationshiptohead maritalstatus ownland dummymarriage working_pop mainocc_occupation_indiv dummydemonetisation trapamount_indiv nbmale nbfemale HHsize HH_count_child HH_count_adult headsex assets_total1000 annualincome_HH nbworker_HH nbnonworker_HH remittnet_HH secondlockdownexposure loanamount_HH trapamount_HH share_giventrap dummytrap_indiv village_1 village_2 village_3 village_4 village_5 village_6 village_7 village_8 village_9 village_10 dalits dummyloans_indiv panelvar
+keep HHID_panel INDID_panel year sex age edulevel relationshiptohead maritalstatus ownland dummymarriage working_pop mainocc_occupation_indiv dummydemonetisation trapamount_indiv nbmale nbfemale HHsize HH_count_child HH_count_adult headsex assets_total1000 annualincome_HH nbworker_HH nbnonworker_HH remittnet_HH secondlockdownexposure loanamount_HH trapamount_HH share_giventrap dummytrap_indiv village_1 village_2 village_3 village_4 village_5 village_6 village_7 village_8 village_9 village_10 dalits dummyloans_indiv panelvar caste_1 caste_2 caste_3
 
 
 ********** Rename
@@ -116,37 +116,31 @@ replace headwoman=1 if headsex==2
 drop headsex
 
 * Shock 1
-fre dummymarriage
-rename dummymarriage shock1
+fre dummydemonetisation
+rename dummydemonetisation shock1
 recode shock1 (.=0)
-label var shock1 "Marriage (=1)"
+label var shock1 "Demonetisation (=1)"
 
 * Shock 2
-fre dummydemonetisation
-rename dummydemonetisation shock2
-recode shock2 (.=0)
-label var shock2 "Demonetisation (=1)"
-
-* Shock 3
 fre secondlockdownexposure
-gen shock3=0 if secondlockdownexposure==1
-replace shock3=0 if secondlockdownexposure==2
-replace shock3=1 if secondlockdownexposure==3
-recode shock3 (.=0)
+gen shock2=0 if secondlockdownexposure==1
+replace shock2=0 if secondlockdownexposure==2
+replace shock2=1 if secondlockdownexposure==3
+recode shock2 (.=0)
 drop secondlockdownexposure
-label var shock3 "After 2nd lockdown (=1)"
+label var shock2 "After 2nd lockdown (=1)"
 
 
 
 ********** Order
 sort HHID_panel INDID_panel year
-order HHID_panel INDID_panel HHFE panelvar year age agesq women relationshiptohead married dalits edu_1 edu_2 edu_3 moccup_1 moccup_2 moccup_3 moccup_4 moccup_5 moccup_6 moccup_7 dummyloan dummytrap trapamount sharetrap headwoman size_HH nbchildren_HH nbadult_HH nbmale nbfemale nbworker_HH nbnonworker_HH assets_std income_std loan_std trapamount_HH remittnet_HH ownland shock1 shock2 shock3
+order HHID_panel INDID_panel HHFE panelvar year age agesq women relationshiptohead married dalits edu_1 edu_2 edu_3 moccup_1 moccup_2 moccup_3 moccup_4 moccup_5 moccup_6 moccup_7 dummyloan dummytrap trapamount sharetrap headwoman size_HH nbchildren_HH nbadult_HH nbmale nbfemale nbworker_HH nbnonworker_HH assets_std income_std loan_std trapamount_HH remittnet_HH ownland shock1 shock2
 
 
 
 ********** Mean over time for FE
 global indivcont age agesq married edu_1 edu_2 edu_3 moccup_1 moccup_2 moccup_3 moccup_4 moccup_5 moccup_6 moccup_7
-global hhcont headwoman size_HH nbchildren_HH nbadult_HH nbmale nbfemale nbworker_HH nbnonworker_HH assets_std income_std loan_std trapamount_HH shock1 shock2 shock3
+global hhcont headwoman size_HH nbchildren_HH nbadult_HH nbmale nbfemale nbworker_HH nbnonworker_HH assets_std income_std loan_std trapamount_HH shock1 shock2
 
 foreach x in $indivcont $hhcont {
 bysort HHID_panel INDID_panel: egen mean_`x'=mean(`x')
@@ -198,7 +192,6 @@ save"panel_indiv_v2_econo", replace
 use"panel_indiv_v2_econo", clear
 
 
-
 ********** Macro
 global indivcont ///
 age mean_age ///
@@ -220,8 +213,7 @@ assets_std mean_assets_std
 
 global shocks ///
 shock1 mean_shock1 ///
-shock2 mean_shock2 ///
-shock3 mean_shock3
+shock2 mean_shock2 
 
 global invar ///
 village_2 village_3 village_4 village_5 village_6 village_7 village_8 village_9 village_10
@@ -276,11 +268,11 @@ $indivcont $hhcont $shocks $invar $time ///
 , vce(cl panelvar)
 est store pro3
 * Margins
-margins, dydx(women dalits age married edu_2 edu_3 moccup_1 moccup_2 moccup_4 moccup_5 moccup_6 moccup_7 size_HH nbchildren_HH income_std assets_std shock1 shock2 shock3) atmeans post
+margins, dydx(women dalits age married edu_2 edu_3 moccup_1 moccup_2 moccup_4 moccup_5 moccup_6 moccup_7 size_HH nbchildren_HH income_std assets_std shock1 shock2) atmeans post
 est store marg3
 
 
-
+/*
 ********** HH FE
 * Probit
 probit dummytrap i.women i.dalits ///
@@ -290,14 +282,14 @@ est store pro4
 * Margins
 margins, dydx(women dalits age married edu_2 edu_3 moccup_1 moccup_2 moccup_4 moccup_5 moccup_6 moccup_7 size_HH nbchildren_HH income_std assets_std) atmeans post
 est store marg4
-
+*/
 
 
 
 
 
 ********** Table
-esttab pro1 pro2 pro3 pro4 using "Trap_pro.csv", replace ///
+esttab pro1 pro2 pro3 using "Trap_pro.csv", replace ///
 	label b(3) p(3) eqlabels(none) alignment(S) ///
 	star(* 0.10 ** 0.05 *** 0.01) ///
 	drop(mean_* village_* year* nobs*) ///
@@ -352,8 +344,7 @@ assets_std mean_assets_std
 
 global shocks ///
 shock1 mean_shock1 ///
-shock2 mean_shock2 ///
-shock3 mean_shock3
+shock2 mean_shock2 
 
 global invar ///
 village_2 village_3 village_4 village_5 village_6 village_7 village_8 village_9 village_10
@@ -415,7 +406,7 @@ $indivcont $hhcont $shocks $invar $time ///
 , family(binomial) link(probit) cluster(panelvar)
 est store fra3
 * Margins
-margins, dydx(women dalits age married edu_2 edu_3 moccup_1 moccup_2 moccup_4 moccup_5 moccup_6 moccup_7 size_HH nbchildren_HH income_std assets_std shock1 shock2 shock3) atmeans post
+margins, dydx(women dalits age married edu_2 edu_3 moccup_1 moccup_2 moccup_4 moccup_5 moccup_6 moccup_7 size_HH nbchildren_HH income_std assets_std shock1 shock2) atmeans post
 est store marg3
 
 
@@ -512,26 +503,11 @@ drop lab
 twoway ///
 (rcap max min cat, horiz xline(0)) ///
 (scatter cat dydx, msymbol(S)) ///
-, ylabel(1/21,value) ///
+, ylabel(1/20,value) ///
 ytitle("") xtitle("Marginal effect") ///
 legend(order(1 "95% CI" 2 "Effect") pos(6) col(2)) ///
 scale(1.2) name(probit_final, replace)
 graph export "graph/probit_shocks.png", as(png) replace
-
-
-********** HH FE
-import excel "_marggraph.xlsx", sheet("probit_HHFE") firstrow clear
-labmask cat, values(lab)
-drop lab
-*
-twoway ///
-(rcap max min cat, horiz xline(0)) ///
-(scatter cat dydx, msymbol(S)) ///
-, ylabel(1/18,value) ///
-ytitle("") xtitle("Marginal effect") ///
-legend(order(1 "95% CI" 2 "Effect") pos(6) col(2)) ///
-scale(1.2) name(probit_final, replace)
-graph export "graph/probit_HHFE.png", as(png) replace
 
 	
 ****************************************
@@ -598,16 +574,192 @@ drop lab
 twoway ///
 (rcap max min cat, horiz xline(0)) ///
 (scatter cat dydx, msymbol(S)) ///
-, ylabel(1/21,value) ///
+, ylabel(1/20,value) ///
 ytitle("") xtitle("Marginal effect") ///
 legend(order(1 "95% CI" 2 "Effect") pos(6) col(2)) ///
 scale(1.2) name(probit_final, replace)
 graph export "graph/fracprob_shocks.png", as(png) replace
-
-
 	
 ****************************************
 * END
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* PROBIT with Interactions
+****************************************
+use"panel_indiv_v2_econo", clear
+
+
+********** Sample
+* Only trapped HH
+keep if trapamount_HH!=0
+ta dummytrap year, col
+recode dummytrap (.=0)
+ta dummytrap year, col
+
+
+********** Final
+probit dummytrap i.women i.dalits ///
+age mean_age married mean_married edu_2 mean_edu_2 edu_3 mean_edu_3 moccup_1 mean_moccup_1 moccup_2 mean_moccup_2 moccup_4 mean_moccup_4 moccup_5 mean_moccup_5 moccup_6 mean_moccup_6 moccup_7 mean_moccup_7 ///
+size_HH mean_size_HH nbchildren_HH mean_nbchildren_HH income_std mean_income_std assets_std mean_assets_std ///
+village_2 village_3 village_4 village_5 village_6 village_7 village_8 village_9 village_10 ///
+year2020 mean_year2020 nobs2 ///
+, vce(cl panelvar)
+est store pro1
+
+
+********** Gender ## Caste
+probit dummytrap i.women##i.dalits ///
+age mean_age married mean_married edu_2 mean_edu_2 edu_3 mean_edu_3 moccup_1 mean_moccup_1 moccup_2 mean_moccup_2 moccup_4 mean_moccup_4 moccup_5 mean_moccup_5 moccup_6 mean_moccup_6 moccup_7 mean_moccup_7 ///
+size_HH mean_size_HH nbchildren_HH mean_nbchildren_HH income_std mean_income_std assets_std mean_assets_std ///
+village_2 village_3 village_4 village_5 village_6 village_7 village_8 village_9 village_10 ///
+year2020 mean_year2020 nobs2 ///
+, vce(cl panelvar)
+est store pro2
+
+
+********** Gender ## Income
+probit dummytrap i.dalits ///
+age mean_age married mean_married edu_2 mean_edu_2 edu_3 mean_edu_3 moccup_1 mean_moccup_1 moccup_2 mean_moccup_2 moccup_4 mean_moccup_4 moccup_5 mean_moccup_5 moccup_6 mean_moccup_6 moccup_7 mean_moccup_7 ///
+size_HH mean_size_HH nbchildren_HH mean_nbchildren_HH i.women##c.income_std i.women##c.mean_income_std assets_std mean_assets_std ///
+village_2 village_3 village_4 village_5 village_6 village_7 village_8 village_9 village_10 ///
+year2020 mean_year2020 nobs2 ///
+, vce(cl panelvar)
+est store pro3
+
+
+********** Gender ## Income
+probit dummytrap i.dalits ///
+age mean_age married mean_married edu_2 mean_edu_2 edu_3 mean_edu_3 moccup_1 mean_moccup_1 moccup_2 mean_moccup_2 moccup_4 mean_moccup_4 moccup_5 mean_moccup_5 moccup_6 mean_moccup_6 moccup_7 mean_moccup_7 ///
+size_HH mean_size_HH nbchildren_HH mean_nbchildren_HH income_std mean_income_std i.women##c.assets_std i.women##c.mean_assets_std ///
+village_2 village_3 village_4 village_5 village_6 village_7 village_8 village_9 village_10 ///
+year2020 mean_year2020 nobs2 ///
+, vce(cl panelvar)
+est store pro4
+
+
+********** Table
+esttab pro1 pro2 pro3 pro4 using "Trap_pro_int.csv", replace ///
+	label b(3) p(3) eqlabels(none) alignment(S) ///
+	star(* 0.10 ** 0.05 *** 0.01) ///
+	drop(mean_* village_* year* nobs*) ///
+	cells("b(fmt(2)star)" "se(fmt(2)par)") ///
+	refcat(, nolabel) ///
+	stats(N N_clust r2_p, fmt(0 0 2)	labels(`"Observations"' `"Number of clust"'))
+
+
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* FRACTIONAL PROBIT with Interactions
+****************************************
+use"panel_indiv_v2_econo", clear
+
+
+********** Sample
+* Only trapped HH
+keep if trapamount_HH!=0
+ta dummytrap year, col
+recode dummytrap (.=0)
+ta dummytrap year, col
+keep if dummytrap==1
+ta year
+
+
+********** Final
+glm sharetrap i.women i.dalits ///
+age mean_age married mean_married edu_2 mean_edu_2 edu_3 mean_edu_3 moccup_1 mean_moccup_1 moccup_2 mean_moccup_2 moccup_4 mean_moccup_4 moccup_5 mean_moccup_5 moccup_6 mean_moccup_6 moccup_7 mean_moccup_7 ///
+size_HH mean_size_HH nbchildren_HH mean_nbchildren_HH income_std mean_income_std assets_std mean_assets_std ///
+village_2 village_3 village_4 village_5 village_6 village_7 village_8 village_9 village_10 ///
+year2020 mean_year2020 nobs2 ///
+, family(binomial) link(probit) cluster(panelvar)
+est store fra1
+
+
+********** Gender ## Caste
+glm sharetrap i.women##i.dalits ///
+age mean_age married mean_married edu_2 mean_edu_2 edu_3 mean_edu_3 moccup_1 mean_moccup_1 moccup_2 mean_moccup_2 moccup_4 mean_moccup_4 moccup_5 mean_moccup_5 moccup_6 mean_moccup_6 moccup_7 mean_moccup_7 ///
+size_HH mean_size_HH nbchildren_HH mean_nbchildren_HH income_std mean_income_std assets_std mean_assets_std ///
+village_2 village_3 village_4 village_5 village_6 village_7 village_8 village_9 village_10 ///
+year2020 mean_year2020 nobs2 ///
+, family(binomial) link(probit) cluster(panelvar)
+est store fra2
+
+
+********** Gender ## Income
+glm sharetrap i.dalits ///
+age mean_age married mean_married edu_2 mean_edu_2 edu_3 mean_edu_3 moccup_1 mean_moccup_1 moccup_2 mean_moccup_2 moccup_4 mean_moccup_4 moccup_5 mean_moccup_5 moccup_6 mean_moccup_6 moccup_7 mean_moccup_7 ///
+size_HH mean_size_HH nbchildren_HH mean_nbchildren_HH i.women##c.income_std i.women##c.mean_income_std assets_std mean_assets_std ///
+village_2 village_3 village_4 village_5 village_6 village_7 village_8 village_9 village_10 ///
+year2020 mean_year2020 nobs2 ///
+, family(binomial) link(probit) cluster(panelvar)
+est store fra3
+
+
+********** Gender ## Income
+glm sharetrap i.dalits ///
+age mean_age married mean_married edu_2 mean_edu_2 edu_3 mean_edu_3 moccup_1 mean_moccup_1 moccup_2 mean_moccup_2 moccup_4 mean_moccup_4 moccup_5 mean_moccup_5 moccup_6 mean_moccup_6 moccup_7 mean_moccup_7 ///
+size_HH mean_size_HH nbchildren_HH mean_nbchildren_HH income_std mean_income_std i.women##c.assets_std i.women##c.mean_assets_std ///
+village_2 village_3 village_4 village_5 village_6 village_7 village_8 village_9 village_10 ///
+year2020 mean_year2020 nobs2 ///
+, family(binomial) link(probit) cluster(panelvar)
+est store fra4
+
+
+
+
+
+********** Table
+esttab fra1 fra2 fra3 fra4 using "Trap_fra_int.csv", replace ///
+	label b(3) p(3) eqlabels(none) alignment(S) ///
+	star(* 0.10 ** 0.05 *** 0.01) ///
+	drop(mean_* village_* year* nobs*) ///
+	cells("b(fmt(2)star)" "se(fmt(2)par)") ///
+	refcat(, nolabel) ///
+	stats(N N_clust r2_p, fmt(0 0 2)	labels(`"Observations"' `"Number of clust"'))
+
+****************************************
+* END
+
+
+
+
+
+
 
 
 
