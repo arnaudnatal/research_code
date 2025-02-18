@@ -114,3 +114,49 @@ graph bar y1 y2 y3, over(mod, lab(angle(45)) gap(100)) legend(order(1 "2010" 2 "
 
 ****************************************
 * END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Stat desc 2, mieux catégoriser les prêts trappe
+****************************************
+use"panel_loans_v1", replace
+
+keep HHID_panel year caste loanreasongiven imp1_debt_service imp1_interest_service
+
+rename imp1_debt_service ds
+rename imp1_interest_service is
+
+fre loanreasongiven
+gen ds_repa=ds if loanreasongiven==4
+gen is_repa=is if loanreasongiven==4
+
+gen trap=1 if loanreasongiven==4
+
+collapse (sum) ds is ds_repa is_repa trap, by(HHID_panel year)
+
+replace trap=1 if trap>1
+recode trap (.=0)
+
+ta trap year
+
+gen dssharerepa=ds_repa*100/ds
+gen issharerepa=is_repa*100/is
+
+tabstat dssharerepa issharerepa if trap==1, stat(n mean q) by(year)
+
+****************************************
+* END

@@ -14,6 +14,113 @@ do "C:/Users/Arnaud/Documents/GitHub/folderanalysis/$link.do"
 
 
 
+
+
+
+
+****************************************
+* Sample size check
+****************************************
+
+********** NEEMSIS-2
+use"raw/NEEMSIS2-HH", clear
+
+keep HHID2020 INDID2020 egoid livinghome dummylefthousehold reasonlefthome reasonlefthomeother maritalstatus
+*
+merge m:m HHID2020 using "raw/keypanel-HH_wide", keepusing(HHID_panel)
+keep if _merge==3
+drop _merge HHID2020
+*
+tostring INDID2020, replace
+merge m:m HHID_panel INDID2020 using "raw/keypanel-Indiv_wide", keepusing(INDID_panel)
+keep if _merge==3
+drop _merge INDID2020
+*
+order HHID_panel INDID_panel
+*
+foreach x in egoid dummylefthousehold reasonlefthome reasonlefthomeother livinghome maritalstatus {
+rename `x' `x'2020
+}
+
+save"_temp", replace
+
+
+********** NEEMSIS-1
+use"raw/NEEMSIS1-HH", clear
+
+keep HHID2016 INDID2016 egoid livinghome name sex maritalstatus
+*
+merge m:m HHID2016 using "raw/keypanel-HH_wide", keepusing(HHID_panel)
+keep if _merge==3
+drop _merge HHID2016
+*
+tostring INDID2016, replace
+merge m:m HHID_panel INDID2016 using "raw/keypanel-Indiv_wide", keepusing(INDID_panel)
+keep if _merge==3
+drop _merge INDID2016
+*
+order HHID_panel INDID_panel
+*
+drop if egoid==0
+*
+merge 1:1 HHID_panel INDID_panel using "_temp"
+drop if _merge==2
+*
+count
+*
+drop if egoid2020>0 & egoid2020!=.
+
+* Reason left home
+fre reasonlefthome2020
+ta reasonlefthomeother2020
+replace reasonlefthome2020=2 if  reasonlefthomeother2020=="Following Jayaraman"
+replace reasonlefthome2020=2 if  reasonlefthomeother2020=="Following her husband"
+replace reasonlefthome2020=2 if  reasonlefthomeother2020=="Following her husband"
+replace reasonlefthome2020=3 if  reasonlefthomeother2020=="To start nuclear family"
+fre reasonlefthome2020
+
+
+* Others
+ta livinghome2020
+fre livinghome2020
+
+* Var global
+sort _merge HHID_panel INDID_panel
+gen reason=""
+replace reason="Permanent migration (job)" if reasonlefthome2020==2
+replace reason="Marriage" if reasonlefthome2020==3
+replace reason="Died" if reasonlefthome2020==4
+replace reason="Other" if reasonlefthome2020==77
+replace reason="Temporarily migration" if livinghome2020==2
+replace reason="Marriage" if livinghome2020==3
+replace reason="Attrition HH" if _merge==1
+replace reason="Indisponible to answer ego" if livinghome2020==1
+
+ta reason, sort
+
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ****************************************
 * PREPA 2016-17
 ****************************************

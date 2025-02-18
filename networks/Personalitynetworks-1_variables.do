@@ -17,6 +17,8 @@ do"C:\Users\Arnaud\Documents\GitHub\folderanalysis\networks.do"
 
 
 
+
+
 ****************************************
 * Enlever les 6 ménages pour lesquels il nous manque des infos
 ****************************************

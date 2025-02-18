@@ -32,7 +32,7 @@ gen dummymainloan=0
 replace dummymainloan=1 if borrowerservices!=.
 ta dummymainloan
 
-keep HHID2010 loanid loanreasongiven loanlender loansettled loanamount lender_cat reason_cat lender4 loanamount2 loanbalance2 interestpaid2 totalrepaid2 principalpaid2 effective_repa plantorep_* dummymainloan
+keep HHID2010 loanid loanreasongiven loanlender loansettled loanamount lender_cat reason_cat lender4 loanamount2 loanbalance2 interestpaid2 totalrepaid2 principalpaid2 effective_repa plantorep_* dummymainloan imp1_debt_service imp1_interest_service
 
 merge m:m HHID2010 using "raw/keypanel-HH_wide.dta", keepusing(HHID_panel)
 keep if _merge==3
@@ -68,7 +68,7 @@ ta dummymainloan
 
 ta loan_database
 drop if loan_database=="MARRIAGE"
-keep HHID2016 INDID2016 loanid loanreasongiven loanlender loansettled loanamount lender_cat reason_cat lender4 loanamount2 loanbalance2 interestpaid2 totalrepaid2 principalpaid2 effective_repa loan_database plantorep_* settlestrat_* dummymainloan
+keep HHID2016 INDID2016 loanid loanreasongiven loanlender loansettled loanamount lender_cat reason_cat lender4 loanamount2 loanbalance2 interestpaid2 totalrepaid2 principalpaid2 effective_repa loan_database plantorep_* settlestrat_* dummymainloan imp1_debt_service imp1_interest_service
 
 merge m:m HHID2016 using "raw/keypanel-HH_wide.dta", keepusing(HHID_panel)
 keep if _merge==3
@@ -131,7 +131,7 @@ gen effective_repa2=effective_repa
 replace effective_repa2=1 if loaneffectivereason2==4 & effective_repa2!=. & effective_repa2!=1
 ta effective_repa2
 
-keep HHID2020 INDID2020 loanid loanreasongiven loanlender loansettled loanamount lender_cat reason_cat lender4 loanamount2 loanbalance2 interestpaid2 totalrepaid2 principalpaid2 effective_repa loan_database plantorep_* settlestrat_* dummymainloan
+keep HHID2020 INDID2020 loanid loanreasongiven loanlender loansettled loanamount lender_cat reason_cat lender4 loanamount2 loanbalance2 interestpaid2 totalrepaid2 principalpaid2 effective_repa loan_database plantorep_* settlestrat_* dummymainloan imp1_debt_service imp1_interest_service
 
 merge m:m HHID2020 using "raw/keypanel-HH_wide.dta", keepusing(HHID_panel)
 keep if _merge==3

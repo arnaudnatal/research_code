@@ -506,11 +506,15 @@ label values attrition2016 attrition2016
 
 
 * ES
-tabstat fES2016 fOPEX2016 fCO2016, stat(n mean median) by(attrition2016)
+tabstat fES2016 fOPEX2016 fCO2016, stat(mean median) by(attrition2016)
 reg fES2016 i.attrition2016
-reg fOPEX2016 i.attrition2016
-reg fCO2016 i.attrition2016
+qreg fES2016 i.attrition2016, q(.5)
 
+reg fOPEX2016 i.attrition2016
+qreg fOPEX2016 i.attrition2016, q(.5)
+
+reg fCO2016 i.attrition2016
+qreg fCO2016 i.attrition2016, q(.5)
 
 ****************************************
 * END

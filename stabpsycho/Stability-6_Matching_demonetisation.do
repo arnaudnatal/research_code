@@ -76,6 +76,11 @@ rename sex female
 fre female
 label values female yesno
 
+*** Villagenew
+encode villagename2016_club, gen(newvillage)
+ta newvillage, gen(newvillage)
+
+
 *** Treatment
 rename dummydemonetisation treat 
 
@@ -91,28 +96,20 @@ ta `x', gen(`x'_)
 keep if year==2016
 keep HHID_panel HHFE INDID_panel fES fOPEX fCO treat ///
 age caste female unmarried occupation edulevel HHsize assetsstd incomeHHstd debtstd villageid username_code ///
-caste_1 caste_2 caste_3 occupation_1 occupation_2 occupation_3 occupation_4 occupation_5 occupation_6 occupation_7 occupation_8 edulevel_1 edulevel_2 edulevel_3 edulevel_4 edulevel_5 villageid_1 villageid_2 villageid_3 villageid_4 villageid_5 villageid_6 villageid_7 villageid_8 villageid_9 villageid_10 username_code_1 username_code_2 username_code_3 username_code_4 username_code_5 username_code_6 username_code_7 username_code_8 username_code_9 username_code_10 username_code_11 username_code_12
+caste occupation edulevel villageid username_code
 
+global varstep1 age ib(1).caste female unmarried ib(3).occupation ib(1).edulevel HHsize assetsstd incomeHHstd debtstd
 
-global varstep1 age caste_2 caste_3 female unmarried occupation_1 occupation_2 occupation_4 occupation_5 occupation_6 occupation_7 occupation_8 edulevel_2 edulevel_3 edulevel_4 edulevel_5 HHsize assetsstd incomeHHstd debtstd
-global varstep2 $varstep1 villageid_2 villageid_3 villageid_4 villageid_5 villageid_6 villageid_7 villageid_8 villageid_9 villageid_10 username_code_2 username_code_3 username_code_4 username_code_5 username_code_6 username_code_7 username_code_8 username_code_9 username_code_10 username_code_11 username_code_12
+global varstep2 $varstep1 ib(1).villageid ib(1).username_code
 
 
 
 ********** Balance test
 psweight balance treat $varstep1
+mdesc
 psweight cbpsoid treat $varstep1
+mdesc
 psweight call balanceresults()
-
-cls
-foreach x in $varstep1 {
-reg `x' i.treat, noheader
-}
-
-cls
-foreach x in $varstep1 {
-reg `x' i.treat [pw=_weight], noheader
-}
 
 
 
@@ -139,7 +136,7 @@ est store `x'wsc
 
 esttab fESw fOPEXw fCOw using "new/reg.csv", replace ///
 	b(3) p(3) eqlabels(none) alignment(S) ///
-	drop(_cons $varstep2) ///
+	keep(treat) ///
 	star(* 0.10 ** 0.05 *** 0.01) ///
 	cells("b(fmt(2)star)" "t(fmt(2)par)") ///
 	refcat(, nolabel) ///
@@ -148,7 +145,7 @@ esttab fESw fOPEXw fCOw using "new/reg.csv", replace ///
 
 esttab fESws fOPEXws fCOws using "new/reg_s.csv", replace ///
 	b(3) p(3) eqlabels(none) alignment(S) ///
-	drop(_cons $varstep2) ///
+	keep(1.treat 1.female 1.treat#1.female) ///
 	star(* 0.10 ** 0.05 *** 0.01) ///
 	cells("b(fmt(2)star)" "t(fmt(2)par)") ///
 	refcat(, nolabel) ///
@@ -157,7 +154,7 @@ esttab fESws fOPEXws fCOws using "new/reg_s.csv", replace ///
 
 esttab fESwc fOPEXwc fCOwc using "new/reg_c.csv", replace ///
 	b(3) p(3) eqlabels(none) alignment(S) ///
-	drop(_cons $varstep2) ///
+	keep(1.treat 2.caste 3.caste 1.treat#2.caste 1.treat#3.caste) ///
 	star(* 0.10 ** 0.05 *** 0.01) ///
 	cells("b(fmt(2)star)" "t(fmt(2)par)") ///
 	refcat(, nolabel) ///
@@ -166,7 +163,7 @@ esttab fESwc fOPEXwc fCOwc using "new/reg_c.csv", replace ///
 
 esttab fESwsc fOPEXwsc fCOwsc using "new/reg_sc.csv", replace ///
 	b(3) p(3) eqlabels(none) alignment(S) ///
-	drop(_cons $varstep2) ///
+	keep(1.treat 1.female 1.treat#1.female 2.caste 3.caste 1.treat#2.caste 1.treat#3.caste 1.female#2.caste 1.female#3.caste 1.treat#1.female#2.caste 1.treat#1.female#3.caste) ///
 	star(* 0.10 ** 0.05 *** 0.01) ///
 	cells("b(fmt(2)star)" "t(fmt(2)par)") ///
 	refcat(, nolabel) ///
@@ -277,12 +274,10 @@ ta `x', gen(`x'_)
 *** Clean Database
 keep if year==2020
 keep HHID_panel HHFE INDID_panel fES fOPEX fCO treat ///
-age caste female unmarried occupation edulevel HHsize assetsstd incomeHHstd debtstd villageid username_code ///
-caste_1 caste_2 caste_3 occupation_1 occupation_2 occupation_3 occupation_4 occupation_5 occupation_6 occupation_7 occupation_8 edulevel_1 edulevel_2 edulevel_3 edulevel_4 edulevel_5 villageid_1 villageid_2 villageid_3 villageid_4 villageid_5 villageid_6 villageid_7 villageid_8 villageid_9 villageid_10 username_code_1 username_code_2 username_code_3 username_code_4 username_code_5 username_code_6 username_code_7 username_code_8 username_code_9 username_code_10 username_code_11 username_code_12
+age caste female unmarried occupation edulevel HHsize assetsstd incomeHHstd debtstd villageid username_code 
 
-
-global varstep1 age caste_2 caste_3 female unmarried occupation_1 occupation_2 occupation_4 occupation_5 occupation_6 occupation_7 occupation_8 edulevel_2 edulevel_3 edulevel_4 edulevel_5 HHsize assetsstd incomeHHstd debtstd
-global varstep2 $varstep1 villageid_2 villageid_3 villageid_4 villageid_5 villageid_6 villageid_7 villageid_8 villageid_9 villageid_10 username_code_2 username_code_3 username_code_4 username_code_5 username_code_6 username_code_7 username_code_8 username_code_9 username_code_10 username_code_11 username_code_12
+global varstep1 age ib(1).caste female unmarried ib(3).occupation ib(1).edulevel HHsize assetsstd incomeHHstd debtstd
+global varstep2 $varstep1 ib(1).username_code ib(1).villageid
 
 
 
@@ -290,16 +285,6 @@ global varstep2 $varstep1 villageid_2 villageid_3 villageid_4 villageid_5 villag
 psweight balance treat $varstep1
 psweight cbpsoid treat $varstep1
 psweight call balanceresults()
-
-cls
-foreach x in $varstep1 {
-reg `x' i.treat, noheader
-}
-
-cls
-foreach x in $varstep1 {
-reg `x' i.treat [pw=_weight], noheader
-}
 
 
 
@@ -326,7 +311,7 @@ est store `x'wsc
 
 esttab fESw fOPEXw fCOw using "new/reg.csv", replace ///
 	b(3) p(3) eqlabels(none) alignment(S) ///
-	drop(_cons $varstep2) ///
+	keep(treat) ///
 	star(* 0.10 ** 0.05 *** 0.01) ///
 	cells("b(fmt(2)star)" "t(fmt(2)par)") ///
 	refcat(, nolabel) ///
@@ -335,7 +320,7 @@ esttab fESw fOPEXw fCOw using "new/reg.csv", replace ///
 
 esttab fESws fOPEXws fCOws using "new/reg_s.csv", replace ///
 	b(3) p(3) eqlabels(none) alignment(S) ///
-	drop(_cons $varstep2) ///
+	keep(1.treat 1.female 1.treat#1.female) ///
 	star(* 0.10 ** 0.05 *** 0.01) ///
 	cells("b(fmt(2)star)" "t(fmt(2)par)") ///
 	refcat(, nolabel) ///
@@ -344,7 +329,7 @@ esttab fESws fOPEXws fCOws using "new/reg_s.csv", replace ///
 
 esttab fESwc fOPEXwc fCOwc using "new/reg_c.csv", replace ///
 	b(3) p(3) eqlabels(none) alignment(S) ///
-	drop(_cons $varstep2) ///
+	keep(1.treat 2.caste 3.caste 1.treat#2.caste 1.treat#3.caste) ///
 	star(* 0.10 ** 0.05 *** 0.01) ///
 	cells("b(fmt(2)star)" "t(fmt(2)par)") ///
 	refcat(, nolabel) ///
@@ -353,13 +338,12 @@ esttab fESwc fOPEXwc fCOwc using "new/reg_c.csv", replace ///
 
 esttab fESwsc fOPEXwsc fCOwsc using "new/reg_sc.csv", replace ///
 	b(3) p(3) eqlabels(none) alignment(S) ///
-	drop(_cons $varstep2) ///
+	keep(1.treat 1.female 1.treat#1.female 2.caste 3.caste 1.treat#2.caste 1.treat#3.caste 1.female#2.caste 1.female#3.caste 1.treat#1.female#2.caste 1.treat#1.female#3.caste) ///
 	star(* 0.10 ** 0.05 *** 0.01) ///
 	cells("b(fmt(2)star)" "t(fmt(2)par)") ///
 	refcat(, nolabel) ///
 	stats(N, fmt(0) ///
 	labels(`"Observations"'))
-
 	
 ****************************************
 * END
