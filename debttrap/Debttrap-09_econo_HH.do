@@ -22,7 +22,8 @@ use"panel_HH_v2", clear
 
 
 ********** Selection
-keep HHID_panel year head_sex head_age head_edulevel head_maritalstatus ownland dummymarriage head_mocc_occupation dummydemonetisation nbmale nbfemale HHsize HH_count_child HH_count_adult assets_total1000 annualincome_HH nbworker_HH nbnonworker_HH remittnet_HH secondlockdownexposure loanamount_HH trapamount_HH dummytrap_HH gtdr_HH village_1 village_2 village_3 village_4 village_5 village_6 village_7 village_8 village_9 village_10 dalits dummyloans_HH
+keep HHID_panel year head_sex head_age head_edulevel head_maritalstatus ownland dummymarriage head_mocc_occupation dummydemonetisation nbmale nbfemale HHsize HH_count_child HH_count_adult assets_total1000 annualincome_HH nbworker_HH nbnonworker_HH remittnet_HH secondlockdownexposure loanamount_HH trapamount_HH dummytrap_HH village_1 village_2 village_3 village_4 village_5 village_6 village_7 village_8 village_9 village_10 dalits dummyloans_HH dsr isr gtdr_HH ///
+expenses_educ expenses_food expenses_heal expenses_cere expenses_total shareexpenses_educ shareexpenses_food shareexpenses_heal shareexpenses_cere
 
 
 ********** Rename
@@ -135,7 +136,7 @@ order HHID_panel HHFE year age agesq women married dalits edu_1 edu_2 edu_3 mocc
 
 ********** Mean over time for FE
 global headcont age agesq married edu_1 edu_2 edu_3 moccup_1 moccup_2 moccup_3 moccup_4 moccup_5 moccup_6 moccup_7
-global hhcont size_HH nbchildren_HH nbadult_HH nbmale nbfemale nbworker_HH nbnonworker_HH assets_std income_std loan_std shock1 shock2 shock3
+global hhcont size_HH nbchildren_HH nbadult_HH nbmale nbfemale nbworker_HH nbnonworker_HH assets_std income_std loan_std shock1 shock2 shock3 isr dsr dummytrap
 
 foreach x in $headcont $hhcont {
 bysort HHID_panel: egen mean_`x'=mean(`x')
@@ -171,6 +172,27 @@ label var mean_year2016 "Within year: 2016-17"
 label var mean_year2020 "Within year: 2020-21"
 
 
+********** Lag
+preserve
+use"panel_HH_v2", clear
+keep HHID_panel year dummytrap trapamount gtdr
+bysort HHID_panel: gen n=_N
+drop if year==2020
+recode year (2016=2020) (2010=2016)
+rename dummytrap LAGdummytrap
+rename trapamount LAGtrapamount
+rename gtdr LAGgtdr
+drop if n==1
+drop n
+save"_temp", replace
+restore
+merge 1:1 HHID_panel year using "_temp"
+drop if _merge==2
+drop _merge
+ta year
+
+ta LAGdummytrap year
+
 save"panel_HH_v2_econo", replace
 ****************************************
 * END
@@ -194,6 +216,7 @@ use"panel_HH_v2_econo", clear
 
 
 ********** Macro
+
 global headcont ///
 women ///
 age mean_age ///
@@ -233,9 +256,24 @@ nobs1 nobs2
 
 ********** Incidence
 keep if dummyloans==1
+
+reg expenses_food LAGdummytrap $headcont $hhcont $invar $time, cluster(HHFE)
+reg expenses_food dummytrap $headcont $hhcont $invar $time, cluster(HHFE)
+
+reg expenses_heal LAGdummytrap $headcont $hhcont $invar $time, cluster(HHFE)
+reg expenses_heal dummytrap $headcont $hhcont $invar $time, cluster(HHFE)
+
+reg expenses_educ LAGdummytrap $headcont $hhcont $invar $time, cluster(HHFE)
+reg expenses_educ dummytrap $headcont $hhcont $invar $time, cluster(HHFE)
+
+reg expenses_cere LAGdummytrap $headcont $hhcont $invar $time, cluster(HHFE)
+reg expenses_cere dummytrap $headcont $hhcont $invar $time, cluster(HHFE)
+
+
+
+
 *
-probit dummytrap $headcont $hhcont $invar $time ///
-, vce(cl HHFE)
+probit dummytrap $headcont $hhcont $invar
 est store inc1
 
 

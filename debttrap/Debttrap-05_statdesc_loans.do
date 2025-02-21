@@ -44,6 +44,8 @@ ta lender4 year if loanreasongiven==4
 ta lender4 year if loanreasongiven==4, col nofreq
 
 * Lender cat
+
+ta lender4cat year, col 
 ta lender4cat year if loanreasongiven==4, col nofreq
 
 * Amount by lender

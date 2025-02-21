@@ -45,7 +45,7 @@ merge 1:1 HHID2010 using "raw/RUME-loans_HH", keepusing(nbloans_HH loanamount_HH
 drop _merge
 
 * Add assets and expenses
-merge 1:1 HHID2010 using "raw/RUME-assets", keepusing(assets_total1000 assets_totalnoland1000 assets_ownland)
+merge 1:1 HHID2010 using "raw/RUME-assets", keepusing(assets_total1000 assets_totalnoland1000 assets_ownland expenses_total expenses_food expenses_educ expenses_heal expenses_cere shareexpenses_food shareexpenses_educ shareexpenses_heal shareexpenses_cere)
 drop _merge
 
 * Add income
@@ -94,6 +94,7 @@ drop if livinghome==4
 keep HHID2016 villagearea villageid dummydemonetisation dummymarriage ownland house housetitle
 fre house housetitle
 duplicates drop
+sort dummymarriage
 decode villagearea, gen(vi)
 drop villagearea
 rename vi area
@@ -120,7 +121,7 @@ merge 1:1 HHID2016 using "raw/NEEMSIS1-loans_HH", keepusing(nbloans_HH loanamoun
 drop _merge
 
 * Add assets and expenses
-merge 1:1 HHID2016 using "raw/NEEMSIS1-assets", keepusing(assets_total1000 assets_totalnoland1000 assets_ownland)
+merge 1:1 HHID2016 using "raw/NEEMSIS1-assets", keepusing(assets_total1000 assets_totalnoland1000 assets_ownland expenses_educ expenses_marr expenses_total expenses_food expenses_heal expenses_cere expenses_agri shareexpenses_food shareexpenses_educ shareexpenses_heal shareexpenses_cere)
 drop _merge
 
 * Add income
@@ -226,7 +227,7 @@ merge 1:1 HHID2020 using "raw/NEEMSIS2-loans_HH", keepusing(nbloans_HH loanamoun
 drop _merge
 
 * Add assets and expenses
-merge 1:1 HHID2020 using "raw/NEEMSIS2-assets", keepusing(assets_total1000 assets_totalnoland1000 assets_ownland)
+merge 1:1 HHID2020 using "raw/NEEMSIS2-assets", keepusing(assets_total1000 assets_totalnoland1000 assets_ownland expenses_educ expenses_marr expenses_total expenses_food expenses_heal expenses_cere expenses_agri shareexpenses_food shareexpenses_educ shareexpenses_heal shareexpenses_cere)
 drop _merge
 
 * Add income
@@ -321,7 +322,7 @@ ta caste
 
 
 *** Quanti 
-global quanti loanamount_HH imp1_ds_tot_HH imp1_is_tot_HH assets_ownland assets_total1000 assets_totalnoland1000 annualincome_HH remreceived_HH remsent_HH remittnet_HH
+global quanti loanamount_HH imp1_ds_tot_HH imp1_is_tot_HH assets_ownland assets_total1000 assets_totalnoland1000 annualincome_HH remreceived_HH remsent_HH remittnet_HH expenses_educ expenses_marr expenses_total expenses_food expenses_heal expenses_cere expenses_agri
 
 
 *** Deflate and round
@@ -335,6 +336,29 @@ replace `x'=round(`x',1)
 *** Clean
 recode dummyexposure (.=0)
 recode head_mocc_occupation (.=0)
+
+
+
+
+********* Consumption
+drop expenses_total
+drop expenses_marr
+drop expenses_agri
+drop shareexpenses_food shareexpenses_educ shareexpenses_heal shareexpenses_cere
+
+egen expenses_total=rowtotal(expenses_educ expenses_food expenses_heal expenses_cere)
+
+foreach x in educ food heal cere {
+gen shareexpenses_`x'=expenses_`x'/expenses_total
+}
+
+
+
+
+
+********** Poverty
+
+
 
 ********** Selection
 drop if housetitle==.

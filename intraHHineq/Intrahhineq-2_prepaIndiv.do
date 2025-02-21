@@ -4,11 +4,11 @@ cls
 *arnaud.natal@u-bordeaux.fr
 *August 8, 2024
 *-----
-gl link = "inequalities"
+gl link = "intraHHineq"
 *Prepa Indiv
 *-----
 *do "https://raw.githubusercontent.com/arnaudnatal/folderanalysis/main/$link.do"
-do"C:\Users\Arnaud\Documents\GitHub\folderanalysis\inequalities.do"
+do"C:\Users\Arnaud\Documents\GitHub\folderanalysis\intraHHineq.do"
 *-------------------------
 
 
@@ -30,11 +30,11 @@ keep HHID2010 INDID2010 name sex age relationshiptohead religion
 merge m:1 HHID2010 using "raw\RUME-occup_HH", keepusing(annualincome_HH nbworker_HH nbnonworker_HH nonworkersratio)
 drop _merge
 
-merge 1:1 HHID2010 INDID2010 using "raw\RUME-occup_indiv"
+merge 1:1 HHID2010 INDID2010 using "raw\RUME-occup_indiv", keepusing(dummyworkedpastyear working_pop mainocc_profession_indiv mainocc_occupation_indiv mainocc_sector_indiv mainocc_annualincome_indiv mainocc_occupationname_indiv annualincome_indiv nboccupation_indiv shareincomeagri_indiv shareincomenonagri_indiv)
 drop _merge
 
 * Family compo
-merge m:1 HHID2010 using "raw/RUME-family", keepusing(nbfemale nbmale HHsize HH_count_child HH_count_adult equiscale_HHsize equimodiscale_HHsize squareroot_HHsize typeoffamily sexratio)
+merge m:1 HHID2010 using "raw/RUME-family", keepusing(nbfemale nbmale HHsize HH_count_child HH_count_adult typeoffamily sexratio)
 drop _merge
 
 * Merge KILM
@@ -76,13 +76,13 @@ use"raw\NEEMSIS1-HH.dta", clear
 * Selection
 ta livinghome egoid
 drop if livinghome>=3
-keep HHID2016 INDID2016 name sex age relationshiptohead
+keep HHID2016 INDID2016 name sex age relationshiptohead reasonnotworkpastyear
 
 * Merge income
 merge m:1 HHID2016 using "raw\NEEMSIS1-occup_HH", keepusing(annualincome_HH nbworker_HH nbnonworker_HH nonworkersratio)
 drop _merge
 
-merge 1:1 HHID2016 INDID2016 using "raw\NEEMSIS1-occup_indiv", keepusing(working_pop mainocc_occupation_indiv mainocc_annualincome_indiv annualincome_indiv nboccupation_indiv)
+merge 1:1 HHID2016 INDID2016 using "raw\NEEMSIS1-occup_indiv", keepusing(dummyworkedpastyear working_pop mainocc_profession_indiv mainocc_occupation_indiv mainocc_sector_indiv mainocc_annualincome_indiv mainocc_occupationname_indiv annualincome_indiv nboccupation_indiv shareincomeagri_indiv shareincomenonagri_indiv)
 keep if _merge==3
 drop _merge
 
@@ -92,10 +92,7 @@ drop _merge
 
 * Merge KILM
 merge 1:1 HHID2016 INDID2016 using "raw\NEEMSIS1-kilm", keepusing(employed)
-drop _merge
-
-* Ego
-merge 1:1 HHID2016 INDID2016 using "raw\NEEMSIS1-ego", keepusing(everwork workpastsevendays searchjob startbusiness reasondontsearchjob searchjobsince15 businessafter15 reasondontsearchjobsince15 nbermonthsearchjob readystartjob methodfindjob jobpreference moveoutsideforjob moveoutsideforjobreason aspirationminimumwage kindofworkfirstjob unpaidinbusinessfirstjob agestartworking agestartworkingpaidjob methodfindfirstjob monthstofindjob beforemainoccup otherbeforemainoccup mainoccuptype dummypreviouswagejob previousjobcontract reasonstoppedwagejob)
+keep if _merge==3
 drop _merge
 
 * Panel
@@ -133,13 +130,13 @@ use"raw\NEEMSIS2-HH.dta", clear
 * Selection
 drop if dummylefthousehold==1
 drop if livinghome>=3
-keep HHID2020 INDID2020 name sex age relationshiptohead
+keep HHID2020 INDID2020 name sex age relationshiptohead reasonnotworkpastyear
 
 * Merge income
 merge m:1 HHID2020 using "raw\NEEMSIS2-occup_HH", keepusing(annualincome_HH nbworker_HH nbnonworker_HH nonworkersratio)
 drop _merge
 
-merge 1:1 HHID2020 INDID2020 using "raw\NEEMSIS2-occup_indiv", keepusing(working_pop mainocc_occupation_indiv mainocc_annualincome_indiv annualincome_indiv nboccupation_indiv)
+merge 1:1 HHID2020 INDID2020 using "raw\NEEMSIS2-occup_indiv", keepusing(dummyworkedpastyear working_pop mainocc_profession_indiv mainocc_occupation_indiv mainocc_sector_indiv mainocc_annualincome_indiv mainocc_occupationname_indiv annualincome_indiv nboccupation_indiv shareincomeagri_indiv shareincomenonagri_indiv)
 keep if _merge==3
 drop _merge
 
@@ -149,10 +146,7 @@ drop _merge
 
 * Merge KILM
 merge 1:1 HHID2020 INDID2020 using "raw\NEEMSIS2-kilm", keepusing(employed)
-drop _merge
-
-* Ego
-merge 1:1 HHID2020 INDID2020 using "raw\NEEMSIS2-ego", keepusing(everwork workpastsevendays searchjob startbusiness reasondontsearchjob searchjobsince15 businessafter15 reasondontsearchjobsince15 nbermonthsearchjob readystartjob methodfindjob jobpreference moveoutsideforjob moveoutsideforjobreason aspirationminimumwage kindofworkfirstjob unpaidinbusinessfirstjob agestartworking agestartworkingpaidjob methodfindfirstjob monthstofindjob beforemainoccup otherbeforemainoccup mainoccuptype dummypreviouswagejob previousjobcontract reasonstoppedwagejob respect workmate useknowledgeatwork satisfyingpurpose schedule takeholiday agreementatwork1 agreementatwork2 agreementatwork3 agreementatwork4 changework happywork satisfactionsalary executionwork1 executionwork2 executionwork3 executionwork4 executionwork5 executionwork6 executionwork7 executionwork8 executionwork9 accidentalinjury losswork lossworknumber mostseriousincident mostseriousinjury seriousinjuryother physicalharm problemwork1 problemwork2 problemwork4 problemwork5 problemwork6 problemwork7 problemwork8 problemwork9 problemwork10 workexposure1 workexposure2 workexposure3 workexposure4 workexposure5 professionalequipment break retirementwork verbalaggression physicalagression sexualharassment sexualaggression discrimination1 discrimination2 discrimination3 discrimination4 discrimination5 discrimination6 discrimination7 discrimination8 discrimination9 resdiscrimination1 resdiscrimination2 resdiscrimination3 resdiscrimination4 resdiscrimination5 rurallocation lackskill)
+keep if _merge==3
 drop _merge
 
 * Panel
@@ -204,42 +198,54 @@ order HHID_panel INDID_panel year dummypanel
 sort HHID_panel INDID_panel year
 
 
-* Caste
-
-
 * Working pop
 fre working_pop
-replace working_pop=2 if working_pop==1 & age>35 & (annualincome_indiv==. | annualincome_indiv==0)
-replace working_pop=3 if working_pop==1 & age>35 & annualincome_indiv!=. & annualincome_indiv!=0
+fre reasonnotworkpastyear
+ta reasonnotworkpastyear working_pop
 
-drop nbworker_HH nbnonworker_HH nonworkersratio
+replace working_pop=1 if reasonnotworkpastyear==1
+replace working_pop=1 if reasonnotworkpastyear==2
+replace working_pop=1 if reasonnotworkpastyear==3
+replace working_pop=1 if reasonnotworkpastyear==4
+replace working_pop=1 if reasonnotworkpastyear==5
+replace working_pop=1 if reasonnotworkpastyear==6
+replace working_pop=1 if reasonnotworkpastyear==7
+replace working_pop=1 if reasonnotworkpastyear==8
+replace working_pop=2 if reasonnotworkpastyear==9
+replace working_pop=2 if reasonnotworkpastyear==10
+replace working_pop=2 if reasonnotworkpastyear==11
+replace working_pop=2 if reasonnotworkpastyear==12
+replace working_pop=1 if reasonnotworkpastyear==13
+replace working_pop=2 if reasonnotworkpastyear==14
+replace working_pop=2 if reasonnotworkpastyear==15
+replace working_pop=3 if working_pop==1 & annualincome_indiv!=. & annualincome_indiv!=0
 
-gen wp_inactive=0
-replace wp_inactive=1 if working_pop==1
-
-gen wp_unoccupi=0
-replace wp_unoccupi=1 if working_pop==2
-
-gen wp_occupied=0
-replace wp_occupied=1 if working_pop==3
-
-foreach x in inactive unoccupi occupied {
-bysort HHID_panel year: egen wp_`x'_HH=sum(wp_`x')
-}
-gen wp_active_HH=wp_unoccupi_HH+wp_occupied_HH
-
-gen test=HHsize-wp_active_HH-wp_inactive_HH
-ta test
-drop test
+* Rename and new var
+fre working_pop
+ta mainocc_occupation_indiv working_pop
+ta age year if working_pop==1 & mainocc_occupation_indiv!=.
+gen status=working_pop
+replace status=4 if working_pop==1 & mainocc_occupation_indiv!=.
+ta status
+recode status (3=1) (1=3)
+ta status
+label define status 1"Active occupied" 2"Active unoccupied" 3"Inactive unoccupied" 4"Inactive occupied"
+label values status status
+ta status
+ta status working_pop
 
 
-* Recode moc
-fre mainocc_occupation_indiv
-gen moc_indiv=mainocc_occupation_indiv
-fre moc_indiv
-recode moc_indiv (0=.) (5=4) (6=5) (7=6)
-label define moc_indiv 1"Agri self-employed" 2"Agri casual" 3"Non-agri casual" 4"Non-agri regular" 5"Non-agri self-employed" 6"MGNREGA"
-label values moc_indiv moc_indiv
+* Drop
+drop mainocc_profession_indiv mainocc_sector_indiv nbworker_HH nbnonworker_HH nonworkersratio reasonnotworkpastyear equiscale_HHsize equimodiscale_HHsize squareroot_HHsize dummyworkedpastyear working_pop employed
+
+* Rename
+rename mainocc_occupation_indiv mainocc_occupation
+rename mainocc_annualincome_indiv mainocc_annualincome
+rename mainocc_occupationname_indiv mainocc_occupationname
+rename annualincome_indiv total_annualincome
+rename nboccupation_indiv nboccupation
+rename shareincomeagri_indiv shareincomeagri
+rename shareincomenonagri_indiv shareincomenonagri
 
 * Jatis caste
 merge m:1 HHID_panel year using "raw/JatisCastePanel"
@@ -251,15 +257,13 @@ encode jatis, gen(jatis_code)
 drop jatis
 rename jatis_code jatis
 
-* 
 gen dalits=.
 replace dalits=1 if caste==1
 replace dalits=0 if caste==2
 replace dalits=0 if caste==3
 
-ta caste, gen(caste_)
-
-order jatis caste caste_1 caste_2 caste_3 dalits, after(age)
+* Order and sort
+order HHID_panel INDID_panel year dummypanel name age sex relationshiptohead caste dalits jatis religion status mainocc_occupation mainocc_annualincome mainocc_occupationname total_annualincome nboccupation shareincomeagri shareincomenonagri
 
 save"panelindiv_v0", replace
 ****************************************
@@ -417,10 +421,59 @@ codebook occupation
 label define occupcode 1"Agri self-employed" 2"Agri casual" 3"Casual" 4"Reg non-qualified" 5"Reg qualified" 6"Self-employed" 7"MGNREGA", replace
 fre occupation
 
+*
+drop kindofwork
+rename tot_monthlyincome total_monthlyincome
+rename nboccupation_indiv nboccupation
+
 
 save"panelocc_v2", replace
 ****************************************
 * END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Ineq var
+****************************************
+use"panelindiv_v0", clear
+
+*
+fre status
+fre sex
+gen maleoccupied=1 if sex==1 & (status==1 | status==9)
+gen femaoccupied=1 if sex==2 & (status==1 | status==9)
+
+*
+bysort HHID_panel year: egen nbmaleoccupied=sum(maleoccupied)
+bysort HHID_panel year: egen nbfemaoccupied=sum(femaoccupied)
+
+*
+keep HHID_panel year nbmaleoccupied nbfemaoccupied
+duplicates drop
+
+ta nbmaleoccupied year, col nofreq
+ta nbfemaoccupied year, col nofreq
+
+****************************************
+* END
+
+
+
+
 
 
 

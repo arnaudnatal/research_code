@@ -4,11 +4,11 @@ cls
 *arnaud.natal@u-bordeaux.fr
 *August 8, 2024
 *-----
-gl link = "inequalities"
+gl link = "intraHHineq"
 *Prepa HH
 *-----
 *do "https://raw.githubusercontent.com/arnaudnatal/folderanalysis/main/$link.do"
-do"C:\Users\Arnaud\Documents\GitHub\folderanalysis\inequalities.do"
+do"C:\Users\Arnaud\Documents\GitHub\folderanalysis\intraHHineq.do"
 *-------------------------
 
 
@@ -347,7 +347,6 @@ use"temp_NEEMSIS2", clear
 append using "temp_NEEMSIS1"
 append using "temp_RUME"
 
-
 *
 drop if HHID_panel=="KUV65"
 
@@ -436,262 +435,20 @@ save"panel_v0", replace
 ****************************************
 use"panel_v0", clear
 
-* DSR
-gen dsr=imp1_ds_tot_HH/annualincome_HH
-replace dsr=0 if dsr==.
+drop compensation compensationamount dummymarriage housetitle area livingarea equiscale_HHsize equimodiscale_HHsize squareroot_HHsize head_INDID2020 head_egoid head_relationshiptohead head_dummyhead head_dummyworkedpastyear head_working_pop head_mocc_profession head_mocc_sector head_mocc_annualincome head_mocc_occupationname head_annualincome pop_workingage pop_dependents dependencyratio dummyheadfemale head_widowseparated dummyoneadult sexratio expenses_educ expenses_marr expenses_total expenses_food expenses_heal expenses_cere expenses_agri shareexpenses_food shareexpenses_educ shareexpenses_heal shareexpenses_cere assets_sizeownland assets_housevalue assets_livestock assets_goods assets_gold assets_total1000 assets_totalnoland1000 assets_totalnoprop1000 shareassets_housevalue shareassets_livestock shareassets_goods shareassets_ownland shareassets_gold incomeagri_HH incomenonagri_HH incagrise_HH incagricasual_HH incnonagricasual_HH incnonagriregnonquali_HH incnonagriregquali_HH incnonagrise_HH incnrega_HH shareincagrise_HH shareincagricasual_HH shareincnonagricasual_HH shareincnonagriregnonquali_HH shareincnonagriregquali_HH shareincnonagrise_HH shareincnrega_HH hoursayear_HH hoursayearagri_HH hoursayearnonagri_HH sharehoursayearagri_HH sharehoursayearnonagri_HH nbworker_HH nbnonworker_HH nonworkersratio remreceived_HH remsent_HH remittnet_HH pension_HH goldquantity_HH goldquantitypledge_HH dummyexposure secondlockdownexposure dummysell jatisdetails jatis goldreadyamount dummydemonetisation head_INDID2016 relation_brotherelder relation_brotheryounger head_INDID2010 relation_head relation_wife relation_mother relation_father relation_son relation_daughter relation_soninlaw relation_daughterinlaw relation_sister relation_brother relation_motherinlaw relation_fatherinlaw relation_grandchildren relation_grandfather relation_grandmother relation_cousin relation_other
 
-* ISR
-gen isr=imp1_is_tot_HH/annualincome_HH
-replace isr=0 if isr==.
-replace dsr=dsr*100
-replace isr=isr*100
-
-* DAR
-gen dar=loanamount_HH/assets_totalnoprop
-replace dar=0 if dar==.
-
-* HH
-encode HHID_panel, gen(panelvar)
-
-* Village
-encode villageid, gen(vill)
-fre village villageid vill
-ta vill, gen(village_)
-
-* Stem
-gen stem=.
-replace stem=0 if typeoffamily=="nuclear"
-replace stem=1 if typeoffamily=="stem"
-replace stem=1 if typeoffamily=="joint-stem"
-label define stem 0"Nuclear" 1"Stem"
-label values stem stem
-ta stem typeoffamily
-
-* Head sex
-fre head_sex
-gen head_female=.
-replace head_female=0 if head_sex==1
-replace head_female=1 if head_sex==2
-ta head_sex head_female
-label define head_female 0"Male" 1"Female"
-label values head_female head_female
-
-* Head occupation
-fre head_mocc_occupation
-recode head_mocc_occupation (5=4)
-ta head_mocc_occupation, gen(head_occ)
-
-* Head edulevel
-fre head_edulevel
-recode head_edulevel (3=2) (4=2) (5=2)
-ta head_edulevel, gen(head_educ)
-
-* Head age
-tabstat head_age, stat(n mean sd q)
-gen head_agesq=head_age*head_age
-gen head_agecat=0
-replace head_agecat=1 if head_age<40
-replace head_agecat=2 if head_age>=40 & head_age<50
-replace head_agecat=3 if head_age>=50 & head_age<60
-replace head_agecat=4 if head_age>=60
-label define head_agecat 1"Less 40" 2"40-50" 3"50-60" 4"60 or more"
-label values head_agecat head_agecat
-ta head_agecat, gen(head_agecat)
-
-* Head maritalstatus
-fre head_maritalstatus
-gen head_nonmarried=head_maritalstatus
-recode head_nonmarried (1=0) (2=1) (3=1) (4=1) (.=0)
-label define head_nonmarried 0"Married" 1"Non-married"
-label values head_nonmarried head_nonmarried
-fre head_nonmarried
-
-* Class of assets
-tabstat assets_total, stat(q) by(year)
-foreach i in 2010 2016 2020 {
-xtile assets_`i'=assets_total if year==`i', n(3) 
-}
-gen assets_cat=.
-replace assets_cat=assets_2010 if year==2010
-replace assets_cat=assets_2016 if year==2016
-replace assets_cat=assets_2020 if year==2020
-drop assets_2010 assets_2016 assets_2020
-ta assets_cat
-label define assets_cat 1"Wealth: Poor" 2"Wealth: Middle" 3"Wealth: Rich"
-label values assets_cat assets_cat
-fre assets_cat
-ta assets_cat, gen(assets_cat)
-
-* Class of incomes
-tabstat annualincome_HH, stat(q) by(year)
-foreach i in 2010 2016 2020 {
-xtile income_`i'=annualincome_HH if year==`i', n(3) 
-}
-gen income_cat=.
-replace income_cat=income_2010 if year==2010
-replace income_cat=income_2016 if year==2016
-replace income_cat=income_2020 if year==2020
-drop income_2010 income_2016 income_2020
-ta income_cat
-label define income_cat 1"Income: Poor" 2"Income: Middle" 3"Income: Rich"
-label values income_cat income_cat
-fre income_cat
-ta income_cat, gen(income_cat)
-
-* Time
-gen time=0
-replace time=1 if year==2010
-replace time=2 if year==2016
-replace time=3 if year==2020
-label define time 1"2010" 2"2016-17" 3"2020-21"
-label values time time
-
-* Dummy ownland
-recode ownland (.=0)
-ta ownland year, col nofreq
-label define ownland 0"Own land: No" 1"Own land: Yes"
-label values ownland ownland
-
-* Std
-foreach x in loanamount_HH annualincome_HH assets_total imp1_ds_tot_HH imp1_is_tot_HH dsr isr dar expenses_total remreceived_HH remsent_HH remittnet_HH assets_gold goldquantity_HH goldreadyamount nbloans_HH {
-egen `x'_std=std(`x')
-}
-
-* House
-ta house, gen(house_)
-
-* Lockdown
-recode secondlockdownexposure dummysell(.=1)
-ta secondlockdownexposure, gen(lock_)
-label var lock_1 "Sec. lockdown: Before"
-label var lock_2 "Sec. lockdown: During"
-label var lock_3 "Sec. lockdown: After"
-label var dummysell "Sell assets to face lockdown: Yes"
-label var dummydemonetisation "Demonetisation: Yes"
-
-* Clean assets
-sum assets_housevalue assets_livestock assets_goods assets_ownland assets_gold
-foreach x in assets_housevalue assets_livestock assets_goods assets_ownland assets_gold {
-replace `x'=1 if `x'==. | `x'<1
-}
-
-* Log
-foreach x in assets_total assets_totalnoland assets_housevalue assets_livestock assets_goods assets_ownland assets_gold annualincome_HH assets_totalnoprop {
-replace `x'=1 if `x'<1 | `x'==.
-gen log_`x'=log(`x')
-}
-
-* Mean over time
-global livelihood log_annualincome_HH log_assets_total log_assets_totalnoland remittnet_HH assets_total assets_totalnoland annualincome_HH log_assets_housevalue log_assets_livestock log_assets_goods log_assets_ownland log_assets_gold log_assets_totalnoprop
-global family HHsize HH_count_child stem housetitle ownland sexratio dependencyratio nonworkersratio
-global head head_female head_age head_occ1 head_occ2 head_occ4 head_occ5 head_occ6 head_occ7 head_educ2 head_educ3 head_nonmarried
-global shock dummymarriage dummydemonetisation lock_1 lock_2 lock_3 dummysell dummyexposure
-foreach x in $family $livelihood $head $shock {
-bysort HHID_panel: egen mean_`x'=mean(`x')
-}
-
-* Time var
-bysort HHID_panel: gen nobs=_N
-gen nobs1=nobs==1
-gen nobs2=nobs==2
-gen nobs3=nobs==3
-gen year2010=year==2010
-gen year2016=year==2016
-gen year2020=year==2020
-foreach x in year2010 year2016 year2020 {
-bysort HHID_panel: egen mean_`x'=mean(`x')
-}
-
+*
+* Merge caste and jatis
+merge 1:1 HHID_panel year using "raw/JatisCastePanel"
+keep if _merge==3
+drop _merge
+rename casten caste
+rename jatisn jatis
+order HHID_panel year jatis caste
 
 save"panel_v1", replace
 ****************************************
 * END
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-****************************************
-* Label
-****************************************
-use"panel_v1", clear
-
-* Label
-label var HHsize "Household size"
-label var HH_count_child "Number of childrens"
-label var stem "Family: Stem"
-label var ownland "Land owner: Yes"
-label var head_age "Head: Age (years)"
-label var head_occ1 "Head occ: Unoccupied"
-label var head_occ2 "Head occ: Agri SE"
-label var head_occ3 "Head occ: Agri casual"
-label var head_occ4 "Head occ: Casual"
-label var head_occ5 "Head occ: Regular"
-label var head_occ6 "Head occ: SE"
-label var head_occ7 "Head occ: NREGA"
-label var head_educ1 "Head edu: Below primary"
-label var head_educ2 "Head edu: Primary completed"
-label var head_educ3 "Head edu: High school or more"
-label var head_nonmarried "Head married: No"
-label var dummymarriage "Marriage: Yes"
-label var dummydemonetisation "Demonetisation: Yes"
-label var village_1 "Village: ELA"
-label var village_2 "Village: GOV" 
-label var village_3 "Village: KAR"
-label var village_4 "Village: KOR"
-label var village_5 "Village: KUV"
-label var village_6 "Village: MAN"
-label var village_7 "Village: MANAM"
-label var village_8 "Village: NAT"
-label var village_9 "Village: ORA"
-label var village_10 "Village: SEM"
-label var nonworkersratio "Non-workers ratio"
-label var housetitle "House title: Yes"
-label var head_female "Head sex: Female"
-label var remittnet_HH "Net remittances (Rs.)"
-label var sexratio "Sex ratio"
-label var dependencyratio "Dependency ratio"
-
-label var dar_std "DAR (std)"
-label var dsr_std "DSR (std)"
-label var isr_std "ISR (std)"
-label var assets_total_std "Wealth (std)"
-label var nbloans_HH_std "Nb loans (std)"
-label var annualincome_HH_std "Annual income (std)"
-label var loanamount_HH_std "Loan amount (std)"
-
-label var nobs1 "Nb obs: 1"
-label var nobs2 "Nb obs: 2"
-label var nobs3 "Nb obs: 3"
-label var year2010 "Year: 2010"
-label var year2016 "Year: 2016-17"
-label var year2020 "Year: 2020-21"
-label var mean_year2010 "Within year: 2010"
-label var mean_year2016 "Within year: 2016-17"
-label var mean_year2020 "Within year: 2020-21"
-label var log_annualincome_HH "Annual income (log)"
-label var log_assets_total "Assets (log)"
-label var log_assets_totalnoland "Assets without land (log)"
-
-save"panel_v2", replace
-****************************************
-* END
-
-
-
 
 
 
@@ -834,7 +591,7 @@ replace `x'=`x'*(100/86) if year==2016
 replace `x'=round(`x',1)
 }
 
-save"ineqindiv", replace
+save"tempineqindiv", replace
 ****************************************
 * END
 
@@ -857,7 +614,7 @@ save"ineqindiv", replace
 ****************************************
 * Construction inequalities
 ****************************************
-use"ineqindiv", clear
+use"tempineqindiv", clear
 
 * Share income by sex
 gen monthlyincome_indiv=annualincome_indiv/12
@@ -910,19 +667,19 @@ gen wp_active_men_HH=wp_unoccupi_men_HH+wp_occupied_men_HH
 gen wp_active_women_HH=wp_unoccupi_women_HH+wp_occupied_women_HH
 
 * Save indiv
-save "ineqindiv_v2", replace
+save "tempineqindiv_v2", replace
 
 * Save HH
 keep HHID_panel year suminc_men suminc_women wp_inactive_HH wp_inactive_men_HH wp_inactive_women_HH wp_unoccupi_HH wp_unoccupi_men_HH wp_unoccupi_women_HH wp_occupied_HH wp_occupied_men_HH wp_occupied_women_HH wp_active_HH wp_active_men_HH wp_active_women_HH
 duplicates drop
 compress
-save "ineqHH", replace
+save "tempineqHH", replace
 
 
 * Merge
 use"panel_v2", clear
 
-merge 1:1 HHID_panel year using "ineqHH"
+merge 1:1 HHID_panel year using "tempineqHH"
 keep if _merge==3
 drop _merge
 
