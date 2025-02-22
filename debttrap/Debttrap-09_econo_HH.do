@@ -22,8 +22,9 @@ use"panel_HH_v2", clear
 
 
 ********** Selection
-keep HHID_panel year head_sex head_age head_edulevel head_maritalstatus ownland dummymarriage head_mocc_occupation dummydemonetisation nbmale nbfemale HHsize HH_count_child HH_count_adult assets_total1000 annualincome_HH nbworker_HH nbnonworker_HH remittnet_HH secondlockdownexposure loanamount_HH trapamount_HH dummytrap_HH village_1 village_2 village_3 village_4 village_5 village_6 village_7 village_8 village_9 village_10 dalits dummyloans_HH dsr isr gtdr_HH ///
-expenses_educ expenses_food expenses_heal expenses_cere expenses_total shareexpenses_educ shareexpenses_food shareexpenses_heal shareexpenses_cere
+keep HHID_panel year head_sex head_age head_edulevel head_maritalstatus ownland dummymarriage head_mocc_occupation dummydemonetisation nbmale nbfemale HHsize HH_count_child HH_count_adult assets_total1000 annualincome_HH nbworker_HH nbnonworker_HH remittnet_HH secondlockdownexposure loanamount_HH trapamount dummytrap villageid dalits caste dummyloans dsr isr gtdr ///
+expenses_educ expenses_food expenses_heal expenses_cere expenses_total shareexpenses_educ shareexpenses_food shareexpenses_heal shareexpenses_cere ///
+dummytrap_*
 
 
 ********** Rename
@@ -32,13 +33,14 @@ rename HHsize size_HH
 rename HH_count_child nbchildren_HH
 rename HH_count_adult nbadult_HH
 
-rename dummyloans_HH dummyloans
-rename dummytrap_HH dummytrap
-rename trapamount_HH trapamount
-rename gtdr_HH gtdr
+
+
 
 
 ********** New var
+* HHFE
+encode HHID_panel, gen(HHFE)
+
 * Dalits
 label define dalits 0"Non-dalits" 1"Dalits (=1)", modify
 
@@ -47,35 +49,41 @@ replace gtdr=gtdr/100
 
 * Edulevel
 fre head_edulevel
-ta head_edulevel, gen(edu_)
-drop head_edulevel
-label var edu_1 "Edu: Below primary"
-label var edu_2 "Edu: Primary completed"
-label var edu_3 "Edu: High-school or more"
+rename head_edulevel edulevel
+label define edulevel 0"Edu: Below primary" 1"Edu: Primary completed" 2"Edu: High-school or more", replace
+label values edulevel edulevel
 
 * Occupation
-rename head_mocc_occupation moccup
-fre moccup
-ta moccup, gen(moccup_)
-drop moccup
-label var moccup_1 "Occ: Unoccup"
-label var moccup_2 "Occ: Agri SE"
-label var moccup_3 "Occ: Agri casual"
-label var moccup_4 "Occ: Casual"
-label var moccup_5 "Occ: Regular"
-label var moccup_6 "Occ: SE"
-label var moccup_7 "Occ: MGNREGA"
-
-* HHFE
-encode HHID_panel, gen(HHFE)
+fre head_mocc_occupation
+recode head_mocc_occupation (6=5) (7=6)
+rename head_mocc_occupation mainoccupation
+label define mainoccupation 0"Occ: No" 1"Occ: Agri self-emp" 2"Occ: Agri casual" 3"Occ: Casual" 4"Occ: Regular" 5"Occ: Self-emp" 6"Occ: MGNREGA", replace
+label values mainoccupation mainoccupation
 
 * Women
-gen women=.
-replace women=0 if head_sex==1
-replace women=1 if head_sex==2
-drop head_sex
-label define women 0"Man" 1"Woman (=1)"
-label values women women
+fre head_sex
+rename head_sex sex
+label define sex 1"Sex: Man" 2"Sex: Woman", replace
+label values sex sex
+
+* Age
+rename head_age age
+label var age "Age"
+
+* Maritalstatus
+fre head_maritalstatus
+rename head_maritalstatus maritalstatus
+gen married=1 if maritalstatus==1
+replace married=0 if maritalstatus>1
+drop maritalstatus
+label define married 0"Married: No" 1"Married: Yes"
+label values married married
+
+* Caste
+fre caste
+label define caste 1"Caste: Dalits" 2"Caste: Middle castes" 3"Caste: Upper castes", replace
+label values caste caste 
+fre caste
 
 * Assets
 egen assets_std=std(assets_HH)
@@ -91,20 +99,6 @@ label var income_std "Income (std)"
 egen loan_std=std(loanamount_HH)
 drop loanamount_HH
 label var loan_std "Debt amount (std)"
-
-* Age sq
-rename head_age age
-gen agesq=age*age
-label var age "Age"
-label var agesq "Age squared"
-
-* Maritalstatus
-fre head_maritalstatus
-rename head_maritalstatus maritalstatus
-gen married=1 if maritalstatus==1
-replace married=0 if maritalstatus>1
-drop maritalstatus
-label var married "Married (=1)"
 
 * Shock 1
 fre dummydemonetisation
@@ -127,61 +121,33 @@ rename dummymarriage shock3
 recode shock3 (.=0)
 label var shock3 "Shock 3 (=1)"
 
+* Trap
+label define dummytrap 0"In trap: No" 1"In trap: Yes"
+label values dummytrap dummytrap 
+fre dummytrap
 
-********** Order
-sort HHID_panel year
-order HHID_panel HHFE year age agesq women married dalits edu_1 edu_2 edu_3 moccup_1 moccup_2 moccup_3 moccup_4 moccup_5 moccup_6 moccup_7 dummyloan dummytrap trapamount gtdr size_HH nbchildren_HH nbadult_HH nbmale nbfemale nbworker_HH nbnonworker_HH assets_std income_std loan_std remittnet_HH ownland shock1 shock2 shock3
+label define dummytrap_1ybefore 0"In trap: No" 1"In trap: Yes"
+label values dummytrap_1ybefore dummytrap_1ybefore 
+fre dummytrap_1ybefore
 
-
-
-********** Mean over time for FE
-global headcont age agesq married edu_1 edu_2 edu_3 moccup_1 moccup_2 moccup_3 moccup_4 moccup_5 moccup_6 moccup_7
-global hhcont size_HH nbchildren_HH nbadult_HH nbmale nbfemale nbworker_HH nbnonworker_HH assets_std income_std loan_std shock1 shock2 shock3 isr dsr dummytrap
-
-foreach x in $headcont $hhcont {
-bysort HHID_panel: egen mean_`x'=mean(`x')
-}
+label define dummytrap_2ybefore 0"In trap: No" 1"In trap: Yes"
+label values dummytrap_2ybefore dummytrap_2ybefore 
+fre dummytrap_2ybefore
 
 
 
-
-********** Var Bates, Papke, Wooldridge
-bysort HHID_panel: gen nobs=_N
-
-gen nobs1=nobs==1
-gen nobs2=nobs==2
-gen nobs3=nobs==3
-
-gen year2010=year==2010
-gen year2016=year==2016
-gen year2020=year==2020
-
-
-foreach x in year2010 year2016 year2020{
-bysort HHID_panel: egen mean_`x'=mean(`x')
-}
-
-label var nobs1 "Nb obs: 1"
-label var nobs2 "Nb obs: 2"
-label var nobs3 "Nb obs: 3"
-label var year2010 "Year: 2010"
-label var year2016 "Year: 2016-17"
-label var year2020 "Year: 2020-21"
-label var mean_year2010 "Within year: 2010"
-label var mean_year2016 "Within year: 2016-17"
-label var mean_year2020 "Within year: 2020-21"
-
-
-********** Lag
+********** Lag trap
 preserve
 use"panel_HH_v2", clear
-keep HHID_panel year dummytrap trapamount gtdr
+keep HHID_panel year dummytrap trapamount gtdr dsr isr
 bysort HHID_panel: gen n=_N
 drop if year==2020
 recode year (2016=2020) (2010=2016)
 rename dummytrap LAGdummytrap
 rename trapamount LAGtrapamount
 rename gtdr LAGgtdr
+rename isr LAGisr
+rename dsr LAGdsr
 drop if n==1
 drop n
 save"_temp", replace
@@ -189,9 +155,24 @@ restore
 merge 1:1 HHID_panel year using "_temp"
 drop if _merge==2
 drop _merge
-ta year
 
-ta LAGdummytrap year
+
+
+********** Expenses par tête
+foreach x in expenses_educ expenses_food expenses_heal expenses_cere expenses_total {
+replace `x'=1 if `x'==0
+replace `x'=1 if `x'==.
+gen `x'_pc=`x'/size_HH
+gen log_`x'_pc=log(`x'_pc)
+}
+
+
+********** Selection
+global var HHID_panel HHFE year age sex married edulevel mainoccupation dalits size_HH nbchildren_HH nbadult_HH income_std assets_std shock1 shock2 shock3 villageid dummyloans trapamount dummytrap_1ybefore dummytrap_2ybefore dummytrap log_expenses_educ_pc log_expenses_food_pc log_expenses_heal_pc log_expenses_cere_pc log_expenses_total_pc caste
+keep $var
+order $var
+sort HHID_panel year
+
 
 save"panel_HH_v2_econo", replace
 ****************************************
@@ -209,81 +190,221 @@ save"panel_HH_v2_econo", replace
 
 
 ****************************************
-* Econo
+* Econo without lag
 ****************************************
 use"panel_HH_v2_econo", clear
 
-
-
-********** Macro
-
-global headcont ///
-women ///
-age mean_age ///
-agesq mean_agesq ///
-married mean_married ///
-edu_2 mean_edu_2 ///
-edu_3 mean_edu_3 ///
-moccup_1 mean_moccup_1 ///
-moccup_2 mean_moccup_2 ///
-moccup_4 mean_moccup_4 ///
-moccup_5 mean_moccup_5 ///
-moccup_6 mean_moccup_6 ///
-moccup_7 mean_moccup_7 ///
-
-global hhcont ///
-dalits ///
-size_HH mean_size_HH ///
-nbchildren_HH mean_nbchildren_HH ///
-income_std mean_income_std ///
-assets_std mean_assets_std ///
-shock1 mean_shock1 ///
-shock2 mean_shock2 ///
-shock3 mean_shock3
-
-global invar ///
-village_2 village_3 village_4 village_5 village_6 village_7 village_8 village_9 village_10
-
-global time ///
-year2016 mean_year2016 ///
-year2020 mean_year2020 ///
-nobs1 nobs2
-
-
-
-
-
-
-********** Incidence
+* Selection
 keep if dummyloans==1
+xtset HHFE year
+ta year
 
-reg expenses_food LAGdummytrap $headcont $hhcont $invar $time, cluster(HHFE)
-reg expenses_food dummytrap $headcont $hhcont $invar $time, cluster(HHFE)
-
-reg expenses_heal LAGdummytrap $headcont $hhcont $invar $time, cluster(HHFE)
-reg expenses_heal dummytrap $headcont $hhcont $invar $time, cluster(HHFE)
-
-reg expenses_educ LAGdummytrap $headcont $hhcont $invar $time, cluster(HHFE)
-reg expenses_educ dummytrap $headcont $hhcont $invar $time, cluster(HHFE)
-
-reg expenses_cere LAGdummytrap $headcont $hhcont $invar $time, cluster(HHFE)
-reg expenses_cere dummytrap $headcont $hhcont $invar $time, cluster(HHFE)
+* Macro
+global headcont i.sex c.age##c.age i.married i.edulevel i.mainoccupation 
+global hhcont size_HH nbchildren_HH income_std assets_std
 
 
-
-
+*** Food
+xtreg log_expenses_food_pc i.dummytrap $headcont $hhcont, fe
+est store food
 *
-probit dummytrap $headcont $hhcont $invar
-est store inc1
-
-
-********** Intensity
-keep if dummytrap==1
+margins, dydx(dummytrap sex age married edulevel mainoccupation size_HH nbchildren_HH income_std assets_std) atmeans post
+est store marg_food
 *
-glm gtdr $headcont $hhcont $invar $time ///
-, family(binomial) link(probit) cluster(HHFE)
-est store int1
+coefplot, drop(_cons) xline(0) base ///
+msymbol(S) mcolor(plb1) ///
+headings( ///
+1.sex="{bf:Head charact}" ///
+size_HH="{bf:Household charact}") ///
+xtitle("Marginal effect") xlabel(-.3(.1).3) ///
+title("Annual per capita food expenses (log)") scale(1.1) ///
+legend(order(2 "Effect" 1 "95% CI") pos(6) col(2)) ///
+name(food, replace)
+graph export "graph/xtfe_food.png", as(png) replace
+
+
+*** Health
+xtreg log_expenses_heal_pc i.dummytrap $headcont $hhcont, fe
+est store heal
+*
+margins, dydx(dummytrap sex age married edulevel mainoccupation size_HH nbchildren_HH income_std assets_std) atmeans post
+est store marg_heal
+*
+coefplot, drop(_cons) xline(0) base ///
+msymbol(S) mcolor(plb1) ///
+headings( ///
+1.sex="{bf:Head charact}" ///
+size_HH="{bf:Household charact}") ///
+xtitle("Marginal effect") xlabel(-.8(.2).8) ///
+title("Annual per capita health expenses (log)") scale(1.1) ///
+name(heal, replace)
+graph export "graph/xtfe_health.png", as(png) replace
+
+
+*** Education
+xtreg log_expenses_educ_pc i.dummytrap $headcont $hhcont, fe
+est store educ
+*
+margins, dydx(dummytrap sex age married edulevel mainoccupation size_HH nbchildren_HH income_std assets_std) atmeans post
+est store marg_educ
+*
+coefplot, drop(_cons) xline(0) base ///
+msymbol(S) mcolor(plb1) ///
+headings( ///
+1.sex="{bf:Head charact}" ///
+size_HH="{bf:Household charact}") ///
+xtitle("Marginal effect") xlabel(-3(.5)2) ///
+title("Annual per capita education expenses (log)") scale(1.1) ///
+name(educ, replace)
+graph export "graph/xtfe_education.png", as(png) replace
 
 ****************************************
 * END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Econo with lag
+****************************************
+use"panel_HH_v2_econo", clear
+
+* Selection
+keep if dummyloans==1
+xtset HHFE year
+ta year
+
+* Lag
+drop dummytrap
+rename dummytrap_2ybefore dummytrap
+
+* Macro
+global headcont i.sex c.age##c.age i.married i.edulevel i.mainoccupation 
+global hhcont size_HH nbchildren_HH income_std assets_std
+
+*** Food
+xtreg log_expenses_food_pc i.dummytrap $headcont $hhcont, fe
+est store food
+*
+margins, dydx(dummytrap sex age married edulevel mainoccupation size_HH nbchildren_HH income_std assets_std) atmeans post
+est store marg_food
+*
+coefplot, drop(_cons) xline(0) base ///
+msymbol(S) mcolor(plb1) ///
+headings( ///
+1.sex="{bf:Head charact}" ///
+size_HH="{bf:Household charact}") ///
+xtitle("Marginal effect") xlabel(-.3(.1).3) ///
+title("Annual per capita food expenses (log)") scale(1.1) ///
+legend(order(2 "Effect" 1 "95% CI") pos(6) col(2)) ///
+name(food, replace)
+graph export "graph/xtfe_food_lag.png", as(png) replace
+
+
+*** Health
+xtreg log_expenses_heal_pc i.dummytrap $headcont $hhcont, fe
+est store heal
+*
+margins, dydx(dummytrap sex age married edulevel mainoccupation size_HH nbchildren_HH income_std assets_std) atmeans post
+est store marg_heal
+*
+coefplot, drop(_cons) xline(0) base ///
+msymbol(S) mcolor(plb1) ///
+headings( ///
+1.sex="{bf:Head charact}" ///
+size_HH="{bf:Household charact}") ///
+xtitle("Marginal effect") xlabel(-.8(.2).8) ///
+title("Annual per capita health expenses (log)") scale(1.1) ///
+name(heal, replace)
+graph export "graph/xtfe_health_lag.png", as(png) replace
+
+
+*** Education
+xtreg log_expenses_educ_pc i.dummytrap $headcont $hhcont, fe
+est store educ
+*
+margins, dydx(dummytrap sex age married edulevel mainoccupation size_HH nbchildren_HH income_std assets_std) atmeans post
+est store marg_educ
+*
+coefplot, drop(_cons) xline(0) base ///
+msymbol(S) mcolor(plb1) ///
+headings( ///
+1.sex="{bf:Head charact}" ///
+size_HH="{bf:Household charact}") ///
+xtitle("Marginal effect") xlabel(-3(.5)2) ///
+title("Annual per capita education expenses (log)") scale(1.1) ///
+name(educ, replace)
+graph export "graph/xtfe_education_lag.png", as(png) replace
+
+
+
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Econo with lag and interaction caste
+****************************************
+use"panel_HH_v2_econo", clear
+
+* Selection
+keep if dummyloans==1
+xtset HHFE year
+ta year
+
+* Lag
+drop dummytrap
+rename dummytrap_2ybefore dummytrap
+
+* Macro
+global headcont i.sex c.age##c.age i.married i.edulevel i.mainoccupation 
+global hhcont size_HH nbchildren_HH income_std assets_std
+
+*** Food
+xtreg log_expenses_food_pc i.dummytrap##i.caste $headcont $hhcont, fe
+est store food
+
+
+*** Health
+xtreg log_expenses_heal_pc i.dummytrap##i.caste $headcont $hhcont, fe
+est store heal
+
+
+*** Education
+xtreg log_expenses_educ_pc i.dummytrap##i.caste $headcont $hhcont, fe
+est store educ
+
+
+
+****************************************
+* END
+
+
+
 

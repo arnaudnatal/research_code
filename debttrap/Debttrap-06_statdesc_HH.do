@@ -24,17 +24,21 @@ do"C:/Users/Arnaud/Documents/GitHub/folderanalysis/$link.do"
 ********** Total
 use"panel_HH_v2", clear
 *
-ta dummyloans_HH year, m
-ta dummyloans_HH year, col
-keep if dummyloans_HH==1
+ta dummyloans year, m
+ta dummyloans year, col
+keep if dummyloans==1
 *
-ta dummytrap_HH year, col
-tabstat trapamount_HH if dummytrap_HH==1, stat(mean med) by(year)
-tabstat gtdr_HH if dummytrap_HH==1, stat(mean med) by(year)
+ta dummytrap year, col
+tabstat trapamount if dummytrap==1, stat(mean med) by(year)
+tabstat gtdr if dummytrap==1, stat(mean med) by(year)
 
-* Supplement
-tabstat balancetrapamount_HH if dummytrap_HH==1, stat(mean med) by(year)
-tabstat gbtdr_HH if dummytrap_HH==1, stat(mean med) by(year)
+
+********** Evolution of debt trap over time for individuals
+ta dummytrap year
+ta dummytrap_6m dummytrap_6mto1y, row nofreq
+
+
+
 
 ****************************************
 * END

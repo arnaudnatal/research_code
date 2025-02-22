@@ -354,12 +354,6 @@ gen shareexpenses_`x'=expenses_`x'/expenses_total
 
 
 
-
-
-********** Poverty
-
-
-
 ********** Selection
 drop if housetitle==.
 bysort HHID_panel: gen n=_N
@@ -382,7 +376,6 @@ drop if HHID_panel=="GOV64" & year==2020
 drop if HHID_panel=="GOV67" & year==2020
 drop if HHID_panel=="KUV67" & year==2020
 drop if HHID_panel=="GOV65" & year==2020
-
 
 save"panel_HH_v0", replace
 ****************************************

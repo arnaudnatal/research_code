@@ -579,6 +579,21 @@ order HHID_panel HHID year
 sort HHID_panel year
 
 
+
+********
+rename dummyloans_HH dummyloans
+rename dummytrap_HH dummytrap
+rename trapamount_HH trapamount
+rename gtdr_HH gtdr
+
+rename trapdelta1year_HH dummytrap_1ybefore
+rename trapdelta2year_HH dummytrap_2ybefore
+
+ta dummytrap year, col nofreq
+ta dummytrap_1ybefore year, col nofreq
+ta dummytrap_2ybefore year, col nofreq
+
+
 save"panel_HH_v2", replace
 ****************************************
 * END

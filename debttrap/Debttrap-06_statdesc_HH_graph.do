@@ -23,11 +23,12 @@ do"C:/Users/Arnaud/Documents/GitHub/folderanalysis/$link.do"
 ****************************************
 use"panel_HH_v2", clear
 
-keep if dummyloans_HH==1
+keep if dummyloans==1
 ta year
-ta dummytrap_HH year
+ta dummytrap year, col nofreq
+ta year dummytrap, row nofreq
 
-tabplot dummytrap_HH year, percent(year) showval frame(100) ///
+tabplot dummytrap year, percent(year) showval frame(100) ///
 frameopts(color(plb1)) ///
 fcolor(plb1*0.4) lcolor(plb1) ///
 subtitle("") ///
@@ -36,6 +37,32 @@ xlabel(1 "2010" 2 "2016-17" 3 "2020-21") ylabel(1 "Yes" 2 "No") ///
 note("{it:Note:} Percent given year.", size(small)) ///
 scale(1.2)
 graph export "graph/Incidence.png", as(png) replace
+
+
+**
+ta dummytrap year, col nofreq
+ta year dummytrap, row nofreq
+*
+input y notrap trap
+1 81.48 18.52
+3 83.57 16.43
+5 54.12 45.88
+end
+label define y 1"2010" 3"2016-17" 5"2020-21", replace
+label values y y
+gen sum1=trap
+gen sum2=sum1+notrap
+* 
+twoway ///
+(bar sum1 y, barwidth(1.9)) ///
+(rbar sum1 sum2 y, barwidth(1.9)) ///
+, ///
+xlabel(1 3 5,valuelabel) xtitle("") ///
+ylabel(0(10)100) ytitle("Percent") ///
+legend(order(1 "In trap" 2 "Not in trap") pos(6) col(3)) ///
+note("", size(small)) ///
+name(g1, replace) scale(1.2)
+graph export "graph/Incidence2.png", as(png) replace
 
 
 ****************************************

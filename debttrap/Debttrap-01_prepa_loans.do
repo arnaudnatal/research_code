@@ -28,28 +28,43 @@ do"C:/Users/Arnaud/Documents/GitHub/folderanalysis/$link.do"
 ****************************************
 use"raw/RUME-loans_mainloans_new.dta", replace
 
+*
+drop if loansettled==1
+drop loansettled
+
+*
 gen dummymainloan=0
 replace dummymainloan=1 if borrowerservices!=.
 ta dummymainloan
 
-keep HHID2010 loanid loanreasongiven loanlender loansettled loanamount lender_cat reason_cat lender4 loanamount2 loanbalance2 interestpaid2 totalrepaid2 principalpaid2 effective_repa plantorep_* dummymainloan imp1_debt_service imp1_interest_service
+keep HHID2010 loanid loanreasongiven loanlender loanamount lender_cat reason_cat lender4 loanamount2 loanbalance2 interestpaid2 totalrepaid2 principalpaid2 effective_repa plantorep_* dummymainloan imp1_debt_service imp1_interest_service loandate
 
 merge m:m HHID2010 using "raw/keypanel-HH_wide.dta", keepusing(HHID_panel)
 keep if _merge==3
 drop _merge
 gen year=2010
 
-fre lender4
+* Loan date
+gen date="01mar2010"
+gen submissiondate=date(date, "DMY")
+format submissiondate %td
+gen between=submissiondate-loandate
+ta between
+replace between=3 if between<3
+ta between
+gen deltadate=.
+label define deltadate 1"Less than 6m" 2"6m to 1y" 3"1y to 2y" 4"2y and 4y" 5"More than 4y"
+label values deltadate deltadate
+replace deltadate=1 if between<182
+replace deltadate=2 if between>=182 & between<365
+replace deltadate=3 if between>=365 & between<730
+replace deltadate=4 if between>=730 & between<1460
+replace deltadate=5 if between>=1460
+ta deltadate
 
 save"_temp_RUME-loans.dta", replace
 ****************************************
 * END
-
-
-
-
-
-
 
 
 
@@ -62,13 +77,31 @@ save"_temp_RUME-loans.dta", replace
 ****************************************
 use"raw/NEEMSIS1-loans_mainloans_new.dta", replace
 
+* Loan settled
+drop if loansettled==1
+drop loansettled
+
+* Interview date
+preserve
+use"raw/NEEMSIS1-HH", clear
+keep HHID2016 submissiondate
+duplicates drop
+save"_temp", replace
+restore
+merge m:1 HHID2016 using "_temp"
+keep if _merge==3
+drop _merge
+order HHID2016 INDID2016 year submissiondate
+sort HHID2016 INDID2016 loanid
+
+*
 gen dummymainloan=0
 replace dummymainloan=1 if borrowerservices!=""
 ta dummymainloan
 
 ta loan_database
 drop if loan_database=="MARRIAGE"
-keep HHID2016 INDID2016 loanid loanreasongiven loanlender loansettled loanamount lender_cat reason_cat lender4 loanamount2 loanbalance2 interestpaid2 totalrepaid2 principalpaid2 effective_repa loan_database plantorep_* settlestrat_* dummymainloan imp1_debt_service imp1_interest_service
+keep HHID2016 INDID2016 loanid submissiondate loanreasongiven loanlender loanamount lender_cat reason_cat lender4 loanamount2 loanbalance2 interestpaid2 totalrepaid2 principalpaid2 effective_repa loan_database plantorep_* settlestrat_* dummymainloan imp1_debt_service imp1_interest_service loandate
 
 merge m:m HHID2016 using "raw/keypanel-HH_wide.dta", keepusing(HHID_panel)
 keep if _merge==3
@@ -82,6 +115,21 @@ drop _merge
 
 * Loanid
 tostring loanid, replace
+
+* Loan date
+gen between=submissiondate-loandate
+ta between
+replace between=3 if between<3
+ta between
+gen deltadate=.
+label define deltadate 1"Less than 6m" 2"6m to 1y" 3"1y to 2y" 4"2y and 4y" 5"More than 4y"
+label values deltadate deltadate
+replace deltadate=1 if between<182
+replace deltadate=2 if between>=182 & between<365
+replace deltadate=3 if between>=365 & between<730
+replace deltadate=4 if between>=730 & between<1460
+replace deltadate=5 if between>=1460
+ta deltadate
 
 save"_temp_NEEMSIS1-loans.dta", replace
 ****************************************
@@ -104,6 +152,24 @@ save"_temp_NEEMSIS1-loans.dta", replace
 ****************************************
 use"raw/NEEMSIS2-loans_mainloans_new.dta", replace
 
+*
+drop if loansettled==1
+drop loansettled
+
+* Interview date
+preserve
+use"raw/NEEMSIS2-HH", clear
+keep HHID2020 submissiondate
+duplicates drop
+save"_temp", replace
+restore
+merge m:1 HHID2020 using "_temp"
+keep if _merge==3
+drop _merge
+order HHID2020 INDID2020 year submissiondate
+sort HHID2020 INDID2020 loanid
+
+*
 drop dummymainloan
 gen dummymainloan=0
 replace dummymainloan=1 if borrowerservices!=""
@@ -131,7 +197,7 @@ gen effective_repa2=effective_repa
 replace effective_repa2=1 if loaneffectivereason2==4 & effective_repa2!=. & effective_repa2!=1
 ta effective_repa2
 
-keep HHID2020 INDID2020 loanid loanreasongiven loanlender loansettled loanamount lender_cat reason_cat lender4 loanamount2 loanbalance2 interestpaid2 totalrepaid2 principalpaid2 effective_repa loan_database plantorep_* settlestrat_* dummymainloan imp1_debt_service imp1_interest_service
+keep HHID2020 INDID2020 loanid submissiondate loanreasongiven loanlender loanamount lender_cat reason_cat lender4 loanamount2 loanbalance2 interestpaid2 totalrepaid2 principalpaid2 effective_repa loan_database plantorep_* settlestrat_* dummymainloan imp1_debt_service imp1_interest_service loandate
 
 merge m:m HHID2020 using "raw/keypanel-HH_wide.dta", keepusing(HHID_panel)
 keep if _merge==3
@@ -152,6 +218,22 @@ keep if effective_repa==1
 keep HHID_panel effective_repa
 duplicates drop
 restore
+
+
+* Loan date
+gen between=submissiondate-loandate
+ta between
+replace between=3 if between<3
+ta between
+gen deltadate=.
+label define deltadate 1"Less than 6m" 2"6m to 1y" 3"1y to 2y" 4"2y and 4y" 5"More than 4y"
+label values deltadate deltadate
+replace deltadate=1 if between<182
+replace deltadate=2 if between>=182 & between<365
+replace deltadate=3 if between>=365 & between<730
+replace deltadate=4 if between>=730 & between<1460
+replace deltadate=5 if between>=1460
+ta deltadate
 
 
 save"_temp_NEEMSIS2-loans.dta", replace
@@ -176,6 +258,32 @@ use"_temp_NEEMSIS2-loans", replace
 append using "_temp_NEEMSIS1-loans"
 append using "_temp_RUME-loans"
 
+* Loan date 2
+gen submissionyear=year(submissiondate)
+gen loanyear=year(loandate)
+replace loanyear=2021 if loanyear>2021
+ta submissionyear
+ta loanyear
+
+gen deltayear1=.
+replace deltayear1=1 if submissionyear==2010 & loanyear<=2009
+replace deltayear1=1 if submissionyear==2016 & loanyear<=2015
+replace deltayear1=1 if submissionyear==2017 & loanyear<=2016
+replace deltayear1=1 if submissionyear==2020 & loanyear<=2019
+replace deltayear1=1 if submissionyear==2021 & loanyear<=2020
+recode deltayear1 (.=0)
+ta deltayear1 year
+
+gen deltayear2=.
+replace deltayear2=1 if submissionyear==2010 & loanyear<=2008
+replace deltayear2=1 if submissionyear==2016 & loanyear<=2014
+replace deltayear2=1 if submissionyear==2017 & loanyear<=2015
+replace deltayear2=1 if submissionyear==2020 & loanyear<=2018
+replace deltayear2=1 if submissionyear==2021 & loanyear<=2019
+recode deltayear2 (.=0)
+ta deltayear2
+
+
 * Souci label lender4
 fre lender4
 label define lender4 1"WKP" 2"Relatives" 3"Labour" 4"Pawn broker" 5"Shop keeper" 6"Moneylenders" 7"Friends" 8"Microcredit" 9"Bank" 10"Neighbor"
@@ -191,7 +299,7 @@ foreach x in loanamount loanbalance interestpaid totalrepaid principalpaid {
 rename `x'2 `x'
 }
 
-order HHID_panel year loanamount loansettled loanreasongiven loanlender 
+order HHID_panel year loanamount loanreasongiven loanlender 
 
 
 ********** Selection of the 6 households
@@ -278,6 +386,15 @@ drop dummylefthousehold livinghome
 drop HHID2010 HHID2016 HHID2020 INDID2016 INDID2020
 order HHID_panel INDID_panel year loanid loanamount loanreasongiven loanlender dummymainloan
 
+* Dummy trap one year
+gen trapdelta1year=1 if given_repa==1 & deltayear1==1
+ta trapdelta1year year
+
+* Dummy trap two year
+gen trapdelta2year=1 if given_repa==1 & deltayear2==1
+ta trapdelta2year year
+
+
 save"panel_loans_v0", replace
 ****************************************
 * END
@@ -313,6 +430,13 @@ drop loanbalance_givenrepa
 
 bysort HHID_panel year: egen lnbgivenrepa_HH=sum(given_repa)
 
+* Given by year
+foreach x in trapdelta1year trapdelta2year {
+bysort HHID_panel year: egen `x'_HH=sum(`x')
+}
+foreach x in trapdelta1year trapdelta2year {
+replace `x'_HH=1 if `x'_HH>1
+}
 
 * Effective
 gen loanamount_effectiverepa=loanamount if effective_repa==1
@@ -325,9 +449,9 @@ drop loanbalance_effectiverepa
 
 bysort HHID_panel year: egen lnbeffectiverepa_HH=sum(effective_repa)
 
-keep HHID_panel year lamount_HH lbalance_HH lnb_HH lamountgivenrepa_HH lbalancegivenrepa_HH lnbgivenrepa_HH lamounteffectiverepa_HH lbalanceeffectiverepa_HH lnbeffectiverepa_HH
-
+keep HHID_panel year lamount_HH lbalance_HH lnb_HH lamountgivenrepa_HH lbalancegivenrepa_HH lnbgivenrepa_HH lamounteffectiverepa_HH lbalanceeffectiverepa_HH lnbeffectiverepa_HH trapdelta1year_HH trapdelta2year_HH
 duplicates drop
+
 save"_temp_trap_HH", replace
 ****************************************
 * END
