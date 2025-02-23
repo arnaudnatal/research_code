@@ -293,6 +293,7 @@ global headcont i.sex c.age##c.age i.married i.edulevel i.mainoccupation
 global hhcont size_HH nbchildren_HH income_std assets_std
 
 *** Food
+xtqreg log_expenses_food_pc i.dummytrap $headcont $hhcont, id(HHFE) q(.1 .2 .3 .4 .5 .6 .7 .8 .9)
 xtreg log_expenses_food_pc i.dummytrap $headcont $hhcont, fe
 est store food
 *
