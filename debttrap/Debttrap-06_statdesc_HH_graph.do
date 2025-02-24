@@ -165,18 +165,18 @@ graph combine dal mid upp, col(3)
 ****************************************
 use"panel_HH_v2", clear
 
-keep if dummytrap_HH==1
+keep if dummytrap==1
 ta year
 
 
 ********** Absolut intensity (amount)
-tabstat trapamount_HH, stat(n mean q) by(year)
-violinplot trapamount_HH, over(time) horizontal left dscale(4) noline now ///
+tabstat trapamount, stat(n mean q) by(year)
+violinplot trapamount, over(time) horizontal left dscale(4) noline now ///
 fill(color(black%10)) ///
 box(t(b)) bcolors(plb1) ///
 mean(t(m)) meancolors(plr1) ///
 med(t(m)) medcolors(ananas) ///
-title("Debt trap amount (AbsDT)") ///
+title("Debt trap amount") ///
 xtitle("1k rupees") xlabel(0(20)200) ///
 ylabel(,grid) ///
 legend(order(4 "IQR" 7 "Median" 10 "Mean") pos(6) col(3) on) ///
@@ -185,13 +185,13 @@ graph export "graph/Abs_intensity.png", as(png) replace
 
 
 ********** Relative intensity (percent to debt)
-tabstat gtdr_HH, stat(n mean q) by(year)
-violinplot gtdr_HH, over(time) horizontal left dscale(4) noline now ///
+tabstat gtdr, stat(n mean q) by(year)
+violinplot gtdr, over(time) horizontal left dscale(4) noline now ///
 fill(color(black%10)) ///
 box(t(b)) bcolors(plb1) ///
 mean(t(m)) meancolors(plr1) ///
 med(t(m)) medcolors(ananas) ///
-title("Share of debt trap in household debt (RelDT)") ///
+title("Share of debt trap in household debt") ///
 xtitle("Percent") xlabel(0(10)100) ///
 ylabel(,grid) ///
 legend(order(4 "IQR" 7 "Median" 10 "Mean") pos(6) col(3) on) ///

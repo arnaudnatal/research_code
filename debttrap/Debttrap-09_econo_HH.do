@@ -205,7 +205,7 @@ global hhcont size_HH nbchildren_HH income_std assets_std
 
 
 *** Food
-xtreg log_expenses_food_pc i.dummytrap $headcont $hhcont, fe
+xtreg log_expenses_food_pc i.dummytrap $headcont $hhcont, fe vce(cluster HHFE)
 est store food
 *
 margins, dydx(dummytrap sex age married edulevel mainoccupation size_HH nbchildren_HH income_std assets_std) atmeans post
@@ -224,7 +224,7 @@ graph export "graph/xtfe_food.png", as(png) replace
 
 
 *** Health
-xtreg log_expenses_heal_pc i.dummytrap $headcont $hhcont, fe
+xtreg log_expenses_heal_pc i.dummytrap $headcont $hhcont, fe vce(cluster HHFE)
 est store heal
 *
 margins, dydx(dummytrap sex age married edulevel mainoccupation size_HH nbchildren_HH income_std assets_std) atmeans post
@@ -242,7 +242,7 @@ graph export "graph/xtfe_health.png", as(png) replace
 
 
 *** Education
-xtreg log_expenses_educ_pc i.dummytrap $headcont $hhcont, fe
+xtreg log_expenses_educ_pc i.dummytrap $headcont $hhcont, fe vce(cluster HHFE)
 est store educ
 *
 margins, dydx(dummytrap sex age married edulevel mainoccupation size_HH nbchildren_HH income_std assets_std) atmeans post
@@ -293,8 +293,7 @@ global headcont i.sex c.age##c.age i.married i.edulevel i.mainoccupation
 global hhcont size_HH nbchildren_HH income_std assets_std
 
 *** Food
-xtqreg log_expenses_food_pc i.dummytrap $headcont $hhcont, id(HHFE) q(.1 .2 .3 .4 .5 .6 .7 .8 .9)
-xtreg log_expenses_food_pc i.dummytrap $headcont $hhcont, fe
+xtreg log_expenses_food_pc i.dummytrap $headcont $hhcont, fe vce(cluster HHFE)
 est store food
 *
 margins, dydx(dummytrap sex age married edulevel mainoccupation size_HH nbchildren_HH income_std assets_std) atmeans post
@@ -313,7 +312,7 @@ graph export "graph/xtfe_food_lag.png", as(png) replace
 
 
 *** Health
-xtreg log_expenses_heal_pc i.dummytrap $headcont $hhcont, fe
+xtreg log_expenses_heal_pc i.dummytrap $headcont $hhcont, fe vce(cluster HHFE)
 est store heal
 *
 margins, dydx(dummytrap sex age married edulevel mainoccupation size_HH nbchildren_HH income_std assets_std) atmeans post
@@ -331,7 +330,7 @@ graph export "graph/xtfe_health_lag.png", as(png) replace
 
 
 *** Education
-xtreg log_expenses_educ_pc i.dummytrap $headcont $hhcont, fe
+xtreg log_expenses_educ_pc i.dummytrap $headcont $hhcont, fe vce(cluster HHFE)
 est store educ
 *
 margins, dydx(dummytrap sex age married edulevel mainoccupation size_HH nbchildren_HH income_std assets_std) atmeans post
@@ -366,11 +365,112 @@ graph export "graph/xtfe_education_lag.png", as(png) replace
 
 
 
+****************************************
+* Econo with lag and shocks
+****************************************
+use"panel_HH_v2_econo", clear
+
+* Selection
+keep if dummyloans==1
+xtset HHFE year
+ta year
+
+* Lag
+drop dummytrap
+rename dummytrap_2ybefore dummytrap
+
+* Macro
+global headcont i.sex c.age##c.age i.married i.edulevel i.mainoccupation 
+global hhcont size_HH nbchildren_HH income_std assets_std shock1 shock2
+
+
+*** Food
+xtreg log_expenses_food_pc i.dummytrap $headcont $hhcont, fe vce(cluster HHFE)
+est store food
+*
+margins, dydx(dummytrap sex age married edulevel mainoccupation size_HH nbchildren_HH income_std assets_std shock1 shock2) atmeans post
+est store marg_food
+*
+coefplot, drop(_cons) xline(0) base ///
+msymbol(S) mcolor(plb1) ///
+headings( ///
+1.sex="{bf:Head charact}" ///
+size_HH="{bf:Household charact}") ///
+xtitle("Marginal effect") xlabel(-.3(.1).3) ///
+title("Annual per capita food expenses (log)") scale(1) ///
+legend(order(2 "Effect" 1 "95% CI") pos(6) col(2)) ///
+name(food, replace)
+graph export "graph/xtfe_food_lag_shocks.png", as(png) replace
+
+
+
+*** Health
+xtreg log_expenses_heal_pc i.dummytrap $headcont $hhcont, fe vce(cluster HHFE)
+est store heal
+*
+margins, dydx(dummytrap sex age married edulevel mainoccupation size_HH nbchildren_HH income_std assets_std shock1 shock2) atmeans post
+est store marg_heal
+*
+coefplot, drop(_cons) xline(0) base ///
+msymbol(S) mcolor(plb1) ///
+headings( ///
+1.sex="{bf:Head charact}" ///
+size_HH="{bf:Household charact}") ///
+xtitle("Marginal effect") xlabel(-.8(.2).8) ///
+title("Annual per capita health expenses (log)") scale(1.1) ///
+name(heal, replace)
+graph export "graph/xtfe_health_lag_shocks.png", as(png) replace
+
+
+
+*** Education
+xtreg log_expenses_educ_pc i.dummytrap $headcont $hhcont, fe vce(cluster HHFE)
+est store educ
+*
+margins, dydx(dummytrap sex age married edulevel mainoccupation size_HH nbchildren_HH income_std assets_std shock1 shock2) atmeans post
+est store marg_educ
+*
+coefplot, drop(_cons) xline(0) base ///
+msymbol(S) mcolor(plb1) ///
+headings( ///
+1.sex="{bf:Head charact}" ///
+size_HH="{bf:Household charact}") ///
+xtitle("Marginal effect") xlabel(-3(.5)2) ///
+title("Annual per capita education expenses (log)") scale(1.1) ///
+name(educ, replace)
+graph export "graph/xtfe_education_lag_shocks.png", as(png) replace
+
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
 ****************************************
-* Econo with lag and interaction caste
+* Econo with lag drop outliers
 ****************************************
 use"panel_HH_v2_econo", clear
 
@@ -388,23 +488,195 @@ global headcont i.sex c.age##c.age i.married i.edulevel i.mainoccupation
 global hhcont size_HH nbchildren_HH income_std assets_std
 
 *** Food
-xtreg log_expenses_food_pc i.dummytrap##i.caste $headcont $hhcont, fe
+preserve
+sum log_expenses_food_pc, det
+local min=`r(p1)'
+local max=`r(p99)'
+drop if log_expenses_food_pc<`min'
+drop if log_expenses_food_pc>`max'
+*
+xtreg log_expenses_food_pc i.dummytrap $headcont $hhcont, fe vce(cluster HHFE)
 est store food
+*
+margins, dydx(dummytrap sex age married edulevel mainoccupation size_HH nbchildren_HH income_std assets_std) atmeans post
+est store marg_food
+*
+coefplot, drop(_cons) xline(0) base ///
+msymbol(S) mcolor(plb1) ///
+headings( ///
+1.sex="{bf:Head charact}" ///
+size_HH="{bf:Household charact}") ///
+xtitle("Marginal effect") xlabel(-.3(.1).3) ///
+title("Annual per capita food expenses (log)") scale(1.1) ///
+legend(order(2 "Effect" 1 "95% CI") pos(6) col(2)) ///
+name(food, replace)
+graph export "graph/xtfe_food_lag_out.png", as(png) replace
+restore
 
 
 *** Health
-xtreg log_expenses_heal_pc i.dummytrap##i.caste $headcont $hhcont, fe
+preserve
+sum log_expenses_heal_pc, det
+local min=`r(p1)'
+local max=`r(p99)'
+drop if log_expenses_heal_pc<`min'
+drop if log_expenses_heal_pc>`max'
+*
+xtreg log_expenses_heal_pc i.dummytrap $headcont $hhcont, fe vce(cluster HHFE)
 est store heal
-
+*
+margins, dydx(dummytrap sex age married edulevel mainoccupation size_HH nbchildren_HH income_std assets_std) atmeans post
+est store marg_heal
+*
+coefplot, drop(_cons) xline(0) base ///
+msymbol(S) mcolor(plb1) ///
+headings( ///
+1.sex="{bf:Head charact}" ///
+size_HH="{bf:Household charact}") ///
+xtitle("Marginal effect") xlabel(-.8(.2).8) ///
+title("Annual per capita health expenses (log)") scale(1.1) ///
+name(heal, replace)
+graph export "graph/xtfe_health_lag_out.png", as(png) replace
+restore
 
 *** Education
-xtreg log_expenses_educ_pc i.dummytrap##i.caste $headcont $hhcont, fe
+preserve
+sum log_expenses_educ_pc, det
+local min=`r(p1)'
+local max=`r(p99)'
+drop if log_expenses_educ_pc<`min'
+drop if log_expenses_educ_pc>`max'
+*
+xtreg log_expenses_educ_pc i.dummytrap $headcont $hhcont, fe vce(cluster HHFE)
 est store educ
+*
+margins, dydx(dummytrap sex age married edulevel mainoccupation size_HH nbchildren_HH income_std assets_std) atmeans post
+est store marg_educ
+*
+coefplot, drop(_cons) xline(0) base ///
+msymbol(S) mcolor(plb1) ///
+headings( ///
+1.sex="{bf:Head charact}" ///
+size_HH="{bf:Household charact}") ///
+xtitle("Marginal effect") xlabel(-3(.5)2) ///
+title("Annual per capita education expenses (log)") scale(1.1) ///
+name(educ, replace)
+graph export "graph/xtfe_education_lag_out.png", as(png) replace
+restore
+
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
 ****************************************
+* Econo with lag drop Quantiles
+****************************************
+use"panel_HH_v2_econo", clear
+
+*** Selection
+keep if dummyloans==1
+xtset HHFE year
+ta year
+
+*** Lag
+drop dummytrap
+rename dummytrap_2ybefore dummytrap
+
+*** Macro
+global headcont i.sex c.age##c.age i.married i.edulevel i.mainoccupation 
+global hhcont size_HH nbchildren_HH income_std assets_std
+
+
+********** Econo
+
+*** Food
+cls
+xtqreg log_expenses_food_pc i.dummytrap $headcont $hhcont, id(HHFE) q(.1 .2 .3 .4 .5 .6 .7 .8 .9)
+est store qfood
+
+*** Health
+cls
+xtqreg log_expenses_heal_pc i.dummytrap $headcont $hhcont, id(HHFE) q(.1 .2 .3 .4 .5 .6 .7 .8 .9)
+est store qheal
+
+*** Education
+cls
+xtqreg log_expenses_educ_pc i.dummytrap $headcont $hhcont, id(HHFE) q(.1 .2 .3 .4 .5 .6 .7 .8 .9)
+est store qeduc
+
+
+********** Graph
+
+*** Food
+import excel "Qreg.xlsx", sheet("Sheet1") firstrow clear
+keep if var=="food"
+*
+twoway ///
+(rarea max min quantile, color(plb1%30)) ///
+(line coef quantile, lcolor(plb1) yline(0)) ///
+, xlabel(1(1)9) ylabel(-.4(.1).1) ///
+xtitle("Quantile") ///
+title("Food") ///
+legend(order(2 "Effect" 1 "95% CI") pos(6) col(2)) ///
+name(food, replace) scale (1.2) aspectratio(3)
+
+*** Health
+import excel "Qreg.xlsx", sheet("Sheet1") firstrow clear
+keep if var=="health"
+*
+twoway ///
+(rarea max min quantile, color(plb1%30)) ///
+(line coef quantile, lcolor(plb1) yline(0)) ///
+, xlabel(1(1)9) ylabel(-1(.2).2) ///
+xtitle("Quantile") ///
+title("Health") ///
+legend(order(2 "Effect" 1 "95% CI") pos(6) col(2)) ///
+name(health, replace) scale (1.2) aspectratio(3)
+
+*** Education
+import excel "Qreg.xlsx", sheet("Sheet1") firstrow clear
+keep if var=="educ"
+*
+twoway ///
+(rarea max min quantile, color(plb1%30)) ///
+(line coef quantile, lcolor(plb1) yline(0)) ///
+, xlabel(1(1)9) ylabel(-10(2)10) ///
+xtitle("Quantile") ///
+title("Education") ///
+legend(order(2 "Effect" 1 "95% CI") pos(6) col(2)) ///
+name(educ, replace) scale (1.2) aspectratio(3)
+
+
+*** Comb
+grc1leg food health educ, col(3) name(comb, replace)
+graph export "graph/xtqreg.png", as(png) replace
+
+
+****************************************
 * END
+
+
+
+
+
+
+
 
 
 
