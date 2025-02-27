@@ -1,14 +1,12 @@
 *-------------------------
 cls
-*Arnaud NATAL
-*arnaud.natal@u-bordeaux.fr
-*April 23, 2021
+*XXXX XXXX
+*XXXX@XXXX
+*March 19, 2024
 *-----
 gl link = "stabpsycho"
-*Stab
 *-----
-*do "https://raw.githubusercontent.com/arnaudnatal/folderanalysis/main/$link.do"
-do "C:/Users/Arnaud/Documents/GitHub/folderanalysis/$link.do"
+do "C:/Users/XXXX/Documents/GitHub/folderanalysis/$link.do"
 *-------------------------
 
 
