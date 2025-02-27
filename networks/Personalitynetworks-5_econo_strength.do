@@ -63,7 +63,13 @@ global persoXsexXcaste c.fES##i.female##i.caste c.fOPEX##i.female##i.caste c.fCO
 * Force MCA
 ****************************************
 
-foreach y in strength_mca debt_strength relative_strength talk_strength labour_strength {
+
+glm debt_strength $persoXsex $cont, family(binomial) link(probit) cluster(HHFE)
+margins, dydx($perso) at(female=(0 1)) atmeans post
+
+
+
+foreach y in debt_strength relative_strength talk_strength {
 
 qui glm `y' $perso i.female i.caste $cont, family(binomial) link(probit) cluster(HHFE)
 est store reg1`y'
@@ -113,7 +119,7 @@ esttab marg1`y' marg2`y' marg3`y' marg4`y' using "`y'_glm_margin.csv", ///
 
 
 
-
+/*
 ****************************************
 * Duration
 ****************************************
@@ -159,3 +165,4 @@ esttab marg1`y' marg2`y' marg3`y' marg4`y' using "`y'_reg_margin.csv", ///
 
 ****************************************
 * END
+*/

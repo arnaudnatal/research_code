@@ -366,6 +366,83 @@ graph export "graph/xtfe_education_lag.png", as(png) replace
 
 
 ****************************************
+* Econo with lag INTERACTIONS
+****************************************
+use"panel_HH_v2_econo", clear
+
+* Selection
+keep if dummyloans==1
+xtset HHFE year
+ta year
+
+* Lag
+drop dummytrap
+rename dummytrap_2ybefore dummytrap
+
+* Macro
+global headcont i.sex c.age##c.age i.married i.edulevel i.mainoccupation 
+global hhcont size_HH nbchildren_HH income_std assets_std
+
+
+
+
+*** Food
+xtreg log_expenses_food_pc i.dummytrap##c.income_std $headcont $hhcont, fe vce(cluster HHFE)
+est store food_inc
+xtreg log_expenses_food_pc i.dummytrap##c.assets_std $headcont $hhcont, fe vce(cluster HHFE)
+est store food_ass
+xtreg log_expenses_food_pc i.dummytrap##i.dalits $headcont $hhcont, fe vce(cluster HHFE)
+est store food_cas
+
+
+
+*** Health
+xtreg log_expenses_heal_pc i.dummytrap##c.income_std $headcont $hhcont, fe vce(cluster HHFE)
+est store heal_inc
+xtreg log_expenses_heal_pc i.dummytrap##c.assets_std $headcont $hhcont, fe vce(cluster HHFE)
+est store heal_ass
+xtreg log_expenses_heal_pc i.dummytrap##i.dalits $headcont $hhcont, fe vce(cluster HHFE)
+est store heal_cas
+
+
+*** Education
+xtreg log_expenses_educ_pc i.dummytrap##c.income_std $headcont $hhcont, fe vce(cluster HHFE)
+est store educ_inc
+xtreg log_expenses_educ_pc i.dummytrap##c.assets_std $headcont $hhcont, fe vce(cluster HHFE)
+est store educ_ass
+xtreg log_expenses_educ_pc i.dummytrap##i.dalits $headcont $hhcont, fe vce(cluster HHFE)
+est store educ_cas
+
+
+
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
 * Econo with lag and shocks
 ****************************************
 use"panel_HH_v2_econo", clear
@@ -405,7 +482,7 @@ graph export "graph/xtfe_food_lag_shocks.png", as(png) replace
 
 
 *** Health
-xtreg log_expenses_heal_pc i.dummytrap $headcont $hhcont, fe vce(cluster HHFE)
+xtreg log_expenses_heal_pc i.dummytrap##c.assets_std $headcont $hhcont, fe vce(cluster HHFE)
 est store heal
 *
 margins, dydx(dummytrap sex age married edulevel mainoccupation size_HH nbchildren_HH income_std assets_std shock1 shock2) atmeans post

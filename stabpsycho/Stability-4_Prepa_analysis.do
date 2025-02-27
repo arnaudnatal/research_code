@@ -16,50 +16,71 @@ do "C:/Users/Arnaud/Documents/GitHub/folderanalysis/$link.do"
 
 
 
+****************************************
+* Sample
+****************************************
+use"panel_stab_v2_wide", clear
+
+keep HHID_panel INDID_panel dummydemonetisation2016 dummyexposure2020 egoid2016 egoid2020
+
+*
+gen present2016=1 if egoid2016!=.
+gen present2020=1 if egoid2020!=.
+drop egoid2016 egoid2020
+
+*
+rename dummydemonetisation2016 demonetisation
+rename dummyexposure2020 lockdown
+
+*
+gen panel=0
+replace panel=1 if present2016==1 & present2020==1
+
+*
+order HHID_panel INDID_panel present2016 present2020 panel
+
+* 
+ta demonetisation if present2016==1
+ta demonetisation if panel==1
+
+*
+ta lockdown if present2020==1, m
+ta lockdown if panel==1, m
+
+****************************************
+* END
+
+
+
+
+
+
+
+
+
 
 ****************************************
 * Formation
 ****************************************
 use"panel_stab_v2_wide", clear
 
-keep if panel2016==1
 
-merge 1:1 HHID_panel INDID_panel using "panel_stab_v2_2016"
-drop _merge
-merge 1:1 HHID_panel INDID_panel using "panel_stab_v2_2020"
-drop _merge
+********** Selection
+*keep if panel2016==1
 
 
-
-********** 2016
-drop a12016 a22016 a32016 a42016 a52016 a62016 a72016 a82016 a92016 a102016 a112016 a122016 ab12016 ab22016 ab32016 ab42016 ab52016 ab62016 ab72016 ab82016 ab92016 ab102016 ab112016 ab122016 b12016 b22016 b32016 b42016 b52016 b62016 b72016 b82016 b92016 b102016 b112016 b122016
-
-drop curious2016 interestedbyart2016 inventive2016 liketothink2016 newideas2016 activeimagination2016 organized2016 makeplans2016 workhard2016 appointmentontime2016 completeduties2016 enjoypeople2016 sharefeelings2016 enthusiastic2016 talktomanypeople2016 talkative2016 expressingthoughts2016 workwithother2016 understandotherfeeling2016 trustingofother2016 toleratefaults2016 forgiveother2016 helpfulwithothers2016 managestress2016 staycalm2016 tryhard2016 stickwithgoals2016 goaftergoal2016 finishwhatbegin2016 finishtasks2016 keepworking2016
-
-drop cr_curious2016 cr_interestedbyart2016 cr_inventive2016 cr_liketothink2016 cr_newideas2016 cr_activeimagination2016 cr_organized2016 cr_makeplans2016 cr_workhard2016 cr_appointmentontime2016 cr_completeduties2016 cr_enjoypeople2016 cr_sharefeelings2016 cr_enthusiastic2016 cr_talktomanypeople2016 cr_talkative2016 cr_expressingthoughts2016 cr_workwithother2016 cr_understandotherfeeling2016 cr_trustingofother2016 cr_toleratefaults2016 cr_forgiveother2016 cr_helpfulwithothers2016 cr_managestress2016 cr_staycalm2016 cr_tryhard2016 cr_stickwithgoals2016 cr_goaftergoal2016 cr_finishwhatbegin2016 cr_finishtasks2016 cr_keepworking2016
-
-
-drop ra12016 rab12016 rb12016 ra22016 rab22016 rb22016 ra32016 rab32016 rb32016 ra42016 rab42016 rb42016 ra52016 rab52016 rb52016 ra62016 rab62016 rb62016 ra72016 rab72016 rb72016 ra82016 rab82016 rb82016 ra92016 rab92016 rb92016 ra102016 rab102016 rb102016 ra112016 rab112016 rb112016 ra122016 rab122016 rb122016 set_a2016 set_ab2016 set_b2016
+********** To keep
+keep HHID_panel INDID_panel ///
+egoid* name* sex* age* jatiscorr* caste* edulevel* villageid* panel* dummydemonetisation* relationshiptohead* maritalstatus* mainocc_occupation_indiv* annualincome_indiv* annualincome_HH* assets_total1000* assets_totalnoland1000* HHsize* typeoffamily* village* aspirationminimumwage* dummyaspirationmorehours* aspirationminimumwage2* dummyexposure* secondlockdownexposure* dummysell* submissiondate* ars* ars2* ars3* username* edulevel_backup* num_tt* lit_tt* raven_tt* loanamount_HH* imp1_ds_tot_HH* assets_sizeownland* ownland* dummymarriage* dummy_marriedlist* expenses_heal* shareexpenses_heal* mainocc_profession_indiv* mainocc_sector_indiv* mainocc_occupationname_indiv*
 
 
 
-********** 2020
-drop curious2020 interestedbyart2020 inventive2020 liketothink2020 newideas2020 activeimagination2020 organized2020 makeplans2020 workhard2020 appointmentontime2020 completeduties2020 enjoypeople2020 sharefeelings2020 enthusiastic2020 talktomanypeople2020 talkative2020 expressingthoughts2020 workwithother2020 understandotherfeeling2020 trustingofother2020 toleratefaults2020 forgiveother2020 helpfulwithothers2020 managestress2020 staycalm2020 tryhard2020 stickwithgoals2020 goaftergoal2020 finishwhatbegin2020 finishtasks2020 keepworking2020
-
-drop cr_curious2020 cr_interestedbyart2020 cr_inventive2020 cr_liketothink2020 cr_newideas2020 cr_activeimagination2020 cr_organized2020 cr_makeplans2020 cr_workhard2020 cr_appointmentontime2020 cr_completeduties2020 cr_enjoypeople2020 cr_sharefeelings2020 cr_enthusiastic2020 cr_talktomanypeople2020 cr_talkative2020 cr_expressingthoughts2020 cr_workwithother2020 cr_understandotherfeeling2020 cr_trustingofother2020 cr_toleratefaults2020 cr_forgiveother2020 cr_helpfulwithothers2020 cr_managestress2020 cr_staycalm2020 cr_tryhard2020 cr_stickwithgoals2020 cr_goaftergoal2020 cr_finishwhatbegin2020 cr_finishtasks2020 cr_keepworking2020
-
-drop a12020 a22020 a32020 a42020 a52020 a62020 a72020 a82020 a92020 a102020 a112020 a122020 ab12020 ab22020 ab32020 ab42020 ab52020 ab62020 ab72020 ab82020 ab92020 ab102020 ab112020 ab122020 b12020 b22020 b32020 b42020 b52020 b62020 b72020 b82020 b92020 b102020 b112020 b122020
-
-
-drop ra12020 rab12020 rb12020 ra22020 rab22020 rb22020 ra32020 rab32020 rb32020 ra42020 rab42020 rb42020 ra52020 rab52020 rb52020 ra62020 rab62020 rb62020 ra72020 rab72020 rb72020 ra82020 rab82020 rb82020 ra92020 rab92020 rb92020 ra102020 rab102020 rb102020 ra112020 rab112020 rb112020 ra122020 rab122020 rb122020 set_a2020 set_ab2020 set_b2020
-
-
-*** Username
+********** Username
 * 2016
 rename username_2016_code2016 username_neemsis1
 desc username_neemsis1
 fre username_neemsis1
-label define username_2016_code 1"Enum: Ant" 2"Enum: Kum" 3"Enum: May" 4"Enum: Paz" 5"Enum: Raj" 6"Enum: Sit" 7"Enum: Viv", modify
+label define username_2016_code 1"Enu2016: Ant" 2"Enu2016: Kum" 3"Enu2016: May" 4"Enu2016: Paz" 5"Enu2016: Raj" 6"Enu2016: Sit" 7"Enu2016: Viv", modify
 
 * 2020
 rename username_2020_code2020 username_neemsis2
@@ -67,7 +88,7 @@ fre username_neemsis2
 desc username_neemsis2
 recode username_neemsis2 (1=4)
 fre username_neemsis2
-label define userneemsis2 1"Chithra-Radhika" 2"Mayan" 3"Pazani" 4"Raichal" 5"Rajalakschmi" 6"Suganya-Malarvizhi" 7"Vivek-Radja"
+label define userneemsis2 1"Enu2020: Chi" 2"Enu2020: May" 3"Enu2020: Paz" 4"Enu2020: Rai" 5"Enu2020: Raj" 6"Enu2020: Sug" 7"Enu2020: Viv"
 fre username_neemsis2
 replace username_neemsis2=username_neemsis2-1
 label values username_neemsis2 userneemsis2
@@ -77,261 +98,10 @@ drop username2016 username_20162016 username_20202016 username_2020_code2016 use
 
 fre username_backup2016 username_neemsis1 username_backup2020 username_neemsis2
 
-save "panel_stab_wide_v3", replace
-****************************************
-* END
 
 
 
-
-
-
-
-
-
-****************************************
-* Cognitive
-****************************************
-use "panel_stab_wide_v3", clear
-
-foreach x in numeracy12016 numeracy22016 numeracy32016 numeracy42016 numeracy12020 numeracy22020 numeracy32020 numeracy42020 {
-recode `x' (2=0)
-}
-
-egen num2_tt2016=rowtotal(numeracy12016 numeracy22016 numeracy32016 numeracy42016)
-egen num2_tt2020=rowtotal(numeracy12020 numeracy22020 numeracy32020 numeracy42020)
-
-***** Diff
-sum num2_tt2016 num2_tt2020
-sum lit_tt2016 lit_tt2020
-sum raven_tt2016 raven_tt2020
-
-gen diff_num=num2_tt2020-num2_tt2016
-gen diff_lit=lit_tt2020-lit_tt2016
-gen diff_raven=raven_tt2020-raven_tt2016
-
-ta diff_num
-ta diff_lit
-ta diff_raven
-
-
-********** Graph
-set graph off
-
-histogram diff_num, percent dis xline(0) ///
-xtitle("Numeracy Score Difference" "=2020-2016") ytitle("%") ///
-xlabel(-4(1)4) ylabel(0(5)30) ///
-name(num, replace)
-*graph save "diff_num.gph", replace
-*graph export "diff_num.pdf", replace
-
-histogram diff_lit, percent xline(0) ///
-xtitle("Literacy Score Difference" "=2020-2016") ytitle("%") ///
-xlabel(-4(1)4) ylabel(0(10)50) ///
-xmtick(-4(.5)4) ymtick(0(5)50) ///
-name(lit, replace)
-*graph save "diff_lit.gph", replace
-*graph export "diff_lit.pdf", replace
-
-histogram diff_raven, percent dis xline(0) ///
-xtitle("Raven Score Difference" "=2020-2016") ytitle("%") ///
-xlabel(-40(10)30) ylabel(0(1)7) ///
-xmtick(-40(5)30) ymtick() ///
-name(raven, replace)
-*graph save "diff_rav.gph", replace
-*graph export "diff_rav.pdf", replace
-
-***** Combine
-graph combine num lit raven, col(3) name(cog_com, replace)
-
-graph save "diff_cog.gph", replace
-graph export "diff_cog.pdf", replace
-
-set graph on
-
-save "panel_stab_wide_v31", replace
-****************************************
-* END
-
-
-
-
-
-
-
-
-
-
-****************************************
-* Stability of ES
-****************************************
-use "panel_stab_wide_v31", clear
-
-
-rename f1_2016 fa_ES2016
-rename f1_2020 fa_ES2020
-
-tab1 cr_ES2016 cr_ES2020
-tab1 fa_ES2016 fa_ES2020
-
-foreach x in cr_ES2016 cr_ES2020 fa_ES2016 fa_ES2020 {
-replace `x'=5 if `x'>5
-}
-
-tabstat cr_ES2016 cr_ES2020 fa_ES2016 fa_ES2020, stat(n mean sd p50 min max)
-* Min = 0
-* Max = 5
-
-********** DIFF
-gen diff_cr_ES=cr_ES2020-cr_ES2016
-gen diff_fa_ES=fa_ES2020-fa_ES2016
-
-foreach x in diff_cr_ES diff_fa_ES {
-gen abs_`x'=abs(`x')
-}
-
-tabstat diff_cr_ES diff_fa_ES abs_diff_cr_ES abs_diff_fa_ES, stat(n mean sd p50 min max range)
-* Min = -5
-* Max = +5
-* Range = 10
-
-egen diff_cr_ES_cat5=cut(diff_cr_ES), at(-5,-.25,.25,5) icodes
-egen diff_cr_ES_cat10=cut(diff_cr_ES), at(-5,-.5,.5,5) icodes
-egen diff_fa_ES_cat5=cut(diff_fa_ES), at(-5,-.25,.25,5) icodes
-egen diff_fa_ES_cat10=cut(diff_fa_ES), at(-5,-.5,.5,5) icodes
-fre diff_cr_ES_cat5 diff_cr_ES_cat10 diff_fa_ES_cat5 diff_fa_ES_cat10
-
-egen abs_diff_cr_ES_cat5=cut(abs_diff_cr_ES), at(0,.25,5) icodes
-egen abs_diff_cr_ES_cat10=cut(abs_diff_cr_ES), at(0,.5,5) icodes
-egen abs_diff_fa_ES_cat5=cut(abs_diff_fa_ES), at(0,.25,5) icodes
-egen abs_diff_fa_ES_cat10=cut(abs_diff_fa_ES), at(0,.5,5) icodes
-fre abs_diff_cr_ES_cat5 abs_diff_cr_ES_cat10 abs_diff_fa_ES_cat5 abs_diff_fa_ES_cat10
-
-
-gen abs_diff_fa_ES_cat10_cont=abs(diff_fa_ES)
-replace abs_diff_fa_ES_cat10_cont=. if  abs_diff_fa_ES_cat10==0
-ta abs_diff_fa_ES_cat10_cont
-
-
-
-********** DELTA
-gen delta_cr_ES=(cr_ES2020-cr_ES2016)/cr_ES2016
-gen delta_fa_ES=(fa_ES2020-fa_ES2016)/fa_ES2016
-
-foreach x in delta_cr_ES delta_fa_ES {
-gen abs_`x'=abs(`x')
-}
-
-tabstat delta_cr_ES delta_fa_ES abs_delta_cr_ES abs_delta_fa_ES, stat(n mean sd min p1 p5 p10 q p90 p95 p99 max)
-
-egen delta_cr_ES_cat5=cut(delta_cr_ES), at(-2,-.05,.05,7) icodes
-egen delta_cr_ES_cat10=cut(delta_cr_ES), at(-2,-.1,.1,7) icodes
-egen delta_fa_ES_cat5=cut(delta_fa_ES), at(-2,-.05,.05,7) icodes
-egen delta_fa_ES_cat10=cut(delta_fa_ES), at(-2,-.1,.1,7) icodes
-fre delta_cr_ES_cat5 delta_cr_ES_cat10 delta_fa_ES_cat5 delta_fa_ES_cat10
-
-egen abs_delta_cr_ES_cat5=cut(abs_delta_cr_ES), at(0,.05,7) icodes
-egen abs_delta_cr_ES_cat10=cut(abs_delta_cr_ES), at(0,.1,7) icodes
-egen abs_delta_fa_ES_cat5=cut(abs_delta_fa_ES), at(0,.05,7) icodes
-egen abs_delta_fa_ES_cat10=cut(abs_delta_fa_ES), at(0,.1,7) icodes
-fre abs_delta_cr_ES_cat5 abs_delta_cr_ES_cat10 abs_delta_fa_ES_cat5 abs_delta_fa_ES_cat10
-
-
-********** LABEL
-label define stab 0"Decrease" 1"Stable" 2"Increase"
-foreach x in diff_cr_ES_cat5 diff_cr_ES_cat10 diff_fa_ES_cat5 diff_fa_ES_cat10 delta_cr_ES_cat5 delta_cr_ES_cat10 delta_fa_ES_cat5 delta_fa_ES_cat10 {
-label values `x' stab
-}
-fre diff_cr_ES_cat5 diff_cr_ES_cat10 diff_fa_ES_cat5 diff_fa_ES_cat10 delta_cr_ES_cat5 delta_cr_ES_cat10 delta_fa_ES_cat5 delta_fa_ES_cat10
-
-label define stab2 0"Stable" 1"Instable"
-foreach x in abs_diff_cr_ES_cat5 abs_diff_cr_ES_cat10 abs_diff_fa_ES_cat5 abs_diff_fa_ES_cat10 abs_delta_cr_ES_cat5 abs_delta_cr_ES_cat10 abs_delta_fa_ES_cat5 abs_delta_fa_ES_cat10 {
-label values `x' stab2
-}
-fre abs_diff_cr_ES_cat5 abs_diff_cr_ES_cat10 abs_diff_fa_ES_cat5 abs_diff_fa_ES_cat10 abs_delta_cr_ES_cat5 abs_delta_cr_ES_cat10 abs_delta_fa_ES_cat5 abs_delta_fa_ES_cat10
-
-
-********** INSTAB
-/*
-gen abs_diff_instab5=0
-gen abs_diff_instab10=0
-gen abs_delta_instab5=0
-gen abs_delta_instab10=0
-
-replace abs_diff_instab5=1 if abs_diff_cr_ES_cat5==1 & abs_diff_fa_ES_cat5==1
-replace abs_diff_instab10=1 if abs_diff_cr_ES_cat10==1 & abs_diff_fa_ES_cat10==1
-
-replace abs_delta_instab5=1 if abs_delta_cr_ES_cat5==1 & abs_delta_fa_ES_cat5==1
-replace abs_delta_instab10=1 if abs_delta_cr_ES_cat10==1 & abs_delta_fa_ES_cat10==1
-
-label define stab3 0"Stable" 1"Instable"
-foreach x in abs_diff_instab5 abs_diff_instab10 abs_delta_instab5 abs_delta_instab10 {
-label values `x' stab3
-} 
-fre abs_diff_instab5 abs_diff_instab10 abs_delta_instab5 abs_delta_instab10
-*/
-
-*** Increase or decrease
-gen pathabs_diff_cr_cat5=0
-gen pathabs_diff_cr_cat10=0
-gen pathabs_delta_cr_cat5=0
-gen pathabs_delta_cr_cat10=0
-
-gen pathabs_diff_fa_cat5=0
-gen pathabs_diff_fa_cat10=0
-gen pathabs_delta_fa_cat5=0
-gen pathabs_delta_fa_cat10=0
-
-replace pathabs_diff_cr_cat5=1 if cr_ES2016>cr_ES2020 & abs_diff_cr_ES_cat5==1
-replace pathabs_diff_cr_cat10=1 if cr_ES2016>cr_ES2020 & abs_diff_cr_ES_cat10==1
-replace pathabs_delta_cr_cat5=1 if cr_ES2016>cr_ES2020 & abs_delta_cr_ES_cat5==1
-replace pathabs_delta_cr_cat10=1 if cr_ES2016>cr_ES2020 & abs_delta_cr_ES_cat10==1
-replace pathabs_diff_cr_cat5=2 if cr_ES2016<cr_ES2020 & abs_diff_cr_ES_cat5==1
-replace pathabs_diff_cr_cat10=2 if cr_ES2016<cr_ES2020 & abs_diff_cr_ES_cat10==1
-replace pathabs_delta_cr_cat5=2 if cr_ES2016<cr_ES2020 & abs_delta_cr_ES_cat5==1
-replace pathabs_delta_cr_cat10=2 if cr_ES2016<cr_ES2020 & abs_delta_cr_ES_cat10==1
-
-replace pathabs_diff_fa_cat5=1 if fa_ES2016>fa_ES2020 & abs_diff_fa_ES_cat5==1
-replace pathabs_diff_fa_cat10=1 if fa_ES2016>fa_ES2020 & abs_diff_fa_ES_cat10==1
-replace pathabs_delta_fa_cat5=1 if fa_ES2016>fa_ES2020 & abs_delta_fa_ES_cat5==1
-replace pathabs_delta_fa_cat10=1 if fa_ES2016>fa_ES2020 & abs_delta_fa_ES_cat10==1
-replace pathabs_diff_fa_cat5=2 if fa_ES2016<fa_ES2020 & abs_diff_fa_ES_cat5==1
-replace pathabs_diff_fa_cat10=2 if fa_ES2016<fa_ES2020 & abs_diff_fa_ES_cat10==1
-replace pathabs_delta_fa_cat5=2 if fa_ES2016<fa_ES2020 & abs_delta_fa_ES_cat5==1
-replace pathabs_delta_fa_cat10=2 if fa_ES2016<fa_ES2020 & abs_delta_fa_ES_cat10==1
-
-
-label define path 1 "Decreasing" 2 "Increasing"
-foreach x in pathabs_diff_cr_cat5 pathabs_diff_cr_cat10 pathabs_delta_cr_cat5 pathabs_delta_cr_cat10 pathabs_diff_fa_cat5 pathabs_diff_fa_cat10 pathabs_delta_fa_cat5 pathabs_delta_fa_cat10 {
-recode `x' (0=.)
-label values `x' path
-}
-fre pathabs_diff_cr_cat5 pathabs_diff_cr_cat10 pathabs_delta_cr_cat5 pathabs_delta_cr_cat10 pathabs_diff_fa_cat5 pathabs_diff_fa_cat10 pathabs_delta_fa_cat5 pathabs_delta_fa_cat10
-
-
-save "panel_stab_wide_v4", replace
-****************************************
-* END
-
-
-
-
-
-
-
-
-
-
-****************************************
-* Control var
-****************************************
-use "panel_stab_wide_v4", clear
-
-*** Panel
-keep if panel2016==1
-keep if panel2020==1
-
-*** Controle var
+********** Creation
 * Sex
 rename sex2016 sex
 drop sex2020
@@ -364,8 +134,11 @@ label define edulevel 0"Edu: Below prim" 1"Edu: Primary" 2"Edu: High school" 3"E
 
 
 * MOC
-rename mainocc_occupation_indiv2016 moc_indiv
-label define occupcode 0"Occ: No occup" 1"Occ: Agri" 2"Occ: Agri coolie" 3"Occ: Coolie" 4"Occ: Reg non-qual" 5"Occ: Reg qualif" 6"Occ: SE" 7"Occ: NREGA", modify
+clonevar moc_indiv=mainocc_occupation_indiv2016
+recode moc_indiv (5=4)
+label define occupcode2 0"Occ: No occup" 1"Occ: Agri" 2"Occ: Agri coolie" 3"Occ: Coolie" 4"Occ: Reg" 6"Occ: SE" 7"Occ: MGNREGA"
+label values moc_indiv occupcode2
+ta mainocc_occupation_indiv2016 moc_indiv
 
 
 * Bias
@@ -373,7 +146,7 @@ gen diff_ars3=ars32020-ars32016
 tabstat diff_ars3, stat(n mean sd p50 min max range)
 dis 2.428571*0.05
 egen diff_ars3_cat5=cut(diff_ars3), at(-1,-.121,.121,1.5) icodes
-label define ars3cat 0"Bias: Decrease" 1"Bias: Stable" 2"Bias: Increase"
+label define ars3cat 0"AcqB: Decrease" 1"AcqB: Stable" 2"AcqB: Increase"
 label values diff_ars3_cat5 ars3cat
 
 
@@ -426,73 +199,255 @@ label values annualincome_HH2016_q income
 label values annualincome_indiv2016_q income
 
 
-* Cov expo
+* Caste
+codebook caste
+label define castecat2 1"Caste: Dalits" 2"Caste: Middle" 3"Caste: Upper", modify
+label values caste castecat
+fre caste
+
+
+* Type of family
+label define typeoffamily 1 "Fam: Nuclear" 2 "Fam: Stem" 3 "Fam: Joint-stem"
+foreach i in 2016 2020 {
+replace typeoffamily`i'="1" if typeoffamily`i'=="nuclear"
+replace typeoffamily`i'="2" if typeoffamily`i'=="stem"
+replace typeoffamily`i'="3" if typeoffamily`i'=="joint-stem"
+destring typeoffamily`i', replace
+}
+label values typeoffamily2016 typeoffamily
+label values typeoffamily2020 typeoffamily
+fre typeoffamily2016 typeoffamily2020
+
+
+* Label
+label var age2016 "Age (in years)"
+label var HHsize2016 "Household size"
+label var ars32016 "Absolute acquiescence score"
+
+
+
+
+********** Merge cognition
+global items imcr_curious2016 imcr_interestedbyart2016 imcr_repetitivetasks2016 imcr_inventive2016 imcr_liketothink2016 imcr_newideas2016 imcr_activeimagination2016 imcr_organized2016 imcr_makeplans2016 imcr_workhard2016 imcr_appointmentontime2016 imcr_putoffduties2016 imcr_easilydistracted2016 imcr_completeduties2016 imcr_enjoypeople2016 imcr_sharefeelings2016 imcr_shywithpeople2016 imcr_enthusiastic2016 imcr_talktomanypeople2016 imcr_talkative2016 imcr_expressingthoughts2016 imcr_workwithother2016 imcr_understandotherfeeling2016 imcr_trustingofother2016 imcr_rudetoother2016 imcr_toleratefaults2016 imcr_forgiveother2016 imcr_helpfulwithothers2016 imcr_managestress2016 imcr_nervous2016 imcr_changemood2016 imcr_feeldepressed2016 imcr_easilyupset2016 imcr_worryalot2016 imcr_staycalm2016 imcr_curious2020 imcr_interestedbyart2020 imcr_repetitivetasks2020 imcr_inventive2020 imcr_liketothink2020 imcr_newideas2020 imcr_activeimagination2020 imcr_organized2020 imcr_makeplans2020 imcr_workhard2020 imcr_appointmentontime2020 imcr_putoffduties2020 imcr_easilydistracted2020 imcr_completeduties2020 imcr_enjoypeople2020 imcr_sharefeelings2020 imcr_shywithpeople2020 imcr_enthusiastic2020 imcr_talktomanypeople2020 imcr_talkative2020 imcr_expressingthoughts2020 imcr_workwithother2020 imcr_understandotherfeeling2020 imcr_trustingofother2020 imcr_rudetoother2020 imcr_toleratefaults2020 imcr_forgiveother2020 imcr_helpfulwithothers2020 imcr_managestress2020 imcr_nervous2020 imcr_changemood2020 imcr_feeldepressed2020 imcr_easilyupset2020 imcr_worryalot2020 imcr_staycalm2020
+
+merge 1:1 HHID_panel INDID_panel using "panel_stab_v2_pooled_wide", keepusing( ///
+fES2016 fES2020 ///
+fCO2016 fCO2020 ///
+fOPEX2016 fOPEX2020 ///
+num_tt2016 num_tt2020 ///
+lit_tt2016 lit_tt2020 ///
+raven_tt2016 raven_tt2020 ///
+diff_fES abs_diff_fES catdiff_fES dumdiff_fES ///
+diff_fCO abs_diff_fCO catdiff_fCO dumdiff_fCO ///
+diff_fOPEX abs_diff_fOPEX catdiff_fOPEX dumdiff_fOPEX ///
+var_fES abs_var_fES catvar_fES dumvar_fES ///
+var_fCO abs_var_fCO catvar_fCO dumvar_fCO ///
+var_fOPEX abs_var_fOPEX catvar_fOPEX dumvar_fOPEX ///
+$items)
+drop _merge
+keep if sex!=.
+
+label var fES2016 "Emotional stability score"
+label var fCO2016 "Conscientiousness score"
+label var fOPEX2016 "Plasticity score"
+label var num_tt2016 "Numeracy score"
+label var lit_tt2016 "Literacy score"
+label var raven_tt2016 "Raven score"
+
+label var fES2020 "Emotional stability score in 2020-21"
+label var fCO2020 "Conscientiousness score in 2020-21"
+label var fOPEX2020 "Plasticity score in 2020-21"
+label var num_tt2020 "Numeracy score in 2020-21"
+label var lit_tt2020 "Literacy score in 2020-21"
+label var raven_tt2020 "Raven score in 2020-21"
+
+label var diff_fES "Emotional stability"
+label var diff_fCO "Conscientiousness"
+label var diff_fOPEX "Plasticity"
+
+label var dumdiff_fES "Unstable on ES (% of yes)"
+label var dumdiff_fCO "Unstable on CO (% of yes)"
+label var dumdiff_fOPEX "Unstable on PL (% of yes)"
+
+label var catdiff_fES "ES temporal trajectory"
+label var catdiff_fCO "CO temporal trajectory"
+label var catdiff_fOPEX "PL temporal trajectory"
+
+label var abs_diff_fES "Intensity of ES instability"
+label var abs_diff_fCO "Intensity of CO instability"
+label var abs_diff_fOPEX "Intensity of PL instability"
+
+label var var_fES "Variation ES (%)"
+label var var_fCO "Variation CO (%)"
+label var var_fOPEX "Variation PL (%)"
+
+label var dumvar_fES "Unstable on ES (% of yes)"
+label var dumvar_fCO "Unstable on CO (% of yes)"
+label var dumvar_fOPEX "Unstable on PL (% of yes)"
+
+label var catvar_fES "ES temporal trajectory"
+label var catvar_fCO "CO temporal trajectory"
+label var catvar_fOPEX "PL temporal trajectory"
+
+label var abs_var_fES "Intensity of ES instability"
+label var abs_var_fCO "Intensity of CO instability"
+label var abs_var_fOPEX "Intensity of PL instability"
+
+
+
+********** Items to rename
+foreach x in $items {
+local new=substr("`x'",6,99)
+rename `x' `new'
+}
+
+
+********** Shocks
+* COVID
 destring dummysell2020, replace
 label define cov 0 "Cov: Not exp" 1 "Cov: Exposed"
 label values dummysell2020 cov
 fre dummysell2020
+label var dummysell2020 "COVID-19 exposure (% of yes)"
 
-* General shock
-gen shock=dummydemonetisation2016+dummysell2020
-fre shock
+* Demonetisation
+ta dummydemonetisation2016
+label define demo2 0 "Demo: Not exp" 1 "Demo: Exposed"
+label values dummydemonetisation2016 demo2
+fre dummydemonetisation2016
+label var dummydemonetisation2016 "Demonetisation exposure (% of yes)"
+
+* Land
+gen dummyshockland=.
+label define shockland 0 "Same or higher land area" 1 "Sale/loss of land"
+label values dummyshockland shockland
+replace dummyshockland=0 if assets_sizeownland2020>=assets_sizeownland2016
+replace dummyshockland=1 if assets_sizeownland2020<assets_sizeownland2016
+ta dummyshockland
+label var dummyshockland "Sale/loss of land (% of yes)"
+
+* Debt
+gen temp1=imp1_ds_tot_HH2016/annualincome_HH2016
+gen temp2=imp1_ds_tot_HH2020/annualincome_HH2020
+gen dummyshockdebt=.
+label define shockdebt 0 "Same or lower debt" 1 "Higher debt (x1.5)"
+label values dummyshockdebt shockdebt
+gen temp=temp2/temp1
+ta temp
+replace dummyshockdebt=0 if temp<1.5
+replace dummyshockdebt=1 if temp>=1.5
+ta dummyshockdebt
+drop temp temp1 temp2
+label var dummyshockdebt "Higher debt (x1.5) (% of yes)"
+ta dummyshockdebt
+
+* Debt2
+gen temp1=imp1_ds_tot_HH2016/annualincome_HH2016
+gen temp2=imp1_ds_tot_HH2020/annualincome_HH2020
+gen dummyshockdebt2=.
+label define shockdebt2 0 "Same or lower debt" 1 "Higher debt (x2)"
+label values dummyshockdebt2 shockdebt2
+gen temp=temp2/temp1
+ta temp
+replace dummyshockdebt2=0 if temp<2
+replace dummyshockdebt2=1 if temp>=2
+ta dummyshockdebt2
+drop temp temp1 temp2
+label var dummyshockdebt2 "Higher debt (x2) (% of yes)"
+ta dummyshockdebt2
+
+* Health
+gen temp1=expenses_heal2016/annualincome_HH2016
+gen temp2=expenses_heal2020/annualincome_HH2020
+gen dummyshockhealth=.
+label define shockhealth 0 "Same or lower health spending" 1 "Higher health spending (x1.5)"
+label values dummyshockhealth shockhealth
+gen temp=temp2/temp1
+ta temp
+replace dummyshockhealth=0 if temp<1.5
+replace dummyshockhealth=1 if temp>=1.5
+ta dummyshockhealth
+drop temp temp1 temp2
+label var dummyshockhealth "Higher health spending (x1.5) (% of yes)"
+ta dummyshockhealth
 
 
-* Dummy shock
-gen dummyshock=shock
-recode dummyshock (4=1) (3=1) (2=1)
-label define dummyshock 0"Shock: No" 1"Shock: Yes"
-label values dummyshock dummyshock
+* Health2
+gen temp1=expenses_heal2016/annualincome_HH2016
+gen temp2=expenses_heal2020/annualincome_HH2020
+gen dummyshockhealth2=.
+label define shockhealth2 0 "Same or lower health spending" 1 "Higher health spending (x2)"
+label values dummyshockhealth2 shockhealth2
+gen temp=temp2/temp1
+ta temp
+replace dummyshockhealth2=0 if temp<2
+replace dummyshockhealth2=1 if temp>=2
+ta dummyshockhealth2
+drop temp temp1 temp2
+label var dummyshockhealth2 "Higher health spending (x2) (% of yes)"
+ta dummyshockhealth2
 
 
-* Recode shock
-gen shock_recode=shock
-recode shock_recode (4=2) (3=2)
-label define shock_recode 0"Shock: No" 1"Shock: One" 2"Shock: Two or more"
-label values shock_recode shock_recode
+* Income
+gen temp1=annualincome_indiv2016*(100/158)
+gen temp2=annualincome_indiv2020*(100/184)
+gen dummyshockincome=.
+label define shockincome 0 "Same or lower income" 1 "Higher income (x1.5)"
+label values dummyshockincome shockincome
+gen temp=temp2/temp1
+ta temp
+replace dummyshockincome=0 if temp<1.5
+replace dummyshockincome=1 if temp>=1.5
+ta dummyshockincome
+drop temp temp1 temp2
+label var dummyshockincome "Higher income (x1.5) (% of yes)"
+ta dummyshockincome
 
-* Dummy
-foreach x in sex age_cat educode moc_indiv caste annualincome_indiv2016_q {
-tab `x', gen(`x'_)
+
+* Income2
+gen temp1=annualincome_indiv2016*(100/158)
+gen temp2=annualincome_indiv2020*(100/184)
+gen dummyshockincome2=.
+label define shockincome2 0 "Same or lower income" 1 "Higher income (x2)"
+label values dummyshockincome2 shockincome2
+gen temp=temp2/temp1
+ta temp
+replace dummyshockincome2=0 if temp<2
+replace dummyshockincome2=1 if temp>=2
+ta dummyshockincome2
+drop temp temp1 temp2
+label var dummyshockincome2 "Higher income (x2) (% of yes)"
+ta dummyshockincome2
+
+
+* Assets
+gen temp1=assets_total10002016*(100/158)
+gen temp2=assets_total10002020*(100/184)
+gen dummyshockassets=.
+label define shockassets 0 "Assets: Same or higher" 1 "Assets: Lower"
+label values dummyshockassets shockassets
+gen temp=temp2/temp1
+ta temp
+replace dummyshockassets=0 if temp>=1
+replace dummyshockassets=1 if temp<1
+ta dummyshockassets
+drop temp temp1 temp2
+label var dummyshockassets "Lower assets (% of yes)"
+ta dummyshockassets
+
+
+********** Abs diff rec
+foreach x in ES OPEX CO {
+gen abs_diff_rec_f`x'=abs_diff_f`x'
+replace abs_diff_rec_f`x'=0 if dumdiff_f`x'==0
+order abs_diff_rec_f`x', after(abs_diff_f`x')
 }
 
-* Recode moc_indiv
-recode moc_indiv (5=4)
-des moc_indiv
-fre moc_indiv
-label define occupcode 4"Occ: Reg", modify
-fre moc_indiv
 
-save "panel_stab_wide_v5", replace
+
+
+save "panel_stab_pooled_wide_v3", replace
 ****************************************
 * END
 
 
-
-
-
-
-
-
-
-
-****************************************
-* reshape + intraclass correlation
-****************************************
-use "panel_stab_wide_v5", clear
-
-keep HHID_panel INDID_panel fa_ES2016 fa_ES2020 sex age2016 caste edulevel2016 edulevel2020 villageid2016 mainocc_occupation_indiv2020
-
-reshape long fa_ES edulevel, i(HHID_panel INDID_panel) j(year)
-
-egen HHINDID=concat(HHID_panel INDID_panel), p(/)
-encode HHINDID, gen(HHINDID2)
-drop HHINDID
-rename HHINDID2 HHINDID
-
-xtset HHINDID year
-
-icc fa_ES HHINDID
-
-save "panel_stab_v6", replace
-****************************************
-* END

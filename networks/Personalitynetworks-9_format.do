@@ -19,38 +19,15 @@ do"C:\Users\Arnaud\Documents\GitHub\folderanalysis\networks.do"
 * Format
 *************************************
 foreach y in ///
-strength_mca_glm duration_afe_reg ///
-talk_strength_glm talk_duration_afe_reg ///
-debt_strength_glm debt_duration_afe_reg ///
-relative_strength_glm relative_duration_afe_reg ///
-ddiffcaste_probit diffcaste_glm diffcaste_frac ///
-ddiffjatis_probit diffjatis_glm diffjatis_frac ///
-ddiffgender_probit diffgender_glm diffgender_frac ///
-ddifflocation_probit difflocation_glm difflocation_frac ///
-talk_ddiffcaste_probit talk_diffcaste_glm talk_diffcaste_frac ///
-talk_ddiffjatis_probit talk_diffjatis_glm talk_diffjatis_frac ///
-talk_ddiffgender_probit talk_diffgender_glm talk_diffgender_frac ///
-talk_ddifflocation_probit talk_difflocation_glm talk_difflocation_frac ///
-debt_ddiffcaste_probit debt_diffcaste_glm debt_diffcaste_frac ///
-debt_ddiffjatis_probit debt_diffjatis_glm debt_diffjatis_frac ///
-debt_ddiffgender_probit debt_diffgender_glm debt_diffgender_frac ///
-debt_ddifflocation_probit debt_difflocation_glm debt_difflocation_frac ///
-relative_ddiffcaste_probit relative_diffcaste_glm relative_diffcaste_frac ///
-relative_ddiffjatis_probit relative_diffjatis_glm relative_diffjatis_frac ///
-relative_ddiffgender_probit relative_diffgender_glm relative_diffgender_frac ///
-relative_ddifflocation_probit relative_difflocation_glm relative_difflocation_frac ///
-hetero_caste_probit IQV_caste_glm ///
-hetero_jatis_probit IQV_jatis_glm ///
-hetero_gender_probit IQV_gender_glm ///
-hetero_location_probit IQV_location_glm ///
-talk_hetero_caste_probit talk_IQV_caste_glm ///
-talk_hetero_jatis_probit talk_IQV_jatis_glm ///
-talk_hetero_gender_probit talk_IQV_gender_glm ///
-talk_hetero_location_probit talk_IQV_location_glm ///
-debt_hetero_caste_probit debt_IQV_caste_glm ///
-debt_hetero_jatis_probit debt_IQV_jatis_glm ///
-debt_hetero_gender_probit debt_IQV_gender_glm ///
-debt_hetero_location_probit debt_IQV_location_glm ///
+talk_strength_glm ///
+debt_strength_glm ///
+relative_strength_glm ///
+talk_ddiffcaste_probit talk_diffcaste_glm ///
+talk_ddiffgender_probit talk_diffgender_glm ///
+debt_ddiffcaste_probit debt_diffcaste_glm ///
+debt_ddiffgender_probit debt_diffgender_glm ///
+relative_ddiffcaste_probit relative_diffcaste_glm ///
+relative_ddiffgender_probit relative_diffgender_glm ///
  {
 
 local yvar `y'

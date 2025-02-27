@@ -57,7 +57,7 @@ global persoXsexXcaste c.fES##i.female##i.caste c.fOPEX##i.female##i.caste c.fCO
 
 
 
-
+/*
 ****************************************
 * One step heterophily for pooled sample
 ****************************************
@@ -103,6 +103,7 @@ esttab marg1`y' marg2`y' marg3`y' marg4`y' using "diff`y'_frac_margin.csv", ///
 
 ****************************************
 * END
+*/
 
 
 
@@ -114,8 +115,7 @@ esttab marg1`y' marg2`y' marg3`y' marg4`y' using "diff`y'_frac_margin.csv", ///
 
 
 
-
-
+/*
 ****************************************
 * Two step heterophily for pooled sample
 ****************************************
@@ -208,6 +208,7 @@ restore
 
 ****************************************
 * END
+*/
 
 
 
@@ -223,8 +224,7 @@ restore
 
 
 
-
-
+/*
 ****************************************
 * One step heterophily for sub generators
 ****************************************
@@ -273,7 +273,7 @@ esttab marg1`y' marg2`y' marg3`y' marg4`y' using "`y'`var'_frac_margin.csv", ///
 
 ****************************************
 * END
-
+*/
 
 
 
@@ -289,7 +289,7 @@ esttab marg1`y' marg2`y' marg3`y' marg4`y' using "`y'`var'_frac_margin.csv", ///
 * Two step heterophily for sub generators
 ****************************************
 
-foreach var in caste gender jatis location {
+foreach var in caste gender {
 
 ********** Step 1: Probit
 foreach y in debt_ddiff talk_ddiff relative_ddiff {
