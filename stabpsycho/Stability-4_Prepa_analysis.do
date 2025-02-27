@@ -6,7 +6,7 @@ cls
 *-----
 gl link = "stabpsycho"
 *-----
-do "C:/Users/XXXX/Documents/GitHub/folderanalysis/$link.do"
+do "C:/Users/Arnaud/Documents/GitHub/folderanalysis/$link.do"
 *-------------------------
 
 
