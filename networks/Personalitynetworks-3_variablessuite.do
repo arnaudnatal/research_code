@@ -20,7 +20,7 @@ do"C:\Users\Arnaud\Documents\GitHub\folderanalysis\networks.do"
 * Clean
 ****************************************
 cls
-use"Analysis/Main_analyses_network", clear
+use"Analysis/Main_analyses_network_MAJ", clear
 
 
 *** Occupation
@@ -167,7 +167,7 @@ order HHID_panel INDID_panel
 destring INDID2020, replace
 
 
-
+/*
 ***** Hetero
 cls
 foreach x in IQV_caste IQV_jatis IQV_gender IQV_location {
@@ -209,7 +209,7 @@ gen ddiff`x'=diff`x'
 replace ddiff`x'=1 if diff`x'>0 & diff`x'!=.
 label values ddiff`x' ddiff
 }
-
+*/
 
 
 save"Analysis/Main_analyses_v4", replace
@@ -238,6 +238,7 @@ save"Analysis/Main_analyses_v4", replace
 use"Analysis/Main_analyses_v4", clear
 
 
+/*
 ********** Heterogeneity
 cls
 foreach cat in debt relative talk labour {
@@ -255,7 +256,7 @@ replace `cat'_hetero_`x'=1 if `cat'_hetero_`x'!=0 & `cat'_hetero_`x'>0 & `cat'_h
 label values `cat'_hetero_`x' `cat'_hetero
 }
 }
-
+*/
 
 
 ********** Homophily
@@ -288,6 +289,15 @@ replace `cat'_ddiff`x'=1 if `cat'_diff`x'>0 & `cat'_diff`x'!=.
 label values `cat'_ddiff`x' `cat'_ddiff
 }
 }
+
+
+
+
+********** Heterophily
+cls
+
+tabstat EI_gender EI_caste, stat(n mean q min max)
+
 
 
 save"Analysis/Main_analyses_v5", replace
