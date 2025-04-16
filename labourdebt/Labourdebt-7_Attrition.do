@@ -22,7 +22,7 @@ do"C:\Users\Arnaud\Documents\GitHub\folderanalysis\labourdebt.do"
 
 
 ****************************************
-* Attrition
+* Attrition HH level
 ****************************************
 use"raw/keypanel-HH_long", clear
 
@@ -64,33 +64,17 @@ recode attrition (.=0)
 
 *
 save"attrition", replace
-****************************************
-* END
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-****************************************
-* Attrition
-****************************************
+**********
 use"attrition", clear
 
 ***** Var
 gen DSR=imp1_ds_tot_HH*100/annualincome_HH
 replace loanamount_HH=loanamount_HH/1000
 replace annualincome_HH=annualincome_HH/1000
+
+ta hoursamonth_indiv
 
 
 ***** Analysis 2010
@@ -108,11 +92,58 @@ reg annualincome_HH i.attrition if year==2016
 reg loanamount_HH i.attrition if year==2016
 reg DSR i.attrition if year==2016
 
-
-
 ****************************************
 * END
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Attrition Indiv level
+****************************************
+use"panel_laboursupplyindiv_v2", clear
+
+drop if age<14
+keep if year==2016
+count
+
+keep HHID_panel INDID_panel year hoursamonth_indiv
+
+
+merge m:1 HHID_panel year using "attrition", keepusing(attrition)
+keep if _merge==3
+drop _merge
+
+
+***** Analysis 2016-17
+tabstat hoursamonth_indiv, stat(n mean median) by(attrition)
+reg hoursamonth_indiv i.attrition
+
+****************************************
+* END
 
 
 

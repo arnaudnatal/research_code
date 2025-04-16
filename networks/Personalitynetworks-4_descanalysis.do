@@ -22,12 +22,13 @@ do"C:\Users\Arnaud\Documents\GitHub\folderanalysis\networks.do"
 * Who are the egos? Socio-demo
 ****************************************
 cls
-use"Analysis/Main_analyses_v5", clear
+use"Analysis/Main_analyses_v6", clear
 
 ta egoid
 ta sex
 ta caste
 
+rename edulevel educ
 
 *** Age
 tabstat age, stat(n mean median) by(sex)
@@ -52,12 +53,14 @@ ta occup caste, col nofreq
 
 
 
-
+/*
 ****************************************
 * Who are the egos? Networks
 ****************************************
 cls
-use"Analysis/Main_analyses_v5", clear
+use"Analysis/Main_analyses_v6", clear
+
+rename edulevel educ
 
 
 *** Taille
@@ -71,36 +74,6 @@ tabstat duration_corr, stat(n mean med) by(caste)
 *** Force
 tabstat strength_mca, stat(n mean med) by(sex)
 tabstat strength_mca, stat(n mean med) by(caste)
-
-*** Homo caste
-tabstat IQV_caste, stat(mean) by(sex)
-tabstat IQV_caste, stat(mean) by(caste)
-ta hetero_caste sex, col nofreq
-ta hetero_caste caste, col nofreq
-
-*** Homo sexe
-tabstat IQV_gender, stat(mean) by(sex)
-tabstat IQV_gender, stat(mean) by(caste)
-ta hetero_gender sex, col nofreq
-ta hetero_gender caste, col nofreq
-
-*** Homo age
-tabstat IQV_age, stat(mean) by(sex)
-tabstat IQV_age, stat(mean) by(caste)
-ta hetero_age sex, col nofreq
-ta hetero_age caste, col nofreq
-
-*** Homo educ
-tabstat IQV_educ, stat(mean) by(sex)
-tabstat IQV_educ, stat(mean) by(caste)
-ta hetero_educ sex, col nofreq
-ta hetero_educ caste, col nofreq
-
-*** Homo occup
-tabstat IQV_occup, stat(mean) by(sex)
-tabstat IQV_occup, stat(mean) by(caste)
-ta hetero_occup sex, col nofreq
-ta hetero_occup caste, col nofreq
 
 
 *** Homophily caste
@@ -126,7 +99,7 @@ tabstat multiplexityF_pct, stat(mean) by(caste)
 
 ****************************************
 * END
-
+*/
 
 
 

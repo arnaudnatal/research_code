@@ -19,15 +19,12 @@ do"C:\Users\Arnaud\Documents\GitHub\folderanalysis\networks.do"
 * Format
 *************************************
 foreach y in ///
-talk_strength_glm ///
-debt_strength_glm ///
-relative_strength_glm ///
-talk_ddiffcaste_probit talk_diffcaste_glm ///
-talk_ddiffgender_probit talk_diffgender_glm ///
-debt_ddiffcaste_probit debt_diffcaste_glm ///
-debt_ddiffgender_probit debt_diffgender_glm ///
-relative_ddiffcaste_probit relative_diffcaste_glm ///
-relative_ddiffgender_probit relative_diffgender_glm ///
+dum_talk_EIcaste_pr talkcaste_ol ///
+dum_talk_EIgender_pr talkgender_ol ///
+dum_relative_EIcaste_pr relativecaste_ol ///
+dum_relative_EIgender_pr relativegender_ol ///
+dum_debt_EIcaste_pr debtcaste_ol ///
+dum_debt_EIgender_pr debtgender_ol ///
  {
 
 local yvar `y'
@@ -35,7 +32,7 @@ local yvar `y'
 
 
 ********** Import
-import delimited "`yvar'_margin.csv", clear stripquote(yes)
+import delimited "`yvar'.csv", clear stripquote(yes)
 gen n=_n
 drop if n<=4
 replace n=n-4
@@ -294,8 +291,8 @@ erase"trait1.dta"
 erase"trait2.dta"
 erase"trait3.dta"
 erase"trait4.dta"
-erase"`yvar'_margin.csv"
 
+*erase"`yvar'.csv"
 }
 
 *************************************

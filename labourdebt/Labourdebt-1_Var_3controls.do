@@ -422,4 +422,4 @@ save"panel_cont_v1", replace
 ****************************************
 * END
 
-do"$dofile\\Labourdebt-4_Merge.do"
+do"C:\Users\Arnaud\Documents\GitHub\research_code\labourdebt\Labourdebt-2_Merge.do"

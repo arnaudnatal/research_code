@@ -2,10 +2,10 @@
 cls
 *Arnaud NATAL
 *arnaud.natal@u-bordeaux.fr
-*December 5, 2023
+*April 14, 2025
 *-----
 gl link = "labourdebt"
-*Rob outliers
+*Rob no self employment activities
 *-----
 *do "https://raw.githubusercontent.com/arnaudnatal/folderanalysis/main/$link.do"
 do"C:\Users\Arnaud\Documents\GitHub\folderanalysis\labourdebt.do"
@@ -23,9 +23,9 @@ do"C:\Users\Arnaud\Documents\GitHub\folderanalysis\labourdebt.do"
 use"panel_laboursupplyindiv_v2", clear
 
 
-
 ********** Selection
 drop if age<14
+
 
 
 ********** Panel
@@ -34,15 +34,12 @@ xtset panelvar year
 est clear
 
 
-********** 1% outliers
-foreach i in 2016 2020 {
-gen todrop`i'=1 if year==`i'
-qui sum hoursamonth_indiv if year==`i', det
-replace todrop`i'=0 if inrange(hoursamonth_indiv, r(p5), r(p95)) & year==`i'
-replace todrop`i'=0 if work==0 & year==`i'
-drop if todrop`i'==1
-drop todrop`i'
-}
+
+********** Without self act
+ta lag_se_act se_act
+ta lag_se_act year
+ta se_act year
+drop if lag_se_act==1
 
 
 
@@ -52,12 +49,14 @@ c.age i.edulevel i.relation2 i.sex i.marital ///
 remitt_std assets_std ///
 HHsize HH_count_child sexratio i.caste  i.villageid ///
 , selection(work = c.nonworkersratio) ///
-id(panelvar) time(year) reps(50) seed(4)
+id(panelvar) time(year) reps(20) seed(4)
 est store m1
 
 
+
+
 ********** Tables
-esttab m1 using "Heckman_total_noout.csv", replace ///
+esttab m1 using "Heckman_total_noself.csv", replace ///
 	label b(3) p(3) eqlabels(none) alignment(S) ///
 	drop(_cons) ///
 	star(* 0.10 ** 0.05 *** 0.01) ///
@@ -97,15 +96,15 @@ sort HHID_panel INDID_panel year
 xtset panelvar year
 est clear
 
-********** 1% outliers
-foreach i in 2016 2020 {
-gen todrop`i'=1 if year==`i'
-qui sum hoursamonth_indiv if year==`i', det
-replace todrop`i'=0 if inrange(hoursamonth_indiv, r(p5), r(p95)) & year==`i'
-replace todrop`i'=0 if work==0 & year==`i'
-drop if todrop`i'==1
-drop todrop`i'
-}
+
+********** Without self act
+ta lag_se_act se_act
+ta lag_se_act year
+ta se_act year
+drop if lag_se_act==1
+
+
+
 
 
 ********** 
@@ -114,12 +113,13 @@ c.age i.edulevel i.relation2 i.sex i.marital ///
 remitt_std assets_std ///
 HHsize HH_count_child sexratio i.caste  i.villageid ///
 , selection(work = c.nonworkersratio) ///
-id(panelvar) time(year) reps(50) seed(4)
+id(panelvar) time(year) reps(20) seed(4)
 est store m1
 
 
+
 ********** Tables
-esttab m1 using "Heckman_males_noout.csv", replace ///
+esttab m1 using "Heckman_males_noself.csv", replace ///
 	label b(3) p(3) eqlabels(none) alignment(S) ///
 	drop(_cons) ///
 	star(* 0.10 ** 0.05 *** 0.01) ///
@@ -161,15 +161,15 @@ xtset panelvar year
 est clear
 
 
-********** 1% outliers
-foreach i in 2016 2020 {
-gen todrop`i'=1 if year==`i'
-qui sum hoursamonth_indiv if year==`i', det
-replace todrop`i'=0 if inrange(hoursamonth_indiv, r(p5), r(p95)) & year==`i'
-replace todrop`i'=0 if work==0 & year==`i'
-drop if todrop`i'==1
-drop todrop`i'
-}
+
+********** Without self act
+ta lag_se_act se_act
+ta lag_se_act year
+ta se_act year
+drop if lag_se_act==1
+
+
+
 
 
 ********** 
@@ -178,12 +178,12 @@ c.age i.edulevel i.relation2 i.sex i.marital ///
 remitt_std assets_std ///
 HHsize HH_count_child sexratio i.caste  i.villageid ///
 , selection(work = c.nonworkersratio) ///
-id(panelvar) time(year) reps(200) seed(4)
+id(panelvar) time(year) reps(20) seed(4)
 est store m1
 
 
 ********** Tables
-esttab m1 using "Heckman_females_noout.csv", replace ///
+esttab m1 using "Heckman_females_noself.csv", replace ///
 	label b(3) p(3) eqlabels(none) alignment(S) ///
 	drop(_cons) ///
 	star(* 0.10 ** 0.05 *** 0.01) ///

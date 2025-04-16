@@ -446,6 +446,23 @@ rename casten caste
 rename jatisn jatis
 order HHID_panel year jatis caste
 
+
+*** Drop
+drop age_group agegrp_0_13 agegrp_14_17 agegrp_18_24 agegrp_25_29 agegrp_30_34 agegrp_35_39 agegrp_40_49 agegrp_50_59 agegrp_60_69 agegrp_70_79 agegrp_80_100 male_agegrp_0_13 female_agegrp_0_13 male_agegrp_14_17 female_agegrp_14_17 male_agegrp_18_24 female_agegrp_18_24 male_agegrp_25_29 female_agegrp_25_29 male_agegrp_30_34 female_agegrp_30_34 male_agegrp_35_39 female_agegrp_35_39 male_agegrp_40_49 female_agegrp_40_49 male_agegrp_50_59 female_agegrp_50_59 male_agegrp_60_69 female_agegrp_60_69 male_agegrp_70_79 female_agegrp_70_79 male_agegrp_80_100 female_agegrp_80_100
+
+drop nbgeneration1 nbgeneration2 nbgeneration3 nbgeneration4 nbgeneration5 dummygeneration1 dummygeneration2 dummygeneration3 dummygeneration4 dummygeneration5
+
+
+*** DSR ISR DAR
+gen dsr=imp1_ds_tot_HH/annualincome_HH
+tabstat dsr, stat(n mean) by(year)
+
+gen isr=imp1_is_tot_HH/annualincome_HH
+tabstat isr, stat(n mean) by(year)
+
+gen dar=loanamount_HH/assets_total
+tabstat dar, stat(n mean) by(year)
+
 save"panel_v1", replace
 ****************************************
 * END

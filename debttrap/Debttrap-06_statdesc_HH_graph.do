@@ -59,7 +59,7 @@ twoway ///
 , ///
 xlabel(1 3 5,valuelabel) xtitle("") ///
 ylabel(0(10)100) ytitle("Percent") ///
-legend(order(1 "In trap" 2 "Not in trap") pos(6) col(3)) ///
+legend(order(1 "In debt trap" 2 "Not in debt trap") pos(6) col(3)) ///
 note("", size(small)) ///
 name(g1, replace) scale(1.2)
 graph export "graph/Incidence2.png", as(png) replace

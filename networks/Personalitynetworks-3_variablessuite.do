@@ -20,7 +20,12 @@ do"C:\Users\Arnaud\Documents\GitHub\folderanalysis\networks.do"
 * Clean
 ****************************************
 cls
-use"Analysis/Main_analyses_network_MAJ", clear
+
+use"Analysis/Main_analyses", clear
+
+merge 1:1 HHID2020 INDID2020 using "Analysis/Main_analyses_network_MAJ", keepusing(netsize_all multiplexity_alter duration_corr strength_mca samegender_pct samecaste_pct samejatis_pct samelocation_pct EI_gender EI_caste EI_jatis EI_location IQV_caste IQV_jatis IQV_gender IQV_location multiplex_pct meetweekly_pct veryintimate_pct reciprocity_pct money_pct netsize_debt netsize_relative netsize_talk netsize_labour debt_duration relative_duration talk_duration labour_duration debt_strenght relative_strenght talk_strenght labour_strenght debt_samegender_pct relative_samegender_pct talk_samegender_pct labour_samegender_pct debt_samecaste_pct relative_samecaste_pct talk_samecaste_pct labour_samecaste_pct debt_samejatis_pct relative_samejatis_pct talk_samejatis_pct labour_samejatis_pct debt_samelocation_pct relative_samelocation_pct talk_samelocation_pct labour_samelocation_pct debt_EI_gender relative_EI_gender talk_EI_gender labour_EI_gender debt_EI_caste relative_EI_caste talk_EI_caste labour_EI_caste debt_EI_jatis relative_EI_jatis talk_EI_jatis labour_EI_jatis debt_EI_location relative_EI_location talk_EI_location labour_EI_location debt_IQV_caste debt_IQV_jatis debt_IQV_gender debt_IQV_location relative_IQV_caste relative_IQV_jatis relative_IQV_gender relative_IQV_location talk_IQV_caste talk_IQV_jatis talk_IQV_gender talk_IQV_location labour_IQV_caste labour_IQV_jatis labour_IQV_gender labour_IQV_location debt_multiplex_pct relative_multiplex_pct talk_multiplex_pct labour_multiplex_pct)
+keep if _merge==3
+drop _merge
 
 
 *** Occupation
@@ -259,6 +264,7 @@ label values `cat'_hetero_`x' `cat'_hetero
 */
 
 
+/*
 ********** Homophily
 cls
 foreach cat in debt relative talk labour {
@@ -289,14 +295,30 @@ replace `cat'_ddiff`x'=1 if `cat'_diff`x'>0 & `cat'_diff`x'!=.
 label values `cat'_ddiff`x' `cat'_ddiff
 }
 }
-
+*/
 
 
 
 ********** Heterophily
 cls
 
-tabstat EI_gender EI_caste, stat(n mean q min max)
+tab1 EI_gender EI_caste
+tab1 debt_EI_gender debt_EI_caste
+tab1 talk_EI_gender talk_EI_caste
+tab1 relative_EI_gender relative_EI_caste
+
+*
+label define dum 0"Perfect homophily" 1"Heterophily"
+foreach x in EI_gender EI_caste debt_EI_gender debt_EI_caste talk_EI_gender talk_EI_caste relative_EI_gender relative_EI_caste {
+gen dum_`x'=.
+}
+foreach x in EI_gender EI_caste debt_EI_gender debt_EI_caste talk_EI_gender talk_EI_caste relative_EI_gender relative_EI_caste {
+replace dum_`x'=1 if `x'>-1 & `x'!=.
+replace dum_`x'=0 if `x'==-1 & `x'!=.
+label values dum_`x' dum
+}
+
+tab1 dum_EI_gender dum_EI_caste dum_debt_EI_gender dum_debt_EI_caste dum_talk_EI_gender dum_talk_EI_caste dum_relative_EI_gender dum_relative_EI_caste
 
 
 
@@ -322,8 +344,6 @@ use"Analysis/Main_analyses_v5", clear
 
 drop imcr_curious imcr_interestedbyart imcr_repetitivetasks imcr_inventive imcr_liketothink imcr_newideas imcr_activeimagination imcr_organized imcr_makeplans imcr_workhard imcr_appointmentontime imcr_putoffduties imcr_easilydistracted imcr_completeduties imcr_enjoypeople imcr_sharefeelings imcr_shywithpeople imcr_enthusiastic imcr_talktomanypeople imcr_talkative imcr_expressingthoughts imcr_workwithother imcr_understandotherfeeling imcr_trustingofother imcr_rudetoother imcr_toleratefaults imcr_forgiveother imcr_helpfulwithothers imcr_managestress imcr_nervous imcr_changemood imcr_feeldepressed imcr_easilyupset imcr_worryalot imcr_staycalm imcr_tryhard imcr_stickwithgoals imcr_goaftergoal imcr_finishwhatbegin imcr_finishtasks imcr_keepworking
 
-drop HHINDID
-
 drop head_egoid head_name head_sex head_age head_maritalstatus head_mocc_occupation head_mocc_annualincome head_annualincome head_nboccupation head_edulevel
 
 drop incomeagri_HH incomenonagri_HH shareincomeagri_HH shareincomenonagri_HH nbloans_HH loanamount_HH imp1_ds_tot_HH imp1_is_tot_HH
@@ -334,11 +354,11 @@ drop imp1_ds_tot_indiv imp1_is_tot_indiv
 
 drop locus_raw locuscat fES_raw fOPEX_raw fCO_raw 
 
-drop occup dummyworkedpastyear working_pop
+drop dummyworkedpastyear working_pop
 
 drop waystem
 
-drop sex canread
+drop canread
 
 order logincome logassets stdincome stdassets married fES fOPEX fCO locus, after(typeoffamily)
 
@@ -349,7 +369,12 @@ rename relative_strenght relative_strength
 rename talk_strenght talk_strength
 rename labour_strenght labour_strength
 
+*
+drop debt_IQV_caste debt_IQV_jatis debt_IQV_gender debt_IQV_location relative_IQV_caste relative_IQV_jatis relative_IQV_gender relative_IQV_location talk_IQV_caste talk_IQV_jatis talk_IQV_gender talk_IQV_location labour_IQV_caste labour_IQV_jatis labour_IQV_gender labour_IQV_location
 
+drop debt_samegender_pct relative_samegender_pct talk_samegender_pct labour_samegender_pct debt_samecaste_pct relative_samecaste_pct talk_samecaste_pct labour_samecaste_pct debt_samejatis_pct relative_samejatis_pct talk_samejatis_pct labour_samejatis_pct debt_samelocation_pct relative_samelocation_pct talk_samelocation_pct labour_samelocation_pct
+
+drop IQV_caste IQV_jatis IQV_gender IQV_location multiplex_pct meetweekly_pct veryintimate_pct reciprocity_pct money_pct
 
 save"Analysis/Main_analyses_v6", replace
 ****************************************

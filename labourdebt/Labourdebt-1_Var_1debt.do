@@ -393,6 +393,138 @@ save "panel_sharedsr", replace
 
 
 
+****************************************
+* Self activity
+****************************************
+
+********** RUME
+use"raw/RUME-occupnew", clear
+
+fre occupation
+gen selfemp_agri=1 if occupation==1
+gen selfemp_nonagri=1 if occupation==6
+
+ta occupation selfemp_agri
+ta occupation selfemp_nonagri
+
+bysort HHID2010: egen se_agri=sum(selfemp_agri)
+replace se_agri=1 if se_agri>1
+bysort HHID2010: egen se_nonagri=sum(selfemp_nonagri)
+replace se_nonagri=1 if se_nonagri>1
+
+keep HHID2010 se_agri se_nonagri
+duplicates drop
+
+*
+merge 1:m HHID2010 using "raw/keypanel-HH_wide", keepusing(HHID_panel)
+keep if _merge==3
+drop _merge HHID2010
+gen year=2010
+order HHID_panel year
+
+save"_tempR", replace
+
+
+
+********** NEEMSIS-1
+use"raw/NEEMSIS1-occupnew", clear
+
+fre occupation
+gen selfemp_agri=1 if occupation==1
+gen selfemp_nonagri=1 if occupation==6
+
+ta occupation selfemp_agri
+ta occupation selfemp_nonagri
+
+bysort HHID2016: egen se_agri=sum(selfemp_agri)
+replace se_agri=1 if se_agri>1
+bysort HHID2016: egen se_nonagri=sum(selfemp_nonagri)
+replace se_nonagri=1 if se_nonagri>1
+
+keep HHID2016 se_agri se_nonagri
+duplicates drop
+
+*
+merge 1:m HHID2016 using "raw/keypanel-HH_wide", keepusing(HHID_panel)
+keep if _merge==3
+drop _merge HHID2016
+gen year=2016
+order HHID_panel year
+
+save"_tempN1", replace
+
+
+
+********** NEEMSIS-2
+use"raw/NEEMSIS2-occupnew", clear
+
+fre occupation
+gen selfemp_agri=1 if occupation==1
+gen selfemp_nonagri=1 if occupation==6
+
+ta occupation selfemp_agri
+ta occupation selfemp_nonagri
+
+bysort HHID2020: egen se_agri=sum(selfemp_agri)
+replace se_agri=1 if se_agri>1
+bysort HHID2020: egen se_nonagri=sum(selfemp_nonagri)
+replace se_nonagri=1 if se_nonagri>1
+
+keep HHID2020 se_agri se_nonagri
+duplicates drop
+
+*
+merge 1:m HHID2020 using "raw/keypanel-HH_wide", keepusing(HHID_panel)
+keep if _merge==3
+drop _merge HHID2020
+gen year=2020
+order HHID_panel year
+
+save"_tempN2", replace
+
+
+********** Append
+use"_tempR", clear
+
+append using "_tempN1"
+append using "_tempN2"
+
+sort HHID_panel year
+
+gen se_act=se_agri+se_nonagri
+replace se_act=1 if se_act>1
+
+ta se_act year
+
+save"_temp", replace
+
+* Lag
+drop if year==2020
+recode year (2010=2016) (2016=2020)
+
+ta year
+
+rename se_agri lag_se_agri
+rename se_nonagri lag_se_nonagri
+rename se_act lag_se_act
+
+save "_temp2", replace
+
+* Append lag et non lag
+use"_temp", clear
+
+merge 1:1 HHID_panel year using "_temp2"
+drop if _merge==2
+drop _merge
+
+
+save"statusSE", replace
+
+****************************************
+* END
+
+
+
 
 
 
@@ -596,6 +728,13 @@ drop HHID2010 HHID2016 HHID2020
 ta year
 ta imp1_ds_tot_HH year
 
+
+*** Merge agri status lag
+ta year
+merge 1:1 HHID_panel year using "statusSE"
+ta _merge year
+drop if _merge==2
+drop _merge
 save"panel_debt_noinvest_v2", replace
 
 
@@ -676,11 +815,4 @@ save"_temp388", replace
 * END
 
 
-
-
-
-
-
-do"$dofile\\Labourdebt-2_Labour_var.do"
-do"$dofile\\Labourdebt-3_Controls_var.do"
-do"$dofile\\Labourdebt-4_Merge.do"
+do"C:\Users\Arnaud\Documents\GitHub\research_code\labourdebt\Labourdebt-1_Var_2labour.do"

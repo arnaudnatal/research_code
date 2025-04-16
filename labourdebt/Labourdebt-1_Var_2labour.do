@@ -17,8 +17,6 @@ do"C:\Users\Arnaud\Documents\GitHub\folderanalysis\labourdebt.do"
 
 
 
-
-
 ****************************************
 * 2016-17 at individual level
 ****************************************
@@ -137,6 +135,7 @@ replace `x'=7300 if `x'>7300 & `x'!=.
 save"hoursindiv2016_bis", replace
 ****************************************
 * END
+
 
 
 
@@ -269,6 +268,8 @@ replace `x'=7300 if `x'>7300 & `x'!=.
 save"hoursindiv2020_bis", replace
 ****************************************
 * END
+
+
 
 
 
@@ -419,6 +420,127 @@ save"discri", replace
 
 
 
+****************************************
+* Days a month for individuals
+****************************************
+
+********** 2016-17
+use"raw/NEEMSIS1-occupations", clear
+*
+merge 1:1 HHID2016 INDID2016 occupationid using "raw/NEEMSIS1-occupnew", keepusing(dummymainoccupation_indiv)
+keep if _merge==3
+drop _merge
+*
+gen daysayear=daysamonth*monthsayear
+replace daysayear=365 if daysayear>365
+
+
+* Max
+bysort HHID2016 INDID2016: egen daysamonth_max=max(daysamonth)
+bysort HHID2016 INDID2016: egen daysayear_max=max(daysayear)
+
+* Mean
+bysort HHID2016 INDID2016: egen daysamonth_mean=mean(daysamonth)
+bysort HHID2016 INDID2016: egen daysayear_mean=mean(daysayear)
+
+* Main
+keep if dummymainoccupation_indiv==1
+gen daysamonth_main=daysamonth
+gen daysayear_main=daysayear
+
+* Selection
+keep HHID2016 INDID2016 daysamonth_* daysayear_*
+duplicates drop
+
+* Merge panel
+merge m:m HHID2016 using "raw/keypanel-HH_wide", keepusing(HHID_panel)
+keep if _merge==3
+drop _merge
+
+tostring INDID2016, replace
+merge 1:m HHID_panel INDID2016 using "raw/keypanel-indiv_wide", keepusing(INDID_panel)
+keep if _merge==3
+drop _merge
+
+gen year=2016
+order HHID_panel INDID_panel year
+drop HHID2016 INDID2016
+
+save "_tempN1days", replace
+
+
+
+
+********** 2020-21
+use"raw/NEEMSIS2-occupations", clear
+*
+merge 1:1 HHID2020 INDID2020 occupationid using "raw/NEEMSIS2-occupnew", keepusing(dummymainoccupation_indiv)
+keep if _merge==3
+drop _merge
+*
+gen daysayear=daysamonth*monthsayear
+replace daysayear=365 if daysayear>365
+
+* Max
+bysort HHID2020 INDID2020: egen daysamonth_max=max(daysamonth)
+bysort HHID2020 INDID2020: egen daysayear_max=max(daysayear)
+
+* Mean
+bysort HHID2020 INDID2020: egen daysamonth_mean=mean(daysamonth)
+bysort HHID2020 INDID2020: egen daysayear_mean=mean(daysayear)
+
+* Sum
+
+
+* Main
+keep if dummymainoccupation_indiv==1
+gen daysamonth_main=daysamonth
+gen daysayear_main=daysayear
+
+* Selection
+keep HHID2020 INDID2020 daysamonth_* daysayear_*
+duplicates drop
+
+* Merge panel
+merge m:m HHID2020 using "raw/keypanel-HH_wide", keepusing(HHID_panel)
+keep if _merge==3
+drop _merge
+
+tostring INDID2020, replace
+merge 1:m HHID_panel INDID2020 using "raw/keypanel-indiv_wide", keepusing(INDID_panel)
+keep if _merge==3
+drop _merge
+
+gen year=2020
+order HHID_panel INDID_panel year
+drop HHID2020 INDID2020
+
+save "_tempN2days", replace
+
+
+
+
+********** Append
+use"_tempN2days", clear
+append using "_tempN1days"
+save"_tempdays", replace
+
+
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -437,6 +559,11 @@ drop HHID2016 HHID2020 INDID2016 INDID2020
 duplicates tag HHID_panel INDID_panel year, gen(tag)
 ta tag
 drop tag
+
+* Merge days
+merge 1:1 HHID_panel INDID_panel year using "_tempdays"
+drop if _merge==2
+drop _merge
 
 save"hoursindiv", replace
 
@@ -584,5 +711,4 @@ save "laboursupply_HH", replace
 * END
 
 
-do"$dofile\\Labourdebt-3_Controls_var.do"
-do"$dofile\\Labourdebt-4_Merge.do"
+do"C:\Users\Arnaud\Documents\GitHub\research_code\labourdebt\Labourdebt-1_Var_3controls.do"
