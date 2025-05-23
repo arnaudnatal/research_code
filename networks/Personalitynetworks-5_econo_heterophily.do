@@ -64,30 +64,30 @@ global persoXsexXcaste c.fES##i.female##i.caste c.fOPEX##i.female##i.caste c.fCO
 
 
 ****************************************
-* Two step heterophily for sub generators
+* Two step heterophily for debt
 ****************************************
 
 foreach var in caste gender {
 
 ********** Step 1: Probit
-foreach y in dum_debt_EI dum_talk_EI dum_relative_EI {
+foreach y in dum_debt_EI {
 
-qui probit `y'_`var' $perso i.female i.caste $cont, vce(cl HHFE)
+qui probit `y'_`var' $perso i.female i.caste $cont c.netsize_debt, vce(cl HHFE)
 est store reg1`y'
 qui margins, dydx($perso) atmeans post
 est store marg1`y'
 
-qui probit `y'_`var' $persoXsex $cont, vce(cl HHFE)
+qui probit `y'_`var' $persoXsex $cont c.netsize_debt, vce(cl HHFE)
 est store reg2`y'
 qui margins, dydx($perso) at(female=(0 1)) atmeans post
 est store marg2`y'
 
-qui probit `y'_`var' $persoXcaste $cont, vce(cl HHFE)
+qui probit `y'_`var' $persoXcaste $cont c.netsize_debt, vce(cl HHFE)
 est store reg3`y'
 qui margins, dydx($perso) at(caste=(1 2 3)) atmeans post
 est store marg3`y'
 
-qui probit `y'_`var' $persoXsexXcaste $cont, vce(cl HHFE)
+qui probit `y'_`var' $persoXsexXcaste $cont c.netsize_debt, vce(cl HHFE)
 est store reg4`y'
 qui margins, dydx($perso) at(female=(0 1) caste=(1 2 3)) atmeans post
 est store marg4`y'
@@ -103,27 +103,27 @@ esttab marg1`y' marg2`y' marg3`y' marg4`y' using "`y'`var'_pr.csv", ///
 
 
 ********** Step 2: OLS
-foreach y in debt talk relative {
+foreach y in debt {
 
 preserve
 keep if dum_`y'_EI_`var'==1
 
-qui reg `y'_EI_`var' $perso i.female i.caste $cont, cluster(HHFE)
+qui reg `y'_EI_`var' $perso i.female i.caste $cont c.netsize_debt, cluster(HHFE)
 est store reg1`y'
 qui margins, dydx($perso) atmeans post
 est store marg1`y'
 
-qui reg `y'_EI_`var' $persoXsex $cont, cluster(HHFE)
+qui reg `y'_EI_`var' $persoXsex $cont c.netsize_debt, cluster(HHFE)
 est store reg2`y'
 qui margins, dydx($perso) at(female=(0 1)) atmeans post
 est store marg2`y'
 
-qui reg `y'_EI_`var' $persoXcaste $cont, cluster(HHFE)
+qui reg `y'_EI_`var' $persoXcaste $cont c.netsize_debt, cluster(HHFE)
 est store reg3`y'
 qui margins, dydx($perso) at(caste=(1 2 3)) atmeans post
 est store marg3`y'
 
-qui reg `y'_EI_`var' $persoXsexXcaste $cont, cluster(HHFE)
+qui reg `y'_EI_`var' $persoXsexXcaste $cont c.netsize_debt, cluster(HHFE)
 est store reg4`y'
 qui margins, dydx($perso) at(female=(0 1) caste=(1 2 3)) atmeans post
 est store marg4`y'
@@ -139,6 +139,194 @@ restore
 	
 ****************************************
 * END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Two step heterophily for talk
+****************************************
+
+foreach var in caste gender {
+
+********** Step 1: Probit
+foreach y in dum_talk_EI {
+
+qui probit `y'_`var' $perso i.female i.caste $cont c.netsize_talk, vce(cl HHFE)
+est store reg1`y'
+qui margins, dydx($perso) atmeans post
+est store marg1`y'
+
+qui probit `y'_`var' $persoXsex $cont c.netsize_talk, vce(cl HHFE)
+est store reg2`y'
+qui margins, dydx($perso) at(female=(0 1)) atmeans post
+est store marg2`y'
+
+qui probit `y'_`var' $persoXcaste $cont c.netsize_talk, vce(cl HHFE)
+est store reg3`y'
+qui margins, dydx($perso) at(caste=(1 2 3)) atmeans post
+est store marg3`y'
+
+qui probit `y'_`var' $persoXsexXcaste $cont c.netsize_talk, vce(cl HHFE)
+est store reg4`y'
+qui margins, dydx($perso) at(female=(0 1) caste=(1 2 3)) atmeans post
+est store marg4`y'
+
+
+esttab marg1`y' marg2`y' marg3`y' marg4`y' using "`y'`var'_pr.csv", ///
+	cells("b(fmt(2) star)" se(par fmt(2))) ///
+	legend varlabels(_cons constant) ///
+	starlevels(* 0.10 ** 0.05 *** 0.01) ///
+	replace		
+}
+
+
+
+********** Step 2: OLS
+foreach y in talk {
+
+preserve
+keep if dum_`y'_EI_`var'==1
+
+qui reg `y'_EI_`var' $perso i.female i.caste $cont c.netsize_talk, cluster(HHFE)
+est store reg1`y'
+qui margins, dydx($perso) atmeans post
+est store marg1`y'
+
+qui reg `y'_EI_`var' $persoXsex $cont c.netsize_talk, cluster(HHFE)
+est store reg2`y'
+qui margins, dydx($perso) at(female=(0 1)) atmeans post
+est store marg2`y'
+
+qui reg `y'_EI_`var' $persoXcaste $cont c.netsize_talk, cluster(HHFE)
+est store reg3`y'
+qui margins, dydx($perso) at(caste=(1 2 3)) atmeans post
+est store marg3`y'
+
+qui reg `y'_EI_`var' $persoXsexXcaste $cont c.netsize_talk, cluster(HHFE)
+est store reg4`y'
+qui margins, dydx($perso) at(female=(0 1) caste=(1 2 3)) atmeans post
+est store marg4`y'
+
+esttab marg1`y' marg2`y' marg3`y' marg4`y' using "`y'`var'_ol.csv", ///
+	cells("b(fmt(2) star)" se(par fmt(2))) ///
+	legend varlabels(_cons constant) ///
+	starlevels(* 0.10 ** 0.05 *** 0.01) ///
+	replace		
+restore
+}
+}
+	
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Two step heterophily for relative
+****************************************
+
+foreach var in caste gender {
+
+********** Step 1: Probit
+foreach y in dum_relative_EI {
+
+qui probit `y'_`var' $perso i.female i.caste $cont c.netsize_relative, vce(cl HHFE)
+est store reg1`y'
+qui margins, dydx($perso) atmeans post
+est store marg1`y'
+
+qui probit `y'_`var' $persoXsex $cont c.netsize_relative, vce(cl HHFE)
+est store reg2`y'
+qui margins, dydx($perso) at(female=(0 1)) atmeans post
+est store marg2`y'
+
+qui probit `y'_`var' $persoXcaste $cont c.netsize_relative, vce(cl HHFE)
+est store reg3`y'
+qui margins, dydx($perso) at(caste=(1 2 3)) atmeans post
+est store marg3`y'
+
+qui probit `y'_`var' $persoXsexXcaste $cont c.netsize_relative, vce(cl HHFE)
+est store reg4`y'
+qui margins, dydx($perso) at(female=(0 1) caste=(1 2 3)) atmeans post
+est store marg4`y'
+
+
+esttab marg1`y' marg2`y' marg3`y' marg4`y' using "`y'`var'_pr.csv", ///
+	cells("b(fmt(2) star)" se(par fmt(2))) ///
+	legend varlabels(_cons constant) ///
+	starlevels(* 0.10 ** 0.05 *** 0.01) ///
+	replace		
+}
+
+
+
+********** Step 2: OLS
+foreach y in relative {
+
+preserve
+keep if dum_`y'_EI_`var'==1
+
+qui reg `y'_EI_`var' $perso i.female i.caste $cont c.netsize_relative, cluster(HHFE)
+est store reg1`y'
+qui margins, dydx($perso) atmeans post
+est store marg1`y'
+
+qui reg `y'_EI_`var' $persoXsex $cont c.netsize_relative, cluster(HHFE)
+est store reg2`y'
+qui margins, dydx($perso) at(female=(0 1)) atmeans post
+est store marg2`y'
+
+qui reg `y'_EI_`var' $persoXcaste $cont c.netsize_relative, cluster(HHFE)
+est store reg3`y'
+qui margins, dydx($perso) at(caste=(1 2 3)) atmeans post
+est store marg3`y'
+
+qui reg `y'_EI_`var' $persoXsexXcaste $cont c.netsize_relative, cluster(HHFE)
+est store reg4`y'
+qui margins, dydx($perso) at(female=(0 1) caste=(1 2 3)) atmeans post
+est store marg4`y'
+
+esttab marg1`y' marg2`y' marg3`y' marg4`y' using "`y'`var'_ol.csv", ///
+	cells("b(fmt(2) star)" se(par fmt(2))) ///
+	legend varlabels(_cons constant) ///
+	starlevels(* 0.10 ** 0.05 *** 0.01) ///
+	replace		
+restore
+}
+}
+	
+****************************************
+* END
+
 
 
 

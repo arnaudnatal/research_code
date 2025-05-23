@@ -151,6 +151,38 @@ ta educ
 ta occup
 
 
+* Alters by name generator
+ta networkpurpose1, gen(purpose_)
+forvalues i=1/13 {
+forvalues j=1/9 {
+replace purpose_`i'=1 if networkpurpose`j'==`i'
+}
+}
+replace purpose_1=1 if purpose_2==1
+
+drop purpose_2
+
+fre networkpurpose1
+
+rename purpose_1 purpose_loan
+rename purpose_3 purpose_recruit
+rename purpose_4 purpose_asso
+rename purpose_5 purpose_current
+rename purpose_6 purpose_future
+rename purpose_7 purpose_recommend
+rename purpose_8 purpose_hired
+rename purpose_9 purpose_talkthemost
+rename purpose_10 purpose_medical
+rename purpose_11 purpose_closerela
+rename purpose_12 purpose_receiveCOVID
+rename purpose_13 purpose_giveCOVID
+
+
+***
+cls
+tab1 purpose_loan purpose_recruit purpose_asso purpose_current purpose_future purpose_recommend purpose_hired purpose_talkthemost purpose_medical purpose_closerela purpose_receiveCOVID purpose_giveCOVID
+
+
 ****************************************
 * END
 

@@ -19,6 +19,9 @@ do"C:\Users\Arnaud\Documents\GitHub\folderanalysis\networks.do"
 * Format
 *************************************
 foreach y in ///
+talk_strength_glm_margin ///
+relative_strength_glm_margin ///
+debt_strength_glm_margin ///
 dum_talk_EIcaste_pr talkcaste_ol ///
 dum_talk_EIgender_pr talkgender_ol ///
 dum_relative_EIcaste_pr relativecaste_ol ///
