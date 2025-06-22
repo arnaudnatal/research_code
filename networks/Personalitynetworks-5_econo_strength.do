@@ -65,7 +65,7 @@ global persoXsexXcaste c.fES##i.female##i.caste c.fOPEX##i.female##i.caste c.fCO
 
 foreach y in debt_strength  {
 
-qui glm `y' $perso i.female i.caste $cont c.netsize_debt, family(binomial) link(probit) cluster(HHFE)
+glm `y' $perso i.female i.caste $cont c.netsize_debt, family(binomial) link(probit) cluster(HHFE)
 est store reg1`y'
 qui margins, dydx($perso) atmeans post
 est store marg1`y'
@@ -163,7 +163,7 @@ esttab marg1`y' marg2`y' marg3`y' marg4`y' using "`y'_glm_margin.csv", ///
 
 foreach y in talk_strength {
 
-qui glm `y' $perso i.female i.caste $cont c.netsize_talk, family(binomial) link(probit) cluster(HHFE)
+glm `y' $perso i.female i.caste $cont c.netsize_talk, family(binomial) link(probit) cluster(HHFE)
 est store reg1`y'
 qui margins, dydx($perso) atmeans post
 est store marg1`y'
