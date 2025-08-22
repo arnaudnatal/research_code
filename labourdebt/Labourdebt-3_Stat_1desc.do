@@ -206,9 +206,9 @@ ta year
 
 
 **** DSR
-tabstat DSR_lag, stat(n mean cv q p90 p95) by(year)
+tabstat DSR_lag, stat(n mean q) by(year)
 
-tabstat DSR_lag, stat(n p90 p95 p99 max) by(year)
+reg DSR_lag i.year
 
 * Stripplot
 preserve
@@ -239,6 +239,21 @@ tabstat annualincome_HH, stat(n mean cv p50) by(year)
 
 ***** Marriage
 ta dummymarriage year, col nofreq
+
+***** Caste
+preserve
+use "panel_laboursupplyindiv_v2", clear
+keep HHID_panel year caste
+duplicates drop
+ta year
+save"_caste", replace
+restore
+merge 1:1 HHID_panel year using "_caste"
+keep if _merge==3
+drop _merge
+*
+ta caste year, col
+
 
 ***** HH size
 tabstat HHsize, stat(n mean cv p50) by(year)
@@ -322,6 +337,45 @@ legend(order(7 "IQR" 10 "Median" 13 "Mean") pos(6) col(3) on) ///
 aspectratio() scale(1.2) name(vio, replace) range(0 400) ///
 note("{it:Note:} For 1047 individuals in 2016-17 and 1307 in 2020-21." "{it:Source:} NEEMSIS-1 (2016-17) and NEEMSIS-2 (2020-21); authors' calculations.", size(vsmall))
 graph export "LS_stripplot.png", as(png) replace
+
+* 2016
+fre sex
+twoway ///
+(kdensity hoursamonth_indiv if sex==1 & year==2016, bwidth(20)) ///
+(kdensity hoursamonth_indiv if sex==2 & year==2016, bwidth(20)) ///
+, ///
+title("2016-2017") xtitle("Monthly working hours") ytitle("Density") ///
+xlabel(0(100)600) ylabel(0(0.001)0.008) ///
+legend(order(1 "Men" 2 "Women") col(2) pos(6)) ///
+name(g1, replace)
+
+* 2020
+fre sex
+twoway ///
+(kdensity hoursamonth_indiv if sex==1 & year==2020, bwidth(20)) ///
+(kdensity hoursamonth_indiv if sex==2 & year==2020, bwidth(20)) ///
+, ///
+title("2020-2021") xtitle("Monthly working hours") ytitle("Density") ///
+xlabel(0(100)600) ylabel(0(0.001)0.008) ///
+legend(order(1 "Men" 2 "Women") col(2) pos(6)) ///
+name(g2, replace)
+
+*
+grc1leg g1 g2, col(2) name(comb, replace) ///
+note("Kernel: Epanechnikov" "Bandwidth=20")
+graph export "LS_density.png", as(png) replace
+
+
+****
+tabstat hoursamonth_indiv if year==2016, stat(n mean q) by(sex)
+tabstat hoursamonth_indiv if year==2020, stat(n mean q) by(sex)
+reg hoursamonth_indiv i.year if sex==1
+reg hoursamonth_indiv i.year if sex==2
+
+reg hoursamonth_indiv i.sex if year==2016
+reg hoursamonth_indiv i.sex if year==2020
+
+
 
 
 ****************************************

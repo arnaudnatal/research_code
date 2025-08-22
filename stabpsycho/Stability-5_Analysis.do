@@ -6,10 +6,10 @@ cls
 *-----
 gl link = "stabpsycho"
 *-----
-do "C:/Users/Arnaud/Documents/GitHub/folderanalysis/$link.do"
+*do "C:/Users/Arnaud/Documents/GitHub/folderanalysis/$link.do"
 *-------------------------
 
-
+cd"C:\Users\anatal\Downloads\JDS_Stability\Analysis"
 
 
 
@@ -22,8 +22,8 @@ est clear
 graph drop _all
 
 ***** Mean level
-label var fES2016 "2016-17" 
-label var fES2020 "2020-21" 
+label var fES2016 "2016-2017" 
+label var fES2020 "2020-2021" 
 violinplot fES2016 fES2020, vert mean title("Emotional stability score") ylabel(0(1)6) ymtick(0(.5)6) yscale(range(-.5 .)) nowhiskers name(es, replace) scale(1.2)
 violinplot fES2016 fES2020, horizontal left dscale(2.8) noline range(0 6) now ///
 fill(color(black%10)) ///
@@ -36,8 +36,8 @@ ylabel(,grid) ytick() ytitle("") ///
 legend(order(3 "IQR" 6 "Median" 8 "Mean") pos(6) col(3) on) ///
 aspectratio() scale(1.2) name(esb, replace)
 
-label var fOPEX2016 "2016-17" 
-label var fOPEX2020 "2020-21" 
+label var fOPEX2016 "2016-2017" 
+label var fOPEX2020 "2020-2021" 
 violinplot fOPEX2016 fOPEX2020, vert mean title("Plasticity score") ylabel(0(1)6) ymtick(0(.5)6) yscale(range(-.5 .)) nowhiskers name(opex, replace) scale(1.2)
 violinplot fOPEX2016 fOPEX2020, horizontal left dscale(2.8) noline range(0 6) now ///
 fill(color(black%10)) ///
@@ -50,8 +50,8 @@ ylabel(,grid) ytick() ytitle("") ///
 legend(order(3 "IQR" 6 "Median" 8 "Mean") pos(6) col(3) on) ///
 aspectratio() scale(1.2) name(opexb, replace)
 
-label var fCO2016 "2016-17" 
-label var fCO2020 "2020-21" 
+label var fCO2016 "2016-2017" 
+label var fCO2020 "2020-2021" 
 violinplot fCO2016 fCO2020, vert mean title("Conscientiousness score") ylabel(0(1)6) ymtick(0(.5)6) yscale(range(-.5 .)) nowhiskers name(co, replace) scale(1.2)
 violinplot fCO2016 fCO2020, horizontal left dscale(2.8) noline range(0 6) now ///
 fill(color(black%10)) ///
@@ -80,8 +80,8 @@ graph export "new/violins.pdf", as(pdf) replace
 ***** Rank order stability using Spearman's rank correlation coefficients
 corr fES2016 fES2020
 spearman fES2016 fES2020, stats(rho p)
-label var fES2016 "Score in 2016-17" 
-label var fES2020 "Score 2020-21" 
+label var fES2016 "Score in 2016-2017" 
+label var fES2020 "Score 2020-2021" 
 twoway (scatter fES2020 fES2016, mcolor(black%30)) ///
 , ///
 xlabel(0(1)6) xmtick(0(.5)6) ///
@@ -92,8 +92,8 @@ name(es, replace) scale(1.2)
 
 corr fOPEX2016 fOPEX2020
 spearman fOPEX2016 fOPEX2020, stats(rho p)
-label var fOPEX2016 "Score in 2016-17" 
-label var fOPEX2020 "Score 2020-21" 
+label var fOPEX2016 "Score in 2016-2017" 
+label var fOPEX2020 "Score 2020-2021" 
 twoway (scatter fOPEX2020 fOPEX2016, mcolor(black%30)) ///
 , ///
 xlabel(0(1)6) xmtick(0(.5)6) ///
@@ -104,8 +104,8 @@ name(opex, replace) scale(1.2)
 
 corr fCO2016 fCO2020
 spearman fCO2016 fCO2020, stats(rho p)
-label var fCO2016 "Score in 2016-17" 
-label var fCO2020 "Score 2020-21" 
+label var fCO2016 "Score in 2016-2017" 
+label var fCO2020 "Score 2020-2021" 
 twoway (scatter fCO2020 fCO2016, mcolor(black%30)) ///
 , ///
 xlabel(0(1)6) xmtick(0(.5)6) ///
@@ -453,3 +453,215 @@ graph export "new/evo_items.png", as(pdf) replace
 
 ****************************************
 * END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Deter of scores
+****************************************
+cls
+use"panel_stab_v2_pooled_long", clear
+
+***** Selection
+keep HHID_panel INDID_panel year egoid sex age caste edulevel mainocc_occupation_indiv annualincome_indiv annualincome_HH maritalstatus relationshiptohead assets_total1000 villageid fES fOPEX fCO
+
+***** Variables
+*** Occupation
+fre mainocc_occupation_indiv
+recode mainocc_occupation_indiv (.=0)
+rename mainocc_occupation_indiv occupation
+fre occupation
+
+*** Income
+recode annualincome_indiv (.=0)
+egen incomestd=std(annualincome_indiv)
+
+recode annualincome_HH (.=0)
+egen incomeHHstd=std(annualincome_HH)
+
+*** Assets
+egen assetsstd=std(assets_total1000)
+
+*** Education
+fre edulevel
+
+*** Marital status
+recode maritalstatus (1=0) (2=1) (3=1) (4=1)
+label define maritalstatus 0"Married" 1"Non-married", replace
+label values maritalstatus maritalstatus
+fre maritalstatus
+rename maritalstatus unmarried
+
+*** Caste
+fre caste
+
+*** Sex
+fre sex
+recode sex (2=1) (1=0)
+rename sex female
+fre female
+label values female yesno
+
+*** Cluster
+encode HHID_panel, gen(HH)
+
+cls
+***** Regressions without year
+*** ES
+reg fES c.age ib(1).caste i.female i.unmarried ib(3).occupation ib(1).edulevel c.assetsstd c.incomeHHstd, cl(HH)
+est store detES
+
+*** OPEX
+reg fOPEX c.age ib(1).caste i.female i.unmarried ib(3).occupation ib(1).edulevel c.assetsstd c.incomeHHstd, cl(HH)
+est store detOPEX
+
+*** CO
+reg fCO c.age ib(1).caste i.female i.unmarried ib(3).occupation ib(1).edulevel c.assetsstd c.incomeHHstd, cl(HH)
+est store detCO
+
+
+***** Regressions with year
+*** ES
+reg fES c.age ib(1).caste i.female i.unmarried ib(3).occupation ib(1).edulevel c.assetsstd c.incomeHHstd i.year, cl(HH)
+est store detyES
+
+*** OPEX
+reg fOPEX c.age ib(1).caste i.female i.unmarried ib(3).occupation ib(1).edulevel c.assetsstd c.incomeHHstd i.year, cl(HH)
+est store detyOPEX
+
+*** CO
+reg fCO c.age ib(1).caste i.female i.unmarried ib(3).occupation ib(1).edulevel c.assetsstd c.incomeHHstd i.year, cl(HH)
+est store detyCO
+
+
+***** Tableau
+esttab detES detOPEX detCO detyES detyOPEX detyCO using "new/regdet.csv", replace ///
+	b(3) p(3) eqlabels(none) alignment(S) ///
+	star(* 0.10 ** 0.05 *** 0.01) ///
+	cells("b(fmt(2)star)" "t(fmt(2)par)") ///
+	refcat(, nolabel) ///
+	stats(N, fmt(0) ///
+	labels(`"Observations"'))
+	
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Characteristics associated with evolution 
+****************************************
+cls
+use"panel_stab_pooled_wide_v3", clear
+
+***** Selection
+keep HHID_panel INDID_panel sex age2016 caste edulevel2016 mainocc_occupation_indiv2016 annualincome_indiv2016 annualincome_HH2016 maritalstatus2016 relationshiptohead2016 assets_total10002016 villageid2016 catdiff_fES catdiff_fOPEX catdiff_fCO abs_diff_fES abs_diff_fOPEX abs_diff_fCO dumdiff_fES dumdiff_fOPEX dumdiff_fCO
+
+foreach x in age edulevel mainocc_occupation_indiv annualincome_indiv annualincome_HH maritalstatus relationshiptohead assets_total1000 villageid {
+rename `x'2016 `x'
+}
+
+***** Variables
+*** Occupation
+fre mainocc_occupation_indiv
+recode mainocc_occupation_indiv (.=0)
+rename mainocc_occupation_indiv occupation
+fre occupation
+
+*** Income
+recode annualincome_indiv (.=0)
+egen incomestd=std(annualincome_indiv)
+drop annualincome_indiv
+
+recode annualincome_HH (.=0)
+egen incomeHHstd=std(annualincome_HH)
+drop annualincome_HH
+
+*** Assets
+egen assetsstd=std(assets_total1000)
+drop assets_total1000
+
+*** Education
+fre edulevel
+
+*** Marital status
+fre maritalstatus
+recode maritalstatus (1=0) (2=1) (3=1) (4=1)
+label define maritalstatus 0"Married" 1"Non-married", replace
+label values maritalstatus maritalstatus
+fre maritalstatus
+rename maritalstatus unmarried
+
+*** Caste
+fre caste
+
+*** Sex
+fre sex
+recode sex (2=1) (1=0)
+rename sex female
+fre female
+label values female yesno
+
+*** Evo 
+ta catdiff_fES dumdiff_fES
+ta catdiff_fOPEX dumdiff_fOPEX
+ta catdiff_fCO dumdiff_fCO
+
+fre dumdiff_fES dumdiff_fOPEX dumdiff_fCO
+
+cls
+***** Probit
+*** ES
+probit dumdiff_fES c.age ib(1).caste i.female i.unmarried ib(3).occupation ib(1).edulevel c.assetsstd c.incomeHHstd, cl(HH)
+est store ES
+
+
+*** OPEX
+probit dumdiff_fOPEX c.age ib(1).caste i.female i.unmarried ib(3).occupation ib(1).edulevel c.assetsstd c.incomeHHstd, cl(HH)
+est store OPEX
+
+*** CO
+probit dumdiff_fCO c.age ib(1).caste i.female i.unmarried ib(3).occupation ib(1).edulevel c.assetsstd c.incomeHHstd, cl(HH)
+est store CO
+
+
+
+***** Tableau
+esttab ES OPEX CO using "new/regdetinsta.csv", replace ///
+	b(3) p(3) eqlabels(none) alignment(S) ///
+	star(* 0.10 ** 0.05 *** 0.01) ///
+	cells("b(fmt(2)star)" "t(fmt(2)par)") ///
+	refcat(, nolabel) ///
+	stats(N, fmt(0) ///
+	labels(`"Observations"'))
+	
+****************************************
+* END
+

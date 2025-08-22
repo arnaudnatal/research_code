@@ -9,6 +9,7 @@ gl link = "stabpsycho"
 do "C:/Users/Arnaud/Documents/GitHub/folderanalysis/$link.do"
 *-------------------------
 
+*cd"C:\Users\anatal\Downloads\JDS_Stability\Analysis"
 
 
 
@@ -418,6 +419,383 @@ qreg fOPEX2016 i.attrition2016, q(.5)
 
 reg fCO2016 i.attrition2016
 qreg fCO2016 i.attrition2016, q(.5)
+
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* EFA pooled sample with selections
+****************************************
+use"panel_stab_v2", clear
+
+********** Non educ VS educ
+gen educ=.
+replace educ=0 if edulevel==0
+replace educ=0 if edulevel==1
+replace educ=1 if edulevel==2
+replace educ=1 if edulevel==3
+replace educ=1 if edulevel==4
+ta edulevel educ, m
+fre educ
+
+
+********** Income
+xtile decinc=annualincome_HH, n(10)
+gen richinc=0 if decinc<=5
+replace richinc=1 if decinc>5
+ta decinc richinc, m
+
+
+********** Wealth
+xtile decwea=assets_total1000, n(10)
+gen richwea=0 if decwea<=5
+replace richwea=1 if decwea>5
+ta decwea richwea, m
+
+
+*********** Imputation 
+global big5cr ///
+cr_curious cr_interestedbyart cr_repetitivetasks cr_inventive cr_liketothink cr_newideas cr_activeimagination ///
+cr_organized cr_makeplans cr_workhard cr_appointmentontime cr_putoffduties cr_easilydistracted cr_completeduties ///
+cr_enjoypeople cr_sharefeelings cr_shywithpeople cr_enthusiastic cr_talktomanypeople cr_talkative cr_expressingthoughts ///
+cr_workwithother cr_understandotherfeeling cr_trustingofother cr_rudetoother cr_toleratefaults cr_forgiveother cr_helpfulwithothers ///
+cr_managestress cr_nervous cr_changemood cr_feeldepressed cr_easilyupset cr_worryalot cr_staycalm ///
+cr_tryhard cr_stickwithgoals cr_goaftergoal cr_finishwhatbegin cr_finishtasks cr_keepworking
+
+global big5 ///
+curious interestedbyart repetitivetasks inventive liketothink newideas activeimagination ///
+organized makeplans workhard appointmentontime putoffduties easilydistracted completeduties ///
+enjoypeople sharefeelings shywithpeople enthusiastic talktomanypeople talkative expressingthoughts ///
+workwithother understandotherfeeling trustingofother rudetoother toleratefaults forgiveother helpfulwithothers ///
+managestress nervous changemood feeldepressed easilyupset worryalot staycalm ///
+tryhard stickwithgoals goaftergoal finishwhatbegin finishtasks keepworking
+
+foreach x in $big5cr $big5{
+gen im`x'=`x'
+}
+
+forvalues j=1(1)3{
+forvalues i=1(1)2{
+foreach x in $big5cr $big5{
+qui sum im`x' if sex==`i' & caste==`j' & egoid!=0 & egoid!=.
+replace im`x'=r(mean) if im`x'==. & sex==`i' & caste==`j' & egoid!=0 & egoid!=.
+}
+}
+}
+
+
+
+********** Macro
+
+***** Corr
+global imcr_OP imcr_curious imcr_interestedbyart imcr_repetitivetasks imcr_inventive imcr_liketothink imcr_newideas imcr_activeimagination 
+
+global imcr_CO imcr_organized imcr_makeplans imcr_workhard imcr_appointmentontime imcr_putoffduties imcr_easilydistracted imcr_completeduties
+
+global imcr_EX imcr_enjoypeople imcr_sharefeelings imcr_shywithpeople imcr_enthusiastic imcr_talktomanypeople imcr_talkative imcr_expressingthoughts 
+
+global imcr_AG imcr_workwithother imcr_understandotherfeeling imcr_trustingofother imcr_rudetoother imcr_toleratefaults imcr_forgiveother imcr_helpfulwithothers
+
+global imcr_ES imcr_managestress imcr_nervous imcr_changemood imcr_feeldepressed imcr_easilyupset imcr_worryalot imcr_staycalm
+
+
+
+
+********** NB FACT
+
+preserve
+********** Nb fact No educ
+* Selection
+keep if educ==0
+* Nb factors
+global imcr_without $imcr_OP $imcr_CO $imcr_EX $imcr_AG $imcr_ES
+factortest $imcr_without
+factor $imcr_without, pcf
+* Velicer Minimum Average Partial Correlation
+minap $imcr_without
+restore
+
+
+
+preserve
+********** Nb fact Educ
+* Selection
+keep if educ==1
+* Nb factors
+global imcr_without $imcr_OP $imcr_CO $imcr_EX $imcr_AG $imcr_ES
+factortest $imcr_without
+factor $imcr_without, pcf
+* Velicer Minimum Average Partial Correlation
+minap $imcr_without
+restore
+
+
+
+preserve
+********** Nb fact Income poor
+* Selection
+keep if richinc==0
+* Nb factors
+global imcr_without $imcr_OP $imcr_CO $imcr_EX $imcr_AG $imcr_ES
+factortest $imcr_without
+factor $imcr_without, pcf
+* Velicer Minimum Average Partial Correlation
+minap $imcr_without
+restore
+
+
+
+preserve
+********** Nb fact Income rich
+* Selection
+keep if richinc==1
+* Nb factors
+global imcr_without $imcr_OP $imcr_CO $imcr_EX $imcr_AG $imcr_ES
+factortest $imcr_without
+factor $imcr_without, pcf
+* Velicer Minimum Average Partial Correlation
+minap $imcr_without
+restore
+
+
+
+
+preserve
+********** Nb fact Neemsis 1
+* Selection
+keep if year==2016
+* Nb factors
+global imcr_without $imcr_OP $imcr_CO $imcr_EX $imcr_AG $imcr_ES
+factortest $imcr_without
+factor $imcr_without, pcf
+* Velicer Minimum Average Partial Correlation
+minap $imcr_without
+restore
+
+
+preserve
+********** Nb fact Neemsis 2
+* Selection
+keep if year==2020
+* Nb factors
+global imcr_without $imcr_OP $imcr_CO $imcr_EX $imcr_AG $imcr_ES
+factortest $imcr_without
+factor $imcr_without, pcf
+* Velicer Minimum Average Partial Correlation
+minap $imcr_without
+restore
+
+
+
+/*
+preserve
+********** Nb fact Wealth poor
+* Selection
+keep if richwea==0
+* Nb factors
+global imcr_without $imcr_OP $imcr_CO $imcr_EX $imcr_AG $imcr_ES
+factortest $imcr_without
+factor $imcr_without, pcf
+* Velicer Minimum Average Partial Correlation
+minap $imcr_without
+restore
+
+
+
+preserve
+********** Nb fact Wealth rich
+* Selection
+keep if richwea==1
+* Nb factors
+global imcr_without $imcr_OP $imcr_CO $imcr_EX $imcr_AG $imcr_ES
+factortest $imcr_without
+factor $imcr_without, pcf
+* Velicer Minimum Average Partial Correlation
+minap $imcr_without
+restore
+*/
+
+
+
+
+
+
+
+
+********** EFA
+
+
+preserve
+********** EFA No educ
+* Selection
+keep if educ==0
+* Nb factors
+global imcr_without $imcr_OP $imcr_CO $imcr_EX $imcr_AG $imcr_ES
+factortest $imcr_without
+factor $imcr_without, pcf
+* Velicer Minimum Average Partial Correlation
+minap $imcr_without
+* EFA
+factor $imcr_without, pcf fa(3)
+rotate, quartimin
+predict f1corr f2corr f3corr
+putexcel set "new/EFA_pooled.xlsx", modify sheet("Non_educ")
+putexcel (D2)=matrix(e(r_L))
+restore
+
+
+
+preserve
+********** EFA Educ
+* Selection
+keep if educ==1
+* Nb factors
+global imcr_without $imcr_OP $imcr_CO $imcr_EX $imcr_AG $imcr_ES
+factortest $imcr_without
+factor $imcr_without, pcf
+* Velicer Minimum Average Partial Correlation
+minap $imcr_without
+* EFA
+factor $imcr_without, pcf fa(2)
+rotate, quartimin
+predict f1corr f2corr f3corr
+putexcel set "new/EFA_pooled.xlsx", modify sheet("Educ")
+putexcel (D2)=matrix(e(r_L))
+restore
+
+
+/*
+preserve
+********** EFA Wealth poor
+* Selection
+keep if richwea==0
+* Nb factors
+global imcr_without $imcr_OP $imcr_CO $imcr_EX $imcr_AG $imcr_ES
+factortest $imcr_without
+factor $imcr_without, pcf
+* Velicer Minimum Average Partial Correlation
+minap $imcr_without
+* EFA
+factor $imcr_without, pcf fa(3)
+rotate, quartimin
+predict f1corr f2corr f3corr
+putexcel set "new/EFA_pooled.xlsx", modify sheet("Wealth_poor")
+putexcel (D2)=matrix(e(r_L))
+restore
+
+
+
+preserve
+********** EFA Wealth rich
+* Selection
+keep if richwea==1
+* Nb factors
+global imcr_without $imcr_OP $imcr_CO $imcr_EX $imcr_AG $imcr_ES
+factortest $imcr_without
+factor $imcr_without, pcf
+* Velicer Minimum Average Partial Correlation
+minap $imcr_without
+* EFA
+factor $imcr_without, pcf fa(3)
+rotate, quartimin
+predict f1corr f2corr f3corr
+putexcel set "new/EFA_pooled.xlsx", modify sheet("Wealth_rich")
+putexcel (D2)=matrix(e(r_L))
+restore
+*/
+
+preserve
+********** EFA Income poor
+* Selection
+keep if richinc==0
+* Nb factors
+global imcr_without $imcr_OP $imcr_CO $imcr_EX $imcr_AG $imcr_ES
+factortest $imcr_without
+factor $imcr_without, pcf
+* Velicer Minimum Average Partial Correlation
+minap $imcr_without
+* EFA
+factor $imcr_without, pcf fa(3)
+rotate, quartimin
+predict f1corr f2corr f3corr
+putexcel set "new/EFA_pooled.xlsx", modify sheet("Income_poor")
+putexcel (D2)=matrix(e(r_L))
+restore
+
+
+
+preserve
+********** EFA Income rich
+* Selection
+keep if richinc==1
+* Nb factors
+global imcr_without $imcr_OP $imcr_CO $imcr_EX $imcr_AG $imcr_ES
+factortest $imcr_without
+factor $imcr_without, pcf
+* Velicer Minimum Average Partial Correlation
+minap $imcr_without
+* EFA
+factor $imcr_without, pcf fa(3)
+rotate, quartimin
+predict f1corr f2corr f3corr
+putexcel set "new/EFA_pooled.xlsx", modify sheet("Income_rich")
+putexcel (D2)=matrix(e(r_L))
+restore
+
+
+
+
+preserve
+********** EFA Neemsis 1
+* Selection
+keep if year==2016
+* Nb factors
+global imcr_without $imcr_OP $imcr_CO $imcr_EX $imcr_AG $imcr_ES
+factortest $imcr_without
+factor $imcr_without, pcf
+* Velicer Minimum Average Partial Correlation
+minap $imcr_without
+* EFA
+factor $imcr_without, pcf fa(5)
+rotate, quartimin
+predict f1corr f2corr f3corr
+putexcel set "new/EFA_pooled.xlsx", modify sheet("N1")
+putexcel (D2)=matrix(e(r_L))
+restore
+
+
+preserve
+********** EFA Neemsis 2
+* Selection
+keep if year==2020
+* Nb factors
+global imcr_without $imcr_OP $imcr_CO $imcr_EX $imcr_AG $imcr_ES
+factortest $imcr_without
+factor $imcr_without, pcf
+* Velicer Minimum Average Partial Correlation
+minap $imcr_without
+* EFA
+factor $imcr_without, pcf fa(2)
+rotate, quartimin
+predict f1corr f2corr f3corr
+putexcel set "new/EFA_pooled.xlsx", modify sheet("N2")
+putexcel (D2)=matrix(e(r_L))
+restore
+
 
 ****************************************
 * END

@@ -66,8 +66,8 @@ collapse (mean) hourlyincome, by(occupation year)
 drop if occupation==.
 
 *
-graph bar hourlyincome, over(year) over(occupation, lab(angle(45)) relabel(1 "Agri self-emp" 2 "Agri casual" 3 "Casual" 4 "Reg non-quali" 5 "Reg quali" 6 "Self-emp" 7 "MGNREGA"))	ytitle("Rupees") ylabel(0(10)90) asyvars legend(order(1 "2016-17" 2 "2020-21") pos(6) col(2)) name(inc, replace) ///
-note("{it:Note:} For 1323 individuals in 2016-17 and 1704 in 2020-21." "{it:Source:} NEEMSIS-1 (2016-17) and NEEMSIS-2 (2020-21); authors' calculations.", size(vsmall)) scale(1.2)
+graph bar hourlyincome, over(year) over(occupation, lab(angle(45)) relabel(1 "Agri self-emp" 2 "Agri casual" 3 "Casual" 4 "Reg non-quali" 5 "Reg quali" 6 "Self-emp" 7 "MGNREGA"))	ytitle("Rupees") ylabel(0(10)90) asyvars legend(order(1 "2016-2017" 2 "2020-2021") pos(6) col(2)) name(inc, replace) ///
+note("{it:Note:} For 1,323 individuals in 2016-2017 and 1,704 in 2020-2021." "{it:Source:} NEEMSIS-1 (2016-2017) and NEEMSIS-2 (2020-2021); authors' calculations.", size(vsmall)) scale(1.2)
 graph export "Hourlyincome.png", as(png) replace
 
 
@@ -125,7 +125,7 @@ label define mainocc_occupation_indiv 1"Agri self-emp" 2"Agri casual" 3"Casual" 
 
 ***** Graph
 graph bar score, over(type) over(occupation, lab(angle(45)))	ytitle("Score") ylabel(0(.1).9) asyvars legend(order(1 "Execution" 2 "Problem" 3 "Exposure") pos(6) col(3)) name(inc, replace) ///
-note("{it:Note:} For 1272 individuals in 2020-21." "{it:Source:} NEEMSIS-2 (2020-21); authors' calculations.", size(vsmall)) scale(1.2)
+note("{it:Note:} For 1,272 individuals in 2020-2021." "{it:Source:} NEEMSIS-2 (2020-2021); authors' calculations.", size(vsmall)) scale(1.2)
 graph export "Workingcond.png", as(png) replace
 
 
