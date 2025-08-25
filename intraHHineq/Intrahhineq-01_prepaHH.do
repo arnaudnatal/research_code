@@ -378,7 +378,7 @@ sort HHID_panel year
 recode dummydemonetisation (.=0)
 recode dummymarriage (.=0)
 
-* Quanti defalte and round
+* Quanti deflate and round
 global quanti1 head_mocc_annualincome head_annualincome 
 global quanti2 loanamount_HH imp1_ds_tot_HH imp1_is_tot_HH
 global quanti3 expenses_total expenses_food expenses_educ expenses_heal expenses_cere expenses_agri expenses_marr

@@ -7,7 +7,8 @@ cls
 gl link = "datadebt"
 *Stat HH
 *-----
-do "https://raw.githubusercontent.com/arnaudnatal/folderanalysis/main/$link.do"
+*do "https://raw.githubusercontent.com/arnaudnatal/folderanalysis/main/$link.do"
+do"C:/Users/Arnaud/Documents/GitHub/folderanalysis/$link.do"
 *-------------------------
 
 
