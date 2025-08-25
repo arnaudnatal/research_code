@@ -123,9 +123,30 @@ fre livinghome
 drop if livinghome==3
 drop if livinghome==4
 
+* Education
+preserve
+keep if currentlyatschool==1
+gen male=1 if sex==1
+gen female=1 if sex==2
+gen educationexpenses_male=educationexpenses if sex==1
+gen educationexpenses_female=educationexpenses if sex==2
+keep HHID2016 educationexpenses educationexpenses_male educationexpenses_female male female
+collapse (sum) educationexpenses educationexpenses_male educationexpenses_female male female, by(HHID2016)
+gen gendereduc=1 if educationexpenses_male>0 & educationexpenses_female>0
+replace gendereduc=2 if educationexpenses_male==0 & educationexpenses_female>0
+replace gendereduc=3 if educationexpenses_male>0 & educationexpenses_female==0
+label define gendereduc 1"Both" 2"Females only" 3"Males only"
+label values gendereduc gendereduc
+gen aveducexp_male=educationexpenses_male/male
+gen aveducexp_female=educationexpenses_female/female
+keep HHID2016 gendereduc aveducexp_male aveducexp_female
+save"_tempeduc", replace
+restore
+merge m:1 HHID2016 using "_tempeduc"
+drop _merge
 
 * To keep
-keep HHID2016 villagearea villageid dummydemonetisation dummymarriage ownland house housetitle
+keep HHID2016 villagearea villageid dummydemonetisation dummymarriage ownland house housetitle gendereduc aveducexp_male aveducexp_female
 fre house housetitle
 duplicates drop
 decode villagearea, gen(vi)
@@ -226,8 +247,30 @@ ta dummyeverland2010
 ta dummyeverhadland
 restore
 
+* Education
+preserve
+keep if currentlyatschool==1
+gen male=1 if sex==1
+gen female=1 if sex==2
+gen educationexpenses_male=educationexpenses if sex==1
+gen educationexpenses_female=educationexpenses if sex==2
+keep HHID2020 educationexpenses educationexpenses_male educationexpenses_female male female
+collapse (sum) educationexpenses educationexpenses_male educationexpenses_female male female, by(HHID2020)
+gen gendereduc=1 if educationexpenses_male>0 & educationexpenses_female>0
+replace gendereduc=2 if educationexpenses_male==0 & educationexpenses_female>0
+replace gendereduc=3 if educationexpenses_male>0 & educationexpenses_female==0
+label define gendereduc 1"Both" 2"Females only" 3"Males only"
+label values gendereduc gendereduc
+gen aveducexp_male=educationexpenses_male/male
+gen aveducexp_female=educationexpenses_female/female
+keep HHID2020 gendereduc aveducexp_male aveducexp_female
+save"_tempeduc", replace
+restore
+merge m:1 HHID2020 using "_tempeduc"
+drop _merge
+
 * To keep
-keep HHID2020 villagearea villageid dummymarriage ownland ownland house housetitle compensation compensationamount
+keep HHID2020 villagearea villageid dummymarriage ownland ownland house housetitle compensation compensationamount gendereduc aveducexp_male aveducexp_female
 fre house housetitle
 destring house housetitle, replace
 destring ownland, replace
@@ -384,7 +427,7 @@ global quanti2 loanamount_HH imp1_ds_tot_HH imp1_is_tot_HH
 global quanti3 expenses_total expenses_food expenses_educ expenses_heal expenses_cere expenses_agri expenses_marr
 global quanti4 assets_housevalue assets_livestock assets_goods assets_ownland assets_gold assets_total assets_totalnoland assets_totalnoprop assets_total1000 assets_totalnoland1000 assets_totalnoprop1000 annualincome_HH
 global quanti5 remreceived_HH remsent_HH remittnet_HH pension_HH
-global quanti6 goldreadyamount incomeagri_HH incomenonagri_HH incagrise_HH incagricasual_HH incnonagricasual_HH incnonagriregnonquali_HH incnonagriregquali_HH incnonagrise_HH incnrega_HH
+global quanti6 goldreadyamount incomeagri_HH incomenonagri_HH incagrise_HH incagricasual_HH incnonagricasual_HH incnonagriregnonquali_HH incnonagriregquali_HH incnonagrise_HH incnrega_HH aveducexp_male aveducexp_female
 global quanti $quanti1 $quanti2 $quanti3 $quanti4 $quanti5 $quanti6
 
 foreach x in $quanti {
@@ -463,106 +506,22 @@ tabstat isr, stat(n mean) by(year)
 gen dar=loanamount_HH/assets_total
 tabstat dar, stat(n mean) by(year)
 
+*** Diff educ exp
+gen educexp=1 if aveducexp_male>aveducexp_female
+replace educexp=2 if aveducexp_male<aveducexp_female
+replace educexp=3 if aveducexp_male==aveducexp_female
+replace educexp=. if aveducexp_male==. | aveducexp_female==.
+label define educexp 1"Male > Female" 2"Male < Female" 3"Male = Female"
+label values educexp educexp
+fre gendereduc
+ta educexp
+
+gen diff_educexp=aveducexp_male-aveducexp_female
+
+
+
+
 save"panel_v1", replace
 ****************************************
 * END
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*
-****************************************
-* Construction 3
-****************************************
-
-gen intratodrop=0
-replace intratodrop=1 if annualincome_HH==1
-drop if intratodrop==1
-drop intratodrop
-
-
-********** Part moyenne d'un homme et part moyenne d'une femme
-/*
-*
-gen mshare_men=((suminc_men/wp_occupied_men_HH)/annualincome_HH)*100
-gen mshare_women=((suminc_women/wp_occupied_women_HH)/annualincome_HH)*100
-gen diff_mshare=mshare_men-mshare_women
-gen absdiff_mshare=abs(diff_mshare)
-
-* Groupes 1
-gen grpHH=.
-replace grpHH=1 if wp_occupied_women_HH==0
-replace grpHH=2 if wp_occupied_men_HH==0
-replace grpHH=3 if diff_mshare!=. & diff_mshare<-5
-replace grpHH=4 if diff_mshare!=. & diff_mshare>=-5  & diff_mshare<=5
-replace grpHH=5 if diff_mshare!=. & diff_mshare>5
-label define grpHH 1"No women income" 2"No men income" 3"(c) Women > Men" 4"(b) Men = Women" 5"(a) Men > Women"
-label values grpHH grpHH
-
-* Group 2
-gen grpHH2=.
-replace grpHH2=1 if grpHH==3
-replace grpHH2=2 if grpHH==4
-replace grpHH2=3 if grpHH==5
-label define grpHH2 1"(c) Women > Men" 2"(b) Men = Women" 3"(a) Men > Women"
-label values grpHH2 grpHH2
-
-* Group 3
-gen grpHH3=.
-replace grpHH3=1 if grpHH==1
-replace grpHH3=2 if grpHH==2
-replace grpHH3=3 if grpHH>=3
-label define grpHH3 1"No women income" 2"No men income" 3"Income for both"
-label values grpHH3 grpHH3
-*/
-
-
-********** Ecart entre le revenu moyen d'un homme et le revenu moyen d'une femme
-*
-gen av_men=suminc_men/wp_occupied_men_HH
-gen av_women=suminc_women/wp_occupied_women_HH
-gen diffav=av_men-av_women
-gen absdiffav=abs(diffav)
-tabstat av_men av_women absdiffav, stat(min p1 p5 p10 q p90 p95 p99 max)
-*
-gen monthlyincome=head_annualincome/12
-tabstat monthlyincome, stat(n mean sd median) by(year)
-drop monthlyincome
-*
-
-* Groupes 1
-gen alt_grpHH=.
-replace alt_grpHH=1 if wp_occupied_women_HH==0
-replace alt_grpHH=2 if wp_occupied_men_HH==0
-replace alt_grpHH=3 if diffav!=. & diffav<-730
-replace alt_grpHH=4 if diffav!=. & diffav>=-730  & diffav<=730
-replace alt_grpHH=5 if diffav!=. & diffav>730
-label define alt_grpHH 1"No women income" 2"No men income" 3"(c) Women > Men" 4"(b) Men = Women" 5"(a) Men > Women"
-label values alt_grpHH alt_grpHH
-
-* Group 2
-gen alt_grpHH2=.
-replace alt_grpHH2=1 if alt_grpHH==3
-replace alt_grpHH2=2 if alt_grpHH==4
-replace alt_grpHH2=3 if alt_grpHH==5
-label define alt_grpHH2 1"(c) Women > Men" 2"(b) Men = Women" 3"(a) Men > Women"
-label values alt_grpHH2 alt_grpHH2
-
-* Group 3
-gen alt_grpHH3=.
-replace alt_grpHH3=1 if alt_grpHH==1
-replace alt_grpHH3=2 if alt_grpHH==2
-replace alt_grpHH3=3 if alt_grpHH>=3
-label define alt_grpHH3 1"No women income" 2"No men income" 3"Income for both"
-label values alt_grpHH3 alt_grpHH3
-*/
 

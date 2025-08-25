@@ -17,15 +17,11 @@ do"C:\Users\Arnaud\Documents\GitHub\folderanalysis\intraHHineq.do"
 
 
 
-
-
-
-
 ****************************************
 * Trends in intra-
 ****************************************
 cls
-use"panel_v2", clear
+use"panel_v3", clear
 
 fre catdiff
 
@@ -65,7 +61,7 @@ graph export "incidence.png", as(png) replace
 * Intensity
 ****************************************
 cls
-use"panel_v2", clear
+use"panel_v3", clear
 
 fre catdiff
 keep if catdiff==3 | catdiff==5
@@ -120,7 +116,7 @@ graph export "Intensityintra.png", as(png) replace
 * Deter path for all HH
 ****************************************
 cls
-use"panel_v2", clear
+use"panel_v3", clear
 
 * Caste
 ta catdiff caste, col nofreq 
@@ -176,28 +172,45 @@ reg dar i.catdiff
 ****************************************
 * Test econometrics HH level
 ****************************************
-use"panel_v2", clear
-
+use"panel_v3", clear
 
 *
 encode HHID_panel, gen(HHFE)
 xtset HHFE year
 
 
-********** DSR
-***** No lag
-*
-xtreg dsr i.catdiff i.caste, fe cluster(HHFE)
+
+
+********** Loan amount
+xtreg loanamount_HH i.LAGcatdiff i.caste, fe cluster(HHFE) base
 *
 preserve
 keep if catdiff==3 | catdiff==5
-xtreg dsr absdiff_log i.caste, fe cluster(HHFE)
+xtreg loanamount_HH LAGabsdiff_log i.caste, fe cluster(HHFE)
 restore
 
 
-***** Lag
+
+********** Loan amount
+xtreg loanamount_HH i.LAGcatdiff i.caste, fe cluster(HHFE) base
 *
-xtreg dsr i.LAGcatdiff i.caste, fe cluster(HHFE)
+preserve
+keep if catdiff==3 | catdiff==5
+xtreg loanamount_HH LAGabsdiff_log i.caste, fe cluster(HHFE)
+restore
+
+
+********** Debt trap
+xtreg dummytrap i.LAGcatdiff i.caste, fe cluster(HHFE) base
+*
+preserve
+keep if catdiff==3 | catdiff==5
+xtreg dummytrap LAGabsdiff_log i.caste, fe cluster(HHFE)
+restore
+
+
+********** DSR
+xtreg dsr i.LAGcatdiff i.caste, fe cluster(HHFE) base
 *
 preserve
 keep if catdiff==3 | catdiff==5
@@ -205,53 +218,41 @@ xtreg dsr LAGabsdiff_log i.caste, fe cluster(HHFE)
 restore
 
 
-
-
-
-********** ISR
-***** No lag
-*
-xtreg isr i.catdiff i.caste, fe cluster(HHFE)
-*
-preserve
-keep if catdiff==3 | catdiff==5
-xtreg isr absdiff_log i.caste, fe cluster(HHFE)
-restore
-
-
-***** Lag
-*
-xtreg isr i.LAGcatdiff i.caste, fe cluster(HHFE)
-*
-preserve
-keep if catdiff==3 | catdiff==5
-xtreg isr LAGabsdiff_log i.caste, fe cluster(HHFE)
-restore
-
-
-
-
-
-
 ********** DAR
-***** No lag
-*
-xtreg dar i.catdiff i.caste, fe cluster(HHFE)
-*
-preserve
-keep if catdiff==3 | catdiff==5
-xtreg dar absdiff_log i.caste, fe cluster(HHFE)
-restore
-
-
-***** Lag
-*
 xtreg dar i.LAGcatdiff i.caste, fe cluster(HHFE)
 *
 preserve
 keep if catdiff==3 | catdiff==5
 xtreg dar LAGabsdiff_log i.caste, fe cluster(HHFE)
 restore
+
+
+********** DSR non prod
+xtreg dsr_nonprod i.LAGcatdiff i.caste, fe cluster(HHFE) base
+*
+preserve
+keep if catdiff==3 | catdiff==5
+xtreg dsr_nonprod LAGabsdiff_log i.caste, fe cluster(HHFE)
+restore
+
+
+********** DSR prod
+xtreg dsr_prod i.LAGcatdiff i.caste, fe cluster(HHFE) base
+*
+preserve
+keep if catdiff==3 | catdiff==5
+xtreg dsr_prod LAGabsdiff_log i.caste, fe cluster(HHFE)
+restore
+
+
+********** Wealth
+xtreg assets_total i.LAGcatdiff i.caste, fe cluster(HHFE) base
+*
+preserve
+keep if catdiff==3 | catdiff==5
+xtreg assets_total LAGabsdiff_log i.caste, fe cluster(HHFE)
+restore
+
 
 
 ****************************************
@@ -387,58 +388,6 @@ preserve
 keep if catdiff==3 | catdiff==5
 xtreg loanamount_indiv LAGabsdiff_log age i.caste i.mainocc_occupation if sex==1, fe cluster(HHFE)
 xtreg loanamount_indiv LAGabsdiff_log age i.caste i.mainocc_occupation if sex==2, fe cluster(HHFE)
-restore
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-********** Opinion working woman without lag
-reg opinionworkingwoman i.catdiff age sex i.caste i.mainocc_occupation, cluster(HHFE)
-
-preserve
-keep if catdiff==3 | catdiff==5
-reg opinionworkingwoman absdiff_log age sex i.caste i.mainocc_occupation, cluster(HHFE)
 restore
 
 

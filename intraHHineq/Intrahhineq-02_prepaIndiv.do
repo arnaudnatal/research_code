@@ -625,7 +625,6 @@ save"_temp2", replace
 ********** Merger avec la base HH
 use"panel_v1", clear
 
-drop annualincome_HH shareincomeagri_HH shareincomenonagri_HH
 merge 1:1 HHID_panel year using "_temp"
 drop _merge
 

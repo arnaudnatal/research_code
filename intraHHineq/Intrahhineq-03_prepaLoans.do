@@ -33,7 +33,7 @@ gen dummymainloan=0
 replace dummymainloan=1 if borrowerservices!=.
 ta dummymainloan
 
-keep HHID2010 loanid loanreasongiven loanlender loansettled loanamount lender_cat reason_cat lender4 loanamount2 loanbalance2 interestpaid2 totalrepaid2 principalpaid2 effective_repa plantorep_* dummymainloan othlendserv_* dummyinterest guarantee_* loanduration
+keep HHID2010 loanid loanreasongiven loanlender loansettled loanamount lender_cat reason_cat lender4 loanamount2 loanbalance2 interestpaid2 totalrepaid2 principalpaid2 effective_* plantorep_* dummymainloan othlendserv_* dummyinterest guarantee_* loanduration imp1_debt_service imp1_interest_service
 
 merge m:m HHID2010 using "raw/keypanel-HH_wide.dta", keepusing(HHID_panel)
 keep if _merge==3
@@ -79,7 +79,7 @@ ta dummymainloan
 
 ta loan_database
 drop if loan_database=="MARRIAGE"
-keep HHID2016 INDID2016 loanid loanreasongiven loanlender loansettled loanamount lender_cat reason_cat lender4 loanamount2 loanbalance2 interestpaid2 totalrepaid2 principalpaid2 effective_repa loan_database plantorep_* settlestrat_* dummymainloan othlendserv_* dummyinterest guarantee_* loanduration
+keep HHID2016 INDID2016 loanid loanreasongiven loanlender loansettled loanamount lender_cat reason_cat lender4 loanamount2 loanbalance2 interestpaid2 totalrepaid2 principalpaid2 effective_* loan_database plantorep_* settlestrat_* dummymainloan othlendserv_* dummyinterest guarantee_* loanduration imp1_debt_service imp1_interest_service
 
 merge m:m HHID2016 using "raw/keypanel-HH_wide.dta", keepusing(HHID_panel)
 keep if _merge==3
@@ -148,7 +148,7 @@ gen effective_repa2=effective_repa
 replace effective_repa2=1 if loaneffectivereason2==4 & effective_repa2!=. & effective_repa2!=1
 ta effective_repa2
 
-keep HHID2020 INDID2020 loanid loanreasongiven loanlender loansettled loanamount lender_cat reason_cat lender4 loanamount2 loanbalance2 interestpaid2 totalrepaid2 principalpaid2 effective_repa loan_database plantorep_* settlestrat_* dummymainloan othlendserv_* dummyinterest guarantee_* loanduration
+keep HHID2020 INDID2020 loanid loanreasongiven loanlender loansettled loanamount lender_cat reason_cat lender4 loanamount2 loanbalance2 interestpaid2 totalrepaid2 principalpaid2 effective_* loan_database plantorep_* settlestrat_* dummymainloan othlendserv_* dummyinterest guarantee_* loanduration imp1_debt_service imp1_interest_service
 
 merge m:m HHID2020 using "raw/keypanel-HH_wide.dta", keepusing(HHID_panel)
 keep if _merge==3
@@ -343,7 +343,7 @@ drop if _merge==2
 drop _merge
 
 * Merge caste
-merge m:1 HHID_panel year using "panel_v1", keepusing(caste)
+merge m:1 HHID_panel year using "panel_v2", keepusing(caste)
 drop if _merge==2
 drop _merge
 order HHID_panel INDID_panel year caste sex 
@@ -427,257 +427,10 @@ save"panel_loans_v1", replace
 
 
 
-
-
-
-****************************************
-* Long lender
-****************************************
-use"panel_loans_v1", clear
-
-fre dummyinterest
-drop if dummyinterest==88
-
-ta lender4 year, col nofreq
-
-
-********** All loans
-preserve
-keep lender4 reason_cat catloanamount
-rename lender4 lender
-rename reason_cat reason
-rename catloanamount amount
-export delimited using "Allloans.csv", replace
-restore
-
-
-********** All loans details
-preserve
-keep lender4 loanreasongiven catloanamount
-rename lender4 lender
-rename loanreasongiven reason
-rename catloanamount amount
-ta reason
-export delimited using "Allloans2.csv", replace
-restore
-
-
-********** Main loans
-preserve
-keep if dummymainloan==1
-keep lender4 reason_cat catmainloanamount dummyinterest guarantee otherlenderservice
-rename lender4 lender
-rename reason_cat reason
-rename catmainloanamount amount
-rename dummyinterest interest
-rename otherlenderservice services
-export delimited using "Mainloans.csv", replace
-restore
-
-****************************************
-* END
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-****************************************
-* MCA 1
-****************************************
-use"panel_loans_v1", clear
-
-* Selection
-keep HHID_panel INDID_panel loanid year ///
-lender4 reason_cat catloanamount
-
-* Rename
-rename lender4 lender
-rename reason_cat reason
-rename catloanamount amount
-
-fre lender
-fre reason
-fre amount
-
-* Macro
-global var lender reason amount
-
-* MCA
-mca $var, method (indicator) normal(princ)
-
-* Cluster
-mca $var, method (indicator) normal(princ) dim(10)
-predict a1 a2 a3 a4 a5 a6 a7 a8 a9 a10
-cluster wardslinkage a1 a2 a3 a4 a5 a6 a7 a8 a9 a10, measure(Euclidean)
-cluster dendrogram, cutnumber(50)
-cluster gen clustloan1=groups(10)
-
-* Keep
-keep HHID_panel INDID_panel loanid year clustloan1 _clus_*
-
-save"clustloan1", replace
-****************************************
-* END
-
-
-
-
-
-
-
-
-
-
-****************************************
-* MCA 2
-****************************************
-use"panel_loans_v1", clear
-
-* Selection
-keep if dummymainloan==1
-keep HHID_panel INDID_panel loanid year ///
-lender4 reason_cat catmainloanamount dummyinterest guarantee otherlenderservice
-
-* Rename
-rename lender4 lender
-rename reason_cat reason
-rename catmainloanamount amount
-rename dummyinterest interest
-rename otherlenderservice services
-
-* Macro
-global var lender reason amount interest guarantee services
-
-* MCA
-mca $var, method (indicator) normal(princ)
-
-* Cluster
-mca $var, method (indicator) normal(princ) dim(11)
-predict a1 a2 a3 a4 a5 a6 a7 a8 a9 a10 a11
-cluster wardslinkage a1 a2 a3 a4 a5 a6 a7 a8 a9 a10 a11, measure(Euclidean)
-*cluster dendrogram, cutnumber(50)
-cluster gen clustloan2=groups(9)
-
-* Keep
-keep HHID_panel INDID_panel loanid year clustloan2 _clus_*
-
-save"clustloan2", replace
-****************************************
-* END
-
-
-
-
-
-
-
-
-
-
-****************************************
-* Merge with main database
-****************************************
-
-********** Separer 2010 du reste
-foreach i in 1 2 {
-use"clustloan`i'", clear
-keep if year==2010
-drop INDID_panel
-rename _clus_1_id _clus`i'_id
-rename _clus_1_ord _clus`i'_ord
-rename _clus_1_hgt _clus`i'_hgt
-save"clustloan`i'_2010", replace
-
-use"clustloan`i'", clear
-drop if year==2010
-rename _clus_1_id _clus`i'_id
-rename _clus_1_ord _clus`i'_ord
-rename _clus_1_hgt _clus`i'_hgt
-save"clustloan`i'_reste", replace
-}
-
-
-
-********** Aussi sur la base "main"
-use"panel_loans_v1", clear
-keep if year==2010
-drop INDID_panel
-save"panel_loans_v1_2010", replace
-
-use"panel_loans_v1", clear
-drop if year==2010
-save"panel_loans_v1_reste", replace
-
-
-********** Merger 2010
-use"panel_loans_v1_2010", clear
-*
-merge 1:1 HHID_panel loanid using "clustloan1_2010"
-drop _merge
-*
-merge 1:1 HHID_panel loanid using "clustloan2_2010"
-drop _merge
-
-save"panel_loans_v1_clust_2010", replace
-
-
-********** Merger reste
-use"panel_loans_v1_reste", clear
-
-*
-merge 1:1 HHID_panel INDID_panel loanid year using "clustloan1_reste"
-drop _merge
-*
-merge 1:1 HHID_panel INDID_panel loanid year using "clustloan2_reste"
-drop _merge
-
-save"panel_loans_v1_clust_reste", replace
-
-
-
-********** Append 2010 avec le reste
-use"panel_loans_v1_clust_2010", clear
-
-append using "panel_loans_v1_clust_reste"
-
-save"panel_loans_v1_clust", replace
-****************************************
-* END
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ****************************************
 * Loan to HH level
 ****************************************
-use"panel_v1", clear
+use"panel_v2", clear
 /*
 Il y a dans la base ménage déjà le montant abs et rel de la dette
 */
@@ -686,13 +439,124 @@ Il y a dans la base ménage déjà le montant abs et rel de la dette
 use"panel_loans_v1", clear
 
 * Debt trap
+preserve
+ta effective_repa year
+keep if effective_repa==1
+keep HHID_panel year effective_repa
+duplicates drop
+rename effective_repa dummytrap
+save"_temp_trap", replace
+restore
+
+***** Database creation
+drop if loan_database=="GOLD"
+drop if loan_database=="MARRIAGE"
+fre year
+gen debt_prod=0
+replace debt_prod=1 if effective_agri==1
+replace debt_prod=1 if effective_inve==1
+ta debt_prod
+keep HHID_panel year debt_prod imp1_debt_service imp1_interest_service loanamount
+
+foreach x in imp1_debt_service imp1_interest_service loanamount {
+gen `x'_prod=`x' if debt_prod==1
+gen `x'_nonprod=`x' if debt_prod==0
+}
+
+gen debt_nonprod=.
+replace debt_nonprod=1 if debt_prod==0
+replace debt_nonprod=0 if debt_prod==1
+ta debt_nonprod debt_prod
+order debt_nonprod, after(debt_prod)
+
+collapse (sum) loanamount debt_prod debt_nonprod imp1_debt_service_prod imp1_debt_service_nonprod imp1_interest_service_prod imp1_interest_service_nonprod loanamount_prod loanamount_nonprod imp1_debt_service imp1_interest_service, by(HHID_panel year)
+ta year
+
+* Rename 
+rename imp1_debt_service imp1_ds_tot_HH_v2
+rename imp1_interest_service imp1_is_tot_HH_v2
+
+* Recourse to different type of debt
+gen cat_typeofdebt=.
+replace cat_typeofdebt=1 if debt_prod==0 & debt_nonprod>0
+replace cat_typeofdebt=2 if debt_prod>0 & debt_nonprod==0
+replace cat_typeofdebt=3 if debt_prod>0 & debt_nonprod>0
+label define cat_typeofdebt 1"Non-prod" 2"Prod" 3"Both"
+label values cat_typeofdebt cat_typeofdebt
+fre cat_typeofdebt
+
+* Dummy prod debt
+gen dummy_debt_prod=.
+replace dummy_debt_prod=0 if debt_prod==0
+replace dummy_debt_prod=1 if debt_prod>0
+label define dummy_debt_prod 0"Prod: No" 1"Prod: Yes"
+label values dummy_debt_prod dummy_debt_prod
+fre dummy_debt_prod
+
+* Dummy non prod debt
+gen dummy_debt_nonprod=.
+replace dummy_debt_nonprod=0 if debt_nonprod==0
+replace dummy_debt_nonprod=1 if debt_nonprod>0
+label define dummy_debt_nonprod 0"Non-prod: No" 1"Non-prod: Yes"
+label values dummy_debt_nonprod dummy_debt_nonprod
+fre dummy_debt_nonprod
+
+* Share of in total amount
+gen shareamount_prod=loanamount_prod/loanamount
+gen shareamount_nonprod=loanamount_nonprod/loanamount
+
+drop loanamount debt_prod debt_nonprod loanamount_prod loanamount_nonprod
+order HHID_panel year cat_typeofdebt ///
+dummy_debt_prod shareamount_prod imp1_debt_service_prod imp1_interest_service_prod ///
+dummy_debt_nonprod shareamount_nonprod imp1_debt_service_nonprod imp1_interest_service_nonprod
+
+rename imp1_interest_service_prod imp1_is_tot_HH_prod
+rename imp1_debt_service_prod imp1_ds_tot_HH_prod
+rename imp1_interest_service_nonprod imp1_is_tot_HH_nonprod
+rename imp1_debt_service_nonprod imp1_ds_tot_HH_nonprod
+
+drop imp1_ds_tot_HH_v2 imp1_is_tot_HH_v2
+
+save"_temp_prod", replace
 
 
+********** Merge with HH data
+use"panel_v2", clear
+
+* Dummy
+gen debt_HH=0
+replace debt_HH=1 if nbloans_HH>0 & nbloans_HH!=.
+order debt_HH, before(nbloans_HH)
+ta debt_HH year
+
+* Trap
+merge 1:1 HHID_panel year using "_temp_trap"
+drop _merge
+replace dummytrap=0 if debt_HH==1 & dummytrap==.
+replace dummytrap=. if debt_HH==0
+
+* Structure
+merge 1:1 HHID_panel year using "_temp_prod"
+drop _merge
+
+* dsr et isr pour prod 
+gen dsr_prod=imp1_ds_tot_HH_prod/annualincome_HH
+gen isr_prod=imp1_is_tot_HH_prod/annualincome_HH
+
+* dsr et isr pour non-prod 
+gen dsr_nonprod=imp1_ds_tot_HH_nonprod/annualincome_HH
+gen isr_nonprod=imp1_is_tot_HH_nonprod/annualincome_HH
+
+tabstat dsr_prod dsr_nonprod, stat(n mean p50) by(year) long
+
+* Clean
+drop imp1_ds_tot_HH imp1_is_tot_HH imp1_ds_tot_HH_prod imp1_is_tot_HH_prod imp1_ds_tot_HH_nonprod imp1_is_tot_HH_nonprod
+drop annualincome_HH shareincomeagri_HH shareincomenonagri_HH
+
+order debt_HH nbloans_HH loanamount_HH, before(dsr)
+order dummytrap cat_typeofdebt dummy_debt_prod shareamount_prod dummy_debt_nonprod shareamount_nonprod dsr_prod isr_prod dsr_nonprod isr_nonprod, after(dar)
 
 
-*
-
-
-save"panel_loans_v1_HH", replace
+save"panel_v3", replace
 ****************************************
 * END
