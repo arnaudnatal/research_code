@@ -2,7 +2,7 @@
 cls
 *Arnaud NATAL
 *arnaud.natal@ifpindia.org
-*February 2, 2025
+*September 2, 2025
 *-----
 gl link = "debtnetworks"
 *Creation variables
@@ -249,6 +249,11 @@ merge 1:1 HHID2020 INDID2020 using "raw/NEEMSIS2-loans_indiv", keepusing(nbloans
 drop if _merge==2
 drop _merge
 count
+rename nbloans_indiv nbloans_indiv_tot
+rename loanamount_indiv loanamount_indiv_tot
+rename imp1_ds_tot_indiv ds_indiv_tot
+rename imp1_is_tot_indiv is_indiv_tot
+
 
 * Wealth
 count
@@ -270,6 +275,10 @@ merge m:1 HHID2020 using "raw/NEEMSIS2-loans_HH", keepusing(nbloans_HH loanamoun
 drop if _merge==2
 drop _merge
 count
+rename nbloans_HH nbloans_HH_tot
+rename loanamount_HH loanamount_HH_tot
+rename imp1_ds_tot_HH ds_HH_tot
+rename imp1_is_tot_HH is_HH_tot
 
 * Family characteristics
 count
@@ -380,28 +389,123 @@ save"Main_analyses_v3", replace
 
 
 
-
-
 ****************************************
-* Stat desc pour voir ce que ca donne
+* More data on debt
 ****************************************
 cls
-use"Main_analyses_v3", clear
+use"raw/NEEMSIS2-loans_mainloans_new", clear
 
 *
-gen dsr=imp1_ds_tot_indiv*100/annualincome_indiv
+fre loanlender
+drop if loanlender==10
+drop if loanlender==11
+drop if loanlender==12
+drop if loanlender==13
+drop if loanlender==14
 
-tabstat dsr, stat(n mean q) by(sex)
-tabstat dsr, stat(n mean q) by(caste)
+*
+fre loan_database
+keep if loan_database=="FINANCE"
 
-* Macro
-global varcont i.sex c.age i.caste i.educ i.occup i.married c.stdassets c.stdincome i.villageid
+*
+fre dummyinteret
+gen dummy_ml=0
+replace dummy_ml=1 if dummyinteret!=.
+ta dummy_ml dummyproblemtorepay, m
 
-reg dsr netsize_debt debt_samegender_pct debt_samecaste_pct debt_sameage_pct debt_samejobstatut_pct debt_sameoccup_pct debt_sameeduc_pct debt_samelocation_pct debt_samewealth_pct $varcont
+*
+global var HHID2020 INDID2020 loanid dummy_ml loanamount2 imp1_debt_service imp1_interest_service dummyproblemtorepay dummyhelptosettleloan given_repa effective_repa
+keep $var
+order $var
+rename loanamount2 loanamount
+
+*
+rename imp1_debt_service ds
+rename imp1_interest_service is
+gen loan=1
+order loan, after(loanid)
+
+*
+save "_temp", replace
+
+***** Indiv
+use "_temp", clear
+
+drop loanid
+collapse (sum) loan dummy_ml loanamount ds is dummyproblemtorepay dummyhelptosettleloan given_repa effective_repa, by(HHID2020 INDID2020)
+
+rename loan nbloan
+
+rename dummy_ml ml
+gen dummy_ml=ml
+replace dummy_ml=1 if ml>1
+order dummy_ml, before(ml)
+
+rename dummyproblemtorepay problemtorepay
+gen dummyproblemtorepay=problemtorepay
+replace dummyproblemtorepay=1 if problemtorepay>1
+order dummyproblemtorepay, before(problemtorepay)
+replace dummyproblemtorepay=. if dummy_ml==0
+replace problemtorepay=. if dummy_ml==0
+
+rename dummyhelptosettleloan helptosettleloan
+gen dummyhelptosettleloan=helptosettleloan
+replace dummyhelptosettleloan=1 if helptosettleloan>1
+order dummyhelptosettleloan, before(helptosettleloan)
+replace dummyhelptosettleloan=. if dummy_ml==0
+replace helptosettleloan=. if dummy_ml==0
+
+foreach x in nbloan dummy_ml ml loanamount ds is dummyproblemtorepay problemtorepay dummyhelptosettleloan helptosettleloan given_repa effective_repa {
+rename `x' `x'_indiv
+}
+
+save "_temp_indiv", replace
 
 
+***** HH
+use "_temp_indiv", replace
+
+drop INDID2020 dummy_ml ml dummyproblemtorepay dummyhelptosettleloan
+
+foreach x in nbloan loanamount ds is problemtorepay helptosettleloan given_repa effective_repa {
+rename `x'_indiv `x'
+}
+
+collapse (sum) nbloan loanamount ds is problemtorepay helptosettleloan given_repa effective_repa, by(HHID2020)
+
+rename nbloan nbloan_HH
+
+gen dummyproblemtorepay=problemtorepay
+replace dummyproblemtorepay=1 if problemtorepay>1
+order dummyproblemtorepay, before(problemtorepay)
+
+gen dummyhelptosettleloan=helptosettleloan
+replace dummyhelptosettleloan=1 if helptosettleloan>1
+order dummyhelptosettleloan, before(helptosettleloan)
+
+foreach x in loanamount ds is dummyproblemtorepay problemtorepay dummyhelptosettleloan helptosettleloan given_repa effective_repa {
+rename `x' `x'_HH
+}
+
+save "_temp_HH", replace
+
+
+***** Merge with main database
+use"Main_analyses_v3", clear
+
+merge 1:1 HHID2020 INDID2020 using "_temp_indiv"
+drop if _merge==2
+drop _merge
+
+merge m:1 HHID2020 using "_temp_HH"
+drop if _merge==2
+drop _merge
+
+save"Main_analyses_v4", replace
 ****************************************
 * END
+
+
 
 
 
