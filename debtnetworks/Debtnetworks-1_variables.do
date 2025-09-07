@@ -11,6 +11,7 @@ gl link = "debtnetworks"
 do"C:\Users\Arnaud\Documents\GitHub\folderanalysis\debtnetworks.do"
 *-------------------------
 
+*cd"D:\Ongoing_Networks_debt\Analysis"
 
 
 
@@ -368,6 +369,8 @@ use"Main_analyses_v2", clear
 
 
 ********** Debt networks
+*Enlever ca ici pour ajouter debtnew à la place qui me parait plus juste
+
 merge 1:1 HHID2020 INDID2020 using "raw/Main_analyses_DG_debttalkrela", keepusing(debt_duration debt_samegender_pct debt_samecaste_pct debt_samejatis_pct debt_sameage_pct debt_samejobstatut_pct debt_sameoccup_pct debt_sameeduc_pct debt_samelocation_pct debt_samewealth_pct debt_IQV_caste debt_IQV_jatis debt_IQV_age debt_IQV_occup debt_IQV_educ debt_IQV_gender debt_IQV_location debt_multiplex_pct debt_multiplexR_pct debt_family_pct debt_meetweekly_pct debt_veryintimate_pct debt_reciprocity_pct debt_money_pct strength_debt netsize_debt)
 keep if _merge==3
 drop _merge
@@ -501,6 +504,12 @@ merge m:1 HHID2020 using "_temp_HH"
 drop if _merge==2
 drop _merge
 
+***** Min HH income
+ta annualincome_HH
+replace annualincome_HH=5000 if annualincome_HH<5000
+
+
+
 save"Main_analyses_v4", replace
 ****************************************
 * END
@@ -509,6 +518,86 @@ save"Main_analyses_v4", replace
 
 
 
+
+
+****************************************
+* Creation var Y
+****************************************
+cls
+use"Main_analyses_v4", clear
+
+
+***** Indiv level
+*
+gen isr_indiv=is_indiv/annualincome_indiv
+*
+gen dsr_indiv=ds_indiv/annualincome_indiv
+*
+gen share_isr=is_indiv/is_HH
+*
+gen share_dsr=ds_indiv/ds_HH
+*
+foreach x in given_repa_indiv effective_repa_indiv {
+gen dummy`x'=`x'
+}
+foreach x in given_repa_indiv effective_repa_indiv {
+replace dummy`x'=1 if `x'>1
+}
+
+
+***** HH level
+*
+gen isr_HH=is_HH/annualincome_HH
+*
+gen dsr_HH=ds_HH/annualincome_HH
+*
+foreach x in given_repa_HH effective_repa_HH {
+gen dummy`x'=`x'
+}
+foreach x in given_repa_HH effective_repa_HH {
+replace dummy`x'=1 if `x'>1
+}
+
+***** Rename
+rename	netsize_debt	sn_size
+rename	debt_duration	sn_dura
+rename	strength_debt	sn_stre
+rename	debt_samegender_pct	sn_sgende
+rename	debt_samecaste_pct	sn_scaste
+rename	debt_samejatis_pct	sn_sjatis
+rename	debt_sameage_pct	sn_sage
+rename	debt_samejobstatut_pct	sn_sstat
+rename	debt_sameoccup_pct	sn_socc
+rename	debt_sameeduc_pct	sn_sedu
+rename	debt_samelocation_pct	sn_sloc
+rename	debt_samewealth_pct	sn_sweal
+rename	debt_IQV_caste	sn_IQVcaste
+rename	debt_IQV_jatis	sn_IQVjatis
+rename	debt_IQV_age	sn_IQVage
+rename	debt_IQV_occup	sn_IQVoccup
+rename	debt_IQV_educ	sn_IQVeduc
+rename	debt_IQV_gender	sn_IQVgender
+rename	debt_IQV_location	sn_IQVloc
+rename	debt_multiplex_pct	sn_multiplex
+rename	debt_multiplexR_pct	sn_multiplexR
+rename	debt_family_pct	sn_family
+rename	debt_meetweekly_pct	sn_meetweekly
+rename	debt_veryintimate_pct	sn_veryintimate
+rename	debt_reciprocity_pct	sn_reciprocity
+drop	debt_money_pct
+
+
+***** Rename 2
+rename dummyproblemtorepay_indiv dpbtorepay_indiv
+rename dummyhelptosettleloan_indiv dhelpsettle_indiv
+rename dummygiven_repa_indiv dgrepa_indiv
+rename dummyeffective_repa_indiv deffrepa_indiv
+
+
+
+save"Main_analyses_v5", replace
+****************************************
+* END
 
 
 

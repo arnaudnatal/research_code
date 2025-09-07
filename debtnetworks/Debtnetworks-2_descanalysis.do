@@ -8,9 +8,10 @@ gl link = "debtnetworks"
 *Desc analysis
 *-----
 *do "https://raw.githubusercontent.com/arnaudnatal/folderanalysis/main/$link.do"
-do"C:\Users\Arnaud\Documents\GitHub\folderanalysis\debtnetworks.do"
+*do"C:\Users\Arnaud\Documents\GitHub\folderanalysis\debtnetworks.do"
 *-------------------------
 
+cd"D:\Ongoing_Networks_debt\Analysis"
 
 
 
@@ -22,7 +23,7 @@ do"C:\Users\Arnaud\Documents\GitHub\folderanalysis\debtnetworks.do"
 * Who are the egos? Socio-demo
 ****************************************
 cls
-use"Analysis/Main_analyses_v4", clear
+use"Main_analyses_v5", clear
 
 ta egoid
 ta sex
@@ -57,7 +58,7 @@ ta occup caste, col nofreq
 * Who are the egos? Networks
 ****************************************
 cls
-use"Analysis/Main_analyses_v4", clear
+use"Main_analyses_v5", clear
 
 
 *** Taille
@@ -231,3 +232,42 @@ ta occup ego_occup, row nofreq
 * END
 
 
+
+
+
+
+
+
+
+
+
+****************************************
+* Distribution des Y
+****************************************
+cls
+use"Main_analyses_v5", clear
+
+* 
+drop if nbloan_indiv==0
+drop if nbloan_indiv==.
+foreach x in isr_indiv dsr_indiv share_isr share_dsr isr_HH dsr_HH {
+replace `x'=`x'*100
+}
+
+* Indiv
+tabstat loanamount_indiv isr_indiv dsr_indiv share_isr share_dsr, stat(n mean q p90 p95 p99 max)
+ta dummyproblemtorepay_indiv
+ta dummyhelptosettleloan_indiv
+ta dummygiven_repa_indiv
+ta dummyeffective_repa_indiv
+
+* HH
+tabstat isr_HH dsr_HH, stat(n mean q p90 p95 p99 max)
+ta dummyproblemtorepay_HH
+ta dummyhelptosettleloan_HH
+ta dummygiven_repa_HH
+ta dummyeffective_repa_HH
+
+
+****************************************
+* END
