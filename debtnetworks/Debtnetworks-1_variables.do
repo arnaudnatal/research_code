@@ -168,7 +168,7 @@ drop same_caste_n
 keep HHID2020 INDID2020 samegender_pct samecaste_pct duration_corr netsize strength_mca
 
 
-save"debtnetw", replace
+save"_tempdebtnetw", replace
 ****************************************
 * END
 
@@ -666,7 +666,7 @@ order loanid1 loanid2, after(loanid)
 replace loanid=loanid1 if n==1
 replace loanid=loanid2 if n==2
 drop loanid1 loanid2 n
-save"snlender_2", replace
+save"_tempsnlender_2", replace
 restore
 
 
@@ -683,7 +683,7 @@ replace loanid=loanid1 if n==1
 replace loanid=loanid2 if n==2
 replace loanid=loanid3 if n==3
 drop loanid1 loanid2 loanid3 n
-save"snlender_3", replace
+save"_tempsnlender_3", replace
 restore
 
 
@@ -704,15 +704,15 @@ replace loanid=loanid5 if n==5
 replace loanid=loanid6 if n==6
 replace loanid=loanid7 if n==7
 drop loanid1 loanid2 loanid3 loanid4 loanid5 loanid6 loanid7 n
-save"snlender_7", replace
+save"_tempsnlender_7", replace
 restore
 
 
 * Drop les prêteurs multiples et les ajouter à la main
 drop if nbloanperalter>1
-append using "snlender_2"
-append using "snlender_3"
-append using "snlender_7"
+append using "_tempsnlender_2"
+append using "_tempsnlender_3"
+append using "_tempsnlender_7"
 
 destring loanid, replace
 
@@ -722,7 +722,7 @@ rename `x' sn`x'
 }
 
 * Save
-save"sndata", replace
+save"_tempsndata", replace
 
 
 
@@ -734,11 +734,11 @@ use"raw/NEEMSIS2-loans_mainloans_new", clear
 
 keep if loan_database=="FINANCE"
 
-keep HHID2020 INDID2020 loanid loanamount loanreasongiven loanlender guarantee dummyinterest dummyproblemtorepay dummyhelptosettleloan lender4 interestpaid2 totalrepaid2 principalpaid2 interestloan2 loanduration_month yratepaid monthlyinterestrate debt_service interest_service
+keep HHID2020 INDID2020 loanid loanamount loanreasongiven loanlender guarantee dummyinterest dummyproblemtorepay dummyhelptosettleloan lender4 interestpaid2 totalrepaid2 principalpaid2 interestloan2 loanduration_month yratepaid monthlyinterestrate debt_service interest_service dummyinteret borrservices_free borrservices_work borrservices_supp borrservices_none borrservices_othe othlendserv_poli othlendserv_fina othlendserv_guar othlendserv_gene othlendserv_none othlendserv_othe
 sort HHID2020 INDID2020 loanid
 
 * Save
-save"loandata", replace
+save"_temploandata", replace
 
 
 
@@ -748,20 +748,25 @@ use"Main_analyses_v5", clear
 
 keep HHID2020 INDID2020 age sex jatis caste relationshiptohead educ occupation annualincome_HH assets_total HHsize HH_count_child HH_count_adult typeoffamily waystem religion villageid occup
 
+* Covid
+merge m:1 HHID2020 using "raw/NEEMSIS2-covid", keepusing(secondlockdownexposure)
+keep if _merge==3
+drop _merge
+rename secondlockdownexposure covidexpo
 
 * Save
-save"indivdata", replace
+save"_tempindivdata", replace
 
 
 
 ********** Merge
-use"loandata",clear
+use"_temploandata",clear
 
-merge 1:1 HHID2020 INDID2020 loanid using "sndata"
+merge 1:1 HHID2020 INDID2020 loanid using "_tempsndata"
 keep if _merge==3
 drop _merge
 
-merge m:1 HHID2020 INDID2020 using "indivdata"
+merge m:1 HHID2020 INDID2020 using "_tempindivdata"
 keep if _merge==3
 drop _merge
 
@@ -870,6 +875,51 @@ predict dim1
 sum dim1
 gen strength_mca=(dim1-`r(min)')/(`r(max)'-`r(min)')
 sum strength_mca
+
+
+********** Trap
+fre loanreasongiven
+gen dummytrap=0
+replace dummytrap=1 if loanreasongiven==4
+
+ta loanreasongiven dummytrap
+ta dummytrap
+
+********** Borrower services only for ML
+fre borrservices_free borrservices_work borrservices_supp borrservices_none borrservices_othe
+foreach x in borrservices_free borrservices_work borrservices_supp borrservices_none borrservices_othe {
+replace `x'=. if dummymainloan==0
+}
+gen dummyborrowerservice=0 if borrservices_none==1
+replace dummyborrowerservice=1 if borrservices_free==1
+replace dummyborrowerservice=1 if borrservices_work==1
+replace dummyborrowerservice=1 if borrservices_supp==1
+replace dummyborrowerservice=1 if borrservices_othe==1
+
+ta dummyborrowerservice borrservices_none
+drop borrservices_free borrservices_work borrservices_supp borrservices_none borrservices_othe
+
+
+********** Lender services
+fre othlendserv_poli othlendserv_fina othlendserv_guar othlendserv_gene othlendserv_none othlendserv_othe
+
+gen dummylenderservices=0
+replace dummylenderservices=1 if othlendserv_poli==1
+replace dummylenderservices=1 if othlendserv_guar==1
+replace dummylenderservices=1 if othlendserv_gene==1
+replace dummylenderservices=1 if othlendserv_othe==1
+
+ta dummylenderservices othlendserv_poli
+ta dummylenderservices othlendserv_fina
+ta dummylenderservices othlendserv_guar
+ta dummylenderservices othlendserv_gene
+ta dummylenderservices othlendserv_othe
+ta dummylenderservices othlendserv_none
+
+drop othlendserv_poli othlendserv_fina othlendserv_guar othlendserv_gene othlendserv_none othlendserv_othe
+
+ta dummylenderservices
+
 
 save"Analysesloan_v2", replace
 ****************************************
