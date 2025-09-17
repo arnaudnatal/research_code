@@ -8,10 +8,10 @@ gl link = "debtnetworks"
 *Econo at loan level
 *-----
 *do "https://raw.githubusercontent.com/arnaudnatal/folderanalysis/main/$link.do"
-*do"C:\Users\Arnaud\Documents\GitHub\folderanalysis\debtnetworks.do"
+do"C:\Users\Arnaud\Documents\GitHub\folderanalysis\debtnetworks.do"
 *-------------------------
 
-cd"C:\Users\anatal\Documents\Ongoing_Networks_debt\Analysis"
+*cd"C:\Users\anatal\Documents\Ongoing_Networks_debt\Analysis"
 
 
 
@@ -152,3 +152,154 @@ using "marg_all_caste.csv", ///
 	
 ****************************************
 * END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Contribution R2
+****************************************
+use"Analysesloan_v2", clear
+
+*
+fre samecaste
+recode samecaste (2=0)
+fre samecaste
+
+*
+fre caste
+recode caste (3=2)
+fre caste
+
+***** Controls
+global controls i.sex c.age i.caste i.educ i.occupation c.assets_total c.annualincome_HH i.villageid loanamount i.loanreasongiven
+
+
+***** Without lenders-
+foreach y in dummyinterest dummyproblemtorepay dummylenderservices {
+probit `y' ///
+$controls, cluster(hhindiv)
+est store `y'_without
+}
+
+
+***** With lenders-
+foreach y in dummyinterest dummyproblemtorepay dummylenderservices {
+probit `y' ///
+i.samecaste i.samesex i.dummymultipleloan c.duration_cat i.sameoccup i.samevillage i.sndummyfam i.snfriend i.snlabourrelation ///
+$controls, cluster(hhindiv)
+est store `y'_with
+}
+
+
+
+***** Table
+esttab ///
+dummyinterest_without dummyinterest_with ///
+dummyproblemtorepay_without dummyproblemtorepay_with ///
+dummylenderservices_without dummylenderservices_with ///
+using "EvoRsq.csv", replace ///
+	label b(3) p(3) eqlabels(none) alignment(S) ///
+	keep(_cons) ///
+	star(* 0.10 ** 0.05 *** 0.01) ///
+	cells("b(fmt(2)star)" "se(fmt(2)par)") ///
+	refcat(, nolabel) ///
+	stats(N r2_p, fmt(0 2) ///
+	labels(`"Observations"' `"Pseudo R-squared"'))
+
+
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Shapley decomposition
+****************************************
+use"Analysesloan_v2", clear
+
+*
+fre samecaste
+recode samecaste (2=0)
+fre samecaste
+
+*
+fre caste
+recode caste (3=2)
+fre caste
+
+***** Controls
+foreach x in sex caste educ occupation villageid loanreasongiven {
+ta `x', gen(`x'_)
+}
+
+
+global controls age assets_total annualincome_HH loanamount sex_1 sex_2 caste_1 caste_2 educ_1 educ_2 educ_3 educ_4 educ_5 educ_6 occupation_1 occupation_2 occupation_3 occupation_4 occupation_5 occupation_6 occupation_7 occupation_8 villageid_1 villageid_2 villageid_3 villageid_4 villageid_5 villageid_6 villageid_7 villageid_8 villageid_9 villageid_10 loanreasongiven_1 loanreasongiven_2 loanreasongiven_3 loanreasongiven_4 loanreasongiven_5 loanreasongiven_6 loanreasongiven_7 loanreasongiven_8 loanreasongiven_9 loanreasongiven_10 loanreasongiven_11 loanreasongiven_12
+
+
+*****
+probit dummyinterest ///
+samecaste samesex dummymultipleloan duration_cat sameoccup samevillage sndummyfam snfriend snlabourrelation ///
+$controls, cluster(hhindiv)
+shapley2, stat(r2_p) force
+
+reg dummyinterest ///
+samecaste samesex dummymultipleloan duration_cat sameoccup samevillage sndummyfam snfriend snlabourrelation ///
+$controls, cluster(hhindiv)
+shapley2, stat(r2) force
+
+
+probit dummyproblemtorepay ///
+i.samecaste i.samesex i.dummymultipleloan c.duration_cat i.sameoccup i.samevillage i.sndummyfam i.snfriend i.snlabourrelation ///
+$controls, cluster(hhindiv)
+
+probit dummylenderservices ///
+i.samecaste i.samesex i.dummymultipleloan c.duration_cat i.sameoccup i.samevillage i.sndummyfam i.snfriend i.snlabourrelation ///
+$controls, cluster(hhindiv)
+
+
+
+
+
+****************************************
+* END
+
