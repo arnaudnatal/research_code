@@ -8,10 +8,10 @@ gl link = "debtnetworks"
 *Creation variables
 *-----
 *do "https://raw.githubusercontent.com/arnaudnatal/folderanalysis/main/$link.do"
-*do"C:\Users\Arnaud\Documents\GitHub\folderanalysis\debtnetworks.do"
+do"C:\Users\Arnaud\Documents\GitHub\folderanalysis\debtnetworks.do"
 *-------------------------
 
-cd"C:\Users\anatal\Documents\Ongoing_Networks_debt\Analysis"
+*cd"C:\Users\anatal\Documents\Ongoing_Networks_debt\Analysis"
 
 
 
@@ -746,7 +746,7 @@ save"_temploandata", replace
 ********** HH data
 use"Main_analyses_v5", clear
 
-keep HHID2020 INDID2020 age sex jatis caste relationshiptohead educ occupation annualincome_HH assets_total HHsize HH_count_child HH_count_adult typeoffamily waystem religion villageid occup
+keep HHID2020 INDID2020 age sex jatis caste relationshiptohead educ occupation annualincome_HH assets_total HHsize HH_count_child HH_count_adult typeoffamily waystem religion villageid occup married
 
 * Covid
 merge m:1 HHID2020 using "raw/NEEMSIS2-covid", keepusing(secondlockdownexposure)
