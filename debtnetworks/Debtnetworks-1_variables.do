@@ -785,6 +785,11 @@ save"Analysesloan_v1", replace
 
 
 
+
+
+
+
+
 ****************************************
 * Loan level: creation variables
 ****************************************
@@ -920,9 +925,61 @@ drop othlendserv_poli othlendserv_fina othlendserv_guar othlendserv_gene othlend
 
 ta dummylenderservices
 
+********** Loan duration
+replace loanduration_month=1 if loanduration<1
 
 save"Analysesloan_v2", replace
 ****************************************
 * END
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+****************************************
+* NEEMSIS-1
+****************************************
+***** Loans
+use"raw/NEEMSIS1-loans_mainloans_new", clear
+
+fre loan_database
+keep if loan_database=="FINANCE"
+
+fre loanlender
+drop if loanlender==10
+drop if loanlender==11
+drop if loanlender==12
+drop if loanlender==13
+drop if loanlender==14
+
+keep HHID2016 INDID2016 loanid loanamount2 loanlender lenderrelation lenderscaste lenderfrom lendersex lenderoccup lender_cat lender4 dummyinterest dummyproblemtorepay otherlenderservices othlendserv_poli othlendserv_fina othlendserv_guar othlendserv_gene othlendserv_none othlendserv_othe loanduration_month
+
+gen dummyml=0
+replace dummyml=1 if lendersex!=.
+rename loanamount2 loanamount
+
+save"_N1", replace
+
+
+***** Indiv and HH characteristics
+use"raw/NEEMSIS1-HH", clear
+
+drop if livinghome==3
+drop if livinghome==4
+
+keep HHID2016 INDID2016 name age sex 
+
+
+****************************************
+* END

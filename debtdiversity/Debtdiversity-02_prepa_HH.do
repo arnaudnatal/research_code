@@ -12,7 +12,12 @@ do"C:/Users/Arnaud/Documents/GitHub/folderanalysis/$link.do"
 *-------------------------
 
 
-
+/*
+- En Inde rurale, c'est l'or qui remplace l'épargne donc ajouter une faible quantité d'or comme privation.
+- En Inde rurale, même si endettement formel est moins cher, c'est plus rigide donc moins adapté au marché de l'emploi local donc privation de ca.
+- Un truc en rapport avec la maison
+- 
+*/
 
 
 
@@ -24,8 +29,8 @@ do"C:/Users/Arnaud/Documents/GitHub/folderanalysis/$link.do"
 use"raw/RUME-HH", clear
 
 * To keep
-keep HHID2010 villagename villagearea ownland house housetitle
-fre house housetitle
+keep HHID2010 villagename villagearea ownland house housetitle dummysavingaccount
+fre house housetitle 
 gen livingarea=1
 
 * Clean
@@ -41,15 +46,15 @@ merge 1:1 HHID2010 using "raw/RUME-family", keepusing(nbfemale nbmale agegrp_0_1
 drop _merge
 
 * Add debt
-merge 1:1 HHID2010 using "raw/RUME-loans_HH", keepusing(nbloans_HH loanamount_HH imp1_ds_tot_HH imp1_is_tot_HH)
+merge 1:1 HHID2010 using "raw/RUME-loans_HH", keepusing(nbloans_HH loanamount_HH imp1_ds_tot_HH imp1_is_tot_HH dumHH_givencat_econ dumHH_givencat_curr dumHH_givencat_huma dumHH_givencat_soci dumHH_givencat_hous)
 drop _merge
 
 * Add assets and expenses
-merge 1:1 HHID2010 using "raw/RUME-assets", keepusing(assets_total1000 assets_totalnoland1000 assets_ownland)
+merge 1:1 HHID2010 using "raw/RUME-assets", keepusing(assets_total1000 assets_totalnoland1000 assets_ownland assets_gold)
 drop _merge
 
 * Add income
-merge 1:1 HHID2010 using "raw/RUME-occup_HH", keepusing(annualincome_HH nbworker_HH nbnonworker_HH)
+merge 1:1 HHID2010 using "raw/RUME-occup_HH", keepusing(annualincome_HH nbworker_HH nbnonworker_HH incagrise_HH incagricasual_HH incnonagricasual_HH incnonagriregnonquali_HH incnonagriregquali_HH incnonagrise_HH incnrega_HH shareincomeagri_HH shareincomenonagri_HH)
 drop _merge
 
 * Add remittances
@@ -91,7 +96,7 @@ drop if livinghome==3
 drop if livinghome==4
 
 * To keep
-keep HHID2016 villagearea villageid dummydemonetisation dummymarriage ownland house housetitle
+keep HHID2016 villagearea villageid dummydemonetisation dummymarriage ownland house housetitle dummysavingaccount
 fre house housetitle
 duplicates drop
 decode villagearea, gen(vi)
@@ -116,15 +121,15 @@ merge 1:1 HHID2016 using "raw/NEEMSIS1-family", keepusing(nbfemale nbmale agegrp
 drop _merge
 
 * Add debt
-merge 1:1 HHID2016 using "raw/NEEMSIS1-loans_HH", keepusing(nbloans_HH loanamount_HH imp1_ds_tot_HH imp1_is_tot_HH)
+merge 1:1 HHID2016 using "raw/NEEMSIS1-loans_HH", keepusing(nbloans_HH loanamount_HH imp1_ds_tot_HH imp1_is_tot_HH dumHH_givencat_econ dumHH_givencat_curr dumHH_givencat_huma dumHH_givencat_soci dumHH_givencat_hous)
 drop _merge
 
 * Add assets and expenses
-merge 1:1 HHID2016 using "raw/NEEMSIS1-assets", keepusing(assets_total1000 assets_totalnoland1000 assets_ownland)
+merge 1:1 HHID2016 using "raw/NEEMSIS1-assets", keepusing(assets_total1000 assets_totalnoland1000 assets_ownland assets_gold)
 drop _merge
 
 * Add income
-merge 1:1 HHID2016 using "raw/NEEMSIS1-occup_HH", keepusing(annualincome_HH nbworker_HH nbnonworker_HH)
+merge 1:1 HHID2016 using "raw/NEEMSIS1-occup_HH", keepusing(annualincome_HH nbworker_HH nbnonworker_HH incagrise_HH incagricasual_HH incnonagricasual_HH incnonagriregnonquali_HH incnonagriregquali_HH incnonagrise_HH incnrega_HH shareincomeagri_HH shareincomenonagri_HH)
 drop _merge
 
 * Add remittances
@@ -168,7 +173,7 @@ drop if dummylefthousehold==1
 
 
 * To keep
-keep HHID2020 villagearea villageid dummymarriage ownland ownland house housetitle
+keep HHID2020 villagearea villageid dummymarriage ownland ownland house housetitle dummysavingaccount
 fre house housetitle
 destring house housetitle, replace
 destring ownland, replace
@@ -205,15 +210,15 @@ merge 1:1 HHID2020 using "raw/NEEMSIS2-family", keepusing(nbfemale nbmale agegrp
 drop _merge
 
 * Add debt
-merge 1:1 HHID2020 using "raw/NEEMSIS2-loans_HH", keepusing(nbloans_HH loanamount_HH imp1_ds_tot_HH imp1_is_tot_HH)
+merge 1:1 HHID2020 using "raw/NEEMSIS2-loans_HH", keepusing(nbloans_HH loanamount_HH imp1_ds_tot_HH imp1_is_tot_HH dumHH_givencat_econ dumHH_givencat_curr dumHH_givencat_huma dumHH_givencat_soci dumHH_givencat_hous)
 drop _merge
 
 * Add assets and expenses
-merge 1:1 HHID2020 using "raw/NEEMSIS2-assets", keepusing(assets_total1000 assets_totalnoland1000 assets_ownland)
+merge 1:1 HHID2020 using "raw/NEEMSIS2-assets", keepusing(assets_total1000 assets_totalnoland1000 assets_ownland assets_gold)
 drop _merge
 
 * Add income
-merge 1:1 HHID2020 using "raw/NEEMSIS2-occup_HH", keepusing(annualincome_HH nbworker_HH nbnonworker_HH)
+merge 1:1 HHID2020 using "raw/NEEMSIS2-occup_HH", keepusing(annualincome_HH nbworker_HH nbnonworker_HH incagrise_HH incagricasual_HH incnonagricasual_HH incnonagriregnonquali_HH incnonagriregquali_HH incnonagrise_HH incnrega_HH shareincomeagri_HH shareincomenonagri_HH)
 drop _merge
 
 * Add remittances
