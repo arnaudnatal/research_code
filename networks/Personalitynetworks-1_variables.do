@@ -253,50 +253,6 @@ replace im`x'=r(mean) if im`x'==. & sex==`i' & caste==`j' & egoid!=0 & egoid!=.
 }
 
 
-/*
-********** Keep
-keep HHID2020 INDID2020 egoid imcr_* locuscontrol1 locuscontrol2 locuscontrol3 locuscontrol4_rv locuscontrol5_rv locuscontrol6_rv
-
-rename locuscontrol1 locus1
-rename locuscontrol2 locus2
-rename locuscontrol3 locus3
-rename locuscontrol4_rv locus4
-rename locuscontrol5_rv locus5
-rename locuscontrol6_rv locus6
-
-
-global var imcr_curious imcr_interestedbyart imcr_repetitivetasks imcr_inventive imcr_liketothink imcr_newideas imcr_activeimagination imcr_organized imcr_makeplans imcr_workhard imcr_appointmentontime imcr_putoffduties imcr_easilydistracted imcr_completeduties imcr_enjoypeople imcr_sharefeelings imcr_shywithpeople imcr_enthusiastic imcr_talktomanypeople imcr_talkative imcr_expressingthoughts imcr_workwithother imcr_understandotherfeeling imcr_trustingofother imcr_rudetoother imcr_toleratefaults imcr_forgiveother imcr_helpfulwithothers imcr_managestress imcr_nervous imcr_changemood imcr_feeldepressed imcr_easilyupset imcr_worryalot imcr_staycalm 
-
-*imcr_tryhard imcr_stickwithgoals imcr_goaftergoal imcr_finishwhatbegin imcr_finishtasks imcr_keepworking
-*locus1 locus2 locus3 locus4 locus5 locus6
-
-
-**********
-factortest $var
-factor $var, pcf factor(2)
-rotate, quartimin
-
-
-* Kaiser criterion (eigenvalue>1)
-* 14
-
-* Velicer Minimum Average Partial Correlation
-minap $var
-* 3
-
-* Horn Parallel Analysis
-paran $var, factor(pcf)
-* 8
-
-* Catell screeplot
-*screeplot, neigen(15) yline(1)
-
-
-putexcel set "EFA.xlsx", modify sheet(Sheet1)
-putexcel (E2)=matrix(e(r_L))
-*/
-
-
 
 
 

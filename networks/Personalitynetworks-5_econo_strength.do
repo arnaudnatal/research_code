@@ -21,10 +21,10 @@ do"C:\Users\Arnaud\Documents\GitHub\folderanalysis\networks.do"
 ****************************************
 * Macro
 ****************************************
-use"Analysis/Main_analyses_v6", clear
+use"Analysis/Main_analyses_v3", clear
 
 * Durée nette de l'age
-foreach y in duration debt_duration relative_duration talk_duration labour_duration {
+foreach y in debt_duration relative_duration talk_duration {
 reg `y' age
 predict `y'_afe, res
 egen `y'_afe_std=std(`y'_afe)
