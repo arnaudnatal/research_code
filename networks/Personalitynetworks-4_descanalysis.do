@@ -22,7 +22,7 @@ do"C:\Users\Arnaud\Documents\GitHub\folderanalysis\networks.do"
 * Who are the egos? Socio-demo
 ****************************************
 cls
-use"Analysis/Main_analyses_v6", clear
+use"Analysis/Main_analyses_v3", clear
 
 ta egoid
 ta sex
@@ -266,7 +266,7 @@ ta occup ego_occup, row nofreq
 ****************************************
 * Distribution des futurs Y
 ****************************************
-use"Analysis/Main_analyses_v6", clear
+use"Analysis/Main_analyses_v3", clear
 
 
 ********** Talk the most

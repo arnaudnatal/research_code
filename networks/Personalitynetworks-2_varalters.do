@@ -126,6 +126,9 @@ bys HHINDID : egen `var'_moneyoften_n=total(money_often) if `var'_network==1
 
 
 ***** MCA 
+*
+* mca meetfrequencybis intimacy invite_reciprocity duration_catbis, method (indicator) normal(princ)
+*
 mca meetfrequencybis intimacy invite_reciprocity duration_catbis 
 predict dim1
 sum dim1

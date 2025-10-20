@@ -51,6 +51,117 @@ global persoXsexXcaste c.fES##i.female##i.caste c.fOPEX##i.female##i.caste c.fCO
 
 
 
+/*
+****************************************
+* Evo R-squared
+****************************************
+
+********** Debt
+***** Debt, step 1
+foreach var in caste gender {
+* Without
+probit dum_debt_EI_`var' i.female i.caste $cont c.netsize_debt, vce(cl HHFE)
+est store s1without_debt_`var'
+* With
+probit dum_debt_EI_`var' $perso i.female i.caste $cont c.netsize_debt, vce(cl HHFE)
+est store s1with_debt_`var'
+}
+
+***** Debt, step 2
+foreach var in caste gender {
+preserve
+keep if dum_debt_EI_`var'==1
+* Without
+reg debt_EI_`var' i.female i.caste $cont c.netsize_debt, cluster(HHFE)
+est store s2without_debt_`var'
+* With
+reg debt_EI_`var' $perso i.female i.caste $cont c.netsize_debt, cluster(HHFE)
+est store s2with_debt_`var'
+restore
+}
+
+
+********** Talk
+***** Talk, step 1
+foreach var in caste gender {
+* Without
+probit dum_talk_EI_`var' i.female i.caste $cont c.netsize_talk, vce(cl HHFE)
+est store s1without_talk_`var'
+* With
+probit dum_talk_EI_`var' $perso i.female i.caste $cont c.netsize_talk, vce(cl HHFE)
+est store s1with_talk_`var'
+}
+
+***** Talk, step 2
+foreach var in caste gender {
+preserve
+keep if dum_talk_EI_`var'==1
+* Without
+reg talk_EI_`var' i.female i.caste $cont c.netsize_talk, cluster(HHFE)
+est store s2without_talk_`var'
+* With
+reg talk_EI_`var' $perso i.female i.caste $cont c.netsize_talk, cluster(HHFE)
+est store s2with_talk_`var'
+restore
+}
+
+
+********** Relative
+***** Relative, step 1
+foreach var in caste gender {
+* Without
+probit dum_relative_EI_`var' i.female i.caste $cont c.netsize_relative, vce(cl HHFE)
+est store s1without_relative_`var'
+* With
+probit dum_relative_EI_`var' $perso i.female i.caste $cont c.netsize_relative, vce(cl HHFE)
+est store s1with_relative_`var'
+}
+
+***** Relative, step 2
+foreach var in caste gender {
+preserve
+keep if dum_relative_EI_`var'==1
+* Without
+reg relative_EI_`var' i.female i.caste $cont c.netsize_relative, cluster(HHFE)
+est store s2without_relative_`var'
+* With
+reg relative_EI_`var' $perso i.female i.caste $cont c.netsize_relative, cluster(HHFE)
+est store s2with_relative_`var'
+restore
+}
+
+
+
+********** Table probit
+esttab ///
+s1without_debt_caste 		s1with_debt_caste ///
+s1without_debt_gender 		s1with_debt_gender ///
+s1without_talk_caste 		s1with_talk_caste ///
+s1without_talk_gender 		s1with_talk_gender ///
+s1without_relative_caste 	s1with_relative_caste ///
+s1without_relative_gender 	s1with_relative_gender ///
+using "pseudoR2_hetero_s1.csv", ///
+	stats(N r2_p, fmt(0 2) ///
+	labels(`"Observations"' `"Pseudo R-squared"')) replace
+
+esttab ///
+s2without_debt_caste 		s2with_debt_caste ///
+s2without_debt_gender 		s2with_debt_gender ///
+s2without_talk_caste 		s2with_talk_caste ///
+s2without_talk_gender 		s2with_talk_gender ///
+s2without_relative_caste 	s2with_relative_caste ///
+s2without_relative_gender 	s2with_relative_gender ///
+using "pseudoR2_hetero_s2.csv", ///
+	stats(N r2_a, fmt(0 2) ///
+	labels(`"Observations"' `"Adj R2-squared"')) replace
+
+****************************************
+* END
+*/
+
+
+
+
 
 
 
