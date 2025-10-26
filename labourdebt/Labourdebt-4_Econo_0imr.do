@@ -31,6 +31,7 @@ drop if age<14
 sort HHID_panel INDID_panel year
 xtset panelvar year
 est clear
+recode secondlockdownexposure (.=0)
 
 
 
@@ -38,7 +39,7 @@ est clear
 capture noisily xtheckmanfe hoursamonth_indiv DSR_lag ///
 c.age i.edulevel i.sex i.marital ///
 remitt_std assets_std ///
-HHsize HH_count_child sexratio nonworkersratio i.caste i.villageid ///
+HHsize HH_count_child sexratio nonworkersratio i.caste i.villageid i.dummydemonetisation i.secondlockdownexposure ///
 , selection(work = i.landowner i.relation2 c.monthlyexpenses) ///
 id(panelvar) time(year) reps(200)
 est store excl_1
@@ -50,7 +51,7 @@ est store excl_1
 capture noisily xtheckmanfe hoursamonth_indiv DSR_lag ///
 c.age i.edulevel i.sex i.relation2 ///
 remitt_std assets_std ///
-HHsize sexratio nonworkersratio i.caste i.villageid ///
+HHsize sexratio nonworkersratio i.caste i.villageid i.dummydemonetisation i.secondlockdownexposure ///
 , selection(work = i.marital c.HH_count_child c.HH_count_adult) ///
 id(panelvar) time(year) reps(200)
 est store excl_2
@@ -60,7 +61,7 @@ est store excl_2
 capture noisily xtheckmanfe hoursamonth_indiv DSR_lag ///
 i.edulevel i.relation2 i.sex i.marital ///
 remitt_std assets_std ///
-HHsize HH_count_child sexratio nonworkersratio i.caste i.villageid ///
+HHsize HH_count_child sexratio nonworkersratio i.caste i.villageid i.dummydemonetisation i.secondlockdownexposure ///
 , selection(work = c.age) ///
 id(panelvar) time(year) reps(200)
 est store excl_5
@@ -72,7 +73,7 @@ est store excl_5
 capture noisily xtheckmanfe hoursamonth_indiv DSR_lag ///
 c.age i.edulevel i.relation2 i.sex i.marital ///
 remitt_std assets_std ///
-HHsize sexratio nonworkersratio  i.caste i.villageid ///
+HHsize sexratio nonworkersratio  i.caste i.villageid i.dummydemonetisation i.secondlockdownexposure ///
 , selection(work = i.head_edulevel HH_count_child annualincome_HH) ///
 id(panelvar) time(year) reps(200)
 est store excl_6
@@ -83,7 +84,7 @@ est store excl_6
 capture noisily xtheckmanfe hoursamonth_indiv DSR_lag ///
 c.age i.edulevel i.relation2 i.sex i.marital ///
 remitt_std assets_std ///
-HHsize sexratio nonworkersratio i.caste i.villageid ///
+HHsize sexratio nonworkersratio i.caste i.villageid i.dummydemonetisation i.secondlockdownexposure ///
 , selection(work = c.HH_count_child) ///
 id(panelvar) time(year) reps(200)
 est store excl_7
@@ -93,7 +94,7 @@ est store excl_7
 capture noisily xtheckmanfe hoursamonth_indiv DSR_lag ///
 c.age i.edulevel i.relation2 i.sex i.marital ///
 remitt_std assets_std ///
-HHsize sexratio nonworkersratio i.caste i.villageid ///
+HHsize sexratio nonworkersratio i.caste i.villageid i.dummydemonetisation i.secondlockdownexposure ///
 , selection(work = c.HH_count_child) ///
 id(panelvar) time(year) reps(200)
 est store excl_7

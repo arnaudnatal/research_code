@@ -396,7 +396,7 @@ save"panel_cont_v0", replace
 * Création du lag
 use"panel_cont_v0", clear
 
-global var annualincome_HH assets_total assets_totalnoland assets_totalnoprop
+global var annualincome_HH assets_total assets_totalnoland assets_totalnoprop expenses_educ expenses_food expenses_heal
 
 keep HHID_panel year $var
 

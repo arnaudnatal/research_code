@@ -120,7 +120,7 @@ replace duration_cat=3 if duration>=10 & duration<15
 replace duration_cat=4 if duration>=15 & duration<20
 replace duration_cat=5 if duration>=20 & duration<25
 replace duration_cat=6 if duration>=25 & duration<30
-replace duration_cat=7 if duration>=30 
+replace duration_cat=7 if duration>=30
 tab duration_cat
 gen duration_corr=cond(duration<100,duration,.) 
 bys HHID2020 INDID2020: egen durationm=mean(duration_corr)
@@ -734,7 +734,7 @@ use"raw/NEEMSIS2-loans_mainloans_new", clear
 
 keep if loan_database=="FINANCE"
 
-keep HHID2020 INDID2020 loanid loanamount loanreasongiven loanlender guarantee dummyinterest dummyproblemtorepay dummyhelptosettleloan lender4 interestpaid2 totalrepaid2 principalpaid2 interestloan2 loanduration_month yratepaid monthlyinterestrate debt_service interest_service dummyinteret borrservices_free borrservices_work borrservices_supp borrservices_none borrservices_othe othlendserv_poli othlendserv_fina othlendserv_guar othlendserv_gene othlendserv_none othlendserv_othe
+keep HHID2020 INDID2020 loanid loanamount loanreasongiven loanlender guarantee dummyinterest dummyproblemtorepay dummyhelptosettleloan lender4 interestpaid2 totalrepaid2 principalpaid2 interestloan2 loanduration_month yratepaid monthlyinterestrate debt_service interest_service dummyinteret borrservices_free borrservices_work borrservices_supp borrservices_none borrservices_othe othlendserv_poli othlendserv_fina othlendserv_guar othlendserv_gene othlendserv_none othlendserv_othe guarantee_doc guarantee_chit guarantee_shg guarantee_pers guarantee_jewe guarantee_none guarantee_othe
 sort HHID2020 INDID2020 loanid
 
 * Save
@@ -861,6 +861,9 @@ replace duration_cat=5 if snduration>=20 & snduration<25
 replace duration_cat=6 if snduration>=25 & snduration<30
 replace duration_cat=7 if snduration>=30 
 tab duration_cat
+ta snduration
+replace snduration=50 if snduration>50
+ta snduration
 
 *Meet frequency : overall average + average by categories
 tab	snmeetfrequency
@@ -928,58 +931,40 @@ ta dummylenderservices
 ********** Loan duration
 replace loanduration_month=1 if loanduration<1
 
+
+********** Prepa analysis
+*
+fre samecaste
+recode samecaste (2=0)
+fre samecaste
+
+*
+fre caste
+recode caste (3=2)
+fre caste
+
+*
+ta loanamount
+replace loanamount=log(loanamount)
+
+*
+ta annualincome_HH
+replace annualincome_HH=log(annualincome_HH)
+
+*
+ta assets_total
+replace assets_total=log(assets_total)
+
+*
+ta guarantee_none
+drop guarantee guarantee_doc guarantee_chit guarantee_shg guarantee_pers guarantee_jewe guarantee_othe
+rename guarantee_none dummyguarantee
+recode dummyguarantee (1=0) (0=1)
+label define dummyguarantee 0"Guarantee: No" 1"Guarantee: Yes"
+label values dummyguarantee dummyguarantee
+fre dummyguarantee
+
+
 save"Analysesloan_v2", replace
-****************************************
-* END
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*
-****************************************
-* NEEMSIS-1
-****************************************
-***** Loans
-use"raw/NEEMSIS1-loans_mainloans_new", clear
-
-fre loan_database
-keep if loan_database=="FINANCE"
-
-fre loanlender
-drop if loanlender==10
-drop if loanlender==11
-drop if loanlender==12
-drop if loanlender==13
-drop if loanlender==14
-
-keep HHID2016 INDID2016 loanid loanamount2 loanlender lenderrelation lenderscaste lenderfrom lendersex lenderoccup lender_cat lender4 dummyinterest dummyproblemtorepay otherlenderservices othlendserv_poli othlendserv_fina othlendserv_guar othlendserv_gene othlendserv_none othlendserv_othe loanduration_month
-
-gen dummyml=0
-replace dummyml=1 if lendersex!=.
-rename loanamount2 loanamount
-
-save"_N1", replace
-
-
-***** Indiv and HH characteristics
-use"raw/NEEMSIS1-HH", clear
-
-drop if livinghome==3
-drop if livinghome==4
-
-keep HHID2016 INDID2016 name age sex 
-
-
 ****************************************
 * END

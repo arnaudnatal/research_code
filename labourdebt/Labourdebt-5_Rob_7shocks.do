@@ -5,12 +5,11 @@ cls
 *December 5, 2023
 *-----
 gl link = "labourdebt"
-*Econo main
+*Rob outliers
 *-----
 *do "https://raw.githubusercontent.com/arnaudnatal/folderanalysis/main/$link.do"
 do"C:\Users\Arnaud\Documents\GitHub\folderanalysis\labourdebt.do"
 *-------------------------
-
 
 
 
@@ -33,25 +32,27 @@ drop if age<14
 sort HHID_panel INDID_panel year
 xtset panelvar year
 est clear
-recode secondlockdownexposure (.=0)
 
+
+********** Recode shocks
+recode dummydemonetisation (.=0)
+recode secondlockdownexposure (.=1)
+recode expenses_heal expenses_food lag_expenses_educ lag_expenses_food lag_expenses_heal (.=0)
 
 
 **********
-/*
-Garder 'seed(4)' car c'est le seed qui va le plus vite à converger.
-*/
 capture noisily xtheckmanfe hoursamonth_indiv DSR_lag ///
 c.age i.edulevel i.relation2 i.sex i.marital ///
 remitt_std assets_std ///
-HHsize HH_count_child sexratio i.caste  i.villageid i.dummydemonetisation i.secondlockdownexposure ///
+HHsize HH_count_child sexratio i.caste  i.villageid ///
+i.dummydemonetisation i.secondlockdownexposure c.lag_expenses_heal c.lag_expenses_food c.lag_expenses_educ ///
 , selection(work = c.nonworkersratio) ///
-id(panelvar) time(year) reps(200) seed(4)
+id(panelvar) time(year) reps(50) seed(4)
 est store m1
 
 
 ********** Tables
-esttab m1 using "Heckman_total.csv", replace ///
+esttab m1 using "Heckman_total_shocks.csv", replace ///
 	label b(3) p(3) eqlabels(none) alignment(S) ///
 	drop(_cons) ///
 	star(* 0.10 ** 0.05 *** 0.01) ///
@@ -59,9 +60,6 @@ esttab m1 using "Heckman_total.csv", replace ///
 	refcat(, nolabel) ///
 	stats(N, fmt(0) ///
 	labels(`"Observations"'))
-	
-
-
 	
 ****************************************
 * END
@@ -93,21 +91,27 @@ keep if sex==1
 sort HHID_panel INDID_panel year
 xtset panelvar year
 est clear
-recode secondlockdownexposure (.=0)
+
+
+********** Recode shocks
+recode dummydemonetisation (.=0)
+recode secondlockdownexposure (.=1)
+recode expenses_heal expenses_food lag_expenses_educ lag_expenses_food lag_expenses_heal (.=0)
 
 
 ********** 
 capture noisily xtheckmanfe hoursamonth_indiv DSR_lag ///
 c.age i.edulevel i.relation2 i.sex i.marital ///
 remitt_std assets_std ///
-HHsize HH_count_child sexratio i.caste  i.villageid i.dummydemonetisation i.secondlockdownexposure ///
+HHsize HH_count_child sexratio i.caste  i.villageid ///
+i.dummydemonetisation i.secondlockdownexposure c.lag_expenses_heal c.lag_expenses_food c.lag_expenses_educ ///
 , selection(work = c.nonworkersratio) ///
-id(panelvar) time(year) reps(200) seed(4)
+id(panelvar) time(year) reps(50) seed(4)
 est store m1
 
 
 ********** Tables
-esttab m1 using "Heckman_males.csv", replace ///
+esttab m1 using "Heckman_males_shocks.csv", replace ///
 	label b(3) p(3) eqlabels(none) alignment(S) ///
 	drop(_cons) ///
 	star(* 0.10 ** 0.05 *** 0.01) ///
@@ -147,22 +151,27 @@ keep if sex==2
 sort HHID_panel INDID_panel year
 xtset panelvar year
 est clear
-recode secondlockdownexposure (.=0)
 
+
+********** Recode shocks
+recode dummydemonetisation (.=0)
+recode secondlockdownexposure (.=1)
+recode expenses_heal expenses_food lag_expenses_educ lag_expenses_food lag_expenses_heal (.=0)
 
 
 ********** 
 capture noisily xtheckmanfe hoursamonth_indiv DSR_lag ///
 c.age i.edulevel i.relation2 i.sex i.marital ///
 remitt_std assets_std ///
-HHsize HH_count_child sexratio i.caste  i.villageid i.dummydemonetisation i.secondlockdownexposure ///
+HHsize HH_count_child sexratio i.caste  i.villageid ///
+c.lag_expenses_heal c.lag_expenses_food ///
 , selection(work = c.nonworkersratio) ///
-id(panelvar) time(year) reps(200) seed(4)
+id(panelvar) time(year) reps(50) seed(4)
 est store m1
 
 
 ********** Tables
-esttab m1 using "Heckman_females.csv", replace ///
+esttab m1 using "Heckman_females_shocks.csv", replace ///
 	label b(3) p(3) eqlabels(none) alignment(S) ///
 	drop(_cons) ///
 	star(* 0.10 ** 0.05 *** 0.01) ///
