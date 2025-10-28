@@ -1,8 +1,8 @@
 *-------------------------
 cls
 *Arnaud NATAL
-*arnaud.natal@u-bordeaux.fr
-*December 5, 2023
+*arnaud.natal@ifpindia.org
+*October 27, 2025
 *-----
 gl link = "labourdebt"
 *Rob Craggs
@@ -33,11 +33,16 @@ sort HHID_panel INDID_panel year
 xtset panelvar year
 
 
+********** Recode
+recode secondlockdownexposure (.=1)
+recode marital (3=2)
+
+
 * Work
 qui xtreg work DSR_lag ///
-c.age i.edulevel i.relation2 i.sex i.marital ///
+c.age i.edulevel i.sex i.marital ///
 remitt_std assets_std ///
-HHsize HH_count_child sexratio i.caste i.villageid ///
+HHsize HH_count_child sexratio i.caste i.villageid i.dummydemonetisation i.secondlockdownexposure i.dummymarriage ///
 , fe
 est store work
 
@@ -45,9 +50,9 @@ est store work
 
 * Hours a month
 xtreg hoursamonth_indiv DSR_lag ///
-c.age i.edulevel i.relation2 i.sex i.marital ///
+c.age i.edulevel i.sex i.marital ///
 remitt_std assets_std ///
-HHsize HH_count_child sexratio i.caste i.villageid ///
+HHsize HH_count_child sexratio i.caste i.villageid i.dummydemonetisation i.secondlockdownexposure i.dummymarriage ///
 , fe
 est store hour
 
@@ -80,7 +85,7 @@ esttab work hour using "Craggs_total.csv", replace ///
 
 
 	
-	
+
 ****************************************
 * Craggs males
 ****************************************
@@ -98,11 +103,16 @@ sort HHID_panel INDID_panel year
 xtset panelvar year
 
 
+********** Recode
+recode secondlockdownexposure (.=1)
+recode marital (3=2)
+
+
 * Work
 qui xtreg work DSR_lag ///
-c.age i.edulevel i.relation2 i.sex i.marital ///
+c.age i.edulevel i.sex i.marital ///
 remitt_std assets_std ///
-HHsize HH_count_child sexratio i.caste i.villageid ///
+HHsize HH_count_child sexratio i.caste i.villageid i.dummydemonetisation i.secondlockdownexposure i.dummymarriage ///
 , fe
 est store work
 
@@ -110,9 +120,9 @@ est store work
 
 * Hours a month
 xtreg hoursamonth_indiv DSR_lag ///
-c.age i.edulevel i.relation2 i.sex i.marital ///
+c.age i.edulevel i.sex i.marital ///
 remitt_std assets_std ///
-HHsize HH_count_child sexratio i.caste i.villageid ///
+HHsize HH_count_child sexratio i.caste i.villageid i.dummydemonetisation i.secondlockdownexposure i.dummymarriage ///
 , fe
 est store hour
 
@@ -162,11 +172,16 @@ sort HHID_panel INDID_panel year
 xtset panelvar year
 
 
+********** Recode
+recode secondlockdownexposure (.=1)
+recode marital (3=2)
+
+
 * Work
-qui xtreg work DSR_lag ///
-c.age i.edulevel i.relation2 i.sex i.marital ///
+xtreg work DSR_lag ///
+c.age i.edulevel i.sex i.marital ///
 remitt_std assets_std ///
-HHsize HH_count_child sexratio i.caste i.villageid ///
+HHsize HH_count_child sexratio i.caste i.villageid i.dummydemonetisation i.secondlockdownexposure i.dummymarriage ///
 , fe
 est store work
 
@@ -174,9 +189,9 @@ est store work
 
 * Hours a month
 xtreg hoursamonth_indiv DSR_lag ///
-c.age i.edulevel i.relation2 i.sex i.marital ///
+c.age i.edulevel i.sex i.marital ///
 remitt_std assets_std ///
-HHsize HH_count_child sexratio i.caste i.villageid ///
+HHsize HH_count_child sexratio i.caste i.villageid i.dummydemonetisation i.secondlockdownexposure i.dummymarriage ///
 , fe
 est store hour
 
@@ -195,3 +210,6 @@ esttab work hour using "Craggs_females.csv", replace ///
 
 ****************************************
 * END
+
+
+do"C:\Users\Arnaud\Documents\GitHub\research_code\labourdebt\Labourdebt-5_Rob_2outliers.do"

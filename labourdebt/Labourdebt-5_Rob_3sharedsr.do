@@ -1,8 +1,8 @@
 *-------------------------
 cls
 *Arnaud NATAL
-*arnaud.natal@u-bordeaux.fr
-*December 5, 2023
+*arnaud.natal@ifpindia.org
+*October 27, 2025
 *-----
 gl link = "labourdebt"
 *Rob share dsr
@@ -29,14 +29,19 @@ drop if age<14
 keep if year==2020
 
 
+********** Recode
+recode secondlockdownexposure (.=1)
+recode marital (3=2)
+
+
 ********** Sort
 sort HHID_panel INDID_panel year
 
 ********** 
 heckman hoursamonth_indiv lag_share_dsr ///
-c.age i.edulevel i.relation2 i.sex i.marital ///
-remitt_std assets_std ///
-HHsize HH_count_child sexratio i.caste  i.villageid ///
+c.age i.edulevel i.sex i.marital ///
+remitt_std assets_std i.secondlockdownexposure ///
+HHsize HH_count_child sexratio i.caste i.villageid i.dummymarriage i.secondlockdownexposure ///
 , select(work = c.nonworkersratio)
 est store m1
 
@@ -79,6 +84,10 @@ keep if year==2020
 fre sex
 keep if sex==1
 
+********** Recode
+recode secondlockdownexposure (.=1)
+recode marital (3=2)
+
 ********** Sort
 sort HHID_panel INDID_panel year
 
@@ -89,9 +98,9 @@ soit l'éducation
 soit le statut marital
 */
 heckman hoursamonth_indiv lag_share_dsr ///
-c.age i.edulevel i.relation2 ///
+c.age i.edulevel ///
 remitt_std assets_std ///
-HHsize HH_count_child sexratio i.caste ///
+HHsize HH_count_child sexratio i.caste i.dummymarriage i.secondlockdownexposure ///
 , select(work = c.nonworkersratio)
 est store m1
 
@@ -131,6 +140,11 @@ keep if year==2020
 fre sex
 keep if sex==2
 
+
+********** Recode
+recode secondlockdownexposure (.=1)
+recode marital (3=2)
+
 ********** Sort
 sort HHID_panel INDID_panel year
 
@@ -145,7 +159,7 @@ soit statut + education
 heckman hoursamonth_indiv lag_share_dsr ///
 c.age i.edulevel ///
 remitt_std assets_std ///
-HHsize HH_count_child sexratio i.caste ///
+HHsize HH_count_child sexratio i.caste i.secondlockdownexposure i.dummymarriage ///
 , select(work = c.nonworkersratio)
 est store m1
 

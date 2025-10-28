@@ -1,11 +1,11 @@
 *-------------------------
 cls
 *Arnaud NATAL
-*arnaud.natal@u-bordeaux.fr
-*December 5, 2023
+*arnaud.natal@ifpindia.org
+*October 27, 2025
 *-----
 gl link = "labourdebt"
-*Econo main
+*Econo IMR
 *-----
 *do "https://raw.githubusercontent.com/arnaudnatal/folderanalysis/main/$link.do"
 do"C:\Users\Arnaud\Documents\GitHub\folderanalysis\labourdebt.do"
@@ -31,7 +31,10 @@ drop if age<14
 sort HHID_panel INDID_panel year
 xtset panelvar year
 est clear
-recode secondlockdownexposure (.=0)
+
+********** Recode
+recode secondlockdownexposure (.=1)
+recode marital (3=2)
 
 
 
@@ -39,69 +42,66 @@ recode secondlockdownexposure (.=0)
 capture noisily xtheckmanfe hoursamonth_indiv DSR_lag ///
 c.age i.edulevel i.sex i.marital ///
 remitt_std assets_std ///
-HHsize HH_count_child sexratio nonworkersratio i.caste i.villageid i.dummydemonetisation i.secondlockdownexposure ///
+HHsize HH_count_child sexratio nonworkersratio i.caste i.villageid i.dummydemonetisation i.secondlockdownexposure i.dummymarriage ///
 , selection(work = i.landowner i.relation2 c.monthlyexpenses) ///
-id(panelvar) time(year) reps(200)
+id(panelvar) time(year) reps(200) seed(1)
 est store excl_1
-
 
 
 
 ********** Exclusion 2: Hussain & Mukhopadhyay 2023
 capture noisily xtheckmanfe hoursamonth_indiv DSR_lag ///
-c.age i.edulevel i.sex i.relation2 ///
+c.age i.edulevel i.sex ///
 remitt_std assets_std ///
-HHsize sexratio nonworkersratio i.caste i.villageid i.dummydemonetisation i.secondlockdownexposure ///
+HHsize sexratio nonworkersratio i.caste i.villageid i.dummydemonetisation i.secondlockdownexposure i.dummymarriage ///
 , selection(work = i.marital c.HH_count_child c.HH_count_adult) ///
-id(panelvar) time(year) reps(200)
+id(panelvar) time(year) reps(200) seed(1)
 est store excl_2
 
 
 ********** Exclusion 3: Hwang et al. 2019
 capture noisily xtheckmanfe hoursamonth_indiv DSR_lag ///
-i.edulevel i.relation2 i.sex i.marital ///
+i.edulevel i.sex i.marital ///
 remitt_std assets_std ///
-HHsize HH_count_child sexratio nonworkersratio i.caste i.villageid i.dummydemonetisation i.secondlockdownexposure ///
+HHsize HH_count_child sexratio nonworkersratio i.caste i.villageid i.dummydemonetisation i.secondlockdownexposure i.dummymarriage ///
 , selection(work = c.age) ///
-id(panelvar) time(year) reps(200)
-est store excl_5
-
-
+id(panelvar) time(year) reps(200) seed(1)
+est store excl_3
 
 
 ********** Exclusion 4: Klasen & Pieters 2015
 capture noisily xtheckmanfe hoursamonth_indiv DSR_lag ///
-c.age i.edulevel i.relation2 i.sex i.marital ///
+c.age i.edulevel i.sex i.marital ///
 remitt_std assets_std ///
-HHsize sexratio nonworkersratio  i.caste i.villageid i.dummydemonetisation i.secondlockdownexposure ///
+HHsize sexratio nonworkersratio  i.caste i.villageid i.dummydemonetisation i.secondlockdownexposure i.dummymarriage ///
 , selection(work = i.head_edulevel HH_count_child annualincome_HH) ///
-id(panelvar) time(year) reps(200)
-est store excl_6
+id(panelvar) time(year) reps(200) seed(1)
+est store excl_4
 
 
 
 ********** Exclusion 5: Comola & Mello 2013
 capture noisily xtheckmanfe hoursamonth_indiv DSR_lag ///
-c.age i.edulevel i.relation2 i.sex i.marital ///
+c.age i.edulevel i.sex i.marital ///
 remitt_std assets_std ///
-HHsize sexratio nonworkersratio i.caste i.villageid i.dummydemonetisation i.secondlockdownexposure ///
+HHsize sexratio nonworkersratio i.caste i.villageid i.dummydemonetisation i.secondlockdownexposure i.dummymarriage ///
 , selection(work = c.HH_count_child) ///
-id(panelvar) time(year) reps(200)
-est store excl_7
+id(panelvar) time(year) reps(200) seed(1)
+est store excl_5
 
 
 ********** Exclusion 6: Kuepie et al. 2009
 capture noisily xtheckmanfe hoursamonth_indiv DSR_lag ///
-c.age i.edulevel i.relation2 i.sex i.marital ///
+c.age i.edulevel i.sex i.marital ///
 remitt_std assets_std ///
-HHsize sexratio nonworkersratio i.caste i.villageid i.dummydemonetisation i.secondlockdownexposure ///
+HHsize sexratio nonworkersratio i.caste i.villageid i.dummydemonetisation i.secondlockdownexposure i.dummymarriage ///
 , selection(work = c.HH_count_child) ///
-id(panelvar) time(year) reps(200)
-est store excl_7
+id(panelvar) time(year) reps(200) seed(1)
+est store excl_6
 
 
 ********** Tables
-esttab excl_1 excl_2 excl_3 excl_4 excl_5 excl_6 excl_7 using "IMR_test.csv", replace ///
+esttab excl_1 excl_2 excl_3 excl_4 excl_5 excl_6 using "IMR_test.csv", replace ///
 	label b(3) p(3) eqlabels(none) alignment(S) ///
 	drop(_cons) ///
 	star(* 0.10 ** 0.05 *** 0.01) ///
@@ -115,3 +115,4 @@ esttab excl_1 excl_2 excl_3 excl_4 excl_5 excl_6 excl_7 using "IMR_test.csv", re
 * END
 
 
+do"C:\Users\Arnaud\Documents\GitHub\research_code\labourdebt\Labourdebt-4_Econo_1main.do"

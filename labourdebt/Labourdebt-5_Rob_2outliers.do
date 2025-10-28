@@ -1,8 +1,8 @@
 *-------------------------
 cls
 *Arnaud NATAL
-*arnaud.natal@u-bordeaux.fr
-*December 5, 2023
+*arnaud.natal@ifpindia.org
+*October 27, 2025
 *-----
 gl link = "labourdebt"
 *Rob outliers
@@ -33,8 +33,12 @@ sort HHID_panel INDID_panel year
 xtset panelvar year
 est clear
 
+********** Recode
+recode secondlockdownexposure (.=1)
+recode marital (3=2)
 
-********** 1% outliers
+
+********** 5% outliers
 foreach i in 2016 2020 {
 gen todrop`i'=1 if year==`i'
 qui sum hoursamonth_indiv if year==`i', det
@@ -48,11 +52,11 @@ drop todrop`i'
 
 **********
 capture noisily xtheckmanfe hoursamonth_indiv DSR_lag ///
-c.age i.edulevel i.relation2 i.sex i.marital ///
+c.age i.edulevel i.sex i.marital ///
 remitt_std assets_std ///
-HHsize HH_count_child sexratio i.caste  i.villageid ///
+HHsize HH_count_child sexratio i.caste  i.villageid i.dummydemonetisation i.secondlockdownexposure i.dummymarriage ///
 , selection(work = c.nonworkersratio) ///
-id(panelvar) time(year) reps(50) seed(4)
+id(panelvar) time(year) reps(200) seed(1)
 est store m1
 
 
@@ -97,7 +101,12 @@ sort HHID_panel INDID_panel year
 xtset panelvar year
 est clear
 
-********** 1% outliers
+********** Recode
+recode secondlockdownexposure (.=1)
+recode marital (3=2)
+
+
+********** 5% outliers
 foreach i in 2016 2020 {
 gen todrop`i'=1 if year==`i'
 qui sum hoursamonth_indiv if year==`i', det
@@ -110,11 +119,11 @@ drop todrop`i'
 
 ********** 
 capture noisily xtheckmanfe hoursamonth_indiv DSR_lag ///
-c.age i.edulevel i.relation2 i.sex i.marital ///
+c.age i.edulevel i.sex i.marital ///
 remitt_std assets_std ///
-HHsize HH_count_child sexratio i.caste  i.villageid ///
+HHsize HH_count_child sexratio i.caste  i.villageid i.dummydemonetisation i.secondlockdownexposure i.dummymarriage ///
 , selection(work = c.nonworkersratio) ///
-id(panelvar) time(year) reps(50) seed(4)
+id(panelvar) time(year) reps(200) seed(1)
 est store m1
 
 
@@ -161,7 +170,11 @@ xtset panelvar year
 est clear
 
 
-********** 1% outliers
+********** Recode
+recode secondlockdownexposure (.=1)
+recode marital (3=2)
+
+********** 5% outliers
 foreach i in 2016 2020 {
 gen todrop`i'=1 if year==`i'
 qui sum hoursamonth_indiv if year==`i', det
@@ -174,11 +187,11 @@ drop todrop`i'
 
 ********** 
 capture noisily xtheckmanfe hoursamonth_indiv DSR_lag ///
-c.age i.edulevel i.relation2 i.sex i.marital ///
+c.age i.edulevel i.sex i.marital ///
 remitt_std assets_std ///
-HHsize HH_count_child sexratio i.caste  i.villageid ///
+HHsize HH_count_child sexratio i.caste i.villageid i.dummydemonetisation i.secondlockdownexposure i.dummymarriage ///
 , selection(work = c.nonworkersratio) ///
-id(panelvar) time(year) reps(200) seed(4)
+id(panelvar) time(year) reps(200) seed(1)
 est store m1
 
 
@@ -194,3 +207,6 @@ esttab m1 using "Heckman_females_noout.csv", replace ///
 
 ****************************************
 * END
+
+
+do"C:\Users\Arnaud\Documents\GitHub\research_code\labourdebt\Labourdebt-5_Rob_4consumption.do"

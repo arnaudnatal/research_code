@@ -1,8 +1,8 @@
 *-------------------------
 cls
 *Arnaud NATAL
-*arnaud.natal@u-bordeaux.fr
-*December 5, 2023
+*arnaud.natal@ifpindia.org
+*October 27, 2025
 *-----
 gl link = "labourdebt"
 *Econo main
@@ -33,20 +33,21 @@ drop if age<14
 sort HHID_panel INDID_panel year
 xtset panelvar year
 est clear
-recode secondlockdownexposure (.=0)
+
+
+********** Recode
+recode secondlockdownexposure (.=1)
+recode marital (3=2)
 
 
 
 **********
-/*
-Garder 'seed(4)' car c'est le seed qui va le plus vite à converger.
-*/
 capture noisily xtheckmanfe hoursamonth_indiv DSR_lag ///
-c.age i.edulevel i.relation2 i.sex i.marital ///
+c.age i.edulevel i.sex i.marital ///
 remitt_std assets_std ///
-HHsize HH_count_child sexratio i.caste  i.villageid i.dummydemonetisation i.secondlockdownexposure ///
+HHsize HH_count_child sexratio i.caste i.villageid i.dummydemonetisation i.secondlockdownexposure i.dummymarriage ///
 , selection(work = c.nonworkersratio) ///
-id(panelvar) time(year) reps(200) seed(4)
+id(panelvar) time(year) reps(200) seed(1)
 est store m1
 
 
@@ -76,8 +77,6 @@ esttab m1 using "Heckman_total.csv", replace ///
 
 
 
-
-
 ****************************************
 * Heckman males
 ****************************************
@@ -93,16 +92,20 @@ keep if sex==1
 sort HHID_panel INDID_panel year
 xtset panelvar year
 est clear
-recode secondlockdownexposure (.=0)
+
+
+********** Recode
+recode secondlockdownexposure (.=1)
+recode marital (3=2)
 
 
 ********** 
 capture noisily xtheckmanfe hoursamonth_indiv DSR_lag ///
-c.age i.edulevel i.relation2 i.sex i.marital ///
+c.age i.edulevel i.sex i.marital ///
 remitt_std assets_std ///
-HHsize HH_count_child sexratio i.caste  i.villageid i.dummydemonetisation i.secondlockdownexposure ///
+HHsize HH_count_child sexratio i.caste i.villageid i.dummydemonetisation i.secondlockdownexposure i.dummymarriage ///
 , selection(work = c.nonworkersratio) ///
-id(panelvar) time(year) reps(200) seed(4)
+id(panelvar) time(year) reps(200) seed(1)
 est store m1
 
 
@@ -147,18 +150,22 @@ keep if sex==2
 sort HHID_panel INDID_panel year
 xtset panelvar year
 est clear
-recode secondlockdownexposure (.=0)
 
+
+********** Recode
+recode secondlockdownexposure (.=1)
+recode marital (3=2)
 
 
 ********** 
 capture noisily xtheckmanfe hoursamonth_indiv DSR_lag ///
-c.age i.edulevel i.relation2 i.sex i.marital ///
+c.age i.edulevel i.sex i.marital ///
 remitt_std assets_std ///
-HHsize HH_count_child sexratio i.caste  i.villageid i.dummydemonetisation i.secondlockdownexposure ///
+HHsize HH_count_child sexratio i.caste i.villageid i.dummydemonetisation i.secondlockdownexposure i.dummymarriage ///
 , selection(work = c.nonworkersratio) ///
-id(panelvar) time(year) reps(200) seed(4)
+id(panelvar) time(year) reps(200) seed(1)
 est store m1
+
 
 
 ********** Tables
@@ -173,3 +180,7 @@ esttab m1 using "Heckman_females.csv", replace ///
 
 ****************************************
 * END
+
+
+
+do"C:\Users\Arnaud\Documents\GitHub\research_code\labourdebt\Labourdebt-4_Econo_2caste.do"

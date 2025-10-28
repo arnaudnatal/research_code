@@ -1,11 +1,11 @@
 *-------------------------
 cls
 *Arnaud NATAL
-*arnaud.natal@u-bordeaux.fr
-*April 14, 2025
+*arnaud.natal@ifpindia.org
+*October 27, 2025
 *-----
 gl link = "labourdebt"
-*Rob days worked
+*Econo wealth
 *-----
 *do "https://raw.githubusercontent.com/arnaudnatal/folderanalysis/main/$link.do"
 do"C:\Users\Arnaud\Documents\GitHub\folderanalysis\labourdebt.do"
@@ -23,9 +23,9 @@ do"C:\Users\Arnaud\Documents\GitHub\folderanalysis\labourdebt.do"
 use"panel_laboursupplyindiv_v2", clear
 
 
+
 ********** Selection
 drop if age<14
-
 
 
 ********** Panel
@@ -34,28 +34,24 @@ xtset panelvar year
 est clear
 
 
+********** Recode
+recode secondlockdownexposure (.=1)
+recode marital (3=2)
+
 
 
 **********
-capture noisily xtheckmanfe daysayear_max DSR_lag ///
-c.age i.edulevel i.relation2 i.sex i.marital ///
+capture noisily xtheckmanfe hoursamonth_indiv c.DSR_lag##c.assets_std ///
+c.age i.edulevel i.sex i.marital ///
 remitt_std assets_std ///
-HHsize HH_count_child sexratio i.caste  i.villageid ///
+HHsize HH_count_child sexratio i.caste i.villageid i.dummydemonetisation i.secondlockdownexposure i.dummymarriage ///
 , selection(work = c.nonworkersratio) ///
-id(panelvar) time(year) reps(50) seed(4)
+id(panelvar) time(year) reps(200) seed(1)
 est store m1
-
-capture noisily xtheckmanfe daysayear_mean DSR_lag ///
-c.age i.edulevel i.relation2 i.sex i.marital ///
-remitt_std assets_std ///
-HHsize HH_count_child sexratio i.caste  i.villageid ///
-, selection(work = c.nonworkersratio) ///
-id(panelvar) time(year) reps(50) seed(4)
-est store m2
 
 
 ********** Tables
-esttab m1 m2 using "Heckman_total_days.csv", replace ///
+esttab m1 using "Wealth_Heckman_total.csv", replace ///
 	label b(3) p(3) eqlabels(none) alignment(S) ///
 	drop(_cons) ///
 	star(* 0.10 ** 0.05 *** 0.01) ///
@@ -63,7 +59,7 @@ esttab m1 m2 using "Heckman_total_days.csv", replace ///
 	refcat(, nolabel) ///
 	stats(N, fmt(0) ///
 	labels(`"Observations"'))
-	
+		
 ****************************************
 * END
 
@@ -96,29 +92,23 @@ xtset panelvar year
 est clear
 
 
-
+********** Recode
+recode secondlockdownexposure (.=1)
+recode marital (3=2)
 
 
 ********** 
-capture noisily xtheckmanfe daysayear_max DSR_lag ///
-c.age i.edulevel i.relation2 i.sex i.marital ///
+capture noisily xtheckmanfe hoursamonth_indiv c.DSR_lag##c.assets_std ///
+c.age i.edulevel i.sex i.marital ///
 remitt_std assets_std ///
-HHsize HH_count_child sexratio i.caste  i.villageid ///
+HHsize HH_count_child sexratio i.caste i.villageid i.dummydemonetisation i.secondlockdownexposure i.dummymarriage ///
 , selection(work = c.nonworkersratio) ///
-id(panelvar) time(year) reps(50) seed(4)
+id(panelvar) time(year) reps(200) seed(1)
 est store m1
-
-capture noisily xtheckmanfe daysayear_mean DSR_lag ///
-c.age i.edulevel i.relation2 i.sex i.marital ///
-remitt_std assets_std ///
-HHsize HH_count_child sexratio i.caste  i.villageid ///
-, selection(work = c.nonworkersratio) ///
-id(panelvar) time(year) reps(50) seed(4)
-est store m2
 
 
 ********** Tables
-esttab m1 m2 using "Heckman_males_days.csv", replace ///
+esttab m1 using "Wealth_Heckman_males.csv", replace ///
 	label b(3) p(3) eqlabels(none) alignment(S) ///
 	drop(_cons) ///
 	star(* 0.10 ** 0.05 *** 0.01) ///
@@ -160,28 +150,24 @@ xtset panelvar year
 est clear
 
 
+********** Recode
+recode secondlockdownexposure (.=1)
+recode marital (3=2)
 
 
 ********** 
-capture noisily xtheckmanfe daysayear_max DSR_lag ///
-c.age i.edulevel i.relation2 i.sex i.marital ///
+capture noisily xtheckmanfe hoursamonth_indiv c.DSR_lag##c.assets_std ///
+c.age i.edulevel i.sex i.marital ///
 remitt_std assets_std ///
-HHsize HH_count_child sexratio i.caste  i.villageid ///
+HHsize HH_count_child sexratio i.caste i.villageid i.dummydemonetisation i.secondlockdownexposure i.dummymarriage ///
 , selection(work = c.nonworkersratio) ///
-id(panelvar) time(year) reps(50) seed(4)
+id(panelvar) time(year) reps(200) seed(1)
 est store m1
 
-capture noisily xtheckmanfe daysayear_mean DSR_lag ///
-c.age i.edulevel i.relation2 i.sex i.marital ///
-remitt_std assets_std ///
-HHsize HH_count_child sexratio i.caste  i.villageid ///
-, selection(work = c.nonworkersratio) ///
-id(panelvar) time(year) reps(50) seed(4)
-est store m2
 
 
 ********** Tables
-esttab m1 m2 using "Heckman_females_days.csv", replace ///
+esttab m1 using "Wealth_Heckman_females.csv", replace ///
 	label b(3) p(3) eqlabels(none) alignment(S) ///
 	drop(_cons) ///
 	star(* 0.10 ** 0.05 *** 0.01) ///
@@ -192,3 +178,7 @@ esttab m1 m2 using "Heckman_females_days.csv", replace ///
 
 ****************************************
 * END
+
+
+
+do"C:\Users\Arnaud\Documents\GitHub\research_code\labourdebt\Labourdebt-5_Rob_1craggs.do"

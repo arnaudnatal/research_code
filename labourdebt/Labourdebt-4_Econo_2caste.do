@@ -1,8 +1,8 @@
 *-------------------------
 cls
 *Arnaud NATAL
-*arnaud.natal@u-bordeaux.fr
-*December 5, 2023
+*arnaud.natal@ifpindia.org
+*October 27, 2025
 *-----
 gl link = "labourdebt"
 *Econo castes
@@ -14,9 +14,7 @@ do"C:\Users\Arnaud\Documents\GitHub\folderanalysis\labourdebt.do"
 
 
 
-/*
-Interaction avec la caste
-*/
+
 
 
 
@@ -27,6 +25,7 @@ Interaction avec la caste
 use"panel_laboursupplyindiv_v2", clear
 
 
+
 ********** Selection
 drop if age<14
 
@@ -34,23 +33,27 @@ drop if age<14
 ********** Panel
 sort HHID_panel INDID_panel year
 xtset panelvar year
-
-
-
-********** 
 est clear
+
+
+********** Recode
+recode secondlockdownexposure (.=1)
+recode marital (3=2)
+
+
+
+**********
 capture noisily xtheckmanfe hoursamonth_indiv c.DSR_lag##i.caste ///
-c.age i.edulevel i.relation2 i.sex i.marital ///
+c.age i.edulevel i.sex i.marital ///
 remitt_std assets_std ///
-HHsize HH_count_child sexratio  i.villageid ///
+HHsize HH_count_child sexratio i.caste i.villageid i.dummydemonetisation i.secondlockdownexposure i.dummymarriage ///
 , selection(work = c.nonworkersratio) ///
-id(panelvar) time(year) reps(200) seed(1)
+id(panelvar) time(year) reps(200) seed(2)
 est store m1
 
 
-
 ********** Tables
-esttab m1  using "Caste_Heckman_total.csv", replace ///
+esttab m1 using "Caste_Heckman_total.csv", replace ///
 	label b(3) p(3) eqlabels(none) alignment(S) ///
 	drop(_cons) ///
 	star(* 0.10 ** 0.05 *** 0.01) ///
@@ -59,9 +62,11 @@ esttab m1  using "Caste_Heckman_total.csv", replace ///
 	stats(N, fmt(0) ///
 	labels(`"Observations"'))
 	
+
+
+	
 ****************************************
 * END
-
 
 
 
@@ -89,18 +94,22 @@ keep if sex==1
 ********** Panel
 sort HHID_panel INDID_panel year
 xtset panelvar year
+est clear
+
+
+********** Recode
+recode secondlockdownexposure (.=1)
+recode marital (3=2)
 
 
 ********** 
-est clear
 capture noisily xtheckmanfe hoursamonth_indiv c.DSR_lag##i.caste ///
-c.age i.edulevel i.relation2 i.sex i.marital ///
+c.age i.edulevel i.sex i.marital ///
 remitt_std assets_std ///
-HHsize HH_count_child sexratio  i.villageid ///
+HHsize HH_count_child sexratio i.caste i.villageid i.dummydemonetisation i.secondlockdownexposure i.dummymarriage ///
 , selection(work = c.nonworkersratio) ///
-id(panelvar) time(year) reps(200) seed(8)
+id(panelvar) time(year) reps(190) seed(1)
 est store m1
-
 
 
 ********** Tables
@@ -127,6 +136,8 @@ esttab m1 using "Caste_Heckman_males.csv", replace ///
 
 
 
+
+
 ****************************************
 * Heckman females
 ****************************************
@@ -141,17 +152,21 @@ keep if sex==2
 ********** Panel
 sort HHID_panel INDID_panel year
 xtset panelvar year
-
-
-
-**********
 est clear
+
+
+********** Recode
+recode secondlockdownexposure (.=1)
+recode marital (3=2)
+
+
+********** 
 capture noisily xtheckmanfe hoursamonth_indiv c.DSR_lag##i.caste ///
-c.age i.edulevel i.relation2 i.sex i.marital ///
+c.age i.edulevel i.sex i.marital ///
 remitt_std assets_std ///
-HHsize HH_count_child sexratio  i.villageid ///
+HHsize HH_count_child sexratio i.caste i.villageid i.dummydemonetisation i.secondlockdownexposure i.dummymarriage ///
 , selection(work = c.nonworkersratio) ///
-id(panelvar) time(year) reps(200) seed(27)
+id(panelvar) time(year) reps(200) seed(3)
 est store m1
 
 
@@ -168,3 +183,9 @@ esttab m1 using "Caste_Heckman_females.csv", replace ///
 
 ****************************************
 * END
+
+
+
+
+
+do"C:\Users\Arnaud\Documents\GitHub\research_code\labourdebt\Labourdebt-4_Econo_3wealth.do"
