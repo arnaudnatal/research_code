@@ -31,7 +31,7 @@ global mainX samecaste samesex sameoccup samevillage dummymultipleloan snduratio
 
 
 ***** Quali
-foreach y in dummyinterest dummyguarantee dummylenderservices dummymainloan dummyproblemtorepay dummyborrowerservice {
+foreach y in dummyinterest dummyguarantee dummylenderservices dummymainloan dummyproblemtorepay dummyborrowerservice dummyg_mat dummyg_trust {
 
 * No int
 qui probit `y' ///
@@ -56,6 +56,15 @@ $controls, cluster(hhindiv)
 est store `y'_c
 margins, dydx($mainX) at(caste=(1 2)) atmeans post
 est store marg3`y'
+
+
+* Both
+qui probit `y' ///
+i.samecaste##i.caste##i.sex i.samesex##i.caste##i.sex i.sameoccup##i.caste##i.sex i.samevillage##i.caste##i.sex i.dummymultipleloan##i.caste##i.sex c.snduration##i.caste##i.sex i.invite_reciprocity##i.caste##i.sex i.sndummyfam##i.caste##i.sex i.snfriend##i.caste##i.sex i.snlabourrelation##i.caste##i.sex ///
+$controls, cluster(hhindiv)
+est store `y'_b
+margins, dydx($mainX) at(caste=(1 2) sex=(1 2)) atmeans post
+est store marg4`y'
 }
 
 
@@ -65,10 +74,26 @@ esttab ///
 dummyinterest dummyinterest_g dummyinterest_c ///
 dummyguarantee dummyguarantee_g dummyguarantee_c ///
 dummylenderservices dummylenderservices_g dummylenderservices_c ///
-dummymainloan dummymainloan_g dummymainloan_c ///
-dummyproblemtorepay dummyproblemtorepay_g dummyproblemtorepay_c ///
 dummyborrowerservice dummyborrowerservice_g dummyborrowerservice_c ///
+dummyg_mat dummyg_mat_g dummyg_mat_c ///
+dummyg_trust dummyg_trust_g dummyg_trust_c ///
 using "Loanlevel.csv", replace ///
+	label b(3) p(3) eqlabels(none) alignment(S) ///
+	drop(_cons $coef) ///
+	star(* 0.10 ** 0.05 *** 0.01) ///
+	cells("b(fmt(2)star)" "se(fmt(2)par)") ///
+	refcat(, nolabel) ///
+	stats(N, fmt(0) ///
+	labels(`"Observations"'))
+	
+esttab ///
+dummyinterest_b ///
+dummyguarantee_b ///
+dummylenderservices_b ///
+dummyborrowerservice_b ///
+dummyg_mat_b ///
+dummyg_trust_b ///
+using "Loanlevel_both.csv", replace ///
 	label b(3) p(3) eqlabels(none) alignment(S) ///
 	drop(_cons $coef) ///
 	star(* 0.10 ** 0.05 *** 0.01) ///
@@ -81,7 +106,7 @@ using "Loanlevel.csv", replace ///
 ***** Table margins
 *** 1: No int
 esttab ///
-marg1dummyinterest marg1dummyguarantee marg1dummylenderservices marg1dummymainloan marg1dummyproblemtorepay marg1dummyborrowerservice ///
+marg1dummyinterest marg1dummyguarantee marg1dummylenderservices marg1dummyborrowerservice marg1dummyg_mat marg1dummyg_trust ///
 using "marg_all_noint.csv", ///
 	cells("b(fmt(2) star)" se(par fmt(2))) ///
 	drop(0.samecaste 0.samesex 0.dummymultipleloan 0.sameoccup 0.samevillage 0.sndummyfam 0.snfriend 0.snlabourrelation) ///
@@ -91,7 +116,7 @@ using "marg_all_noint.csv", ///
 
 *** 2: Gender
 esttab ///
-marg2dummyinterest marg2dummyguarantee marg2dummylenderservices marg2dummymainloan marg2dummyproblemtorepay marg2dummyborrowerservice ///
+marg2dummyinterest marg2dummyguarantee marg2dummylenderservices marg2dummyborrowerservice marg2dummyg_mat marg2dummyg_trust ///
 using "marg_all_gender.csv", ///
 	cells("b(fmt(2) star)" se(par fmt(2))) ///
 	legend varlabels(_cons constant) ///
@@ -101,8 +126,19 @@ using "marg_all_gender.csv", ///
 
 *** 3: Caste	
 esttab ///
-marg3dummyinterest marg3dummyguarantee marg3dummylenderservices marg3dummymainloan marg3dummyproblemtorepay marg3dummyborrowerservice ///
+marg3dummyinterest marg3dummyguarantee marg3dummylenderservices marg3dummyborrowerservice marg3dummyg_mat marg3dummyg_trust ///
 using "marg_all_caste.csv", ///
+	cells("b(fmt(2) star)" se(par fmt(2))) ///
+	legend varlabels(_cons constant) ///
+	starlevels(* 0.10 ** 0.05 *** 0.01) ///
+	replace
+	
+
+
+*** 4: Both	
+esttab ///
+marg4dummyinterest marg4dummyguarantee marg4dummylenderservices marg4dummyborrowerservice marg4dummyg_mat marg4dummyg_trust ///
+using "marg_all_both.csv", ///
 	cells("b(fmt(2) star)" se(par fmt(2))) ///
 	legend varlabels(_cons constant) ///
 	starlevels(* 0.10 ** 0.05 *** 0.01) ///
@@ -110,8 +146,6 @@ using "marg_all_caste.csv", ///
 	
 ****************************************
 * END
-
-
 
 
 
@@ -141,7 +175,7 @@ use"Analysesloan_v2", clear
 global controls i.sex c.age i.caste i.educ i.occupation c.assets_total c.annualincome_HH i.villageid loanamount i.loanreasongiven c.loanduration_month i.married c.HHsize i.covidexpo
 
 ***** Without lenders-
-foreach y in dummyinterest dummyguarantee dummylenderservices dummymainloan dummyproblemtorepay dummyborrowerservice {
+foreach y in dummyinterest dummyguarantee dummylenderservices dummymainloan dummyproblemtorepay dummyborrowerservice dummyg_mat dummyg_trust {
 probit `y' ///
 $controls, cluster(hhindiv)
 est store `y'_wo
@@ -149,7 +183,7 @@ est store `y'_wo
 
 
 ***** With lenders-
-foreach y in dummyinterest dummyguarantee dummylenderservices dummymainloan dummyproblemtorepay dummyborrowerservice {
+foreach y in dummyinterest dummyguarantee dummylenderservices dummymainloan dummyproblemtorepay dummyborrowerservice dummyg_mat dummyg_trust  {
 probit `y' ///
 i.samecaste i.samesex i.sameoccup i.samevillage i.dummymultipleloan c.snduration i.invite_reciprocity i.sndummyfam i.snfriend i.snlabourrelation ///
 $controls, cluster(hhindiv)
@@ -166,6 +200,8 @@ dummylenderservices_wo dummylenderservices_wi ///
 dummymainloan_wo dummymainloan_wi ///
 dummyproblemtorepay_wo dummyproblemtorepay_wi ///
 dummyborrowerservice_wo dummyborrowerservice_wi ///
+dummyg_mat_wo dummyg_mat_wi ///
+dummyg_trust_wo dummyg_trust_wi ///
 using "EvoRsq.csv", replace ///
 	label b(3) p(3) eqlabels(none) alignment(S) ///
 	keep(_cons) ///

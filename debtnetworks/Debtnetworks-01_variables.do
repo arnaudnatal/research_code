@@ -955,14 +955,38 @@ replace annualincome_HH=log(annualincome_HH)
 ta assets_total
 replace assets_total=log(assets_total)
 
-*
+* yes vs no guarantee
 ta guarantee_none
-drop guarantee guarantee_doc guarantee_chit guarantee_shg guarantee_pers guarantee_jewe guarantee_othe
-rename guarantee_none dummyguarantee
-recode dummyguarantee (1=0) (0=1)
+ta guarantee
+gen dummyguarantee=.
+replace dummyguarantee=0 if guarantee_none==1
+replace dummyguarantee=1 if guarantee_doc==1
+replace dummyguarantee=1 if guarantee_chit==1
+replace dummyguarantee=1 if guarantee_shg==1
+replace dummyguarantee=1 if guarantee_pers==1
+replace dummyguarantee=1 if guarantee_jewe==1
+replace dummyguarantee=1 if guarantee_othe==1
 label define dummyguarantee 0"Guarantee: No" 1"Guarantee: Yes"
 label values dummyguarantee dummyguarantee
-fre dummyguarantee
+ta dummyguarantee guarantee_none
+
+* If yes, materials vs trust-based
+gen dummyg_mat=0 if dummyguarantee==1
+replace dummyg_mat=1 if guarantee_doc==1
+replace dummyg_mat=1 if guarantee_jewe==1
+
+gen dummyg_trust=0 if dummyguarantee==1
+replace dummyg_trust=1 if guarantee_chit==1
+replace dummyg_trust=1 if guarantee_shg==1
+replace dummyg_trust=1 if guarantee_pers==1
+
+ta dummyguarantee
+ta dummyg_mat dummyg_trust
+
+ta dummyguarantee dummyg_trust
+ta dummyguarantee dummyg_mat
+
+drop guarantee guarantee_doc guarantee_chit guarantee_shg guarantee_pers guarantee_jewe guarantee_othe guarantee_none
 
 
 save"Analysesloan_v2", replace
