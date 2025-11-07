@@ -971,9 +971,14 @@ label values dummyguarantee dummyguarantee
 ta dummyguarantee guarantee_none
 
 * If yes, materials vs trust-based
-gen dummyg_mat=0 if dummyguarantee==1
+gen dummyg_mat=.
+replace dummyg_mat=0 if dummyguarantee==0
+replace dummyg_mat=0 if dummyguarantee==1
 replace dummyg_mat=1 if guarantee_doc==1
 replace dummyg_mat=1 if guarantee_jewe==1
+
+ta dummyguarantee dummyg_mat
+
 
 gen dummyg_trust=0 if dummyguarantee==1
 replace dummyg_trust=1 if guarantee_chit==1

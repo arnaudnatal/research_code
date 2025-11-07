@@ -30,15 +30,17 @@ global coef 1.sex 2.sex age 1.caste 2.caste 1.educ 2.educ 3.educ 4.educ 5.educ 6
 global mainX samecaste samesex sameoccup samevillage dummymultipleloan snduration invite_reciprocity sndummyfam snfriend snlabourrelation
 
 
+
+
 ***** Quali
-foreach y in dummyinterest dummyguarantee dummylenderservices dummymainloan dummyproblemtorepay dummyborrowerservice dummyg_mat dummyg_trust {
+foreach y in dummyinterest dummyg_mat dummylenderservices dummyborrowerservice {
 
 * No int
 qui probit `y' ///
 i.samecaste i.samesex i.sameoccup i.samevillage i.dummymultipleloan c.snduration i.invite_reciprocity i.sndummyfam i.snfriend i.snlabourrelation ///
 $controls, cluster(hhindiv)
 est store `y'
-margins, dydx($mainX) atmeans post
+qui margins, dydx($mainX) atmeans post
 est store marg1`y'
 
 * Gender
@@ -46,25 +48,16 @@ qui probit `y' ///
 i.samecaste##i.sex i.samesex##i.sex i.sameoccup##i.sex i.samevillage##i.sex i.dummymultipleloan##i.sex c.snduration##i.sex i.invite_reciprocity##i.sex i.sndummyfam##i.sex i.snfriend##i.sex i.snlabourrelation##i.sex ///
 $controls, cluster(hhindiv)
 est store `y'_g
-margins, dydx($mainX) at(sex=(1 2)) atmeans post
+qui margins, dydx($mainX) at(sex=(1 2)) atmeans post
 est store marg2`y'
 
 * Caste
-qui probit `y' ///
-i.samecaste##i.caste i.samesex##i.caste i.sameoccup##i.caste i.samevillage##i.caste i.dummymultipleloan##i.caste c.snduration##i.caste i.invite_reciprocity##i.caste i.sndummyfam##i.caste i.snfriend##i.caste i.snlabourrelation##i.caste ///
+probit `y' ///
+i.samecaste##ib(2).caste i.samesex##ib(2).caste i.sameoccup##ib(2).caste i.samevillage##ib(2).caste i.dummymultipleloan##ib(2).caste c.snduration##ib(2).caste i.invite_reciprocity##ib(2).caste i.sndummyfam##ib(2).caste i.snfriend##ib(2).caste i.snlabourrelation##ib(2).caste ///
 $controls, cluster(hhindiv)
 est store `y'_c
-margins, dydx($mainX) at(caste=(1 2)) atmeans post
+qui margins, dydx($mainX) at(caste=(1 2)) atmeans post
 est store marg3`y'
-
-
-* Both
-qui probit `y' ///
-i.samecaste##i.caste##i.sex i.samesex##i.caste##i.sex i.sameoccup##i.caste##i.sex i.samevillage##i.caste##i.sex i.dummymultipleloan##i.caste##i.sex c.snduration##i.caste##i.sex i.invite_reciprocity##i.caste##i.sex i.sndummyfam##i.caste##i.sex i.snfriend##i.caste##i.sex i.snlabourrelation##i.caste##i.sex ///
-$controls, cluster(hhindiv)
-est store `y'_b
-margins, dydx($mainX) at(caste=(1 2) sex=(1 2)) atmeans post
-est store marg4`y'
 }
 
 
@@ -72,11 +65,9 @@ est store marg4`y'
 ***** Table reg
 esttab ///
 dummyinterest dummyinterest_g dummyinterest_c ///
-dummyguarantee dummyguarantee_g dummyguarantee_c ///
+dummyg_mat dummyg_mat_g dummyg_mat_c ///
 dummylenderservices dummylenderservices_g dummylenderservices_c ///
 dummyborrowerservice dummyborrowerservice_g dummyborrowerservice_c ///
-dummyg_mat dummyg_mat_g dummyg_mat_c ///
-dummyg_trust dummyg_trust_g dummyg_trust_c ///
 using "Loanlevel.csv", replace ///
 	label b(3) p(3) eqlabels(none) alignment(S) ///
 	drop(_cons $coef) ///
@@ -86,27 +77,11 @@ using "Loanlevel.csv", replace ///
 	stats(N, fmt(0) ///
 	labels(`"Observations"'))
 	
-esttab ///
-dummyinterest_b ///
-dummyguarantee_b ///
-dummylenderservices_b ///
-dummyborrowerservice_b ///
-dummyg_mat_b ///
-dummyg_trust_b ///
-using "Loanlevel_both.csv", replace ///
-	label b(3) p(3) eqlabels(none) alignment(S) ///
-	drop(_cons $coef) ///
-	star(* 0.10 ** 0.05 *** 0.01) ///
-	cells("b(fmt(2)star)" "se(fmt(2)par)") ///
-	refcat(, nolabel) ///
-	stats(N, fmt(0) ///
-	labels(`"Observations"'))
-
 	
 ***** Table margins
 *** 1: No int
 esttab ///
-marg1dummyinterest marg1dummyguarantee marg1dummylenderservices marg1dummyborrowerservice marg1dummyg_mat marg1dummyg_trust ///
+marg1dummyinterest marg1dummyg_mat marg1dummylenderservices marg1dummyborrowerservice ///
 using "marg_all_noint.csv", ///
 	cells("b(fmt(2) star)" se(par fmt(2))) ///
 	drop(0.samecaste 0.samesex 0.dummymultipleloan 0.sameoccup 0.samevillage 0.sndummyfam 0.snfriend 0.snlabourrelation) ///
@@ -116,7 +91,7 @@ using "marg_all_noint.csv", ///
 
 *** 2: Gender
 esttab ///
-marg2dummyinterest marg2dummyguarantee marg2dummylenderservices marg2dummyborrowerservice marg2dummyg_mat marg2dummyg_trust ///
+marg2dummyinterest marg2dummyg_mat marg2dummylenderservices marg2dummyborrowerservice  ///
 using "marg_all_gender.csv", ///
 	cells("b(fmt(2) star)" se(par fmt(2))) ///
 	legend varlabels(_cons constant) ///
@@ -126,23 +101,13 @@ using "marg_all_gender.csv", ///
 
 *** 3: Caste	
 esttab ///
-marg3dummyinterest marg3dummyguarantee marg3dummylenderservices marg3dummyborrowerservice marg3dummyg_mat marg3dummyg_trust ///
+marg3dummyinterest marg3dummyg_mat marg3dummylenderservices marg3dummyborrowerservice ///
 using "marg_all_caste.csv", ///
 	cells("b(fmt(2) star)" se(par fmt(2))) ///
 	legend varlabels(_cons constant) ///
 	starlevels(* 0.10 ** 0.05 *** 0.01) ///
 	replace
 	
-
-
-*** 4: Both	
-esttab ///
-marg4dummyinterest marg4dummyguarantee marg4dummylenderservices marg4dummyborrowerservice marg4dummyg_mat marg4dummyg_trust ///
-using "marg_all_both.csv", ///
-	cells("b(fmt(2) star)" se(par fmt(2))) ///
-	legend varlabels(_cons constant) ///
-	starlevels(* 0.10 ** 0.05 *** 0.01) ///
-	replace
 	
 ****************************************
 * END
@@ -175,7 +140,7 @@ use"Analysesloan_v2", clear
 global controls i.sex c.age i.caste i.educ i.occupation c.assets_total c.annualincome_HH i.villageid loanamount i.loanreasongiven c.loanduration_month i.married c.HHsize i.covidexpo
 
 ***** Without lenders-
-foreach y in dummyinterest dummyguarantee dummylenderservices dummymainloan dummyproblemtorepay dummyborrowerservice dummyg_mat dummyg_trust {
+foreach y in dummyinterest dummyg_mat dummylenderservices dummyborrowerservice  {
 probit `y' ///
 $controls, cluster(hhindiv)
 est store `y'_wo
@@ -183,7 +148,7 @@ est store `y'_wo
 
 
 ***** With lenders-
-foreach y in dummyinterest dummyguarantee dummylenderservices dummymainloan dummyproblemtorepay dummyborrowerservice dummyg_mat dummyg_trust  {
+foreach y in dummyinterest dummyg_mat dummylenderservices dummyborrowerservice  {
 probit `y' ///
 i.samecaste i.samesex i.sameoccup i.samevillage i.dummymultipleloan c.snduration i.invite_reciprocity i.sndummyfam i.snfriend i.snlabourrelation ///
 $controls, cluster(hhindiv)
@@ -195,13 +160,9 @@ est store `y'_wi
 ***** Table
 esttab ///
 dummyinterest_wo dummyinterest_wi ///
-dummyguarantee_wo dummyguarantee_wi ///
-dummylenderservices_wo dummylenderservices_wi ///
-dummymainloan_wo dummymainloan_wi ///
-dummyproblemtorepay_wo dummyproblemtorepay_wi ///
-dummyborrowerservice_wo dummyborrowerservice_wi ///
 dummyg_mat_wo dummyg_mat_wi ///
-dummyg_trust_wo dummyg_trust_wi ///
+dummylenderservices_wo dummylenderservices_wi ///
+dummyborrowerservice_wo dummyborrowerservice_wi ///
 using "EvoRsq.csv", replace ///
 	label b(3) p(3) eqlabels(none) alignment(S) ///
 	keep(_cons) ///
