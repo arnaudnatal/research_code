@@ -32,8 +32,8 @@ tabplot dummytrap year, percent(year) showval frame(100) ///
 frameopts(color(plb1)) ///
 fcolor(plb1*0.4) lcolor(plb1) ///
 subtitle("") ///
-xtitle("") ytitle("Debt trap?") ///
-xlabel(1 "2010" 2 "2016-17" 3 "2020-21") ylabel(1 "Yes" 2 "No") ///
+xtitle("") ytitle("Debt rollover?") ///
+xlabel(1 "2010" 2 "2016-2017" 3 "2020-2021") ylabel(1 "Yes" 2 "No") ///
 note("{it:Note:} Percent given year.", size(small)) ///
 scale(1.2)
 graph export "graph/Incidence.png", as(png) replace
@@ -48,7 +48,7 @@ input y notrap trap
 3 83.57 16.43
 5 54.12 45.88
 end
-label define y 1"2010" 3"2016-17" 5"2020-21", replace
+label define y 1"2010" 3"2016-2017" 5"2020-2021", replace
 label values y y
 gen sum1=trap
 gen sum2=sum1+notrap
@@ -59,7 +59,7 @@ twoway ///
 , ///
 xlabel(1 3 5,valuelabel) xtitle("") ///
 ylabel(0(10)100) ytitle("Percent") ///
-legend(order(1 "In debt trap" 2 "Not in debt trap") pos(6) col(3)) ///
+legend(order(1 "Debt rollover" 2 "No debt rollover") pos(6) col(3)) ///
 note("", size(small)) ///
 name(g1, replace) scale(1.2)
 graph export "graph/Incidence2.png", as(png) replace
@@ -84,36 +84,36 @@ graph export "graph/Incidence2.png", as(png) replace
 ****************************************
 use"panel_HH_v2", clear
 
-keep if dummyloans_HH==1
+keep if dummyloans==1
 
-ta caste dummytrap_HH if year==2010, chi2 exp cchi2
-ta caste dummytrap_HH if year==2016, chi2 exp cchi2
-ta caste dummytrap_HH if year==2020, chi2 exp cchi2
-ta caste dummytrap_HH, chi2 exp cchi2
+ta caste dummytrap if year==2010, chi2 exp cchi2
+ta caste dummytrap if year==2016, chi2 exp cchi2
+ta caste dummytrap if year==2020, chi2 exp cchi2
+ta caste dummytrap, chi2 exp cchi2
 
 * Dalits
 preserve
 keep if caste==1
-tabplot dummytrap_HH year, percent(year) showval frame(100) ///
+tabplot dummytrap year, percent(year) showval frame(100) ///
 frameopts(color(plb1)) ///
 fcolor(plb1*0.4) lcolor(plb1) ///
 subtitle("") ///
 title("Dalits") ///
-xtitle("") ytitle("Debt trap?") ///
-xlabel(1 "2010" 2 "2016-17" 3 "2020-21") ylabel(1 "Yes" 2 "No") ///
+xtitle("") ytitle("Debt rollover") ///
+xlabel(1 "2010" 2 "2016-2017" 3 "2020-2021") ylabel(1 "Yes" 2 "No") ///
 scale(1.2) name(dal, replace)
 restore
 
 * Middle castes
 preserve
 keep if caste==2
-tabplot dummytrap_HH year, percent(year) showval frame(100) ///
+tabplot dummytrap year, percent(year) showval frame(100) ///
 frameopts(color(plb1)) ///
 fcolor(plb1*0.4) lcolor(plb1) ///
 subtitle("") ///
 title("Middle castes") ///
-xtitle("") ytitle("Debt trap?") ///
-xlabel(1 "2010" 2 "2016-17" 3 "2020-21") ylabel(1 "Yes" 2 "No") ///
+xtitle("") ytitle("Debt rollover") ///
+xlabel(1 "2010" 2 "2016-2017" 3 "2020-2021") ylabel(1 "Yes" 2 "No") ///
 scale(1.2) name(mid, replace)
 restore
 
@@ -121,13 +121,13 @@ restore
 * Dalits
 preserve
 keep if caste==3
-tabplot dummytrap_HH year, percent(year) showval frame(100) ///
+tabplot dummytrap year, percent(year) showval frame(100) ///
 frameopts(color(plb1)) ///
 fcolor(plb1*0.4) lcolor(plb1) ///
 subtitle("") ///
 title("Upper castes") ///
-xtitle("") ytitle("Debt trap?") ///
-xlabel(1 "2010" 2 "2016-17" 3 "2020-21") ylabel(1 "Yes" 2 "No") ///
+xtitle("") ytitle("Debt rollover") ///
+xlabel(1 "2010" 2 "2016-2017" 3 "2020-2021") ylabel(1 "Yes" 2 "No") ///
 scale(1.2) name(upp, replace)
 restore
 
@@ -176,8 +176,8 @@ fill(color(black%10)) ///
 box(t(b)) bcolors(plb1) ///
 mean(t(m)) meancolors(plr1) ///
 med(t(m)) medcolors(ananas) ///
-title("Debt trap amount") ///
-xtitle("1k rupees") xlabel(0(20)200) ///
+title("Debt rollover amount") ///
+xtitle("1,000 rupees") xlabel(0(20)200) ///
 ylabel(,grid) ///
 legend(order(4 "IQR" 7 "Median" 10 "Mean") pos(6) col(3) on) ///
 aspectratio() scale(1.2) name(abs, replace) range(0 200)
@@ -191,7 +191,7 @@ fill(color(black%10)) ///
 box(t(b)) bcolors(plb1) ///
 mean(t(m)) meancolors(plr1) ///
 med(t(m)) medcolors(ananas) ///
-title("Share of debt trap in household debt") ///
+title("Share of debt rollover in household debt") ///
 xtitle("Percent") xlabel(0(10)100) ///
 ylabel(,grid) ///
 legend(order(4 "IQR" 7 "Median" 10 "Mean") pos(6) col(3) on) ///
@@ -206,7 +206,7 @@ fill(color(black%10)) ///
 box(t(b)) bcolors(plb1) ///
 mean(t(m)) meancolors(plr1) ///
 med(t(m)) medcolors(ananas) ///
-title("Share of debt trap in annual income") ///
+title("Share of debt rollover in annual income") ///
 xtitle("Percent") xlabel(0(20)200) ///
 ylabel(,grid) ///
 legend(order(4 "IQR" 7 "Median" 10 "Mean") pos(6) col(3) on) ///
@@ -223,7 +223,7 @@ box(t(b)) bcolors(plb1) ///
 mean(t(m)) meancolors(plr1) ///
 med(t(m)) medcolors(ananas) ///
 title("Total amount of debt") ///
-xtitle("1k rupees") xlabel(0(80)800) ///
+xtitle("1,000 rupees") xlabel(0(80)800) ///
 ylabel(,grid) ///
 legend(order(4 "IQR" 7 "Median" 10 "Mean") pos(6) col(3) on) ///
 aspectratio() scale(1.2) name(amt, replace) range(0 800)
@@ -259,34 +259,34 @@ graph export "graph/Intensity.png", as(png) replace
 ****************************************
 use"panel_HH_v2", clear
 
-keep if dummyloans_HH==1
+keep if dummyloans==1
 
 ***** 2010
 twoway ///
-(kdensity assets_total1000 if year==2010 & dummytrap_HH==0, bwidth(800)) ///
-(kdensity assets_total1000 if year==2010 &  dummytrap_HH==1, bwidth(800)) ///
-, xtitle("Total wealth (1k rupees)") ytitle("Density") ///
+(kdensity assets_total1000 if year==2010 & dummytrap==0, bwidth(800)) ///
+(kdensity assets_total1000 if year==2010 &  dummytrap==1, bwidth(800)) ///
+, xtitle("Total wealth (1,000 rupees)") ytitle("Density") ///
 title("2010") ///
-legend(order(1 "Not in a debt trap" 2 "Debt trapped") pos(6) col(2)) ///
+legend(order(1 "Not debt rollover" 2 "Debt rollover") pos(6) col(2)) ///
 scale(1.2) aspectratio(1.5) name(g1, replace)
 
 ***** 2016-17
 twoway ///
-(kdensity assets_total1000 if year==2016 & dummytrap_HH==0, bwidth(800)) ///
-(kdensity assets_total1000 if year==2016 &  dummytrap_HH==1, bwidth(800)) ///
-, xtitle("Total wealth (1k rupees)") ytitle("Density") ///
-title("2016-17") ///
-legend(order(1 "Not in a debt trap" 2 "Debt trapped") pos(6) col(2)) ///
+(kdensity assets_total1000 if year==2016 & dummytrap==0, bwidth(800)) ///
+(kdensity assets_total1000 if year==2016 &  dummytrap==1, bwidth(800)) ///
+, xtitle("Total wealth (1,000 rupees)") ytitle("Density") ///
+title("2016-2017") ///
+legend(order(1 "No debt rollover" 2 "Debt rollover") pos(6) col(2)) ///
 scale(1.2) aspectratio(1.5) name(g2, replace)
 
 
 ***** 2020-21
 twoway ///
-(kdensity assets_total1000 if year==2020 & dummytrap_HH==0, bwidth(800)) ///
-(kdensity assets_total1000 if year==2020 &  dummytrap_HH==1, bwidth(800)) ///
-, xtitle("Total wealth (1k rupees)") ytitle("Density") ///
-title("2020-21") ///
-legend(order(1 "Not in a debt trap" 2 "Debt trapped") pos(6) col(2)) ///
+(kdensity assets_total1000 if year==2020 & dummytrap==0, bwidth(800)) ///
+(kdensity assets_total1000 if year==2020 &  dummytrap==1, bwidth(800)) ///
+, xtitle("Total wealth (1,000 rupees)") ytitle("Density") ///
+title("2020-2021") ///
+legend(order(1 "No debt rollover" 2 "Debt rollover") pos(6) col(2)) ///
 scale(1.2) aspectratio(1.5) name(g3, replace)
 
 
@@ -328,11 +328,11 @@ name(comb,replace)
 ********** Given trap
 use"panel_HH_v2", clear
 
-keep if dummyloans_HH==1
+keep if dummyloans==1
 replace annualincome_HH=annualincome_HH/1000
-keep HHID_panel year dummytrap_HH annualincome_HH
+keep HHID_panel year dummytrap annualincome_HH
 rename annualincome_HH contvar
-rename dummytrap_HH catvar
+rename dummytrap catvar
 gen contvar1=contvar if year==2010 & catvar==0
 gen contvar2=contvar if year==2010 & catvar==1
 gen contvar3=contvar if year==2016 & catvar==0
@@ -380,7 +380,7 @@ replace sample=2 if sample==6
 
 order sample year
 
-label define sample 1"Non-trapped" 2"Trapped", replace
+label define sample 1"No rollover" 2"Rollover", replace
 label values sample sample
 
 
@@ -393,7 +393,7 @@ twoway ///
 (rspike max_var min_var sample) ///
 , ylabel(0(40)240) ymtick(0(20)240) ///
 xlabel(1 2,valuelabel angle(0)) ///
-ytitle("Annual income (1k rupees)") xtitle("") ///
+ytitle("Annual income (1,000 rupees)") xtitle("") ///
 title("2010") ///
 legend(off) scale(1.2) /// 
 name(g1, replace)
@@ -407,8 +407,8 @@ twoway ///
 (rspike max_var min_var sample) ///
 , ylabel(0(40)240) ymtick(0(20)240) ///
 xlabel(1 2,valuelabel angle(0)) ///
-ytitle("Annual income (1k rupees)") xtitle("") ///
-title("2016-17") ///
+ytitle("Annual income (1,000 rupees)") xtitle("") ///
+title("2016-2017") ///
 legend(off) scale(1.2) /// 
 name(g2, replace)
 restore
@@ -421,8 +421,8 @@ twoway ///
 (rspike max_var min_var sample) ///
 , ylabel(0(40)240) ymtick(0(20)240) ///
 xlabel(1 2,valuelabel angle(0)) ///
-ytitle("Annual income (1k rupees)") xtitle("") ///
-title("2020-21") ///
+ytitle("Annual income (1,000 rupees)") xtitle("") ///
+title("2020-2021") ///
 legend(off) scale(1.2) /// 
 name(g3, replace)
 restore

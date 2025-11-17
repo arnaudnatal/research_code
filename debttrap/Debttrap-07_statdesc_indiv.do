@@ -51,8 +51,8 @@ twoway ///
 , ///
 xlabel(1 3 5,valuelabel) xtitle("") ///
 ylabel(0(10)100) ytitle("Percent") ///
-title("2016-17") ///
-legend(order(1 "In trap" 2 "Not in trap") pos(6) col(3)) ///
+title("2016-2017") ///
+legend(order(1 "Rollover" 2 "No rollover") pos(6) col(3)) ///
 note("Pearson Chi2(1)=38.36   Pr=0.00", size(small)) ///
 name(g1, replace) scale(1.2)
 drop cat notrap trap sum1 sum2
@@ -79,8 +79,8 @@ twoway ///
 , ///
 xlabel(1 3 5,valuelabel) xtitle("") ///
 ylabel(0(10)100) ytitle("Percent") ///
-title("2020-21") ///
-legend(order(1 "In trap" 2 "Not in trap") pos(6) col(3)) ///
+title("2020-2021") ///
+legend(order(1 "Rollover" 2 "No rollover") pos(6) col(3)) ///
 note("Pearson Chi2(1)=71.37   Pr=0.00", size(small)) ///
 name(g2, replace) scale(1.2)
 drop cat notrap trap sum1 sum2
@@ -111,8 +111,8 @@ ta year sex
 twoway ///
 (histogram share_giventrap if year==2016 & sex==1, width(2) color(plb1%50) percent) ///
 (histogram share_giventrap if year==2016 & sex==2, width(2) color(plr1%50) percent) ///
-, title("2016-17") ///
-ytitle("Percent") xtitle("Share of debt trap (percent)") ///
+, title("2016-2017") ///
+ytitle("Percent") xtitle("Share of debt rollover (percent)") ///
 ylabel(0(10)100) xlabel(0(10)100) ///
 legend(order(1 "Men" 2 "Women") pos(6) col(2)) scale(1.2) ///
 name(g1, replace)
@@ -122,8 +122,8 @@ name(g1, replace)
 twoway ///
 (histogram share_giventrap if year==2020 & sex==1, width(2) color(plb1%50) percent) ///
 (histogram share_giventrap if year==2020 & sex==2, width(2) color(plr1%50) percent) ///
-, title("2020-21") ///
-ytitle("Percent") xtitle("Share of debt trap (percent)") ///
+, title("2020-2021") ///
+ytitle("Percent") xtitle("Share of debt rollover (percent)") ///
 ylabel(0(10)100) xlabel(0(10)100) ///
 legend(order(1 "Men" 2 "Women") pos(6) col(2)) scale(1.2) ///
 name(g2, replace)

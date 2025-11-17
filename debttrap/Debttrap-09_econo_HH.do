@@ -104,7 +104,7 @@ label var loan_std "Debt amount (std)"
 fre dummydemonetisation
 rename dummydemonetisation shock1
 recode shock1 (.=0)
-label var shock1 "Shock 1 (=1)"
+label var shock1 "Demonetisation (=1)"
 
 * Shock 2
 fre secondlockdownexposure
@@ -113,24 +113,24 @@ replace shock2=0 if secondlockdownexposure==2
 replace shock2=1 if secondlockdownexposure==3
 recode shock2 (.=0)
 drop secondlockdownexposure
-label var shock2 "Shock 2 (=1)"
+label var shock2 "COVID-19 (=1)"
 
 * Shock 3
 fre dummymarriage
 rename dummymarriage shock3
 recode shock3 (.=0)
-label var shock3 "Shock 3 (=1)"
+label var shock3 "Marriage (=1)"
 
 * Trap
-label define dummytrap 0"In trap: No" 1"In trap: Yes"
+label define dummytrap 0"Rollover: No" 1"Rollover: Yes"
 label values dummytrap dummytrap 
 fre dummytrap
 
-label define dummytrap_1ybefore 0"In trap: No" 1"In trap: Yes"
+label define dummytrap_1ybefore 0"Rollover: No" 1"Rollover: Yes"
 label values dummytrap_1ybefore dummytrap_1ybefore 
 fre dummytrap_1ybefore
 
-label define dummytrap_2ybefore 0"In trap: No" 1"In trap: Yes"
+label define dummytrap_2ybefore 0"Rollover: No" 1"Rollover: Yes"
 label values dummytrap_2ybefore dummytrap_2ybefore 
 fre dummytrap_2ybefore
 
@@ -190,92 +190,7 @@ save"panel_HH_v2_econo", replace
 
 
 ****************************************
-* Econo without lag
-****************************************
-use"panel_HH_v2_econo", clear
-
-* Selection
-keep if dummyloans==1
-xtset HHFE year
-ta year
-
-* Macro
-global headcont i.sex c.age##c.age i.married i.edulevel i.mainoccupation 
-global hhcont size_HH nbchildren_HH income_std assets_std
-
-
-*** Food
-xtreg log_expenses_food_pc i.dummytrap $headcont $hhcont i.year, fe vce(cluster HHFE)
-est store food
-*
-margins, dydx(dummytrap sex age married edulevel mainoccupation size_HH nbchildren_HH income_std assets_std) atmeans post
-est store marg_food
-*
-coefplot, drop(_cons) xline(0) base ///
-msymbol(S) mcolor(plb1) ///
-headings( ///
-1.sex="{bf:Head charact}" ///
-size_HH="{bf:Household charact}") ///
-xtitle("Marginal effect") xlabel(-.3(.1).3) ///
-title("Annual per capita food expenses (log)") scale(1.1) ///
-legend(order(2 "Effect" 1 "95% CI") pos(6) col(2)) ///
-name(food, replace)
-graph export "graph/xtfe_food.png", as(png) replace
-
-
-*** Health
-xtreg log_expenses_heal_pc i.dummytrap $headcont $hhcont i.year, fe vce(cluster HHFE)
-est store heal
-*
-margins, dydx(dummytrap sex age married edulevel mainoccupation size_HH nbchildren_HH income_std assets_std) atmeans post
-est store marg_heal
-*
-coefplot, drop(_cons) xline(0) base ///
-msymbol(S) mcolor(plb1) ///
-headings( ///
-1.sex="{bf:Head charact}" ///
-size_HH="{bf:Household charact}") ///
-xtitle("Marginal effect") xlabel(-.8(.2).8) ///
-title("Annual per capita health expenses (log)") scale(1.1) ///
-name(heal, replace)
-graph export "graph/xtfe_health.png", as(png) replace
-
-
-*** Education
-xtreg log_expenses_educ_pc i.dummytrap $headcont $hhcont i.year, fe vce(cluster HHFE)
-est store educ
-*
-margins, dydx(dummytrap sex age married edulevel mainoccupation size_HH nbchildren_HH income_std assets_std) atmeans post
-est store marg_educ
-*
-coefplot, drop(_cons) xline(0) base ///
-msymbol(S) mcolor(plb1) ///
-headings( ///
-1.sex="{bf:Head charact}" ///
-size_HH="{bf:Household charact}") ///
-xtitle("Marginal effect") xlabel(-3(.5)2) ///
-title("Annual per capita education expenses (log)") scale(1.1) ///
-name(educ, replace)
-graph export "graph/xtfe_education.png", as(png) replace
-
-****************************************
-* END
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-****************************************
-* Econo with lag
+* Econo with lag and shocks
 ****************************************
 use"panel_HH_v2_econo", clear
 
@@ -289,72 +204,38 @@ drop dummytrap
 rename dummytrap_2ybefore dummytrap
 
 * Macro
-global headcont i.sex c.age##c.age i.married i.edulevel i.mainoccupation 
-global hhcont size_HH nbchildren_HH income_std assets_std
+global headcont i.sex c.age i.married i.edulevel i.mainoccupation 
+global hhcont size_HH nbchildren_HH income_std assets_std shock1 shock2
+
 
 *** Food
-xtreg log_expenses_food_pc i.dummytrap $headcont $hhcont i.year, fe vce(cluster HHFE)
+xtreg log_expenses_food_pc i.dummytrap $headcont $hhcont, fe vce(cluster HHFE)
 est store food
-*
-margins, dydx(dummytrap sex age married edulevel mainoccupation size_HH nbchildren_HH income_std assets_std) atmeans post
-est store marg_food
-*
-coefplot, drop(_cons) xline(0) base ///
-msymbol(S) mcolor(plb1) ///
-headings( ///
-1.sex="{bf:Head charact}" ///
-size_HH="{bf:Household charact}") ///
-xtitle("Marginal effect") xlabel(-.3(.1).3) ///
-title("Annual per capita food expenses (log)") scale(1.1) ///
-legend(order(2 "Effect" 1 "95% CI") pos(6) col(2)) ///
-name(food, replace)
-graph export "graph/xtfe_food_lag.png", as(png) replace
 
 
 *** Health
-xtreg log_expenses_heal_pc i.dummytrap $headcont $hhcont i.year, fe vce(cluster HHFE)
+xtreg log_expenses_heal_pc i.dummytrap $headcont $hhcont, fe vce(cluster HHFE)
 est store heal
-*
-margins, dydx(dummytrap sex age married edulevel mainoccupation size_HH nbchildren_HH income_std assets_std) atmeans post
-est store marg_heal
-*
-coefplot, drop(_cons) xline(0) base ///
-msymbol(S) mcolor(plb1) ///
-headings( ///
-1.sex="{bf:Head charact}" ///
-size_HH="{bf:Household charact}") ///
-xtitle("Marginal effect") xlabel(-.8(.2).8) ///
-title("Annual per capita health expenses (log)") scale(1.1) ///
-name(heal, replace)
-graph export "graph/xtfe_health_lag.png", as(png) replace
-
 
 *** Education
-xtreg log_expenses_educ_pc i.dummytrap $headcont $hhcont i.year, fe vce(cluster HHFE)
+xtreg log_expenses_educ_pc i.dummytrap $headcont $hhcont, fe vce(cluster HHFE)
 est store educ
-*
-margins, dydx(dummytrap sex age married edulevel mainoccupation size_HH nbchildren_HH income_std assets_std) atmeans post
-est store marg_educ
-*
-coefplot, drop(_cons) xline(0) base ///
-msymbol(S) mcolor(plb1) ///
-headings( ///
-1.sex="{bf:Head charact}" ///
-size_HH="{bf:Household charact}") ///
-xtitle("Marginal effect") xlabel(-3(.5)2) ///
-title("Annual per capita education expenses (log)") scale(1.1) ///
-name(educ, replace)
-graph export "graph/xtfe_education_lag.png", as(png) replace
 
 
+*** Table
+esttab ///
+food heal educ ///
+using "Res.csv", replace ///
+	label b(3) p(3) eqlabels(none) alignment(S) ///
+	keep(1.dummytrap) ///
+	star(* 0.10 ** 0.05 *** 0.01) ///
+	cells("b(fmt(2)star)" "se(fmt(2)par)") ///
+	refcat(, nolabel) ///
+	stats(N, fmt(0) ///
+	labels(`"Observations"'))
 
 ****************************************
 * END
-
-
-
-
-
 
 
 
@@ -381,36 +262,34 @@ rename dummytrap_2ybefore dummytrap
 
 * Macro
 global headcont i.sex c.age##c.age i.married i.edulevel i.mainoccupation 
-global hhcont size_HH nbchildren_HH income_std assets_std
-
-
+global hhcont size_HH nbchildren_HH income_std assets_std shock1 shock2
 
 
 *** Food
-xtreg log_expenses_food_pc i.dummytrap##c.income_std $headcont $hhcont i.year, fe vce(cluster HHFE)
+xtreg log_expenses_food_pc i.dummytrap##c.income_std $headcont $hhcont, fe vce(cluster HHFE)
 est store food_inc
-xtreg log_expenses_food_pc i.dummytrap##c.assets_std $headcont $hhcont i.year, fe vce(cluster HHFE)
+xtreg log_expenses_food_pc i.dummytrap##c.assets_std $headcont $hhcont, fe vce(cluster HHFE)
 est store food_ass
-xtreg log_expenses_food_pc i.dummytrap##i.dalits $headcont $hhcont i.year, fe vce(cluster HHFE)
+xtreg log_expenses_food_pc i.dummytrap##i.dalits $headcont $hhcont, fe vce(cluster HHFE)
 est store food_cas
 
 
 
 *** Health
-xtreg log_expenses_heal_pc i.dummytrap##c.income_std $headcont $hhcont i.year, fe vce(cluster HHFE)
+xtreg log_expenses_heal_pc i.dummytrap##c.income_std $headcont $hhcont, fe vce(cluster HHFE)
 est store heal_inc
-xtreg log_expenses_heal_pc i.dummytrap##c.assets_std $headcont $hhcont i.year, fe vce(cluster HHFE)
+xtreg log_expenses_heal_pc i.dummytrap##c.assets_std $headcont $hhcont, fe vce(cluster HHFE)
 est store heal_ass
-xtreg log_expenses_heal_pc i.dummytrap##i.dalits $headcont $hhcont i.year, fe vce(cluster HHFE)
+xtreg log_expenses_heal_pc i.dummytrap##i.dalits $headcont $hhcont, fe vce(cluster HHFE)
 est store heal_cas
 
 
 *** Education
-xtreg log_expenses_educ_pc i.dummytrap##c.income_std $headcont $hhcont i.year, fe vce(cluster HHFE)
+xtreg log_expenses_educ_pc i.dummytrap##c.income_std $headcont $hhcont, fe vce(cluster HHFE)
 est store educ_inc
-xtreg log_expenses_educ_pc i.dummytrap##c.assets_std $headcont $hhcont i.year, fe vce(cluster HHFE)
+xtreg log_expenses_educ_pc i.dummytrap##c.assets_std $headcont $hhcont, fe vce(cluster HHFE)
 est store educ_ass
-xtreg log_expenses_educ_pc i.dummytrap##i.dalits $headcont $hhcont i.year, fe vce(cluster HHFE)
+xtreg log_expenses_educ_pc i.dummytrap##i.dalits $headcont $hhcont, fe vce(cluster HHFE)
 est store educ_cas
 
 
@@ -419,106 +298,6 @@ est store educ_cas
 * END
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-****************************************
-* Econo with lag and shocks
-****************************************
-use"panel_HH_v2_econo", clear
-
-* Selection
-keep if dummyloans==1
-xtset HHFE year
-ta year
-
-* Lag
-drop dummytrap
-rename dummytrap_2ybefore dummytrap
-
-* Macro
-global headcont i.sex c.age##c.age i.married i.edulevel i.mainoccupation 
-global hhcont size_HH nbchildren_HH income_std assets_std shock1 shock2
-
-
-*** Food
-xtreg log_expenses_food_pc i.dummytrap $headcont $hhcont i.year, fe vce(cluster HHFE)
-est store food
-*
-margins, dydx(dummytrap sex age married edulevel mainoccupation size_HH nbchildren_HH income_std assets_std shock1 shock2) atmeans post
-est store marg_food
-*
-coefplot, drop(_cons) xline(0) base ///
-msymbol(S) mcolor(plb1) ///
-headings( ///
-1.sex="{bf:Head charact}" ///
-size_HH="{bf:Household charact}") ///
-xtitle("Marginal effect") xlabel(-.3(.1).3) ///
-title("Annual per capita food expenses (log)") scale(1) ///
-legend(order(2 "Effect" 1 "95% CI") pos(6) col(2)) ///
-name(food, replace)
-graph export "graph/xtfe_food_lag_shocks.png", as(png) replace
-
-
-
-*** Health
-xtreg log_expenses_heal_pc i.dummytrap##c.assets_std $headcont $hhcont i.year, fe vce(cluster HHFE)
-est store heal
-*
-margins, dydx(dummytrap sex age married edulevel mainoccupation size_HH nbchildren_HH income_std assets_std shock1 shock2) atmeans post
-est store marg_heal
-*
-coefplot, drop(_cons) xline(0) base ///
-msymbol(S) mcolor(plb1) ///
-headings( ///
-1.sex="{bf:Head charact}" ///
-size_HH="{bf:Household charact}") ///
-xtitle("Marginal effect") xlabel(-.8(.2).8) ///
-title("Annual per capita health expenses (log)") scale(1.1) ///
-name(heal, replace)
-graph export "graph/xtfe_health_lag_shocks.png", as(png) replace
-
-
-
-*** Education
-xtreg log_expenses_educ_pc i.dummytrap $headcont $hhcont i.year, fe vce(cluster HHFE)
-est store educ
-*
-margins, dydx(dummytrap sex age married edulevel mainoccupation size_HH nbchildren_HH income_std assets_std shock1 shock2) atmeans post
-est store marg_educ
-*
-coefplot, drop(_cons) xline(0) base ///
-msymbol(S) mcolor(plb1) ///
-headings( ///
-1.sex="{bf:Head charact}" ///
-size_HH="{bf:Household charact}") ///
-xtitle("Marginal effect") xlabel(-3(.5)2) ///
-title("Annual per capita education expenses (log)") scale(1.1) ///
-name(educ, replace)
-graph export "graph/xtfe_education_lag_shocks.png", as(png) replace
-
-****************************************
-* END
 
 
 
@@ -562,7 +341,7 @@ rename dummytrap_2ybefore dummytrap
 
 * Macro
 global headcont i.sex c.age##c.age i.married i.edulevel i.mainoccupation 
-global hhcont size_HH nbchildren_HH income_std assets_std
+global hhcont size_HH nbchildren_HH income_std assets_std shock1 shock2
 
 *** Food
 preserve
@@ -572,22 +351,8 @@ local max=`r(p99)'
 drop if log_expenses_food_pc<`min'
 drop if log_expenses_food_pc>`max'
 *
-xtreg log_expenses_food_pc i.dummytrap $headcont $hhcont i.year, fe vce(cluster HHFE)
+xtreg log_expenses_food_pc i.dummytrap $headcont $hhcont, fe vce(cluster HHFE)
 est store food
-*
-margins, dydx(dummytrap sex age married edulevel mainoccupation size_HH nbchildren_HH income_std assets_std) atmeans post
-est store marg_food
-*
-coefplot, drop(_cons) xline(0) base ///
-msymbol(S) mcolor(plb1) ///
-headings( ///
-1.sex="{bf:Head charact}" ///
-size_HH="{bf:Household charact}") ///
-xtitle("Marginal effect") xlabel(-.3(.1).3) ///
-title("Annual per capita food expenses (log)") scale(1.1) ///
-legend(order(2 "Effect" 1 "95% CI") pos(6) col(2)) ///
-name(food, replace)
-graph export "graph/xtfe_food_lag_out.png", as(png) replace
 restore
 
 
@@ -599,21 +364,8 @@ local max=`r(p99)'
 drop if log_expenses_heal_pc<`min'
 drop if log_expenses_heal_pc>`max'
 *
-xtreg log_expenses_heal_pc i.dummytrap $headcont $hhcont i.year, fe vce(cluster HHFE)
+xtreg log_expenses_heal_pc i.dummytrap $headcont $hhcont, fe vce(cluster HHFE)
 est store heal
-*
-margins, dydx(dummytrap sex age married edulevel mainoccupation size_HH nbchildren_HH income_std assets_std) atmeans post
-est store marg_heal
-*
-coefplot, drop(_cons) xline(0) base ///
-msymbol(S) mcolor(plb1) ///
-headings( ///
-1.sex="{bf:Head charact}" ///
-size_HH="{bf:Household charact}") ///
-xtitle("Marginal effect") xlabel(-.8(.2).8) ///
-title("Annual per capita health expenses (log)") scale(1.1) ///
-name(heal, replace)
-graph export "graph/xtfe_health_lag_out.png", as(png) replace
 restore
 
 *** Education
@@ -624,22 +376,22 @@ local max=`r(p99)'
 drop if log_expenses_educ_pc<`min'
 drop if log_expenses_educ_pc>`max'
 *
-xtreg log_expenses_educ_pc i.dummytrap $headcont $hhcont i.year, fe vce(cluster HHFE)
+xtreg log_expenses_educ_pc i.dummytrap $headcont $hhcont, fe vce(cluster HHFE)
 est store educ
-*
-margins, dydx(dummytrap sex age married edulevel mainoccupation size_HH nbchildren_HH income_std assets_std) atmeans post
-est store marg_educ
-*
-coefplot, drop(_cons) xline(0) base ///
-msymbol(S) mcolor(plb1) ///
-headings( ///
-1.sex="{bf:Head charact}" ///
-size_HH="{bf:Household charact}") ///
-xtitle("Marginal effect") xlabel(-3(.5)2) ///
-title("Annual per capita education expenses (log)") scale(1.1) ///
-name(educ, replace)
-graph export "graph/xtfe_education_lag_out.png", as(png) replace
 restore
+
+
+*** Table
+esttab ///
+food heal educ ///
+using "Res_noout.csv", replace ///
+	label b(3) p(3) eqlabels(none) alignment(S) ///
+	keep(1.dummytrap) ///
+	star(* 0.10 ** 0.05 *** 0.01) ///
+	cells("b(fmt(2)star)" "se(fmt(2)par)") ///
+	refcat(, nolabel) ///
+	stats(N, fmt(0) ///
+	labels(`"Observations"'))
 
 ****************************************
 * END
@@ -677,24 +429,24 @@ rename dummytrap_2ybefore dummytrap
 
 *** Macro
 global headcont i.sex c.age##c.age i.married i.edulevel i.mainoccupation 
-global hhcont size_HH nbchildren_HH income_std assets_std
+global hhcont size_HH nbchildren_HH income_std assets_std shock1 shock2
 
 
 ********** Econo
 
 *** Food
 cls
-xtqreg log_expenses_food_pc i.dummytrap $headcont $hhcont i.year, id(HHFE) q(.1 .2 .3 .4 .5 .6 .7 .8 .9)
+xtqreg log_expenses_food_pc i.dummytrap $headcont $hhcont, id(HHFE) q(.1 .2 .3 .4 .5 .6 .7 .8 .9)
 est store qfood
 
 *** Health
 cls
-xtqreg log_expenses_heal_pc i.dummytrap $headcont $hhcont i.year, id(HHFE) q(.1 .2 .3 .4 .5 .6 .7 .8 .9)
+xtqreg log_expenses_heal_pc i.dummytrap $headcont $hhcont, id(HHFE) q(.1 .2 .3 .4 .5 .6 .7 .8 .9)
 est store qheal
 
 *** Education
 cls
-xtqreg log_expenses_educ_pc i.dummytrap $headcont $hhcont i.year, id(HHFE) q(.1 .2 .3 .4 .5 .6 .7 .8 .9)
+xtqreg log_expenses_educ_pc i.dummytrap $headcont $hhcont, id(HHFE) q(.1 .2 .3 .4 .5 .6 .7 .8 .9)
 est store qeduc
 
 
@@ -747,68 +499,4 @@ graph export "graph/xtqreg.png", as(png) replace
 
 ****************************************
 * END
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-****************************************
-* Econo impact 
-****************************************
-use"panel_HH_v2_econo", clear
-
-* Selection
-keep if dummyloans==1
-xtset HHFE year
-ta year
-
-* Macro
-global headcont i.sex c.age##c.age i.married i.edulevel i.mainoccupation 
-global hhcont size_HH nbchildren_HH income_std assets_std
-
-*** Demonetisation
-preserve
-keep if year==2016
-probit dummytrap i.shock1 $headcont $hhcont
-est store demo
-restore
-
-*** COVID-19
-preserve
-keep if year==2020
-probit dummytrap i.shock2 $headcont $hhcont
-est store covid
-restore
-
-****************************************
-* END
-
-
-
-
-
-
-
-
-
 

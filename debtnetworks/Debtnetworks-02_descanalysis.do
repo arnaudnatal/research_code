@@ -8,7 +8,7 @@ gl link = "debtnetworks"
 *Desc analysis
 *-----
 *do "https://raw.githubusercontent.com/arnaudnatal/folderanalysis/main/$link.do"
-*do"C:\Users\Arnaud\Documents\GitHub\folderanalysis\debtnetworks.do"
+do"C:\Users\Arnaud\Documents\GitHub\folderanalysis\debtnetworks.do"
 *-------------------------
 
 
@@ -45,7 +45,7 @@ reg snduration i.caste
 
 cls
 ***** Y-var
-foreach y in dummyinterest dummyguarantee dummylenderservices dummymainloan dummyproblemtorepay dummyborrowerservice  {
+foreach y in dummyinterest dummyg_mat dummylenderservices dummyborrowerservice  {
 ta `y'
 ta `y' sex, nofreq chi2 col 
 ta `y' caste, nofreq chi2 col
