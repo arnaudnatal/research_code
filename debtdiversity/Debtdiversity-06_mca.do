@@ -109,6 +109,67 @@ save"clustloan2", replace
 
 
 
+
+****************************************
+* PCA
+****************************************
+use"panel_loans_v1", clear
+
+* Selection
+keep HHID_panel INDID_panel loanid year ///
+loanamount loanbalance interestpaid totalrepaid principalpaid
+
+* Rename
+rename loanamount amount
+rename loanbalance balance
+rename interestpaid interest
+rename principalpaid principal
+
+* Macro
+foreach x in amount balance interest totalrepaid principal {
+egen `x'_std=std(`x')
+}
+global var amount_std balance_std interest_std totalrepaid_std principal_std
+
+
+* PCA
+pca $var
+screeplot, ci
+loadingplot , component(2) combined xline(0) yline(0) aspect(1)
+
+scoreplot, component(3) combined xline(0) yline(0) aspect(1)
+
+
+* Cluster
+mca $var, method (indicator) normal(princ) dim(10)
+predict a1 a2 a3 a4 a5 a6 a7 a8 a9 a10
+cluster wardslinkage a1 a2 a3 a4 a5 a6 a7 a8 a9 a10, measure(Euclidean)
+cluster dendrogram, cutnumber(50)
+cluster gen clustloan1=groups(10)
+
+* Keep
+keep HHID_panel INDID_panel loanid year clustloan1 _clus_*
+
+save"clustloan1", replace
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ****************************************
 * Merge with main database
 ****************************************

@@ -17,7 +17,6 @@ do"C:\Users\Arnaud\Documents\GitHub\folderanalysis\debtnetworks.do"
 
 
 
-
 ****************************************
 * Table stat desc
 ****************************************
