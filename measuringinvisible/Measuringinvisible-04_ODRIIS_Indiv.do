@@ -73,6 +73,7 @@ duplicates drop
 save"_temp", replace
 restore
 merge 1:1 HHID2016 INDID2016 using "_temp"
+drop if _merge==1
 drop _merge
 *
 foreach x in borrowed $var {
@@ -102,7 +103,7 @@ ta `x'
 ****************************************
 use"raw/NEEMSIS1-loans_mainloans_new", replace
 
-***** Check in the last 5 years
+***** Check in the last year
 ta loandate // ok
 drop if loandate<mdy(1, 1, 2015)
 
@@ -139,14 +140,16 @@ replace `x'=1 if `x'>1
 *
 preserve
 use"raw/NEEMSIS1-HH", clear
-keep HHID2016 INDID2016 livinghome
+keep HHID2016 INDID2016 livinghome age
 drop if livinghome==3
 drop if livinghome==4
 drop livinghome
+drop if age<18
 duplicates drop
 save"_temp", replace
 restore
 merge 1:1 HHID2016 INDID2016 using "_temp"
+drop if _merge==1
 drop _merge
 *
 foreach x in borrowed $var {
@@ -163,6 +166,8 @@ ta `x'
 *
 ****************************************
 * END
+
+
 
 
 
@@ -195,10 +200,10 @@ gen funmar=given_marr+given_deat
 
 global var lender4_bank lender4_micr lender4_mone lender_empl relafriend lender4_shop lender4_pawn otherinfo activity given_hous given_educ funmar given_heal
 
-keep HHID2020 borrowed $var
+keep HHID2020 INDID2020 borrowed $var
 
 foreach x in borrowed $var {
-bysort HHID2020: egen s`x'=sum(`x')
+bysort HHID2020 INDID2020: egen s`x'=sum(`x')
 }
 
 foreach x in borrowed $var {
@@ -214,11 +219,17 @@ replace `x'=1 if `x'>1
 *
 preserve
 use"raw/NEEMSIS2-HH", clear
-keep HHID2020
+keep HHID2020 INDID2020 livinghome dummylefthousehold age
+drop if dummylefthousehold==1
+drop if livinghome==3
+drop if livinghome==4
+drop livinghome
+drop if age<18
 duplicates drop
 save"_temp", replace
 restore
-merge 1:1 HHID2020 using "_temp"
+merge 1:1 HHID2020 INDID2020 using "_temp"
+drop if _merge==1
 drop _merge
 *
 foreach x in borrowed $var {
@@ -243,12 +254,13 @@ ta `x'
 
 
 
+
 ****************************************
 * NEEMSIS-2 (2020) last year
 ****************************************
 use"raw/NEEMSIS2-loans_mainloans_new", replace
 
-***** Check in the last 5 years
+***** Check in the last year
 ta loandate // ok
 drop if loandate<mdy(1, 1, 2019)
 
@@ -266,10 +278,10 @@ gen funmar=given_marr+given_deat
 
 global var lender4_bank lender4_micr lender4_mone lender_empl relafriend lender4_shop lender4_pawn otherinfo activity given_hous given_educ funmar given_heal
 
-keep HHID2020 borrowed $var
+keep HHID2020 INDID2020 borrowed $var
 
 foreach x in borrowed $var {
-bysort HHID2020: egen s`x'=sum(`x')
+bysort HHID2020 INDID2020: egen s`x'=sum(`x')
 }
 
 foreach x in borrowed $var {
@@ -285,11 +297,17 @@ replace `x'=1 if `x'>1
 *
 preserve
 use"raw/NEEMSIS2-HH", clear
-keep HHID2020
+keep HHID2020 INDID2020 livinghome dummylefthousehold age
+drop if dummylefthousehold==1
+drop if livinghome==3
+drop if livinghome==4
+drop livinghome
+drop if age<18
 duplicates drop
 save"_temp", replace
 restore
-merge 1:1 HHID2020 using "_temp"
+merge 1:1 HHID2020 INDID2020 using "_temp"
+drop if _merge==1
 drop _merge
 *
 foreach x in borrowed $var {

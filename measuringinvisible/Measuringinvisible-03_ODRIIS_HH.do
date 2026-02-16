@@ -389,7 +389,7 @@ ta `x'
 ****************************************
 use"raw/NEEMSIS2-loans_mainloans_new", replace
 
-***** Check in the last 5 years
+***** Check in the last year
 ta loandate // ok
 drop if loandate<mdy(1, 1, 2019)
 
