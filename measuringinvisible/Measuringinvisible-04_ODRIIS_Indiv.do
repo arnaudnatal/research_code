@@ -175,6 +175,90 @@ ta `x'
 
 
 
+****************************************
+* NEEMSIS-1 (2016) outstanding
+****************************************
+use"raw/NEEMSIS1-loans_mainloans_new", replace
+
+***** Check in the last year
+drop if loansettled==1
+
+
+***** Dummy borrowed
+gen borrowed=0
+replace borrowed=1 if loanamount>0
+
+
+***** Outstanding
+bys HHID2016 INDID2016: egen sbalance=sum(loanbalance2)
+
+
+***** Dummy lender and borrower
+gen relafriend=lender4_rela+lender4_frie
+gen otherinfo=lender4_WKP+lender4_neig
+gen activity=given_agri+given_inve
+gen funmar=given_marr+given_deat
+
+global var lender4_bank lender4_micr lender4_mone lender_empl relafriend lender4_shop lender4_pawn otherinfo activity given_hous given_educ funmar given_heal
+
+keep HHID2016 INDID2016 borrowed sbalance $var
+
+foreach x in borrowed $var {
+bysort HHID2016 INDID2016: egen s`x'=sum(`x')
+}
+
+foreach x in borrowed $var {
+drop `x'
+rename s`x' `x'
+}
+
+***** Duplicate and dummy
+duplicates drop
+foreach x in borrowed $var {
+replace `x'=1 if `x'>1
+}
+*
+preserve
+use"raw/NEEMSIS1-HH", clear
+keep HHID2016 INDID2016 livinghome age
+drop if livinghome==3
+drop if livinghome==4
+drop livinghome
+drop if age<18
+duplicates drop
+save"_temp", replace
+restore
+merge 1:1 HHID2016 INDID2016 using "_temp"
+drop if _merge==1
+drop _merge
+*
+foreach x in borrowed $var {
+recode `x' (.=0)
+}
+
+cls
+***** Statistics
+ta borrowed
+sum sbalance
+foreach x in $var {
+ta `x'
+}
+
+*
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 ****************************************
@@ -324,3 +408,96 @@ ta `x'
 *
 ****************************************
 * END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* NEEMSIS-2 (2020) outstanding
+****************************************
+use"raw/NEEMSIS2-loans_mainloans_new", replace
+
+***** Check in the last year
+drop if loansettled==1
+
+
+***** Dummy borrowed
+gen borrowed=0
+replace borrowed=1 if loanamount>0
+
+
+***** Outstanding
+bys HHID2020 INDID2020: egen sbalance=sum(loanbalance2)
+
+
+***** Dummy lender and borrower
+gen relafriend=lender4_rela+lender4_frie
+gen otherinfo=lender4_WKP+lender4_neig
+gen activity=given_agri+given_inve
+gen funmar=given_marr+given_deat
+
+global var lender4_bank lender4_micr lender4_mone lender_empl relafriend lender4_shop lender4_pawn otherinfo activity given_hous given_educ funmar given_heal
+
+keep HHID2020 INDID2020 borrowed sbalance $var
+
+foreach x in borrowed $var {
+bysort HHID2020 INDID2020: egen s`x'=sum(`x')
+}
+
+foreach x in borrowed $var {
+drop `x'
+rename s`x' `x'
+}
+
+***** Duplicate and dummy
+duplicates drop
+foreach x in borrowed $var {
+replace `x'=1 if `x'>1
+}
+*
+preserve
+use"raw/NEEMSIS2-HH", clear
+keep HHID2020 INDID2020 livinghome age
+drop if livinghome==3
+drop if livinghome==4
+drop livinghome
+drop if age<18
+duplicates drop
+save"_temp", replace
+restore
+merge 1:1 HHID2020 INDID2020 using "_temp"
+drop if _merge==1
+drop _merge
+*
+foreach x in borrowed $var {
+recode `x' (.=0)
+}
+
+cls
+***** Statistics
+ta borrowed
+sum sbalance
+foreach x in $var {
+ta `x'
+}
+
+*
+****************************************
+* END
+
+
+
+
+
+
+

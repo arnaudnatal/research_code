@@ -35,6 +35,7 @@ label values Sector Sector
 preserve
 keep HHID Sector State State_District MLT
 duplicates drop
+ta Sector
 count
 save"totHH", replace
 restore

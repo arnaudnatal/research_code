@@ -36,6 +36,7 @@ preserve
 keep HHID Sector State State_District Weight_SC
 duplicates drop
 count
+ta Sector
 save"totHH", replace
 restore
 *110,800 households in 2013

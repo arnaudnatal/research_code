@@ -192,3 +192,104 @@ ta carddebt [iweight=wgt]
 
 ****************************************
 * END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Findex 2021 Rural India
+****************************************
+use"raw/Findex2021.dta", replace
+cls
+keep if economy=="India"
+keep if urbanicity_f2f==1
+fre urbanicity_f2f
+
+ta borrowed [iweight=wgt]
+
+* Sources
+ta fin22a [iweight=wgt]
+ta fin22b [iweight=wgt]
+ta fin22c [iweight=wgt]
+
+* Reasons
+ta fin20 [iweight=wgt]
+
+* Mobile money
+ta fin13c [iweight=wgt]
+
+* Not pay credit in full
+gen carddebt=0
+*fin8 used a credit card
+*fin8b paid credit card balances in full
+replace carddebt=1 if fin8==1 & fin8b==2
+ta carddebt [iweight=wgt]
+
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Findex 2024 Rural India
+****************************************
+use"raw/Findex2024.dta", replace
+cls
+keep if economy=="India"
+
+
+ta borrowed urbanicity [iweight=wgt], col
+
+fre urbanicity
+keep if urbanicity==1
+fre urbanicity
+
+ta borrowed [iweight=wgt]
+
+ta fin23 [iweight=wgt]
+
+* Sources
+ta fin22a [iweight=wgt]
+ta fin22a_1 [iweight=wgt]
+ta fin22b [iweight=wgt]
+ta fin22c [iweight=wgt]
+ta fin20 [iweight=wgt]
+
+* Reasons
+ta fin22d [iweight=wgt]
+ta fin22e [iweight=wgt]
+ta fin22f [iweight=wgt]
+
+* Not pay credit in full
+gen carddebt=0
+*fin22g used a credit card
+*fin22h paid credit card balances in full
+replace carddebt=1 if fin22g==1 & fin22h==2
+ta carddebt [iweight=wgt]
+
+****************************************
+* END
