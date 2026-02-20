@@ -37,8 +37,11 @@ rename n_`x' `x'
 order data source year area rural level timeperiod samplesize indebted
 
 * Amount
-replace amount=amount/1000
-label var amount "Outstanding (1,000 rupees)"
+foreach x in mean_amount median_amount mean_loanamount median_loanamount {
+replace `x'=`x'/1000
+label var `x' "1,000 rupees"
+}
+
 
 save"IndianHHdebt_v01.dta", replace
 ****************************************
@@ -177,26 +180,56 @@ legend(order(1 "NSSO" 2 "ODRIIS") pos(6) col(2)) ///
 title("Households with outstanding debt") name(ioi, replace)
 * AOD
 twoway ///
-(connected amount year if source==3, color(plb1)) ///
-(connected amount year if source==4, color(ply1)) ///
+(connected mean_amount year if source==3, color(plb1)) ///
+(connected mean_amount year if source==4, color(ply1)) ///
 , ylabel(40(20)200) xlabel(2010(2)2020) ///
 ytitle("1,000 rupees") xtitle("") ///
 legend(order(1 "NSSO" 2 "ODRIIS") pos(6) col(2)) ///
 title("Average amount of debt for indebted rural Tamil households") name(aod, replace)
+* AOD
+twoway ///
+(connected median_amount year if source==3, color(plb1)) ///
+(connected median_amount year if source==4, color(ply1)) ///
+, ylabel(20(20)120) xlabel(2010(2)2020) ///
+ytitle("1,000 rupees") xtitle("") ///
+legend(order(1 "NSSO" 2 "ODRIIS") pos(6) col(2)) ///
+title("Median amount of debt for indebted rural Tamil households") name(mod, replace)
 * Combine
 grc1leg ioi aod
 graph export "graph/TamilNadu_nsso_odriis_ioi_aod.png", replace
+grc1leg ioi mod
+graph export "graph/TamilNadu_nsso_odriis_ioi_mod.png", replace
 
 
-********** Graph 2: Number of loan
+********** Graph 2: Number of loan and amount
+* Nb
 twoway ///
-(connected nbloan year if source==3, color(plb1)) ///
-(connected nbloan year if source==4, color(ply1)) ///
+(connected mean_nbloan year if source==3, color(plb1)) ///
+(connected mean_nbloan year if source==4, color(ply1)) ///
 , ylabel(0(1)10) xlabel(2010(2)2020) ///
 ytitle("Number of loans") xtitle("") ///
 legend(order(1 "NSSO" 2 "ODRIIS") pos(6) col(2)) ///
 title("Average number of loans per indebted rural Tamil household") name(nb, replace)
-graph export "graph/TamilNadu_nsso_odriis_amount.png", replace
+* Average loan amount
+twoway ///
+(connected mean_loanamount year if source==3, color(plb1)) ///
+(connected mean_loanamount year if source==4, color(ply1)) ///
+, ylabel(0(10)100) xlabel(2010(2)2020) ///
+ytitle("1,000 rupees") xtitle("") ///
+legend(order(1 "NSSO" 2 "ODRIIS") pos(6) col(2)) ///
+title("Average loan amount in rural Tamil household") name(avloan, replace)
+* Median loan amount
+twoway ///
+(connected median_loanamount year if source==3, color(plb1)) ///
+(connected median_loanamount year if source==4, color(ply1)) ///
+, ylabel(0(10)100) xlabel(2010(2)2020) ///
+ytitle("1,000 rupees") xtitle("") ///
+legend(order(1 "NSSO" 2 "ODRIIS") pos(6) col(2)) ///
+title("Median loan amount in rural Tamil household") name(medloan, replace)
+grc1leg nb avloan
+graph export "graph/TamilNadu_nsso_odriis_nb_avloanamount.png", replace
+grc1leg nb medloan
+graph export "graph/TamilNadu_nsso_odriis_nb_medloanamount.png", replace
 
 
 ********** Graph 3: Lenders
