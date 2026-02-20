@@ -472,7 +472,6 @@ save"NSSO2003-Debtlastyear_HH", replace
 use"NSSO2003-Outstanding_HH", clear
 cls
 * Incidence of indebtedness in All India
-ta sborrowed Sector, col
 ta sborrowed Sector [aweight=Weight], col
 ta slender_bank Sector [aweight=Weight], col nofreq
 ta slender_moneylender Sector [aweight=Weight], col nofreq
@@ -484,70 +483,62 @@ tabstat sloan if sborrowed==1 [aweight=Weight], stat(n mean) by(Sector)
 cls
 * In Tamil Nadu
 keep if State==33
-ta sborrowed Sector [aweight=Weight_SC], col nofreq
-ta slender_bank Sector [aweight=Weight_SC], col nofreq
-ta slender_moneylender Sector [aweight=Weight_SC], col nofreq
-ta slender_relafrien Sector [aweight=Weight_SC], col nofreq
-ta slender_fininstit Sector [aweight=Weight_SC], col nofreq
-ta spurpose_housing Sector [aweight=Weight_SC], col nofreq
-ta spurpose_education Sector [aweight=Weight_SC], col nofreq
-ta spurpose_health Sector [aweight=Weight_SC], col nofreq
-ta spurpose_farmbusi Sector [aweight=Weight_SC], col nofreq
-tabstat samount if sborrowed==1 [aweight=Weight_SC], stat(n mean) by(Sector)
+ta sborrowed Sector [aweight=Weight], col nofreq
+ta slender_bank Sector [aweight=Weight], col nofreq
+ta slender_moneylender Sector [aweight=Weight], col nofreq
+ta slender_relafrien Sector [aweight=Weight], col nofreq
+ta slender_fininstit Sector [aweight=Weight], col nofreq
+ta spurpose_farmbusi Sector [aweight=Weight], col nofreq
+tabstat samount if sborrowed==1 [aweight=Weight], stat(n mean) by(Sector)
+tabstat sloan if sborrowed==1 [aweight=Weight], stat(n mean) by(Sector)
 
 
 ********** LAST 5 YEARS
-use"NSSO2013-Debt5years_HH", clear
+use"NSSO2003-Debt5years_HH", clear
 cls
 * Incidence of indebtedness in All India
-ta sborrowed Sector [aweight=Weight_SC], col nofreq
-ta slender_bank Sector [aweight=Weight_SC], col nofreq
-ta slender_moneylender Sector [aweight=Weight_SC], col nofreq
-ta slender_relafrien Sector [aweight=Weight_SC], col nofreq
-ta slender_fininstit Sector [aweight=Weight_SC], col nofreq
-ta spurpose_housing Sector [aweight=Weight_SC], col nofreq
-ta spurpose_education Sector [aweight=Weight_SC], col nofreq
-ta spurpose_health Sector [aweight=Weight_SC], col nofreq
-ta spurpose_farmbusi Sector [aweight=Weight_SC], col nofreq
+ta sborrowed Sector [aweight=Weight], col nofreq
+ta slender_bank Sector [aweight=Weight], col nofreq
+ta slender_moneylender Sector [aweight=Weight], col nofreq
+ta slender_relafrien Sector [aweight=Weight], col nofreq
+ta slender_fininstit Sector [aweight=Weight], col nofreq
+ta spurpose_farmbusi Sector [aweight=Weight], col nofreq
+tabstat sloan if sborrowed==1 [aweight=Weight], stat(n mean) by(Sector)
+
 cls
 * In Tamil Nadu
 keep if State==33
-ta sborrowed Sector [aweight=Weight_SC], col nofreq
-ta slender_bank Sector [aweight=Weight_SC], col nofreq
-ta slender_moneylender Sector [aweight=Weight_SC], col nofreq
-ta slender_relafrien Sector [aweight=Weight_SC], col nofreq
-ta slender_fininstit Sector [aweight=Weight_SC], col nofreq
-ta spurpose_housing Sector [aweight=Weight_SC], col nofreq
-ta spurpose_education Sector [aweight=Weight_SC], col nofreq
-ta spurpose_health Sector [aweight=Weight_SC], col nofreq
-ta spurpose_farmbusi Sector [aweight=Weight_SC], col nofreq
+ta sborrowed Sector [aweight=Weight], col nofreq
+ta slender_bank Sector [aweight=Weight], col nofreq
+ta slender_moneylender Sector [aweight=Weight], col nofreq
+ta slender_relafrien Sector [aweight=Weight], col nofreq
+ta slender_fininstit Sector [aweight=Weight], col nofreq
+ta spurpose_farmbusi Sector [aweight=Weight], col nofreq
+tabstat sloan if sborrowed==1 [aweight=Weight], stat(n mean) by(Sector)
 
 
 ********** LAST YEAR
-use"NSSO2013-Debtlastyear_HH", clear
+use"NSSO2003-Debtlastyear_HH", clear
 cls
 * Incidence of indebtedness in All India
-ta sborrowed Sector [aweight=Weight_SC], col nofreq
-ta slender_bank Sector [aweight=Weight_SC], col nofreq
-ta slender_moneylender Sector [aweight=Weight_SC], col nofreq
-ta slender_relafrien Sector [aweight=Weight_SC], col nofreq
-ta slender_fininstit Sector [aweight=Weight_SC], col nofreq
-ta spurpose_housing Sector [aweight=Weight_SC], col nofreq
-ta spurpose_education Sector [aweight=Weight_SC], col nofreq
-ta spurpose_health Sector [aweight=Weight_SC], col nofreq
-ta spurpose_farmbusi Sector [aweight=Weight_SC], col nofreq
+ta sborrowed Sector [aweight=Weight], col nofreq
+ta slender_bank Sector [aweight=Weight], col nofreq
+ta slender_moneylender Sector [aweight=Weight], col nofreq
+ta slender_relafrien Sector [aweight=Weight], col nofreq
+ta slender_fininstit Sector [aweight=Weight], col nofreq
+ta spurpose_farmbusi Sector [aweight=Weight], col nofreq
+tabstat sloan if sborrowed==1 [aweight=Weight], stat(n mean) by(Sector)
+
 cls
 * In Tamil Nadu
 keep if State==33
-ta sborrowed Sector [aweight=Weight_SC], col nofreq
-ta slender_bank Sector [aweight=Weight_SC], col nofreq
-ta slender_moneylender Sector [aweight=Weight_SC], col nofreq
-ta slender_relafrien Sector [aweight=Weight_SC], col nofreq
-ta slender_fininstit Sector [aweight=Weight_SC], col nofreq
-ta spurpose_housing Sector [aweight=Weight_SC], col nofreq
-ta spurpose_education Sector [aweight=Weight_SC], col nofreq
-ta spurpose_health Sector [aweight=Weight_SC], col nofreq
-ta spurpose_farmbusi Sector [aweight=Weight_SC], col nofreq
+ta sborrowed Sector [aweight=Weight], col nofreq
+ta slender_bank Sector [aweight=Weight], col nofreq
+ta slender_moneylender Sector [aweight=Weight], col nofreq
+ta slender_relafrien Sector [aweight=Weight], col nofreq
+ta slender_fininstit Sector [aweight=Weight], col nofreq
+ta spurpose_farmbusi Sector [aweight=Weight], col nofreq
+tabstat sloan if sborrowed==1 [aweight=Weight], stat(n mean) by(Sector)
 
 ****************************************
 * END
