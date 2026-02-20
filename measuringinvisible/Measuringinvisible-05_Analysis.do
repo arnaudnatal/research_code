@@ -74,6 +74,11 @@ drop if source==3 & year>2013
 *** Graphs
 * All lenders
 graph bar indebted, over(data) ylabel(0(20)100) title("All lenders") ytitle("Percent") name(global, replace)
+*
+graph bar indebted, over(data) ylabel(0(20)100) title("Households in debt over the last 5 years in India") ytitle("Percent") name(g1, replace)
+graph export "graph/Global_india_5.png", replace
+
+
 
 * Bank
 graph bar l_bank, over(data) ylabel(0(20)100) title("Banks") ytitle("Percent") name(bank, replace)

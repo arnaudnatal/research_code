@@ -142,6 +142,10 @@ bys HHID: egen sborrowed=sum(borrowed)
 * Amount borrowed
 bys HHID: egen samount=sum(b12q15)
 
+* Number of loans
+gen loan=1
+bys HHID: egen sloan=sum(loan)
+
 * Details by sources
 ta lender, gen(lender_)
 forvalues i=1/5 {
@@ -168,7 +172,7 @@ rename spurpose_5 spurpose_farmbusi
 
 * Selections
 global dummies sborrowed slender_other slender_bank slender_moneylender slender_relafrien slender_fininstit spurpose_other spurpose_housing spurpose_education spurpose_health spurpose_farmbusi
-keep HHID samount $dummies
+keep HHID samount sloan $dummies
 
 * Recode dummies
 foreach x in $dummies {
@@ -263,6 +267,10 @@ gen borrowed=0
 replace borrowed=1 if b12q4!=. & b12q4!=0
 bys HHID: egen sborrowed=sum(borrowed)
 
+* Number of loans
+gen loan=1
+bys HHID: egen sloan=sum(loan)
+
 * Details by sources
 ta lender, gen(lender_)
 forvalues i=1/5 {
@@ -289,7 +297,7 @@ rename spurpose_5 spurpose_farmbusi
 
 * Selections
 global dummies sborrowed slender_other slender_bank slender_moneylender slender_relafrien slender_fininstit spurpose_other spurpose_housing spurpose_education spurpose_health spurpose_farmbusi
-keep HHID $dummies
+keep HHID $dummies sloan
 
 * Recode dummies
 foreach x in $dummies {
@@ -382,6 +390,10 @@ gen borrowed=0
 replace borrowed=1 if b12q4!=. & b12q4!=0
 bys HHID: egen sborrowed=sum(borrowed)
 
+* Number of loans
+gen loan=1
+bys HHID: egen sloan=sum(loan)
+
 * Details by sources
 ta lender, gen(lender_)
 forvalues i=1/5 {
@@ -408,7 +420,7 @@ rename spurpose_5 spurpose_farmbusi
 
 * Selections
 global dummies sborrowed slender_other slender_bank slender_moneylender slender_relafrien slender_fininstit spurpose_other spurpose_housing spurpose_education spurpose_health spurpose_farmbusi
-keep HHID $dummies
+keep HHID $dummies sloan
 
 * Recode dummies
 foreach x in $dummies {
@@ -464,6 +476,7 @@ ta spurpose_education Sector [aweight=MLT], col nofreq
 ta spurpose_health Sector [aweight=MLT], col nofreq
 ta spurpose_farmbusi Sector [aweight=MLT], col nofreq
 tabstat samount if sborrowed==1 [aweight=MLT], stat(n mean) by(Sector)
+tabstat sloan if sborrowed==1 [aweight=MLT], stat(n mean) by(Sector)
 cls
 * In Tamil Nadu
 keep if State==33
@@ -477,6 +490,7 @@ ta spurpose_education Sector [aweight=MLT], col nofreq
 ta spurpose_health Sector [aweight=MLT], col nofreq
 ta spurpose_farmbusi Sector [aweight=MLT], col nofreq
 tabstat samount if sborrowed==1 [aweight=MLT], stat(n mean) by(Sector)
+tabstat sloan if sborrowed==1 [aweight=MLT], stat(n mean) by(Sector)
 
 
 ********** LAST 5 YEARS
@@ -492,6 +506,8 @@ ta spurpose_housing Sector [aweight=MLT], col nofreq
 ta spurpose_education Sector [aweight=MLT], col nofreq
 ta spurpose_health Sector [aweight=MLT], col nofreq
 ta spurpose_farmbusi Sector [aweight=MLT], col nofreq
+tabstat sloan if sborrowed==1 [aweight=MLT], stat(n mean) by(Sector)
+
 cls
 * In Tamil Nadu
 keep if State==33
@@ -504,6 +520,7 @@ ta spurpose_housing Sector [aweight=MLT], col nofreq
 ta spurpose_education Sector [aweight=MLT], col nofreq
 ta spurpose_health Sector [aweight=MLT], col nofreq
 ta spurpose_farmbusi Sector [aweight=MLT], col nofreq
+tabstat sloan if sborrowed==1 [aweight=MLT], stat(n mean) by(Sector)
 
 
 ********** LAST YEAR
@@ -519,6 +536,8 @@ ta spurpose_housing Sector [aweight=MLT], col nofreq
 ta spurpose_education Sector [aweight=MLT], col nofreq
 ta spurpose_health Sector [aweight=MLT], col nofreq
 ta spurpose_farmbusi Sector [aweight=MLT], col nofreq
+tabstat sloan if sborrowed==1 [aweight=MLT], stat(n mean) by(Sector)
+
 cls
 * In Tamil Nadu
 keep if State==33
@@ -531,6 +550,7 @@ ta spurpose_housing Sector [aweight=MLT], col nofreq
 ta spurpose_education Sector [aweight=MLT], col nofreq
 ta spurpose_health Sector [aweight=MLT], col nofreq
 ta spurpose_farmbusi Sector [aweight=MLT], col nofreq
+tabstat sloan if sborrowed==1 [aweight=MLT], stat(n mean) by(Sector)
 
 ****************************************
 * END
