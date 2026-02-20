@@ -56,162 +56,46 @@ save"IndianHHdebt_v01.dta", replace
 
 
 ****************************************
-* All Indian households
+* All India
 ****************************************
-use"IndianHHdebt_v01.dta", clear
 
-*** Selection
-fre level
+********** HOUSEHOLD LEVEL: NSSO vs IHDS
+use"IndianHHdebt_v01.dta", clear
+*
 keep if level==1
-fre area
 keep if area==1
-fre rural
 keep if rural==1
-fre timeperiod
 keep if timeperiod==1
 drop if source==3 & year>2013
-
-*** Graphs
-* All lenders
-graph bar indebted, over(data) ylabel(0(20)100) title("All lenders") ytitle("Percent") name(global, replace)
-*
-graph bar indebted, over(data) ylabel(0(20)100) title("Households in debt over the last 5 years in India") ytitle("Percent") name(g1, replace)
-graph export "graph/Global_india_5.png", replace
-
-
-
-* Bank
-graph bar l_bank, over(data) ylabel(0(20)100) title("Banks") ytitle("Percent") name(bank, replace)
-
-* Moneylenders
-graph bar l_moneylender, over(data) ylabel(0(20)100) title("Moneylenders") ytitle("Percent") name(ml, replace)
-
-* Relatives
-graph bar l_relatives, over(data) ylabel(0(20)100) title("Relatives") ytitle("Percent") name(relatives, replace)
-
-* Combine
-graph combine global bank ml relatives, title("Households in debt over the last 5 years in India")
-graph export "graph/Global_india_5.pdf", replace
-graph export "graph/Global_india_5.png", replace
+* 
+twoway ///
+(connected indebted year if source==2, color(plb1)) ///
+(connected indebted year if source==3, color(ply1)) ///
+, ylabel(0(20)100) xlabel(2003(2)2013) ///
+ytitle("Percent") xtitle("") ///
+legend(order(1 "IHDS" 2 "NSSO") pos(6) col(3)) ///
+title("Households in debt over the last 5 years in India") name(india1, replace)
+graph export "graph/India_nsso_ihds.png", replace
 
 
-****************************************
-* END
-
-
-
-
-
-
-
-
-
-
-****************************************
-* All Indian indiv from Findex
-****************************************
+********** INDIVIDUAL LEVEL: Findex
 use"IndianHHdebt_v01.dta", clear
-
-*** Selection
+*
 keep if source==1
 keep if rural==1
-
-*** Graphs
+*
 twoway ///
-(connected indebted year, color(plb1)) ///
-(connected l_bank year, color(ply1)) ///
-(connected l_relatives year, color(plr1)) ///
-, ylabel(0(20)100) xlabel(2011(1)2024) ///
+(connected indebted year, color(plr1)) ///
+, ylabel(0(20)100) xlabel(2011(2)2024) ///
 ytitle("Percent") xtitle("") ///
-legend(order(1 "All lenders" 2 "Bank" 3 "Relatives") pos(6) col(3)) ///
-title("Individuals in debt over the last year in India (Findex data)") name(global, replace)
-graph export "graph/Global_findex_india_1.pdf", replace
-graph export "graph/Global_findex_india_1.png", replace
+legend(order(1 "Findex") pos(6) col(1) on) ///
+title("Individuals in debt over the last year in India") name(findex, replace)
+graph export "graph/India_findex.png", replace
 
 
-****************************************
-* END
-
-
-
-
-
-
-
-
-
-****************************************
-* Rural Tamil indiv from ODRIIS
-****************************************
-use"IndianHHdebt_v01.dta", clear
-
-*** Selection
-keep if source==4
-keep if level==2
-keep if timeperiod==2
-
-*** Graphs
-twoway ///
-(connected indebted year, color(plb1)) ///
-(connected l_bank year, color(ply1)) ///
-(connected l_relatives year, color(plr1)) ///
-, ylabel(0(20)100) xlabel(2016(1)2020) ///
-ytitle("Percent") xtitle("") ///
-legend(order(1 "All lenders" 2 "Bank" 3 "Relatives") pos(6) col(3)) ///
-title("Individuals in debt over the last year in rural Tamil Nadu (ODRIIS data)") name(global, replace)
-graph export "graph/Rural_odriis_tamil_1.pdf", replace
-graph export "graph/Rural_odriis_tamil_1.png", replace
-
-
-****************************************
-* END
-
-
-
-
-
-
-
-
-
-
-
-
-
-****************************************
-* All Indian households from rural area
-****************************************
-use"IndianHHdebt_v01.dta", clear
-
-*** Selection
-fre level
-keep if level==1
-fre area
-keep if area==1
-fre rural
-keep if rural==2
-fre timeperiod
-keep if timeperiod==1
-drop if source==3 & year>2013
-
-
-*** Graphs
-* All lenders
-graph bar indebted, over(data) ylabel(0(20)100) title("All lenders") ytitle("Percent") name(global, replace)
-
-* Bank
-graph bar l_bank, over(data) ylabel(0(20)100) title("Banks") ytitle("Percent") name(bank, replace)
-
-* Moneylenders
-graph bar l_moneylender, over(data) ylabel(0(20)100) title("Moneylenders") ytitle("Percent") name(ml, replace)
-
-* Relatives
-graph bar l_relatives, over(data) ylabel(0(20)100) title("Relatives") ytitle("Percent") name(relatives, replace)
-
-* Combine
-graph combine global bank ml relatives, title("Rural households in debt over the last 5 years in India")
-graph export "graph/Rural_india_5.pdf", replace
-graph export "graph/Rural_india_5.png", replace
+********** Combine
+graph combine india1 findex
+graph export "graph/India_nsso_ihds_findex.png", replace
 
 ****************************************
 * END
