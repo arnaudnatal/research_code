@@ -24,41 +24,34 @@ Rural		Sector==1
 ****************************************
 * Number of households
 ****************************************
-use"raw/NSSO2013/Visit_1_Block_3_Household_Characteristics.dta", replace
+use"raw/NSSO2003/Visit_1_2_Block_3_Household_Characteristics.dta", replace
 
 * Cleaning
-destring State State_District Sector, replace
+destring State District Sector, replace
 label define Sector 1"Rural" 2"Urban"
 label values Sector Sector
 
 ***** How many households in India?
 preserve
-keep HHID Sector State State_District Weight_SC
+keep HHID Sector State District Weight
 duplicates drop
 count
 ta Sector
+gen totmaster=1
 save"totHH", replace
 restore
-*110,800 households in 2013
+*139,041 households in 2003
 
 
 ***** How many in Tamil Nadu?
 count if State==33
-* 6,842 households in Tamil Nadu
+* 10,727 households in Tamil Nadu in 2003
 
 
 ***** How many in rural Tamil Nadu?
 count if State==33 & Sector==1
-* 3,429 households in rural Tamil Nadu
+* 5,496 households in rural Tamil Nadu in 2003
 
-
-***** How many in rural Cuddalore and Viluppuram?
-preserve
-keep if State_District==3307 | State_District==3318
-keep if Sector==1
-count
-restore
-* 364 households in rural Cuddalore or Viluppuram districts
 
 ****************************************
 * END
@@ -72,77 +65,97 @@ restore
 
 
 ****************************************
+* Merge les deux bases de données
+****************************************
+use"raw/NSSO2003/Visit_1_2_Block_15_part_1_cashloans.dta", clear
+
+* Unique?
+duplicates tag HHID B15_2_q1, gen(tag)
+ta tag
+drop tag
+
+* Merge
+merge 1:m HHID B15_2_q1 using "raw/NSSO2003/Visit_1_2_Block_15_part_2_cashloans.dta", keepusing(B15_2_q17 B15_2_q18 B15_2_q19 B15_2_q20 B15_2_q21 B15_2_q22 B15_2_q23 B15_2_q24)
+drop if _merge==2
+drop _merge
+
+* Unique?
+duplicates tag HHID B15_2_q1, gen(tag)
+bys HHID: egen stag=sum(tag)
+drop tag
+sort stag HHID
+drop if stag!=0
+drop stag
+
+save"raw/NSSO2003/Visit_1_2_Block_15_cashloans.dta", replace
+
+****************************************
+* END
+
+
+
+
+
+
+****************************************
 * Outstanding debt at the time of the survey
 * Comme dans les rapports NSSO
 ****************************************
-use"raw/NSSO2013/Visit_1_Block_14_cashloans.dta", replace
+use"raw/NSSO2003/Visit_1_2_Block_15_cashloans.dta", clear
 
 * Cleaning 1
-/*
-99 c'est quand il n'y a pas de prêts, alors pourquoi il y a quand même des montants ?
-*/
-*replace b14_q5=. if b14_q1=="99"
-*replace b14_q16=. if b14_q1=="99"
-*replace b14_q17=. if b14_q1=="99"
-drop if b14_q1=="99"
+drop if B15_2_q1=="99"
 
 * Cleaning 2
-/*
-pour les statistiques du rapport, NSSO utilise b14_q17 pour l'IOI et l'outstanding debt, donc je fais pareil.
-Mais je ne comprends pas la diff avec la variable b14_q16 qui a moins de manquants.
-*/
-drop if b14_q17==.
-
-* Les prêts en cours datent de quand ?
-ta b14_q3
-
+drop if B15_2_q24==.
 
 * To keep
-keep HHID Sector State State_District b14_q1 b14_q6 b14_q11 b14_q17 Weight_SC
-destring Sector State State_District, replace
-destring b14_q1 b14_q6 b14_q11, replace
+keep HHID Sector State District B15_2_q6 B15_2_q11 B15_2_q24 Weight
+destring Sector State District, replace
+destring B15_2_q6 B15_2_q11, replace
 
 * Label  sources + recat
-fre b14_q6
-label define b14_q6 1"Gov" 2"Coop bank" 3"Bank" 4"Insur" 5"Provident fund" 6"Finan instit" 7"Finan comp" 8"SHG bank" 9"Others" 10"SHG non-bank" 11"Other instit agencies" 12"Landlord" 13"Agri moneylender" 14"Pro moneylender" 15"Input supplier" 16"Relatives and friends" 17"Doctors, lawyers, other pro"
-label values b14_q6 b14_q6
-fre b14_q6
+fre B15_2_q6
+label define B15_2_q6 1"Gov" 2"Coop bank" 3"Bank" 4"Insur" 5"Provident fund" 6"Finan instit" 7"Finan comp" 8"other instit agenc" 9"Landlord" 10"Agri moneylender" 11"Pro moneylender" 12"trader" 13"Relatives and friends" 14"Doctors, lawyers, other pro" 99"others"
+label values B15_2_q6 B15_2_q6
+fre B15_2_q6
 gen lender=0
 label define lender 0"Other" 1"Bank" 2"Moneylender" 3"Relatives/friends" 4"Fin instit"
 label values lender lender
-replace lender=1 if b14_q6==2
-replace lender=1 if b14_q6==3
-replace lender=2 if b14_q6==13
-replace lender=2 if b14_q6==14
-replace lender=3 if b14_q6==16
-replace lender=4 if b14_q6==6
-replace lender=4 if b14_q6==7
+replace lender=1 if B15_2_q6==2
+replace lender=1 if B15_2_q6==3
+replace lender=2 if B15_2_q6==10
+replace lender=2 if B15_2_q6==11
+replace lender=3 if B15_2_q6==13
+replace lender=4 if B15_2_q6==6
+replace lender=4 if B15_2_q6==7
 ta lender
 
 * Label purposes
-fre b14_q11
-label define b14_q11 1"Cap exp farm" 2"Current exp farm" 3"Cap exp non-farm" 4"Current exp non-farm" 5"Exp litigation" 6"Debt repay" 7"Finan invest" 8"Education" 9"Others" 10"Medical treatment" 11"Housing" 12"Other exp"
-label values b14_q11 b14_q11
-fre b14_q11
+fre B15_2_q11
+label define B15_2_q11 1"Cap exp farm" 2"Current exp farm" 3"Cap exp non-farm" 4"Current exp non-farm" 5"Household expenditure" 6"Litige" 7"Repay debt" 8"Finan invest"
+label values B15_2_q11 B15_2_q11
+fre B15_2_q11
 gen purpose=0
 label define purpose 0"Other" 1"Housing" 2"Education" 3"Health" 4"Farm/business"
 label values purpose purpose
-replace purpose=1 if b14_q11==11
-replace purpose=2 if b14_q11==8
-replace purpose=3 if b14_q11==10
-replace purpose=4 if b14_q11==1
-replace purpose=4 if b14_q11==2
-replace purpose=4 if b14_q11==3
-replace purpose=4 if b14_q11==4
+replace purpose=4 if B15_2_q11==1
+replace purpose=4 if B15_2_q11==2
+replace purpose=4 if B15_2_q11==3
+replace purpose=4 if B15_2_q11==4
 ta purpose
 
 * Borrowed
 gen borrowed=0
-replace borrowed=1 if b14_q17!=. & b14_q17!=0
+replace borrowed=1 if B15_2_q24!=. & B15_2_q24!=0
 bys HHID: egen sborrowed=sum(borrowed)
 
+* Number of loans
+gen loan=1
+bys HHID: egen sloan=sum(loan)
+
 * Amount borrowed
-bys HHID: egen samount=sum(b14_q17)
+bys HHID: egen samount=sum(B15_2_q24)
 
 * Details by sources
 ta lender, gen(lender_)
@@ -158,19 +171,16 @@ rename slender_5 slender_fininstit
 
 * Details by reason
 ta purpose, gen(purpose_)
-forvalues i=1/5 {
+forvalues i=1/2 {
 bys HHID: egen spurpose_`i'=sum(purpose_`i')
 }
-drop purpose_1-purpose_5
+drop purpose_1-purpose_2
 rename spurpose_1 spurpose_other
-rename spurpose_2 spurpose_housing
-rename spurpose_3 spurpose_education
-rename spurpose_4 spurpose_health
-rename spurpose_5 spurpose_farmbusi
+rename spurpose_2 spurpose_farmbusi
 
 * Selections
-global dummies sborrowed slender_other slender_bank slender_moneylender slender_relafrien slender_fininstit spurpose_other spurpose_housing spurpose_education spurpose_health spurpose_farmbusi
-keep HHID samount $dummies
+global dummies sborrowed slender_other slender_bank slender_moneylender slender_relafrien slender_fininstit spurpose_other spurpose_farmbusi
+keep HHID samount sloan $dummies
 
 * Recode dummies
 foreach x in $dummies {
@@ -182,16 +192,17 @@ duplicates drop
 
 * Merge other HH
 merge 1:1 HHID using "totHH"
+drop if _merge==1
 drop _merge
 
 * Recode dummies
 recode $dummies (.=0)
 
 * Order
-order HHID State State_District Sector Weight_SC
+order HHID State District Sector Weight
 
 * Save
-save"NSSO2013-Outstanding_HH", replace
+save"NSSO2003-Outstanding_HH", replace
 ****************************************
 * END
 
@@ -208,67 +219,61 @@ save"NSSO2013-Outstanding_HH", replace
 ****************************************
 * Any debt in the last 5 years
 ****************************************
-use"raw/NSSO2013/Visit_1_Block_14_cashloans.dta", replace
+use"raw/NSSO2003/Visit_1_2_Block_15_cashloans.dta", clear
 
 * Cleaning 1
-/*
-99 c'est quand il n'y a pas de prêts, alors pourquoi il y a quand même des montants ?
-*/
-*replace b14_q5=. if b14_q1=="99"
-*replace b14_q16=. if b14_q1=="99"
-*replace b14_q17=. if b14_q1=="99"
-drop if b14_q1=="99"
+drop if B15_2_q1=="99"
 
 * Cleaning 2
-/*
-Je ne garde que les 5 dernières années
-*/
-drop if b14_q3<2008
-ta b14_q3
+destring B15_2_q3, replace
+drop if B15_2_q3<1998
+drop if B15_2_q3>2003
+ta B15_2_q3
 
 * To keep
-keep HHID Sector State State_District b14_q1 b14_q6 b14_q11 b14_q5 Weight_SC
-destring Sector State State_District, replace
-destring b14_q1 b14_q6 b14_q11, replace
+keep HHID Sector State District B15_2_q6 B15_2_q11 B15_2_q5 Weight
+destring Sector State District, replace
+destring B15_2_q6 B15_2_q11, replace
 
 * Label  sources + recat
-fre b14_q6
-label define b14_q6 1"Gov" 2"Coop bank" 3"Bank" 4"Insur" 5"Provident fund" 6"Finan instit" 7"Finan comp" 8"SHG bank" 9"Others" 10"SHG non-bank" 11"Other instit agencies" 12"Landlord" 13"Agri moneylender" 14"Pro moneylender" 15"Input supplier" 16"Relatives and friends" 17"Doctors, lawyers, other pro"
-label values b14_q6 b14_q6
-fre b14_q6
+fre B15_2_q6
+label define B15_2_q6 1"Gov" 2"Coop bank" 3"Bank" 4"Insur" 5"Provident fund" 6"Finan instit" 7"Finan comp" 8"other instit agenc" 9"Landlord" 10"Agri moneylender" 11"Pro moneylender" 12"trader" 13"Relatives and friends" 14"Doctors, lawyers, other pro" 99"others"
+label values B15_2_q6 B15_2_q6
+fre B15_2_q6
 gen lender=0
 label define lender 0"Other" 1"Bank" 2"Moneylender" 3"Relatives/friends" 4"Fin instit"
 label values lender lender
-replace lender=1 if b14_q6==2
-replace lender=1 if b14_q6==3
-replace lender=2 if b14_q6==13
-replace lender=2 if b14_q6==14
-replace lender=3 if b14_q6==16
-replace lender=4 if b14_q6==6
-replace lender=4 if b14_q6==7
+replace lender=1 if B15_2_q6==2
+replace lender=1 if B15_2_q6==3
+replace lender=2 if B15_2_q6==10
+replace lender=2 if B15_2_q6==11
+replace lender=3 if B15_2_q6==13
+replace lender=4 if B15_2_q6==6
+replace lender=4 if B15_2_q6==7
 ta lender
 
 * Label purposes
-fre b14_q11
-label define b14_q11 1"Cap exp farm" 2"Current exp farm" 3"Cap exp non-farm" 4"Current exp non-farm" 5"Exp litigation" 6"Debt repay" 7"Finan invest" 8"Education" 9"Others" 10"Medical treatment" 11"Housing" 12"Other exp"
-label values b14_q11 b14_q11
-fre b14_q11
+fre B15_2_q11
+label define B15_2_q11 1"Cap exp farm" 2"Current exp farm" 3"Cap exp non-farm" 4"Current exp non-farm" 5"Household expenditure" 6"Litige" 7"Repay debt" 8"Finan invest"
+label values B15_2_q11 B15_2_q11
+fre B15_2_q11
 gen purpose=0
 label define purpose 0"Other" 1"Housing" 2"Education" 3"Health" 4"Farm/business"
 label values purpose purpose
-replace purpose=1 if b14_q11==11
-replace purpose=2 if b14_q11==8
-replace purpose=3 if b14_q11==10
-replace purpose=4 if b14_q11==1
-replace purpose=4 if b14_q11==2
-replace purpose=4 if b14_q11==3
-replace purpose=4 if b14_q11==4
+replace purpose=4 if B15_2_q11==1
+replace purpose=4 if B15_2_q11==2
+replace purpose=4 if B15_2_q11==3
+replace purpose=4 if B15_2_q11==4
 ta purpose
 
 * Borrowed
 gen borrowed=0
-replace borrowed=1 if b14_q5!=. & b14_q5!=0
+replace borrowed=1 if B15_2_q5!=. & B15_2_q5!=0
 bys HHID: egen sborrowed=sum(borrowed)
+
+* Number of loans
+gen loan=1
+bys HHID: egen sloan=sum(loan)
 
 * Details by sources
 ta lender, gen(lender_)
@@ -284,19 +289,16 @@ rename slender_5 slender_fininstit
 
 * Details by reason
 ta purpose, gen(purpose_)
-forvalues i=1/5 {
+forvalues i=1/2 {
 bys HHID: egen spurpose_`i'=sum(purpose_`i')
 }
-drop purpose_1-purpose_5
+drop purpose_1-purpose_2
 rename spurpose_1 spurpose_other
-rename spurpose_2 spurpose_housing
-rename spurpose_3 spurpose_education
-rename spurpose_4 spurpose_health
-rename spurpose_5 spurpose_farmbusi
+rename spurpose_2 spurpose_farmbusi
 
 * Selections
-global dummies sborrowed slender_other slender_bank slender_moneylender slender_relafrien slender_fininstit spurpose_other spurpose_housing spurpose_education spurpose_health spurpose_farmbusi
-keep HHID $dummies
+global dummies sborrowed slender_other slender_bank slender_moneylender slender_relafrien slender_fininstit spurpose_other spurpose_farmbusi
+keep HHID sloan $dummies
 
 * Recode dummies
 foreach x in $dummies {
@@ -308,16 +310,17 @@ duplicates drop
 
 * Merge other HH
 merge 1:1 HHID using "totHH"
+drop if _merge==1
 drop _merge
 
 * Recode dummies
 recode $dummies (.=0)
 
 * Order
-order HHID State State_District Sector Weight_SC
+order HHID State District Sector Weight
 
 * Save
-save"NSSO2013-Debt5years_HH", replace
+save"NSSO2003-Debt5years_HH", replace
 ****************************************
 * END
 
@@ -337,67 +340,61 @@ save"NSSO2013-Debt5years_HH", replace
 ****************************************
 * Any debt in the last year
 ****************************************
-use"raw/NSSO2013/Visit_1_Block_14_cashloans.dta", replace
+use"raw/NSSO2003/Visit_1_2_Block_15_cashloans.dta", clear
 
 * Cleaning 1
-/*
-99 c'est quand il n'y a pas de prêts, alors pourquoi il y a quand même des montants ?
-*/
-*replace b14_q5=. if b14_q1=="99"
-*replace b14_q16=. if b14_q1=="99"
-*replace b14_q17=. if b14_q1=="99"
-drop if b14_q1=="99"
+drop if B15_2_q1=="99"
 
 * Cleaning 2
-/*
-Je ne garde que les 5 dernières années
-*/
-drop if b14_q3<2011
-ta b14_q3
+destring B15_2_q3, replace
+drop if B15_2_q3<2002
+drop if B15_2_q3>2003
+ta B15_2_q3
 
 * To keep
-keep HHID Sector State State_District b14_q1 b14_q6 b14_q11 b14_q5 Weight_SC
-destring Sector State State_District, replace
-destring b14_q1 b14_q6 b14_q11, replace
+keep HHID Sector State District B15_2_q6 B15_2_q11 B15_2_q5 Weight
+destring Sector State District, replace
+destring B15_2_q6 B15_2_q11, replace
 
 * Label  sources + recat
-fre b14_q6
-label define b14_q6 1"Gov" 2"Coop bank" 3"Bank" 4"Insur" 5"Provident fund" 6"Finan instit" 7"Finan comp" 8"SHG bank" 9"Others" 10"SHG non-bank" 11"Other instit agencies" 12"Landlord" 13"Agri moneylender" 14"Pro moneylender" 15"Input supplier" 16"Relatives and friends" 17"Doctors, lawyers, other pro"
-label values b14_q6 b14_q6
-fre b14_q6
+fre B15_2_q6
+label define B15_2_q6 1"Gov" 2"Coop bank" 3"Bank" 4"Insur" 5"Provident fund" 6"Finan instit" 7"Finan comp" 8"other instit agenc" 9"Landlord" 10"Agri moneylender" 11"Pro moneylender" 12"trader" 13"Relatives and friends" 14"Doctors, lawyers, other pro" 99"others"
+label values B15_2_q6 B15_2_q6
+fre B15_2_q6
 gen lender=0
 label define lender 0"Other" 1"Bank" 2"Moneylender" 3"Relatives/friends" 4"Fin instit"
 label values lender lender
-replace lender=1 if b14_q6==2
-replace lender=1 if b14_q6==3
-replace lender=2 if b14_q6==13
-replace lender=2 if b14_q6==14
-replace lender=3 if b14_q6==16
-replace lender=4 if b14_q6==6
-replace lender=4 if b14_q6==7
+replace lender=1 if B15_2_q6==2
+replace lender=1 if B15_2_q6==3
+replace lender=2 if B15_2_q6==10
+replace lender=2 if B15_2_q6==11
+replace lender=3 if B15_2_q6==13
+replace lender=4 if B15_2_q6==6
+replace lender=4 if B15_2_q6==7
 ta lender
 
 * Label purposes
-fre b14_q11
-label define b14_q11 1"Cap exp farm" 2"Current exp farm" 3"Cap exp non-farm" 4"Current exp non-farm" 5"Exp litigation" 6"Debt repay" 7"Finan invest" 8"Education" 9"Others" 10"Medical treatment" 11"Housing" 12"Other exp"
-label values b14_q11 b14_q11
-fre b14_q11
+fre B15_2_q11
+label define B15_2_q11 1"Cap exp farm" 2"Current exp farm" 3"Cap exp non-farm" 4"Current exp non-farm" 5"Household expenditure" 6"Litige" 7"Repay debt" 8"Finan invest"
+label values B15_2_q11 B15_2_q11
+fre B15_2_q11
 gen purpose=0
 label define purpose 0"Other" 1"Housing" 2"Education" 3"Health" 4"Farm/business"
 label values purpose purpose
-replace purpose=1 if b14_q11==11
-replace purpose=2 if b14_q11==8
-replace purpose=3 if b14_q11==10
-replace purpose=4 if b14_q11==1
-replace purpose=4 if b14_q11==2
-replace purpose=4 if b14_q11==3
-replace purpose=4 if b14_q11==4
+replace purpose=4 if B15_2_q11==1
+replace purpose=4 if B15_2_q11==2
+replace purpose=4 if B15_2_q11==3
+replace purpose=4 if B15_2_q11==4
 ta purpose
 
 * Borrowed
 gen borrowed=0
-replace borrowed=1 if b14_q5!=. & b14_q5!=0
+replace borrowed=1 if B15_2_q5!=. & B15_2_q5!=0
 bys HHID: egen sborrowed=sum(borrowed)
+
+* Number of loans
+gen loan=1
+bys HHID: egen sloan=sum(loan)
 
 * Details by sources
 ta lender, gen(lender_)
@@ -413,19 +410,16 @@ rename slender_5 slender_fininstit
 
 * Details by reason
 ta purpose, gen(purpose_)
-forvalues i=1/5 {
+forvalues i=1/2 {
 bys HHID: egen spurpose_`i'=sum(purpose_`i')
 }
-drop purpose_1-purpose_5
+drop purpose_1-purpose_2
 rename spurpose_1 spurpose_other
-rename spurpose_2 spurpose_housing
-rename spurpose_3 spurpose_education
-rename spurpose_4 spurpose_health
-rename spurpose_5 spurpose_farmbusi
+rename spurpose_2 spurpose_farmbusi
 
 * Selections
-global dummies sborrowed slender_other slender_bank slender_moneylender slender_relafrien slender_fininstit spurpose_other spurpose_housing spurpose_education spurpose_health spurpose_farmbusi
-keep HHID $dummies
+global dummies sborrowed slender_other slender_bank slender_moneylender slender_relafrien slender_fininstit spurpose_other spurpose_farmbusi
+keep HHID sloan $dummies
 
 * Recode dummies
 foreach x in $dummies {
@@ -437,19 +431,19 @@ duplicates drop
 
 * Merge other HH
 merge 1:1 HHID using "totHH"
+drop if _merge==1
 drop _merge
 
 * Recode dummies
 recode $dummies (.=0)
 
 * Order
-order HHID State State_District Sector Weight_SC
+order HHID State District Sector Weight
 
 * Save
-save"NSSO2013-Debtlastyear_HH", replace
+save"NSSO2003-Debtlastyear_HH", replace
 ****************************************
 * END
-
 
 
 
@@ -475,19 +469,18 @@ save"NSSO2013-Debtlastyear_HH", replace
 ****************************************
 
 ********** OUTSTANDING
-use"NSSO2013-Outstanding_HH", clear
+use"NSSO2003-Outstanding_HH", clear
 cls
 * Incidence of indebtedness in All India
-ta sborrowed Sector [aweight=Weight_SC], col nofreq
-ta slender_bank Sector [aweight=Weight_SC], col nofreq
-ta slender_moneylender Sector [aweight=Weight_SC], col nofreq
-ta slender_relafrien Sector [aweight=Weight_SC], col nofreq
-ta slender_fininstit Sector [aweight=Weight_SC], col nofreq
-ta spurpose_housing Sector [aweight=Weight_SC], col nofreq
-ta spurpose_education Sector [aweight=Weight_SC], col nofreq
-ta spurpose_health Sector [aweight=Weight_SC], col nofreq
-ta spurpose_farmbusi Sector [aweight=Weight_SC], col nofreq
-tabstat samount if sborrowed==1 [aweight=Weight_SC], stat(n mean) by(Sector)
+ta sborrowed Sector, col
+ta sborrowed Sector [aweight=Weight], col
+ta slender_bank Sector [aweight=Weight], col nofreq
+ta slender_moneylender Sector [aweight=Weight], col nofreq
+ta slender_relafrien Sector [aweight=Weight], col nofreq
+ta slender_fininstit Sector [aweight=Weight], col nofreq
+ta spurpose_farmbusi Sector [aweight=Weight], col nofreq
+tabstat samount if sborrowed==1 [aweight=Weight], stat(n mean) by(Sector)
+tabstat sloan if sborrowed==1 [aweight=Weight], stat(n mean) by(Sector)
 cls
 * In Tamil Nadu
 keep if State==33
