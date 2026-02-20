@@ -29,6 +29,10 @@ ta loandate // ok
 gen borrowed=0
 replace borrowed=1 if loanamount>0
 
+***** Nb loans
+gen loan=1
+bys HHID2010: egen sloan=sum(loan)
+
 
 ***** Dummy lender and borrower
 gen relafriend=lender4_rela+lender4_frie
@@ -38,7 +42,7 @@ gen funmar=given_marr+given_deat
 
 global var lender4_bank lender4_micr lender4_mone lender_empl relafriend lender4_shop lender4_pawn otherinfo activity given_hous given_educ funmar given_heal
 
-keep HHID2010 borrowed $var
+keep HHID2010 borrowed $var sloan
 
 foreach x in borrowed $var {
 bysort HHID2010: egen s`x'=sum(`x')
@@ -74,7 +78,7 @@ ta borrowed
 foreach x in $var {
 ta `x'
 }
-
+sum sloan if borrowed==1
 *
 ****************************************
 * END
@@ -104,6 +108,9 @@ drop if loandate<mdy(1, 1, 2009)
 gen borrowed=0
 replace borrowed=1 if loanamount>0
 
+***** Nb loans
+gen loan=1
+bys HHID2010: egen sloan=sum(loan)
 
 ***** Dummy lender and borrower
 gen relafriend=lender4_rela+lender4_frie
@@ -113,7 +120,7 @@ gen funmar=given_marr+given_deat
 
 global var lender4_bank lender4_micr lender4_mone lender_empl relafriend lender4_shop lender4_pawn otherinfo activity given_hous given_educ funmar given_heal
 
-keep HHID2010 borrowed $var
+keep HHID2010 borrowed $var sloan
 
 foreach x in borrowed $var {
 bysort HHID2010: egen s`x'=sum(`x')
@@ -149,7 +156,7 @@ ta borrowed
 foreach x in $var {
 ta `x'
 }
-
+sum sloan if borrowed==1
 *
 ****************************************
 * END
@@ -174,6 +181,10 @@ drop if loansettled==1
 gen borrowed=0
 replace borrowed=1 if loanamount>0
 
+***** Nb loans
+gen loan=1
+bys HHID2010: egen sloan=sum(loan)
+
 ***** Outstanding amount
 bys HHID2010 : egen sbalance=sum(loanbalance2)
 
@@ -185,7 +196,7 @@ gen funmar=given_marr+given_deat
 
 global var lender4_bank lender4_micr lender4_mone lender_empl relafriend lender4_shop lender4_pawn otherinfo activity given_hous given_educ funmar given_heal
 
-keep HHID2010 borrowed sbalance $var
+keep HHID2010 borrowed sbalance $var sloan
 
 foreach x in borrowed $var {
 bysort HHID2010: egen s`x'=sum(`x')
@@ -222,7 +233,7 @@ sum sbalance
 foreach x in $var {
 ta `x'
 }
-
+sum sloan if borrowed==1
 *
 ****************************************
 * END
@@ -253,6 +264,9 @@ drop if loandate<mdy(1, 1, 2012)
 gen borrowed=0
 replace borrowed=1 if loanamount>0
 
+***** Nb loans
+gen loan=1
+bys HHID2016: egen sloan=sum(loan)
 
 ***** Dummy lender and borrower
 gen relafriend=lender4_rela+lender4_frie
@@ -262,7 +276,7 @@ gen funmar=given_marr+given_deat
 
 global var lender4_bank lender4_micr lender4_mone lender_empl relafriend lender4_shop lender4_pawn otherinfo activity given_hous given_educ funmar given_heal
 
-keep HHID2016 borrowed $var
+keep HHID2016 borrowed $var sloan
 
 foreach x in borrowed $var {
 bysort HHID2016: egen s`x'=sum(`x')
@@ -298,7 +312,7 @@ ta borrowed
 foreach x in $var {
 ta `x'
 }
-
+sum sloan if borrowed==1
 *
 ****************************************
 * END
@@ -324,6 +338,9 @@ drop if loandate<mdy(1, 1, 2015)
 gen borrowed=0
 replace borrowed=1 if loanamount>0
 
+***** Nb loans
+gen loan=1
+bys HHID2016: egen sloan=sum(loan)
 
 ***** Dummy lender and borrower
 gen relafriend=lender4_rela+lender4_frie
@@ -333,7 +350,7 @@ gen funmar=given_marr+given_deat
 
 global var lender4_bank lender4_micr lender4_mone lender_empl relafriend lender4_shop lender4_pawn otherinfo activity given_hous given_educ funmar given_heal
 
-keep HHID2016 borrowed $var
+keep HHID2016 borrowed $var sloan
 
 foreach x in borrowed $var {
 bysort HHID2016: egen s`x'=sum(`x')
@@ -369,7 +386,7 @@ ta borrowed
 foreach x in $var {
 ta `x'
 }
-
+sum sloan if borrowed==1
 *
 ****************************************
 * END
@@ -398,6 +415,10 @@ drop if loansettled==1
 gen borrowed=0
 replace borrowed=1 if loanamount>0
 
+***** Nb loans
+gen loan=1
+bys HHID2016: egen sloan=sum(loan)
+
 ***** Outstanding amount
 bys HHID2016 : egen sbalance=sum(loanbalance2)
 
@@ -409,7 +430,7 @@ gen funmar=given_marr+given_deat
 
 global var lender4_bank lender4_micr lender4_mone lender_empl relafriend lender4_shop lender4_pawn otherinfo activity given_hous given_educ funmar given_heal
 
-keep HHID2016 borrowed sbalance $var
+keep HHID2016 borrowed sbalance $var sloan
 
 foreach x in borrowed $var {
 bysort HHID2016: egen s`x'=sum(`x')
@@ -446,7 +467,7 @@ sum sbalance
 foreach x in $var {
 ta `x'
 }
-
+sum sloan if borrowed==1
 *
 ****************************************
 * END
@@ -478,6 +499,9 @@ drop if loandate<mdy(1, 1, 2015)
 gen borrowed=0
 replace borrowed=1 if loanamount>0
 
+***** Nb loans
+gen loan=1
+bys HHID2020: egen sloan=sum(loan)
 
 ***** Dummy lender and borrower
 gen relafriend=lender4_rela+lender4_frie
@@ -487,7 +511,7 @@ gen funmar=given_marr+given_deat
 
 global var lender4_bank lender4_micr lender4_mone lender_empl relafriend lender4_shop lender4_pawn otherinfo activity given_hous given_educ funmar given_heal
 
-keep HHID2020 borrowed $var
+keep HHID2020 borrowed $var sloan
 
 foreach x in borrowed $var {
 bysort HHID2020: egen s`x'=sum(`x')
@@ -523,7 +547,7 @@ ta borrowed
 foreach x in $var {
 ta `x'
 }
-
+sum sloan if borrowed==1
 *
 ****************************************
 * END
@@ -549,6 +573,9 @@ drop if loandate<mdy(1, 1, 2019)
 gen borrowed=0
 replace borrowed=1 if loanamount>0
 
+***** Nb loans
+gen loan=1
+bys HHID2020: egen sloan=sum(loan)
 
 ***** Dummy lender and borrower
 gen relafriend=lender4_rela+lender4_frie
@@ -558,7 +585,7 @@ gen funmar=given_marr+given_deat
 
 global var lender4_bank lender4_micr lender4_mone lender_empl relafriend lender4_shop lender4_pawn otherinfo activity given_hous given_educ funmar given_heal
 
-keep HHID2020 borrowed $var
+keep HHID2020 borrowed $var sloan
 
 foreach x in borrowed $var {
 bysort HHID2020: egen s`x'=sum(`x')
@@ -594,7 +621,7 @@ ta borrowed
 foreach x in $var {
 ta `x'
 }
-
+sum sloan if borrowed==1
 *
 ****************************************
 * END
@@ -622,6 +649,10 @@ drop if loansettled==1
 gen borrowed=0
 replace borrowed=1 if loanamount>0
 
+***** Nb loans
+gen loan=1
+bys HHID2020: egen sloan=sum(loan)
+
 ***** Outstanding amount
 bys HHID2020 : egen sbalance=sum(loanbalance2)
 
@@ -633,7 +664,7 @@ gen funmar=given_marr+given_deat
 
 global var lender4_bank lender4_micr lender4_mone lender_empl relafriend lender4_shop lender4_pawn otherinfo activity given_hous given_educ funmar given_heal
 
-keep HHID2020 borrowed sbalance $var
+keep HHID2020 borrowed sbalance $var sloan
 
 foreach x in borrowed $var {
 bysort HHID2020: egen s`x'=sum(`x')
@@ -670,7 +701,7 @@ sum sbalance
 foreach x in $var {
 ta `x'
 }
-
+sum sloan if borrowed==1
 *
 ****************************************
 * END
