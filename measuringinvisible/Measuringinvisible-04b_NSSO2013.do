@@ -98,7 +98,7 @@ ta b14_q3
 
 
 * To keep
-keep HHID Sector State State_District b14_q1 b14_q6 b14_q11 b14_q17 Weight_SC
+keep HHID Sector State State_District b14_q1 b14_q6 b14_q11 b14_q17 Weight_SC b14_q5
 destring Sector State State_District, replace
 destring b14_q1 b14_q6 b14_q11, replace
 
@@ -144,6 +144,9 @@ bys HHID: egen sborrowed=sum(borrowed)
 * Amount borrowed
 bys HHID: egen samount=sum(b14_q17)
 
+* Average amount
+bys HHID: egen avloan=mean(b14_q5)
+
 * Number of loans
 gen loan=1
 bys HHID: egen sloan=sum(loan)
@@ -174,7 +177,7 @@ rename spurpose_5 spurpose_farmbusi
 
 * Selections
 global dummies sborrowed slender_other slender_bank slender_moneylender slender_relafrien slender_fininstit spurpose_other spurpose_housing spurpose_education spurpose_health spurpose_farmbusi
-keep HHID samount sloan $dummies
+keep HHID samount sloan $dummies avloan
 
 * Recode dummies
 foreach x in $dummies {
@@ -513,9 +516,9 @@ ta spurpose_housing Sector [aweight=Weight_SC], col nofreq
 ta spurpose_education Sector [aweight=Weight_SC], col nofreq
 ta spurpose_health Sector [aweight=Weight_SC], col nofreq
 ta spurpose_farmbusi Sector [aweight=Weight_SC], col nofreq
-tabstat samount if sborrowed==1 [aweight=Weight_SC], stat(n mean) by(Sector)
-tabstat sloan if sborrowed==1 [aweight=Weight_SC], stat(n mean) by(Sector)
-
+tabstat samount if sborrowed==1 [aweight=Weight_SC], stat(n mean p50) by(Sector)
+tabstat sloan if sborrowed==1 [aweight=Weight_SC], stat(n mean p50) by(Sector)
+tabstat avloan if sborrowed==1 [aweight=Weight_SC], stat(n mean p50) by(Sector)
 
 ********** LAST 5 YEARS
 use"NSSO2013-Debt5years_HH", clear

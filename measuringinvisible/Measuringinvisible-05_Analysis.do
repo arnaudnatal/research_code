@@ -58,7 +58,9 @@ save"IndianHHdebt_v01.dta", replace
 ****************************************
 * All India
 ****************************************
-
+/*
+Main characteristics aligned with IHDS
+*/
 ********** HOUSEHOLD LEVEL: NSSO vs IHDS
 use"IndianHHdebt_v01.dta", clear
 *
@@ -111,38 +113,24 @@ graph export "graph/India_nsso_ihds_findex.png", replace
 
 
 ****************************************
-* TN households from rural area five years
+* Tamil Nadu: ODRIIS vs NSSO vs IHDS around 2010
 ****************************************
 use"IndianHHdebt_v01.dta", clear
-
+/*
+Main characteristics aligned with IHDS
+*/
 *** Selection
-fre level
 keep if level==1
-fre area
 keep if area==2
-fre timeperiod
 keep if timeperiod==1
-drop if source==4 & year>2010
-drop if source==3 & year>2013
+drop if year<2010
+drop if year>2013
 
 
 *** Graphs
 * All lenders
-graph bar indebted, over(data) ylabel(0(20)100) title("All lenders") ytitle("Percent") name(global, replace)
-
-* Bank
-graph bar l_bank, over(data) ylabel(0(20)100) title("Banks") ytitle("Percent") name(bank, replace)
-
-* Moneylenders
-graph bar l_moneylender, over(data) ylabel(0(20)100) title("Moneylenders") ytitle("Percent") name(ml, replace)
-
-* Relatives
-graph bar l_relatives, over(data) ylabel(0(20)100) title("Relatives") ytitle("Percent") name(relatives, replace)
-
-* Combine
-graph combine global bank ml relatives, title("Rural households in debt over the last 5 years in Tamil Nadu")
-graph export "graph/Rural_tamil_5.pdf", replace
-graph export "graph/Rural_tamil_5.png", replace
+graph bar indebted, over(data) ylabel(0(20)100) title("Rural Tamil households in debt over the last 5 years") ytitle("Percent") name(global, replace)
+graph export "graph/TamilNadu_nsso_ihds_odriis.png", replace
 
 ****************************************
 * END
@@ -165,29 +153,53 @@ graph export "graph/Rural_tamil_5.png", replace
 
 
 ****************************************
-* TN households from rural area outstanding
+* Tamil Nadu: ODRIIS vs NSSO
 ****************************************
 use"IndianHHdebt_v01.dta", clear
-
-*** Selection
-fre level
+/*
+Details with outstanding debt
+*/
+********** Selection
 keep if level==1
-fre area
 keep if area==2
-fre timeperiod
 keep if timeperiod==3
+drop if year==2003
+drop l_mfi l_employer l_shop l_pawn l_wkp
 
-
-*** Graphs
-* All lenders
+********** Graph 1: IOI and AOD
+* IOI
 twoway ///
 (connected indebted year if source==3, color(plb1)) ///
 (connected indebted year if source==4, color(ply1)) ///
-, ylabel(0(20)100) xlabel(2010(2)2020) ///
+, ylabel(0(10)100) xlabel(2010(2)2020) ///
 ytitle("Percent") xtitle("") ///
 legend(order(1 "NSSO" 2 "ODRIIS") pos(6) col(2)) ///
-title("All lenders") name(global, replace)
+title("Households with outstanding debt") name(ioi, replace)
+* AOD
+twoway ///
+(connected amount year if source==3, color(plb1)) ///
+(connected amount year if source==4, color(ply1)) ///
+, ylabel(40(20)200) xlabel(2010(2)2020) ///
+ytitle("1,000 rupees") xtitle("") ///
+legend(order(1 "NSSO" 2 "ODRIIS") pos(6) col(2)) ///
+title("Average amount of debt for indebted rural Tamil households") name(aod, replace)
+* Combine
+grc1leg ioi aod
+graph export "graph/TamilNadu_nsso_odriis_ioi_aod.png", replace
 
+
+********** Graph 2: Number of loan
+twoway ///
+(connected nbloan year if source==3, color(plb1)) ///
+(connected nbloan year if source==4, color(ply1)) ///
+, ylabel(0(1)10) xlabel(2010(2)2020) ///
+ytitle("Number of loans") xtitle("") ///
+legend(order(1 "NSSO" 2 "ODRIIS") pos(6) col(2)) ///
+title("Average number of loans per indebted rural Tamil household") name(nb, replace)
+graph export "graph/TamilNadu_nsso_odriis_amount.png", replace
+
+
+********** Graph 3: Lenders
 * Banks
 twoway ///
 (connected l_bank year if source==3, color(plb1)) ///
@@ -196,7 +208,6 @@ twoway ///
 ytitle("Percent") xtitle("") ///
 legend(order(1 "NSSO" 2 "ODRIIS") pos(6) col(2)) ///
 title("Banks") name(bank, replace)
-
 * Moneylender
 twoway ///
 (connected l_moneylender year if source==3, color(plb1)) ///
@@ -205,7 +216,6 @@ twoway ///
 ytitle("Percent") xtitle("") ///
 legend(order(1 "NSSO" 2 "ODRIIS") pos(6) col(2)) ///
 title("Moneylenders") name(ml, replace)
-
 * Relatives
 twoway ///
 (connected l_relatives year if source==3, color(plb1)) ///
@@ -214,23 +224,47 @@ twoway ///
 ytitle("Percent") xtitle("") ///
 legend(order(1 "NSSO" 2 "ODRIIS") pos(6) col(2)) ///
 title("Relatives") name(relatives, replace)
-
-* Amount
-twoway ///
-(connected amount year if source==3, color(plb1)) ///
-(connected amount year if source==4, color(ply1)) ///
-, ylabel(50(20)190) xlabel(2010(2)2020) ///
-ytitle("1,000 rupees") xtitle("") ///
-legend(order(1 "NSSO" 2 "ODRIIS") pos(6) col(2)) ///
-title("Outstanding debt for rural Tamil households") name(amount, replace)
-graph export "graph/Rural_tamil_amount.pdf", replace
-graph export "graph/Rural_tamil_amount.png", replace
-
-
 * Combine
-grc1leg global bank ml relatives, title("Rural Tamil households in debt at the time of the survey")
-graph export "graph/Rural_tamil_out.pdf", replace
-graph export "graph/Rural_tamil_out.png", replace
+grc1leg bank ml relatives, title("Rural Tamil households with outstanding debt from ...") col(3)
+graph export "graph/TamilNadu_nsso_odriis_lenders.png", replace
+
+
+********** Graph 4: Loan reason given
+* Housing
+twoway ///
+(connected r_house year if source==3, color(plb1)) ///
+(connected r_house year if source==4, color(ply1)) ///
+, ylabel(0(20)100) xlabel(2010(2)2020) ///
+ytitle("Percent") xtitle("") ///
+legend(order(1 "NSSO" 2 "ODRIIS") pos(6) col(2)) ///
+title("Housing") name(hou, replace)
+* Education
+twoway ///
+(connected r_educ year if source==3, color(plb1)) ///
+(connected r_educ year if source==4, color(ply1)) ///
+, ylabel(0(20)100) xlabel(2010(2)2020) ///
+ytitle("Percent") xtitle("") ///
+legend(order(1 "NSSO" 2 "ODRIIS") pos(6) col(2)) ///
+title("Education") name(edu, replace)
+* Health
+twoway ///
+(connected r_health year if source==3, color(plb1)) ///
+(connected r_health year if source==4, color(ply1)) ///
+, ylabel(0(20)100) xlabel(2010(2)2020) ///
+ytitle("Percent") xtitle("") ///
+legend(order(1 "NSSO" 2 "ODRIIS") pos(6) col(2)) ///
+title("Health") name(heal, replace)
+* Farm/business
+twoway ///
+(connected r_farmbusi year if source==3, color(plb1)) ///
+(connected r_farmbusi year if source==4, color(ply1)) ///
+, ylabel(0(20)100) xlabel(2010(2)2020) ///
+ytitle("Percent") xtitle("") ///
+legend(order(1 "NSSO" 2 "ODRIIS") pos(6) col(2)) ///
+title("Own business or farm") name(farm, replace)
+* Combine
+grc1leg hou edu heal farm, title("Rural Tamil households with outstanding debt for ...") col(2)
+graph export "graph/TamilNadu_nsso_odriis_reasons.png", replace
 
 ****************************************
 * END

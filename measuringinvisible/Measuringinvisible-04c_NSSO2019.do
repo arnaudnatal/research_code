@@ -94,7 +94,7 @@ Mais je ne comprends pas la diff avec la variable b14_q16 qui a moins de manquan
 drop if b12q15==.
 
 * To keep
-keep HHID Sector State State_District b12q15 MLT b12q5 b12q10
+keep HHID Sector State State_District b12q15 MLT b12q5 b12q10 b12q4
 destring Sector State State_District, replace
 destring b12q5 b12q10, replace
 
@@ -146,6 +146,9 @@ bys HHID: egen samount=sum(b12q15)
 gen loan=1
 bys HHID: egen sloan=sum(loan)
 
+* Average amount
+bys HHID: egen avloan=mean(b12q4)
+
 * Details by sources
 ta lender, gen(lender_)
 forvalues i=1/5 {
@@ -172,7 +175,7 @@ rename spurpose_5 spurpose_farmbusi
 
 * Selections
 global dummies sborrowed slender_other slender_bank slender_moneylender slender_relafrien slender_fininstit spurpose_other spurpose_housing spurpose_education spurpose_health spurpose_farmbusi
-keep HHID samount sloan $dummies
+keep HHID samount sloan $dummies avloan
 
 * Recode dummies
 foreach x in $dummies {
@@ -489,8 +492,9 @@ ta spurpose_housing Sector [aweight=MLT], col nofreq
 ta spurpose_education Sector [aweight=MLT], col nofreq
 ta spurpose_health Sector [aweight=MLT], col nofreq
 ta spurpose_farmbusi Sector [aweight=MLT], col nofreq
-tabstat samount if sborrowed==1 [aweight=MLT], stat(n mean) by(Sector)
-tabstat sloan if sborrowed==1 [aweight=MLT], stat(n mean) by(Sector)
+tabstat samount if sborrowed==1 [aweight=MLT], stat(n mean p50) by(Sector)
+tabstat sloan if sborrowed==1 [aweight=MLT], stat(n mean p50) by(Sector)
+tabstat avloan if sborrowed==1 [aweight=MLT], stat(n mean p50) by(Sector)
 
 
 ********** LAST 5 YEARS

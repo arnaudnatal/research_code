@@ -188,6 +188,9 @@ bys HHID2010: egen sloan=sum(loan)
 ***** Outstanding amount
 bys HHID2010 : egen sbalance=sum(loanbalance2)
 
+***** Av loan amount
+bys HHID2010 : egen avloan=mean(loanamount)
+
 ***** Dummy lender and borrower
 gen relafriend=lender4_rela+lender4_frie
 gen otherinfo=lender4_WKP+lender4_neig
@@ -196,7 +199,7 @@ gen funmar=given_marr+given_deat
 
 global var lender4_bank lender4_micr lender4_mone lender_empl relafriend lender4_shop lender4_pawn otherinfo activity given_hous given_educ funmar given_heal
 
-keep HHID2010 borrowed sbalance $var sloan
+keep HHID2010 borrowed sbalance $var sloan avloan
 
 foreach x in borrowed $var {
 bysort HHID2010: egen s`x'=sum(`x')
@@ -229,11 +232,10 @@ recode `x' (.=0)
 cls
 ***** Statistics
 ta borrowed
-sum sbalance
 foreach x in $var {
 ta `x'
 }
-sum sloan if borrowed==1
+tabstat sbalance sloan avloan if borrowed==1, stat(n mean p50)
 *
 ****************************************
 * END
@@ -422,6 +424,9 @@ bys HHID2016: egen sloan=sum(loan)
 ***** Outstanding amount
 bys HHID2016 : egen sbalance=sum(loanbalance2)
 
+***** Av loan amount
+bys HHID2016 : egen avloan=mean(loanamount)
+
 ***** Dummy lender and borrower
 gen relafriend=lender4_rela+lender4_frie
 gen otherinfo=lender4_WKP+lender4_neig
@@ -430,8 +435,8 @@ gen funmar=given_marr+given_deat
 
 global var lender4_bank lender4_micr lender4_mone lender_empl relafriend lender4_shop lender4_pawn otherinfo activity given_hous given_educ funmar given_heal
 
-keep HHID2016 borrowed sbalance $var sloan
-
+keep HHID2016 borrowed sbalance $var sloan avloan
+ 
 foreach x in borrowed $var {
 bysort HHID2016: egen s`x'=sum(`x')
 }
@@ -463,11 +468,10 @@ recode `x' (.=0)
 cls
 ***** Statistics
 ta borrowed
-sum sbalance
 foreach x in $var {
 ta `x'
 }
-sum sloan if borrowed==1
+tabstat sbalance sloan avloan if borrowed==1, stat(n mean p50)
 *
 ****************************************
 * END
@@ -656,6 +660,9 @@ bys HHID2020: egen sloan=sum(loan)
 ***** Outstanding amount
 bys HHID2020 : egen sbalance=sum(loanbalance2)
 
+***** Av loan amount
+bys HHID2020 : egen avloan=mean(loanamount)
+
 ***** Dummy lender and borrower
 gen relafriend=lender4_rela+lender4_frie
 gen otherinfo=lender4_WKP+lender4_neig
@@ -664,7 +671,7 @@ gen funmar=given_marr+given_deat
 
 global var lender4_bank lender4_micr lender4_mone lender_empl relafriend lender4_shop lender4_pawn otherinfo activity given_hous given_educ funmar given_heal
 
-keep HHID2020 borrowed sbalance $var sloan
+keep HHID2020 borrowed sbalance $var sloan avloan
 
 foreach x in borrowed $var {
 bysort HHID2020: egen s`x'=sum(`x')
@@ -697,11 +704,10 @@ recode `x' (.=0)
 cls
 ***** Statistics
 ta borrowed
-sum sbalance
 foreach x in $var {
 ta `x'
 }
-sum sloan if borrowed==1
+tabstat sbalance sloan avloan if borrowed==1, stat(n mean p50)
 *
 ****************************************
 * END
