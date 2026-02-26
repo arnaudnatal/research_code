@@ -78,7 +78,7 @@ twoway ///
 (connected indebted year if source==3, color(ply1)) ///
 , ylabel(0(20)100) xlabel(2003(2)2013) ///
 ytitle("Percent") xtitle("") ///
-legend(order(1 "IHDS" 2 "NSSO") pos(6) col(3)) ///
+legend(order(1 "IHDS" 2 "NSSO-AIDIS") pos(6) col(3)) ///
 title("Households in debt over the last 5 years in India") name(india1, replace)
 graph export "graph/India_nsso_ihds.png", replace
 
@@ -129,6 +129,14 @@ keep if timeperiod==1
 drop if year<2010
 drop if year>2013
 
+* Label
+replace data="1" if data=="ODRIIS 2010"
+replace data="2" if data=="IHDS 2011"
+replace data="3" if data=="NSSO 2013"
+destring data, replace
+label define data 1"RUME 2010" 2"IHDS 2011" 3"NSSO-AIDIS 2013"
+label values data data
+
 
 *** Graphs
 * All lenders
@@ -176,7 +184,7 @@ twoway ///
 (connected indebted year if source==4, color(ply1)) ///
 , ylabel(0(10)100) xlabel(2010(2)2020) ///
 ytitle("Percent") xtitle("") ///
-legend(order(1 "NSSO" 2 "ODRIIS") pos(6) col(2)) ///
+legend(order(1 "NSSO-AIDIS" 2 "RUME-NEEMSIS") pos(6) col(2)) ///
 title("Households with outstanding debt") name(ioi, replace)
 * AOD
 twoway ///
@@ -184,7 +192,7 @@ twoway ///
 (connected mean_amount year if source==4, color(ply1)) ///
 , ylabel(40(20)200) xlabel(2010(2)2020) ///
 ytitle("1,000 rupees") xtitle("") ///
-legend(order(1 "NSSO" 2 "ODRIIS") pos(6) col(2)) ///
+legend(order(1 "NSSO-AIDIS" 2 "RUME-NEEMSIS") pos(6) col(2)) ///
 title("Average amount of debt for indebted rural Tamil households") name(aod, replace)
 * AOD
 twoway ///
@@ -192,7 +200,7 @@ twoway ///
 (connected median_amount year if source==4, color(ply1)) ///
 , ylabel(20(20)120) xlabel(2010(2)2020) ///
 ytitle("1,000 rupees") xtitle("") ///
-legend(order(1 "NSSO" 2 "ODRIIS") pos(6) col(2)) ///
+legend(order(1 "NSSO-AIDIS" 2 "RUME-NEEMSIS") pos(6) col(2)) ///
 title("Median amount of debt for indebted rural Tamil households") name(mod, replace)
 * Combine
 grc1leg ioi aod
@@ -208,7 +216,7 @@ twoway ///
 (connected mean_nbloan year if source==4, color(ply1)) ///
 , ylabel(0(1)10) xlabel(2010(2)2020) ///
 ytitle("Number of loans") xtitle("") ///
-legend(order(1 "NSSO" 2 "ODRIIS") pos(6) col(2)) ///
+legend(order(1 "NSSO-AIDIS" 2 "RUME-NEEMSIS") pos(6) col(2)) ///
 title("Average number of loans per indebted rural Tamil household") name(nb, replace)
 * Average loan amount
 twoway ///
@@ -216,7 +224,7 @@ twoway ///
 (connected mean_loanamount year if source==4, color(ply1)) ///
 , ylabel(0(10)100) xlabel(2010(2)2020) ///
 ytitle("1,000 rupees") xtitle("") ///
-legend(order(1 "NSSO" 2 "ODRIIS") pos(6) col(2)) ///
+legend(order(1 "NSSO-AIDIS" 2 "RUME-NEEMSIS") pos(6) col(2)) ///
 title("Average loan amount in rural Tamil household") name(avloan, replace)
 * Median loan amount
 twoway ///
@@ -224,7 +232,7 @@ twoway ///
 (connected median_loanamount year if source==4, color(ply1)) ///
 , ylabel(0(10)100) xlabel(2010(2)2020) ///
 ytitle("1,000 rupees") xtitle("") ///
-legend(order(1 "NSSO" 2 "ODRIIS") pos(6) col(2)) ///
+legend(order(1 "NSSO-AIDIS" 2 "RUME-NEEMSIS") pos(6) col(2)) ///
 title("Median loan amount in rural Tamil household") name(medloan, replace)
 grc1leg nb avloan
 graph export "graph/TamilNadu_nsso_odriis_nb_avloanamount.png", replace
@@ -239,7 +247,7 @@ twoway ///
 (connected l_bank year if source==4, color(ply1)) ///
 , ylabel(0(20)100) xlabel(2010(2)2020) ///
 ytitle("Percent") xtitle("") ///
-legend(order(1 "NSSO" 2 "ODRIIS") pos(6) col(2)) ///
+legend(order(1 "NSSO-AIDIS" 2 "RUME-NEEMSIS") pos(6) col(2)) ///
 title("Banks") name(bank, replace)
 * Moneylender
 twoway ///
@@ -247,7 +255,7 @@ twoway ///
 (connected l_moneylender year if source==4, color(ply1)) ///
 , ylabel(0(20)100) xlabel(2010(2)2020) ///
 ytitle("Percent") xtitle("") ///
-legend(order(1 "NSSO" 2 "ODRIIS") pos(6) col(2)) ///
+legend(order(1 "NSSO-AIDIS" 2 "RUME-NEEMSIS") pos(6) col(2)) ///
 title("Moneylenders") name(ml, replace)
 * Relatives
 twoway ///
@@ -255,7 +263,7 @@ twoway ///
 (connected l_relatives year if source==4, color(ply1)) ///
 , ylabel(0(20)100) xlabel(2010(2)2020) ///
 ytitle("Percent") xtitle("") ///
-legend(order(1 "NSSO" 2 "ODRIIS") pos(6) col(2)) ///
+legend(order(1 "NSSO-AIDIS" 2 "RUME-NEEMSIS") pos(6) col(2)) ///
 title("Relatives") name(relatives, replace)
 * Combine
 grc1leg bank ml relatives, title("Rural Tamil households with outstanding debt from ...") col(3)
@@ -269,7 +277,7 @@ twoway ///
 (connected r_house year if source==4, color(ply1)) ///
 , ylabel(0(20)100) xlabel(2010(2)2020) ///
 ytitle("Percent") xtitle("") ///
-legend(order(1 "NSSO" 2 "ODRIIS") pos(6) col(2)) ///
+legend(order(1 "NSSO-AIDIS" 2 "RUME-NEEMSIS") pos(6) col(2)) ///
 title("Housing") name(hou, replace)
 * Education
 twoway ///
@@ -277,7 +285,7 @@ twoway ///
 (connected r_educ year if source==4, color(ply1)) ///
 , ylabel(0(20)100) xlabel(2010(2)2020) ///
 ytitle("Percent") xtitle("") ///
-legend(order(1 "NSSO" 2 "ODRIIS") pos(6) col(2)) ///
+legend(order(1 "NSSO-AIDIS" 2 "RUME-NEEMSIS") pos(6) col(2)) ///
 title("Education") name(edu, replace)
 * Health
 twoway ///
@@ -285,7 +293,7 @@ twoway ///
 (connected r_health year if source==4, color(ply1)) ///
 , ylabel(0(20)100) xlabel(2010(2)2020) ///
 ytitle("Percent") xtitle("") ///
-legend(order(1 "NSSO" 2 "ODRIIS") pos(6) col(2)) ///
+legend(order(1 "NSSO-AIDIS" 2 "RUME-NEEMSIS") pos(6) col(2)) ///
 title("Health") name(heal, replace)
 * Farm/business
 twoway ///
@@ -293,7 +301,7 @@ twoway ///
 (connected r_farmbusi year if source==4, color(ply1)) ///
 , ylabel(0(20)100) xlabel(2010(2)2020) ///
 ytitle("Percent") xtitle("") ///
-legend(order(1 "NSSO" 2 "ODRIIS") pos(6) col(2)) ///
+legend(order(1 "NSSO-AIDIS" 2 "RUME-NEEMSIS") pos(6) col(2)) ///
 title("Own business or farm") name(farm, replace)
 * Combine
 grc1leg hou edu heal farm, title("Rural Tamil households with outstanding debt for ...") col(2)
