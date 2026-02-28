@@ -61,6 +61,41 @@ global persoXsexXcaste c.fES##i.female##i.caste c.fOPEX##i.female##i.caste c.fCO
 
 
 
+****************************************
+* Referee: PL on network size for kin and non-kin
+****************************************
+
+* Kin
+reg netsize_relative $perso i.female i.caste $cont, cluster(HHFE)
+
+* Non-kin
+reg netsize_talk $perso i.female i.caste $cont, cluster(HHFE)
+
+* Kin and non-kin
+reg netsize_kinnonkin $perso i.female i.caste $cont, cluster(HHFE)
+est store reg1
+
+esttab reg1 using "netwsize.csv", ///
+	cells("b(fmt(2) star)" se(par fmt(2))) ///
+	legend varlabels(_cons constant) ///
+	starlevels(* 0.10 ** 0.05 *** 0.01) ///
+	stats(N, fmt(0) labels(`"Observations"')) ///
+	replace		
+
+
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -70,7 +105,16 @@ global persoXsexXcaste c.fES##i.female##i.caste c.fOPEX##i.female##i.caste c.fCO
 * Debt strength
 ****************************************
 
-foreach y in debt_strength debt_week {
+
+*
+glm debt_strength $perso i.female i.caste $cont c.netsize_debt, family(binomial) link(probit) cluster(HHFE)
+
+glm debt_week $perso i.female i.caste $cont c.netsize_debt, family(binomial) link(probit) cluster(HHFE)
+
+
+
+foreach y in debt_strength {
+*debt_week
 
 qui glm `y' $perso i.female i.caste $cont c.netsize_debt, family(binomial) link(probit) cluster(HHFE)
 est store reg1`y'
@@ -96,6 +140,12 @@ esttab marg1`y' marg2`y' marg3`y' marg4`y' using "`y'_glm_margin.csv", ///
 	cells("b(fmt(2) star)" se(par fmt(2))) ///
 	legend varlabels(_cons constant) ///
 	starlevels(* 0.10 ** 0.05 *** 0.01) ///
+	replace
+esttab reg1`y' reg2`y' reg3`y' reg4`y' using "R_`y'_glm.csv", ///
+	cells("b(fmt(2) star)" se(par fmt(2))) ///
+	legend varlabels(_cons constant) ///
+	starlevels(* 0.10 ** 0.05 *** 0.01) ///
+	stats(N, fmt(0) labels(`"Observations"')) ///
 	replace		
 }
 
@@ -112,6 +162,9 @@ esttab marg1`y' marg2`y' marg3`y' marg4`y' using "`y'_glm_margin.csv", ///
 ****************************************
 * Debt duration
 ****************************************
+
+reg debt_durafe $perso i.female i.caste $cont c.netsize_debt, cluster(HHFE)
+
 
 foreach y in debt_durafe {
 
@@ -157,7 +210,14 @@ esttab marg1`y' marg2`y' marg3`y' marg4`y' using "`y'_glm_margin.csv", ///
 * Relative strength
 ****************************************
 
-foreach y in relative_strength relative_week {
+glm relative_strength $perso i.female i.caste $cont c.netsize_relative, family(binomial) link(probit) cluster(HHFE)
+
+glm relative_week $perso i.female i.caste $cont c.netsize_relative, family(binomial) link(probit) cluster(HHFE)
+
+
+
+foreach y in relative_strength {
+*relative_week
 
 qui glm `y' $perso i.female i.caste $cont c.netsize_relative, family(binomial) link(probit) cluster(HHFE)
 est store reg1`y'
@@ -183,6 +243,12 @@ esttab marg1`y' marg2`y' marg3`y' marg4`y' using "`y'_glm_margin.csv", ///
 	cells("b(fmt(2) star)" se(par fmt(2))) ///
 	legend varlabels(_cons constant) ///
 	starlevels(* 0.10 ** 0.05 *** 0.01) ///
+	replace
+esttab reg1`y' reg2`y' reg3`y' reg4`y' using "R_`y'_glm.csv", ///
+	cells("b(fmt(2) star)" se(par fmt(2))) ///
+	legend varlabels(_cons constant) ///
+	starlevels(* 0.10 ** 0.05 *** 0.01) ///
+	stats(N, fmt(0) labels(`"Observations"')) ///
 	replace		
 }
 
@@ -200,6 +266,8 @@ esttab marg1`y' marg2`y' marg3`y' marg4`y' using "`y'_glm_margin.csv", ///
 ****************************************
 * Relative duration
 ****************************************
+
+reg relative_durafe $perso i.female i.caste $cont c.netsize_relative, cluster(HHFE)
 
 foreach y in relative_durafe {
 
@@ -253,7 +321,13 @@ esttab marg1`y' marg2`y' marg3`y' marg4`y' using "`y'_glm_margin.csv", ///
 * Talk strength
 ****************************************
 
-foreach y in talk_strength talk_week {
+glm talk_strength $perso i.female i.caste $cont c.netsize_talk, family(binomial) link(probit) cluster(HHFE)
+
+glm talk_week $perso i.female i.caste $cont c.netsize_talk, family(binomial) link(probit) cluster(HHFE)
+
+
+foreach y in talk_strength {
+*talk_week
 
 glm `y' $perso i.female i.caste $cont c.netsize_talk, family(binomial) link(probit) cluster(HHFE)
 est store reg1`y'
@@ -279,7 +353,13 @@ esttab marg1`y' marg2`y' marg3`y' marg4`y' using "`y'_glm_margin.csv", ///
 	cells("b(fmt(2) star)" se(par fmt(2))) ///
 	legend varlabels(_cons constant) ///
 	starlevels(* 0.10 ** 0.05 *** 0.01) ///
-	replace		
+	replace
+esttab reg1`y' reg2`y' reg3`y' reg4`y' using "R_`y'_glm.csv", ///
+	cells("b(fmt(2) star)" se(par fmt(2))) ///
+	legend varlabels(_cons constant) ///
+	starlevels(* 0.10 ** 0.05 *** 0.01) ///
+	stats(N, fmt(0) labels(`"Observations"')) ///
+	replace	
 }
 
 ****************************************
@@ -297,6 +377,9 @@ esttab marg1`y' marg2`y' marg3`y' marg4`y' using "`y'_glm_margin.csv", ///
 ****************************************
 * Talk duration
 ****************************************
+
+reg talk_durafe $perso i.female i.caste $cont c.netsize_talk, cluster(HHFE)
+
 
 foreach y in talk_durafe {
 

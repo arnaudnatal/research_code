@@ -44,6 +44,19 @@ global persoXcaste c.fES##i.caste c.fOPEX##i.caste c.fCO##i.caste c.locus##i.cas
 global persoXsexXcaste c.fES##i.female##i.caste c.fOPEX##i.female##i.caste c.fCO##i.female##i.caste c.locus##i.female##i.caste
 
 
+/*
+tabstat age annualincome_HH assets_total, stat(n mean) by(sex)
+tabstat age annualincome_HH assets_total, stat(n mean) by(caste)
+
+*
+foreach x in married occupation educ {
+ta `x' sex, col nofreq
+}
+*
+foreach x in married occupation educ {
+ta `x' caste, col nofreq
+}
+*/
 ****************************************
 * END
 
@@ -180,10 +193,11 @@ using "pseudoR2_hetero_s2.csv", ///
 
 foreach var in caste gender {
 
+
 ********** Step 1: Probit
 foreach y in dum_debt_EI {
 
-qui probit `y'_`var' $perso i.female i.caste $cont c.netsize_debt, vce(cl HHFE)
+probit `y'_`var' $perso i.female i.caste $cont c.netsize_debt, vce(cl HHFE)
 est store reg1`y'
 qui margins, dydx($perso) atmeans post
 est store marg1`y'
@@ -203,12 +217,18 @@ est store reg4`y'
 qui margins, dydx($perso) at(female=(0 1) caste=(1 2 3)) atmeans post
 est store marg4`y'
 
-
 esttab marg1`y' marg2`y' marg3`y' marg4`y' using "`y'`var'_pr.csv", ///
 	cells("b(fmt(2) star)" se(par fmt(2))) ///
 	legend varlabels(_cons constant) ///
 	starlevels(* 0.10 ** 0.05 *** 0.01) ///
 	replace		
+
+esttab reg1`y' reg2`y' reg3`y' reg4`y' using "R_`y'`var'_pr.csv", ///
+	cells("b(fmt(2) star)" se(par fmt(2))) ///
+	legend varlabels(_cons constant) ///
+	starlevels(* 0.10 ** 0.05 *** 0.01) ///
+	stats(N, fmt(0) labels(`"Observations"')) ///
+	replace	
 }
 
 
@@ -219,7 +239,7 @@ foreach y in debt {
 preserve
 keep if dum_`y'_EI_`var'==1
 
-qui reg `y'_EI_`var' $perso i.female i.caste $cont c.netsize_debt, cluster(HHFE)
+reg `y'_EI_`var' $perso i.female i.caste $cont c.netsize_debt, cluster(HHFE)
 est store reg1`y'
 qui margins, dydx($perso) atmeans post
 est store marg1`y'
@@ -243,6 +263,12 @@ esttab marg1`y' marg2`y' marg3`y' marg4`y' using "`y'`var'_ol.csv", ///
 	cells("b(fmt(2) star)" se(par fmt(2))) ///
 	legend varlabels(_cons constant) ///
 	starlevels(* 0.10 ** 0.05 *** 0.01) ///
+	replace
+esttab reg1`y' reg2`y' reg3`y' reg4`y' using "R_`y'`var'_ol.csv", ///
+	cells("b(fmt(2) star)" se(par fmt(2))) ///
+	legend varlabels(_cons constant) ///
+	starlevels(* 0.10 ** 0.05 *** 0.01) ///
+	stats(N, fmt(0) labels(`"Observations"')) ///
 	replace		
 restore
 }
@@ -273,12 +299,12 @@ restore
 * Two step heterophily for talk
 ****************************************
 
-foreach var in caste gender {
+foreach var in caste gender  {
 
 ********** Step 1: Probit
 foreach y in dum_talk_EI {
 
-qui probit `y'_`var' $perso i.female i.caste $cont c.netsize_talk, vce(cl HHFE)
+probit `y'_`var' $perso i.female i.caste $cont c.netsize_talk, vce(cl HHFE)
 est store reg1`y'
 qui margins, dydx($perso) atmeans post
 est store marg1`y'
@@ -303,7 +329,13 @@ esttab marg1`y' marg2`y' marg3`y' marg4`y' using "`y'`var'_pr.csv", ///
 	cells("b(fmt(2) star)" se(par fmt(2))) ///
 	legend varlabels(_cons constant) ///
 	starlevels(* 0.10 ** 0.05 *** 0.01) ///
-	replace		
+	replace
+esttab reg1`y' reg2`y' reg3`y' reg4`y' using "R_`y'`var'_pr.csv", ///
+	cells("b(fmt(2) star)" se(par fmt(2))) ///
+	legend varlabels(_cons constant) ///
+	starlevels(* 0.10 ** 0.05 *** 0.01) ///
+	stats(N, fmt(0) labels(`"Observations"')) ///
+	replace	
 }
 
 
@@ -314,7 +346,7 @@ foreach y in talk {
 preserve
 keep if dum_`y'_EI_`var'==1
 
-qui reg `y'_EI_`var' $perso i.female i.caste $cont c.netsize_talk, cluster(HHFE)
+reg `y'_EI_`var' $perso i.female i.caste $cont c.netsize_talk, cluster(HHFE)
 est store reg1`y'
 qui margins, dydx($perso) atmeans post
 est store marg1`y'
@@ -338,6 +370,12 @@ esttab marg1`y' marg2`y' marg3`y' marg4`y' using "`y'`var'_ol.csv", ///
 	cells("b(fmt(2) star)" se(par fmt(2))) ///
 	legend varlabels(_cons constant) ///
 	starlevels(* 0.10 ** 0.05 *** 0.01) ///
+	replace
+esttab reg1`y' reg2`y' reg3`y' reg4`y' using "R_`y'`var'_ol.csv", ///
+	cells("b(fmt(2) star)" se(par fmt(2))) ///
+	legend varlabels(_cons constant) ///
+	starlevels(* 0.10 ** 0.05 *** 0.01) ///
+	stats(N, fmt(0) labels(`"Observations"')) ///
 	replace		
 restore
 }
@@ -370,7 +408,7 @@ foreach var in caste gender {
 ********** Step 1: Probit
 foreach y in dum_relative_EI {
 
-qui probit `y'_`var' $perso i.female i.caste $cont c.netsize_relative, vce(cl HHFE)
+probit `y'_`var' $perso i.female i.caste $cont c.netsize_relative, vce(cl HHFE)
 est store reg1`y'
 qui margins, dydx($perso) atmeans post
 est store marg1`y'
@@ -395,6 +433,12 @@ esttab marg1`y' marg2`y' marg3`y' marg4`y' using "`y'`var'_pr.csv", ///
 	cells("b(fmt(2) star)" se(par fmt(2))) ///
 	legend varlabels(_cons constant) ///
 	starlevels(* 0.10 ** 0.05 *** 0.01) ///
+	replace
+esttab reg1`y' reg2`y' reg3`y' reg4`y' using "R_`y'`var'_pr.csv", ///
+	cells("b(fmt(2) star)" se(par fmt(2))) ///
+	legend varlabels(_cons constant) ///
+	starlevels(* 0.10 ** 0.05 *** 0.01) ///
+	stats(N, fmt(0) labels(`"Observations"')) ///
 	replace		
 }
 
@@ -406,7 +450,7 @@ foreach y in relative {
 preserve
 keep if dum_`y'_EI_`var'==1
 
-qui reg `y'_EI_`var' $perso i.female i.caste $cont c.netsize_relative, cluster(HHFE)
+reg `y'_EI_`var' $perso i.female i.caste $cont c.netsize_relative, cluster(HHFE)
 est store reg1`y'
 qui margins, dydx($perso) atmeans post
 est store marg1`y'
@@ -430,6 +474,12 @@ esttab marg1`y' marg2`y' marg3`y' marg4`y' using "`y'`var'_ol.csv", ///
 	cells("b(fmt(2) star)" se(par fmt(2))) ///
 	legend varlabels(_cons constant) ///
 	starlevels(* 0.10 ** 0.05 *** 0.01) ///
+	replace
+esttab reg1`y' reg2`y' reg3`y' reg4`y' using "R_`y'`var'_ol.csv", ///
+	cells("b(fmt(2) star)" se(par fmt(2))) ///
+	legend varlabels(_cons constant) ///
+	starlevels(* 0.10 ** 0.05 *** 0.01) ///
+	stats(N, fmt(0) labels(`"Observations"')) ///
 	replace		
 restore
 }

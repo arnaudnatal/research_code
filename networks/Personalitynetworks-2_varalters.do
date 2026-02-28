@@ -35,6 +35,15 @@ replace relative_network=0 if relative_network==1 & talk_network==1
 
 
 ********** Network size 
+***** Kin and non kin
+ta relative_network
+ta talk_network
+gen kinnonkin_network=talk_network+relative_network
+replace kinnonkin_network=1 if kinnonkin_network>1
+ta kinnonkin_network
+bys HHINDID : egen netsize_kinnonkin=total(kinnonkin_network)
+
+
 ***** Debt
 bys HHINDID : egen netsize_debt=total(debt_network)
 ***** Close relative
@@ -208,7 +217,7 @@ use "Analysis\Alters_sub.dta", clear
 
 ********* Collapse
 collapse (first) HHID2020 INDID2020 (mean) ///
-netsize_debt netsize_relative netsize_talk netsize_labour ///
+netsize_debt netsize_relative netsize_talk netsize_labour netsize_kinnonkin ///
 debt_multiplexity_n relative_multiplexity_n talk_multiplexity_n labour_multiplexity_n ///
 debt_meetweekly_n relative_meetweekly_n talk_meetweekly_n labour_meetweekly_n ///
 debt_veryintimate_n relative_veryintimate_n talk_veryintimate_n labour_veryintimate_n ///
@@ -225,7 +234,7 @@ debt_strength relative_strength talk_strength labour_strength ///
 , by (HHINDID) 	
 
 ********** Selection
-keep HHINDID HHID2020 INDID2020 netsize_debt netsize_relative netsize_talk debt_meetweekly_n relative_meetweekly_n talk_meetweekly_n debt_duration relative_duration talk_duration debt_samegender_n relative_samegender_n talk_samegender_n debt_samecaste_n relative_samecaste_n talk_samecaste_n debt_strength relative_strength talk_strength
+keep HHINDID HHID2020 INDID2020 netsize_debt netsize_relative netsize_kinnonkin netsize_talk debt_meetweekly_n relative_meetweekly_n talk_meetweekly_n debt_duration relative_duration talk_duration debt_samegender_n relative_samegender_n talk_samegender_n debt_samecaste_n relative_samecaste_n talk_samecaste_n debt_strength relative_strength talk_strength
 		
 save "Analysis\Subnetwork_traits.dta", replace
 
@@ -266,7 +275,7 @@ gen talk_meetweekly_pct = talk_meetweekly_n/netsize_talk
 
 save "Analysis\Subnetwork_traits.dta", replace
 
-keep  HHINDID HHID2020 INDID2020 netsize_debt netsize_relative netsize_talk debt_duration relative_duration talk_duration debt_strength relative_strength talk_strength debt_EI_gender relative_EI_gender talk_EI_gender debt_EI_caste relative_EI_caste talk_EI_caste dum_debt_EI_gender dum_debt_EI_caste dum_talk_EI_gender dum_talk_EI_caste dum_relative_EI_gender dum_relative_EI_caste debt_meetweekly_pct relative_meetweekly_pct talk_meetweekly_pct
+keep  HHINDID HHID2020 INDID2020 netsize_debt netsize_relative netsize_kinnonkin netsize_talk debt_duration relative_duration talk_duration debt_strength relative_strength talk_strength debt_EI_gender relative_EI_gender talk_EI_gender debt_EI_caste relative_EI_caste talk_EI_caste dum_debt_EI_gender dum_debt_EI_caste dum_talk_EI_gender dum_talk_EI_caste dum_relative_EI_gender dum_relative_EI_caste debt_meetweekly_pct relative_meetweekly_pct talk_meetweekly_pct
 
 save "Analysis\Subnetwork_traits_tomerge.dta", replace
 ****************************************
