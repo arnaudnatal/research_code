@@ -180,6 +180,80 @@ save"_temp_NEEMSIS2-loans.dta", replace
 
 
 
+****************************************
+* NEEMSIS-3 (2026)
+****************************************
+use"raw/NEEMSIS3-loans_mainloans_new.dta", replace
+
+* 
+ta loanid loan_database, m
+tostring loanid, replace
+replace loanid=goldid if loanid=="." & goldid!=""
+replace loanid=marriageid if loanid=="." & marriageid!=""
+replace loanid=marriagedowryid if loanid=="." & marriagedowryid!=""
+ta loanid loan_database, m
+drop goldid marriageid
+
+*
+drop effective_*
+ta loaneffectivereason loan_database, m
+ta loaneffectivereason, gen(effective_)
+rename effective_1 effective_agri
+rename effective_2 effective_fami
+rename effective_3 effective_heal
+rename effective_4 effective_repa
+rename effective_5 effective_hous
+rename effective_6 effective_inve
+rename effective_7 effective_cere
+rename effective_8 effective_marr
+rename effective_9 effective_educ
+rename effective_10 effective_rela
+rename effective_11 effective_deat
+rename effective_12 effective_nore
+rename effective_13 effective_othe
+
+fre loaneffectivereason2
+gen effective_repa2=effective_repa
+replace effective_repa2=1 if loaneffectivereason2==4 & effective_repa2!=. & effective_repa2!=1
+ta effective_repa2
+
+keep HHID2020 INDID2020 loanid loanreasongiven loanlender loansettled loanamount lender_cat reason_cat lender4 loanamount2 loanbalance2 interestpaid2 totalrepaid2 principalpaid2 effective_repa loan_database plantorep_* settlestrat_* dummymainloan othlendserv_* dummyinterest guarantee_*
+
+merge m:m HHID2020 using "raw/keypanel-HH_wide.dta", keepusing(HHID_panel)
+keep if _merge==3
+drop _merge
+gen year=2020
+
+tostring INDID2020, replace
+merge m:m HHID_panel INDID2020 using "raw/keypanel-Indiv_wide.dta", keepusing(INDID_panel)
+keep if _merge==3
+drop _merge
+
+* How many HH?
+preserve
+keep if effective_repa==1
+keep HHID_panel effective_repa
+duplicates drop
+restore
+
+
+save"_temp_NEEMSIS2-loans.dta", replace
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ****************************************
 * Append
