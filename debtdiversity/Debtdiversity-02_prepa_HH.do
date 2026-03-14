@@ -8,10 +8,9 @@ gl link = "debtdiversity"
 *Prepa database
 *-----
 *do "https://raw.githubusercontent.com/arnaudnatal/folderanalysis/main/$link.do"
-*do"C:/Users/Arnaud/Documents/GitHub/folderanalysis/$link.do"
+do"C:/Users/Arnaud/Documents/GitHub/folderanalysis/$link.do"
 *-------------------------
 
-cd"D:\Ongoing_Diversity\Analysis"
 
 
 
@@ -293,6 +292,120 @@ gen year=2020
 save"_temp_NEEMSIS2", replace
 ****************************************
 * END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* 2026
+****************************************
+use"raw/NEEMSIS3-HH", clear
+
+* Drop migrants
+fre livinghome
+drop if livinghome==3
+drop if livinghome==4
+drop if dummylefthousehold==1
+
+* Saving
+preserve
+keep HHID2026 savingsamount1 savingsamount2 savingsamount3
+forvalues i=1/3 {
+bysort HHID2026: egen sam`i'=sum(savingsamount`i')
+}
+egen savingamount=rowtotal(sam1 sam2 sam3)
+keep HHID2026 savingamount
+duplicates drop
+save"N3_sav", replace
+restore
+
+* To keep
+keep HHID_panel villagearea villageid villagename dummymarriage ownland ownland house housetitle dummysavingaccount
+fre house housetitle
+destring house housetitle, replace
+destring ownland, replace
+duplicates drop
+decode villagearea, gen(vi)
+drop villagearea
+rename vi area
+decode villageid, gen(vi)
+drop villageid
+rename vi villageid
+
+* Drop
+duplicates drop
+count
+
+* Family compo
+merge 1:1 HHID2020 using "raw/NEEMSIS2-family", keepusing(nbfemale nbmale agegrp_0_13 agegrp_14_17 agegrp_18_24 agegrp_25_29 agegrp_30_34 agegrp_35_39 agegrp_40_49 agegrp_50_59 agegrp_60_69 agegrp_70_79 agegrp_80_100 HHsize HH_count_child HH_count_adult typeoffamily dummypolygamous head_sex head_age head_dummyworkedpastyear head_working_pop head_mocc_occupation head_edulevel head_maritalstatus)
+drop _merge
+
+* Add debt
+merge 1:1 HHID2020 using "raw/NEEMSIS2-loans_HH", keepusing(nbloans_HH loanamount_HH imp1_ds_tot_HH imp1_is_tot_HH dumHH_givencat_econ dumHH_givencat_curr dumHH_givencat_huma dumHH_givencat_soci dumHH_givencat_hous dumHH_lendercat_form)
+drop _merge
+
+* Add assets and expenses
+merge 1:1 HHID2020 using "raw/NEEMSIS2-assets", keepusing(assets_total1000 assets_totalnoland1000 assets_ownland assets_gold)
+drop _merge
+
+* Add gold quantity
+merge 1:1 HHID2020 using "raw/NEEMSIS2-gold_HH", keepusing(goldquantity_HH)
+drop _merge
+
+* Add saving
+merge 1:1 HHID2020 using "N2_sav"
+drop _merge
+
+* Add income
+merge 1:1 HHID2020 using "raw/NEEMSIS2-occup_HH", keepusing(annualincome_HH nbworker_HH nbnonworker_HH incagrise_HH incagricasual_HH incnonagricasual_HH incnonagriregnonquali_HH incnonagriregquali_HH incnonagrise_HH incnrega_HH shareincomeagri_HH shareincomenonagri_HH)
+drop _merge
+
+* Add remittances
+merge 1:1 HHID2020 using "raw/NEEMSIS2-transferts_HH", keepusing(remreceived_HH remsent_HH remittnet_HH)
+drop _merge
+
+* Panel
+merge 1:m HHID2020 using"raw/keypanel-HH_wide", keepusing(HHID_panel)
+keep if _merge==3
+drop _merge
+rename HHID2020 HHID
+
+* Year
+gen year=2020
+
+save"_temp_NEEMSIS2", replace
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

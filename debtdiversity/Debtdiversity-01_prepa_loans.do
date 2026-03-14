@@ -212,32 +212,27 @@ rename effective_11 effective_deat
 rename effective_12 effective_nore
 rename effective_13 effective_othe
 
-fre loaneffectivereason2
-gen effective_repa2=effective_repa
-replace effective_repa2=1 if loaneffectivereason2==4 & effective_repa2!=. & effective_repa2!=1
-ta effective_repa2
+keep HHID2026 INDID2026 loanid loanreasongiven loanlender loansettled loanamount lender_cat reason_cat lender4 loanamount2 loanbalance2 interestpaid2 totalrepaid2 principalpaid2 effective_repa loan_database plantorep_* settlestrat_* dummymainloan othlendserv_* dummyinterest guarantee_*
 
-keep HHID2020 INDID2020 loanid loanreasongiven loanlender loansettled loanamount lender_cat reason_cat lender4 loanamount2 loanbalance2 interestpaid2 totalrepaid2 principalpaid2 effective_repa loan_database plantorep_* settlestrat_* dummymainloan othlendserv_* dummyinterest guarantee_*
-
-merge m:m HHID2020 using "raw/keypanel-HH_wide.dta", keepusing(HHID_panel)
-keep if _merge==3
-drop _merge
-gen year=2020
-
-tostring INDID2020, replace
-merge m:m HHID_panel INDID2020 using "raw/keypanel-Indiv_wide.dta", keepusing(INDID_panel)
-keep if _merge==3
-drop _merge
-
-* How many HH?
+*
 preserve
-keep if effective_repa==1
-keep HHID_panel effective_repa
+use"raw/NEEMSIS3-HH", clear
+keep HHID2026 HHID_panel
 duplicates drop
+save"_temp", replace
 restore
+merge m:1 HHID2026 using "_temp", keepusing(HHID_panel)
+keep if _merge==3
+drop _merge
+gen year=2026
+
+merge m:m HHID_panel INDID2026 using "raw/NEEMSIS3-INDIDpanel_p1.dta", keepusing(INDID_panel)
+ta loan_database _merge, m
+drop if _merge==2
+drop _merge
 
 
-save"_temp_NEEMSIS2-loans.dta", replace
+save"_temp_NEEMSIS3-loans.dta", replace
 ****************************************
 * END
 
@@ -258,8 +253,9 @@ save"_temp_NEEMSIS2-loans.dta", replace
 ****************************************
 * Append
 ****************************************
-use"_temp_NEEMSIS2-loans", replace
+use"_temp_NEEMSIS3-loans", replace
 
+append using "_temp_NEEMSIS2-loans"
 append using "_temp_NEEMSIS1-loans"
 append using "_temp_RUME-loans"
 
@@ -292,9 +288,17 @@ drop if HHID_panel=="GOV65" & year==2020
 
 
 *** Deflate and round
+/*
+CPI
+2010 100
+2016 158
+2020 184
+2026 250
+*/
 foreach x in loanamount loanbalance interestpaid totalrepaid principalpaid {
-replace `x'=`x'*(100/54) if year==2010
-replace `x'=`x'*(100/86) if year==2016
+replace `x'=`x'*(100/40) if year==2010
+replace `x'=`x'*(100/63.2) if year==2016
+replace `x'=`x'*(100/73.6) if year==2020
 replace `x'=round(`x',1)
 replace `x'=`x'/1000
 }
@@ -361,8 +365,17 @@ drop if livinghome==3
 drop if livinghome==4
 drop dummylefthousehold livinghome
 
+* Supprimer les morts et les migrants en 2026
+merge m:m HHID2026 INDID2026 using "raw/NEEMSIS3-HH", keepusing(dummylefthousehold livinghome)
+drop if _merge==2
+drop _merge
+drop if dummylefthousehold==1
+drop if livinghome==3
+drop if livinghome==4
+drop dummylefthousehold livinghome
+
 * INDID
-drop HHID2010 HHID2016 HHID2020 INDID2016 INDID2020
+drop HHID2010 HHID2016 HHID2020 HHID2026 INDID2016 INDID2020 INDID2026
 order HHID_panel INDID_panel loanid year loanamount loanreasongiven loanlender dummymainloan othlendserv_6
 
 * Check duplicates
@@ -382,6 +395,13 @@ restore
 
 preserve
 keep if year==2020
+keep HHID_panel INDID_panel loanid
+duplicates tag, gen(tag)
+ta tag
+restore
+
+preserve
+keep if year==2026
 keep HHID_panel INDID_panel loanid
 duplicates tag, gen(tag)
 ta tag
