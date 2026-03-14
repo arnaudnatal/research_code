@@ -33,10 +33,12 @@ drop if livinghome==4
 drop livinghome
 
 * Merge caste
+/*
 merge m:1 HHID_panel year using "panel_HH_v0", keepusing(caste)
 drop if _merge==2
 drop _merge
 order HHID_panel INDID_panel year caste sex 
+*/
 
 * Cat of amount
 xtile catloanamount=loanamount, n(5)
@@ -212,6 +214,7 @@ label values stem stem
 ta stem typeoffamily
 
 * Dalits
+/*
 gen dalits=.
 replace dalits=1 if caste==1
 replace dalits=0 if caste==2
@@ -222,6 +225,7 @@ label values dalits dalits
 * Caste
 fre caste
 ta caste, gen(caste_)
+*/
 
 * Ownland
 recode ownland (.=0)
@@ -232,8 +236,8 @@ label values ownland ownland
 
 
 ********** Label
-label var caste_2 "Caste: Middle"
-label var caste_3 "Caste: Upper"
+*label var caste_2 "Caste: Middle"
+*label var caste_3 "Caste: Upper"
 label var HHsize "Household size"
 label var HH_count_child "Number of childrens"
 label var stem "Family: Stem"
@@ -404,6 +408,7 @@ label define head_nonmarried 0"Married" 1"Non-married"
 label values head_nonmarried head_nonmarried
 
 * Dalits
+/*
 gen dalits=.
 replace dalits=1 if caste==1
 replace dalits=0 if caste==2
@@ -413,6 +418,7 @@ label values dalits dalits
 
 * Caste
 ta caste, gen(caste_)
+*/
 
 * Time
 gen time=0
@@ -424,14 +430,14 @@ label values time time
 
 * Dummy ownland
 recode ownland (.=0)
-label define ownland 0"Own land: No" 1"Own land: Yes"
+*label define ownland 0"Own land: No" 1"Own land: Yes"
 label values ownland ownland
 
 
 
 ********* Label
-label var caste_2 "Caste: Middle"
-label var caste_3 "Caste: Upper"
+*label var caste_2 "Caste: Middle"
+*label var caste_3 "Caste: Upper"
 label var HHsize "Household size"
 label var HH_count_child "Number of childrens"
 label var stem "Family: Stem"

@@ -335,7 +335,8 @@ save"N3_sav", replace
 restore
 
 * To keep
-keep HHID_panel villagearea villageid villagename dummymarriage ownland ownland house housetitle dummysavingaccount
+keep HHID_panel HHID2026 villagearea villageid villagename dummymarriage ownland ownland house housetitle dummysavingaccount
+drop if villageid==.
 fre house housetitle
 destring house housetitle, replace
 destring ownland, replace
@@ -352,43 +353,40 @@ duplicates drop
 count
 
 * Family compo
-merge 1:1 HHID2020 using "raw/NEEMSIS2-family", keepusing(nbfemale nbmale agegrp_0_13 agegrp_14_17 agegrp_18_24 agegrp_25_29 agegrp_30_34 agegrp_35_39 agegrp_40_49 agegrp_50_59 agegrp_60_69 agegrp_70_79 agegrp_80_100 HHsize HH_count_child HH_count_adult typeoffamily dummypolygamous head_sex head_age head_dummyworkedpastyear head_working_pop head_mocc_occupation head_edulevel head_maritalstatus)
+merge 1:1 HHID2026 using "raw/NEEMSIS3-family", keepusing(nbfemale nbmale agegrp_0_13 agegrp_14_17 agegrp_18_24 agegrp_25_29 agegrp_30_34 agegrp_35_39 agegrp_40_49 agegrp_50_59 agegrp_60_69 agegrp_70_79 agegrp_80_100 HHsize HH_count_child HH_count_adult typeoffamily dummypolygamous head_sex head_age head_edulevel head_maritalstatus)
 drop _merge
 
 * Add debt
-merge 1:1 HHID2020 using "raw/NEEMSIS2-loans_HH", keepusing(nbloans_HH loanamount_HH imp1_ds_tot_HH imp1_is_tot_HH dumHH_givencat_econ dumHH_givencat_curr dumHH_givencat_huma dumHH_givencat_soci dumHH_givencat_hous dumHH_lendercat_form)
+merge 1:1 HHID2026 using "raw/NEEMSIS3-loans_HH", keepusing(nbloans_HH loanamount_HH imp1_ds_tot_HH imp1_is_tot_HH dumHH_givencat_econ dumHH_givencat_curr dumHH_givencat_huma dumHH_givencat_soci dumHH_givencat_hous dumHH_lendercat_form)
 drop _merge
 
 * Add assets and expenses
-merge 1:1 HHID2020 using "raw/NEEMSIS2-assets", keepusing(assets_total1000 assets_totalnoland1000 assets_ownland assets_gold)
+merge 1:1 HHID2026 using "raw/NEEMSIS3-assets", keepusing(assets_total1000 assets_totalnoland1000 assets_ownland assets_gold)
 drop _merge
 
 * Add gold quantity
-merge 1:1 HHID2020 using "raw/NEEMSIS2-gold_HH", keepusing(goldquantity_HH)
+merge 1:1 HHID2026 using "raw/NEEMSIS3-gold_HH", keepusing(goldquantity_HH)
 drop _merge
 
 * Add saving
-merge 1:1 HHID2020 using "N2_sav"
+merge 1:1 HHID2026 using "N3_sav"
 drop _merge
 
 * Add income
-merge 1:1 HHID2020 using "raw/NEEMSIS2-occup_HH", keepusing(annualincome_HH nbworker_HH nbnonworker_HH incagrise_HH incagricasual_HH incnonagricasual_HH incnonagriregnonquali_HH incnonagriregquali_HH incnonagrise_HH incnrega_HH shareincomeagri_HH shareincomenonagri_HH)
+merge 1:1 HHID2026 using "raw/NEEMSIS3-occup_HH", keepusing(annualincome_HH nbworker_HH nbnonworker_HH incagrise_HH incagricasual_HH incnonagricasual_HH incnonagriregnonquali_HH incnonagriregquali_HH incnonagrise_HH incnrega_HH shareincomeagri_HH shareincomenonagri_HH)
 drop _merge
 
 * Add remittances
-merge 1:1 HHID2020 using "raw/NEEMSIS2-transferts_HH", keepusing(remreceived_HH remsent_HH remittnet_HH)
+merge 1:1 HHID2026 using "raw/NEEMSIS3-transferts_HH", keepusing(remreceived_HH remsent_HH remittnet_HH)
 drop _merge
 
 * Panel
-merge 1:m HHID2020 using"raw/keypanel-HH_wide", keepusing(HHID_panel)
-keep if _merge==3
-drop _merge
-rename HHID2020 HHID
+rename HHID2026 HHID
 
 * Year
-gen year=2020
+gen year=2026
 
-save"_temp_NEEMSIS2", replace
+save"_temp_NEEMSIS3", replace
 ****************************************
 * END
 
@@ -420,8 +418,9 @@ save"_temp_NEEMSIS2", replace
 ****************************************
 * Panel
 ****************************************
-use"_temp_NEEMSIS2", clear
+use"_temp_NEEMSIS3", clear
 
+append using "_temp_NEEMSIS2"
 append using "_temp_NEEMSIS1"
 append using "_temp_RUME"
 
@@ -461,13 +460,14 @@ recode dummydemonetisation (.=0)
 recode dummymarriage (.=0)
 
 * Caste
+/*
 merge 1:1 HHID_panel year using "raw/JatisCastePanel"
 rename jatisn jatis
 rename casten caste
 keep if _merge==3
 drop _merge
 ta caste
-
+*/
 
 *** Quanti 
 global quanti loanamount_HH imp1_ds_tot_HH imp1_is_tot_HH assets_ownland assets_total1000 assets_totalnoland1000 annualincome_HH remreceived_HH remsent_HH remittnet_HH savingamount incagrise_HH incagricasual_HH incnonagricasual_HH incnonagriregnonquali_HH incnonagriregquali_HH incnonagrise_HH incnrega_HH
@@ -476,8 +476,9 @@ gen annualincome_HH_nondef=annualincome_HH
 
 *** Deflate and round
 foreach x in $quanti {
-replace `x'=`x'*(100/54) if year==2010
-replace `x'=`x'*(100/86) if year==2016
+replace `x'=`x'*(100/40) if year==2010
+replace `x'=`x'*(100/63.2) if year==2016
+replace `x'=`x'*(100/73.6) if year==2020
 replace `x'=round(`x',1)
 }
 
@@ -676,9 +677,11 @@ order d_dsr d_isr d_dar d_curr d_land d_gold d_sav d_poor d_casu d_rem, before(d
 drop annualincome_HH_nondef dailyincome_pc dailyuspppdincome_pc inc_casu inc_ncasu d_div d_form d_htitle agegrp_0_13 agegrp_14_17 agegrp_18_24 agegrp_25_29 agegrp_30_34 agegrp_35_39 agegrp_40_49 agegrp_50_59 agegrp_60_69 agegrp_70_79 agegrp_80_100 dummypolygamous dumHH_givencat_econ dumHH_givencat_huma dumHH_givencat_soci dumHH_givencat_hous savingamount incagrise_HH incagricasual_HH incnonagricasual_HH incnonagriregnonquali_HH incnonagriregquali_HH incnonagrise_HH incnrega_HH remreceived_HH remsent_HH remittnet_HH dummysell dummysavingaccount
 
 * Jatis
+/*
 rename jatis jatis_str
 encode jatis_str, gen(jatis)
 order jatis, after(jatis_str)
+*/
 
 * HHID
 rename HHID HHIDyear
