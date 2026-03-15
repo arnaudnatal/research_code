@@ -27,7 +27,7 @@ keep HHID_panel year monthlyincome caste
 rename monthlyincome income
 reshape wide income, i(HHID_panel) j(year)
 
-foreach x in 2010 2016 2020 {
+foreach x in 2010 2016 2020 2026 {
 xtile quint`x'=income`x', n(5)
 }
 
@@ -50,21 +50,35 @@ replace catdiffq2=1 if diffq2==0 & diffq2!=.
 replace catdiffq2=2 if diffq2>0 & diffq2!=.
 replace catdiffq2=3 if diffq2<0 & diffq2!=.
 
+gen diffq3=quint2026-quint2020
+gen absdiffq3=abs(diffq3)
+gen catdiffq3=.
+label define catdiffq3 1"Immobility" 2"Upward" 3"Downward" 
+label values catdiffq3 catdiffq3
+replace catdiffq3=1 if diffq3==0 & diffq3!=.
+replace catdiffq3=2 if diffq3>0 & diffq3!=.
+replace catdiffq3=3 if diffq3<0 & diffq3!=.
 
 
 * Transition matrix
 ta quint2010 quint2016, row nofreq chi2
 ta quint2016 quint2020, row nofreq chi2
+ta quint2020 quint2026, row nofreq chi2
 
 * Immobility and upward and downward mobility
 ta catdiffq1
 ta catdiffq2
+ta catdiffq3
 
 ta catdiffq1 catdiffq2, row nofreq
 ta catdiffq1 catdiffq2, chi2 exp cchi2
 
+ta catdiffq2 catdiffq3, row nofreq
+ta catdiffq2 catdiffq3, chi2 exp cchi2
+
 tabstat absdiffq1 if catdiffq1!=1, stat(n mean) by(catdiffq1)
 tabstat absdiffq2 if catdiffq2!=1, stat(n mean) by(catdiffq2)
+tabstat absdiffq3 if catdiffq3!=1, stat(n mean) by(catdiffq3)
 
 ****************************************
 * END
@@ -89,7 +103,7 @@ keep HHID_panel year assets_total caste
 rename assets_total assets
 reshape wide assets, i(HHID_panel) j(year)
 
-foreach x in 2010 2016 2020 {
+foreach x in 2010 2016 2020 2026 {
 xtile quint`x'=assets`x', n(5)
 }
 
@@ -112,19 +126,31 @@ replace catdiffq2=1 if diffq2==0 & diffq2!=.
 replace catdiffq2=2 if diffq2>0 & diffq2!=.
 replace catdiffq2=3 if diffq2<0 & diffq2!=.
 
+gen diffq3=quint2026-quint2020
+gen absdiffq3=abs(diffq3)
+gen catdiffq3=.
+label define catdiffq3 1"Immobility" 2"Upward" 3"Downward" 
+label values catdiffq3 catdiffq3
+replace catdiffq3=1 if diffq3==0 & diffq3!=.
+replace catdiffq3=2 if diffq3>0 & diffq3!=.
+replace catdiffq3=3 if diffq3<0 & diffq3!=.
 
 * Transition matrix
 ta quint2010 quint2016, row nofreq chi2
 ta quint2016 quint2020, row nofreq chi2
+ta quint2020 quint2026, row nofreq chi2
 
 * Immobility and upward and downward mobility
 ta catdiffq1
 ta catdiffq2
+ta catdiffq3
 
 ta catdiffq1 catdiffq2, row nofreq chi2
+ta catdiffq2 catdiffq3, row nofreq chi2
 
 tabstat absdiffq1 if catdiffq1!=1, stat(n mean) by(catdiffq1)
 tabstat absdiffq2 if catdiffq2!=1, stat(n mean) by(catdiffq2)
+tabstat absdiffq3 if catdiffq3!=1, stat(n mean) by(catdiffq3)
 
 ****************************************
 * END
@@ -163,6 +189,7 @@ replace inc=inc*1000
 replace year=1 if year==2010
 replace year=2 if year==2016
 replace year=3 if year==2020
+replace year=4 if year==2026
 reshape wide inc, i(HHID_panel) j(year)
 rename HHID_panel hhid
 drop inc3
@@ -181,6 +208,7 @@ replace inc=inc*1000
 replace year=1 if year==2010
 replace year=2 if year==2016
 replace year=3 if year==2020
+replace year=4 if year==2026
 reshape wide inc, i(HHID_panel) j(year)
 rename HHID_panel hhid
 drop inc1
@@ -190,6 +218,24 @@ rename inc2 var1
 rename inc3 var2
 export delimited using "C:\Users\Arnaud\Documents\GitHub\research_code\inequalities\incomehh2.txt", delimiter(tab) replace
 
+
+* 2020 - 2026
+use"panel_v3", clear
+keep HHID_panel year monthlyincome
+rename monthlyincome inc
+replace inc=inc*1000
+replace year=1 if year==2010
+replace year=2 if year==2016
+replace year=3 if year==2020
+replace year=4 if year==2026
+reshape wide inc, i(HHID_panel) j(year)
+rename HHID_panel hhid
+drop inc1
+drop if inc3==.
+drop if inc4==.
+rename inc3 var1
+rename inc4 var2
+export delimited using "C:\Users\Arnaud\Documents\GitHub\research_code\inequalities\incomehh3.txt", delimiter(tab) replace
 
 
 ********** Assets
@@ -202,6 +248,7 @@ replace ass=ass*1000
 replace year=1 if year==2010
 replace year=2 if year==2016
 replace year=3 if year==2020
+replace year=4 if year==2026
 reshape wide ass, i(HHID_panel) j(year)
 rename HHID_panel hhid
 drop ass3
@@ -222,6 +269,7 @@ replace ass=ass*1000
 replace year=1 if year==2010
 replace year=2 if year==2016
 replace year=3 if year==2020
+replace year=4 if year==2026
 reshape wide ass, i(HHID_panel) j(year)
 rename HHID_panel hhid
 drop ass1
@@ -232,6 +280,27 @@ rename ass3 var2
 drop if var1==0
 drop if var2==0
 export delimited using "C:\Users\Arnaud\Documents\GitHub\research_code\inequalities\wealthhh2.txt", delimiter(tab) replace
+
+
+* 2020 - 2026
+use"panel_v3", clear
+keep HHID_panel year assets_total
+rename assets_total ass
+replace ass=ass*1000
+replace year=1 if year==2010
+replace year=2 if year==2016
+replace year=3 if year==2020
+replace year=4 if year==2026
+reshape wide ass, i(HHID_panel) j(year)
+rename HHID_panel hhid
+drop ass1
+drop if ass3==.
+drop if ass4==.
+rename ass3 var1
+rename ass4 var2
+drop if var1==0
+drop if var2==0
+export delimited using "C:\Users\Arnaud\Documents\GitHub\research_code\inequalities\wealthhh3.txt", delimiter(tab) replace
 
 ****************************************
 * END
@@ -256,7 +325,7 @@ export delimited using "C:\Users\Arnaud\Documents\GitHub\research_code\inequalit
 
 ********** INCOME RANK
 import excel "CF_income.xlsx", sheet("rank_HH") firstrow clear
-label define timeframe 1"2010 - 2016-17" 2"2016-17 - 2020-21"
+label define timeframe 1"2010 - 2016-2017" 2"2016-2017 - 2020-2021" 3"2020-2021 - 2026"
 label values timeframe timeframe
 label define sample 1"Overall" 2"Downward" 3"Upward"
 label values sample sample
@@ -269,10 +338,12 @@ twoway ///
 (rarea CI_upper CI_lower alpha if timeframe==1, color(plg1%10)) ///
 (connected index alpha if timeframe==2, color(plr1)) ///
 (rarea CI_upper CI_lower alpha if timeframe==2, color(plr1%10)) ///
+(connected index alpha if timeframe==3, color(plr1)) ///
+(rarea CI_upper CI_lower alpha if timeframe==3, color(plr1%10)) ///
 , title("Monthly income rank mobility") ///
 ytitle("") ylabel(.2(.1).8) ///
 xtitle("α") xlabel(-.5(.5)1.5) ///
-legend(order(1 "2010 to 2016-17" 3 "2016-17 to 2020-21") pos(6) col(2)) ///
+legend(order(1 "2010 to 2016" 3 "2016 to 2020" 5 "2020 to 2026") pos(6) col(2)) ///
 scale(1.2) name(incrank, replace)
 
 
@@ -280,7 +351,7 @@ scale(1.2) name(incrank, replace)
 
 ********** WEALTH RANK
 import excel "CF_wealth.xlsx", sheet("rank_HH") firstrow clear
-label define timeframe 1"2010 - 2016-17" 2"2016-17 - 2020-21"
+label define timeframe 1"2010 - 2016-17" 2"2016-17 - 2020-21" 3"2020 - 2026"
 label values timeframe timeframe
 label define sample 1"Overall" 2"Downward" 3"Upward"
 label values sample sample
@@ -293,10 +364,12 @@ twoway ///
 (rarea CI_upper CI_lower alpha if timeframe==1, color(plg1%10)) ///
 (connected index alpha if timeframe==2, color(plr1)) ///
 (rarea CI_upper CI_lower alpha if timeframe==2, color(plr1%10)) ///
+(connected index alpha if timeframe==3, color(plr1)) ///
+(rarea CI_upper CI_lower alpha if timeframe==3, color(plr1%10)) ///
 , title("Wealth rank mobility") ///
 ytitle("") ylabel(.2(.1).8) ///
 xtitle("α") xlabel(-.5(.5)1.5) ///
-legend(order(1 "2010 to 2016-17" 3 "2016-17 to 2020-21") pos(6) col(2)) ///
+legend(order(1 "2010 to 2016-17" 3 "2016-17 to 2020-21" 5 "2020 to 2026") pos(6) col(2)) ///
 scale(1.2) name(assrank, replace)
 
 
@@ -304,7 +377,7 @@ scale(1.2) name(assrank, replace)
 
 ********** INCOME VALUE
 import excel "CF_income.xlsx", sheet("inc_HH") firstrow clear
-label define timeframe 1"2010 - 2016-17" 2"2016-17 - 2020-21"
+label define timeframe 1"2010 - 2016-17" 2"2016-17 - 2020-21" 3"2020 to 2026"
 label values timeframe timeframe
 label define sample 1"Overall" 2"Downward" 3"Upward"
 label values sample sample
@@ -317,10 +390,12 @@ twoway ///
 (rarea CI_upper CI_lower alpha if timeframe==1, color(plg1%10)) ///
 (connected index alpha if timeframe==2, color(plr1)) ///
 (rarea CI_upper CI_lower alpha if timeframe==2, color(plr1%10)) ///
+(connected index alpha if timeframe==3, color(plr1)) ///
+(rarea CI_upper CI_lower alpha if timeframe==3, color(plr1%10)) ///
 , title("Monthly income mobility") ///
 ytitle("") ylabel(0(1)3) ///
 xtitle("α") xlabel(-.5(.5)1.5) ///
-legend(order(1 "2010 to 2016-17" 3 "2016-17 to 2020-21") pos(6) col(2)) ///
+legend(order(1 "2010 to 2016-17" 3 "2016-17 to 2020-21" 5 "2020 to 2026") pos(6) col(2)) ///
 scale(1.2) name(incval, replace)
 
 
@@ -331,7 +406,7 @@ scale(1.2) name(incval, replace)
 
 ********** WEALTH VALUE
 import excel "CF_wealth.xlsx", sheet("ass_HH") firstrow clear
-label define timeframe 1"2010 - 2016-17" 2"2016-17 - 2020-21"
+label define timeframe 1"2010 - 2016-17" 2"2016-17 - 2020-21" 3"2020 to 2026"
 label values timeframe timeframe
 label define sample 1"Overall" 2"Downward" 3"Upward"
 label values sample sample
@@ -344,10 +419,12 @@ twoway ///
 (rarea CI_upper CI_lower alpha if timeframe==1, color(plg1%10)) ///
 (connected index alpha if timeframe==2, color(plr1)) ///
 (rarea CI_upper CI_lower alpha if timeframe==2, color(plr1%10)) ///
+(connected index alpha if timeframe==3, color(plr1)) ///
+(rarea CI_upper CI_lower alpha if timeframe==3, color(plr1%10)) ///
 , title("Wealth mobility") ///
 ytitle("") ylabel(0(1)3) ///
 xtitle("α") xlabel(-.5(.5)1.5) ///
-legend(order(1 "2010 to 2016-17" 3 "2016-17 to 2020-21") pos(6) col(2)) ///
+legend(order(1 "2010 to 2016-17" 3 "2016-17 to 2020-21" 5 "2020 to 2026") pos(6) col(2)) ///
 scale(1.2) name(assval, replace)
 
 
@@ -356,7 +433,7 @@ scale(1.2) name(assval, replace)
 
 
 ********** Combine
-grc1leg incrank assrank incval assval, col(2) name(combcomb, replace) note("{it:Note:} For 388 households in 2010 and 2016-17, and 485 in 2016-17 and 2020-21.", size(vsmall))
+grc1leg incrank assrank incval assval, col(2) name(combcomb, replace) note("{it:Note:} For 388 households in 2010 and 2016-2017, and 485 in 2016-2017 and 2020-2021.", size(vsmall))
 graph export "graph_HH/CFgraph_HH.png", as(png) replace
 
 ****************************************

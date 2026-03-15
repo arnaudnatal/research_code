@@ -412,11 +412,111 @@ drop test
 gen goldreadyamount=(goldquantity_HH-goldquantitypledge_HH)*2700
 tabstat assets_gold goldreadyamount, stat(n mean cv q)
 
+*
+decode jatis, gen(jatis2)
+drop jatis
+rename jatis2 jatis
+drop jatisdetails
 
 save"temp_NEEMSIS2", replace
 ****************************************
 * END
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* 2026
+****************************************
+use"raw/NEEMSIS3-HH", clear
+
+
+*
+drop if catindiv==2
+drop if livinghome==3
+drop if livinghome==4
+drop if dummylefthousehold==1
+drop if age==.
+
+* Savings
+egen savings_indiv=rowtotal(savingsamount1 savingsamount2 savingsamount3)
+bysort HHID2026: egen savings_HH=sum(savings_indiv)
+
+* To keep
+keep HHID2026 HHID_panel villagearea villageid dummymarriage ownland ownland house housetitle savings_HH caste
+fre house housetitle
+destring house housetitle, replace
+destring ownland, replace
+duplicates drop
+decode villagearea, gen(vi)
+drop villagearea
+rename vi area
+decode villageid, gen(vi)
+drop villageid
+rename vi villageid
+
+* Drop
+duplicates drop
+count
+
+* Family compo
+merge 1:1 HHID2026 using "raw/NEEMSIS3-family"
+drop _merge
+
+* Add debt
+merge 1:1 HHID2026 using "raw/NEEMSIS3-loans_HH", keepusing(nbloans_HH loanamount_HH imp1_ds_tot_HH imp1_is_tot_HH)
+drop _merge
+
+* Add assets and expenses
+merge 1:1 HHID2026 using "raw/NEEMSIS3-assets"
+drop _merge
+destring assets_sizeownland, replace
+
+* Add income
+merge 1:1 HHID2026 using "raw/NEEMSIS3-occup_HH"
+drop _merge
+
+* Add remittances
+merge 1:1 HHID2026 using "raw/NEEMSIS3-transferts_HH"
+drop _merge transferts_HH
+
+* Add gold
+merge 1:1 HHID2026 using "raw/NEEMSIS3-gold_HH"
+drop _merge
+drop goldamount_HH goldamountpledge_HH
+
+* Year
+gen year=2026
+
+* Gold not pledge
+gen test=assets_gold-(goldquantity_HH*2700)
+ta test
+drop test
+gen goldreadyamount=(goldquantity_HH-goldquantitypledge_HH)*2700
+tabstat assets_gold goldreadyamount, stat(n mean cv q)
+
+*
+fre caste
+decode caste, gen(jatis)
+drop caste
+fre jatis
+
+
+save"temp_NEEMSIS3", replace
+****************************************
+* END
 
 
 
@@ -442,9 +542,10 @@ save"temp_NEEMSIS2", replace
 ****************************************
 * Panel
 ****************************************
-use"temp_NEEMSIS2", clear
+use"temp_NEEMSIS3", clear
 
 * Append
+append using "temp_NEEMSIS2"
 append using "temp_NEEMSIS1"
 append using "temp_RUME"
 
@@ -490,8 +591,9 @@ global quanti6 goldreadyamount incomeagri_HH incomenonagri_HH incagrise_HH incag
 global quanti $quanti1 $quanti2 $quanti3 $quanti4 $quanti5 $quanti6
 
 foreach x in $quanti {
-replace `x'=`x'*(100/54) if year==2010
-replace `x'=`x'*(100/86) if year==2016
+replace `x'=`x'*(100/40) if year==2010
+replace `x'=`x'*(100/63.2) if year==2016
+replace `x'=`x'*(100/73.6) if year==2020
 replace `x'=round(`x',1)
 }
 
@@ -548,62 +650,22 @@ fre village villageid vill
 ta vill, gen(village_)
 
 * Caste
-drop jatisdetails jatis
 merge 1:1 HHID_panel year using "raw/JatisCastePanel"
-keep if _merge==3
+drop if _merge==2
 drop _merge
-rename casten caste
-rename jatisn jatis
+
+*
+replace jatis=jatisn if jatis==""
+ta jatis
 encode jatis, gen(jatis_code)
 drop jatis
 rename jatis_code jatis
-
-gen dalits=.
-replace dalits=1 if caste==1
-replace dalits=0 if caste==2
-replace dalits=0 if caste==3
-
-ta caste, gen(caste_)
-label var caste_1 "Caste: Dalits"
-label var caste_2 "Caste: Middle castes"
-label var caste_3 "Caste: Upper castes"
-
-* Jatis 1
 fre jatis
-gen jatis2=jatis
-recode jatis2 ///
-(1=1) (11=2) ///
-(7=3) (9=5) (12=6) (4=8) (2=9) ///
-(6=11) (3=12) (8=13) (5=14) (10=15)
 
-label define jatis2 ///
-2"SC" 1"Arunthathiyar" ///
-9"Asarai" 8"Kulalar" 7"Gramani" 6"Vanniyar" 5"Nattar" 4"Navithar" 3"Muslims" ///
-15"Rediyar" 14"Marwari" 13"Naidu" 12"Chettiyar" 11"Mudaliar" 10"Yathavar"
-label values jatis2 jatis2
-
-ta jatis jatis2
-
-drop jatis
-rename jatis2 jatis
-order jatis, after(caste)
-
-
-* Jatis 2
-gen jatis3=jatis
-fre jatis3
-recode jatis3 (5=4) (6=5) (8=6) (9=7) (11=8) (12=9) (13=10) (14=11) (15=12)
-label define jatis3 ///
-2"SC" 1"Arunthathiyar" ///
-7"Asarai" 6"Kulalar" 5"Vanniyar" 4"Nattar" 3"Muslims" ///
-12"Rediyar" 11"Marwari" 10"Naidu" 9"Chettiyar" 8"Mudaliar"
-label values jatis3 jatis3
-
-ta jatis3 jatis
-drop jatis
-rename jatis3 jatis
-order jatis, after(caste)
-
+gen dalits=0
+replace dalits=1 if jatis==1
+replace dalits=1 if jatis==2
+replace dalits=1 if jatis==16
 
 
 ********** Nettoyage
@@ -622,7 +684,6 @@ drop hoursayear_HH hoursayearagri_HH hoursayearnonagri_HH nbworker_HH nbnonworke
 drop assets_total assets_totalnoland assets_totalnoprop assets_total1000 assets_totalnoland1000 assets_totalnoprop1000 shareassets_housevalue shareassets_livestock shareassets_goods shareassets_ownland shareassets_gold assets_sizeownland
 drop goldquantity_HH goldquantitypledge_HH goldreadyamount
 drop village_1 village_2 village_3 village_4 village_5 village_6 village_7 village_8 village_9 village_10
-drop caste_1 caste_2 caste_3
 drop house
 drop housetitle nbmale nbfemale HH_count_child HH_count_adult equiscale_HHsize equimodiscale_HHsize squareroot_HHsize incomeagri_HH incomenonagri_HH remsent_HH remittnet_HH dummyexposure secondlockdownexposure dummysell dummydemonetisation panelvar dalits
 drop dummypanel
@@ -632,7 +693,8 @@ gen time=.
 replace time=1 if year==2010
 replace time=2 if year==2016
 replace time=3 if year==2020
-label define time 1"2010" 2"2016-17" 3"2020-21"
+replace time=4 if year==2026
+label define time 1"2010" 2"2016-2017" 3"2020-2021" 4"2026"
 label values time time
 order time, after(year)
 
@@ -673,7 +735,7 @@ rename assets_gold gold
 * Dummy ownland
 recode ownland (.=0)
 ta ownland year, col nofreq
-label define ownland 0"Own land: No" 1"Own land: Yes"
+label define ownland 0"Own land: No" 1"Own land: Yes", replace
 label values ownland ownland
 
 * Recode and dummies

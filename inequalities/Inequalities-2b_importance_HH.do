@@ -35,32 +35,44 @@ reshape wide income assets size caste, i(HHID_panel) j(year)
 gen attrition2010=0
 replace attrition2010=1 if income2010!=. & income2016==.
 replace attrition2010=. if income2010==.
-label define attrition2010 0"Recovered in 2016-17" 1"Lost in 2016-17"
+label define attrition2010 0"Recovered in 2016-2017" 1"Lost in 2016-2017"
 label values attrition2010 attrition2010
 
 gen attrition2016=0
 replace attrition2016=1 if income2016!=. & income2020==.
 replace attrition2016=. if income2016==.
-label define attrition2016 0"Recovered in 2020-21" 1"Lost in 2020-21"
+label define attrition2016 0"Recovered in 2020-2021" 1"Lost in 2020-2021"
 label values attrition2016 attrition2016
+
+gen attrition2020=0
+replace attrition2020=1 if income2020!=. & income2026==.
+replace attrition2020=. if income2020==.
+label define attrition2020 0"Recovered in 2026" 1"Lost in 2026"
+label values attrition2020 attrition2020
 
 * Income
 tabstat income2010, stat(n mean median) by(attrition2010)
 tabstat income2016, stat(n mean median) by(attrition2016)
+tabstat income2020, stat(n mean median) by(attrition2020)
 reg income2010 i.attrition2010
 reg income2016 i.attrition2016
+reg income2020 i.attrition2020
 
 * Assets
 tabstat assets2010, stat(n mean median) by(attrition2010)
 tabstat assets2016, stat(n mean median) by(attrition2016)
+tabstat assets2020, stat(n mean median) by(attrition2020)
 reg assets2010 i.attrition2010
 reg assets2016 i.attrition2016
+reg assets2020 i.attrition2020
 
 * HH size
 tabstat size2010, stat(n mean median) by(attrition2010)
 tabstat size2016, stat(n mean median) by(attrition2016)
+tabstat size2020, stat(n mean median) by(attrition2020)
 reg size2010 i.attrition2010
 reg size2016 i.attrition2016
+reg size2020 i.attrition2020
 
 ****************************************
 * END
@@ -117,7 +129,7 @@ aspectratio() scale(1.2) name(ass, replace) range(0 10000)
 
 
 ********** Combine
-grc1leg inc ass, col(2) note("{it:Note:} For 405 households in 2010, 492 in 2016-17, and 625 in 2020-21.", size(vsmall))
+grc1leg inc ass, col(2) note("{it:Note:} For 405 households in 2010, 492 in 2016-2017, and 625 in 2020-2021.", size(vsmall))
 graph export "graph_HH/Violin_HH.png", as(png) replace
 
 ****************************************
@@ -145,11 +157,11 @@ graph export "graph_HH/Violin_HH.png", as(png) replace
 ***** Income
 use"panel_v3", clear
 
-foreach i in 2010 2016 2020 {
+foreach i in 2010 2016 2020 2026 {
 xtile monthlyinc`i'=monthlyincome if year==`i', n(10)
 }
 gen incgroup=.
-foreach i in 2010 2016 2020 {
+foreach i in 2010 2016 2020 2026 {
 replace incgroup=monthlyinc`i' if year==`i'
 drop monthlyinc`i' 
 }
@@ -162,30 +174,22 @@ twoway ///
 (connected shareinc incgroup if year==2010) ///
 (connected shareinc incgroup if year==2016) ///
 (connected shareinc incgroup if year==2020) ///
+(connected shareinc incgroup if year==2026) ///
 , title("Share of total monthly income by decile") ///
 ytitle("Percent") ylabel(0(5)35) ///
 xtitle("Decile of monthly income") xlabel(1(1)10) ///
-legend(order(1 "2010" 2 "2016-17" 3 "2020-21") pos(6) col(3)) name(inc, replace) scale(1.2)
+legend(order(1 "2010" 2 "2016-2017" 3 "2020-2021" 4 "2026") pos(6) col(3)) name(inc, replace) scale(1.2)
 
-* French for MSH
-twoway ///
-(connected shareinc incgroup if year==2010) ///
-(connected shareinc incgroup if year==2016) ///
-(connected shareinc incgroup if year==2020) ///
-, title("Part du revenu total détenue par" "chaque décile de revenu") ///
-ytitle("%") ylabel(0(5)35) ///
-xtitle("Décile de revenu") xlabel(1(1)10) ///
-legend(order(1 "2010" 2 "2016-2017" 3 "2020-2021") pos(6) col(3)) name(frinc, replace) scale(1.2)
 
 
 ***** Assets
 use"panel_v3", clear
 
-foreach i in 2010 2016 2020 {
+foreach i in 2010 2016 2020 2026 {
 xtile assets_total`i'=assets_total if year==`i', n(10)
 }
 gen assgroup=.
-foreach i in 2010 2016 2020 {
+foreach i in 2010 2016 2020 2026 {
 replace assgroup=assets_total`i' if year==`i'
 drop assets_total`i' 
 }
@@ -198,29 +202,17 @@ twoway ///
 (connected shareass assgroup if year==2010) ///
 (connected shareass assgroup if year==2016) ///
 (connected shareass assgroup if year==2020) ///
+(connected shareass assgroup if year==2026) ///
 , title("Share of total wealth by decile") ///
 ytitle("Percent") ylabel(0(5)55) ///
 xtitle("Decile of wealth") xlabel(1(1)10) ///
-legend(order(1 "2010" 2 "2016-17" 3 "2020-21") pos(6) col(3)) name(ass, replace) scale(1.2)
-
-* Fr for MSH
-twoway ///
-(connected shareass assgroup if year==2010) ///
-(connected shareass assgroup if year==2016) ///
-(connected shareass assgroup if year==2020) ///
-, title("Part du patrimoine total détenue par" "chaque décile de patrimoine") ///
-ytitle("%") ylabel(0(5)55) ///
-xtitle("Décile de patrimoine") xlabel(1(1)10) ///
-legend(order(1 "2010" 2 "2016-2017" 3 "2020-2021") pos(6) col(3)) name(frass, replace) scale(1.2)
+legend(order(1 "2010" 2 "2016-2017" 3 "2020-2021" 4 "2026") pos(6) col(3)) name(ass, replace) scale(1.2)
 
 
 
 ***** Combine
-grc1leg inc ass, col(2) note("{it:Note:} For 405 households in 2010, 492 in 2016-17, and 625 in 2020-21.", size(vsmall))
+grc1leg inc ass, col(2) note("{it:Note:} For 405 households in 2010, 492 in 2016-2017, and 625 in 2020-2021.", size(vsmall))
 graph export "graph_HH/Decile_HH.png", as(png) replace
-
-grc1leg frinc frass, col(2) note("{it:Note :} Pour 405 ménages en 2010, 492 en 2016-2017 et 625 en 2020-2021.", size(vsmall))
-graph export "graph_HH/FR_Decile_HH.png", as(png) replace width(1920) 
 
 ****************************************
 * END
@@ -253,16 +245,16 @@ use"panel_v3", clear
 
 keep HHID_panel year monthlyincome
 reshape wide monthlyincome, i(HHID_panel) j(year)
-lorenz estimate monthlyincome2010 monthlyincome2016 monthlyincome2020, gini
-
+lorenz estimate monthlyincome2010 monthlyincome2016 monthlyincome2020 monthlyincome2026, gini
+lorenz graph, overlay
 
 ***** Assets
 use"panel_v3", clear
 
 keep HHID_panel year assets_total
 reshape wide assets_total, i(HHID_panel) j(year)
-lorenz estimate assets_total2010 assets_total2016 assets_total2020, gini
-
+lorenz estimate assets_total2010 assets_total2016 assets_total2020 assets_total2026, gini
+lorenz graph, overlay
 
 ********** À la main pour les CI
 
@@ -276,9 +268,11 @@ twoway ///
 (rarea ub2016 lb2016 pop, color(plr1%10)) ///
 (line coef2020 pop, color(plg1)) ///
 (rarea ub2020 lb2020 pop, color(plg1%10)) ///
+(line coef2026 pop, color(plg1)) ///
+(rarea ub2026 lb2026 pop, color(plg1%10)) ///
 , title("Monthly income") ytitle("Cumulative income proportion") ylabel(0(.1)1) ///
 xtitle("Population share") xlabel(0(10)100) ///
-legend(order(1 "2010" 3 "2016-17" 5 "2020-21") pos(6) col(3)) ///
+legend(order(1 "2010" 3 "2016-2017" 5 "2020-2021" 7 "2026") pos(6) col(3)) ///
 scale(1.2) note("Gini index is 0.32 in 2010, 0.43 in 2016-17 and 0.48 in 2020-21.", size(vsmall)) name(inc, replace)
 
 *** Wealth
@@ -291,14 +285,16 @@ twoway ///
 (rarea ub2016 lb2016 pop, color(plr1%10)) ///
 (line coef2020 pop, color(plg1)) ///
 (rarea ub2020 lb2020 pop, color(plg1%10)) ///
+(line coef2026 pop, color(plg1)) ///
+(rarea ub2026 lb2026 pop, color(plg1%10)) ///
 , title("Wealth") ytitle("Cumulative wealth proportion") ylabel(0(.1)1) ///
 xtitle("Population share") xlabel(0(10)100) ///
-legend(order(1 "2010" 3 "2016-17" 5 "2020-21") pos(6) col(3)) ///
+legend(order(1 "2010" 3 "2016-2017" 5 "2020-2021" 7 "2026") pos(6) col(3)) ///
 scale(1.2) note("Gini index is 0.57 in 2010, 0.66 in 2016-17 and 0.61 in 2020-21.", size(vsmall)) name(ass, replace)
 
 
 *** Combine
-grc1leg inc ass, col(2) note("{it:Note:} For 405 households in 2010, 492 in 2016-17, and 625 in 2020-21.", size(vsmall))
+grc1leg inc ass, col(2) note("{it:Note:} For 405 households in 2010, 492 in 2016-2017, and 625 in 2020-2021.", size(vsmall))
 graph export "graph_HH/Lorenz_HH.png", as(png) replace
 
 ****************************************
@@ -347,7 +343,7 @@ label values cat cat
 reshape wide share, i(cat) j(time)
 
 * Graph 
-graph bar share1 share2 share3, over(cat, label(angle(45))) title("") ytitle("Percent") legend(order(1 "2010" 2 "2016-17" 3 "2020-21") col(3) pos(6)) name(g1, replace) ylabel(0(10)100)
+graph bar share1 share2 share3 share4, over(cat, label(angle(45))) title("") ytitle("Percent") legend(order(1 "2010" 2 "2016-2017" 3 "2020-2021" 4 "2026") col(3) pos(6)) name(g1, replace) ylabel(0(10)100)
 graph export "graph_HH/Assets_ownership.png", as(png) replace
 
 
