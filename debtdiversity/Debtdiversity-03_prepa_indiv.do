@@ -177,12 +177,88 @@ save"_temp_NEEMSIS2indiv", replace
 
 
 
+
+****************************************
+* 2026
+****************************************
+use"raw/NEEMSIS3-HH", clear
+
+* To keep
+drop if catindiv==2
+drop if livinghome==3
+drop if livinghome==4
+drop if dummylefthousehold==1
+drop if age==.
+
+keep HHID2026 HHID_panel INDID_panel INDID2026 villagearea villageid dummymarriage ownland ownland house housetitle name sex age relationshiptohead livinghome maritalstatus dummylefthousehold
+fre house housetitle
+destring house housetitle, replace
+destring ownland, replace
+duplicates drop
+decode villagearea, gen(vi)
+drop villagearea
+rename vi area
+decode villageid, gen(vi)
+drop villageid
+rename vi villageid
+
+* Education
+merge 1:m HHID2026 INDID2026 using "raw\NEEMSIS3-education", keepusing(edulevel)
+keep if _merge==3
+drop _merge
+
+* Occupation
+merge 1:m HHID2026 INDID2026 using "raw\NEEMSIS3-occup_indiv", keepusing(dummyworkedpastyear working_pop mainocc_occupation_indiv annualincome_indiv nboccupation_indiv hoursayear_indiv)
+keep if _merge==3
+drop _merge
+
+* Debt
+merge 1:1 HHID2026 INDID2026 using "raw\NEEMSIS3-loans_indiv", keepusing(nbloans_indiv loanamount_indiv imp1_ds_tot_indiv imp1_is_tot_indiv)
+drop if _merge==2
+drop _merge
+
+* Transferts
+merge 1:1 HHID2026 INDID2026 using "raw\NEEMSIS3-transferts_indiv", keepusing(remreceived_indiv remsent_indiv remittnet_indiv)
+keep if _merge==3
+drop _merge
+
+* Rename
+rename HHID2026 HHID
+rename INDID2026 INDID
+order HHID_panel INDID_panel
+tostring INDID, replace
+
+*Year
+gen year=2026
+
+save"_temp_NEEMSIS3indiv", replace
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ****************************************
 * Panel
 ****************************************
-use"_temp_NEEMSIS2indiv", clear
+use"_temp_NEEMSIS3indiv", clear
+
 
 ***
+append using "_temp_NEEMSIS2indiv"
 append using "_temp_NEEMSIS1indiv"
 
 *
@@ -212,11 +288,11 @@ recode dummymarriage (.=0)
 
 * Time
 gen time=0
-replace time=1 if year==2010
-replace time=2 if year==2016
-replace time=3 if year==2020
+replace time=1 if year==2016
+replace time=2 if year==2020
+replace time=3 if year==2026
 
-label define time 1"2010" 2"2016-17" 3"2020-21"
+label define time 1"2016-2017" 2"2020-2021" 3"2026"
 label values time time
 
 
@@ -225,7 +301,8 @@ global quanti annualincome_indiv loanamount_indiv imp1_ds_tot_indiv imp1_is_tot_
 
 *** Deflate and round
 foreach x in $quanti {
-replace `x'=`x'*(100/86) if year==2016
+replace `x'=`x'*(100/63.2) if year==2016
+replace `x'=`x'*(100/73.6) if year==2020
 replace `x'=round(`x',1)
 }
 
