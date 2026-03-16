@@ -23,16 +23,42 @@ do"C:\Users\Arnaud\Documents\GitHub\folderanalysis\inequalities.do"
 ****************************************
 use"panel_v3", clear
 
+
+*** Prepa for time serie clustering
+preserve
+keep HHID_panel year assets_total_pc
+rename assets_total_pc wealth
+bys HHID_panel: gen n=_N
+ta n
+keep if n==4
+ta year
+drop n
+reshape wide wealth, i(HHID_panel) j(year)
+export delimited "wealth.csv", replace
+restore
+preserve
+keep HHID_panel year annualincome_pc
+rename annualincome_pc income
+bys HHID_panel: gen n=_N
+ta n
+keep if n==4
+ta year
+drop n
+reshape wide income, i(HHID_panel) j(year)
+export delimited "income.csv", replace
+restore
+
+
 *** Declaration
 ta year
-drop if year==2026
+*drop if year==2026
 xtset panelvar time
 
 *** Lag
 preserve
 keep HHID_panel year logincome logassets
-drop if year==2020
-recode year (2010=2016) (2016=2020)
+drop if year==2026
+recode year (2010=2016) (2016=2020) (2020=2026)
 fre year
 rename logincome laglogincome
 rename logassets laglogassets
@@ -41,6 +67,7 @@ restore
 merge 1:1 HHID_panel year using "_temp"
 drop if _merge==2
 drop _merge
+
 
 
 *** Interactions
@@ -56,27 +83,53 @@ global hh sexratio logdebt logHHsize
 global invar vill2 vill3 vill4 vill5 vill6 vill7 vill8 vill9 vill10 caste2 caste3
 
 
-***
-xtqreg assets_total c.logincome##i.caste $head $hh $invar, id(panelvar) q(.1 .2 .3 .4 .5 .6 .7 .8 .9)
+*** XTQREG
+xtset panelvar time
 
-/*
-xtqreg assets_total c.laglogincome##i.caste $head $hh $invar, id(panelvar) q(.1 .2 .3 .4 .5 .6 .7 .8 .9)
+* Assets with income
+xtqreg logassets laglogassets logincome $head $hh $invar, id(panelvar) q(.1 .2 .3 .4 .5 .6 .7 .8 .9)
 
-xtqreg annualincome c.laglogassets##i.caste $head $hh $invar, id(panelvar) q(.1 .2 .3 .4 .5 .6 .7 .8 .9)
-*/
+* Assets with lag income
+xtqreg logassets laglogassets logincome laglogincome $head $hh $invar, id(panelvar) q(.1 .2 .3 .4 .5 .6 .7 .8 .9)
+
+* Income with assets
+xtqreg logincome laglogincome logassets $head $hh $invar, id(panelvar) q(.1 .2 .3 .4 .5 .6 .7 .8 .9)
+
+* Income with assets lag
+xtqreg logincome laglogincome logassets laglogassets $head $hh $invar, id(panelvar) q(.1 .2 .3 .4 .5 .6 .7 .8 .9)
 
 
 
-*** Income in t-1 on Wealth in t
+
+
+
+
+
+*** QREGPD
+xtset panelvar time
+gen l_assets_total=l.assets_total
+gen l_annualincome=l.annualincome
+qregpd assets_total logincome $head l_assets_total, id(panelvar) fix(time)
+qregpd annualincome logassets $head l_annualincome, id(panelvar) fix(time)
+
+
+*** Simple diff
+xtset panelvar time
+xtreg D.logassets L.c.logincome##i.caste $head $hh $invar, fe
+xtreg D.logincome L.c.logassets##i.caste $head $hh $invar, fe
+
+*** ML-SEM
+xtset panelvar time
+* Income in t-1 on Wealth in t
 xtdpdml logassets $head $hh, inv($invar) predetermined(L.logincome) fiml
 
-*** Wealth in t-1 on Income in t
+* Wealth in t-1 on Income in t
 xtdpdml logincome $head $hh, inv($invar) predetermined(L.logassets) fiml
 
-*** Income in t-1 X caste on Wealth in t
+* Income in t-1 X caste on Wealth in t
 xtdpdml logassets $head $hh, inv($invar) predetermined(L.logincome L.caste2_logincome L.caste3_logincome) fiml
 
-*** Wealth in t-1 X caste on Income in t
+* Wealth in t-1 X caste on Income in t
 xtdpdml logincome $head $hh, inv($invar) predetermined(L.logassets L.caste2_logassets caste3_logassets) fiml
 
 

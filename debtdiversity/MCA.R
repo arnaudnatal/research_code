@@ -13,7 +13,7 @@ data<-read.csv("Allloans.csv")
 var<-data[,c("lender", "reason", "amount"), drop = FALSE]
 
 # Shiny App
-#res<-MCAshiny(var)
+res<-MCAshiny(var)
 
 # Codes
 res.MCA10<-MCA(var,ncp=13,graph=FALSE)
