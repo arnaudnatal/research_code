@@ -669,7 +669,6 @@ replace dalits=1 if jatis==16
 
 
 ********** Nettoyage
-drop head_*
 drop agegrp*
 drop male_agegrp*
 drop female_agegrp*
@@ -678,15 +677,14 @@ drop nbgeneration1 nbgeneration2 nbgeneration3 nbgeneration4 nbgeneration5 dummy
 drop vill
 drop shareincagrise_HH shareincagricasual_HH shareincnonagricasual_HH shareincnonagriregnonquali_HH shareincnonagriregquali_HH shareincnonagrise_HH shareincnrega_HH sharehoursayearagri_HH sharehoursayearnonagri_HH shareincomeagri_HH shareincomenonagri_HH
 drop expenses_educ expenses_marr expenses_total expenses_food expenses_heal expenses_cere expenses_agri shareexpenses_food shareexpenses_educ shareexpenses_heal shareexpenses_cere
-drop age_group family typeoffamily nbgeneration waystem dummypolygamous pop_workingage pop_dependents dependencyratio dummyheadfemale dummyoneadult sexratio nbloans_HH loanamount_HH imp1_ds_tot_HH imp1_is_tot_HH
-drop compensation compensationamount dummymarriage
-drop hoursayear_HH hoursayearagri_HH hoursayearnonagri_HH nbworker_HH nbnonworker_HH nonworkersratio
+drop age_group nbgeneration dummypolygamous pop_workingage pop_dependents dependencyratio dummyheadfemale dummyoneadult
+drop compensation compensationamount
+drop hoursayear_HH hoursayearagri_HH hoursayearnonagri_HH
 drop assets_total assets_totalnoland assets_totalnoprop assets_total1000 assets_totalnoland1000 assets_totalnoprop1000 shareassets_housevalue shareassets_livestock shareassets_goods shareassets_ownland shareassets_gold assets_sizeownland
 drop goldquantity_HH goldquantitypledge_HH goldreadyamount
 drop village_1 village_2 village_3 village_4 village_5 village_6 village_7 village_8 village_9 village_10
 drop house
-drop housetitle nbmale nbfemale HH_count_child HH_count_adult equiscale_HHsize equimodiscale_HHsize squareroot_HHsize incomeagri_HH incomenonagri_HH remsent_HH remittnet_HH dummyexposure secondlockdownexposure dummysell dummydemonetisation panelvar dalits
-drop dummypanel
+drop housetitle equiscale_HHsize equimodiscale_HHsize squareroot_HHsize incomeagri_HH incomenonagri_HH remsent_HH remittnet_HH dummyexposure  dummysell 
 
 * Time
 gen time=.
@@ -882,6 +880,66 @@ s_agrise_pc s_agrica_pc s_casual_pc s_regula_pc s_selfem_pc s_mgnreg_pc s_pensio
 ********** 1k rupees
 replace monthlyincome=monthlyincome/1000
 replace monthlyincome_pc=monthlyincome_pc/1000
+
+
+
+
+********** Construction
+
+*** Log
+replace assets_total=1 if assets_total==0
+gen logassets=log(assets_total)
+replace annualincome=1 if annualincome==0
+gen logincome=log(annualincome)
+replace loanamount_HH=1 if loanamount_HH==0
+gen logdebt=log(loanamount_HH)
+gen logHHsize=log(HHsize)
+
+*** Head characteristics
+*
+fre head_maritalstatus
+gen head_married=0
+replace head_married=1 if head_maritalstatus==1
+ta head_maritalstatus head_married
+ta head_married
+*
+fre head_sex
+gen head_female=0
+replace head_female=1 if head_sex==2
+ta head_sex head_female
+*
+fre head_edulevel
+recode head_edulevel (4=3) (5=3)
+ta head_edulevel, gen(head_edu)
+*
+fre head_mocc_occupation
+recode head_mocc_occupation (5=4)
+ta head_mocc_occupation, gen(head_occ)
+
+*** Households
+* 
+fre villageid
+ta villageid, gen(vill)
+
+
+*** Caste
+fre jatis
+ta jatis casten, m
+
+replace casten=1 if jatis==1
+replace casten=2 if jatis==3
+replace casten=3 if jatis==6
+replace casten=3 if jatis==11
+replace casten=2 if jatis==14
+replace casten=3 if jatis==15
+replace casten=2 if jatis==17
+replace casten=2 if jatis==18
+replace casten=2 if jatis==19
+fre casten
+rename casten caste
+ta caste, gen(caste)
+gen dalit=0
+replace dalit=1 if caste==1
 
 
 
