@@ -24,7 +24,7 @@ do"C:/Users/Arnaud/Documents/GitHub/folderanalysis/$link.do"
 use"panel_loans_v0", clear
 
 * Merge sex and drop died
-merge m:1 HHID_panel INDID_panel year using "panel_indiv_v0", keepusing(sex livinghome)
+merge m:m HHID_panel INDID_panel year using "panel_indiv_v0", keepusing(sex livinghome)
 drop if _merge==2
 drop _merge
 ta livinghome year
@@ -230,7 +230,7 @@ ta caste, gen(caste_)
 * Ownland
 recode ownland (.=0)
 ta ownland year, col nofreq
-label define ownland 0"Own land: No" 1"Own land: Yes"
+label define ownland 0"Own land: No" 1"Own land: Yes", replace
 label values ownland ownland
 
 

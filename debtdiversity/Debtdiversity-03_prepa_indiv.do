@@ -213,13 +213,13 @@ keep if _merge==3
 drop _merge
 
 * Debt
-merge 1:1 HHID2026 INDID2026 using "raw\NEEMSIS3-loans_indiv", keepusing(nbloans_indiv loanamount_indiv imp1_ds_tot_indiv imp1_is_tot_indiv)
+merge m:1 HHID2026 INDID2026 using "raw\NEEMSIS3-loans_indiv", keepusing(nbloans_indiv loanamount_indiv imp1_ds_tot_indiv imp1_is_tot_indiv)
 drop if _merge==2
 drop _merge
 
 * Transferts
-merge 1:1 HHID2026 INDID2026 using "raw\NEEMSIS3-transferts_indiv", keepusing(remreceived_indiv remsent_indiv remittnet_indiv)
-keep if _merge==3
+merge m:1 HHID2026 INDID2026 using "raw\NEEMSIS3-transferts_indiv", keepusing(remreceived_indiv remsent_indiv remittnet_indiv)
+drop if _merge==2
 drop _merge
 
 * Rename

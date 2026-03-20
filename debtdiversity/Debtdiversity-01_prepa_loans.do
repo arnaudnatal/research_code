@@ -226,7 +226,7 @@ keep if _merge==3
 drop _merge
 gen year=2026
 
-merge m:m HHID_panel INDID2026 using "raw/NEEMSIS3-INDIDpanel_p1.dta", keepusing(INDID_panel)
+merge m:m HHID_panel INDID2026 using "raw/NEEMSIS3-HH.dta", keepusing(INDID_panel)
 ta loan_database _merge, m
 drop if _merge==2
 drop _merge

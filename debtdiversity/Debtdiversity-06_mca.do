@@ -56,112 +56,13 @@ cluster gen clust=groups(4)
 
 
 
-
-****************************************
-* MCA all loans 1 (with 2010)
-****************************************
-use"panel_loans_v1", clear
-
-* Add repay debt
-fre loanreasongiven
-fre reason_cat
-ta loanreasongiven reason
-
-fre reason_cat
-replace reason_cat=6 if loanreasongiven==4
-replace reason_cat=7 if loanreasongiven==3
-label define reason_cat 1"R_eco" 2"R_cur" 3"R_edu" 4"R_cer" 5"R_hou" 6"R_rep" 7"R_hea", modify
-fre reason
-
-ta loanreasongiven reason_cat
-
-*
-ta year
-
-* Selection
-keep HHID_panel INDID_panel loanid year ///
-lender4 reason_cat catloanamount
-
-* Rename
-rename lender4 lender
-rename reason_cat reason
-rename catloanamount amount
-
-fre lender
-fre reason
-fre amount
-
-* Export pour R
-foreach x in lender reason amount {
-decode `x', gen(`x'_dec)
-drop `x'
-rename `x'_dec `x'
-}
-export delimited using "Allloans.csv", replace
-
-* Analyses sous R
-
-* Import R
-import delimited using "Allloans_res.csv", clear
-rename hhid_panel HHID_panel
-rename indid_panel INDID_panel
-
-* 10 clusters
-ta clust10
-/*
-ta lender clust10, col nofreq
-ta reason clust10, col nofreq
-ta amount clust10, col nofreq
-ta clust10 year, col nofreq
-*/
-
-* 9 clusters
-ta clust9
-/*
-ta lender clust9, col nofreq
-ta reason clust9, col nofreq
-ta amount clust9, col nofreq
-ta clust9 year, col nofreq
-*/
-
-* 8 clusters
-ta clust8
-ta lender clust8, col nofreq
-ta reason clust8, col nofreq
-ta amount clust8, col nofreq
-ta clust8 year, col nofreq
-
-* 7 clusters
-ta clust7
-/*
-ta lender clust7, col nofreq
-ta reason clust7, col nofreq
-ta amount clust7, col nofreq
-ta clust7 year, col nofreq
-*/
-
-save"clustloan1", replace
-****************************************
-* END
-
-
-
-
-
-
-
-
-
-
-
-
-
 ****************************************
 * MCA all loans 2 (without 2010)
 ****************************************
 use"panel_loans_v1", clear
 
 drop if year==2010
+drop if loan_database=="MARRIAGE"
 
 * Add repay debt
 fre loanreasongiven
