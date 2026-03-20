@@ -141,3 +141,46 @@ xtdpdml logincome $head $hh, inv($invar) predetermined(L.logassets L.caste2_loga
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* PCA
+****************************************
+use"panel_v3", clear
+
+foreach x in annualincome_pc expenses_total loanamount_HH assets_total_pc {
+replace `x'=`x'/1000
+}
+
+pca annualincome expenses_total loanamount_HH assets_total
+predict a1 a2 a3
+
+cluster wardslinkage a1 a2 a3, measure(Euclidean)
+cluster dendrogram, cutnumber(50)
+cluster gen clust2=groups(2)
+cluster gen clust4=groups(4)
+
+tabstat annualincome expenses_total loanamount_HH assets_total, stat(n mean) by(clust4)
+
+ta clust4 year, col nofreq
+
+
+
+
+
+****************************************
+* END
+
+
+
