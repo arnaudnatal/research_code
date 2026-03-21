@@ -58,10 +58,6 @@ count
 merge 1:1 HHID2010 using "raw/RUME-family", keepusing(nbfemale nbmale HHsize HH_count_child typeoffamily head_sex head_age head_dummyworkedpastyear head_working_pop head_mocc_profession head_mocc_occupation head_mocc_sector head_mocc_annualincome head_mocc_occupationname head_annualincome head_nboccupation head_edulevel pop_workingage pop_dependents dependencyratio dummyheadfemale dummyoneadult sexratio)
 drop _merge
 
-* Add debt
-merge 1:1 HHID2010 using "raw/RUME-loans_HH", keepusing(nbloans_HH loanamount_HH imp1_ds_tot_HH imp1_is_tot_HH totHH_lendercatamt_info totHH_lendercatamt_semi totHH_lendercatamt_form)
-drop _merge
-
 * Add assets and expenses
 merge 1:1 HHID2010 using "raw/RUME-assets", keepusing(assets_sizeownland assets_housevalue assets_livestock assets_goods assets_total)
 drop _merge
@@ -142,10 +138,6 @@ count
 
 * Family compo
 merge 1:1 HHID2016 using "raw/NEEMSIS1-family",keepusing(nbfemale head_maritalstatus nbmale HHsize HH_count_child typeoffamily head_sex head_age head_dummyworkedpastyear head_working_pop head_mocc_profession head_mocc_occupation head_mocc_sector head_mocc_annualincome head_mocc_occupationname head_annualincome head_nboccupation head_edulevel pop_workingage pop_dependents dependencyratio dummyheadfemale dummyoneadult sexratio)
-drop _merge
-
-* Add debt
-merge 1:1 HHID2016 using "raw/NEEMSIS1-loans_HH", keepusing(nbloans_HH loanamount_HH imp1_ds_tot_HH imp1_is_tot_HH totHH_lendercatamt_info totHH_lendercatamt_semi totHH_lendercatamt_form)
 drop _merge
 
 * Add assets and expenses
@@ -258,11 +250,6 @@ count
 merge 1:1 HHID2020 using "raw/NEEMSIS2-family", keepusing(nbfemale nbmale HHsize HH_count_child typeoffamily head_sex head_age head_dummyworkedpastyear head_working_pop head_mocc_profession head_mocc_occupation head_mocc_sector head_mocc_annualincome head_mocc_occupationname head_maritalstatus head_annualincome head_nboccupation head_edulevel pop_workingage pop_dependents dependencyratio dummyheadfemale dummyoneadult sexratio)
 drop _merge
 
-
-* Add debt
-merge 1:1 HHID2020 using "raw/NEEMSIS2-loans_HH", keepusing(nbloans_HH loanamount_HH imp1_ds_tot_HH imp1_is_tot_HH totHH_lendercatamt_info totHH_lendercatamt_semi totHH_lendercatamt_form)
-drop _merge
-
 * Add assets and expenses
 merge 1:1 HHID2020 using "raw/NEEMSIS2-assets", keepusing(assets_sizeownland assets_housevalue assets_livestock assets_goods assets_total)
 drop _merge
@@ -360,10 +347,6 @@ count
 merge 1:1 HHID2026 using "raw/NEEMSIS3-family", keepusing(nbfemale head_maritalstatus nbmale HHsize HH_count_child typeoffamily head_sex head_age head_dummyworkedpastyear head_working_pop head_mocc_profession head_mocc_occupation head_mocc_sector head_mocc_annualincome head_mocc_occupationname head_annualincome head_nboccupation head_edulevel pop_workingage pop_dependents dependencyratio dummyheadfemale dummyoneadult sexratio)
 drop _merge
 
-* Add debt
-merge 1:1 HHID2026 using "raw/NEEMSIS3-loans_HH", keepusing(nbloans_HH loanamount_HH imp1_ds_tot_HH imp1_is_tot_HH totHH_lendercatamt_info totHH_lendercatamt_semi totHH_lendercatamt_form)
-drop _merge
-
 * Add assets and expenses
 merge 1:1 HHID2026 using "raw/NEEMSIS3-assets", keepusing(assets_sizeownland assets_housevalue assets_livestock assets_goods assets_total)
 drop _merge
@@ -391,6 +374,8 @@ decode caste, gen(jatis)
 drop caste
 fre jatis
 
+rename HHID2026 HHID
+
 
 save"temp_NEEMSIS3", replace
 ****************************************
@@ -403,6 +388,79 @@ save"temp_NEEMSIS3", replace
 
 
 
+
+
+****************************************
+* Debt measure
+****************************************
+
+********** 2010
+use"raw/RUME-loans_mainloans_new", clear
+keep HHID2010 loanreasongiven lender4 loanbalance2
+drop if loanbalance==0
+bys HHID2010: egen debt=sum(loanbalance2)
+keep HHID2010 debt
+rename HHID2010 HHID
+duplicates drop
+save"_temp", replace
+*
+use"temp_RUME", clear
+merge 1:1 HHID using "_temp"
+drop _merge
+save"temp_RUME", replace
+
+
+
+********** 2016
+use"raw/NEEMSIS1-loans_mainloans_new", clear
+keep HHID2016 loanreasongiven lender4 loanbalance2
+drop if loanbalance==0
+bys HHID2016: egen debt=sum(loanbalance2)
+keep HHID2016 debt
+rename HHID2016 HHID
+duplicates drop
+save"_temp", replace
+*
+use"temp_NEEMSIS1", clear
+merge 1:1 HHID using "_temp"
+drop _merge
+save"temp_NEEMSIS1", replace
+
+
+********** 2020
+use"raw/NEEMSIS2-loans_mainloans_new", clear
+keep HHID2020 loanreasongiven lender4 loanbalance2
+drop if loanbalance==0
+bys HHID2020: egen debt=sum(loanbalance2)
+keep HHID2020 debt
+rename HHID2020 HHID
+duplicates drop
+save"_temp", replace
+*
+use"temp_NEEMSIS2", clear
+merge 1:1 HHID using "_temp"
+drop _merge
+save"temp_NEEMSIS2", replace
+
+
+********** 2026
+use"raw/NEEMSIS3-loans_mainloans_new", clear
+keep HHID2026 loanreasongiven lender4 loanbalance2
+drop if loanbalance==0
+bys HHID2026: egen debt=sum(loanbalance2)
+keep HHID2026 debt
+rename HHID2026 HHID
+duplicates drop
+save"_temp", replace
+*
+use"temp_NEEMSIS3", clear
+merge 1:1 HHID using "_temp"
+drop _merge
+save"temp_NEEMSIS3", replace
+
+
+****************************************
+* END
 
 
 
@@ -456,11 +514,12 @@ order HHID_panel HHID year dummypanel
 sort HHID_panel year
 
 * Shock
+recode secondlockdownexposure (.=1)
 recode dummydemonetisation (.=0)
 recode dummymarriage (.=0)
 
 * Quanti defalte and round
-global quanti savings_HH head_mocc_annualincome head_annualincome loanamount_HH imp1_ds_tot_HH imp1_is_tot_HH totHH_lendercatamt_info totHH_lendercatamt_semi totHH_lendercatamt_form assets_housevalue assets_livestock assets_goods assets_total incomeagri_HH incomenonagri_HH annualincome_HH remreceived_HH remsent_HH remittnet_HH pension_HH
+global quanti savings_HH head_mocc_annualincome head_annualincome debt assets_housevalue assets_livestock assets_goods assets_total incomeagri_HH incomenonagri_HH annualincome_HH remreceived_HH remsent_HH remittnet_HH pension_HH
 
 foreach x in $quanti {
 replace `x'=`x'*(100/40) if year==2010
@@ -473,7 +532,7 @@ replace `x'=round(`x',1)
 recode dummyexposure (.=0)
 recode head_mocc_occupation (.=0)
 recode head_nboccupation (.=0)
-replace loanamount_HH=0 if loanamount_HH==.
+replace debt=0 if debt==.
 
 
 * Selection
@@ -537,7 +596,13 @@ fre jatis
 gen dalits=0
 replace dalits=1 if jatis==1
 replace dalits=1 if jatis==2
-replace dalits=1 if jatis==16
+replace dalits=1 if jatis==19
+
+replace dalits=1 if HHID_panel=="ELA11" & year==2026
+replace dalits=1 if HHID_panel=="ELA3" & year==2026
+replace dalits=0 if HHID_panel=="MANAM65" & year==2026
+replace dalits=1 if HHID_panel=="MANAM7" & year==2026
+replace dalits=1 if HHID_panel=="SEM6" & year==2026
 
 
 * Time
@@ -577,49 +642,82 @@ ta head_mocc_occupation, gen(head_occ)
 fre villageid
 ta villageid, gen(vill)
 
-
-*** Caste
-fre jatis
-ta jatis casten, m
-
-replace casten=1 if jatis==1
-replace casten=2 if jatis==3
-replace casten=3 if jatis==6
-replace casten=3 if jatis==11
-replace casten=2 if jatis==14
-replace casten=3 if jatis==15
-replace casten=2 if jatis==17
-replace casten=2 if jatis==18
-replace casten=2 if jatis==19
-fre casten
-rename casten caste
-ta caste, gen(caste)
-gen dalit=0
-replace dalit=1 if caste==1
-
-
-
-* Std for pca
-gen infdebt=totHH_lendercatamt_info+totHH_lendercatamt_semi
-gen assetsliq=assets_livestock+assets_goods
-
-rename infdebt					d_inf
-rename totHH_lendercatamt_form	d_form
-rename assets_sizeownland		w_land
-rename savings_HH 				w_saving
-rename assetsliq				w_assets
-rename goldquantity_HH			w_gold
-rename incomeagri_HH			inc_agr
-rename incomenonagri_HH			inc_nonagr
-rename remittnet_HH				remittnet
-
-global var d_inf d_form w_land w_saving w_assets w_gold inc_agr inc_nonagr remittnet
-foreach x in $var {
-replace `x'=0 if `x'==.
-egen `x'_std=std(`x')
-}
-
 save "panel_v1", replace
 ****************************************
 * END
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Pooled sample for debt trap
+****************************************
+use"panel_v1", clear
+
+drop if debt==0
+gen logdebt=log(debt)
+
+keep HHID_panel year logdebt
+reshape wide logdebt, i(HHID_panel) j(year)
+*
+preserve
+keep HHID_panel logdebt2010 logdebt2016
+gen timeperiod=1
+rename logdebt2010 logdebt_t
+rename logdebt2016 logdebt_t1
+save"_tp1", replace
+restore
+preserve
+keep HHID_panel logdebt2016 logdebt2020
+gen timeperiod=2
+rename logdebt2016 logdebt_t
+rename logdebt2020 logdebt_t1
+save"_tp2", replace
+restore
+preserve
+keep HHID_panel logdebt2020 logdebt2026
+gen timeperiod=3
+rename logdebt2020 logdebt_t
+rename logdebt2026 logdebt_t1
+save"_tp3", replace
+restore
+
+
+use"_tp1", clear
+append using "_tp2"
+append using "_tp3"
+label define timeperiod 1"2010 - 2016" 2"2016 - 2020" 3"2020 - 2026"
+label values timeperiod timeperiod
+order HHID_panel timeperiod
+drop if logdebt_t==.
+drop if logdebt_t1==.
+ta timeperiod
+
+gen year=.
+replace year=2010 if timeperiod==1
+replace year=2016 if timeperiod==2
+replace year=2020 if timeperiod==3
+order HHID_panel timeperiod year
+
+* Merge
+merge 1:1 HHID_panel year using "panel_v1"
+keep if _merge==3
+drop _merge
+ta timeperiod
+
+
+save "pooled_v1", replace
+****************************************
+* END

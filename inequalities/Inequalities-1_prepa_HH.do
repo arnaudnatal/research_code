@@ -942,9 +942,196 @@ ta caste, gen(caste)
 gen dalit=0
 replace dalit=1 if caste==1
 
+fre dalits
+fre dalit
+fre caste
+drop caste caste1 caste2 caste3 dalit
+
+
+* Check Dalits
+bys HHID_panel: egen m_dal=mean(dalits)
+ta m_dal
+sort HHID_panel year
+*br HHID_panel year dalits if m_dal>0 & m_dal<1
+replace dalits=1 if HHID_panel=="ELA11" & year==2026
+replace dalits=1 if HHID_panel=="ELA3" & year==2026
+replace dalits=0 if HHID_panel=="MANAM65" & year==2026
+replace dalits=1 if HHID_panel=="MANAM7" & year==2026
+replace dalits=1 if HHID_panel=="SEM6" & year==2026
+drop m_dal
+
 
 
 save "panel_v3", replace
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Pooled sample
+****************************************
+use"panel_v3", clear
+
+keep HHID_panel year logassets
+reshape wide logassets, i(HHID_panel) j(year)
+*
+preserve
+keep HHID_panel logassets2010 logassets2016
+gen timeperiod=1
+rename logassets2010 logassets_t
+rename logassets2016 logassets_t1
+save"_tp1", replace
+restore
+preserve
+keep HHID_panel logassets2016 logassets2020
+gen timeperiod=2
+rename logassets2016 logassets_t
+rename logassets2020 logassets_t1
+save"_tp2", replace
+restore
+preserve
+keep HHID_panel logassets2020 logassets2026
+gen timeperiod=3
+rename logassets2020 logassets_t
+rename logassets2026 logassets_t1
+save"_tp3", replace
+restore
+
+
+use"_tp1", clear
+append using "_tp2"
+append using "_tp3"
+label define timeperiod 1"2010 - 2016" 2"2016 - 2020" 3"2020 - 2026"
+label values timeperiod timeperiod
+order HHID_panel timeperiod
+drop if logassets_t==.
+drop if logassets_t1==.
+ta timeperiod
+
+gen year=.
+replace year=2010 if timeperiod==1
+replace year=2016 if timeperiod==2
+replace year=2020 if timeperiod==3
+order HHID_panel timeperiod year
+
+* Merge
+merge 1:1 HHID_panel year using "panel_v3", keepusing(ownland dummymarriage area villageid HHsize HH_count_child typeoffamily head_age head_mocc_occupation head_edulevel sexratio nbloans_HH loanamount_HH imp1_ds_tot_HH imp1_is_tot_HH nbworker_HH nbnonworker_HH nonworkersratio secondlockdownexposure dummydemonetisation panelvar dalits annualincome s_agrise s_agrica s_casual s_regula s_selfem s_mgnreg s_pensio s_remitt head_married head_female s_house s_livestock s_goods s_land s_gold s_savings)
+keep if _merge==3
+drop _merge
+ta timeperiod
+
+
+save "pooled_v1", replace
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Pooled sample for debt trap
+****************************************
+use"panel_v3", clear
+
+keep HHID_panel year loanamount_HH logdebt
+rename loanamount_HH debt
+reshape wide debt logdebt, i(HHID_panel) j(year)
+*
+preserve
+keep HHID_panel debt2010 debt2016 logdebt2010 logdebt2016
+gen timeperiod=1
+rename debt2010 debt_t
+rename debt2016 debt_t1
+rename logdebt2010 logdebt_t
+rename logdebt2016 logdebt_t1
+save"_tp1", replace
+restore
+preserve
+keep HHID_panel debt2016 debt2020 logdebt2016 logdebt2020
+gen timeperiod=2
+rename debt2016 debt_t
+rename debt2020 debt_t1
+rename logdebt2016 logdebt_t
+rename logdebt2020 logdebt_t1
+save"_tp2", replace
+restore
+preserve
+keep HHID_panel debt2020 debt2026 logdebt2020 logdebt2026
+gen timeperiod=3
+rename debt2020 debt_t
+rename debt2026 debt_t1
+rename logdebt2020 logdebt_t
+rename logdebt2026 logdebt_t1
+save"_tp3", replace
+restore
+
+
+use"_tp1", clear
+append using "_tp2"
+append using "_tp3"
+label define timeperiod 1"2010 - 2016" 2"2016 - 2020" 3"2020 - 2026"
+label values timeperiod timeperiod
+order HHID_panel timeperiod
+drop if debt_t==.
+drop if debt_t1==.
+ta timeperiod
+
+gen year=.
+replace year=2010 if timeperiod==1
+replace year=2016 if timeperiod==2
+replace year=2020 if timeperiod==3
+order HHID_panel timeperiod year
+
+* Merge
+merge 1:1 HHID_panel year using "panel_v3", keepusing(ownland dummymarriage area villageid HHsize HH_count_child typeoffamily head_age head_mocc_occupation head_edulevel sexratio nbloans_HH loanamount_HH imp1_ds_tot_HH imp1_is_tot_HH nbworker_HH nbnonworker_HH nonworkersratio secondlockdownexposure dummydemonetisation panelvar dalits annualincome s_agrise s_agrica s_casual s_regula s_selfem s_mgnreg s_pensio s_remitt head_married head_female s_house s_livestock s_goods s_land s_gold s_savings logassets logincome logdebt)
+keep if _merge==3
+drop _merge
+ta timeperiod
+
+
+save "pooled_debt_v1", replace
 ****************************************
 * END
 
