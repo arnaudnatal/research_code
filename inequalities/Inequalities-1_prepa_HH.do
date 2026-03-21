@@ -665,7 +665,9 @@ fre jatis
 gen dalits=0
 replace dalits=1 if jatis==1
 replace dalits=1 if jatis==2
-replace dalits=1 if jatis==16
+replace dalits=1 if jatis==19
+
+fre dalits
 
 
 ********** Nettoyage
