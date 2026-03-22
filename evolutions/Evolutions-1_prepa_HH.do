@@ -396,10 +396,13 @@ save"temp_NEEMSIS3", replace
 
 ********** 2010
 use"raw/RUME-loans_mainloans_new", clear
-keep HHID2010 loanreasongiven lender4 loanbalance2
-drop if loanbalance==0
-bys HHID2010: egen debt=sum(loanbalance2)
-keep HHID2010 debt
+keep HHID2010 imp1_interest_service imp1_debt_service loanbalance2 loanamount2
+drop if imp1_debt_service==.
+foreach x in imp1_interest_service imp1_debt_service loanbalance2 loanamount2 {
+bys HHID2010: egen `x'_HH=sum(`x')
+drop `x'
+rename `x'_HH `x'
+}
 rename HHID2010 HHID
 duplicates drop
 save"_temp", replace
@@ -413,10 +416,13 @@ save"temp_RUME", replace
 
 ********** 2016
 use"raw/NEEMSIS1-loans_mainloans_new", clear
-keep HHID2016 loanreasongiven lender4 loanbalance2
-drop if loanbalance==0
-bys HHID2016: egen debt=sum(loanbalance2)
-keep HHID2016 debt
+keep HHID2016 imp1_interest_service imp1_debt_service loanbalance2 loanamount2
+drop if imp1_debt_service==.
+foreach x in imp1_interest_service imp1_debt_service loanbalance2 loanamount2 {
+bys HHID2016: egen `x'_HH=sum(`x')
+drop `x'
+rename `x'_HH `x'
+}
 rename HHID2016 HHID
 duplicates drop
 save"_temp", replace
@@ -429,10 +435,13 @@ save"temp_NEEMSIS1", replace
 
 ********** 2020
 use"raw/NEEMSIS2-loans_mainloans_new", clear
-keep HHID2020 loanreasongiven lender4 loanbalance2
-drop if loanbalance==0
-bys HHID2020: egen debt=sum(loanbalance2)
-keep HHID2020 debt
+keep HHID2020 imp1_interest_service imp1_debt_service loanbalance2 loanamount2
+drop if imp1_debt_service==.
+foreach x in imp1_interest_service imp1_debt_service loanbalance2 loanamount2 {
+bys HHID2020: egen `x'_HH=sum(`x')
+drop `x'
+rename `x'_HH `x'
+}
 rename HHID2020 HHID
 duplicates drop
 save"_temp", replace
@@ -445,10 +454,13 @@ save"temp_NEEMSIS2", replace
 
 ********** 2026
 use"raw/NEEMSIS3-loans_mainloans_new", clear
-keep HHID2026 loanreasongiven lender4 loanbalance2
-drop if loanbalance==0
-bys HHID2026: egen debt=sum(loanbalance2)
-keep HHID2026 debt
+keep HHID2026 imp1_interest_service imp1_debt_service loanbalance2 loanamount2
+drop if imp1_debt_service==.
+foreach x in imp1_interest_service imp1_debt_service loanbalance2 loanamount2 {
+bys HHID2026: egen `x'_HH=sum(`x')
+drop `x'
+rename `x'_HH `x'
+}
 rename HHID2026 HHID
 duplicates drop
 save"_temp", replace
@@ -519,7 +531,7 @@ recode dummydemonetisation (.=0)
 recode dummymarriage (.=0)
 
 * Quanti defalte and round
-global quanti savings_HH head_mocc_annualincome head_annualincome debt assets_housevalue assets_livestock assets_goods assets_total incomeagri_HH incomenonagri_HH annualincome_HH remreceived_HH remsent_HH remittnet_HH pension_HH
+global quanti savings_HH head_mocc_annualincome head_annualincome imp1_interest_service imp1_debt_service loanbalance2 assets_housevalue assets_livestock assets_goods assets_total incomeagri_HH incomenonagri_HH annualincome_HH remreceived_HH remsent_HH remittnet_HH pension_HH
 
 foreach x in $quanti {
 replace `x'=`x'*(100/40) if year==2010
@@ -532,8 +544,13 @@ replace `x'=round(`x',1)
 recode dummyexposure (.=0)
 recode head_mocc_occupation (.=0)
 recode head_nboccupation (.=0)
-replace debt=0 if debt==.
 
+* Gen
+gen dsr=imp1_debt_service*100/annualincome_HH
+gen isr=imp1_interest_service*100/annualincome_HH
+gen dar=loanbalance2*100/assets_total
+
+tabstat dsr isr dar, stat(n mean p50) by(year)
 
 * Selection
 drop if housetitle==.
@@ -666,43 +683,55 @@ save "panel_v1", replace
 ****************************************
 use"panel_v1", clear
 
-drop if debt==0
-gen logdebt=log(debt)
+* Assets and income
+gen logassets=log(assets_total+1)
+gen logincome=log(annualincome_HH+1)
 
-keep HHID_panel year logdebt
-reshape wide logdebt, i(HHID_panel) j(year)
+* Debt
+rename loanamount2 debt
+rename loanbalance2 debtbal
+
+
+mdesc dsr isr dar logassets logincome debt debtbal
+recode dsr isr dar debt debtbal (.=0)
+
+global var dsr isr dar debt debtbal logassets logincome
+keep HHID_panel year $var
+reshape wide $var, i(HHID_panel) j(year)
 *
+foreach x in $var {
 preserve
-keep HHID_panel logdebt2010 logdebt2016
+keep HHID_panel `x'2010 `x'2016
 gen timeperiod=1
-rename logdebt2010 logdebt_t
-rename logdebt2016 logdebt_t1
-save"_tp1", replace
+rename `x'2010 `x'_t
+rename `x'2016 `x'_t1
+save"_tp1_`x'", replace
 restore
 preserve
-keep HHID_panel logdebt2016 logdebt2020
+keep HHID_panel `x'2016 `x'2020
 gen timeperiod=2
-rename logdebt2016 logdebt_t
-rename logdebt2020 logdebt_t1
-save"_tp2", replace
+rename `x'2016 `x'_t
+rename `x'2020 `x'_t1
+save"_tp2_`x'", replace
 restore
 preserve
-keep HHID_panel logdebt2020 logdebt2026
+keep HHID_panel `x'2020 `x'2026
 gen timeperiod=3
-rename logdebt2020 logdebt_t
-rename logdebt2026 logdebt_t1
-save"_tp3", replace
+rename `x'2020 `x'_t
+rename `x'2026 `x'_t1
+save"_tp3_`x'", replace
 restore
+}
 
-
-use"_tp1", clear
-append using "_tp2"
-append using "_tp3"
+foreach x in $var {
+use"_tp1_`x'", clear
+append using "_tp2_`x'"
+append using "_tp3_`x'"
 label define timeperiod 1"2010 - 2016" 2"2016 - 2020" 3"2020 - 2026"
 label values timeperiod timeperiod
 order HHID_panel timeperiod
-drop if logdebt_t==.
-drop if logdebt_t1==.
+drop if `x'_t==.
+drop if `x'_t1==.
 ta timeperiod
 
 gen year=.
@@ -710,12 +739,91 @@ replace year=2010 if timeperiod==1
 replace year=2016 if timeperiod==2
 replace year=2020 if timeperiod==3
 order HHID_panel timeperiod year
+save"_temp_`x'", replace
+}
 
 * Merge
+use"_temp_dsr", clear
+*
+merge 1:1 HHID year using "_temp_isr"
+keep if _merge==3
+drop _merge
+*
+merge 1:1 HHID year using "_temp_dar"
+keep if _merge==3
+drop _merge
+*
+merge 1:1 HHID year using "_temp_debt"
+keep if _merge==3
+drop _merge
+*
+merge 1:1 HHID year using "_temp_debtbal"
+keep if _merge==3
+drop _merge
+*
+merge 1:1 HHID year using "_temp_logassets"
+keep if _merge==3
+drop _merge
+*
+merge 1:1 HHID year using "_temp_logincome"
+keep if _merge==3
+drop _merge
+*
 merge 1:1 HHID_panel year using "panel_v1"
 keep if _merge==3
 drop _merge
 ta timeperiod
+
+
+*
+ta dsr_t if dsr_t==0
+ta dsr_t1 if dsr_t1==0
+ta isr_t if isr_t==0
+ta isr_t1 if isr_t1==0
+ta dar_t if dar_t==0
+ta dar_t1 if dar_t1==0
+
+*
+foreach x in dsr_t dsr_t1 isr_t isr_t1 dar_t dar_t1 debt_t debt_t1 debtbal_t debtbal_t1 {
+gen temp`x'=`x'+1
+gen log`x'=log(temp`x')
+drop temp`x'
+}
+
+
+foreach x in dsr_t dsr_t1 isr_t isr_t1 dar_t dar_t1 debt_t debt_t1 debtbal_t debtbal_t1 {
+qui sum `x', det
+replace `x'=`r(p95)' if `x'>`r(p95)'
+}
+
+
+* Poor and rich in terms of wealth and income
+forvalues i=1/3 {
+xtile wealth`i'=assets_total if timeperiod==`i', n(3)
+xtile income`i'=annualincome_HH if timeperiod==`i', n(3)
+}
+
+foreach x in wealth income {
+gen `x'_grp=.
+forvalues i=1/3 {
+replace `x'_grp=`x'`i' if timeperiod==`i'
+}
+}
+drop wealth1 wealth2 wealth3
+drop income1 income2 income3
+
+* Agri vs non-agri hh ?
+gen shareagri=incomeagri_HH*100/annualincome_HH
+*
+gen catinc=.
+label define catinc 1"Non-agri" 2"Agri" 3"Both"
+label values catinc catinc
+replace catinc=1 if shareagri<=30
+replace catinc=2 if shareagri>=70
+replace catinc=3 if shareagri>30 & shareagri<70
+ta catinc year, m col nofreq
+drop shareagri
+
 
 
 save "pooled_v1", replace
