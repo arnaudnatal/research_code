@@ -334,7 +334,16 @@ drop if worldarea==9
 fre area
 keep if area==1
 
+
 probit everydaydebt i.female i.year age i.educ i.inc_q i.country [iweight=wgt]
+probit everydaydebt i.female age i.educ i.inc_q i.country [iweight=wgt] if year==2021
+probit everydaydebt i.female age i.educ i.inc_q i.country [iweight=wgt] if year==2024
+
+
+********** Indiv with everyday debt in rural areas of the Global South in 2024
+keep if year==2024
+
+ta country everyday [iweight=wgt], row nofreq
 
 
 ****************************************

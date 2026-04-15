@@ -4,7 +4,7 @@ cls
 *arnaud.natal@ifpindia.org
 *January 21, 2025
 *-----
-gl link = "debttrap"
+gl link = "debtrollover"
 *Prepa database
 *-----
 *do "https://raw.githubusercontent.com/arnaudnatal/folderanalysis/main/$link.do"
@@ -393,6 +393,7 @@ ta trapdelta1year year
 * Dummy trap two year
 gen trapdelta2year=1 if given_repa==1 & deltayear2==1
 ta trapdelta2year year
+gen trapamountdelta2year=loanbalance if trapdelta2year==1
 
 
 save"panel_loans_v0", replace
@@ -438,6 +439,8 @@ foreach x in trapdelta1year trapdelta2year {
 replace `x'_HH=1 if `x'_HH>1
 }
 
+bys HHID_panel year: egen trapamountdelta2year_HH=sum(trapamountdelta2year)
+
 * Effective
 gen loanamount_effectiverepa=loanamount if effective_repa==1
 bysort HHID_panel year: egen lamounteffectiverepa_HH=sum(loanamount_effectiverepa)
@@ -449,7 +452,7 @@ drop loanbalance_effectiverepa
 
 bysort HHID_panel year: egen lnbeffectiverepa_HH=sum(effective_repa)
 
-keep HHID_panel year lamount_HH lbalance_HH lnb_HH lamountgivenrepa_HH lbalancegivenrepa_HH lnbgivenrepa_HH lamounteffectiverepa_HH lbalanceeffectiverepa_HH lnbeffectiverepa_HH trapdelta1year_HH trapdelta2year_HH
+keep HHID_panel year lamount_HH lbalance_HH lnb_HH lamountgivenrepa_HH lbalancegivenrepa_HH lnbgivenrepa_HH lamounteffectiverepa_HH lbalanceeffectiverepa_HH lnbeffectiverepa_HH trapdelta1year_HH trapdelta2year_HH trapamountdelta2year_HH
 duplicates drop
 
 save"_temp_trap_HH", replace
@@ -517,4 +520,4 @@ save"_temp_trap_indiv", replace
 * END
 
 
-do"$dofile\Debttrap-02_prepa_HH"
+*do"$dofile\Debttrap-02_prepa_HH"

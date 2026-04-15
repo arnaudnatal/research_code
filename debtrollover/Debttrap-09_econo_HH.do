@@ -4,7 +4,7 @@ cls
 *arnaud.natal@ifpindia.org
 *January 9, 2025
 *-----
-gl link = "debttrap"
+gl link = "debtrollover"
 *Prepa database
 *-----
 *do "https://raw.githubusercontent.com/arnaudnatal/folderanalysis/main/$link.do"
@@ -24,7 +24,7 @@ use"panel_HH_v2", clear
 ********** Selection
 keep HHID_panel year head_sex head_age head_edulevel head_maritalstatus ownland dummymarriage head_mocc_occupation dummydemonetisation nbmale nbfemale HHsize HH_count_child HH_count_adult assets_total1000 annualincome_HH nbworker_HH nbnonworker_HH remittnet_HH secondlockdownexposure loanamount_HH trapamount dummytrap villageid dalits caste dummyloans dsr isr gtdr ///
 expenses_educ expenses_food expenses_heal expenses_cere expenses_total shareexpenses_educ shareexpenses_food shareexpenses_heal shareexpenses_cere ///
-dummytrap_*
+dummytrap_* trapamountdelta2year_HH
 
 
 ********** Rename
@@ -169,7 +169,7 @@ gen log_`x'_pc=log(`x'_pc)
 
 ********** Selection
 global var HHID_panel HHFE year age sex married edulevel mainoccupation dalits size_HH nbchildren_HH nbadult_HH income_std assets_std shock1 shock2 shock3 villageid dummyloans trapamount dummytrap_1ybefore dummytrap_2ybefore dummytrap log_expenses_educ_pc log_expenses_food_pc log_expenses_heal_pc log_expenses_cere_pc log_expenses_total_pc caste
-keep $var
+keep $var trapamountdelta2year_HH
 order $var
 sort HHID_panel year
 
@@ -247,6 +247,71 @@ using "Res.csv", replace ///
 
 
 ****************************************
+* Econo with lag and shocks with rollover amount
+****************************************
+use"panel_HH_v2_econo", clear
+
+* Selection
+keep if dummyloans==1
+xtset HHFE year
+ta year
+
+* Lag
+drop dummytrap
+rename dummytrap_2ybefore dummytrap
+ta dummytrap
+keep if dummytrap==1
+rename trapamountdelta2year_HH trapamount_HH
+
+* Macro
+global headcont i.sex c.age i.married i.edulevel i.mainoccupation 
+global hhcont size_HH nbchildren_HH income_std assets_std shock1 shock2
+
+
+*** Food
+xtreg log_expenses_food_pc c.trapamount_HH $headcont $hhcont, fe vce(cluster HHFE)
+est store food
+
+
+*** Health
+xtreg log_expenses_heal_pc c.trapamount_HH $headcont $hhcont, fe vce(cluster HHFE)
+est store heal
+
+*** Education
+xtreg log_expenses_educ_pc c.trapamount_HH $headcont $hhcont, fe vce(cluster HHFE)
+est store educ
+
+
+*** Table
+esttab ///
+food heal educ ///
+using "Res_cont.csv", replace ///
+	label b(3) p(3) eqlabels(none) alignment(S) ///
+	keep(trapamount_HH) ///
+	star(* 0.10 ** 0.05 *** 0.01) ///
+	cells("b(fmt(2)star)" "se(fmt(2)par)") ///
+	refcat(, nolabel) ///
+	stats(N, fmt(0) ///
+	labels(`"Observations"'))
+
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
 * Econo with lag INTERACTIONS
 ****************************************
 use"panel_HH_v2_econo", clear
@@ -293,6 +358,22 @@ xtreg log_expenses_educ_pc i.dummytrap##i.dalits $headcont $hhcont, fe vce(clust
 est store educ_cas
 
 
+
+*** Table
+esttab ///
+heal_cas food_cas educ_cas ///
+food_inc heal_inc educ_inc ///
+food_ass heal_ass educ_ass ///
+using "Res_int.csv", replace ///
+	label b(3) p(3) eqlabels(none) alignment(S) ///
+	star(* 0.10 ** 0.05 *** 0.01) ///
+	cells("b(fmt(2)star)" "se(fmt(2)par)") ///
+	refcat(, nolabel) ///
+	stats(N, fmt(0) ///
+	labels(`"Observations"'))
+
+
+ 
 
 ****************************************
 * END
