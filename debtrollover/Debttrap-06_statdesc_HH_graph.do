@@ -4,7 +4,7 @@ cls
 *arnaud.natal@ifpindia.org
 *January 21, 2025
 *-----
-gl link = "debttrap"
+gl link = "debtrollover"
 *Stat desc
 *-----
 *do "https://raw.githubusercontent.com/arnaudnatal/folderanalysis/main/$link.do"
@@ -29,12 +29,12 @@ ta dummytrap year, col nofreq
 ta year dummytrap, row nofreq
 
 tabplot dummytrap year, percent(year) showval frame(100) ///
-frameopts(color(plb1)) ///
-fcolor(plb1*0.4) lcolor(plb1) ///
+frameopts(color(gs5)) ///
+fcolor(gs5*0.4) lcolor(gs5) ///
 subtitle("") ///
 xtitle("") ytitle("Debt rollover?") ///
 xlabel(1 "2010" 2 "2016-2017" 3 "2020-2021") ylabel(1 "Yes" 2 "No") ///
-note("{it:Note:} Percent given year.", size(small)) ///
+note("{it:Note:} Per cent given year.", size(small)) ///
 scale(1.2)
 graph export "graph/Incidence.png", as(png) replace
 
@@ -170,6 +170,30 @@ ta year
 
 
 ********** Absolut intensity (amount)
+bys time: egen med = median(trapamount)
+bys time: egen lqt = pctile(trapamount), p(25)
+bys time: egen uqt = pctile(trapamount), p(75)
+bys time: egen iqr = iqr(trapamount)
+bys time: egen mean = mean(trapamount)
+gen l = trapamount if(trapamount >= lqt-1.5*iqr)
+bys time: egen ls = min(l)
+gen u = trapamount if(trapamount <= uqt+1.5*iqr)
+bys time: egen us = max(u)
+*
+twoway rbar lqt med time, fcolor(gs12) lcolor(black) barw(.5) || ///
+       rbar med uqt time, fcolor(gs12) lcolor(black) barw(.5) || ///
+       rspike lqt ls time, lcolor(black) || ///
+       rspike uqt us time, lcolor(black) || ///
+       rcap ls ls time, msize(*6) lcolor(black) || ///
+       rcap us us time, msize(*6) pstyle(p1) || ///
+       scatter mean time, msymbol(Oh) msize(*1) mcolor(black) ///
+       legend(off)  xlabel( 1 "2010" 2 "2016-2017" 3 "2020-2021") ///
+	   ylabel(0(20)180) ///
+       ytitle("1,000 rupees") xtitle("") title("Debt rollover amount") scale(1.2) name(abs, replace)
+*
+drop med lqt uqt iqr mean l ls u us
+	   
+/*
 tabstat trapamount, stat(n mean q) by(year)
 violinplot trapamount, over(time) horizontal left dscale(4) noline now ///
 fill(color(black%10)) ///
@@ -182,9 +206,34 @@ ylabel(,grid) ///
 legend(order(4 "IQR" 7 "Median" 10 "Mean") pos(6) col(3) on) ///
 aspectratio() scale(1.2) name(abs, replace) range(0 200)
 graph export "graph/Abs_intensity.png", as(png) replace
+*/
 
 
 ********** Relative intensity (percent to debt)
+bys time: egen med = median(gtdr)
+bys time: egen lqt = pctile(gtdr), p(25)
+bys time: egen uqt = pctile(gtdr), p(75)
+bys time: egen iqr = iqr(gtdr)
+bys time: egen mean = mean(gtdr)
+gen l = gtdr if(gtdr >= lqt-1.5*iqr)
+bys time: egen ls = min(l)
+gen u = gtdr if(gtdr <= uqt+1.5*iqr)
+bys time: egen us = max(u)
+*
+twoway rbar lqt med time, fcolor(gs12) lcolor(black) barw(.5) || ///
+       rbar med uqt time, fcolor(gs12) lcolor(black) barw(.5) || ///
+       rspike lqt ls time, lcolor(black) || ///
+       rspike uqt us time, lcolor(black) || ///
+       rcap ls ls time, msize(*6) lcolor(black) || ///
+       rcap us us time, msize(*6) pstyle(p1) || ///
+       scatter mean time, msymbol(Oh) msize(*1) mcolor(black) ///
+       legend(off)  xlabel( 1 "2010" 2 "2016-2017" 3 "2020-2021") ///
+	   ylabel(0(10)100) ///
+       ytitle("Per cent") xtitle("") title("Share of debt rollover in household debt") scale(1.2) name(rel, replace)
+*
+drop med lqt uqt iqr mean l ls u us
+
+/*
 tabstat gtdr, stat(n mean q) by(year)
 violinplot gtdr, over(time) horizontal left dscale(4) noline now ///
 fill(color(black%10)) ///
@@ -197,9 +246,34 @@ ylabel(,grid) ///
 legend(order(4 "IQR" 7 "Median" 10 "Mean") pos(6) col(3) on) ///
 aspectratio() scale(1.2) name(rel, replace) range(0 100)
 graph export "graph/Rel_intensity.png", as(png) replace
-
+*/
 
 ********** Relative intensity (percent to income)
+bys time: egen med = median(gtir_HH)
+bys time: egen lqt = pctile(gtir_HH), p(25)
+bys time: egen uqt = pctile(gtir_HH), p(75)
+bys time: egen iqr = iqr(gtir_HH)
+bys time: egen mean = mean(gtir_HH)
+gen l = gtir_HH if(gtir_HH >= lqt-1.5*iqr)
+bys time: egen ls = min(l)
+gen u = gtir_HH if(gtir_HH <= uqt+1.5*iqr)
+bys time: egen us = max(u)
+*
+twoway rbar lqt med time, fcolor(gs12) lcolor(black) barw(.5) || ///
+       rbar med uqt time, fcolor(gs12) lcolor(black) barw(.5) || ///
+       rspike lqt ls time, lcolor(black) || ///
+       rspike uqt us time, lcolor(black) || ///
+       rcap ls ls time, msize(*6) lcolor(black) || ///
+       rcap us us time, msize(*6) pstyle(p1) || ///
+       scatter mean time, msymbol(Oh) msize(*1) mcolor(black) ///
+       legend(off)  xlabel( 1 "2010" 2 "2016-2017" 3 "2020-2021") ///
+	   ylabel(0(20)200) ///
+       ytitle("Per cent") xtitle("") title("Share of debt rollover in annual income") scale(1.2) name(rel2, replace)
+graph export "graph/Rel_intensity2.png", as(png) replace
+*
+drop med lqt uqt iqr mean l ls u us
+
+/*
 tabstat gtir_HH, stat(n mean q) by(year)
 violinplot gtir_HH, over(time) horizontal left dscale(4) noline now ///
 fill(color(black%10)) ///
@@ -212,10 +286,11 @@ ylabel(,grid) ///
 legend(order(4 "IQR" 7 "Median" 10 "Mean") pos(6) col(3) on) ///
 aspectratio() scale(1.2) name(rel2, replace) range(0 200)
 graph export "graph/Rel_intensity2.png", as(png) replace
-
+*/
 
 
 ********** Total amount of debt
+/*
 tabstat loanamount_HH, stat(n mean q p90 p95 p99 max) by(year)
 violinplot loanamount_HH, over(time) horizontal left dscale(4) noline now ///
 fill(color(black%10)) ///
@@ -228,11 +303,11 @@ ylabel(,grid) ///
 legend(order(4 "IQR" 7 "Median" 10 "Mean") pos(6) col(3) on) ///
 aspectratio() scale(1.2) name(amt, replace) range(0 800)
 graph export "graph/Amountdebt.png", as(png) replace
-
+*/
 
 
 ********** Both
-grc1leg abs rel, col(2) name(comb, replace)
+graph combine abs rel, col(2) name(comb, replace)
 graph export "graph/Intensity.png", as(png) replace
 
 

@@ -12,13 +12,11 @@ clear all
 macro drop _all
 
 ********** Path to do
-*global dofile = "C:\Users\Arnaud\Desktop\NFHS"
-global dofile = "C:\Users\anatal\Documents\NFHS"
+global dofile = "C:\Users\Arnaud\Documents\GitHub\NFHS"
 
 
 ********** Path to working directory directory
-*global directory = "C:\Users\Arnaud\Desktop\NFHS"
-global directory = "C:\Users\anatal\Documents\NFHS"
+global directory = "C:\Users\Arnaud\Desktop\Data\NFHS"
 cd"$directory"
 
 ********** Scheme
@@ -343,7 +341,7 @@ replace label="" if n>`r(min)' & n<`r(max)'
 drop n
 *
 scatter gini mean_wealth, mlabel(label) title("Gini by jatis") msymbol(oh) mcolor(black%30) msize(medium)
-graph export "gini_jatis.png", as(png) replace
+graph export "Figures/gini_jatis.png", as(png) replace
 
 
 * By State
@@ -356,7 +354,7 @@ replace label="" if n>`r(min)' & n<`r(max)'
 drop n
 *
 scatter gini mean_wealth, mlabel(label) title("Gini by state") msymbol(oh) mcolor(black%30) msize(medium)
-graph export "gini_state.png", as(png) replace
+graph export "Figures/gini_state.png", as(png) replace
 
 
 * By district
@@ -369,7 +367,7 @@ replace label="" if n>`r(min)' & n<`r(max)'
 drop n
 *
 scatter gini mean_wealth, mlabel(label) title("Gini by district") msymbol(oh) mcolor(black%30) msize(medium)
-graph export "gini_district.png", as(png) replace
+graph export "Figures/gini_district.png", as(png) replace
 
 ****************************************
 * END
@@ -483,7 +481,6 @@ use"HH_caste.dta", clear
 * Weight
 generate wgt = hv005/1000000
 
-
 * Cleaning
 global var hhid wgt shdistri hv271
 keep $var
@@ -563,20 +560,35 @@ save"ineq_district", replace
 * jatis
 use"ineq_jatis", clear
 spearman gini i_wealth
-pwcorr gini i_wealth
-scatter gini i_wealth
+corr gini i_wealth
+twoway ///
+(scatter gini i_wealth) ///
+, title("By jatis") xtitle("Mckenzie index") ytitle("Gini") ///
+note("Spearman=.55, Pearson=.56")
+graph export "Figures/gini_mckenzie_jatis.png", as(png) replace
+
 
 * state
 use"ineq_state", clear
 spearman gini i_wealth
-pwcorr gini i_wealth
-scatter gini i_wealth
+corr gini i_wealth
+twoway ///
+(scatter gini i_wealth) ///
+, title("By State") xtitle("Mckenzie index") ytitle("Gini") ///
+note("Spearman=.81, Pearson=.81")
+graph export "Figures/gini_mckenzie_state.png", as(png) replace
 
 * district
 use"ineq_district", clear
 spearman gini i_wealth
-pwcorr gini i_wealth
-scatter gini i_wealth
+corr gini i_wealth
+twoway ///
+(scatter gini i_wealth) ///
+, title("By District") xtitle("Mckenzie index") ytitle("Gini") ///
+note("Spearman=.61, Pearson=.62")
+graph export "Figures/gini_mckenzie_district.png", as(png) replace
+
 
 ****************************************
 * END
+

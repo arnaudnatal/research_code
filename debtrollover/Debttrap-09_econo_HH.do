@@ -78,20 +78,27 @@ replace married=0 if maritalstatus>1
 drop maritalstatus
 label define married 0"Married: No" 1"Married: Yes"
 label values married married
+ta married year
+replace married=1 if year==2010
+
+
 
 * Caste
 fre caste
 label define caste 1"Caste: Dalits" 2"Caste: Middle castes" 3"Caste: Upper castes", replace
 label values caste caste 
 fre caste
+ta caste year, col nofreq
 
 * Assets
 egen assets_std=std(assets_HH)
+tabstat assets_HH, stat(mean) by(year)
 drop assets_HH
 label var assets_std "Wealth (std)"
 
 * Income
 egen income_std=std(annualincome_HH)
+tabstat annualincome_HH, stat(mean) by(year)
 drop annualincome_HH
 label var income_std "Income (std)"
 
@@ -165,10 +172,11 @@ replace `x'=1 if `x'==.
 gen `x'_pc=`x'/size_HH
 gen log_`x'_pc=log(`x'_pc)
 }
+tabstat expenses_educ_pc expenses_food_pc expenses_heal_pc, stat(mean) by(year)
 
 
 ********** Selection
-global var HHID_panel HHFE year age sex married edulevel mainoccupation dalits size_HH nbchildren_HH nbadult_HH income_std assets_std shock1 shock2 shock3 villageid dummyloans trapamount dummytrap_1ybefore dummytrap_2ybefore dummytrap log_expenses_educ_pc log_expenses_food_pc log_expenses_heal_pc log_expenses_cere_pc log_expenses_total_pc caste
+global var HHID_panel HHFE year age sex married edulevel mainoccupation dalits size_HH nbchildren_HH nbadult_HH income_std assets_std shock1 shock2 shock3 villageid dummyloans trapamount dummytrap_1ybefore dummytrap_2ybefore dummytrap log_expenses_educ_pc log_expenses_food_pc log_expenses_heal_pc log_expenses_cere_pc log_expenses_total_pc caste 
 keep $var trapamountdelta2year_HH
 order $var
 sort HHID_panel year
@@ -206,6 +214,16 @@ rename dummytrap_2ybefore dummytrap
 * Macro
 global headcont i.sex c.age i.married i.edulevel i.mainoccupation 
 global hhcont size_HH nbchildren_HH income_std assets_std shock1 shock2
+
+
+* Stat desc
+ta sex year, col nofreq
+ta married year, col nofreq
+ta edulevel year, col nofreq
+ta mainoccupation year, col nofreq
+tabstat age size_HH nbchildren_HH, stat(mean) by(year)
+ta shock1 year, col nofreq
+ta shock2 year, col nofreq
 
 
 *** Food
@@ -326,7 +344,7 @@ drop dummytrap
 rename dummytrap_2ybefore dummytrap
 
 * Macro
-global headcont i.sex c.age##c.age i.married i.edulevel i.mainoccupation 
+global headcont i.sex c.age i.married i.edulevel i.mainoccupation 
 global hhcont size_HH nbchildren_HH income_std assets_std shock1 shock2
 
 
@@ -421,7 +439,7 @@ drop dummytrap
 rename dummytrap_2ybefore dummytrap
 
 * Macro
-global headcont i.sex c.age##c.age i.married i.edulevel i.mainoccupation 
+global headcont i.sex c.age i.married i.edulevel i.mainoccupation 
 global hhcont size_HH nbchildren_HH income_std assets_std shock1 shock2
 
 *** Food
@@ -495,7 +513,7 @@ using "Res_noout.csv", replace ///
 
 
 ****************************************
-* Econo with lag drop Quantiles
+* Econo with lag Quantiles
 ****************************************
 use"panel_HH_v2_econo", clear
 
@@ -509,7 +527,7 @@ drop dummytrap
 rename dummytrap_2ybefore dummytrap
 
 *** Macro
-global headcont i.sex c.age##c.age i.married i.edulevel i.mainoccupation 
+global headcont i.sex c.age i.married i.edulevel i.mainoccupation 
 global hhcont size_HH nbchildren_HH income_std assets_std shock1 shock2
 
 
@@ -517,33 +535,32 @@ global hhcont size_HH nbchildren_HH income_std assets_std shock1 shock2
 
 *** Food
 cls
-xtqreg log_expenses_food_pc i.dummytrap $headcont $hhcont, id(HHFE) q(.1 .2 .3 .4 .5 .6 .7 .8 .9)
+mmqreg log_expenses_food_pc i.dummytrap $headcont $hhcont, abs(HHFE) q(.1 .2 .3 .4 .5 .6 .7 .8 .9) cluster(HHFE)
 est store qfood
 
 *** Health
 cls
-xtqreg log_expenses_heal_pc i.dummytrap $headcont $hhcont, id(HHFE) q(.1 .2 .3 .4 .5 .6 .7 .8 .9)
+mmqreg log_expenses_heal_pc i.dummytrap $headcont $hhcont, abs(HHFE) q(.1 .2 .3 .4 .5 .6 .7 .8 .9) cluster(HHFE)
 est store qheal
 
 *** Education
 cls
-xtqreg log_expenses_educ_pc i.dummytrap $headcont $hhcont, id(HHFE) q(.1 .2 .3 .4 .5 .6 .7 .8 .9)
+mmqreg log_expenses_educ_pc i.dummytrap $headcont $hhcont, abs(HHFE) q(.1 .2 .3 .4 .5 .6 .7 .8 .9) cluster(HHFE)
 est store qeduc
 
 
 ********** Graph
-
 *** Food
 import excel "Qreg.xlsx", sheet("Sheet1") firstrow clear
 keep if var=="food"
 *
 twoway ///
-(rarea max min quantile, color(plb1%30)) ///
-(line coef quantile, lcolor(plb1) yline(0)) ///
-, xlabel(1(1)9) ylabel(-.4(.1).1) ///
+(rarea max min quantile, color(gs5%30)) ///
+(line coef quantile, lcolor(gs5) yline(0, lcolor(black))) ///
+, xlabel(1(1)9) ylabel(-.9(.3)1.5) ///
 xtitle("Quantile") ///
 title("Food") ///
-legend(order(2 "Effect" 1 "95% CI") pos(6) col(2)) ///
+legend(order(2 "Effect" 1 "95 per cent confidence interval") pos(6) col(2)) ///
 name(food, replace) scale (1.2) aspectratio(3)
 
 *** Health
@@ -551,12 +568,12 @@ import excel "Qreg.xlsx", sheet("Sheet1") firstrow clear
 keep if var=="health"
 *
 twoway ///
-(rarea max min quantile, color(plb1%30)) ///
-(line coef quantile, lcolor(plb1) yline(0)) ///
-, xlabel(1(1)9) ylabel(-1(.2).2) ///
+(rarea max min quantile, color(gs5%30)) ///
+(line coef quantile, lcolor(gs5) yline(0, lcolor(black))) ///
+, xlabel(1(1)9) ylabel(-.9(.3)1.5) ///
 xtitle("Quantile") ///
 title("Health") ///
-legend(order(2 "Effect" 1 "95% CI") pos(6) col(2)) ///
+legend(order(2 "Effect" 1 "95 per cent confidence interval") pos(6) col(2)) ///
 name(health, replace) scale (1.2) aspectratio(3)
 
 *** Education
@@ -564,18 +581,18 @@ import excel "Qreg.xlsx", sheet("Sheet1") firstrow clear
 keep if var=="educ"
 *
 twoway ///
-(rarea max min quantile, color(plb1%30)) ///
-(line coef quantile, lcolor(plb1) yline(0)) ///
-, xlabel(1(1)9) ylabel(-10(2)10) ///
+(rarea max min quantile, color(gs5%30)) ///
+(line coef quantile, lcolor(gs5) yline(0, lcolor(black))) ///
+, xlabel(1(1)9) ylabel(-.9(.3)1.5) ///
 xtitle("Quantile") ///
 title("Education") ///
-legend(order(2 "Effect" 1 "95% CI") pos(6) col(2)) ///
+legend(order(2 "Effect" 1 "95 per cent confidence interval") pos(6) col(2)) ///
 name(educ, replace) scale (1.2) aspectratio(3)
 
 
 *** Comb
 grc1leg food health educ, col(3) name(comb, replace)
-graph export "graph/xtqreg.png", as(png) replace
+graph export "graph/xtqreg_v3.png", as(png) replace
 
 
 ****************************************
