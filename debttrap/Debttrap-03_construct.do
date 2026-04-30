@@ -49,6 +49,10 @@ gen dir_indiv=(loanbalance_indiv*100)/annualincome_indiv
 replace dir_indiv=0 if dir_indiv==.
 replace dir_indiv=. if dummyloans_indiv==0
 
+* Log
+foreach x in loanbalance_indiv dsr_indiv dir_indiv {
+gen log_`x'=log(`x')
+}
 
 
 ********** Controls
@@ -111,22 +115,23 @@ ta dummyloans_HH year, col
 * DSR
 gen dsr=(imp1_ds_tot_HH*100)/annualincome_HH
 replace dsr=0 if dsr==.
-gen log_dsr=log(dsr)
 
 * ISR
 gen isr=(imp1_is_tot_HH*100)/annualincome_HH
 replace isr=0 if isr==.
-gen log_isr=log(isr)
 
 * DAR
 gen dar=(loanbalance_HH*100)/(assets_total1000*1000)
 replace dar=0 if dar==.
-gen log_dar=log(dar)
 
 * DIR
 gen dir=(loanbalance_HH*100)/annualincome_HH
 replace dir=0 if dir==.
-gen log_dir=log(dir)
+
+* Log
+foreach x in dsr isr dar dir {
+gen log_`x'=log(`x')
+}
 
 
 ********** Controls
