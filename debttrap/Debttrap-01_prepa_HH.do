@@ -15,13 +15,84 @@ do"C:/Users/Arnaud/Documents/GitHub/folderanalysis/$link.do"
 
 
 
+****************************************
+* 2010
+****************************************
+use"raw/RUME-HH", clear
+
+* To keep
+keep HHID2010 village ownland house housetitle
+fre house housetitle
+duplicates drop
+decode village, gen(vi)
+drop village
+rename vi villageid
+
+* Drop
+duplicates drop
+count
+
+* Family compo
+merge 1:1 HHID2010 using "raw/RUME-family", keepusing(nbfemale nbmale HHsize HH_count_child typeoffamily head_sex head_age head_dummyworkedpastyear head_working_pop head_mocc_occupation head_edulevel)
+drop _merge
+
+* Add debt
+merge 1:1 HHID2010 using "raw/RUME-loans_HH", keepusing(nbloans_HH loanamount_HH imp1_ds_tot_HH imp1_is_tot_HH)
+drop _merge
+
+* Add loanbalance
+preserve
+use"raw/RUME-loans_mainloans_new", clear
+keep HHID2010 loanbalance2
+rename loanbalance2 loanbalance
+bys HHID2010: egen loanbalance_HH=sum(loanbalance)
+keep HHID2010 loanbalance_HH
+duplicates drop
+save"_temp", replace
+restore
+merge 1:1 HHID2010 using "_temp"
+drop _merge
+
+* Add assets and expenses
+merge 1:1 HHID2010 using "raw/RUME-assets", keepusing(assets_total1000 assets_totalnoland1000 assets_ownland expenses_educ expenses_food expenses_heal)
+drop _merge
+
+* Add income
+merge 1:1 HHID2010 using "raw/RUME-occup_HH", keepusing(annualincome_HH nbworker_HH nbnonworker_HH)
+drop _merge
+
+* Add remittances
+merge 1:1 HHID2010 using "raw/RUME-transferts_HH", keepusing(remreceived_HH remsent_HH remittnet_HH)
+drop _merge
+
+* Add gold
+merge 1:1 HHID2010 using "raw/RUME-gold_HH", keepusing(goldquantity_HH)
+drop _merge
+
+* Panel
+merge 1:m HHID2010 using"raw/keypanel-HH_wide", keepusing(HHID_panel)
+keep if _merge==3
+drop _merge
+rename HHID2010 HHID
+
+* Year
+gen year=2010
+
+save"_temp_RUME", replace
+
+****************************************
+* END
+
+
+
+
 
 
 
 
 
 ****************************************
-* 2016-17
+* 2016-2017
 ****************************************
 use"raw/NEEMSIS1-HH", clear
 
@@ -114,7 +185,7 @@ save"_temp_NEEMSIS1", replace
 
 
 ****************************************
-* 2020-21
+* 2020-2021
 ****************************************
 use"raw/NEEMSIS2-HH", clear
 
@@ -224,11 +295,102 @@ save"_temp_NEEMSIS2", replace
 
 
 ****************************************
+* 2025-2026
+****************************************
+use"raw/NEEMSIS3-HH", clear
+
+
+* Drop migrants
+fre livinghome
+drop if livinghome==3
+drop if livinghome==4
+drop if dummylefthousehold==1
+
+
+* To keep
+keep HHID2026 HHID_panel villagearea villageid dummymarriage ownland ownland house housetitle caste
+fre house housetitle
+destring house housetitle, replace
+destring ownland, replace
+duplicates drop
+decode villagearea, gen(vi)
+drop villagearea
+rename vi area
+decode villageid, gen(vi)
+drop villageid
+rename vi villageid
+
+* Drop
+duplicates drop
+count
+
+* Family compo
+merge 1:1 HHID2026 using "raw/NEEMSIS3-family", keepusing(nbfemale nbmale HHsize HH_count_child typeoffamily head_sex head_age head_dummyworkedpastyear head_working_pop head_mocc_occupation head_edulevel head_maritalstatus)
+drop _merge
+
+* Add debt
+merge 1:1 HHID2026 using "raw/NEEMSIS3-loans_HH", keepusing(nbloans_HH loanamount_HH imp1_ds_tot_HH imp1_is_tot_HH)
+drop _merge
+
+* Add loanbalance
+preserve
+use"raw/NEEMSIS3-loans_mainloans_new", clear
+keep HHID2026 loanbalance2
+rename loanbalance2 loanbalance
+bys HHID2026: egen loanbalance_HH=sum(loanbalance)
+keep HHID2026 loanbalance_HH
+duplicates drop
+save"_temp", replace
+restore
+merge 1:1 HHID2026 using "_temp"
+drop _merge
+
+* Add assets and expenses
+merge 1:1 HHID2026 using "raw/NEEMSIS3-assets", keepusing(assets_total1000 assets_totalnoland1000 assets_ownland expenses_educ expenses_food expenses_heal)
+drop _merge
+
+* Add income
+merge 1:1 HHID2026 using "raw/NEEMSIS3-occup_HH", keepusing(annualincome_HH nbworker_HH nbnonworker_HH)
+drop _merge
+
+* Add remittances
+merge 1:1 HHID2026 using "raw/NEEMSIS3-transferts_HH", keepusing(remreceived_HH remsent_HH remittnet_HH)
+drop _merge
+
+* Add gold
+merge 1:1 HHID2026 using "raw/NEEMSIS3-gold_HH", keepusing(goldquantity_HH)
+drop _merge
+
+*
+rename HHID2026 HHID
+
+* Year
+gen year=2025
+
+save"_temp_NEEMSIS3", replace
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
 * Panel
 ****************************************
 use"_temp_NEEMSIS2", clear
 
+append using "_temp_NEEMSIS3"
 append using "_temp_NEEMSIS1"
+append using "_temp_RUME"
 
 
 fre house
@@ -272,8 +434,8 @@ recode secondlockdownexposure (.=1)
 * Caste
 merge 1:1 HHID_panel year using "raw/JatisCastePanel"
 rename jatisn jatis
+rename caste caste2025
 rename casten caste
-keep if _merge==3
 drop _merge
 ta caste
 
@@ -284,16 +446,20 @@ global quanti loanamount_HH imp1_ds_tot_HH imp1_is_tot_HH assets_ownland assets_
 
 *** Deflate and round
 foreach x in $quanti {
-replace `x'=`x'*(100/86) if year==2016
+replace `x'=`x'*(100/40) if year==2010
+replace `x'=`x'*(100/63.2) if year==2016
+replace `x'=`x'*(100/73.6) if year==2020
 replace `x'=round(`x',1)
 }
 
 * Time
 gen time=0
-replace time=1 if year==2016
-replace time=2 if year==2020
+replace time=1 if year==2010
+replace time=2 if year==2016
+replace time=3 if year==2020
+replace time=4 if year==2025
 
-label define time 1"2016-2017" 2"2020-2021"
+label define time 1"2010" 2"2016-2017" 3"2020-2021" 4"2025-2026"
 label values time time
 order time, after(year)
 

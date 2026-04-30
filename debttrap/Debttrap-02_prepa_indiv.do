@@ -20,7 +20,7 @@ do"C:/Users/Arnaud/Documents/GitHub/folderanalysis/$link.do"
 
 
 ****************************************
-* 2016-17
+* 2016-2017
 ****************************************
 use"raw/NEEMSIS1-HH", clear
 
@@ -95,7 +95,7 @@ save"_temp_NEEMSIS1indiv", replace
 
 
 ****************************************
-* 2020-21
+* 2020-2021
 ****************************************
 use"raw/NEEMSIS2-HH", clear
 
@@ -171,6 +171,74 @@ save"_temp_NEEMSIS2indiv", replace
 
 
 
+
+****************************************
+* 2025-2026
+****************************************
+use"raw/NEEMSIS3-HH", clear
+
+* To keep
+keep HHID2026 INDID2026 HHID_panel INDID_panel name sex age relationshiptohead maritalstatus livinghome dummylefthousehold
+duplicates drop
+
+* Education
+merge m:m HHID2026 INDID2026 using "raw\NEEMSIS3-education", keepusing(edulevel)
+drop _merge
+
+* Occupation
+merge m:m HHID2026 INDID2026 using "raw\NEEMSIS3-occup_indiv", keepusing(dummyworkedpastyear working_pop mainocc_occupation_indiv annualincome_indiv nboccupation_indiv hoursayear_indiv)
+drop _merge
+
+* Debt
+merge m:m HHID2026 INDID2026 using "raw\NEEMSIS3-loans_indiv", keepusing(nbloans_indiv loanamount_indiv imp1_ds_tot_indiv imp1_is_tot_indiv)
+drop _merge
+
+* Add loanbalance
+preserve
+use"raw/NEEMSIS3-loans_mainloans_new", clear
+keep HHID2026 INDID2026 loanbalance2
+rename loanbalance2 loanbalance
+bys HHID2026 INDID2026: egen loanbalance_indiv=sum(loanbalance)
+keep HHID2026 INDID2026 loanbalance_indiv
+duplicates drop
+save"_temp", replace
+restore
+merge m:m HHID2026 INDID2026 using "_temp"
+drop _merge
+
+* Transferts
+merge m:m HHID2026 INDID2026 using "raw\NEEMSIS3-transferts_indiv", keepusing(remreceived_indiv remsent_indiv remittnet_indiv)
+drop _merge
+
+* Rename
+rename HHID2026 HHID
+rename INDID2026 INDID
+order HHID_panel INDID_panel
+
+*Year
+gen year=2025
+
+* Selection
+drop if livinghome==3
+drop if livinghome==4
+drop if dummylefthousehold==1
+drop livinghome dummylefthousehold
+drop if HHID_panel==""
+tostring INDID, replace
+
+save"_temp_NEEMSIS3indiv", replace
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
 ****************************************
 * Panel
 ****************************************
@@ -178,6 +246,8 @@ use"_temp_NEEMSIS2indiv", clear
 
 ***
 append using "_temp_NEEMSIS1indiv"
+append using "_temp_NEEMSIS3indiv"
+
 
 *
 drop if HHID_panel=="GOV66" & year==2020  
@@ -204,8 +274,9 @@ sort HHID_panel INDID_panel year
 gen time=0
 replace time=1 if year==2016
 replace time=2 if year==2020
+replace time=3 if year==2025
 
-label define time 1"2016-2017" 2"2020-2021"
+label define time 1"2016-2017" 2"2020-2021" 3"2025-2026"
 label values time time
 order time, after(year)
 
@@ -215,7 +286,9 @@ global quanti annualincome_indiv loanamount_indiv imp1_ds_tot_indiv imp1_is_tot_
 
 *** Deflate and round
 foreach x in $quanti {
-replace `x'=`x'*(100/86) if year==2016
+replace `x'=`x'*(100/40) if year==2010
+replace `x'=`x'*(100/63.2) if year==2016
+replace `x'=`x'*(100/73.6) if year==2020
 replace `x'=round(`x',1)
 }
 

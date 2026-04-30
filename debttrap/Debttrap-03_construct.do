@@ -44,13 +44,18 @@ gen dsr_indiv=(imp1_ds_tot_indiv*100)/annualincome_indiv
 replace dsr_indiv=0 if dsr_indiv==.
 replace dsr_indiv=. if dummyloans_indiv==0
 
+* ISR
+gen isr_indiv=(imp1_is_tot_indiv*100)/annualincome_indiv
+replace isr_indiv=0 if isr_indiv==.
+replace isr_indiv=. if dummyloans_indiv==0
+
 * DIR
 gen dir_indiv=(loanbalance_indiv*100)/annualincome_indiv
 replace dir_indiv=0 if dir_indiv==.
 replace dir_indiv=. if dummyloans_indiv==0
 
 * Log
-foreach x in loanbalance_indiv dsr_indiv dir_indiv {
+foreach x in loanbalance_indiv dsr_indiv isr_indiv dir_indiv {
 gen log_`x'=log(`x')
 }
 
@@ -192,4 +197,191 @@ sort HHID_panel year
 save"panel_HH_v1", replace
 ****************************************
 * END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Indiv construct
+****************************************
+use"panel_indiv_v1", clear
+
+* Rename
+rename log_loanbalance_indiv log_loan
+rename log_dsr_indiv log_dsr
+rename log_isr_indiv log_isr
+rename log_dir_indiv log_dir
+
+* Time period 1: 2016 to 2020
+preserve
+keep HHID_panel INDID_panel time log_dsr log_isr log_loan log_dir
+keep if time==1 | time==2
+bys HHID_panel INDID_panel: gen n=_N
+keep if n==2
+ta time
+reshape wide log_dsr log_isr log_loan log_dir, i(HHID_panel INDID_panel) j(time)
+gen timeperiod=1
+gen year=2016
+order HHID_panel INDID_panel timeperiod year
+drop n
+save"_temp_tp1", replace
+restore
+
+* Time period 2: 2020 to 2026
+preserve
+keep HHID_panel INDID_panel time log_dsr log_isr log_loan log_dir
+keep if time==2 | time==3
+bys HHID_panel INDID_panel: gen n=_N
+keep if n==2
+ta time
+reshape wide log_dsr log_isr log_loan log_dir, i(HHID_panel INDID_panel) j(time)
+gen timeperiod=2
+gen year=2020
+order HHID_panel INDID_panel timeperiod year
+foreach x in dsr isr loan dir {
+rename log_`x'2 log_`x'1
+rename log_`x'3 log_`x'2
+}
+drop n
+save"_temp_tp2", replace
+restore
+
+
+* Append
+use"_temp_tp1", clear
+
+append using "_temp_tp2"
+
+save"_temp_tp", replace
+
+* Merge
+use"panel_indiv_v1", clear
+
+merge m:1 HHID_panel INDID_panel year using"_temp_tp"
+drop _merge
+
+save"panel_indiv_v2", replace
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* HH construct
+****************************************
+use"panel_HH_v1", clear
+
+* Time period 1: 2010 to 2016
+preserve
+keep HHID_panel time log_dsr log_isr log_dar log_dir
+keep if time==1 | time==2
+bys HHID_panel: gen n=_N
+keep if n==2
+ta time
+reshape wide log_dsr log_isr log_dar log_dir, i(HHID_panel) j(time)
+gen timeperiod=1
+gen year=2010
+order HHID_panel timeperiod year
+drop n
+save"_temp_tp1", replace
+restore
+
+* Time period 2: 2016 to 2020
+preserve
+keep HHID_panel time log_dsr log_isr log_dar log_dir
+keep if time==2 | time==3
+bys HHID_panel: gen n=_N
+keep if n==2
+ta time
+reshape wide log_dsr log_isr log_dar log_dir, i(HHID_panel) j(time)
+gen timeperiod=2
+gen year=2016
+order HHID_panel timeperiod year
+foreach x in dsr isr dar dir {
+rename log_`x'2 log_`x'1
+rename log_`x'3 log_`x'2
+}
+drop n
+save"_temp_tp2", replace
+restore
+
+* Time period 3: 2020 to 2026
+preserve
+keep HHID_panel time log_dsr log_isr log_dar log_dir
+keep if time==3 | time==4
+bys HHID_panel: gen n=_N
+keep if n==2
+ta time
+reshape wide log_dsr log_isr log_dar log_dir, i(HHID_panel) j(time)
+gen timeperiod=3
+gen year=2020
+order HHID_panel timeperiod year
+foreach x in dsr isr dar dir {
+rename log_`x'3 log_`x'1
+rename log_`x'4 log_`x'2
+}
+drop n
+save"_temp_tp3", replace
+restore
+
+* Append
+use"_temp_tp1", clear
+
+append using "_temp_tp2"
+append using "_temp_tp3"
+
+save"_temp_tp", replace
+
+* Merge
+use"panel_HH_v1", clear
+
+merge 1:1 HHID_panel year using"_temp_tp"
+drop _merge
+
+save"panel_HH_v2", replace
+****************************************
+* END
+
 
