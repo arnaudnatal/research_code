@@ -85,6 +85,24 @@ order HHID_panel year
 sort HHID_panel year
 
 
+*** Caste
+fre caste
+drop dalits
+gen dalits=.
+replace dalits=1 if caste==1
+replace dalits=1 if caste2025==2
+replace dalits=0 if caste==2
+replace dalits=0 if caste==3
+replace dalits=0 if caste2025!=2 & caste2025!=.
+label define dalits 1"Dalits" 0"Non-dalits", replace
+label values dalits dalits
+
+ta caste2025 dalits
+drop caste caste2025
+
+*
+drop if HHID_panel=="KAR23" & INDID_panel=="Ind_2" & year==2025 & working_pop==3
+
 save"panel_indiv_v1", replace
 ****************************************
 * END
@@ -179,10 +197,15 @@ label values head_nonmarried head_nonmarried
 * Dalits
 gen dalits=.
 replace dalits=1 if caste==1
+replace dalits=1 if caste2025==2
 replace dalits=0 if caste==2
 replace dalits=0 if caste==3
+replace dalits=0 if caste2025!=2 & caste2025!=.
 label define dalits 1"Dalits" 0"Non-dalits"
 label values dalits dalits
+
+ta caste2025 dalits
+drop caste caste2025
 
 ********** Drop
 drop nbloans_HH loanamount_HH
@@ -315,12 +338,14 @@ use"panel_HH_v1", clear
 
 * Time period 1: 2010 to 2016
 preserve
-keep HHID_panel time log_dsr log_isr log_dar log_dir
+rename assets_total1000 wealth
+rename annualincome_HH income
+keep HHID_panel time log_dsr log_isr log_dar log_dir wealth income
 keep if time==1 | time==2
 bys HHID_panel: gen n=_N
 keep if n==2
 ta time
-reshape wide log_dsr log_isr log_dar log_dir, i(HHID_panel) j(time)
+reshape wide log_dsr log_isr log_dar log_dir wealth income, i(HHID_panel) j(time)
 gen timeperiod=1
 gen year=2010
 order HHID_panel timeperiod year
@@ -330,12 +355,14 @@ restore
 
 * Time period 2: 2016 to 2020
 preserve
-keep HHID_panel time log_dsr log_isr log_dar log_dir
+rename assets_total1000 wealth
+rename annualincome_HH income
+keep HHID_panel time log_dsr log_isr log_dar log_dir wealth income
 keep if time==2 | time==3
 bys HHID_panel: gen n=_N
 keep if n==2
 ta time
-reshape wide log_dsr log_isr log_dar log_dir, i(HHID_panel) j(time)
+reshape wide log_dsr log_isr log_dar log_dir wealth income, i(HHID_panel) j(time)
 gen timeperiod=2
 gen year=2016
 order HHID_panel timeperiod year
@@ -343,18 +370,24 @@ foreach x in dsr isr dar dir {
 rename log_`x'2 log_`x'1
 rename log_`x'3 log_`x'2
 }
+rename income2 income1
+rename wealth2 wealth1
+rename income3 income2
+rename wealth3 wealth2
 drop n
 save"_temp_tp2", replace
 restore
 
 * Time period 3: 2020 to 2026
 preserve
-keep HHID_panel time log_dsr log_isr log_dar log_dir
+rename assets_total1000 wealth
+rename annualincome_HH income
+keep HHID_panel time log_dsr log_isr log_dar log_dir wealth income
 keep if time==3 | time==4
 bys HHID_panel: gen n=_N
 keep if n==2
 ta time
-reshape wide log_dsr log_isr log_dar log_dir, i(HHID_panel) j(time)
+reshape wide log_dsr log_isr log_dar log_dir wealth income, i(HHID_panel) j(time)
 gen timeperiod=3
 gen year=2020
 order HHID_panel timeperiod year
@@ -362,6 +395,10 @@ foreach x in dsr isr dar dir {
 rename log_`x'3 log_`x'1
 rename log_`x'4 log_`x'2
 }
+rename income3 income1
+rename wealth3 wealth1
+rename income4 income2
+rename wealth4 wealth2
 drop n
 save"_temp_tp3", replace
 restore
@@ -379,6 +416,25 @@ use"panel_HH_v1", clear
 
 merge 1:1 HHID_panel year using"_temp_tp"
 drop _merge
+
+* Terciles
+
+foreach x in income wealth {
+drop `x'2
+xtile `x'_t1=`x'1 if timeperiod==1, n(3)
+xtile `x'_t2=`x'1 if timeperiod==2, n(3)
+xtile `x'_t3=`x'1 if timeperiod==3, n(3)
+}
+foreach x in income wealth {
+gen `x'_t=.
+}
+foreach x in income wealth {
+replace `x'_t=`x'_t1 if timeperiod==1
+replace `x'_t=`x'_t2 if timeperiod==2
+replace `x'_t=`x'_t3 if timeperiod==3
+}
+ta wealth_t timeperiod, m
+
 
 save"panel_HH_v2", replace
 ****************************************

@@ -178,7 +178,8 @@ save"_temp_NEEMSIS2indiv", replace
 use"raw/NEEMSIS3-HH", clear
 
 * To keep
-keep HHID2026 INDID2026 HHID_panel INDID_panel name sex age relationshiptohead maritalstatus livinghome dummylefthousehold
+keep HHID2026 INDID2026 HHID_panel INDID_panel name sex age relationshiptohead maritalstatus livinghome dummylefthousehold caste
+rename caste caste2025
 duplicates drop
 
 * Education
@@ -303,6 +304,9 @@ drop _merge
 ta year
 ta age
 drop if age<18
+
+*** Dalits
+fre caste caste2025
 
 save"panel_indiv_v0", replace
 ****************************************
