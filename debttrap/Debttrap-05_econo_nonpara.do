@@ -16,6 +16,7 @@ do"C:/Users/Arnaud/Documents/GitHub/folderanalysis/$link.do"
 ****************************************
 * Arunachalam & Shenoy (2017)
 ****************************************
+/*
 use"panel_HH_v2", clear
 
 *
@@ -36,8 +37,7 @@ xtile q_dsr1=log_dsr1, n(10)
 
 * Step 3
 reg dsr_inc i.q_dsr1
-
-
+*/
 ****************************************
 * END
 
@@ -53,11 +53,52 @@ reg dsr_inc i.q_dsr1
 
 
 ****************************************
-* Household level
+* Household level: Equilibirum
 ****************************************
 use"panel_HH_v2", clear
 
-***** Graph
+* All
+npregress kernel log_dsr2 log_dsr1, kernel(epanechnikov) reps(50)
+
+* Dalits
+npregress kernel log_dsr2 log_dsr1 if dalit==1, kernel(epanechnikov) reps(50)
+
+* Non-dalits
+npregress kernel log_dsr2 log_dsr1 if dalit==0, kernel(epanechnikov) reps(50)
+
+* Wealth T1
+npregress kernel log_dsr2 log_dsr1 if wealth_t==1, kernel(epanechnikov) reps(50)
+
+* Wealth T2
+npregress kernel log_dsr2 log_dsr1 if wealth_t==2, kernel(epanechnikov) reps(50)
+
+* Wealth T3
+npregress kernel log_dsr2 log_dsr1 if wealth_t==3, kernel(epanechnikov) reps(50)
+
+* Income T1
+npregress kernel log_dsr2 log_dsr1 if income_t==1, kernel(epanechnikov) reps(50)
+
+* Income T2
+npregress kernel log_dsr2 log_dsr1 if income_t==2, kernel(epanechnikov) reps(50)
+
+* Income T3
+npregress kernel log_dsr2 log_dsr1 if income_t==3, kernel(epanechnikov) reps(50)
+
+****************************************
+* END
+
+
+
+
+
+
+
+
+****************************************
+* Household level: Graph
+****************************************
+use"panel_HH_v2", clear
+
 set graph off
 foreach y in dsr isr dar {
 * All
@@ -129,14 +170,42 @@ graph combine dsr_all dsr_dalits dsr_nondalits dsr_wt1 dsr_wt2 dsr_wt3 dsr_it1 d
 graph export "graph/dsr_hh.png", as(png) replace
 
 
-***** Reg
-npregress kernel log_dsr2 log_dsr1, kernel(epanechnikov) reps(50)
 
 ****************************************
 * END
 
 
 
+
+
+
+
+
+
+
+****************************************
+* Individual level: Equilibrium
+****************************************
+use"panel_indiv_v2", clear
+
+* All
+npregress kernel log_dsr2 log_dsr1, kernel(epanechnikov) reps(50)
+
+* Dalits
+npregress kernel log_dsr2 log_dsr1 if dalit==1, kernel(epanechnikov) reps(50)
+
+* Non-dalits
+npregress kernel log_dsr2 log_dsr1 if dalit==0, kernel(epanechnikov) reps(50)
+
+* Women
+npregress kernel log_dsr2 log_dsr1 if female==1, kernel(epanechnikov) reps(50)
+
+* Men
+npregress kernel log_dsr2 log_dsr1 if female==0, kernel(epanechnikov) reps(50)
+
+
+****************************************
+* END
 
 
 
