@@ -54,7 +54,11 @@ merge 1:1 HHID2010 using "_temp"
 drop _merge
 
 * Add assets and expenses
-merge 1:1 HHID2010 using "raw/RUME-assets", keepusing(assets_total1000 assets_totalnoland1000 assets_ownland expenses_educ expenses_food expenses_heal)
+merge 1:1 HHID2010 using "raw/RUME-assets", keepusing(assets_total1000 assets_totalnoland1000 expenses_educ expenses_food expenses_heal)
+drop _merge
+
+* Add land
+merge 1:1 HHID2010 using "raw/RUME-land"
 drop _merge
 
 * Add income
@@ -145,7 +149,11 @@ merge 1:1 HHID2016 using "_temp"
 drop _merge
 
 * Add assets and expenses
-merge 1:1 HHID2016 using "raw/NEEMSIS1-assets", keepusing(assets_total1000 assets_totalnoland1000 assets_ownland expenses_educ expenses_food expenses_heal)
+merge 1:1 HHID2016 using "raw/NEEMSIS1-assets", keepusing(assets_total1000 assets_totalnoland1000 expenses_educ expenses_food expenses_heal)
+drop _merge
+
+* Add land
+merge 1:1 HHID2016 using "raw/NEEMSIS1-land"
 drop _merge
 
 * Add income
@@ -255,6 +263,10 @@ drop _merge
 merge 1:1 HHID2020 using "raw/NEEMSIS2-assets", keepusing(assets_total1000 assets_totalnoland1000 assets_ownland expenses_educ expenses_food expenses_heal)
 drop _merge
 
+* Add land
+merge 1:1 HHID2020 using "raw/NEEMSIS2-land"
+drop _merge
+
 * Add income
 merge 1:1 HHID2020 using "raw/NEEMSIS2-occup_HH", keepusing(annualincome_HH nbworker_HH nbnonworker_HH)
 drop _merge
@@ -347,6 +359,10 @@ drop _merge
 
 * Add assets and expenses
 merge 1:1 HHID2026 using "raw/NEEMSIS3-assets", keepusing(assets_total1000 assets_totalnoland1000 assets_ownland expenses_educ expenses_food expenses_heal)
+drop _merge
+
+* Add land
+merge 1:1 HHID2026 using "raw/NEEMSIS3-land"
 drop _merge
 
 * Add income
@@ -466,7 +482,6 @@ order time, after(year)
 *** Clean
 recode head_mocc_occupation (.=0)
 recode ownland (.=0)
-recode assets_ownland (.=0)
 mdesc
 
 ********** Selection

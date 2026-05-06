@@ -8,7 +8,8 @@ gl link = "debttrap"
 *Prepa database
 *-----
 *do "https://raw.githubusercontent.com/arnaudnatal/folderanalysis/main/$link.do"
-cd"C:\Users\anatal\Documents\DT\Analysis"
+*cd"C:\Users\anatal\Documents\DT\Analysis"
+cd"C:\Users\Arnaud\Documents\MEGA\Research\Ongoing_Debttrap\Analysis"
 *-------------------------
 
 
@@ -277,7 +278,7 @@ drop if HHID_panel=="KAR23" & INDID_panel=="Ind_2" & year==2025 & working_pop==3
 * Merge
 preserve
 use"panel_HH_v1", clear
-keep HHID_panel year villageid HHFE log_wealth log_income dummylock
+keep HHID_panel year villageid HHFE log_wealth log_income dummylock landstatus drywetownland crops_cat sizeownland sizeleaseland nbcrops
 duplicates drop
 save"_temp", replace
 restore
