@@ -116,7 +116,7 @@ drop caste caste2025
 encode HHID_panel, gen(HHFE)
 order HHFE, after(HHID_panel)
 gen log_wealth=log(assets_totalnoland1000)
-gen log_income=log(annualincome_HH)
+gen log_income=log(income_HH)
 rename secondlockdownexposure dummylock
 recode dummylock (1=0) (2=1) (3=1)
 ta villageid
