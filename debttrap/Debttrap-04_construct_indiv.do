@@ -162,19 +162,19 @@ use"panel_indiv_v1", clear
 * Niveau
 recode dsr isr (.=0)
 foreach x in dsr isr {
-gen `x'_r=`x'
-sum `x'_r, det
-replace `x'_r=`r(p99)' if `x'_r>`r(p99)' & `x'_r!=.
+gen w1_`x'=`x'
+sum w1_`x', det
+replace w1_`x'=`r(p99)' if w1_`x'>`r(p99)' & w1_`x'!=.
 }
 
 foreach x in dsr isr {
-gen `x'_rb=`x'
-sum `x'_rb, det
-replace `x'_rb=`r(p95)' if `x'_rb>`r(p95)' & `x'_rb!=.
+gen w5_`x'=`x'
+sum w5_`x', det
+replace w5_`x'=`r(p95)' if w5_`x'>`r(p95)' & w5_`x'!=.
 }
 
 * Var
-global var dummyloans dsr dsr_r dsr_rb isr isr_r isr_rb ///
+global var dummyloans dsr w1_dsr w5_dsr isr w1_isr w5_isr ///
 edulevel occupation age agri nonmarried
 
 * Time period 1: 2016 to 2020
@@ -253,11 +253,11 @@ drop if year==2020
 keep HHID_panel INDID_panel HHFE INDIVFE year ///
 timeperiod dummyloans1 dummyloans2 ///
 dsr1 dsr2 ///
-dsr_r1 dsr_r2 ///
-dsr_rb1 dsr_rb2 ///
+w1_dsr1 w1_dsr2 ///
+w5_dsr1 w5_dsr2 ///
 isr1 isr2 ///
-isr_r1 isr_r2 ///
-isr_rb1 isr_rb2 ///
+w1_isr1 w1_isr2 ///
+w5_isr1 w5_isr2 ///
 log_wealth log_income ///
 HHsize HH_count_child nbworker_HH nbnonworker_HH ///
 female age nonmarried edulevel occupation ///
@@ -282,40 +282,38 @@ ta HHFE, m
 ta HHFE, gen(HH)
 
 * First diff
-gen d_isr=isr2-isr1
-gen d_isr_r=isr_r2-isr_r1
-gen d_isr_rb=isr_rb2-isr_rb1
+gen diff_isr=isr2-isr1
+gen diff_w1_isr=w1_isr2-w1_isr1
+gen diff_w5_isr=w5_isr2-w5_isr1
 
-gen d_dsr=dsr2-dsr1
-gen d_dsr_r=dsr_r2-dsr_r1
-gen d_dsr_rb=dsr_rb2-dsr_rb1
+gen diff_dsr=dsr2-dsr1
+gen diff_w1_dsr=w1_dsr2-w1_dsr1
+gen diff_w5_dsr=w5_dsr2-w5_dsr1
 
 * Quadratic terms
-gen dsr_1=dsr1
-gen dsr_2=dsr1*dsr1
-gen dsr_3=dsr1*dsr1*dsr1
-gen dsr_4=dsr1*dsr1*dsr1*dsr1
-gen dsr_r_1=dsr_r1
-gen dsr_r_2=dsr_r1*dsr_r1
-gen dsr_r_3=dsr_r1*dsr_r1*dsr_r1
-gen dsr_r_4=dsr_r1*dsr_r1*dsr_r1*dsr_r1
-gen dsr_rb_1=dsr_rb1
-gen dsr_rb_2=dsr_rb1*dsr_rb1
-gen dsr_rb_3=dsr_rb1*dsr_rb1*dsr_rb1
-gen dsr_rb_4=dsr_rb1*dsr_rb1*dsr_rb1*dsr_rb1
+gen dsr1_2=dsr1*dsr1
+gen dsr1_3=dsr1*dsr1*dsr1
+gen dsr1_4=dsr1*dsr1*dsr1*dsr1
 
-gen isr_1=isr1
-gen isr_2=isr1*isr1
-gen isr_3=isr1*isr1*isr1
-gen isr_4=isr1*isr1*isr1*isr1
-gen isr_r_1=isr_r1
-gen isr_r_2=isr_r1*isr_r1
-gen isr_r_3=isr_r1*isr_r1*isr_r1
-gen isr_r_4=isr_r1*isr_r1*isr_r1*isr_r1
-gen isr_rb_1=isr_rb1
-gen isr_rb_2=isr_rb1*isr_rb1
-gen isr_rb_3=isr_rb1*isr_rb1*isr_rb1
-gen isr_rb_4=isr_rb1*isr_rb1*isr_rb1*isr_rb1
+gen w1_dsr1_2=w1_dsr1*w1_dsr1
+gen w1_dsr1_3=w1_dsr1*w1_dsr1*w1_dsr1
+gen w1_dsr1_4=w1_dsr1*w1_dsr1*w1_dsr1*w1_dsr1
+
+gen w5_dsr1_2=w5_dsr1*w5_dsr1
+gen w5_dsr1_3=w5_dsr1*w5_dsr1*w5_dsr1
+gen w5_dsr1_4=w5_dsr1*w5_dsr1*w5_dsr1*w5_dsr1
+
+gen isr1_2=isr1*isr1
+gen isr1_3=isr1*isr1*isr1
+gen isr1_4=isr1*isr1*isr1*isr1
+
+gen w1_isr1_2=w1_isr1*w1_isr1
+gen w1_isr1_3=w1_isr1*w1_isr1*w1_isr1
+gen w1_isr1_4=w1_isr1*w1_isr1*w1_isr1*w1_isr1
+
+gen w5_isr1_2=w5_isr1*w5_isr1
+gen w5_isr1_3=w5_isr1*w5_isr1*w5_isr1
+gen w5_isr1_4=w5_isr1*w5_isr1*w5_isr1*w5_isr1
 
 
 * Age
@@ -334,7 +332,14 @@ gen dalitsXfemaleXland=dalits*female*ownland
 gen femaleXdalits=female*dalits
 
 * Var pour CRE à la main
-foreach x in dsr_1 dsr_2 dsr_3 dsr_4 dsr_r_1 dsr_r_2 dsr_r_3 dsr_r_4 dsr_rb_1 dsr_rb_2 dsr_rb_3 dsr_rb_4 isr_1 isr_2 isr_3 isr_4 isr_r_1 isr_r_2 isr_r_3 isr_r_4 isr_rb_1 isr_rb_2 isr_rb_3 isr_rb_4 female age age2 nonmarried occ1 occ2 occ4 occ5 occ6 occ7 educ2 educ3 educ4 HHsize HH_count_child ownland log_wealth log_income dummylock dummydemonetisation dummymarriage dalitsXland femaleXland dalitsXfemaleXland femaleXdalits {
+foreach x in ///
+dsr1 dsr1_2 dsr1_3 dsr1_4 ///
+w1_dsr1 w1_dsr1_2 w1_dsr1_3 w1_dsr1_4 ///
+w5_dsr1 w5_dsr1_2 w5_dsr1_3 w5_dsr1_4 ///
+isr1 isr1_2 isr1_3 isr1_4 ///
+w1_isr1 w1_isr1_2 w1_isr1_3 w1_isr1_4 ///
+w5_isr1 w5_isr1_2 w5_isr1_3 w5_isr1_4 ///
+female age age2 nonmarried occ1 occ2 occ4 occ5 occ6 occ7 educ2 educ3 educ4 HHsize HH_count_child ownland log_wealth log_income dummylock dummydemonetisation dummymarriage dalitsXland femaleXland dalitsXfemaleXland femaleXdalits {
 bys HHID_panel INDID_panel: egen m_`x'=mean(`x')
 }
 bys HHID_panel INDID_panel: gen nby=_N

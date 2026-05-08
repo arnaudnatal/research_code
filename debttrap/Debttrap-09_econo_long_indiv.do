@@ -15,34 +15,24 @@ do"C:/Users/Arnaud/Documents/GitHub/folderanalysis/$link.do"
 
 
 
-****************************************
-* Transition debt // no debt
-****************************************
-use"panel_indiv_v2", clear
-
-* Selection
-drop if timeperiod==.
-
-ta dummyloans1 dummyloans2, row
-
-****************************************
-* END
-
-
-
-
-
 
 
 ****************************************
 * Individual level: All
 ****************************************
-use"panel_indiv_v2", clear
+use"panel_indiv_v3", clear
 
-
+* Selection
+ta timeperiod
+keep if timeperiod==1
+ta year
+ta dummyloans1
+ta dummyloans2
+keep if dummyloans1==1
+keep if dummyloans2==1
 
 * Graph
-lpoly dsr_r2 dsr_r1, kernel(epanechnikov) degree(4) ci noscatter  ///
+lpoly w1_dsr2 w1_dsr1, kernel(epanechnikov) degree(4) ci noscatter  ///
 addplot(function y=x, range(0 1100) xline(30)) ///
 xtitle("DSR t") ytitle("DSR t+1") ///
 title("Individual level analysis") legend(off) name(dsr_all, replace)
@@ -51,13 +41,13 @@ graph export "indiv.png", replace
 
 cls
 * Equilibrium
-eq_lpoly dsr_r2 dsr_r1
+eq_lpoly w1_dsr2 w1_dsr1
 
 * By gender
 foreach i in 0 1 {
 preserve
 keep if female==`i'
-eq_lpoly dsr_r2 dsr_r1
+eq_lpoly w1_dsr2 w1_dsr1
 restore
 }
 
@@ -65,7 +55,7 @@ restore
 foreach i in 0 1 {
 preserve
 keep if dalits==`i'
-eq_lpoly dsr_r2 dsr_r1
+eq_lpoly w1_dsr2 w1_dsr1
 restore
 }
 
@@ -73,23 +63,23 @@ restore
 foreach i in 0 1 {
 preserve
 keep if nonmarried==`i'
-eq_lpoly dsr_r2 dsr_r1
+eq_lpoly w1_dsr2 w1_dsr1
 restore
 }
 
 * By occupation
 foreach i in 1 2 3 4 6 7 {
 preserve
-keep if occupation==`i'
-eq_lpoly dsr_r2 dsr_r1
+keep if occ`i'==1
+eq_lpoly w1_dsr2 w1_dsr1
 restore
 }
 
 * By education
-foreach i in 0 1 2 3 {
+foreach i in 1 2 3 4 {
 preserve
-keep if edulevel==`i'
-eq_lpoly dsr_r2 dsr_r1
+keep if educ`i'==1
+eq_lpoly w1_dsr2 w1_dsr1
 restore
 }
 
@@ -109,7 +99,9 @@ restore
 ****************************************
 * Parametric
 ****************************************
-use"panel_indiv_v2", clear
+use"panel_indiv_v3", clear
+
+* Selection
 drop if timeperiod==.
 
 
