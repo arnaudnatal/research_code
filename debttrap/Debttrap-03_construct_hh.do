@@ -116,6 +116,7 @@ drop caste caste2025
 encode HHID_panel, gen(HHFE)
 order HHFE, after(HHID_panel)
 gen log_wealth=log(assets_totalnoland1000)
+gen log_wealthbis=log(assets_nolandnogold)
 gen log_income=log(income_HH)
 rename secondlockdownexposure dummylock
 recode dummylock (1=0) (2=1) (3=1)
@@ -270,7 +271,7 @@ replace `x'_t=`x'_t2 if timeperiod==2
 replace `x'_t=`x'_t3 if timeperiod==3
 }
 ta wealth_t timeperiod, m
-
+drop income_t1 income_t2 income_t3 wealth_t1 wealth_t2 wealth_t3
 
 save"panel_HH_v2", replace
 ****************************************
@@ -313,9 +314,13 @@ log_wealth log_income ///
 HHsize HH_count_child ///
 head_sex head_age head_mocc_occupation head_edulevel head_nonmarried ///
 dummylock dummydemonetisation dummymarriage ///
-dalits villageid ownland wealth_t income_t
+dalits villageid ownland wealth_t income_t ///
+assets_nolandnogold goldquantity_HH saving
 
 * Vars
+gen log_saving=log(saving)
+drop saving
+
 gen head_female=0
 replace head_female=1 if head_sex==2
 ta head_sex head_female

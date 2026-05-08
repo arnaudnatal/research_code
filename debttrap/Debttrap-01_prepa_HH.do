@@ -59,7 +59,7 @@ merge 1:1 HHID2010 using "_temp"
 drop _merge
 
 * Add assets and expenses
-merge 1:1 HHID2010 using "raw/RUME-assets", keepusing(assets_total1000 assets_totalnoland1000 expenses_educ expenses_food expenses_heal)
+merge 1:1 HHID2010 using "raw/RUME-assets", keepusing(assets_total1000 assets_totalnoland1000 expenses_educ expenses_food expenses_heal assets_nolandnogold)
 drop _merge
 
 * Add land
@@ -159,7 +159,7 @@ merge 1:1 HHID2016 using "_temp"
 drop _merge
 
 * Add assets and expenses
-merge 1:1 HHID2016 using "raw/NEEMSIS1-assets", keepusing(assets_total1000 assets_totalnoland1000 expenses_educ expenses_food expenses_heal)
+merge 1:1 HHID2016 using "raw/NEEMSIS1-assets", keepusing(assets_total1000 assets_totalnoland1000 expenses_educ expenses_food expenses_heal assets_nolandnogold)
 drop _merge
 
 * Add land
@@ -274,7 +274,7 @@ merge 1:1 HHID2020 using "_temp"
 drop _merge
 
 * Add assets and expenses
-merge 1:1 HHID2020 using "raw/NEEMSIS2-assets", keepusing(assets_total1000 assets_totalnoland1000 assets_ownland expenses_educ expenses_food expenses_heal)
+merge 1:1 HHID2020 using "raw/NEEMSIS2-assets", keepusing(assets_total1000 assets_totalnoland1000 assets_ownland expenses_educ expenses_food expenses_heal assets_nolandnogold)
 drop _merge
 
 * Add land
@@ -376,7 +376,7 @@ merge 1:1 HHID2026 using "_temp"
 drop _merge
 
 * Add assets and expenses
-merge 1:1 HHID2026 using "raw/NEEMSIS3-assets", keepusing(assets_total1000 assets_totalnoland1000 assets_ownland expenses_educ expenses_food expenses_heal)
+merge 1:1 HHID2026 using "raw/NEEMSIS3-assets", keepusing(assets_total1000 assets_totalnoland1000 assets_ownland expenses_educ expenses_food expenses_heal assets_nolandnogold)
 drop _merge
 
 * Add land
@@ -475,7 +475,7 @@ ta caste
 
 
 *** Quanti 
-global quanti loanamount_HH imp1_ds_tot_HH imp1_is_tot_HH assets_ownland assets_total1000 assets_totalnoland1000 annualincome_HH remreceived_HH remsent_HH remittnet_HH expenses_educ expenses_food expenses_heal loanbalance_HH saving
+global quanti loanamount_HH imp1_ds_tot_HH imp1_is_tot_HH assets_ownland assets_total1000 assets_totalnoland1000 annualincome_HH remreceived_HH remsent_HH remittnet_HH expenses_educ expenses_food expenses_heal loanbalance_HH saving assets_nolandnogold
 
 
 *** Deflate and round

@@ -61,6 +61,11 @@ drop _merge
 merge 1:1 HHID2016 INDID2016 using "raw\NEEMSIS1-transferts_indiv", keepusing(remreceived_indiv remsent_indiv remittnet_indiv)
 drop _merge
 
+* Gold
+merge 1:1 HHID2016 INDID2016 using "raw\NEEMSIS1-gold", keepusing(goldquantity2)
+drop _merge
+rename goldquantity2 goldquantity
+
 * Panel HH
 merge m:m HHID2016 using"raw/keypanel-HH_wide", keepusing(HHID_panel)
 keep if _merge==3
@@ -142,6 +147,11 @@ drop _merge
 merge 1:1 HHID2020 INDID2020 using "raw\NEEMSIS2-transferts_indiv", keepusing(remreceived_indiv remsent_indiv remittnet_indiv)
 drop _merge
 
+* Gold
+merge 1:1 HHID2020 INDID2020 using "raw\NEEMSIS2-gold", keepusing(goldquantity2)
+drop _merge
+rename goldquantity2 goldquantity
+
 * Panel HH
 merge m:m HHID2020 using"raw/keypanel-HH_wide", keepusing(HHID_panel)
 keep if _merge==3
@@ -187,7 +197,6 @@ save"_temp_NEEMSIS2indiv", replace
 ****************************************
 use"raw/NEEMSIS3-HH", clear
 
-
 * Savings
 egen sav=rowtotal(savingsamount1 savingsamount2 savingsamount3)
 bysort HHID2026: egen saving=sum(sav)
@@ -226,6 +235,11 @@ drop _merge
 * Transferts
 merge m:m HHID2026 INDID2026 using "raw\NEEMSIS3-transferts_indiv", keepusing(remreceived_indiv remsent_indiv remittnet_indiv)
 drop _merge
+
+* Gold
+merge m:1 HHID2026 INDID2026 using "raw\NEEMSIS3-gold", keepusing(goldquantity2)
+drop _merge
+rename goldquantity2 goldquantity
 
 * Rename
 rename HHID2026 HHID
@@ -311,7 +325,7 @@ replace `x'=round(`x',1)
 
 
 ********** Merge HH charact
-merge m:1 HHID_panel year using "panel_HH_v0", keepusing(ownland dummymarriage village HHsize HH_count_child assets_totalnoland1000 ownland goldquantity_HH remittnet_HH secondlockdownexposure dummydemonetisation caste annualincome_HH nbworker_HH nbnonworker_HH)
+merge m:1 HHID_panel year using "panel_HH_v0", keepusing(ownland dummymarriage village HHsize HH_count_child assets_totalnoland1000 ownland goldquantity_HH remittnet_HH secondlockdownexposure dummydemonetisation caste annualincome_HH nbworker_HH nbnonworker_HH assets_nolandnogold)
 drop if _merge==2
 drop _merge
 
