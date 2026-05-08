@@ -80,7 +80,7 @@ restore
 reg diff_w1_dsr w1_dsr1 w1_dsr1_2 w1_dsr1_3 w1_dsr1_4 ///
 female age age2 nonmarried ///
 occ1 occ2 occ4 occ5 occ6 occ7 ///
-educ2 educ3 educ4 ///
+educ2 educ3 educ4 log_saving goldquantity ///
 HHsize HH_count_child ownland log_wealth log_income ///
 dummydemonetisation dummymarriage dalits ///
 village1 village2 village3 village4 village5 village6 village7 village8 village9, cluster(HHFE)
@@ -89,7 +89,7 @@ village1 village2 village3 village4 village5 village6 village7 village8 village9
 reg diff_w1_dsr w1_dsr1 w1_dsr1_2 w1_dsr1_3 w1_dsr1_4 ///
 female age age2 nonmarried ///
 occ1 occ2 occ4 occ5 occ6 occ7 ///
-educ2 educ3 educ4 ///
+educ2 educ3 educ4 log_saving goldquantity ///
 HHsize HH_count_child ownland log_wealth log_income ///
 dummydemonetisation dummymarriage dalits ///
 village1 village2 village3 village4 village5 village6 village7 village8 village9 i.HHFE
@@ -100,7 +100,7 @@ village1 village2 village3 village4 village5 village6 village7 village8 village9
 sqreg diff_w1_dsr w1_dsr1 w1_dsr1_2 w1_dsr1_3 w1_dsr1_4 ///
 female age age2 nonmarried ///
 occ1 occ2 occ4 occ5 occ6 occ7 ///
-educ2 educ3 educ4 ///
+educ2 educ3 educ4 log_saving goldquantity ///
 HHsize HH_count_child ownland log_wealth log_income ///
 dummydemonetisation dummymarriage dalits ///
 village1 village2 village3 village4 village5 village6 village7 village8 village9, q(.5) reps(50)
@@ -109,7 +109,7 @@ village1 village2 village3 village4 village5 village6 village7 village8 village9
 sqreg diff_w1_dsr w1_dsr1 w1_dsr1_2 w1_dsr1_3 w1_dsr1_4 ///
 female age age2 nonmarried ///
 occ1 occ2 occ4 occ5 occ6 occ7 ///
-educ2 educ3 educ4 ///
+educ2 educ3 educ4 log_saving goldquantity ///
 HHsize HH_count_child ownland log_wealth log_income ///
 dummydemonetisation dummymarriage dalits ///
 village1 village2 village3 village4 village5 village6 village7 village8 village9 i.HHFE,  q(.5) reps(50)
@@ -208,7 +208,7 @@ restore
 reg diff_w5_dsr w5_dsr1 w5_dsr1_2 w5_dsr1_3 w5_dsr1_4 ///
 female age age2 nonmarried ///
 occ1 occ2 occ4 occ5 occ6 occ7 ///
-educ2 educ3 educ4 ///
+educ2 educ3 educ4 log_saving goldquantity ///
 HHsize HH_count_child ownland log_wealth log_income ///
 dummydemonetisation dummymarriage dalits ///
 village1 village2 village3 village4 village5 village6 village7 village8 village9, cluster(HHFE)
@@ -217,7 +217,7 @@ village1 village2 village3 village4 village5 village6 village7 village8 village9
 reg diff_w5_dsr w5_dsr1 w5_dsr1_2 w5_dsr1_3 w5_dsr1_4 ///
 female age age2 nonmarried ///
 occ1 occ2 occ4 occ5 occ6 occ7 ///
-educ2 educ3 educ4 ///
+educ2 educ3 educ4 log_saving goldquantity ///
 HHsize HH_count_child ownland log_wealth log_income ///
 dummydemonetisation dummymarriage dalits ///
 village1 village2 village3 village4 village5 village6 village7 village8 village9 i.HHFE
@@ -228,7 +228,7 @@ village1 village2 village3 village4 village5 village6 village7 village8 village9
 sqreg diff_w5_dsr w5_dsr1 w5_dsr1_2 w5_dsr1_3 w5_dsr1_4 ///
 female age age2 nonmarried ///
 occ1 occ2 occ4 occ5 occ6 occ7 ///
-educ2 educ3 educ4 ///
+educ2 educ3 educ4 log_saving goldquantity ///
 HHsize HH_count_child ownland log_wealth log_income ///
 dummydemonetisation dummymarriage dalits ///
 village1 village2 village3 village4 village5 village6 village7 village8 village9, q(.5) reps(50)
@@ -237,7 +237,7 @@ village1 village2 village3 village4 village5 village6 village7 village8 village9
 sqreg diff_w5_dsr w5_dsr1 w5_dsr1_2 w5_dsr1_3 w5_dsr1_4 ///
 female age age2 nonmarried ///
 occ1 occ2 occ4 occ5 occ6 occ7 ///
-educ2 educ3 educ4 ///
+educ2 educ3 educ4 log_saving goldquantity ///
 HHsize HH_count_child ownland log_wealth log_income ///
 dummydemonetisation dummymarriage dalits ///
 village1 village2 village3 village4 village5 village6 village7 village8 village9 i.HHFE,  q(.5) reps(50)
@@ -331,7 +331,7 @@ restore
 reg diff_dsr dsr1 dsr1_2 dsr1_3 dsr1_4 ///
 female age age2 nonmarried ///
 occ1 occ2 occ4 occ5 occ6 occ7 ///
-educ2 educ3 educ4 ///
+educ2 educ3 educ4 log_saving goldquantity ///
 HHsize HH_count_child ownland log_wealth log_income ///
 dummydemonetisation dummymarriage dalits ///
 village1 village2 village3 village4 village5 village6 village7 village8 village9, cluster(HHFE)
@@ -340,7 +340,7 @@ village1 village2 village3 village4 village5 village6 village7 village8 village9
 reg diff_dsr dsr1 dsr1_2 dsr1_3 dsr1_4 ///
 female age age2 nonmarried ///
 occ1 occ2 occ4 occ5 occ6 occ7 ///
-educ2 educ3 educ4 ///
+educ2 educ3 educ4 log_saving goldquantity ///
 HHsize HH_count_child ownland log_wealth log_income ///
 dummydemonetisation dummymarriage dalits ///
 village1 village2 village3 village4 village5 village6 village7 village8 village9 i.HHFE
@@ -351,7 +351,7 @@ village1 village2 village3 village4 village5 village6 village7 village8 village9
 sqreg diff_dsr dsr1 dsr1_2 dsr1_3 dsr1_4 ///
 female age age2 nonmarried ///
 occ1 occ2 occ4 occ5 occ6 occ7 ///
-educ2 educ3 educ4 ///
+educ2 educ3 educ4 log_saving goldquantity ///
 HHsize HH_count_child ownland log_wealth log_income ///
 dummydemonetisation dummymarriage dalits ///
 village1 village2 village3 village4 village5 village6 village7 village8 village9, q(.5) reps(50)
@@ -360,7 +360,7 @@ village1 village2 village3 village4 village5 village6 village7 village8 village9
 sqreg diff_dsr dsr1 dsr1_2 dsr1_3 dsr1_4 ///
 female age age2 nonmarried ///
 occ1 occ2 occ4 occ5 occ6 occ7 ///
-educ2 educ3 educ4 ///
+educ2 educ3 educ4 log_saving goldquantity ///
 HHsize HH_count_child ownland log_wealth log_income ///
 dummydemonetisation dummymarriage dalits ///
 village1 village2 village3 village4 village5 village6 village7 village8 village9 i.HHFE,  q(.5) reps(50)

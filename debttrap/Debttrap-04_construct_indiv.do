@@ -132,7 +132,7 @@ drop if HHID_panel=="KAR23" & INDID_panel=="Ind_2" & year==2025 & working_pop==3
 * Merge
 preserve
 use"panel_HH_v1", clear
-keep HHID_panel year villageid HHFE log_wealth log_income dummylock landstatus drywetownland crops_cat sizeownland sizeleaseland nbcrops assets_nolandnogold
+keep HHID_panel year villageid HHFE log_wealth log_income dummylock landstatus drywetownland crops_cat sizeownland sizeleaseland nbcrops assets_nolandnogold log_wealthbis
 duplicates drop
 save"_temp", replace
 restore
@@ -258,15 +258,17 @@ w5_dsr1 w5_dsr2 ///
 isr1 isr2 ///
 w1_isr1 w1_isr2 ///
 w5_isr1 w5_isr2 ///
-log_wealth log_income ///
+log_wealthbis log_income ///
 HHsize HH_count_child nbworker_HH nbnonworker_HH ///
 female age nonmarried edulevel occupation ///
 dummylock dummydemonetisation dummymarriage ///
 ownland villageid dalits ///
 assets_nolandnogold goldquantity_HH saving goldquantity
+rename log_wealthbis log_wealth
 
 * Vars
-gen log_saving=log(saving)
+ta saving
+gen log_saving=log(1+saving)
 drop saving
 
 ta occupation, m
@@ -334,20 +336,6 @@ gen dalitsXfemaleXland=dalits*female*ownland
 
 * Female X Dalits
 gen femaleXdalits=female*dalits
-
-* Var pour CRE à la main
-foreach x in ///
-dsr1 dsr1_2 dsr1_3 dsr1_4 ///
-w1_dsr1 w1_dsr1_2 w1_dsr1_3 w1_dsr1_4 ///
-w5_dsr1 w5_dsr1_2 w5_dsr1_3 w5_dsr1_4 ///
-isr1 isr1_2 isr1_3 isr1_4 ///
-w1_isr1 w1_isr1_2 w1_isr1_3 w1_isr1_4 ///
-w5_isr1 w5_isr1_2 w5_isr1_3 w5_isr1_4 ///
-female age age2 nonmarried occ1 occ2 occ4 occ5 occ6 occ7 educ2 educ3 educ4 HHsize HH_count_child ownland log_wealth log_income dummylock dummydemonetisation dummymarriage dalitsXland femaleXland dalitsXfemaleXland femaleXdalits {
-bys HHID_panel INDID_panel: egen m_`x'=mean(`x')
-}
-bys HHID_panel INDID_panel: gen nby=_N
-ta year, gen(y)
 
 save"panel_indiv_v3", replace
 ****************************************

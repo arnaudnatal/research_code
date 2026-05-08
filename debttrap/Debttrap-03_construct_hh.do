@@ -310,15 +310,17 @@ w5_dsr1 w5_dsr2 ///
 isr1 isr2 ///
 w1_isr1 w1_isr2 ///
 w5_isr1 w5_isr2 ///
-log_wealth log_income ///
+log_wealthbis log_income ///
 HHsize HH_count_child ///
 head_sex head_age head_mocc_occupation head_edulevel head_nonmarried ///
 dummylock dummydemonetisation dummymarriage ///
 dalits villageid ownland wealth_t income_t ///
 assets_nolandnogold goldquantity_HH saving
+rename log_wealthbis log_wealth
 
 * Vars
-gen log_saving=log(saving)
+ta saving
+gen log_saving=log(1+saving)
 drop saving
 
 gen head_female=0
@@ -377,20 +379,6 @@ gen head_age2=head_age*head_age
 
 * Caste X Lands
 gen dalitsXland=dalits*ownland
-
-* Var pour CRE à la main
-foreach x in ///
-dsr1 dsr1_2 dsr1_3 dsr1_4 ///
-w1_dsr1 w1_dsr1_2 w1_dsr1_3 w1_dsr1_4 ///
-w5_dsr1 w5_dsr1_2 w5_dsr1_3 w5_dsr1_4 ///
-isr1 isr1_2 isr1_3 isr1_4 ///
-w1_isr1 w1_isr1_2 w1_isr1_3 w1_isr1_4 ///
-w5_isr1 w5_isr1_2 w5_isr1_3 w5_isr1_4 ///
- head_female head_age head_age2 head_nonmarried head_occ1 head_occ2 head_occ4 head_occ5 head_occ6 head_occ7 head_educ2 head_educ3 HHsize HH_count_child ownland log_wealth log_income dummylock dummydemonetisation dummymarriage dalitsXland {
-bys HHID_panel: egen m_`x'=mean(`x')
-}
-bys HHID_panel: gen nby=_N
-ta year, gen(y)
 
 save"panel_HH_v3", replace
 ****************************************

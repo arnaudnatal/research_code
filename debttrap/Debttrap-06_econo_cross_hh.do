@@ -64,7 +64,7 @@ w1_dsr1 w1_dsr1_2 w1_dsr1_3 w1_dsr1_4 ///
 head_female head_age head_age2 head_nonmarried ///
 head_occ1 head_occ2 head_occ4 head_occ5 head_occ6 head_occ7 ///
 head_educ2 head_educ3 ///
-HHsize HH_count_child ownland log_wealth log_income ///
+HHsize HH_count_child ownland log_wealth log_income log_saving goldquantity_HH ///
 dummylock dummydemonetisation dummymarriage dalits ///
 village1 village2 village3 village4 village5 village6 village7 village8 village9
 
@@ -75,7 +75,7 @@ w1_dsr1 w1_dsr1_2 w1_dsr1_3 w1_dsr1_4 ///
 head_female head_age head_age2 head_nonmarried ///
 head_occ1 head_occ2 head_occ4 head_occ5 head_occ6 head_occ7 ///
 head_educ2 head_educ3 ///
-HHsize HH_count_child ownland log_wealth log_income ///
+HHsize HH_count_child ownland log_wealth log_income log_saving goldquantity_HH ///
 dummydemonetisation dummymarriage dalits ///
 village1 village2 village3 village4 village5 village6 village7 village8 village9, q(.5) reps(50)
 
@@ -156,7 +156,7 @@ w5_dsr1 w5_dsr1_2 w5_dsr1_3 w5_dsr1_4 ///
 head_female head_age head_age2 head_nonmarried ///
 head_occ1 head_occ2 head_occ4 head_occ5 head_occ6 head_occ7 ///
 head_educ2 head_educ3 ///
-HHsize HH_count_child ownland log_wealth log_income ///
+HHsize HH_count_child ownland log_wealth log_income log_saving goldquantity_HH ///
 dummylock dummydemonetisation dummymarriage dalits ///
 village1 village2 village3 village4 village5 village6 village7 village8 village9
 
@@ -167,7 +167,7 @@ w5_dsr1 w5_dsr1_2 w5_dsr1_3 w5_dsr1_4 ///
 head_female head_age head_age2 head_nonmarried ///
 head_occ1 head_occ2 head_occ4 head_occ5 head_occ6 head_occ7 ///
 head_educ2 head_educ3 ///
-HHsize HH_count_child ownland log_wealth log_income ///
+HHsize HH_count_child ownland log_wealth log_income log_saving goldquantity_HH ///
 dummydemonetisation dummymarriage dalits ///
 village1 village2 village3 village4 village5 village6 village7 village8 village9, q(.5) reps(50)
 
@@ -241,7 +241,7 @@ dsr1 dsr1_2 dsr1_3 dsr1_4 ///
 head_female head_age head_age2 head_nonmarried ///
 head_occ1 head_occ2 head_occ4 head_occ5 head_occ6 head_occ7 ///
 head_educ2 head_educ3 ///
-HHsize HH_count_child ownland log_wealth log_income ///
+HHsize HH_count_child ownland log_wealth log_income log_saving goldquantity_HH ///
 dummylock dummydemonetisation dummymarriage dalits ///
 village1 village2 village3 village4 village5 village6 village7 village8 village9
 
@@ -252,7 +252,7 @@ dsr1 dsr1_2 dsr1_3 dsr1_4 ///
 head_female head_age head_age2 head_nonmarried ///
 head_occ1 head_occ2 head_occ4 head_occ5 head_occ6 head_occ7 ///
 head_educ2 head_educ3 ///
-HHsize HH_count_child ownland log_wealth log_income ///
+HHsize HH_count_child ownland log_wealth log_income log_saving goldquantity_HH ///
 dummydemonetisation dummymarriage dalits ///
 village1 village2 village3 village4 village5 village6 village7 village8 village9, q(.5) reps(50)
 
