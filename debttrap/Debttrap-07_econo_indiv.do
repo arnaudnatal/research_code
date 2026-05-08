@@ -39,18 +39,15 @@ ta dummyloans1 dummyloans2, row
 ****************************************
 use"panel_indiv_v2", clear
 
-* Selection
-drop if timeperiod==.
-keep if dummyloans1==1
-keep if dummyloans2==1
+
 
 * Graph
-ta dsr_r1
-ta dsr_r2
 lpoly dsr_r2 dsr_r1, kernel(epanechnikov) degree(4) ci noscatter  ///
 addplot(function y=x, range(0 1100) xline(30)) ///
 xtitle("DSR t") ytitle("DSR t+1") ///
-title("DSR") legend(off) name(dsr_all, replace)
+title("Individual level analysis") legend(off) name(dsr_all, replace)
+graph export "indiv.png", replace
+
 
 cls
 * Equilibrium
@@ -115,33 +112,37 @@ restore
 use"panel_indiv_v2", clear
 drop if timeperiod==.
 
-*
-keep HHID_panel INDID_panel HHFE INDIVFE year ///
-dsr_r1 dsr_r2 ///
-log_wealth log_income ownland ///
-HHsize HH_count_child nbworker_HH nbnonworker_HH ///
-female age nonmarried edulevel occupation ///
-dummylock dummydemonetisation dummymarriage ///
-dalits villageid
 
 * Panel
 xtset INDIVFE year
 
-* First diff
-gen d_dsr=dsr_r2-dsr_r1
 
-* FE
-xtreg d_dsr c.dsr_r1##c.dsr_r1##c.dsr_r1##c.dsr_r1 ///
-i.female c.age##c.age i.occupation i.edulevel i.nonmarried ///
-HHsize HH_count_child i.ownland log_wealth log_income ///
-i.dummylock i.dummydemonetisation i.dummymarriage i.villageid, fe
+global mean m_dsr1 m_dsr2 m_dsr3 m_dsr4 m_female m_age m_age2 m_nonmarried m_occ1 m_occ2 m_occ4 m_occ5 m_occ6 m_occ7 m_educ2 m_educ3 m_educ4 m_HHsize m_HH_count_child m_ownland m_log_wealth m_log_income m_dummylock m_dummydemonetisation m_dummymarriage
 
+
+***** Within housheold
+cls
 * Within HH FE
-xtreg d_dsr c.dsr_r1##c.dsr_r1##c.dsr_r1##c.dsr_r1 ///
-i.female c.age##c.age i.occupation i.edulevel i.nonmarried ///
-HHsize HH_count_child i.ownland log_wealth log_income ///
-i.dummylock i.dummydemonetisation i.dummymarriage i.villageid ///
-i.HHFE, fe
+xtreg d_dsr dsr1 dsr2 dsr3 dsr4 ///
+female age age2 nonmarried ///
+occ1 occ2 occ4 occ5 occ6 occ7 ///
+educ2 educ3 educ4 ///
+HHsize HH_count_child ownland log_wealth log_income ///
+dummylock dummydemonetisation dummymarriage dalits ///
+village1 village2 village3 village4 village5 village6 village7 village8 village9 ///
+$HH, fe
+
+* Within HH CRE
+cls
+xtreg d_dsr dsr1 dsr2 dsr3 dsr4 ///
+female age age2 nonmarried ///
+occ1 occ2 occ4 occ5 occ6 occ7 ///
+educ2 educ3 educ4 ///
+HHsize HH_count_child ownland log_wealth log_income ///
+dummylock dummydemonetisation dummymarriage dalits ///
+village1 village2 village3 village4 village5 village6 village7 village8 village9 ///
+$mean ///
+$HH, re
 
 ****************************************
 * END

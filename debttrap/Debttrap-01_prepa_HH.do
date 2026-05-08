@@ -12,7 +12,7 @@ do"C:/Users/Arnaud/Documents/GitHub/folderanalysis/$link.do"
 *-------------------------
 
 
-* Ajouter l'épargne pour aller dans la richesse.
+
 
 
 ****************************************
