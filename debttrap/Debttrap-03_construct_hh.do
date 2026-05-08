@@ -9,7 +9,7 @@ gl link = "debttrap"
 *-----
 *do "https://raw.githubusercontent.com/arnaudnatal/folderanalysis/main/$link.do"
 *cd"C:\Users\anatal\Documents\DT\Analysis"
-cd"C:\Users\Arnaud\Documents\MEGA\Research\Ongoing_Debttrap\Analysis"
+do"C:/Users/Arnaud/Documents/GitHub/folderanalysis/$link.do"
 *-------------------------
 
 
@@ -292,12 +292,17 @@ save"panel_HH_v2", replace
 use"panel_HH_v2", clear
 
 * Selection
+/*
 drop if timeperiod==.
 keep if dummyloans_HH1==1
 keep if dummyloans_HH2==1
 drop if year==2020
+*/
+ta year
+drop if year==2010
 
 keep HHID_panel HHFE year ///
+timeperiod dummyloans_HH1 dummyloans_HH2 ///
 dsr1 dsr2 ///
 dsr_r1 dsr_r2 ///
 dsr_rb1 dsr_rb2 ///

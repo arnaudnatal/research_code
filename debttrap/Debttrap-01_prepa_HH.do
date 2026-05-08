@@ -20,9 +20,14 @@ do"C:/Users/Arnaud/Documents/GitHub/folderanalysis/$link.do"
 ****************************************
 use"raw/RUME-HH", clear
 
+* Savings
+egen sav=rowtotal(savingsamount1 savingsamount2 savingsamount3)
+bysort HHID2010: egen saving=sum(sav)
+drop sav
+
 * To keep
-keep HHID2010 village ownland house housetitle
-fre house housetitle
+keep HHID2010 village ownland house housetitle saving
+fre house housetitle 
 duplicates drop
 decode village, gen(vi)
 drop village
@@ -105,8 +110,13 @@ fre livinghome
 drop if livinghome==3
 drop if livinghome==4
 
+* Savings
+egen sav=rowtotal(savingsamount1 savingsamount2 savingsamount3 savingsamount4)
+bysort HHID2016: egen saving=sum(sav)
+drop sav
+
 * To keep
-keep HHID2016 villagearea villageid dummydemonetisation dummymarriage ownland house housetitle
+keep HHID2016 villagearea villageid dummydemonetisation dummymarriage ownland house housetitle saving
 fre house housetitle
 duplicates drop
 sort dummymarriage
@@ -204,9 +214,13 @@ drop if livinghome==3
 drop if livinghome==4
 drop if dummylefthousehold==1
 
+* Savings
+egen sav=rowtotal(savingsamount1 savingsamount2 savingsamount3 savingsamount4)
+bysort HHID2020: egen saving=sum(sav)
+drop sav
 
 * To keep
-keep HHID2020 villagearea villageid dummymarriage ownland ownland house housetitle
+keep HHID2020 villagearea villageid dummymarriage ownland ownland house housetitle saving
 fre house housetitle
 destring house housetitle, replace
 destring ownland, replace
@@ -318,9 +332,13 @@ drop if livinghome==3
 drop if livinghome==4
 drop if dummylefthousehold==1
 
+* Savings
+egen sav=rowtotal(savingsamount1 savingsamount2 savingsamount3)
+bysort HHID2026: egen saving=sum(sav)
+drop sav
 
 * To keep
-keep HHID2026 HHID_panel villagearea villageid dummymarriage ownland ownland house housetitle caste
+keep HHID2026 HHID_panel villagearea villageid dummymarriage ownland ownland house housetitle caste saving
 fre house housetitle
 destring house housetitle, replace
 destring ownland, replace
@@ -457,7 +475,7 @@ ta caste
 
 
 *** Quanti 
-global quanti loanamount_HH imp1_ds_tot_HH imp1_is_tot_HH assets_ownland assets_total1000 assets_totalnoland1000 annualincome_HH remreceived_HH remsent_HH remittnet_HH expenses_educ expenses_food expenses_heal loanbalance_HH
+global quanti loanamount_HH imp1_ds_tot_HH imp1_is_tot_HH assets_ownland assets_total1000 assets_totalnoland1000 annualincome_HH remreceived_HH remsent_HH remittnet_HH expenses_educ expenses_food expenses_heal loanbalance_HH saving
 
 
 *** Deflate and round

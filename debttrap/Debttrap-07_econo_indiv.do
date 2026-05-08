@@ -8,7 +8,7 @@ gl link = "debttrap"
 *Econo indiv level
 *-----
 *do "https://raw.githubusercontent.com/arnaudnatal/folderanalysis/main/$link.do"
-cd"C:\Users\anatal\Documents\DT\Analysis"
+do"C:/Users/Arnaud/Documents/GitHub/folderanalysis/$link.do"
 *-------------------------
 
 

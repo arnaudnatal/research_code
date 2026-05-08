@@ -24,8 +24,13 @@ do"C:/Users/Arnaud/Documents/GitHub/folderanalysis/$link.do"
 ****************************************
 use"raw/NEEMSIS1-HH", clear
 
+* Savings
+egen sav=rowtotal(savingsamount1 savingsamount2 savingsamount3 savingsamount4)
+bysort HHID2016 INDID2016: egen saving=sum(sav)
+drop sav
+
 * To keep
-keep HHID2016 INDID2016 name sex age relationshiptohead maritalstatus livinghome
+keep HHID2016 INDID2016 name sex age relationshiptohead maritalstatus livinghome saving
 
 * Education
 merge 1:1 HHID2016 INDID2016 using "raw\NEEMSIS1-education", keepusing(edulevel)
@@ -99,8 +104,13 @@ save"_temp_NEEMSIS1indiv", replace
 ****************************************
 use"raw/NEEMSIS2-HH", clear
 
+* Savings
+egen sav=rowtotal(savingsamount1 savingsamount2 savingsamount3 savingsamount4)
+bysort HHID2020: egen saving=sum(sav)
+drop sav
+
 * To keep
-keep HHID2020 INDID2020 name sex age relationshiptohead maritalstatus livinghome dummylefthousehold
+keep HHID2020 INDID2020 name sex age relationshiptohead maritalstatus livinghome dummylefthousehold saving
 duplicates drop
 
 * Education
@@ -177,8 +187,14 @@ save"_temp_NEEMSIS2indiv", replace
 ****************************************
 use"raw/NEEMSIS3-HH", clear
 
+
+* Savings
+egen sav=rowtotal(savingsamount1 savingsamount2 savingsamount3)
+bysort HHID2026: egen saving=sum(sav)
+drop sav
+
 * To keep
-keep HHID2026 INDID2026 HHID_panel INDID_panel name sex age relationshiptohead maritalstatus livinghome dummylefthousehold caste
+keep HHID2026 INDID2026 HHID_panel INDID_panel name sex age relationshiptohead maritalstatus livinghome dummylefthousehold caste saving
 rename caste caste2025
 duplicates drop
 
@@ -283,7 +299,7 @@ order time, after(year)
 
 
 *** Quanti 
-global quanti annualincome_indiv loanamount_indiv imp1_ds_tot_indiv imp1_is_tot_indiv remreceived_indiv remsent_indiv remittnet_indiv loanbalance_indiv
+global quanti annualincome_indiv loanamount_indiv imp1_ds_tot_indiv imp1_is_tot_indiv remreceived_indiv remsent_indiv remittnet_indiv loanbalance_indiv saving
 
 *** Deflate and round
 foreach x in $quanti {
