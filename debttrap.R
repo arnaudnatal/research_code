@@ -20,7 +20,24 @@ df_conv <- data.frame(
   x = seq(D_p, 12, length.out = 300)
 )
 
-df_conv$y_conv <- 1 + 0.0005 * (df_conv$x - D_p)^4
+df_conv$y_conv <- 1+0.0005*(df_conv$x-D_p)^4
+
+
+# Courbe concave qui coupe la première bissectrice en D_c
+df_conc <- data.frame(
+  x = seq(0.5, 12, length.out = 300)
+)
+
+#df_conc$y_conc <- 11-0.2*(df_conc$x-7)^2
+  
+
+yDc <- 1 + 10/(1 + exp(-2*(D_c - 6)))  
+df_conc$y_conc <- yDc -
+  0.10 * (df_conc$x - 7)^2 +
+  0.10 * (D_c - 7)^2
+
+
+
 
 # Graphique
 ggplot(df, aes(x = x)) +
@@ -29,7 +46,10 @@ ggplot(df, aes(x = x)) +
   geom_line(aes(y = y_line), color = "black", linewidth = 1) +
   geom_line(data = df_conv, aes(x = x, y = y_conv),
             color = "blue", linewidth = 1.2, linetype = "dashed") +
+  geom_line(data = df_conc, aes(x = x, y = y_conc),
+            color = "purple", linewidth = 1.2) +
   
+    
   # Lignes verticales
   geom_vline(xintercept = OI, color = "darkgreen", linewidth = 1) +
   geom_vline(xintercept = c(D_p, D_m, D_c),
@@ -63,11 +83,14 @@ ggplot(df, aes(x = x)) +
   
   # Annotations
   annotate("text", x = 3.5, y = 2,
-           label = expression(g[2](D[t-1])),
+           label = expression(g[3](D[t-1])),
            color = "red", size = 4) +
   annotate("text", x = 11, y = 4,
            label = expression(g[1](D[t-1])),
            color = "blue", size = 4) +
+  annotate("text", x = 4, y = 11,
+           label = expression(g[2](D[t-1])),
+           color = "purple", size = 4) +
   annotate("text", x = 9.5, y = 10.5,
            label = expression(D[t+1] == D[t]),
            size = 4) +

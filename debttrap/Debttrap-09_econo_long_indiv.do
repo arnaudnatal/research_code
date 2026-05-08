@@ -149,10 +149,7 @@ use"panel_indiv_v3", clear
 
 * Selection
 ta timeperiod
-keep if timeperiod==1
-ta year
-ta dummyloans1
-ta dummyloans2
+drop if timeperiod==.
 keep if dummyloans1==1
 keep if dummyloans2==1
 
@@ -274,10 +271,7 @@ use"panel_indiv_v3", clear
 
 * Selection
 ta timeperiod
-keep if timeperiod==1
-ta year
-ta dummyloans1
-ta dummyloans2
+drop if timeperiod==.
 keep if dummyloans1==1
 keep if dummyloans2==1
 

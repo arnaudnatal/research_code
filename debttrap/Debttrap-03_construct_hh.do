@@ -63,6 +63,54 @@ gen log_`x'=log(`x')
 
 
 ********** Controls
+* Worker ratio
+gen worker=nbnonworker_HH/nbworker_HH
+ta nbnonworker_HH if nbworker_HH==0
+replace worker=nbnonworker_HH if nbworker_HH==0
+ta worker
+
+* Sexratio
+gen sexratio=nbmale/nbfemale
+replace sexratio=nbmale if nbfemale==0
+
+* Agri
+gen tot=incomeagri_HH+incomenonagri_HH
+gen shareagri=incomeagri_HH*100/tot
+replace shareagri=0 if incomeagri_HH==0
+ta shareagri
+*
+gen hhtype5=.
+label define hhtype5 1"Agri" 2"Non-agri" 3"Mix"
+label values hhtype5 hhtype5
+replace hhtype5=1 if shareagri>95
+replace hhtype5=2 if shareagri<5
+replace hhtype5=3 if shareagri<=95 & shareagri>=5
+ta hhtype5
+*
+gen hhtype10=.
+label define hhtype10 1"Agri" 2"Non-agri" 3"Mix"
+label values hhtype10 hhtype10
+replace hhtype10=1 if shareagri>90
+replace hhtype10=2 if shareagri<10
+replace hhtype10=3 if shareagri<=90 & shareagri>=10
+ta hhtype10
+*
+
+* Agri 2
+ta incagrise_HH
+gen agriHH=0 if incagrise_HH==0 & incagrise_HH!=.
+replace agriHH=1 if incagrise_HH>0 & incagrise_HH!=.
+ta agriHH
+
+ta ownland agriHH
+ta landstatus agriHH 
+ta hhtype5 agriHH
+ta hhtype10 agriHH
+
+* Agri 3
+gen log_incagri=log(1+incomeagri_HH)
+gen log_incnonagri=log(1+incomenonagri_HH)
+
 * panelvar
 encode HHID_panel, gen(panelvar)
 
@@ -115,7 +163,7 @@ drop caste caste2025
 * Vars
 encode HHID_panel, gen(HHFE)
 order HHFE, after(HHID_panel)
-gen log_wealth=log(assets_totalnoland1000)
+gen log_wealth=log(assets_total1000)
 gen log_wealthbis=log(assets_nolandnogold)
 gen log_income=log(income_HH)
 rename secondlockdownexposure dummylock
@@ -173,11 +221,19 @@ sum w1_`x', det
 replace w1_`x'=`r(p99)' if w1_`x'>`r(p99)' & w1_`x'!=.
 }
 
+
 foreach x in dsr isr {
 gen w5_`x'=`x'
 sum w5_`x', det
 replace w5_`x'=`r(p95)' if w5_`x'>`r(p95)' & w5_`x'!=.
 }
+
+/*
+gen w5_dsr=dsr
+replace w5_dsr=267 if w5_dsr>267 & w5_dsr!=.
+gen w5_isr=isr
+replace w5_isr=104 if w5_isr>104 & w5_isr!=.
+*/
 
 * Var
 global var dummyloans_HH dsr w1_dsr w5_dsr isr w1_isr w5_isr
@@ -273,6 +329,10 @@ replace `x'_t=`x'_t3 if timeperiod==3
 ta wealth_t timeperiod, m
 drop income_t1 income_t2 income_t3 wealth_t1 wealth_t2 wealth_t3
 
+*
+ta goldquantity_HH, m
+recode goldquantity_HH (.=0)
+
 save"panel_HH_v2", replace
 ****************************************
 * END
@@ -293,15 +353,6 @@ save"panel_HH_v2", replace
 use"panel_HH_v2", clear
 
 * Selection
-/*
-drop if timeperiod==.
-keep if dummyloans_HH1==1
-keep if dummyloans_HH2==1
-drop if year==2020
-*/
-ta year
-drop if year==2010
-
 keep HHID_panel HHFE year ///
 timeperiod dummyloans_HH1 dummyloans_HH2 ///
 dsr1 dsr2 ///
@@ -310,13 +361,12 @@ w5_dsr1 w5_dsr2 ///
 isr1 isr2 ///
 w1_isr1 w1_isr2 ///
 w5_isr1 w5_isr2 ///
-log_wealthbis log_income ///
+log_wealth log_income ///
 HHsize HH_count_child ///
 head_sex head_age head_mocc_occupation head_edulevel head_nonmarried ///
 dummylock dummydemonetisation dummymarriage ///
 dalits villageid ownland wealth_t income_t ///
-assets_nolandnogold goldquantity_HH saving
-rename log_wealthbis log_wealth
+assets_nolandnogold goldquantity_HH saving landstatus hhtype5 hhtype10 worker agriHH log_wealthbis sexratio log_incagri log_incnonagri
 
 * Vars
 ta saving
@@ -339,6 +389,14 @@ drop head_edulevel
 ta villageid, m
 ta villageid, gen(village)
 drop villageid
+
+ta hhtype5, m
+ta hhtype5, gen(hhtype5_)
+drop hhtype5
+
+ta hhtype10, m
+ta hhtype10, gen(hhtype10_)
+drop hhtype10
 
 * First diff
 gen diff_isr=isr2-isr1

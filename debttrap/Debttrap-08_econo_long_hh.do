@@ -16,7 +16,7 @@ do"C:/Users/Arnaud/Documents/GitHub/folderanalysis/$link.do"
 
 
 
-
+/*
 ****************************************
 * Winsorise 1%
 ****************************************
@@ -28,17 +28,19 @@ drop if timeperiod==.
 keep if dummyloans_HH1==1
 keep if dummyloans_HH2==1
 ta year
+drop if year==2020
 
-/*
+
 ********** Nonparametric regression
 lpoly w1_dsr2 w1_dsr1, kernel(epanechnikov) degree(4) ci noscatter ///
 addplot(function y=x, range(0 400) xline(30)) ///
 xtitle("DSR t") ytitle("DSR t+1") ///
+xlabel(0(50)450) ylabel(0(50)400) ///
 title("Household level analysis (w1)") legend(off) name(all, replace)
 graph export "graph/hh_w1_long.png", replace
-*/
 
-/*
+
+
 ********** Nonparametric equilibrium
 * All
 eq_lpoly w1_dsr2 w1_dsr1
@@ -56,7 +58,7 @@ keep if ownland==`i'
 eq_lpoly w1_dsr2 w1_dsr1
 restore
 }
-*/
+
 
 ********** Parametric
 xtset HHFE year
@@ -110,7 +112,7 @@ village1 village2 village3 village4 village5 village6 village7 village8 village9
 
 ****************************************
 * END
-
+*/
 
 
 
@@ -137,6 +139,9 @@ drop if timeperiod==.
 keep if dummyloans_HH1==1
 keep if dummyloans_HH2==1
 ta year
+*drop if year==2020
+fre landstatus
+replace ownland=1 if landstatus==3
 
 /*
 ********** Nonparametric regression
@@ -176,9 +181,24 @@ w5_dsr1 w5_dsr1_2 w5_dsr1_3 w5_dsr1_4 ///
 head_female head_age head_age2 head_nonmarried ///
 head_occ1 head_occ2 head_occ4 head_occ5 head_occ6 head_occ7 ///
 head_educ2 head_educ3 ///
-HHsize HH_count_child ownland log_wealth log_income log_saving goldquantity_HH ///
+HHsize HH_count_child worker sexratio ///
+log_wealth log_saving log_incagri log_incnonagri ///
 dummylock dummydemonetisation dummymarriage dalits ///
 village1 village2 village3 village4 village5 village6 village7 village8 village9, fe
+
+* Quantile
+/*
+mmqreg diff_w5_dsr ///
+w5_dsr1 w5_dsr1_2 w5_dsr1_3 w5_dsr1_4 ///
+head_female head_age head_age2 head_nonmarried ///
+head_occ1 head_occ2 head_occ4 head_occ5 head_occ6 head_occ7 ///
+head_educ2 head_educ3 ///
+HHsize HH_count_child ownland log_wealth log_income log_saving goldquantity_HH ///
+dummylock dummydemonetisation dummymarriage dalits ///
+village1 village2 village3 village4 village5 village6 village7 village8 village9 ///
+, abs(HHFE) q(.1 .2 .3 .4 .5 .6 .7 .8 .9) cluster(HHFE)
+*/
+
 
 * CRE (xthybrid)
 /*
@@ -187,7 +207,7 @@ w5_dsr1 w5_dsr1_2 w5_dsr1_3 w5_dsr1_4 ///
 head_female head_age head_age2 head_nonmarried ///
 head_occ1 head_occ2 head_occ4 head_occ5 head_occ6 head_occ7 ///
 head_educ2 head_educ3 ///
-HHsize HH_count_child ownland log_wealth log_income log_saving goldquantity_HH ///
+HHsize HH_count_child worker ownland log_wealth log_income log_saving goldquantity_HH ///
 dummylock dummydemonetisation dummymarriage dalits ///
 village1 village2 village3 village4 village5 village6 village7 village8 village9, cre clusterid(HHFE)
 */
@@ -219,7 +239,7 @@ village1 village2 village3 village4 village5 village6 village7 village8 village9
 
 ****************************************
 * END
-
+*/
 
 
 
@@ -239,6 +259,7 @@ drop if timeperiod==.
 keep if dummyloans_HH1==1
 keep if dummyloans_HH2==1
 ta year
+drop if year==2020
 
 /*
 ********** Nonparametric regression

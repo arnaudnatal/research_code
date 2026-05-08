@@ -225,6 +225,13 @@ use"panel_indiv_v1", clear
 merge m:1 HHID_panel INDID_panel year using"_temp_tp"
 drop _merge
 
+* Gold
+ta goldquantity_HH, m
+recode goldquantity_HH (.=0)
+
+ta goldquantity, m
+recode goldquantity (.=0)
+
 save"panel_indiv_v2", replace
 ****************************************
 * END
@@ -263,7 +270,7 @@ HHsize HH_count_child nbworker_HH nbnonworker_HH ///
 female age nonmarried edulevel occupation ///
 dummylock dummydemonetisation dummymarriage ///
 ownland villageid dalits ///
-assets_nolandnogold goldquantity_HH saving goldquantity
+assets_nolandnogold goldquantity_HH saving goldquantity landstatus
 rename log_wealthbis log_wealth
 
 * Vars

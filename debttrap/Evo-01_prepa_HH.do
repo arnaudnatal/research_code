@@ -26,8 +26,7 @@ bysort HHID2010: egen saving=sum(sav)
 drop sav
 
 * To keep
-keep HHID2010 village ownland house housetitle saving
-fre house housetitle 
+keep HHID2010 village ownland saving
 duplicates drop
 decode village, gen(vi)
 drop village
@@ -37,21 +36,25 @@ rename vi villageid
 duplicates drop
 count
 
-* Family compo
-merge 1:1 HHID2010 using "raw/RUME-family", keepusing(nbfemale nbmale HHsize HH_count_child typeoffamily head_sex head_age head_dummyworkedpastyear head_working_pop head_mocc_occupation head_edulevel)
-drop _merge
-
 * Add debt
-merge 1:1 HHID2010 using "raw/RUME-loans_HH", keepusing(nbloans_HH loanamount_HH imp1_ds_tot_HH imp1_is_tot_HH)
+merge 1:1 HHID2010 using "raw/RUME-loans_HH", keepusing(imp1_ds_tot_HH)
 drop _merge
 
 * Add loanbalance
 preserve
 use"raw/RUME-loans_mainloans_new", clear
-keep HHID2010 loanbalance2
-rename loanbalance2 loanbalance
-bys HHID2010: egen loanbalance_HH=sum(loanbalance)
-keep HHID2010 loanbalance_HH
+keep HHID2010 loanbalance2 loanlendercat
+rename loanbalance2 balance
+rename loanlendercat cat
+fre cat
+recode cat (2=1)
+gen bal_info=0
+replace bal_info=balance if cat==1
+gen bal_form=0
+replace bal_form=balance if cat==3
+bys HHID2010: egen bal_info_HH=sum(bal_info)
+bys HHID2010: egen bal_form_HH=sum(bal_form)
+keep HHID2010 bal_info_HH bal_form_HH
 duplicates drop
 save"_temp", replace
 restore
@@ -62,16 +65,12 @@ drop _merge
 merge 1:1 HHID2010 using "raw/RUME-assets", keepusing(assets_total1000 assets_totalnoland1000 expenses_educ expenses_food expenses_heal assets_nolandnogold)
 drop _merge
 
-* Add land
-merge 1:1 HHID2010 using "raw/RUME-land"
-drop _merge
-
 * Add income
-merge 1:1 HHID2010 using "raw/RUME-occup_HH", keepusing(annualincome_HH nbworker_HH nbnonworker_HH incomeagri_HH incomenonagri_HH incagrise_HH)
+merge 1:1 HHID2010 using "raw/RUME-occup_HH", keepusing(annualincome_HH   incomeagri_HH incomenonagri_HH)
 drop _merge
 
 * Add remittances
-merge 1:1 HHID2010 using "raw/RUME-transferts_HH", keepusing(remreceived_HH remsent_HH remittnet_HH)
+merge 1:1 HHID2010 using "raw/RUME-transferts_HH", keepusing(remreceived_HH remsent_HH)
 drop _merge
 
 * Add gold
@@ -116,10 +115,8 @@ bysort HHID2016: egen saving=sum(sav)
 drop sav
 
 * To keep
-keep HHID2016 villagearea villageid dummydemonetisation dummymarriage ownland house housetitle saving
-fre house housetitle
+keep HHID2016 villagearea villageid ownland saving
 duplicates drop
-sort dummymarriage
 decode villagearea, gen(vi)
 drop villagearea
 rename vi area
@@ -137,21 +134,25 @@ ta village livingarea
 duplicates drop
 count
 
-* Family compo
-merge 1:1 HHID2016 using "raw/NEEMSIS1-family", keepusing(nbfemale nbmale HHsize HH_count_child typeoffamily head_sex head_age head_dummyworkedpastyear head_working_pop head_mocc_occupation head_edulevel head_maritalstatus)
-drop _merge
-
 * Add debt
-merge 1:1 HHID2016 using "raw/NEEMSIS1-loans_HH", keepusing(nbloans_HH loanamount_HH imp1_ds_tot_HH imp1_is_tot_HH)
+merge 1:1 HHID2016 using "raw/NEEMSIS1-loans_HH", keepusing(imp1_ds_tot_HH)
 drop _merge
 
 * Add loanbalance
 preserve
 use"raw/NEEMSIS1-loans_mainloans_new", clear
-keep HHID2016 loanbalance2
-rename loanbalance2 loanbalance
-bys HHID2016: egen loanbalance_HH=sum(loanbalance)
-keep HHID2016 loanbalance_HH
+keep HHID2016 loanbalance2 lender_cat
+rename loanbalance2 balance
+rename lender_cat cat
+fre cat
+recode cat (2=1)
+gen bal_info=0
+replace bal_info=balance if cat==1
+gen bal_form=0
+replace bal_form=balance if cat==3
+bys HHID2016: egen bal_info_HH=sum(bal_info)
+bys HHID2016: egen bal_form_HH=sum(bal_form)
+keep HHID2016 bal_info_HH bal_form_HH
 duplicates drop
 save"_temp", replace
 restore
@@ -162,16 +163,12 @@ drop _merge
 merge 1:1 HHID2016 using "raw/NEEMSIS1-assets", keepusing(assets_total1000 assets_totalnoland1000 expenses_educ expenses_food expenses_heal assets_nolandnogold)
 drop _merge
 
-* Add land
-merge 1:1 HHID2016 using "raw/NEEMSIS1-land"
-drop _merge
-
 * Add income
-merge 1:1 HHID2016 using "raw/NEEMSIS1-occup_HH", keepusing(annualincome_HH nbworker_HH nbnonworker_HH incomeagri_HH incomenonagri_HH incagrise_HH)
+merge 1:1 HHID2016 using "raw/NEEMSIS1-occup_HH", keepusing(annualincome_HH   incomeagri_HH incomenonagri_HH)
 drop _merge
 
 * Add remittances
-merge 1:1 HHID2016 using "raw/NEEMSIS1-transferts_HH", keepusing(remreceived_HH remsent_HH remittnet_HH)
+merge 1:1 HHID2016 using "raw/NEEMSIS1-transferts_HH", keepusing(remreceived_HH remsent_HH)
 drop _merge
 
 * Add gold
@@ -220,9 +217,7 @@ bysort HHID2020: egen saving=sum(sav)
 drop sav
 
 * To keep
-keep HHID2020 villagearea villageid dummymarriage ownland ownland house housetitle saving
-fre house housetitle
-destring house housetitle, replace
+keep HHID2020 villagearea villageid ownland saving
 destring ownland, replace
 duplicates drop
 decode villagearea, gen(vi)
@@ -252,21 +247,25 @@ ta village livingarea
 duplicates drop
 count
 
-* Family compo
-merge 1:1 HHID2020 using "raw/NEEMSIS2-family", keepusing(nbfemale nbmale HHsize HH_count_child typeoffamily head_sex head_age head_dummyworkedpastyear head_working_pop head_mocc_occupation head_edulevel head_maritalstatus)
-drop _merge
-
 * Add debt
-merge 1:1 HHID2020 using "raw/NEEMSIS2-loans_HH", keepusing(nbloans_HH loanamount_HH imp1_ds_tot_HH imp1_is_tot_HH)
+merge 1:1 HHID2020 using "raw/NEEMSIS2-loans_HH", keepusing(imp1_ds_tot_HH)
 drop _merge
 
 * Add loanbalance
 preserve
 use"raw/NEEMSIS2-loans_mainloans_new", clear
-keep HHID2020 loanbalance2
-rename loanbalance2 loanbalance
-bys HHID2020: egen loanbalance_HH=sum(loanbalance)
-keep HHID2020 loanbalance_HH
+keep HHID2020 loanbalance2 lender_cat
+rename loanbalance2 balance
+rename lender_cat cat
+fre cat
+recode cat (2=1)
+gen bal_info=0
+replace bal_info=balance if cat==1
+gen bal_form=0
+replace bal_form=balance if cat==3
+bys HHID2020: egen bal_info_HH=sum(bal_info)
+bys HHID2020: egen bal_form_HH=sum(bal_form)
+keep HHID2020 bal_info_HH bal_form_HH
 duplicates drop
 save"_temp", replace
 restore
@@ -277,24 +276,16 @@ drop _merge
 merge 1:1 HHID2020 using "raw/NEEMSIS2-assets", keepusing(assets_total1000 assets_totalnoland1000 assets_ownland expenses_educ expenses_food expenses_heal assets_nolandnogold)
 drop _merge
 
-* Add land
-merge 1:1 HHID2020 using "raw/NEEMSIS2-land"
-drop _merge
-
 * Add income
-merge 1:1 HHID2020 using "raw/NEEMSIS2-occup_HH", keepusing(annualincome_HH nbworker_HH nbnonworker_HH incomeagri_HH incomenonagri_HH incagrise_HH)
+merge 1:1 HHID2020 using "raw/NEEMSIS2-occup_HH", keepusing(annualincome_HH   incomeagri_HH incomenonagri_HH )
 drop _merge
 
 * Add remittances
-merge 1:1 HHID2020 using "raw/NEEMSIS2-transferts_HH", keepusing(remreceived_HH remsent_HH remittnet_HH)
+merge 1:1 HHID2020 using "raw/NEEMSIS2-transferts_HH", keepusing(remreceived_HH remsent_HH )
 drop _merge
 
 * Add gold
 merge 1:1 HHID2020 using "raw/NEEMSIS2-gold_HH", keepusing(goldquantity_HH)
-drop _merge
-
-* Add Covid-19
-merge 1:1 HHID2020 using "raw/NEEMSIS2-covid", keepusing(secondlockdownexposure)
 drop _merge
 
 * Panel
@@ -338,9 +329,7 @@ bysort HHID2026: egen saving=sum(sav)
 drop sav
 
 * To keep
-keep HHID2026 HHID_panel villagearea villageid dummymarriage ownland ownland house housetitle caste saving
-fre house housetitle
-destring house housetitle, replace
+keep HHID2026 HHID_panel villagearea villageid ownland saving caste
 destring ownland, replace
 duplicates drop
 decode villagearea, gen(vi)
@@ -354,21 +343,25 @@ rename vi villageid
 duplicates drop
 count
 
-* Family compo
-merge 1:1 HHID2026 using "raw/NEEMSIS3-family", keepusing(nbfemale nbmale HHsize HH_count_child typeoffamily head_sex head_age head_dummyworkedpastyear head_working_pop head_mocc_occupation head_edulevel head_maritalstatus)
-drop _merge
-
 * Add debt
-merge 1:1 HHID2026 using "raw/NEEMSIS3-loans_HH", keepusing(nbloans_HH loanamount_HH imp1_ds_tot_HH imp1_is_tot_HH)
+merge 1:1 HHID2026 using "raw/NEEMSIS3-loans_HH", keepusing(imp1_ds_tot_HH)
 drop _merge
 
 * Add loanbalance
 preserve
 use"raw/NEEMSIS3-loans_mainloans_new", clear
-keep HHID2026 loanbalance2
-rename loanbalance2 loanbalance
-bys HHID2026: egen loanbalance_HH=sum(loanbalance)
-keep HHID2026 loanbalance_HH
+keep HHID2026 loanbalance2 lender_cat
+rename loanbalance2 balance
+rename lender_cat cat
+fre cat
+recode cat (2=1)
+gen bal_info=0
+replace bal_info=balance if cat==1
+gen bal_form=0
+replace bal_form=balance if cat==3
+bys HHID2026: egen bal_info_HH=sum(bal_info)
+bys HHID2026: egen bal_form_HH=sum(bal_form)
+keep HHID2026 bal_info_HH bal_form_HH
 duplicates drop
 save"_temp", replace
 restore
@@ -379,16 +372,12 @@ drop _merge
 merge 1:1 HHID2026 using "raw/NEEMSIS3-assets", keepusing(assets_total1000 assets_totalnoland1000 assets_ownland expenses_educ expenses_food expenses_heal assets_nolandnogold)
 drop _merge
 
-* Add land
-merge 1:1 HHID2026 using "raw/NEEMSIS3-land"
-drop _merge
-
 * Add income
-merge 1:1 HHID2026 using "raw/NEEMSIS3-occup_HH", keepusing(annualincome_HH nbworker_HH nbnonworker_HH incomeagri_HH incomenonagri_HH incagrise_HH)
+merge 1:1 HHID2026 using "raw/NEEMSIS3-occup_HH", keepusing(annualincome_HH  incomeagri_HH incomenonagri_HH)
 drop _merge
 
 * Add remittances
-merge 1:1 HHID2026 using "raw/NEEMSIS3-transferts_HH", keepusing(remreceived_HH remsent_HH remittnet_HH)
+merge 1:1 HHID2026 using "raw/NEEMSIS3-transferts_HH", keepusing(remreceived_HH remsent_HH)
 drop _merge
 
 * Add gold
@@ -426,45 +415,6 @@ append using "_temp_NEEMSIS3"
 append using "_temp_NEEMSIS1"
 append using "_temp_RUME"
 
-
-fre house
-label define house 1"Own house" 2"Joint house" 3"Family property" 4"Rental" 77"Others", modify
-label values house house
-ta house year, m
-*2020
-list HHID_panel year if house==., clean noobs
-
-drop if HHID_panel=="GOV66" & year==2020  
-drop if HHID_panel=="KUV66" & year==2020
-drop if HHID_panel=="GOV64" & year==2020
-drop if HHID_panel=="GOV67" & year==2020
-drop if HHID_panel=="KUV67" & year==2020
-drop if HHID_panel=="GOV65" & year==2020
-
-
-fre housetitle
-label values housetitle housetitle
-ta housetitle year, m
-
-fre typeoffamily
-
-ta livingarea year
-
-* Dummy panel
-bysort HHID_panel: gen n=_N
-recode n (1=0) (2=0) (3=1)
-rename n dummypanel
-ta dummypanel
-order HHID_panel HHID year dummypanel
-sort HHID_panel year
-
-* Shock
-recode dummydemonetisation (.=0)
-recode dummymarriage (.=0)
-fre secondlockdownexposure
-recode secondlockdownexposure (.=1)
-
-
 * Caste
 merge 1:1 HHID_panel year using "raw/JatisCastePanel"
 rename jatisn jatis
@@ -475,7 +425,7 @@ ta caste
 
 
 *** Quanti 
-global quanti loanamount_HH imp1_ds_tot_HH imp1_is_tot_HH assets_ownland assets_total1000 assets_totalnoland1000 annualincome_HH remreceived_HH remsent_HH remittnet_HH expenses_educ expenses_food expenses_heal loanbalance_HH saving assets_nolandnogold incomeagri_HH incomenonagri_HH incagrise_HH
+global quanti saving bal_info_HH bal_form_HH expenses_educ expenses_food expenses_heal assets_ownland assets_nolandnogold assets_total1000 assets_totalnoland1000 incomeagri_HH incomenonagri_HH annualincome_HH remreceived_HH remsent_HH imp1_ds_tot_HH
 
 *** Deflate and round
 foreach x in $quanti {
@@ -496,14 +446,8 @@ label define time 1"2010" 2"2016-2017" 3"2020-2021" 4"2025-2026"
 label values time time
 order time, after(year)
 
-*** Clean
-recode head_mocc_occupation (.=0)
-recode ownland (.=0)
-mdesc
 
 ********** Selection
-drop if housetitle==.
-
 drop if HHID_panel=="GOV66" & year==2020  
 drop if HHID_panel=="KUV66" & year==2020
 drop if HHID_panel=="GOV64" & year==2020
@@ -511,6 +455,107 @@ drop if HHID_panel=="GOV67" & year==2020
 drop if HHID_panel=="KUV67" & year==2020
 drop if HHID_panel=="GOV65" & year==2020
 
-save"panel_HH_v0", replace
+
+******** Vars
+*
+gen dsr=imp1_ds_tot_HH*100/annualincome_HH
+
+
+*
+recode ownland (.=0)
+
+
+*
+encode HHID_panel, gen(HHFE)
+order HHFE, after(HHID_panel)
+
+*
+ta villageid
+drop village
+replace villageid="ELA" if villageid=="ELANTHALMPATTU"
+replace villageid="GOV" if villageid=="GOVULAPURAM"
+replace villageid="KAR" if villageid=="KARUMBUR"
+replace villageid="KOR" if villageid=="KORATTORE"
+replace villageid="KUV" if villageid=="KUVAGAM"
+replace villageid="MANAM" if villageid=="MANAMTHAVIZHINTHAPUTHUR"
+replace villageid="MAN" if villageid=="MANAPAKKAM"
+replace villageid="NAT" if villageid=="NATHAM"
+replace villageid="ORA" if villageid=="ORAIYURE"
+replace villageid="SEM" if villageid=="SEMAKOTTAI"
+ta villageid
+rename villageid village
+encode village, gen(villageid)
+drop village
+
+
+* Dalits
+gen dalits=.
+replace dalits=1 if caste==1
+replace dalits=1 if caste2025==2
+replace dalits=0 if caste==2
+replace dalits=0 if caste==3
+replace dalits=0 if caste2025!=2 & caste2025!=.
+label define dalits 1"Dalits" 0"Non-dalits"
+label values dalits dalits
+
+ta caste2025 dalits
+drop caste caste2025
+
+* Clean
+drop area livingarea assets_ownland
+recode bal_info_HH bal_form_HH expenses_educ expenses_food expenses_heal assets_nolandnogold assets_total1000 assets_totalnoland1000 goldquantity_HH (.=0)
+drop jatis
+
+order HHID_panel HHFE HHID year time villageid dalits
+sort HHID_panel year
+
+* Total expenses
+egen expenses=rowtotal(expenses_educ expenses_food expenses_heal)
+
+save"panel_evo_v0", replace
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+****************************************
+* PCA
+****************************************
+use"panel_evo_v0", clear
+
+
+* Std
+foreach x in saving bal_info_HH bal_form_HH expenses assets_nolandnogold goldquantity_HH incomeagri_HH incomenonagri_HH remreceived_HH remsent_HH dsr {
+egen std_`x'=std(`x')
+}
+
+global var saving dsr expenses assets_nolandnogold goldquantity_HH incomeagri_HH incomenonagri_HH remreceived_HH remsent_HH ownland
+global varstd std_saving std_dsr std_expenses std_assets_nolandnogold std_goldquantity_HH std_incomeagri_HH std_incomenonagri_HH std_remreceived_HH std_remsent_HH ownland
+
+*
+factortest $varstd
+minap $varstd 
+pca $varstd, comp(4)
+predict a1 a2 a3 a4
+
+cluster wardslinkage a1 a2 a3 a4, measure(Euclidean)
+cluster dendrogram, cutnumber(50)
+cluster gen clust3=groups(3)
+
+ta clust3
+tabstat $var, stat(mean p50) by(clust3)
+
+ta clust3 year, col nofreq
+ta clust3 dalit, exp cchi2 chi2
+
+
+
+
 ****************************************
 * END

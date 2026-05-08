@@ -31,17 +31,18 @@ ta dummyloans2
 keep if dummyloans1==1
 keep if dummyloans2==1
 
+/*
 ********** Nonparametric regression
 lpoly w1_dsr2 w1_dsr1, kernel(epanechnikov) degree(4) ci noscatter  ///
 addplot(function y=x, range(0 1100) xline(30)) ///
 xtitle("DSR t") ytitle("DSR t+1") ///
 title("Individual level analysis (w1)") legend(off) name(dsr_all, replace)
 graph export "graph/indiv_w1.png", replace
+*/
 
-
+/*
 ********** Equilibrium
 eq_lpoly w1_dsr2 w1_dsr1
-
 * By gender
 foreach i in 0 1 {
 preserve
@@ -49,15 +50,6 @@ keep if female==`i'
 eq_lpoly w1_dsr2 w1_dsr1
 restore
 }
-
-* By marital status
-foreach i in 0 1 {
-preserve
-keep if nonmarried==`i'
-eq_lpoly w1_dsr2 w1_dsr1
-restore
-}
-
 * By occupation
 foreach i in 1 2 3 4 6 7 {
 preserve
@@ -65,7 +57,6 @@ keep if occ`i'==1
 eq_lpoly w1_dsr2 w1_dsr1
 restore
 }
-
 * By education
 foreach i in 1 2 3 4 {
 preserve
@@ -73,7 +64,7 @@ keep if educ`i'==1
 eq_lpoly w1_dsr2 w1_dsr1
 restore
 }
-
+*/
 
 ********** Parametric OLS
 * Individual
@@ -115,6 +106,7 @@ dummydemonetisation dummymarriage dalits ///
 village1 village2 village3 village4 village5 village6 village7 village8 village9 i.HHFE,  q(.5) reps(50)
 
 * Graph
+/*
 import excel "Qreg.xlsx", sheet("Sheet1") firstrow clear
 *
 twoway ///
@@ -125,8 +117,7 @@ xtitle("Quantile") ///
 title("Diff dsr") ///
 legend(order(2 "Effect" 1 "95 per cent confidence interval") pos(6) col(2)) ///
 name(indv, replace) scale (1.2) aspectratio(3)
-
-
+*/
 ****************************************
 * END
 
@@ -159,17 +150,18 @@ ta dummyloans2
 keep if dummyloans1==1
 keep if dummyloans2==1
 
+/*
 ********** Nonparametric regression
 lpoly w5_dsr2 w5_dsr1, kernel(epanechnikov) degree(4) ci noscatter  ///
 addplot(function y=x, range(0 300) xline(30)) ///
 xtitle("DSR t") ytitle("DSR t+1") ///
 title("Individual level analysis (w5)") legend(off) name(dsr_all, replace)
 graph export "graph/indiv_w5.png", replace
+*/
 
-
+/*
 ********** Equilibrium
 eq_lpoly w5_dsr2 w5_dsr1
-
 * By gender
 foreach i in 0 1 {
 preserve
@@ -177,15 +169,6 @@ keep if female==`i'
 eq_lpoly w5_dsr2 w5_dsr1
 restore
 }
-
-* By marital status
-foreach i in 0 1 {
-preserve
-keep if nonmarried==`i'
-eq_lpoly w5_dsr2 w5_dsr1
-restore
-}
-
 * By occupation
 foreach i in 1 2 3 4 6 7 {
 preserve
@@ -193,7 +176,6 @@ keep if occ`i'==1
 eq_lpoly w5_dsr2 w5_dsr1
 restore
 }
-
 * By education
 foreach i in 1 2 3 4 {
 preserve
@@ -201,7 +183,7 @@ keep if educ`i'==1
 eq_lpoly w5_dsr2 w5_dsr1
 restore
 }
-
+*/
 
 ********** Parametric OLS
 * Individual
@@ -243,6 +225,7 @@ dummydemonetisation dummymarriage dalits ///
 village1 village2 village3 village4 village5 village6 village7 village8 village9 i.HHFE,  q(.5) reps(50)
 
 * Graph
+/*
 import excel "Qreg.xlsx", sheet("Sheet1") firstrow clear
 *
 twoway ///
@@ -253,7 +236,7 @@ xtitle("Quantile") ///
 title("Diff dsr") ///
 legend(order(2 "Effect" 1 "95 per cent confidence interval") pos(6) col(2)) ///
 name(indv, replace) scale (1.2) aspectratio(3)
-
+*/
 ****************************************
 * END
 
@@ -267,7 +250,7 @@ name(indv, replace) scale (1.2) aspectratio(3)
 
 
 
-/*
+
 ****************************************
 * No winsorise
 ****************************************
@@ -282,17 +265,18 @@ ta dummyloans2
 keep if dummyloans1==1
 keep if dummyloans2==1
 
+/*
 ********** Nonparametric regression
 lpoly dsr2 dsr1, kernel(epanechnikov) degree(4) ci noscatter  ///
 addplot(function y=x, range(0 300) xline(30)) ///
 xtitle("DSR t") ytitle("DSR t+1") ///
 title("Individual level analysis (nw)") legend(off) name(dsr_all, replace)
 graph export "graph/indiv_nw.png", replace
+*/
 
-
+/*
 ********** Equilibrium
 eq_lpoly dsr2 dsr1
-
 * By gender
 foreach i in 0 1 {
 preserve
@@ -300,15 +284,6 @@ keep if female==`i'
 eq_lpoly dsr2 dsr1
 restore
 }
-
-* By marital status
-foreach i in 0 1 {
-preserve
-keep if nonmarried==`i'
-eq_lpoly dsr2 dsr1
-restore
-}
-
 * By occupation
 foreach i in 1 2 3 4 6 7 {
 preserve
@@ -316,7 +291,6 @@ keep if occ`i'==1
 eq_lpoly dsr2 dsr1
 restore
 }
-
 * By education
 foreach i in 1 2 3 4 {
 preserve
@@ -324,7 +298,7 @@ keep if educ`i'==1
 eq_lpoly dsr2 dsr1
 restore
 }
-
+*/
 
 ********** Parametric OLS
 * Individual
@@ -366,6 +340,7 @@ dummydemonetisation dummymarriage dalits ///
 village1 village2 village3 village4 village5 village6 village7 village8 village9 i.HHFE,  q(.5) reps(50)
 
 * Graph
+/*
 import excel "Qreg.xlsx", sheet("Sheet1") firstrow clear
 *
 twoway ///
@@ -376,7 +351,7 @@ xtitle("Quantile") ///
 title("Diff dsr") ///
 legend(order(2 "Effect" 1 "95 per cent confidence interval") pos(6) col(2)) ///
 name(indv, replace) scale (1.2) aspectratio(3)
-
+*/
 ****************************************
 * END
-*/
+
