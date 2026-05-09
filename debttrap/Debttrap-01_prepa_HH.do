@@ -105,6 +105,16 @@ save"_temp_RUME", replace
 ****************************************
 use"raw/NEEMSIS1-HH", clear
 
+* Marriage
+gen marriage_m=0
+replace marriage_m=1 if howpaymarriage!=. & sex==1
+bys HHID2016: egen dummymarriage_m=sum(marriage_m)
+replace dummymarriage_m=1 if dummymarriage_m>1 & dummymarriage_m!=.
+gen marriage_f=0
+replace marriage_f=1 if howpaymarriage!=. & sex==2
+bys HHID2016: egen dummymarriage_f=sum(marriage_f)
+replace dummymarriage_f=1 if dummymarriage_f>1 & dummymarriage_f!=.
+
 * Drop migrants
 fre livinghome
 drop if livinghome==3
@@ -116,10 +126,9 @@ bysort HHID2016: egen saving=sum(sav)
 drop sav
 
 * To keep
-keep HHID2016 villagearea villageid dummydemonetisation dummymarriage ownland house housetitle saving
+keep HHID2016 villagearea villageid dummydemonetisation dummymarriage_m dummymarriage_f ownland house housetitle saving
 fre house housetitle
 duplicates drop
-sort dummymarriage
 decode villagearea, gen(vi)
 drop villagearea
 rename vi area
@@ -207,6 +216,15 @@ save"_temp_NEEMSIS1", replace
 ****************************************
 use"raw/NEEMSIS2-HH", clear
 
+* Marriage
+gen marriage_m=0
+replace marriage_m=1 if dummy_marriedlist==1 & sex==1
+bys HHID2020: egen dummymarriage_m=sum(marriage_m)
+replace dummymarriage_m=1 if dummymarriage_m>1 & dummymarriage_m!=.
+gen marriage_f=0
+replace marriage_f=1 if dummy_marriedlist==1 & sex==2
+bys HHID2020: egen dummymarriage_f=sum(marriage_f)
+replace dummymarriage_f=1 if dummymarriage_f>1 & dummymarriage_f!=.
 
 * Drop migrants
 fre livinghome
@@ -220,7 +238,7 @@ bysort HHID2020: egen saving=sum(sav)
 drop sav
 
 * To keep
-keep HHID2020 villagearea villageid dummymarriage ownland ownland house housetitle saving
+keep HHID2020 villagearea villageid dummymarriage_f dummymarriage_m ownland ownland house housetitle saving
 fre house housetitle
 destring house housetitle, replace
 destring ownland, replace
@@ -325,6 +343,15 @@ save"_temp_NEEMSIS2", replace
 ****************************************
 use"raw/NEEMSIS3-HH", clear
 
+* Marriage
+gen marriage_m=0
+replace marriage_m=1 if howpaymarriage!="" & sex==1
+bys HHID2026: egen dummymarriage_m=sum(marriage_m)
+replace dummymarriage_m=1 if dummymarriage_m>1 & dummymarriage_m!=.
+gen marriage_f=0
+replace marriage_f=1 if howpaymarriage!="" & sex==2
+bys HHID2026: egen dummymarriage_f=sum(marriage_f)
+replace dummymarriage_f=1 if dummymarriage_f>1 & dummymarriage_f!=.
 
 * Drop migrants
 fre livinghome
@@ -338,7 +365,7 @@ bysort HHID2026: egen saving=sum(sav)
 drop sav
 
 * To keep
-keep HHID2026 HHID_panel villagearea villageid dummymarriage ownland ownland house housetitle caste saving
+keep HHID2026 HHID_panel villagearea villageid dummymarriage_m dummymarriage_f ownland ownland house housetitle caste saving
 fre house housetitle
 destring house housetitle, replace
 destring ownland, replace
@@ -441,7 +468,6 @@ drop if HHID_panel=="GOV67" & year==2020
 drop if HHID_panel=="KUV67" & year==2020
 drop if HHID_panel=="GOV65" & year==2020
 
-
 fre housetitle
 label values housetitle housetitle
 ta housetitle year, m
@@ -460,7 +486,7 @@ sort HHID_panel year
 
 * Shock
 recode dummydemonetisation (.=0)
-recode dummymarriage (.=0)
+recode dummymarriage_m dummymarriage_f (.=0)
 fre secondlockdownexposure
 recode secondlockdownexposure (.=1)
 

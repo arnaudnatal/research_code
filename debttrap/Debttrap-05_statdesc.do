@@ -17,196 +17,160 @@ do"C:/Users/Arnaud/Documents/GitHub/folderanalysis/$link.do"
 
 
 
+****************************************
+* Household level : cumulative level
+****************************************
+use"panel_HH_v3", clear
+
+* Selection
+fre timeperiod
+keep if timeperiod==2
+keep if dummyloans_HH1==1
+keep if dummyloans_HH2==1
+
+
+* Cumulative no wins
+cumul dsr1, gen(c_dsr1)
+cumul dsr2, gen(c_dsr2)
+twoway ///
+(line c_dsr1 dsr1, sort xline(40)) ///
+(line c_dsr2 dsr2, sort) ///
+, xtitle("Debt service ratio (%)") ytitle("Cum. % of pop.") title("No winsorizing") ylabel(0(.1)1) ///
+legend(order(1 "2016-2017" 2 "2020-2021") pos(6) col(2)) name(nw, replace) scale(1.1)
+
+* Cumulative 1%
+cumul w1_dsr1, gen(c_w1_dsr1)
+cumul w1_dsr2, gen(c_w1_dsr2)
+twoway ///
+(line c_w1_dsr1 w1_dsr1, sort xline(40)) ///
+(line c_w1_dsr2 w1_dsr2, sort) ///
+, xtitle("Debt service ratio (%)") ytitle("Cum. % of pop.") title("1% winsorizing") ylabel(0(.1)1) ///
+legend(order(1 "2016-2017" 2 "2020-2021") pos(6) col(2)) name(w1, replace) scale(1.1)
+
+* Cumulative 2.5%
+cumul w2_dsr1, gen(c_w2_dsr1)
+cumul w2_dsr2, gen(c_w2_dsr2)
+twoway ///
+(line c_w2_dsr1 w2_dsr1, sort xline(40)) ///
+(line c_w2_dsr2 w2_dsr2, sort) ///
+, xtitle("Debt service ratio (%)") ytitle("Cum. % of pop.") title("2.5% winsorizing") ylabel(0(.1)1) ///
+legend(order(1 "2016-2017" 2 "2020-2021") pos(6) col(2)) name(w2, replace) scale(1.1)
+
+* Cumulative 5%
+cumul w5_dsr1, gen(c_w5_dsr1)
+cumul w5_dsr2, gen(c_w5_dsr2)
+twoway ///
+(line c_w5_dsr1 w5_dsr1, sort xline(40)) ///
+(line c_w5_dsr2 w5_dsr2, sort) ///
+, xtitle("Debt service ratio (%)") ytitle("Cum. % of pop.") title("5% winsorizing") ylabel(0(.1)1) ///
+legend(order(1 "2016-2017" 2 "2020-2021") pos(6) col(2)) name(w5, replace) scale(1.1)
+
+* All
+grc1leg nw w1 w2 w5, col(2)
+graph export "graph/cum_dsr.png", replace
 
 ****************************************
-* Household level
+* END
+
+
+
+
+
+
+
+
+
+
 ****************************************
+* Individual level : cumulative level
+****************************************
+use"panel_indiv_v3", clear
+
+* Selection
+fre timeperiod
+keep if timeperiod==1
+keep if dummyloans1==1
+keep if dummyloans2==1
+
+
+* Cumulative no wins
+cumul dsr1, gen(c_dsr1)
+cumul dsr2, gen(c_dsr2)
+twoway ///
+(line c_dsr1 dsr1, sort xline(40)) ///
+(line c_dsr2 dsr2, sort) ///
+, xtitle("Debt service ratio (%)") ytitle("Cum. % of pop.") title("No winsorizing") ylabel(0(.1)1) ///
+legend(order(1 "2016-2017" 2 "2020-2021") pos(6) col(2)) name(nw, replace) scale(1.1)
+
+* Cumulative 1%
+cumul w1_dsr1, gen(c_w1_dsr1)
+cumul w1_dsr2, gen(c_w1_dsr2)
+twoway ///
+(line c_w1_dsr1 w1_dsr1, sort xline(40)) ///
+(line c_w1_dsr2 w1_dsr2, sort) ///
+, xtitle("Debt service ratio (%)") ytitle("Cum. % of pop.") title("1% winsorizing") ylabel(0(.1)1) ///
+legend(order(1 "2016-2017" 2 "2020-2021") pos(6) col(2)) name(w1, replace) scale(1.1)
+
+* Cumulative 2.5%
+cumul w2_dsr1, gen(c_w2_dsr1)
+cumul w2_dsr2, gen(c_w2_dsr2)
+twoway ///
+(line c_w2_dsr1 w2_dsr1, sort xline(40)) ///
+(line c_w2_dsr2 w2_dsr2, sort) ///
+, xtitle("Debt service ratio (%)") ytitle("Cum. % of pop.") title("2.5% winsorizing") ylabel(0(.1)1) ///
+legend(order(1 "2016-2017" 2 "2020-2021") pos(6) col(2)) name(w2, replace) scale(1.1)
+
+* Cumulative 5%
+cumul w5_dsr1, gen(c_w5_dsr1)
+cumul w5_dsr2, gen(c_w5_dsr2)
+twoway ///
+(line c_w5_dsr1 w5_dsr1, sort xline(40)) ///
+(line c_w5_dsr2 w5_dsr2, sort) ///
+, xtitle("Debt service ratio (%)") ytitle("Cum. % of pop.") title("5% winsorizing") ylabel(0(.1)1) ///
+legend(order(1 "2016-2017" 2 "2020-2021") pos(6) col(2)) name(w5, replace) scale(1.1)
+
+* All
+grc1leg nw w1 w2 w5, col(2)
+graph export "graph/cum_dsr_indiv.png", replace
+
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Transition
+****************************************
+
+********** Household level
 use"panel_HH_v2", clear
 
 keep HHID_panel year dummyloans_HH
 rename dummyloans_HH debt
 reshape wide debt, i(HHID_panel) j(year)
-
 *
-ta debt2010
-ta debt2016
-ta debt2020
-ta debt2025
-*
-ta debt2010 debt2016
-ta debt2016 debt2020
-ta debt2020 debt2025
+ta debt2016 debt2020, row
 
-/*
-. ta debt2010
-
-  2010 debt |      Freq.     Percent        Cum.
-------------+-----------------------------------
-        Yes |        405      100.00      100.00
-------------+-----------------------------------
-      Total |        405      100.00
-
-. ta debt2016
-
-  2016 debt |      Freq.     Percent        Cum.
-------------+-----------------------------------
-         No |          5        1.02        1.02
-        Yes |        487       98.98      100.00
-------------+-----------------------------------
-      Total |        492      100.00
-
-. ta debt2020
-
-  2020 debt |      Freq.     Percent        Cum.
-------------+-----------------------------------
-         No |          4        0.64        0.64
-        Yes |        622       99.36      100.00
-------------+-----------------------------------
-      Total |        626      100.00
-
-. ta debt2025
-
-  2025 debt |      Freq.     Percent        Cum.
-------------+-----------------------------------
-         No |          4        1.97        1.97
-        Yes |        199       98.03      100.00
-------------+-----------------------------------
-      Total |        203      100.00
-
-. *
-. ta debt2010 debt2016
-
-           |       2016 debt
- 2010 debt |        No        Yes |     Total
------------+----------------------+----------
-       Yes |         4        384 |       388 
------------+----------------------+----------
-     Total |         4        384 |       388 
-
-
-. ta debt2016 debt2020
-
-           |       2020 debt
- 2016 debt |        No        Yes |     Total
------------+----------------------+----------
-        No |         0          5 |         5 
-       Yes |         3        477 |       480 
------------+----------------------+----------
-     Total |         3        482 |       485 
-
-
-. ta debt2020 debt2025
-
-           |       2025 debt
- 2020 debt |        No        Yes |     Total
------------+----------------------+----------
-       Yes |         4        199 |       203 
------------+----------------------+----------
-     Total |         4        199 |       203 
-*/
-
-
-****************************************
-* END
-
-
-
-
-
-
-
-
-****************************************
-* Household level
-****************************************
-use"panel_HH_v2", clear
-
-keep HHID_panel year log_dsr
-reshape wide log_dsr, i(HHID_panel) j(year)
-
-gen path=.
-replace path=1 if log_dsr2016>log_dsr2010 & log_dsr2020>log_dsr2016
-replace path=2 if log_dsr2016>log_dsr2010 & log_dsr2020<log_dsr2016
-replace path=3 if log_dsr2016<log_dsr2010 & log_dsr2020>log_dsr2016
-replace path=4 if log_dsr2016<log_dsr2010 & log_dsr2020<log_dsr2016 
-
-ta path
-
-****************************************
-* END
-
-
-
-
-****************************************
-* Individual level
-****************************************
+********** Individual level
 use"panel_indiv_v2", clear
 
-keep HHID_panel INDID_panel year dummyloans_indiv
-rename dummyloans_indiv debt
+keep HHID_panel INDID_panel year dummyloans
+rename dummyloans debt
+drop if year==2025
 reshape wide debt, i(HHID_panel INDID_panel) j(year)
-
 *
-ta debt2016
-ta debt2020
-ta debt2025
-*
-ta debt2016 debt2020
-ta debt2020 debt2025
-
-/*
-. ta debt2016
-
-  2016 debt |      Freq.     Percent        Cum.
-------------+-----------------------------------
-         No |        765       45.29       45.29
-        Yes |        924       54.71      100.00
-------------+-----------------------------------
-      Total |      1,689      100.00
-
-. ta debt2020
-
-  2020 debt |      Freq.     Percent        Cum.
-------------+-----------------------------------
-         No |        948       41.93       41.93
-        Yes |      1,313       58.07      100.00
-------------+-----------------------------------
-      Total |      2,261      100.00
-
-. ta debt2025
-
-  2025 debt |      Freq.     Percent        Cum.
-------------+-----------------------------------
-         No |        295       43.13       43.13
-        Yes |        389       56.87      100.00
-------------+-----------------------------------
-      Total |        684      100.00
-
-. *
-. ta debt2016 debt2020
-
-           |       2020 debt
- 2016 debt |        No        Yes |     Total
------------+----------------------+----------
-        No |       342        207 |       549 
-       Yes |       163        667 |       830 
------------+----------------------+----------
-     Total |       505        874 |     1,379 
-
-
-. ta debt2020 debt2025
-
-           |       2025 debt
- 2020 debt |        No        Yes |     Total
------------+----------------------+----------
-        No |       113         97 |       210 
-       Yes |        80        271 |       351 
------------+----------------------+----------
-     Total |       193        368 |       561 
-*/
-
-
+ta debt2016 debt2020, row
 
 
 ****************************************
@@ -216,3 +180,48 @@ ta debt2020 debt2025
 
 
 
+
+
+
+
+****************************************
+* Mobilities
+****************************************
+
+********** Household
+use"panel_HH_v2", clear
+drop if year==2010
+drop if year==2025
+bys HHID_panel: gen n=_N
+keep if n==2
+drop n
+keep HHID_panel year dummyloans_HH dsr
+reshape wide dummyloans_HH dsr, i(HHID_panel) j(year)
+keep if dummyloans_HH2016==1 & dummyloans_HH2020==1
+drop dummyloans_HH2016 dummyloans_HH2020
+*
+xtile dsr2016_q=dsr2016, n(5)
+xtile dsr2020_q=dsr2020, n(5)
+*
+ta dsr2016_q dsr2020_q, row nofreq
+
+
+********** Individual
+use"panel_indiv_v2", clear
+drop if year==2025
+bys HHID_panel INDID_panel: gen n=_N
+keep if n==2
+drop n
+keep HHID_panel INDID_panel year dummyloans dsr
+reshape wide dummyloans dsr, i(HHID_panel INDID_panel) j(year)
+keep if dummyloans2016==1 & dummyloans2020==1
+drop dummyloans2016 dummyloans2020
+*
+xtile dsr2016_q=dsr2016, n(5)
+xtile dsr2020_q=dsr2020, n(5)
+*
+ta dsr2016_q dsr2020_q, row nofreq
+
+
+****************************************
+* END

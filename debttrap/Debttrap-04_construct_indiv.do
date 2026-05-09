@@ -173,8 +173,13 @@ sum w5_`x', det
 replace w5_`x'=`r(p95)' if w5_`x'>`r(p95)' & w5_`x'!=.
 }
 
+gen w2_dsr=dsr
+replace w2_dsr=562 if w2_dsr>562 & w2_dsr!=.
+gen w2_isr=isr
+replace w2_isr=208 if w2_isr>208 & w2_isr!=.
+
 * Var
-global var dummyloans dsr w1_dsr w5_dsr isr w1_isr w5_isr ///
+global var dummyloans dsr w1_dsr w2_dsr w5_dsr isr w1_isr w2_isr w5_isr ///
 edulevel occupation age agri nonmarried
 
 * Time period 1: 2016 to 2020
@@ -261,9 +266,11 @@ keep HHID_panel INDID_panel HHFE INDIVFE year ///
 timeperiod dummyloans1 dummyloans2 ///
 dsr1 dsr2 ///
 w1_dsr1 w1_dsr2 ///
+w2_dsr1 w2_dsr2 ///
 w5_dsr1 w5_dsr2 ///
 isr1 isr2 ///
 w1_isr1 w1_isr2 ///
+w2_isr1 w2_isr2 ///
 w5_isr1 w5_isr2 ///
 log_wealthbis log_income ///
 HHsize HH_count_child nbworker_HH nbnonworker_HH ///
@@ -271,7 +278,6 @@ female age nonmarried edulevel occupation ///
 dummylock dummydemonetisation dummymarriage ///
 ownland villageid dalits ///
 assets_nolandnogold goldquantity_HH saving goldquantity landstatus
-rename log_wealthbis log_wealth
 
 * Vars
 ta saving
@@ -297,10 +303,12 @@ ta HHFE, gen(HH)
 * First diff
 gen diff_isr=isr2-isr1
 gen diff_w1_isr=w1_isr2-w1_isr1
+gen diff_w2_isr=w2_isr2-w2_isr1
 gen diff_w5_isr=w5_isr2-w5_isr1
 
 gen diff_dsr=dsr2-dsr1
 gen diff_w1_dsr=w1_dsr2-w1_dsr1
+gen diff_w2_dsr=w2_dsr2-w2_dsr1
 gen diff_w5_dsr=w5_dsr2-w5_dsr1
 
 * Quadratic terms
@@ -311,6 +319,10 @@ gen dsr1_4=dsr1*dsr1*dsr1*dsr1
 gen w1_dsr1_2=w1_dsr1*w1_dsr1
 gen w1_dsr1_3=w1_dsr1*w1_dsr1*w1_dsr1
 gen w1_dsr1_4=w1_dsr1*w1_dsr1*w1_dsr1*w1_dsr1
+
+gen w2_dsr1_2=w2_dsr1*w2_dsr1
+gen w2_dsr1_3=w2_dsr1*w2_dsr1*w2_dsr1
+gen w2_dsr1_4=w2_dsr1*w2_dsr1*w2_dsr1*w2_dsr1
 
 gen w5_dsr1_2=w5_dsr1*w5_dsr1
 gen w5_dsr1_3=w5_dsr1*w5_dsr1*w5_dsr1
@@ -323,6 +335,10 @@ gen isr1_4=isr1*isr1*isr1*isr1
 gen w1_isr1_2=w1_isr1*w1_isr1
 gen w1_isr1_3=w1_isr1*w1_isr1*w1_isr1
 gen w1_isr1_4=w1_isr1*w1_isr1*w1_isr1*w1_isr1
+
+gen w2_isr1_2=w2_isr1*w2_isr1
+gen w2_isr1_3=w2_isr1*w2_isr1*w2_isr1
+gen w2_isr1_4=w2_isr1*w2_isr1*w2_isr1*w2_isr1
 
 gen w5_isr1_2=w5_isr1*w5_isr1
 gen w5_isr1_3=w5_isr1*w5_isr1*w5_isr1

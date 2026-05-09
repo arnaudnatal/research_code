@@ -39,6 +39,8 @@ rename imp1_is_tot_HH intserv
 
 * Income
 gen income_HH=annualincome_HH+remreceived_HH
+ta income_HH
+*replace income_HH=5000 if income_HH<5000
 
 * DSR
 gen dsr=(debtserv*100)/income_HH
@@ -77,7 +79,8 @@ replace sexratio=nbmale if nbfemale==0
 gen tot=incomeagri_HH+incomenonagri_HH
 gen shareagri=incomeagri_HH*100/tot
 replace shareagri=0 if incomeagri_HH==0
-ta shareagri
+gen sharenonagri=incomenonagri_HH*100/tot
+replace sharenonagri=0 if incomenonagri_HH==0
 *
 gen hhtype5=.
 label define hhtype5 1"Agri" 2"Non-agri" 3"Mix"
@@ -95,6 +98,13 @@ replace hhtype10=2 if shareagri<10
 replace hhtype10=3 if shareagri<=90 & shareagri>=10
 ta hhtype10
 *
+gen hhtype33=.
+label define hhtype33 1"Agri" 2"Non-agri" 3"Mix"
+label values hhtype33 hhtype33
+replace hhtype33=1 if shareagri>66
+replace hhtype33=2 if shareagri<33
+replace hhtype33=3 if shareagri<=66 & shareagri>=33
+ta hhtype33
 
 * Agri 2
 ta incagrise_HH
@@ -111,9 +121,6 @@ ta hhtype10 agriHH
 gen log_incagri=log(1+incomeagri_HH)
 gen log_incnonagri=log(1+incomenonagri_HH)
 
-* panelvar
-encode HHID_panel, gen(panelvar)
-
 * Head sex
 gen head_female=.
 replace head_female=0 if head_sex==1
@@ -128,18 +135,6 @@ ta head_mocc_occupation, gen(head_occ)
 * Head edulevel
 recode head_edulevel (3=2) (4=2) (5=2)
 ta head_edulevel, gen(head_educ)
-
-* Head age
-tabstat head_age, stat(n mean sd q)
-gen head_agesq=head_age*head_age
-gen head_agecat=0
-replace head_agecat=1 if head_age<40
-replace head_agecat=2 if head_age>=40 & head_age<50
-replace head_agecat=3 if head_age>=50 & head_age<60
-replace head_agecat=4 if head_age>=60
-label define head_agecat 1"Less 40" 2"40-50" 3"50-60" 4"60 or more"
-label values head_agecat head_agecat
-ta head_agecat, gen(head_agecat)
 
 * Head maritalstatus
 gen head_nonmarried=head_maritalstatus
@@ -168,15 +163,16 @@ gen log_wealthbis=log(assets_nolandnogold)
 gen log_income=log(income_HH)
 rename secondlockdownexposure dummylock
 recode dummylock (1=0) (2=1) (3=1)
-ta villageid
 drop village
 replace villageid="ELA" if villageid=="ELANTHALMPATTU"
 replace villageid="GOV" if villageid=="GOVULAPURAM"
+replace villageid="GOV" if villageid=="2"
 replace villageid="KAR" if villageid=="KARUMBUR"
 replace villageid="KOR" if villageid=="KORATTORE"
 replace villageid="KUV" if villageid=="KUVAGAM"
 replace villageid="MANAM" if villageid=="MANAMTHAVIZHINTHAPUTHUR"
 replace villageid="MAN" if villageid=="MANAPAKKAM"
+replace villageid="MAN" if villageid=="6"
 replace villageid="NAT" if villageid=="NATHAM"
 replace villageid="ORA" if villageid=="ORAIYURE"
 replace villageid="SEM" if villageid=="SEMAKOTTAI"
@@ -228,15 +224,14 @@ sum w5_`x', det
 replace w5_`x'=`r(p95)' if w5_`x'>`r(p95)' & w5_`x'!=.
 }
 
-/*
-gen w5_dsr=dsr
-replace w5_dsr=267 if w5_dsr>267 & w5_dsr!=.
-gen w5_isr=isr
-replace w5_isr=104 if w5_isr>104 & w5_isr!=.
-*/
+gen w2_dsr=dsr
+replace w2_dsr=267 if w2_dsr>267 & w2_dsr!=.
+gen w2_isr=isr
+replace w2_isr=104 if w2_isr>104 & w2_isr!=.
+
 
 * Var
-global var dummyloans_HH dsr w1_dsr w5_dsr isr w1_isr w5_isr
+global var dummyloans_HH dsr w1_dsr w2_dsr w5_dsr isr w1_isr w2_isr w5_isr 
 
 * Time period 1: 2010 to 2016
 preserve
@@ -357,18 +352,22 @@ keep HHID_panel HHFE year ///
 timeperiod dummyloans_HH1 dummyloans_HH2 ///
 dsr1 dsr2 ///
 w1_dsr1 w1_dsr2 ///
+w2_dsr1 w2_dsr2 ///
 w5_dsr1 w5_dsr2 ///
 isr1 isr2 ///
 w1_isr1 w1_isr2 ///
+w2_isr1 w2_isr2 ///
 w5_isr1 w5_isr2 ///
 log_wealth log_income ///
 HHsize HH_count_child ///
 head_sex head_age head_mocc_occupation head_edulevel head_nonmarried ///
-dummylock dummydemonetisation dummymarriage ///
+dummylock dummydemonetisation dummymarriage_m dummymarriage_f ///
 dalits villageid ownland wealth_t income_t ///
-assets_nolandnogold goldquantity_HH saving landstatus hhtype5 hhtype10 worker agriHH log_wealthbis sexratio log_incagri log_incnonagri
+assets_nolandnogold goldquantity_HH saving landstatus hhtype5 hhtype10 hhtype33 worker agriHH log_wealthbis sexratio log_incagri log_incnonagri shareagri sharenonagri
 
 * Vars
+ta villageid
+
 ta saving
 gen log_saving=log(1+saving)
 drop saving
@@ -392,19 +391,22 @@ drop villageid
 
 ta hhtype5, m
 ta hhtype5, gen(hhtype5_)
-drop hhtype5
 
 ta hhtype10, m
 ta hhtype10, gen(hhtype10_)
-drop hhtype10
+
+replace shareagri=shareagri/10
+ta shareagri
 
 * First diff
 gen diff_isr=isr2-isr1
 gen diff_w1_isr=w1_isr2-w1_isr1
+gen diff_w2_isr=w2_isr2-w2_isr1
 gen diff_w5_isr=w5_isr2-w5_isr1
 
 gen diff_dsr=dsr2-dsr1
 gen diff_w1_dsr=w1_dsr2-w1_dsr1
+gen diff_w2_dsr=w2_dsr2-w2_dsr1
 gen diff_w5_dsr=w5_dsr2-w5_dsr1
 
 * Quadratic terms
@@ -415,6 +417,10 @@ gen dsr1_4=dsr1*dsr1*dsr1*dsr1
 gen w1_dsr1_2=w1_dsr1*w1_dsr1
 gen w1_dsr1_3=w1_dsr1*w1_dsr1*w1_dsr1
 gen w1_dsr1_4=w1_dsr1*w1_dsr1*w1_dsr1*w1_dsr1
+
+gen w2_dsr1_2=w2_dsr1*w2_dsr1
+gen w2_dsr1_3=w2_dsr1*w2_dsr1*w2_dsr1
+gen w2_dsr1_4=w2_dsr1*w2_dsr1*w2_dsr1*w2_dsr1
 
 gen w5_dsr1_2=w5_dsr1*w5_dsr1
 gen w5_dsr1_3=w5_dsr1*w5_dsr1*w5_dsr1
@@ -427,6 +433,10 @@ gen isr1_4=isr1*isr1*isr1*isr1
 gen w1_isr1_2=w1_isr1*w1_isr1
 gen w1_isr1_3=w1_isr1*w1_isr1*w1_isr1
 gen w1_isr1_4=w1_isr1*w1_isr1*w1_isr1*w1_isr1
+
+gen w2_isr1_2=w2_isr1*w2_isr1
+gen w2_isr1_3=w2_isr1*w2_isr1*w2_isr1
+gen w2_isr1_4=w2_isr1*w2_isr1*w2_isr1*w2_isr1
 
 gen w5_isr1_2=w5_isr1*w5_isr1
 gen w5_isr1_3=w5_isr1*w5_isr1*w5_isr1
