@@ -209,6 +209,21 @@ save"panel_HH_v1", replace
 ****************************************
 use"panel_HH_v1", clear
 
+/*
+NW 1500
+W1 415
+W2 300
+W2.5 267
+W3 245
+W4 200
+W5 178
+W6 152
+W7 137
+W8 125
+W9 110
+W10 102
+*/
+
 * Niveau
 recode dsr isr (.=0)
 foreach x in dsr isr {
