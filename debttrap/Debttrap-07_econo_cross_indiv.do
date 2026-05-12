@@ -113,6 +113,13 @@ keep if dalits==`i'
 eq_lpoly w5_dsr2 w5_dsr1
 restore
 }
+* By agri
+foreach i in 0 1 {
+preserve
+keep if agriHH==`i'
+eq_lpoly w5_dsr2 w5_dsr1
+restore
+}
 
 ****************************************
 * END

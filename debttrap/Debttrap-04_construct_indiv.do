@@ -132,7 +132,7 @@ drop if HHID_panel=="KAR23" & INDID_panel=="Ind_2" & year==2025 & working_pop==3
 * Merge
 preserve
 use"panel_HH_v1", clear
-keep HHID_panel year villageid HHFE log_wealth log_income dummylock landstatus drywetownland crops_cat sizeownland sizeleaseland nbcrops assets_nolandnogold log_wealthbis
+keep HHID_panel year villageid HHFE log_wealth log_income dummylock landstatus drywetownland crops_cat sizeownland sizeleaseland nbcrops assets_nolandnogold log_wealthbis ownland shareagri agriHH
 duplicates drop
 save"_temp", replace
 restore
@@ -277,7 +277,7 @@ HHsize HH_count_child nbworker_HH nbnonworker_HH ///
 female age nonmarried edulevel occupation ///
 dummylock dummydemonetisation dummymarriage ///
 ownland villageid dalits ///
-assets_nolandnogold goldquantity_HH saving goldquantity landstatus
+assets_nolandnogold goldquantity_HH saving goldquantity landstatus shareagri agriHH
 
 * Vars
 ta saving

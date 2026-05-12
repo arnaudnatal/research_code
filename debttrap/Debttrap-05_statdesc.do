@@ -28,46 +28,66 @@ keep if timeperiod==2
 keep if dummyloans_HH1==1
 keep if dummyloans_HH2==1
 
+/*
+W1 415
+W2 300
+W3 245
+W4 200
+W5 178
+W6 152
+W7 137
+*/
 
-* Cumulative no wins
+forvalues i=1/2 {
+*
+gen w1dsr`i'=dsr`i'
+replace w1dsr`i'=415 if w1dsr`i'>415
+*
+gen w2dsr`i'=dsr`i'
+replace w2dsr`i'=300 if w2dsr`i'>300
+*
+gen w3dsr`i'=dsr`i'
+replace w3dsr`i'=245 if w3dsr`i'>245
+*
+gen w4dsr`i'=dsr`i'
+replace w4dsr`i'=200 if w4dsr`i'>200
+*
+gen w5dsr`i'=dsr`i'
+replace w5dsr`i'=178 if w5dsr`i'>178
+*
+gen w6dsr`i'=dsr`i'
+replace w6dsr`i'=152 if w6dsr`i'>152
+*
+gen w7dsr`i'=dsr`i'
+replace w7dsr`i'=137 if w7dsr`i'>137
+}
+
+* Cumulative
 cumul dsr1, gen(c_dsr1)
 cumul dsr2, gen(c_dsr2)
+forvalues i=1/7 {
+cumul w`i'dsr1, gen(c_w`i'dsr1)
+cumul w`i'dsr2, gen(c_w`i'dsr2)
+}
+
+* No wins
 twoway ///
-(line c_dsr1 dsr1, sort xline(40)) ///
+(line c_dsr1 dsr1, sort xline(30)) ///
 (line c_dsr2 dsr2, sort) ///
 , xtitle("Debt service ratio (%)") ytitle("Cum. % of pop.") title("No winsorizing") ylabel(0(.1)1) ///
-legend(order(1 "2016-2017" 2 "2020-2021") pos(6) col(2)) name(nw, replace) scale(1.1)
+legend(order(1 "2016-2017" 2 "2020-2021") pos(6) col(4)) name(nw, replace) scale(1.1)
 
-* Cumulative 1%
-cumul w1_dsr1, gen(c_w1_dsr1)
-cumul w1_dsr2, gen(c_w1_dsr2)
+* Winsorizing
+forvalues i=1/7 {
 twoway ///
-(line c_w1_dsr1 w1_dsr1, sort xline(40)) ///
-(line c_w1_dsr2 w1_dsr2, sort) ///
-, xtitle("Debt service ratio (%)") ytitle("Cum. % of pop.") title("1% winsorizing") ylabel(0(.1)1) ///
-legend(order(1 "2016-2017" 2 "2020-2021") pos(6) col(2)) name(w1, replace) scale(1.1)
+(line c_w`i'dsr1 w`i'dsr1, sort xline(30)) ///
+(line c_w`i'dsr2 w`i'dsr2, sort) ///
+, xtitle("Debt service ratio (%)") ytitle("Cum. % of pop.") title("`i'% winsorizing") ylabel(0(.1)1) ///
+legend(order(1 "2016-2017" 2 "2020-2021") pos(6) col(4)) name(w`i', replace) scale(1.1)
+}
 
-* Cumulative 2.5%
-cumul w2_dsr1, gen(c_w2_dsr1)
-cumul w2_dsr2, gen(c_w2_dsr2)
-twoway ///
-(line c_w2_dsr1 w2_dsr1, sort xline(40)) ///
-(line c_w2_dsr2 w2_dsr2, sort) ///
-, xtitle("Debt service ratio (%)") ytitle("Cum. % of pop.") title("2.5% winsorizing") ylabel(0(.1)1) ///
-legend(order(1 "2016-2017" 2 "2020-2021") pos(6) col(2)) name(w2, replace) scale(1.1)
-
-* Cumulative 5%
-cumul w5_dsr1, gen(c_w5_dsr1)
-cumul w5_dsr2, gen(c_w5_dsr2)
-twoway ///
-(line c_w5_dsr1 w5_dsr1, sort xline(40)) ///
-(line c_w5_dsr2 w5_dsr2, sort) ///
-, xtitle("Debt service ratio (%)") ytitle("Cum. % of pop.") title("5% winsorizing") ylabel(0(.1)1) ///
-legend(order(1 "2016-2017" 2 "2020-2021") pos(6) col(2)) name(w5, replace) scale(1.1)
-
-* All
-grc1leg nw w1 w2 w5, col(2)
-graph export "graph/cum_dsr.png", replace
+grc1leg nw w1 w2 w3 w4 w5 w6 w7, col(4)
+graph export "graph/cum_dsr_hh.png", replace
 
 ****************************************
 * END
@@ -92,45 +112,65 @@ keep if timeperiod==1
 keep if dummyloans1==1
 keep if dummyloans2==1
 
+/*
+W1 1540
+W2 1060
+W3 800
+W4 615
+W5 485
+W6 412
+W7 366
+*/
 
-* Cumulative no wins
+forvalues i=1/2 {
+*
+gen w1dsr`i'=dsr`i'
+replace w1dsr`i'=1540 if w1dsr`i'>1540
+*
+gen w2dsr`i'=dsr`i'
+replace w2dsr`i'=1060 if w2dsr`i'>1060
+*
+gen w3dsr`i'=dsr`i'
+replace w3dsr`i'=800 if w3dsr`i'>800
+*
+gen w4dsr`i'=dsr`i'
+replace w4dsr`i'=615 if w4dsr`i'>615
+*
+gen w5dsr`i'=dsr`i'
+replace w5dsr`i'=485 if w5dsr`i'>485
+*
+gen w6dsr`i'=dsr`i'
+replace w6dsr`i'=412 if w6dsr`i'>412
+*
+gen w7dsr`i'=dsr`i'
+replace w7dsr`i'=366 if w7dsr`i'>366
+}
+
+* Cumulative
 cumul dsr1, gen(c_dsr1)
 cumul dsr2, gen(c_dsr2)
+forvalues i=1/7 {
+cumul w`i'dsr1, gen(c_w`i'dsr1)
+cumul w`i'dsr2, gen(c_w`i'dsr2)
+}
+
+* No wins
 twoway ///
-(line c_dsr1 dsr1, sort xline(40)) ///
+(line c_dsr1 dsr1, sort xline(30)) ///
 (line c_dsr2 dsr2, sort) ///
 , xtitle("Debt service ratio (%)") ytitle("Cum. % of pop.") title("No winsorizing") ylabel(0(.1)1) ///
-legend(order(1 "2016-2017" 2 "2020-2021") pos(6) col(2)) name(nw, replace) scale(1.1)
+legend(order(1 "2016-2017" 2 "2020-2021") pos(6) col(4)) name(nw, replace) scale(1.1)
 
-* Cumulative 1%
-cumul w1_dsr1, gen(c_w1_dsr1)
-cumul w1_dsr2, gen(c_w1_dsr2)
+* Winsorizing
+forvalues i=1/7 {
 twoway ///
-(line c_w1_dsr1 w1_dsr1, sort xline(40)) ///
-(line c_w1_dsr2 w1_dsr2, sort) ///
-, xtitle("Debt service ratio (%)") ytitle("Cum. % of pop.") title("1% winsorizing") ylabel(0(.1)1) ///
-legend(order(1 "2016-2017" 2 "2020-2021") pos(6) col(2)) name(w1, replace) scale(1.1)
+(line c_w`i'dsr1 w`i'dsr1, sort xline(30)) ///
+(line c_w`i'dsr2 w`i'dsr2, sort) ///
+, xtitle("Debt service ratio (%)") ytitle("Cum. % of pop.") title("`i'% winsorizing") ylabel(0(.1)1) ///
+legend(order(1 "2016-2017" 2 "2020-2021") pos(6) col(4)) name(w`i', replace) scale(1.1)
+}
 
-* Cumulative 2.5%
-cumul w2_dsr1, gen(c_w2_dsr1)
-cumul w2_dsr2, gen(c_w2_dsr2)
-twoway ///
-(line c_w2_dsr1 w2_dsr1, sort xline(40)) ///
-(line c_w2_dsr2 w2_dsr2, sort) ///
-, xtitle("Debt service ratio (%)") ytitle("Cum. % of pop.") title("2.5% winsorizing") ylabel(0(.1)1) ///
-legend(order(1 "2016-2017" 2 "2020-2021") pos(6) col(2)) name(w2, replace) scale(1.1)
-
-* Cumulative 5%
-cumul w5_dsr1, gen(c_w5_dsr1)
-cumul w5_dsr2, gen(c_w5_dsr2)
-twoway ///
-(line c_w5_dsr1 w5_dsr1, sort xline(40)) ///
-(line c_w5_dsr2 w5_dsr2, sort) ///
-, xtitle("Debt service ratio (%)") ytitle("Cum. % of pop.") title("5% winsorizing") ylabel(0(.1)1) ///
-legend(order(1 "2016-2017" 2 "2020-2021") pos(6) col(2)) name(w5, replace) scale(1.1)
-
-* All
-grc1leg nw w1 w2 w5, col(2)
+grc1leg nw w1 w2 w3 w4 w5 w6 w7, col(4)
 graph export "graph/cum_dsr_indiv.png", replace
 
 ****************************************
@@ -160,7 +200,7 @@ keep HHID_panel year dummyloans_HH
 rename dummyloans_HH debt
 reshape wide debt, i(HHID_panel) j(year)
 *
-ta debt2016 debt2020, row
+ta debt2016 debt2020, row cell
 
 ********** Individual level
 use"panel_indiv_v2", clear
@@ -170,7 +210,7 @@ rename dummyloans debt
 drop if year==2025
 reshape wide debt, i(HHID_panel INDID_panel) j(year)
 *
-ta debt2016 debt2020, row
+ta debt2016 debt2020, row cell
 
 
 ****************************************
@@ -203,8 +243,7 @@ drop dummyloans_HH2016 dummyloans_HH2020
 xtile dsr2016_q=dsr2016, n(5)
 xtile dsr2020_q=dsr2020, n(5)
 *
-ta dsr2016_q dsr2020_q, row nofreq
-
+ta dsr2016_q dsr2020_q, row 
 
 ********** Individual
 use"panel_indiv_v2", clear
@@ -220,7 +259,7 @@ drop dummyloans2016 dummyloans2020
 xtile dsr2016_q=dsr2016, n(5)
 xtile dsr2020_q=dsr2020, n(5)
 *
-ta dsr2016_q dsr2020_q, row nofreq
+ta dsr2016_q dsr2020_q, row 
 
 
 ****************************************
