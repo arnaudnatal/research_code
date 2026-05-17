@@ -86,7 +86,7 @@ twoway ///
 legend(order(1 "2016-2017" 2 "2020-2021") pos(6) col(4)) name(w`i', replace) scale(1.1)
 }
 
-grc1leg nw w1 w2 w3 w4 w5 w6 w7, col(4)
+grc1leg nw w1 w2 w3 w4 w5, col(3)
 graph export "graph/cum_dsr_hh.png", replace
 
 ****************************************
@@ -170,7 +170,7 @@ twoway ///
 legend(order(1 "2016-2017" 2 "2020-2021") pos(6) col(4)) name(w`i', replace) scale(1.1)
 }
 
-grc1leg nw w1 w2 w3 w4 w5 w6 w7, col(4)
+grc1leg nw w1 w2 w3 w4 w5, col(3)
 graph export "graph/cum_dsr_indiv.png", replace
 
 ****************************************
@@ -264,3 +264,149 @@ ta dsr2016_q dsr2020_q, row
 
 ****************************************
 * END
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Stat desc HH
+****************************************
+
+********** p1
+use"panel_HH_v2", clear
+
+* Selection
+fre timeperiod
+drop if timeperiod==.
+keep if dummyloans_HH1==1
+keep if dummyloans_HH2==1
+drop if year==2020
+drop if year==2010
+
+* Quali
+ta head_mocc_occupation ownland, col nofreq chi2
+ta head_edulevel ownland, col nofreq chi2
+
+* Quanti
+foreach x in assets_nolandnogold income_HH saving {
+replace `x'=`x'/1000
+}
+tabstat assets_nolandnogold income_HH saving, stat(mean) by(ownland)
+reg assets_nolandnogold i.ownland
+reg income_HH i.ownland
+reg saving i.ownland
+
+
+
+********** p2
+use"panel_HH_v3", clear
+
+* Selection
+fre timeperiod
+drop if timeperiod==.
+keep if dummyloans_HH1==1
+keep if dummyloans_HH2==1
+drop if year==2020
+drop if year==2010
+
+* Quali
+ta head_female ownland, col nofreq chi2
+ta head_nonmarried ownland, col nofreq chi2
+ta dalits ownland, col nofreq chi2
+ta dummydemonetisation ownland, col nofreq chi2
+
+* Quanti
+tabstat ///
+diff_w5_dsr w5_dsr1 ///
+head_age ///
+HHsize HH_count_child worker sexratio ///
+goldquantity_HH ///
+, stat(mean) by(ownland)
+
+reg diff_w5_dsr i.ownland
+reg w5_dsr1 i.ownland
+reg head_age i.ownland
+reg HHsize i.ownland
+reg HH_count_child i.ownland
+reg worker i.ownland
+reg sexratio i.ownland
+reg goldquantity_HH i.ownland
+
+
+****************************************
+* END
+
+
+
+
+
+
+
+
+****************************************
+* Stat desc indiv
+****************************************
+
+********* p1
+use"panel_indiv_v2", clear
+
+* Selection
+fre timeperiod
+drop if timeperiod==.
+keep if dummyloans1==1
+keep if dummyloans2==1
+drop if year==2020
+drop if year==2010
+
+ta ownland
+
+* Quali
+recode occupation (.=0)
+ta occupation ownland, col chi2 nofreq
+ta edulevel ownland, col chi2 nofreq
+
+* Quanti
+replace saving=saving/1000
+tabstat saving, stat(mean) by(ownland)
+reg saving i.ownland
+
+
+
+********* p2
+use"panel_indiv_v3", clear
+
+* Selection
+fre timeperiod
+drop if timeperiod==.
+keep if dummyloans1==1
+keep if dummyloans2==1
+drop if year==2020
+drop if year==2010
+
+* Quali
+ta female ownland, chi2 col nofreq
+ta nonmarried ownland, chi2 col nofreq
+
+* Quanti
+tabstat diff_w5_dsr w5_dsr1 ///
+age goldquantity, stat(mean) by(ownland)
+
+reg diff_w5_dsr i.ownland
+reg w5_dsr1 i.ownland
+reg age i.ownland
+reg goldquantity i.ownland
+
+****************************************
+* END
+
+
+

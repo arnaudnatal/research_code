@@ -531,31 +531,30 @@ use"panel_evo_v0", clear
 
 
 * Std
-foreach x in saving bal_info_HH bal_form_HH expenses assets_nolandnogold goldquantity_HH incomeagri_HH incomenonagri_HH remreceived_HH remsent_HH dsr {
+foreach x in saving dsr assets_nolandnogold goldquantity_HH annualincome_HH remreceived_HH remsent_HH {
 egen std_`x'=std(`x')
 }
 
-global var saving dsr expenses assets_nolandnogold goldquantity_HH incomeagri_HH incomenonagri_HH remreceived_HH remsent_HH ownland
-global varstd std_saving std_dsr std_expenses std_assets_nolandnogold std_goldquantity_HH std_incomeagri_HH std_incomenonagri_HH std_remreceived_HH std_remsent_HH ownland
+global var saving dsr assets_nolandnogold goldquantity_HH annualincome_HH remreceived_HH remsent_HH ownland
+global varstd std_saving std_dsr std_assets_nolandnogold std_goldquantity_HH std_annualincome_HH std_remreceived_HH std_remsent_HH ownland
 
 *
 factortest $varstd
 minap $varstd 
-pca $varstd, comp(4)
-predict a1 a2 a3 a4
+pca $varstd, comp(5)
+predict a1 a2 a3 a4 a5
 
-cluster wardslinkage a1 a2 a3 a4, measure(Euclidean)
+cluster wardslinkage a1 a2 a3 a4 a5, measure(Euclidean)
 cluster dendrogram, cutnumber(50)
+
 cluster gen clust3=groups(3)
 
 ta clust3
+ta clust3 year, col nofreq
 tabstat $var, stat(mean p50) by(clust3)
 
 ta clust3 year, col nofreq
 ta clust3 dalit, exp cchi2 chi2
-
-
-
 
 ****************************************
 * END
