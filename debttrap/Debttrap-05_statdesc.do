@@ -112,6 +112,53 @@ restore
 
 
 
+****************************************
+* Attrition
+****************************************
+
+********** Household level
+use"panel_HH_v2", clear
+
+keep HHID_panel year dsr income_HH assets_total1000
+ta year
+replace income_HH=income_HH/1000
+drop if year==2010
+drop if year==2025
+bys HHID_panel: gen n=_N
+keep if year==2016
+ta n
+*
+tabstat dsr income_HH assets_total1000, stat(n mean) by(n)
+reg dsr i.n
+reg income_HH i.n
+reg assets_total1000 i.n
+
+
+********** Individual level
+use"panel_indiv_v2", clear
+
+keep HHID_panel INDID_panel year dsr income_indiv
+ta year
+replace income_indiv=income_indiv/1000
+drop if year==2025
+bys HHID_panel INDID_panel: gen n=_N
+keep if year==2016
+ta n
+*
+tabstat dsr income_indiv, stat(n mean) by(n)
+reg dsr i.n
+reg income_indiv i.n
+
+
+****************************************
+* END
+
+
+
+
+
+
+
 
 
 
@@ -187,7 +234,7 @@ twoway ///
 legend(order(1 "2016-2017" 2 "2020-2021") pos(6) col(4)) name(w`i', replace) scale(1.1)
 }
 
-grc1leg nw w1 w2 w3 w4 w5, col(3)
+grc1leg nw w1 w2 w3 w4 w5 w6, col(4)
 graph export "graph/cum_dsr_hh.png", replace
 
 ****************************************
@@ -195,53 +242,6 @@ graph export "graph/cum_dsr_hh.png", replace
 
 
 
-
-
-
-
-
-
-
-****************************************
-* Attrition
-****************************************
-
-********** Household level
-use"panel_HH_v2", clear
-
-keep HHID_panel year dsr income_HH assets_total1000
-ta year
-replace income_HH=income_HH/1000
-drop if year==2010
-drop if year==2025
-bys HHID_panel: gen n=_N
-keep if year==2016
-ta n
-*
-tabstat dsr income_HH assets_total1000, stat(n mean) by(n)
-reg dsr i.n
-reg income_HH i.n
-reg assets_total1000 i.n
-
-
-********** Individual level
-use"panel_indiv_v2", clear
-
-keep HHID_panel INDID_panel year dsr income_indiv
-ta year
-replace income_indiv=income_indiv/1000
-drop if year==2025
-bys HHID_panel INDID_panel: gen n=_N
-keep if year==2016
-ta n
-*
-tabstat dsr income_indiv, stat(n mean) by(n)
-reg dsr i.n
-reg income_indiv i.n
-
-
-****************************************
-* END
 
 
 
@@ -322,7 +322,7 @@ twoway ///
 legend(order(1 "2016-2017" 2 "2020-2021") pos(6) col(4)) name(w`i', replace) scale(1.1)
 }
 
-grc1leg nw w1 w2 w3 w4 w5, col(3)
+grc1leg nw w1 w2 w3 w4 w5 w6, col(4)
 graph export "graph/cum_dsr_indiv.png", replace
 
 ****************************************
