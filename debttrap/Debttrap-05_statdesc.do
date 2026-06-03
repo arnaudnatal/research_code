@@ -15,6 +15,107 @@ do"C:/Users/Arnaud/Documents/GitHub/folderanalysis/$link.do"
 
 
 
+****************************************
+* Decomposition evolution DSR
+****************************************
+********** HH
+use"panel_HH_v0", clear
+
+* Construction
+gen dummyloans_HH=0
+replace dummyloans_HH=1 if nbloans_HH!=. & nbloans_HH>0
+rename imp1_ds_tot_HH debtserv
+gen income_HH=annualincome_HH+remreceived_HH
+gen dsr=(debtserv*100)/income_HH
+replace dsr=0 if dsr==.
+replace dsr=. if dummyloans_HH==0
+
+* Selection
+keep HHID_panel year dsr debtserv income_HH
+drop if year==2010
+drop if year==2025
+reshape wide debtserv income_HH dsr, i(HHID_panel) j(year)
+keep if dsr2016!=.
+keep if dsr2020!=.
+
+* Categories
+foreach x in debtserv income_HH dsr {
+gen cat_`x'=.
+label define cat_`x' 1"Baisse" 2"Hausse" 3"Stagnation"
+label values cat_`x' cat_`x'
+replace cat_`x'=1 if `x'2016>`x'2020
+replace cat_`x'=2 if `x'2016<`x'2020
+replace cat_`x'=3 if `x'2016==`x'2020
+}
+
+* Stat
+preserve
+keep if cat_dsr==1
+ta cat_debtserv cat_income, cell nofreq
+restore
+preserve
+keep if cat_dsr==2
+ta cat_debtserv cat_income, cell nofreq
+restore
+
+
+********** Indiv
+use"panel_indiv_v0", clear
+
+* Construction
+gen dummyloans=0
+replace dummyloans=1 if nbloans_indiv!=. & nbloans_indiv>0
+rename imp1_ds_tot_indiv debtserv
+gen income_indiv=annualincome_indiv+remreceived_indiv
+gen dsr=(debtserv*100)/income_indiv
+replace dsr=0 if dsr==.
+replace dsr=. if dummyloans==0
+
+* Selection
+keep HHID_panel INDID_panel year dsr debtserv income_indiv
+drop if year==2010
+drop if year==2025
+reshape wide dsr debtserv income_indiv, i(HHID_panel INDID_panel) j(year)
+keep if dsr2016!=.
+keep if dsr2020!=.
+
+* Categories
+foreach x in debtserv income_indiv dsr {
+gen cat_`x'=.
+label define cat_`x' 1"Baisse" 2"Hausse" 3"Stagnation"
+label values cat_`x' cat_`x'
+replace cat_`x'=1 if `x'2016>`x'2020
+replace cat_`x'=2 if `x'2016<`x'2020
+replace cat_`x'=3 if `x'2016==`x'2020
+}
+
+* Stat
+preserve
+keep if cat_dsr==1
+ta cat_debtserv cat_income, cell nofreq
+restore
+preserve
+keep if cat_dsr==2
+ta cat_debtserv cat_income, cell nofreq
+restore
+
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 ****************************************
@@ -91,6 +192,57 @@ graph export "graph/cum_dsr_hh.png", replace
 
 ****************************************
 * END
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Attrition
+****************************************
+
+********** Household level
+use"panel_HH_v2", clear
+
+keep HHID_panel year dsr income_HH assets_total1000
+ta year
+replace income_HH=income_HH/1000
+drop if year==2010
+drop if year==2025
+bys HHID_panel: gen n=_N
+keep if year==2016
+ta n
+*
+tabstat dsr income_HH assets_total1000, stat(n mean) by(n)
+reg dsr i.n
+reg income_HH i.n
+reg assets_total1000 i.n
+
+
+********** Individual level
+use"panel_indiv_v2", clear
+
+keep HHID_panel INDID_panel year dsr income_indiv
+ta year
+replace income_indiv=income_indiv/1000
+drop if year==2025
+bys HHID_panel INDID_panel: gen n=_N
+keep if year==2016
+ta n
+*
+tabstat dsr income_indiv, stat(n mean) by(n)
+reg dsr i.n
+reg income_indiv i.n
+
+
+****************************************
+* END
+
 
 
 

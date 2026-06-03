@@ -241,12 +241,22 @@ replace w5_`x'=`r(p95)' if w5_`x'>`r(p95)' & w5_`x'!=.
 
 gen w2_dsr=dsr
 replace w2_dsr=267 if w2_dsr>267 & w2_dsr!=.
+
+gen w3_dsr=dsr
+replace w3_dsr=245 if w3_dsr>245 & w3_dsr!=.
+
+gen w4_dsr=dsr
+replace w4_dsr=200 if w4_dsr>200 & w4_dsr!=.
+
+gen w6_dsr=dsr
+replace w6_dsr=152 if w6_dsr>152 & w6_dsr!=.
+
 gen w2_isr=isr
 replace w2_isr=104 if w2_isr>104 & w2_isr!=.
 
 
 * Var
-global var dummyloans_HH dsr w1_dsr w2_dsr w5_dsr isr w1_isr w2_isr w5_isr 
+global var dummyloans_HH dsr w1_dsr w2_dsr w3_dsr w4_dsr w5_dsr w6_dsr isr w1_isr w2_isr w5_isr 
 
 * Time period 1: 2010 to 2016
 preserve
@@ -368,7 +378,10 @@ timeperiod dummyloans_HH1 dummyloans_HH2 ///
 dsr1 dsr2 ///
 w1_dsr1 w1_dsr2 ///
 w2_dsr1 w2_dsr2 ///
+w3_dsr1 w3_dsr2 ///
+w4_dsr1 w4_dsr2 ///
 w5_dsr1 w5_dsr2 ///
+w6_dsr1 w6_dsr2 ///
 isr1 isr2 ///
 w1_isr1 w1_isr2 ///
 w2_isr1 w2_isr2 ///
@@ -422,7 +435,10 @@ gen diff_w5_isr=w5_isr2-w5_isr1
 gen diff_dsr=dsr2-dsr1
 gen diff_w1_dsr=w1_dsr2-w1_dsr1
 gen diff_w2_dsr=w2_dsr2-w2_dsr1
+gen diff_w3_dsr=w3_dsr2-w3_dsr1
+gen diff_w4_dsr=w4_dsr2-w4_dsr1
 gen diff_w5_dsr=w5_dsr2-w5_dsr1
+gen diff_w6_dsr=w6_dsr2-w6_dsr1
 
 * Quadratic terms
 gen dsr1_2=dsr1*dsr1
@@ -437,9 +453,21 @@ gen w2_dsr1_2=w2_dsr1*w2_dsr1
 gen w2_dsr1_3=w2_dsr1*w2_dsr1*w2_dsr1
 gen w2_dsr1_4=w2_dsr1*w2_dsr1*w2_dsr1*w2_dsr1
 
+gen w3_dsr1_2=w3_dsr1*w3_dsr1
+gen w3_dsr1_3=w3_dsr1*w3_dsr1*w3_dsr1
+gen w3_dsr1_4=w3_dsr1*w3_dsr1*w3_dsr1*w3_dsr1
+
+gen w4_dsr1_2=w4_dsr1*w4_dsr1
+gen w4_dsr1_3=w4_dsr1*w4_dsr1*w4_dsr1
+gen w4_dsr1_4=w4_dsr1*w4_dsr1*w4_dsr1*w4_dsr1
+
 gen w5_dsr1_2=w5_dsr1*w5_dsr1
 gen w5_dsr1_3=w5_dsr1*w5_dsr1*w5_dsr1
 gen w5_dsr1_4=w5_dsr1*w5_dsr1*w5_dsr1*w5_dsr1
+
+gen w6_dsr1_2=w6_dsr1*w6_dsr1
+gen w6_dsr1_3=w6_dsr1*w6_dsr1*w6_dsr1
+gen w6_dsr1_4=w6_dsr1*w6_dsr1*w6_dsr1*w6_dsr1
 
 gen isr1_2=isr1*isr1
 gen isr1_3=isr1*isr1*isr1

@@ -159,6 +159,16 @@ save"panel_indiv_v1", replace
 ****************************************
 use"panel_indiv_v1", clear
 
+/*
+W1 1540
+W2 1060
+W3 800
+W4 615
+W5 485
+W6 412
+W7 366
+*/
+
 * Niveau
 recode dsr isr (.=0)
 foreach x in dsr isr {
@@ -174,12 +184,22 @@ replace w5_`x'=`r(p95)' if w5_`x'>`r(p95)' & w5_`x'!=.
 }
 
 gen w2_dsr=dsr
-replace w2_dsr=562 if w2_dsr>562 & w2_dsr!=.
+replace w2_dsr=1060 if w2_dsr>1060 & w2_dsr!=.
+
+gen w3_dsr=dsr
+replace w3_dsr=800 if w3_dsr>800 & w3_dsr!=.
+
+gen w4_dsr=dsr
+replace w4_dsr=615 if w4_dsr>615 & w4_dsr!=.
+
+gen w6_dsr=dsr
+replace w6_dsr=412 if w6_dsr>412 & w6_dsr!=.
+
 gen w2_isr=isr
 replace w2_isr=208 if w2_isr>208 & w2_isr!=.
 
 * Var
-global var dummyloans dsr w1_dsr w2_dsr w5_dsr isr w1_isr w2_isr w5_isr ///
+global var dummyloans dsr w1_dsr w2_dsr w3_dsr w4_dsr w5_dsr w6_dsr isr w1_isr w2_isr w5_isr ///
 edulevel occupation age agri nonmarried
 
 * Time period 1: 2016 to 2020
@@ -267,7 +287,10 @@ timeperiod dummyloans1 dummyloans2 ///
 dsr1 dsr2 ///
 w1_dsr1 w1_dsr2 ///
 w2_dsr1 w2_dsr2 ///
+w3_dsr1 w3_dsr2 ///
+w4_dsr1 w4_dsr2 ///
 w5_dsr1 w5_dsr2 ///
+w6_dsr1 w6_dsr2 ///
 isr1 isr2 ///
 w1_isr1 w1_isr2 ///
 w2_isr1 w2_isr2 ///
@@ -309,7 +332,10 @@ gen diff_w5_isr=w5_isr2-w5_isr1
 gen diff_dsr=dsr2-dsr1
 gen diff_w1_dsr=w1_dsr2-w1_dsr1
 gen diff_w2_dsr=w2_dsr2-w2_dsr1
+gen diff_w3_dsr=w3_dsr2-w3_dsr1
+gen diff_w4_dsr=w4_dsr2-w4_dsr1
 gen diff_w5_dsr=w5_dsr2-w5_dsr1
+gen diff_w6_dsr=w6_dsr2-w6_dsr1
 
 * Quadratic terms
 gen dsr1_2=dsr1*dsr1
@@ -324,9 +350,21 @@ gen w2_dsr1_2=w2_dsr1*w2_dsr1
 gen w2_dsr1_3=w2_dsr1*w2_dsr1*w2_dsr1
 gen w2_dsr1_4=w2_dsr1*w2_dsr1*w2_dsr1*w2_dsr1
 
+gen w3_dsr1_2=w3_dsr1*w3_dsr1
+gen w3_dsr1_3=w3_dsr1*w3_dsr1*w3_dsr1
+gen w3_dsr1_4=w3_dsr1*w3_dsr1*w3_dsr1*w3_dsr1
+
+gen w4_dsr1_2=w4_dsr1*w4_dsr1
+gen w4_dsr1_3=w4_dsr1*w4_dsr1*w4_dsr1
+gen w4_dsr1_4=w4_dsr1*w4_dsr1*w4_dsr1*w4_dsr1
+
 gen w5_dsr1_2=w5_dsr1*w5_dsr1
 gen w5_dsr1_3=w5_dsr1*w5_dsr1*w5_dsr1
 gen w5_dsr1_4=w5_dsr1*w5_dsr1*w5_dsr1*w5_dsr1
+
+gen w6_dsr1_2=w6_dsr1*w6_dsr1
+gen w6_dsr1_3=w6_dsr1*w6_dsr1*w6_dsr1
+gen w6_dsr1_4=w6_dsr1*w6_dsr1*w6_dsr1*w6_dsr1
 
 gen isr1_2=isr1*isr1
 gen isr1_3=isr1*isr1*isr1
