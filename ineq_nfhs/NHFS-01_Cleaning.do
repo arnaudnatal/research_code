@@ -2,7 +2,7 @@
 cls
 *Arnaud NATAL
 *arnaud.natal@ifpindia.org
-*June 24, 2025
+*June 5, 2026
 *-----
 *Cleaning
 *-----
@@ -12,7 +12,7 @@ clear all
 macro drop _all
 
 ********** Path to working directory directory
-global directory = "C:\Users\Arnaud\Documents\Research\_Data\NFHS"
+global directory = "C:\Users\Arnaud\Documents\MEGA\Research\Ongoing_JatisInequalities\Analysis"
 cd"$directory"
 *-------------------------
 
@@ -43,7 +43,7 @@ Dans "raw" :
 
 
 
-
+/*
 ****************************************
 * Merge base HH
 ****************************************
@@ -68,6 +68,7 @@ rename _merge merge_mpivars
 save"HH_caste_v0.dta", replace
 ****************************************
 * END
+*/
 
 
 
@@ -75,8 +76,7 @@ save"HH_caste_v0.dta", replace
 
 
 
-
-
+/*
 ****************************************
 * Privation bancaire
 ****************************************
@@ -91,6 +91,7 @@ label var d_bank "RECODE of hv247 (Household has a bank account)"
 save"HH_caste_v1.dta", replace
 ****************************************
 * END
+*/
 
 
 
@@ -98,8 +99,7 @@ save"HH_caste_v1.dta", replace
 
 
 
-
-
+/*
 ****************************************
 * Antenatal care
 ****************************************
@@ -162,6 +162,7 @@ drop _merge
 save"HH_caste_v2.dta", replace
 ****************************************
 * END
+*/
 
 
 
@@ -170,8 +171,7 @@ save"HH_caste_v2.dta", replace
 
 
 
-
-
+/*
 ****************************************
 * Deprivation score
 ****************************************
@@ -222,6 +222,7 @@ replace d_mpoor12=1 if dp_score12>=0.333
 save"HH_caste_v3.dta", replace
 ****************************************
 * END
+*/
 
 
 
@@ -232,8 +233,7 @@ save"HH_caste_v3.dta", replace
 
 
 
-
-
+/*
 ****************************************
 * Controls
 ****************************************
@@ -316,7 +316,7 @@ replace mpi_cens12=0 if d_mpoor12==0
 save"HH_caste_v4.dta", replace
 ****************************************
 * END
-
+*/
 
 
 

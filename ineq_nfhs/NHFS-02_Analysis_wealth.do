@@ -2,7 +2,7 @@
 cls
 *Arnaud NATAL
 *arnaud.natal@ifpindia.org
-*June 24, 2025
+*June 5, 2026
 *-----
 *Wealth
 *-----
@@ -12,7 +12,7 @@ clear all
 macro drop _all
 
 ********** Path to working directory directory
-global directory = "C:\Users\Arnaud\Documents\Research\_Data\NFHS"
+global directory = "C:\Users\Arnaud\Documents\MEGA\Research\Ongoing_JatisInequalities\Analysis"
 cd"$directory"
 *-------------------------
 
