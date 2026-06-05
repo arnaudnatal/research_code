@@ -15,7 +15,6 @@ cd"C:\Users\anatal\Documents\DT"
 
 
 
-
 ****************************************
 * Household level parametric
 ****************************************
@@ -29,35 +28,21 @@ keep if dummyloans_HH2==1
 drop if year==2020
 drop if year==2010
 
-
 ********** No int
-reg diff_dsr ///
-c.dsr1##c.dsr1##c.dsr1##c.dsr1 ///
+reg diff_w5_dsr ///
+c.w5_dsr1##c.w5_dsr1##c.w5_dsr1##c.w5_dsr1 ///
 head_female head_age head_age2 head_nonmarried ///
 head_occ1 head_occ2 head_occ4 head_occ5 head_occ6 head_occ7 ///
 head_educ2 head_educ3 ///
 HHsize HH_count_child worker sexratio ///
-log_wealthbis goldquantity_HH log_income log_saving i.ownland ///
+log_wealthbis goldquantity_HH log_income log_saving c.shareagri ///
 dummylock dummydemonetisation i.dalits ///
 village1 village2 village3 village4 village5 village6 village7 village8 village9
-est store r1_nw
-*
-foreach i in 1 2 3 4 6 {
-reg diff_w`i'_dsr ///
-c.w`i'_dsr1##c.w`i'_dsr1##c.w`i'_dsr1##c.w`i'_dsr1 ///
-head_female head_age head_age2 head_nonmarried ///
-head_occ1 head_occ2 head_occ4 head_occ5 head_occ6 head_occ7 ///
-head_educ2 head_educ3 ///
-HHsize HH_count_child worker sexratio ///
-log_wealthbis goldquantity_HH log_income log_saving i.ownland ///
-dummylock dummydemonetisation i.dalits ///
-village1 village2 village3 village4 village5 village6 village7 village8 village9
-est store r1_w`i'
-}
+est store r1
 
 ********** Land int
-reg diff_dsr ///
-c.dsr1##c.dsr1##c.dsr1##c.dsr1##i.ownland ///
+reg diff_w5_dsr ///
+c.w5_dsr1##c.w5_dsr1##c.w5_dsr1##c.w5_dsr1##c.shareagri ///
 head_female head_age head_age2 head_nonmarried ///
 head_occ1 head_occ2 head_occ4 head_occ5 head_occ6 head_occ7 ///
 head_educ2 head_educ3 ///
@@ -65,51 +50,24 @@ HHsize HH_count_child worker sexratio ///
 log_wealthbis goldquantity_HH log_income log_saving ///
 dummylock dummydemonetisation i.dalits ///
 village1 village2 village3 village4 village5 village6 village7 village8 village9
-est store r2_nw
-*
-foreach i in 1 2 3 4 6 {
-reg diff_w`i'_dsr ///
-c.w`i'_dsr1##c.w`i'_dsr1##c.w`i'_dsr1##c.w`i'_dsr1##i.ownland ///
-head_female head_age head_age2 head_nonmarried ///
-head_occ1 head_occ2 head_occ4 head_occ5 head_occ6 head_occ7 ///
-head_educ2 head_educ3 ///
-HHsize HH_count_child worker sexratio ///
-log_wealthbis goldquantity_HH log_income log_saving ///
-dummylock dummydemonetisation i.dalits ///
-village1 village2 village3 village4 village5 village6 village7 village8 village9
-est store r2_w`i'
-}
-
+est store r2
 
 ********** Dalits int
-reg diff_dsr ///
-c.dsr1##c.dsr1##c.dsr1##c.dsr1##i.dalits ///
+reg diff_w5_dsr ///
+c.w5_dsr1##c.w5_dsr1##c.w5_dsr1##c.w5_dsr1##i.dalits ///
 head_female head_age head_age2 head_nonmarried ///
 head_occ1 head_occ2 head_occ4 head_occ5 head_occ6 head_occ7 ///
 head_educ2 head_educ3 ///
 HHsize HH_count_child worker sexratio ///
-log_wealthbis goldquantity_HH log_income log_saving i.ownland ///
+log_wealthbis goldquantity_HH log_income log_saving c.shareagri ///
 dummylock dummydemonetisation ///
 village1 village2 village3 village4 village5 village6 village7 village8 village9
-est store r3_nw
-*
-foreach i in 1 2 3 4 6 {
-reg diff_w`i'_dsr ///
-c.w`i'_dsr1##c.w`i'_dsr1##c.w`i'_dsr1##c.w`i'_dsr1##i.dalits ///
-head_female head_age head_age2 head_nonmarried ///
-head_occ1 head_occ2 head_occ4 head_occ5 head_occ6 head_occ7 ///
-head_educ2 head_educ3 ///
-HHsize HH_count_child worker sexratio ///
-log_wealthbis goldquantity_HH log_income log_saving i.ownland ///
-dummylock dummydemonetisation ///
-village1 village2 village3 village4 village5 village6 village7 village8 village9
-est store r3_w`i'
-}
+est store r3
 
 
 ********** Both int
-reg diff_dsr ///
-c.dsr1##c.dsr1##c.dsr1##c.dsr1##i.dalits##i.ownland  ///
+reg diff_w5_dsr ///
+c.w5_dsr1##c.w5_dsr1##c.w5_dsr1##c.w5_dsr1##i.dalits##c.shareagri ///
 head_female head_age head_age2 head_nonmarried ///
 head_occ1 head_occ2 head_occ4 head_occ5 head_occ6 head_occ7 ///
 head_educ2 head_educ3 ///
@@ -117,25 +75,10 @@ HHsize HH_count_child worker sexratio ///
 log_wealthbis goldquantity_HH log_income log_saving ///
 dummylock dummydemonetisation ///
 village1 village2 village3 village4 village5 village6 village7 village8 village9
-est store r4_nw
-*
-foreach i in 1 2 3 4 6 {
-reg diff_w`i'_dsr ///
-c.w`i'_dsr1##c.w`i'_dsr1##c.w`i'_dsr1##c.w`i'_dsr1##i.dalits##i.ownland  ///
-head_female head_age head_age2 head_nonmarried ///
-head_occ1 head_occ2 head_occ4 head_occ5 head_occ6 head_occ7 ///
-head_educ2 head_educ3 ///
-HHsize HH_count_child worker sexratio ///
-log_wealthbis goldquantity_HH log_income log_saving ///
-dummylock dummydemonetisation ///
-village1 village2 village3 village4 village5 village6 village7 village8 village9
-est store r4_w`i'
-}
-
+est store r4
 
 ********** Tables
-forvalues i=1/4 {
-esttab r`i'_nw r`i'_w1 r`i'_w2 r`i'_w3 r`i'_w4 r`i'_w6 using "robHH_r`i'.csv", replace ///
+esttab r1 r2 r3 r4 using "Household_shareagri.csv", replace ///
 	b(3) p(3) eqlabels(none) alignment(S) ///
 	drop(_cons) ///
 	star(* 0.10 ** 0.05 *** 0.01) ///
@@ -143,18 +86,9 @@ esttab r`i'_nw r`i'_w1 r`i'_w2 r`i'_w3 r`i'_w4 r`i'_w6 using "robHH_r`i'.csv", r
 	refcat(, nolabel) ///
 	stats(N, fmt(0) ///
 	labels(`"Observations"'))
-}
 
 ****************************************
 * END
-
-
-
-
-
-
-
-
 
 
 
@@ -189,117 +123,69 @@ global HH HH1 HH2 HH3 HH4 HH5 HH6 HH7 HH8 HH9 HH10 HH11 HH12 HH13 HH14 HH15 HH16
 
 cls
 ********** No int
-reg diff_dsr ///
-c.dsr1##c.dsr1##c.dsr1##c.dsr1 ///
+reg diff_w5_dsr ///
+c.w5_dsr1##c.w5_dsr1##c.w5_dsr1##c.w5_dsr1 ///
 i.female age age2 nonmarried ///
 occ1 occ2 occ4 occ5 occ6 occ7 ///
 educ2 educ3 educ4 log_saving goldquantity ///
-HHsize HH_count_child i.ownland log_wealthbis log_income ///
+HHsize HH_count_child c.shareagri log_wealthbis log_income ///
 dummylock dummydemonetisation dalits ///
 village1 village2 village3 village4 village5 village6 village7 village8 village9 $HH
-est store r1_nw
-*
-foreach i in 1 2 3 4 6 {
-reg diff_w`i'_dsr ///
-c.w`i'_dsr1##c.w`i'_dsr1##c.w`i'_dsr1##c.w`i'_dsr1 ///
-i.female age age2 nonmarried ///
-occ1 occ2 occ4 occ5 occ6 occ7 ///
-educ2 educ3 educ4 log_saving goldquantity ///
-HHsize HH_count_child i.ownland log_wealthbis log_income ///
-dummylock dummydemonetisation dalits ///
-village1 village2 village3 village4 village5 village6 village7 village8 village9 $HH
-est store r1_w`i'
-}
+est store r1
 
-
-
+cls
 ********** Land
-reg diff_dsr ///
-c.dsr1##c.dsr1##c.dsr1##c.dsr1##i.ownland ///
+reg diff_w5_dsr ///
+c.w5_dsr1##c.w5_dsr1##c.w5_dsr1##c.w5_dsr1##c.shareagri ///
 i.female age age2 nonmarried ///
 occ1 occ2 occ4 occ5 occ6 occ7 ///
 educ2 educ3 educ4 log_saving goldquantity ///
 HHsize HH_count_child log_wealthbis log_income ///
 dummylock dummydemonetisation dalits ///
 village1 village2 village3 village4 village5 village6 village7 village8 village9 $HH
-est store r2_nw
-*
-foreach i in 1 2 3 4 6 {
-reg diff_w`i'_dsr ///
-c.w`i'_dsr1##c.w`i'_dsr1##c.w`i'_dsr1##c.w`i'_dsr1##i.ownland ///
-i.female age age2 nonmarried ///
-occ1 occ2 occ4 occ5 occ6 occ7 ///
-educ2 educ3 educ4 log_saving goldquantity ///
-HHsize HH_count_child log_wealthbis log_income ///
-dummylock dummydemonetisation dalits ///
-village1 village2 village3 village4 village5 village6 village7 village8 village9 $HH
-est store r2_w`i'
-}
+est store r2
 
-
-
+cls
 ********** Gender
-reg diff_dsr ///
-c.dsr1##c.dsr1##c.dsr1##c.dsr1##i.female ///
+reg diff_w5_dsr ///
+c.w5_dsr1##c.w5_dsr1##c.w5_dsr1##c.w5_dsr1##i.female ///
 age age2 nonmarried ///
 occ1 occ2 occ4 occ5 occ6 occ7 ///
 educ2 educ3 educ4 log_saving goldquantity ///
-HHsize HH_count_child log_wealthbis log_income i.ownland ///
+HHsize HH_count_child log_wealthbis log_income c.shareagri ///
 dummylock dummydemonetisation dalits ///
 village1 village2 village3 village4 village5 village6 village7 village8 village9 $HH
-est store r3_nw
-*
-foreach i in 1 2 3 4 6 {
-reg diff_w`i'_dsr ///
-c.w`i'_dsr1##c.w`i'_dsr1##c.w`i'_dsr1##c.w`i'_dsr1##i.female ///
-age age2 nonmarried ///
-occ1 occ2 occ4 occ5 occ6 occ7 ///
-educ2 educ3 educ4 log_saving goldquantity ///
-HHsize HH_count_child log_wealthbis log_income i.ownland ///
-dummylock dummydemonetisation dalits ///
-village1 village2 village3 village4 village5 village6 village7 village8 village9 $HH
-est store r3_w`i'
-}
+est store r3
 
-
-
+cls
 ********** Land x Gender
-reg diff_dsr ///
-c.dsr1##c.dsr1##c.dsr1##c.dsr1##i.ownland##i.female ///
+reg diff_w5_dsr ///
+c.w5_dsr1##c.w5_dsr1##c.w5_dsr1##c.w5_dsr1##c.shareagri##i.female ///
 age age2 nonmarried ///
 occ1 occ2 occ4 occ5 occ6 occ7 ///
 educ2 educ3 educ4 log_saving goldquantity ///
 HHsize HH_count_child log_wealthbis log_income ///
 dummylock dummydemonetisation dalits ///
 village1 village2 village3 village4 village5 village6 village7 village8 village9 $HH
-est store r4_nw
-*
-foreach i in 1 2 3 4 6 {
-reg diff_w`i'_dsr ///
-c.w`i'_dsr1##c.w`i'_dsr1##c.w`i'_dsr1##c.w`i'_dsr1##i.ownland##i.female ///
-age age2 nonmarried ///
-occ1 occ2 occ4 occ5 occ6 occ7 ///
-educ2 educ3 educ4 log_saving goldquantity ///
-HHsize HH_count_child log_wealthbis log_income ///
-dummylock dummydemonetisation dalits ///
-village1 village2 village3 village4 village5 village6 village7 village8 village9 $HH
-est store r4_w`i'
-}
+est store r4
 
 
 ********** Tables
-forvalues i=1/4 {
-esttab r`i'_nw r`i'_w1 r`i'_w2 r`i'_w3 r`i'_w4 r`i'_w6 using "robIndiv_r`i'.csv", replace ///
+esttab r1 r2 r3 r4 using "Individual_shareagri.csv", replace ///
 	b(3) p(3) eqlabels(none) alignment(S) ///
 	drop(_cons) ///
 	star(* 0.10 ** 0.05 *** 0.01) ///
 	cells("b(fmt(2)star)" "se(fmt(2)par)") ///
-	refcat(, nolabel) ///
 	stats(N, fmt(0) ///
 	labels(`"Observations"'))
-}
 
 ****************************************
 * END
+
+
+
+
+
+
 
 
