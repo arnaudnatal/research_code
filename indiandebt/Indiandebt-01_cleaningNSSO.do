@@ -7,7 +7,8 @@ cls
 gl link = "indiandebt"
 *Cleaning AIDIS
 *-----
-do"C:/Users/Arnaud/Documents/GitHub/folderanalysis/$link.do"
+*do"C:/Users/Arnaud/Documents/GitHub/folderanalysis/$link.do"
+cd"C:\Users\anatal\Documents\id"
 *-------------------------
 
 
@@ -249,7 +250,6 @@ destring HHsize HHtype religion caste, replace
 * Order
 order HHID Sector State District Weight caste religion HHsize HHtype
 
-
 save"_temp2019", replace
 ****************************************
 * END
@@ -447,11 +447,22 @@ label values interest2 interest2
 replace interest2=0 if interest==1
 replace interest2=1 if interest==2
 replace interest2=1 if interest==3
-replace interest2=0 if interest2==.
+replace interest2=0 if interest==.
 save"_temp2019_v5", replace
 
 
 ********** Purpose
+* 1992
+use"_temp1992_v5", clear
+gen reason2=.
+label define reason2 1"Investment" 2"Litigation" 3"Repayment" 4"Household" 77"Other"
+label values reason2 reason2
+replace reason2=1 if reason==1
+replace reason2=1 if reason==2
+replace reason2=4 if reason==3
+save"_temp1992_v6", replace
+
+
 * 2002
 use"_temp2002_v5", clear
 gen reason2=.
@@ -476,9 +487,9 @@ replace reason2=2 if reason==5
 replace reason2=3 if reason==6
 replace reason2=4 if reason==8
 replace reason2=4 if reason==10
+replace reason2=4 if reason==11
 replace reason2=4 if reason==12
 replace reason2=77 if reason==9
-replace reason2=77 if reason==11
 save"_temp2012_v6", replace
 
 * 2019
@@ -492,9 +503,9 @@ replace reason2=2 if reason==5
 replace reason2=3 if reason==6
 replace reason2=4 if reason==8
 replace reason2=4 if reason==10
+replace reason2=4 if reason==11
 replace reason2=4 if reason==12
 replace reason2=77 if reason==9
-replace reason2=77 if reason==11
 save"_temp2019_v6", replace
 
 ****************************************
@@ -520,7 +531,7 @@ save"_temp2019_v6", replace
 ****************************************
 
 * 1992
-use"_temp1992_v5", clear
+use"_temp1992_v6", clear
 gen year=1992
 order year, after(HHID)
 save"_tempw1", replace
@@ -585,10 +596,40 @@ gen amount2=amount
 replace amount2=amount*(100/17.0) if year==1992
 replace amount2=amount*(100/34.3) if year==2002
 replace amount2=amount*(100/69.5) if year==2012
+replace amount2=amount2/1000
 
-xtile catamount=amount2, n(5)
-label define catamount 1"V.low" 2"Low" 3"Med" 4"High" 5"V.high"
-label values catamount catamount
+*
+foreach i in 1992 2002 2012 2019 {
+xtile ca`i'=amount if year==`i', n(5)
+}
+gen cat5amount=.
+foreach i in 1992 2002 2012 2019 {
+replace cat5amount=ca`i' if year==`i'
+}
+drop ca1992 ca2002 ca2012 ca2019
+*
+foreach i in 1992 2002 2012 2019 {
+xtile ca`i'=amount if year==`i', n(3)
+}
+gen cat3amount=.
+foreach i in 1992 2002 2012 2019 {
+replace cat3amount=ca`i' if year==`i'
+}
+drop ca1992 ca2002 ca2012 ca2019
+
+* Security
+gen security2=.
+label define security2 0"None or personal" 1"Yes (material, admin, etc.)"
+label values security2 security2
+replace security2=0 if security==1 & year==1992
+replace security2=1 if security>=2 & security<=10 & year==1992
+replace security2=0 if security==1 & year==2002
+replace security2=1 if security>=2 & security<=10 & year==2002
+replace security2=0 if security==10 & year==2012
+replace security2=1 if security>=1 & security<=9 & year==2012
+replace security2=0 if security==2 & year==2019
+replace security2=1 if security==1 & year==2019
+replace security2=0 if security==.
 
 * Caste
 tostring caste, replace
@@ -617,7 +658,7 @@ encode caste, gen(caste2)
 * Religion
 tostring religion, replace
 
-replace religion="." if year==1992
+replace religion="" if year==1992
 
 replace religion="Hindu" if religion=="1" & year==2002
 replace religion="Muslim" if religion=="2" & year==2002
@@ -653,11 +694,17 @@ drop HHtype
 bys HHID year: gen loanid=_n
 
 * Reason
+fre reason2
 recode reason2 (2=77) (3=4)
+ta reason2 year, col nofreq
 
 * Lender
 recode lender2 (2=77)
 
+
+* Indiv id
+egen uniqueid=group(HHID loanid)
+order uniqueid, first
 
 save "Loans_v1", replace
 ****************************************
@@ -685,13 +732,18 @@ save "Loans_v1", replace
 ****************************************
 use "Loans_v1", clear
 
-drop amount lender scheme duration interest reason security religion caste
+drop amount lender scheme duration interest2 reason security religion caste
 
-foreach x in caste religion lender scheme duration interest reason amount {
+foreach x in caste religion lender scheme duration reason amount security {
 rename `x'2 `x'
 }
 
-order HHID year Sector State District Weight caste religion HHsize loanid amount catamount reason lender duration interest scheme
+drop if interest==4
+drop if interest==9
+replace interest=1 if year==2019 & interest==.
+mdesc
+
+order uniqueid HHID year Sector State District Weight caste religion HHsize loanid amount cat3amount cat5amount reason lender duration interest scheme security
 
 ta year
 
