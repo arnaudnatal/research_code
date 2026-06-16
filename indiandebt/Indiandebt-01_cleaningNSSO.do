@@ -701,6 +701,15 @@ ta reason2 year, col nofreq
 * Lender
 recode lender2 (2=77)
 
+* Label
+label define cat3amount 1"Low" 2"Mid" 3"High"
+label values cat3amount cat3amount
+
+label define cat5amount 1"Vlow" 2"Low" 3"Mid" 4"High" 5"Vhigh"
+label values cat5amount cat5amount
+
+label define interest 1"Free" 2"Simple" 3"Compound"
+label values interest interest
 
 * Indiv id
 egen uniqueid=group(HHID loanid)
@@ -732,15 +741,15 @@ save "Loans_v1", replace
 ****************************************
 use "Loans_v1", clear
 
-drop amount lender scheme duration interest2 reason security religion caste
+drop amount lender scheme duration interest reason security religion caste
 
-foreach x in caste religion lender scheme duration reason amount security {
+foreach x in caste religion lender scheme interest duration reason amount security {
 rename `x'2 `x'
 }
 
-drop if interest==4
-drop if interest==9
-replace interest=1 if year==2019 & interest==.
+*drop if interest==4
+*drop if interest==9
+*replace interest=1 if year==2019 & interest==.
 mdesc
 
 order uniqueid HHID year Sector State District Weight caste religion HHsize loanid amount cat3amount cat5amount reason lender duration interest scheme security

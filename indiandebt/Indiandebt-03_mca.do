@@ -17,80 +17,35 @@ cd"C:\Users\anatal\Documents\id"
 
 
 
-
 ****************************************
-* CA
+* HCPC
 ****************************************
-use"Loans_v2", replace
-
-ta reason lender
-
-ca reason lender
-* 3 dimensions
-ca reason lender, dim(2)
-estat coordinates
-predict d1, rowscore(1)
-predict d2, rowscore(2)
-
-****************************************
-* END
-
-
-
-
-
-
-
-
-
-****************************************
-* MCA
-****************************************
-use"Loans_v2", replace
+use"Loans_v2", clear
 
 ********** Preparation
 * Var
-global var reason lender duration interest security cat3amount
+global var reason lender duration interest security cat3amount scheme cat5amount
 mdesc $var
 
-********** MCA
-mca $var, method (indicator) normal(princ)
-mca $var, method (indicator) normal(princ) dim(9)
-global dim d1 d2 d3 d4 d5 d6 d7 d8 d9
-predict $dim
+keep uniqueid $var
+foreach x in $var {
+decode `x', gen(dec_`x')
+drop `x'
+rename dec_`x' `x'
+}
+export delimited using "Allloans.csv", replace
 
 
-********** Kmeans
-cluster kmeans $dim, k(1000)
-
-save"Loans_hcpc_v0", replace
-
-
-********** CAH sur les centroids
-* Centroids
-bys uniqueid: gen n=1
-collapse (mean) $dim (sum) n, by(_clus_1)
-* CAH
-cluster wardslinkage $dim
-cluster dendrogram, cutnumber(50)
-cluster gen clust=groups(4)
-
-save"_tempclust", replace
-
-
-********** Reaffectation
-use"Loans_hcpc_v0", clear
-
-merge m:1 _clus_1 using "_tempclust", keepusing(clust)
-keep if _merge==3
+********** Import results HCPC
+import delimited using "Allloans_res.csv", clear
+save"_temp", replace
+use"Loans_v2", clear
+merge 1:1 uniqueid using"_temp", keepusing(cluster)
 drop _merge
 
-save"Loans_hcpc_v1", replace
+save"Loans_v3", replace
 ****************************************
 * END
-
-
-
 
 
 
@@ -101,27 +56,24 @@ save"Loans_hcpc_v1", replace
 ****************************************
 * Stat
 ****************************************
-use"Loans_hcpc_v1", clear
+use"Loans_v3", clear
 
-*
-ta clust year, col nofreq
+ta cluster
+recode cluster (2=77) (5=77) (6=77)
+*recode cluster (2=77) (5=77) (7=77) (8=77) (9=77)
+ta cluster
 
-*
-egen reasonXlender=group(reason lender), label
-ta reasonXlender clust, col nofreq
-ta reasonXlender clust, row nofreq
+ta cluster year, col nofreq
 
-*
-ta reason clust, col nofreq
-ta lender clust, col nofreq 
-ta duration clust, col nofreq
-ta interest clust, col nofreq
-ta scheme clust, col nofreq
-ta security clust, col nofreq
-
-*
-tabstat amount, stat(n mean q) by(clust)
+ta reason cluster, col nofreq
+ta lender cluster, col nofreq 
+ta duration cluster, col nofreq
+ta interest cluster, col nofreq
+ta scheme cluster, col nofreq
+ta security cluster, col nofreq
+ta cat5amount cluster, col nofreq
 
 ****************************************
 * END
+
 
