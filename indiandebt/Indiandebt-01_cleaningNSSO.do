@@ -7,8 +7,8 @@ cls
 gl link = "indiandebt"
 *Cleaning AIDIS
 *-----
-*do"C:/Users/Arnaud/Documents/GitHub/folderanalysis/$link.do"
-cd"C:\Users\anatal\Documents\id"
+do"C:/Users/Arnaud/Documents/GitHub/folderanalysis/$link.do"
+*cd"C:\Users\anatal\Documents\id"
 *-------------------------
 
 
@@ -711,6 +711,22 @@ label values cat5amount cat5amount
 label define interest 1"Free" 2"Simple" 3"Compound"
 label values interest interest
 
+* Reason3
+ta reason if year==2012 | year==2019
+gen reason3=.
+label define reason3 1"Capital exp farm" 2"Current exp farm" 3"Capital exp non-farm bus" 4"Current exp non-farm bus" 5"Exp litigation" 6"Repay" 7"Fin invest" 8"Educ" 9"Oth" 10"Health" 11"Housing" 12"Oth hh exp"
+label values reason3 reason3
+replace reason3=reason if year==2012
+replace reason3=reason if year==2019
+fre reason3
+recode reason3 (5=9) (7=9) (2=1) (4=3) (6=12) (8=12)
+fre reason3
+
+* Lender3
+ta lender if year==2012
+ta lender if year==2019
+
+
 * Indiv id
 egen uniqueid=group(HHID loanid)
 order uniqueid, first
@@ -741,18 +757,9 @@ save "Loans_v1", replace
 ****************************************
 use "Loans_v1", clear
 
-drop amount lender scheme duration interest reason security religion caste
+drop amount lender scheme duration reason security religion caste
 
-foreach x in caste religion lender scheme interest duration reason amount security {
-rename `x'2 `x'
-}
-
-*drop if interest==4
-*drop if interest==9
-*replace interest=1 if year==2019 & interest==.
-mdesc
-
-order uniqueid HHID year Sector State District Weight caste religion HHsize loanid amount cat3amount cat5amount reason lender duration interest scheme security
+order uniqueid HHID year Sector State District Weight caste religion HHsize loanid amount cat5amount cat3amount lender2 reason2 reason3 interest interest2 duration security2 scheme2
 
 ta year
 

@@ -1,16 +1,17 @@
 # 
 rm(list=ls())
 library(Factoshiny)
-setwd("C:/Users/anatal/Documents/id")
+#setwd("C:/Users/anatal/Documents/id")
+setwd("C:/Users/Arnaud/Documents/MEGA/Research/Ongoing_Indiandebt/Analysis")
 
 # Import data
 data<-read.csv("Allloans.csv")
-var<-data[,c("lender", "reason", "cat5amount", "interest", "security", "scheme", "duration"), drop = FALSE]
+var<-data[,c("lender2", "reason3", "cat5amount", "interest", "security2", "scheme2", "duration2"), drop = FALSE]
 
 # MCA
 nbaxe<-MCA(var, ncp=50, graph=FALSE)
 nbaxe$eig
-res_mca<-MCA(var, ncp=12, graph=FALSE)
+res_mca<-MCA(var, ncp=15, graph=FALSE)
 
 # HCPC
 res_hcpc<-HCPC(res_mca, kk=100, description=FALSE, graph=FALSE, consol=FALSE)

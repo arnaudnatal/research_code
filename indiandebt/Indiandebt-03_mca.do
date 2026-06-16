@@ -7,8 +7,8 @@ cls
 gl link = "indiandebt"
 *MCA
 *-----
-*do"C:/Users/Arnaud/Documents/GitHub/folderanalysis/$link.do"
-cd"C:\Users\anatal\Documents\id"
+do"C:/Users/Arnaud/Documents/GitHub/folderanalysis/$link.do"
+*cd"C:\Users\anatal\Documents\id"
 *-------------------------
 
 
@@ -24,8 +24,10 @@ use"Loans_v2", clear
 
 ********** Preparation
 * Var
-global var reason lender duration interest security cat3amount scheme cat5amount
-mdesc $var
+global var cat5amount cat3amount lender2 reason2 reason3 interest interest2 duration2 security2 scheme2
+
+keep if year==2012 | year==2019
+mdesc
 
 keep uniqueid $var
 foreach x in $var {
