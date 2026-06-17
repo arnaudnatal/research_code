@@ -7,8 +7,8 @@ cls
 gl link = "indiandebt"
 *Cleaning AIDIS
 *-----
-do"C:/Users/Arnaud/Documents/GitHub/folderanalysis/$link.do"
-*cd"C:\Users\anatal\Documents\id"
+*do"C:/Users/Arnaud/Documents/GitHub/folderanalysis/$link.do"
+cd"C:\Users\anatal\Documents\id"
 *-------------------------
 
 
@@ -269,7 +269,7 @@ save"_temp2019", replace
 * 1992
 use"_temp1992", clear
 gen lender2=.
-label define lender2 1"Institutional" 2"Landlord" 3"Moneylender" 4"Friends/Relatives" 77"Other"
+label define lender2 1"Lender: Institutional" 2"Lender: Landlord" 3"Lender: Moneylender" 4"Lender: Friends/Relatives" 77"Lender: Other"
 label values lender2 lender2
 replace lender2=1 if lender>=1 & lender<=6
 replace lender2=2 if lender==7
@@ -281,7 +281,7 @@ save"_temp1992_v2", replace
 * 2002
 use"_temp2002", clear
 gen lender2=.
-label define lender2 1"Institutional" 2"Landlord" 3"Moneylender" 4"Friends/Relatives" 77"Other"
+label define lender2 1"Lender: Institutional" 2"Lender: Landlord" 3"Lender: Moneylender" 4"Lender: Friends/Relatives" 77"Lender: Other"
 label values lender2 lender2
 replace lender2=1 if lender>=1 & lender<=8
 replace lender2=2 if lender==9
@@ -293,7 +293,7 @@ save"_temp2002_v2", replace
 * 2012
 use"_temp2012", clear
 gen lender2=.
-label define lender2 1"Institutional" 2"Landlord" 3"Moneylender" 4"Friends/Relatives" 77"Other"
+label define lender2 1"Lender: Institutional" 2"Lender: Landlord" 3"Lender: Moneylender" 4"Lender: Friends/Relatives" 77"Lender: Other"
 label values lender2 lender2
 replace lender2=1 if lender>=1 & lender<=8
 replace lender2=1 if lender==10 | lender==11
@@ -306,7 +306,7 @@ save"_temp2012_v2", replace
 * 2019
 use"_temp2019", clear
 gen lender2=.
-label define lender2 1"Institutional" 2"Landlord" 3"Moneylender" 4"Friends/Relatives" 77"Other"
+label define lender2 1"Lender: Institutional" 2"Lender: Landlord" 3"Lender: Moneylender" 4"Lender: Friends/Relatives" 77"Lender: Other"
 label values lender2 lender2
 replace lender2=1 if lender>=1 & lender<=8
 replace lender2=1 if lender>=10 & lender<=13
@@ -321,7 +321,7 @@ save"_temp2019_v2", replace
 * 1992
 use"_temp1992_v2", clear
 gen scheme2=.
-label define scheme2 0"No scheme" 1"Scheme"
+label define scheme2 0"Scheme: No" 1"Scheme: Yes"
 label values scheme2 scheme2
 replace scheme2=0 if scheme==9
 replace scheme2=1 if scheme>=1 & scheme<=8
@@ -331,7 +331,7 @@ save"_temp1992_v3", replace
 * 2002
 use"_temp2002_v2", clear
 gen scheme2=.
-label define scheme2 0"No scheme" 1"Scheme"
+label define scheme2 0"Scheme: No" 1"Scheme: Yes"
 label values scheme2 scheme2
 replace scheme2=0 if scheme==9
 replace scheme2=1 if scheme>=1 & scheme<=8
@@ -341,7 +341,7 @@ save"_temp2002_v3", replace
 * 2012
 use"_temp2012_v2", clear
 gen scheme2=.
-label define scheme2 0"No scheme" 1"Scheme"
+label define scheme2 0"Scheme: No" 1"Scheme: Yes"
 label values scheme2 scheme2
 replace scheme2=0 if scheme==9
 replace scheme2=1 if scheme>=1 & scheme<=8
@@ -352,7 +352,7 @@ save"_temp2012_v3", replace
 * 2019
 use"_temp2019_v2", clear
 gen scheme2=.
-label define scheme2 0"No scheme" 1"Scheme"
+label define scheme2 0"Scheme: No" 1"Scheme: Yes"
 label values scheme2 scheme2
 replace scheme2=0 if scheme==9
 replace scheme2=1 if scheme>=1 & scheme<=8
@@ -364,7 +364,7 @@ save"_temp2019_v3", replace
 * 1992
 use"_temp1992_v3", clear
 gen duration2=.
-label define duration2 1"Short" 2"Med" 3"Long"
+label define duration2 1"Duration: Short-term" 2"Duration: Medium-term" 3"Duration: Long-term"
 label values duration2 duration2
 replace duration2=1 if duration==1
 replace duration2=1 if duration==2
@@ -375,7 +375,7 @@ save"_temp1992_v4", replace
 * 2002
 use"_temp2002_v3", clear
 gen duration2=.
-label define duration2 1"Short" 2"Med" 3"Long"
+label define duration2 1"Duration: Short-term" 2"Duration: Medium-term" 3"Duration: Long-term"
 label values duration2 duration2
 replace duration2=1 if duration==1
 replace duration2=1 if duration==2
@@ -386,7 +386,7 @@ save"_temp2002_v4", replace
 * 2012
 use"_temp2012_v3", clear
 gen duration2=.
-label define duration2 1"Short" 2"Med" 3"Long"
+label define duration2 1"Duration: Short-term" 2"Duration: Medium-term" 3"Duration: Long-term"
 label values duration2 duration2
 replace duration2=1 if duration==1
 replace duration2=1 if duration==2
@@ -397,7 +397,7 @@ save"_temp2012_v4", replace
 * 2019
 use"_temp2019_v3", clear
 gen duration2=.
-label define duration2 1"Short" 2"Med" 3"Long"
+label define duration2 1"Duration: Short-term" 2"Duration: Medium-term" 3"Duration: Long-term"
 label values duration2 duration2
 replace duration2=1 if duration==1
 replace duration2=2 if duration==2
@@ -409,7 +409,7 @@ save"_temp2019_v4", replace
 * 1992
 use"_temp1992_v4", clear
 gen interest2=.
-label define interest2 0"No interest" 1"Interest"
+label define interest2 0"Interest: No" 1"Interest: Yes"
 label values interest2 interest2
 replace interest2=0 if interest==1
 replace interest2=1 if interest==2
@@ -420,7 +420,7 @@ save"_temp1992_v5", replace
 * 2002
 use"_temp2002_v4", clear
 gen interest2=.
-label define interest2 0"No interest" 1"Interest"
+label define interest2 0"Interest: No" 1"Interest: Yes"
 label values interest2 interest2
 replace interest2=0 if interest==1
 replace interest2=1 if interest==2
@@ -431,7 +431,7 @@ save"_temp2002_v5", replace
 * 2012
 use"_temp2012_v4", clear
 gen interest2=.
-label define interest2 0"No interest" 1"Interest"
+label define interest2 0"Interest: No" 1"Interest: Yes"
 label values interest2 interest2
 replace interest2=0 if interest==1
 replace interest2=1 if interest==2
@@ -442,7 +442,7 @@ save"_temp2012_v5", replace
 * 2019
 use"_temp2019_v4", clear
 gen interest2=.
-label define interest2 0"No interest" 1"Interest"
+label define interest2 0"Interest: No" 1"Interest: Yes"
 label values interest2 interest2
 replace interest2=0 if interest==1
 replace interest2=1 if interest==2
@@ -455,7 +455,7 @@ save"_temp2019_v5", replace
 * 1992
 use"_temp1992_v5", clear
 gen reason2=.
-label define reason2 1"Investment" 2"Litigation" 3"Repayment" 4"Household" 77"Other"
+label define reason2 1"Reason: Investment" 2"Reason: Litigation" 3"Reason: Repayment" 4"Reason: Household" 77"Reason: Other"
 label values reason2 reason2
 replace reason2=1 if reason==1
 replace reason2=1 if reason==2
@@ -466,7 +466,7 @@ save"_temp1992_v6", replace
 * 2002
 use"_temp2002_v5", clear
 gen reason2=.
-label define reason2 1"Investment" 2"Litigation" 3"Repayment" 4"Household" 77"Other"
+label define reason2 1"Reason: Investment" 2"Reason: Litigation" 3"Reason: Repayment" 4"Reason: Household" 77"Reason: Other"
 label values reason2 reason2
 replace reason2=1 if reason>=1 & reason<=4
 replace reason2=1 if reason==8
@@ -479,7 +479,7 @@ save"_temp2002_v6", replace
 * 2012
 use"_temp2012_v5", clear
 gen reason2=.
-label define reason2 1"Investment" 2"Litigation" 3"Repayment" 4"Household" 77"Other"
+label define reason2 1"Reason: Investment" 2"Reason: Litigation" 3"Reason: Repayment" 4"Reason: Household" 77"Reason: Other"
 label values reason2 reason2
 replace reason2=1 if reason>=1 & reason<=4
 replace reason2=1 if reason==7
@@ -495,7 +495,7 @@ save"_temp2012_v6", replace
 * 2019
 use"_temp2019_v5", clear
 gen reason2=.
-label define reason2 1"Investment" 2"Litigation" 3"Repayment" 4"Household" 77"Other"
+label define reason2 1"Reason: Investment" 2"Reason: Litigation" 3"Reason: Repayment" 4"Reason: Household" 77"Reason: Other"
 label values reason2 reason2
 replace reason2=1 if reason>=1 & reason<=4
 replace reason2=1 if reason==7
@@ -619,7 +619,7 @@ drop ca1992 ca2002 ca2012 ca2019
 
 * Security
 gen security2=.
-label define security2 0"None or personal" 1"Yes (material, admin, etc.)"
+label define security2 0"Security: No" 1"Security: Yes"
 label values security2 security2
 replace security2=0 if security==1 & year==1992
 replace security2=1 if security>=2 & security<=10 & year==1992
@@ -702,14 +702,10 @@ ta reason2 year, col nofreq
 recode lender2 (2=77)
 
 * Label
-label define cat3amount 1"Low" 2"Mid" 3"High"
+label define cat3amount 1"Amount: Low" 2"Amount: Medium" 3"Amount: High"
 label values cat3amount cat3amount
-
-label define cat5amount 1"Vlow" 2"Low" 3"Mid" 4"High" 5"Vhigh"
+label define cat5amount 1"Amount: Vlow" 2"Amount: Low" 3"Amount: Medium" 4"Amount: High" 5"Amount: Vhigh"
 label values cat5amount cat5amount
-
-label define interest 1"Free" 2"Simple" 3"Compound"
-label values interest interest
 
 * Reason3
 ta reason if year==2012 | year==2019
@@ -722,14 +718,129 @@ fre reason3
 recode reason3 (5=9) (7=9) (2=1) (4=3) (6=12) (8=12)
 fre reason3
 
+* Interest
+label define interest 1"Interest: Free" 2"Interest: Simple" 3"Interest: Compound"
+label values interest interest
+recode interest (.=1) (4=99) (9=99)
+ta interest
+
 * Lender3
 ta lender if year==2012
 ta lender if year==2019
 
-
 * Indiv id
 egen uniqueid=group(HHID loanid)
 order uniqueid, first
+
+* State
+/*
+Nouveaux Etats qui n'existaient pas en 1992
+"Uttarakhand"
+"Jharkhand"
+"Chhattisgarh"
+"Telengana"
+*/
+destring State, replace
+gen State_label=.
+replace State_label=State if year==2002
+replace State_label=State if year==2012
+replace State_label=State if year==2019
+label define State_label ///
+1"Jammu & Kashmir" ///
+2"Himanchal Pradesh" ///
+3"Punjab" ///
+4"Chandigarh" ///
+5"Uttarakhand" ///
+6"Haryana" ///
+7"Delhi" ///
+8"Rajasthan" ///
+9"Uttar Pradesh" ///
+10"Bihar" ///
+11"Sikkim" ///
+12"Arunachal Pradesh" ///
+13"Nagaland" ///
+14"Manipur" ///
+15"Mizoram" ///
+16"Tripura" ///
+17"Meghalaya" ///
+18"Assam" ///
+19"West Bengal" ///
+20"Jharkhand" ///
+21"Orissa" ///
+22"Chhattisgarh" ///
+23"Madhya Pradesh" ///
+24"Gujarat" ///
+25"Daman & Diu" ///
+26"Dadra & Nagar Haveli" ///
+27"Maharastra" ///
+28"Andhra Pradesh" ///
+29"Karnataka" ///
+30"Goa" ///
+31"Lakshadweep" ///
+32"Kerala" ///
+33"Tamil Nadu" ///
+34"Puducherry" ///
+35"Andaman & Nicober Islands" ///
+36"Telengana"
+label values State_label State_label
+
+gen State_label1992=.
+replace State_label1992=State if year==1992
+label define State_label1992 ///
+2"Andhra Pradesh" ///
+3"Assam" ///
+4"Bihar" ///
+5"Gujarat" ///
+6"Haryana" ///
+7"Himanchal Pradesh" ///
+8"Jammu & Kashmir" ///
+9"Karnataka" ///
+10"Kerala" ///
+11"Madhya Pradesh" ///
+12"Maharastra" ///
+13"Manipur" ///
+14"Meghalaya" ///
+15"Nagaland" ///
+16"Orissa" ///
+17"Punjab" ///
+18"Rajasthan" ///
+19"Sikkim" ///
+20"Tamil Nadu" ///
+21"Tripura" ///
+22"Uttar Pradesh" ///
+23"West Bengal" ///
+24"Andaman & Nicober Islands" ///
+25"Arunachal Pradesh" ///
+26"Chandigarh" ///
+27"Dadra & Nagar Haveli" ///
+28"Delhi" ///
+29"Goa" ///
+30"Lakshadweep" ///
+31"Mizoram" ///
+32"Puducherry" ///
+33"Daman & Diu" 
+label values State_label1992 State_label1992
+
+decode State_label1992, gen(State_label1992_dec)
+decode State_label, gen(State_label_dec)
+drop State_label1992 State_label
+gen State_label=""
+replace State_label=State_label1992_dec if year==1992
+replace State_label=State_label_dec if year==2002
+replace State_label=State_label_dec if year==2012
+replace State_label=State_label_dec if year==2019
+drop State_label1992_dec State_label_dec
+ta State_label year, m
+
+order State_label, after(State)
+rename State State_nss
+rename State_label State
+
+* Sector
+destring Sector, replace
+label define Sector 1"Rural" 2"Urban"
+label values Sector Sector
+ta Sector
 
 save "Loans_v1", replace
 ****************************************
