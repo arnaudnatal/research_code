@@ -7,8 +7,8 @@ cls
 gl link = "indiandebt"
 *MCA
 *-----
-*do"C:/Users/Arnaud/Documents/GitHub/folderanalysis/$link.do"
-cd"C:\Users\anatal\Documents\id"
+do"C:/Users/Arnaud/Documents/GitHub/folderanalysis/$link.do"
+*cd"C:\Users\anatal\Documents\id"
 *-------------------------
 
 
@@ -119,7 +119,7 @@ restore
 
 
 ****************************************
-* HCPC FactoMineR
+* Indiandebt-02_HCHCPCP.R
 ****************************************
 
 
@@ -243,28 +243,33 @@ save"Loans_v4", replace
 ****************************************
 use"Loans_v4", clear
 
+* N
+ta clusters1
+tabstat amount2, stat(mean) by(clusters1)
+
 * Evolution over time
 ta clusters1 year, col nofreq
 ta clusters1 year, chi2 cchi2 exp
 
 * Rural / urban
-ta clusters1 Sector, row nofreq
 ta clusters1 Sector, col nofreq
+ta Sector clusters1, row nofreq
 ta clusters1 Sector, chi2 cchi2 exp
 
 * Caste
-ta clusters1 caste2 if caste2!=1, row nofreq
 ta clusters1 caste2 if caste2!=1, col nofreq
+ta caste2 clusters1 if caste2!=1, row nofreq
 ta clusters1 caste2 if caste2!=1, chi2 cchi2 exp
 
 * Religion
-ta clusters1 religion2 if religion2!=1, row nofreq
 ta clusters1 religion2 if religion2!=1, col nofreq
+ta religion2 clusters1 if religion2!=1, row nofreq
 ta clusters1 religion2 if religion2!=1, chi2 cchi2 exp
 
 * State
+ta clusters1 State, col nofreq
 ta State clusters1, row nofreq
-ta State clusters1, chi2 cchi2 exp
+ta clusters1 State, chi2 cchi2 exp
 
 ****************************************
 * END
