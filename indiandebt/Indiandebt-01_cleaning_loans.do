@@ -7,8 +7,8 @@ cls
 gl link = "indiandebt"
 *Cleaning AIDIS
 *-----
-*do"C:/Users/Arnaud/Documents/GitHub/folderanalysis/$link.do"
-cd"C:\Users\anatal\Documents\id"
+do"C:/Users/Arnaud/Documents/GitHub/folderanalysis/$link.do"
+*cd"C:\Users\anatal\Documents\id"
 *-------------------------
 
 
@@ -638,6 +638,8 @@ foreach i in 1992 2002 2012 2019 {
 replace cat5amount=ca`i' if year==`i'
 }
 drop ca1992 ca2002 ca2012 ca2019
+label define cat5amount 1"Amount: Vlow" 2"Amount: Low" 3"Amount: Medium" 4"Amount: High" 5"Amount: Vhigh"
+label values cat5amount cat5amount
 *
 foreach i in 1992 2002 2012 2019 {
 xtile ca`i'=amount if year==`i', n(3)
@@ -647,6 +649,59 @@ foreach i in 1992 2002 2012 2019 {
 replace cat3amount=ca`i' if year==`i'
 }
 drop ca1992 ca2002 ca2012 ca2019
+label define cat3amount 1"Amount: Low" 2"Amount: Medium" 3"Amount: High"
+label values cat3amount cat3amount
+*
+foreach i in 1992 2002 2012 2019 {
+xtile ca`i'=amount if year==`i', n(10)
+}
+gen cat10amount=.
+foreach i in 1992 2002 2012 2019 {
+replace cat10amount=ca`i' if year==`i'
+}
+drop ca1992 ca2002 ca2012 ca2019
+*
+ta cat10amount
+gen catamount1=.
+replace catamount1=1 if cat10amount==1
+replace catamount1=2 if cat10amount==2
+replace catamount1=2 if cat10amount==3
+replace catamount1=2 if cat10amount==4
+replace catamount1=2 if cat10amount==5
+replace catamount1=2 if cat10amount==6
+replace catamount1=2 if cat10amount==7
+replace catamount1=2 if cat10amount==8
+replace catamount1=2 if cat10amount==9
+replace catamount1=3 if cat10amount==10
+label values catamount1 cat3amount 
+
+gen catamount2=.
+replace catamount2=1 if cat10amount==1
+replace catamount2=1 if cat10amount==2
+replace catamount2=2 if cat10amount==3
+replace catamount2=2 if cat10amount==4
+replace catamount2=2 if cat10amount==5
+replace catamount2=2 if cat10amount==6
+replace catamount2=2 if cat10amount==7
+replace catamount2=2 if cat10amount==8
+replace catamount2=3 if cat10amount==9
+replace catamount2=3 if cat10amount==10
+label values catamount2 cat3amount 
+
+gen catamount3=.
+replace catamount3=1 if cat10amount==1
+replace catamount3=2 if cat10amount==2
+replace catamount3=2 if cat10amount==3
+replace catamount3=3 if cat10amount==4
+replace catamount3=3 if cat10amount==5
+replace catamount3=3 if cat10amount==6
+replace catamount3=3 if cat10amount==7
+replace catamount3=4 if cat10amount==8
+replace catamount3=4 if cat10amount==9
+replace catamount3=5 if cat10amount==10
+label values catamount3 cat5amount 
+
+ta catamount3
 
 * Security
 gen security2=.
@@ -674,22 +729,60 @@ ta reason2 year, col nofreq
 * Lender
 recode lender2 (2=77)
 
-* Label
-label define cat3amount 1"Amount: Low" 2"Amount: Medium" 3"Amount: High"
-label values cat3amount cat3amount
-label define cat5amount 1"Amount: Vlow" 2"Amount: Low" 3"Amount: Medium" 4"Amount: High" 5"Amount: Vhigh"
-label values cat5amount cat5amount
-
 * Reason3
+fre reason2
 ta reason if year==2012 | year==2019
 gen reason3=.
-label define reason3 1"Capital exp farm" 2"Current exp farm" 3"Capital exp non-farm bus" 4"Current exp non-farm bus" 5"Exp litigation" 6"Repay" 7"Fin invest" 8"Educ" 9"Oth" 10"Health" 11"Housing" 12"Oth hh exp"
 label values reason3 reason3
 replace reason3=reason if year==2012
 replace reason3=reason if year==2019
+label define reason3 1"Reason: Capital (farm)" 2"Reason: Current (farm)" 3"Reason: Capital (non-farm)" 4"Reason: Current (non-farm)" 5"Reason: Litigation" 6"Reason: Repay" 7"Reason: Fin invest" 8"Reason: Education" 9"Reason: Other" 10"Reason: Health" 11"Reason: Housing" 12"Reason: Other household"
+label values reason3 reason3
+ta reason3
+
+* Reason4
 fre reason3
-recode reason3 (5=9) (7=9) (2=1) (4=3) (6=12) (8=12)
-fre reason3
+gen reason4=.
+replace reason4=1 if reason3==1
+replace reason4=1 if reason3==2
+replace reason4=2 if reason3==3
+replace reason4=2 if reason3==4
+replace reason4=77 if reason3==5
+replace reason4=5 if reason3==6
+replace reason4=77 if reason3==7
+replace reason4=3 if reason3==8
+replace reason4=77 if reason3==9
+replace reason4=3 if reason3==10
+replace reason4=4 if reason3==11
+replace reason4=5 if reason3==12
+label define reason4 ///
+1"Reason: Farm inv" ///
+2"Reason: Non-farm inv" ///
+3"Reason: Human capital" ///
+4"Reason: Housing" ///
+5"Reason: Household" ///
+77"Reason: Other"
+label values reason4 reason4
+ta reason3 reason4
+
+* Reason5
+fre reason4
+gen reason5=.
+replace reason5=1 if reason4==1
+replace reason5=1 if reason4==2
+replace reason5=2 if reason4==3
+replace reason5=3 if reason4==4
+replace reason5=4 if reason4==5
+replace reason5=5 if reason4==6
+replace reason5=77 if reason4==77
+label define reason5 ///
+1"Reason: Investment" ///
+2"Reason: Human capital" ///
+3"Reason: Housing" ///
+4"Reason: Household" ///
+77"Reason: Other"
+label values reason5 reason5
+ta reason4 reason5
 
 * Interest
 label define interest 1"Interest: Free" 2"Interest: Simple" 3"Interest: Compound"

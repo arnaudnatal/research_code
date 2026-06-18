@@ -7,8 +7,8 @@ cls
 gl link = "indiandebt"
 *Cleaning AIDIS
 *-----
-*do"C:/Users/Arnaud/Documents/GitHub/folderanalysis/$link.do"
-cd"C:\Users\anatal\Documents\id"
+do"C:/Users/Arnaud/Documents/GitHub/folderanalysis/$link.do"
+*cd"C:\Users\anatal\Documents\id"
 *-------------------------
 
 
@@ -222,7 +222,7 @@ use "Loans_v1", clear
 
 drop amount lender scheme duration reason security religion caste
 
-order uniqueid HHID year Sector State District Weight caste religion HHsize loanid amount cat5amount cat3amount lender2 reason2 reason3 interest interest2 duration security2 scheme2
+order uniqueid HHID year Sector State District Weight caste religion HHsize loanid amount catamount3 lender2 reason2 reason3 reason4 reason5 interest interest2 duration security2 scheme2
 
 ta year
 

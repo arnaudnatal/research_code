@@ -75,9 +75,11 @@ ta scheme2 year, col nofreq
 ****************************************
 use"Loans_v2", clear
 
-********** Preparation base 1992/2019
+
+********** All
 preserve
-global var cat3amount cat5amount lender2 reason2 interest interest2 duration2 security2 scheme2
+global var catamount2 catamount3 lender2 reason2 interest duration2 security2 scheme2 interest2
+*drop if interest==99
 keep uniqueid $var
 egen nbmiss=rowmiss($var)
 ta nbmiss
@@ -88,14 +90,15 @@ decode `x', gen(dec_`x')
 drop `x'
 rename dec_`x' `x'
 }
-export delimited using "Allloans_9219.csv", replace
+export delimited using "Allloans_all.csv", replace
 restore
 
-********** Preparation base 2012/2019
+********** Rural
 preserve
-global var cat3amount lender2 reason2 reason3 interest duration2 security2 scheme2
-keep if year==2012 | year==2019
-drop if interest==99
+fre Sector
+keep if Sector==1
+global var catamount2 catamount3 lender2 reason2 interest duration2 security2 scheme2 interest2
+*drop if interest==99
 keep uniqueid $var
 egen nbmiss=rowmiss($var)
 ta nbmiss
@@ -106,8 +109,47 @@ decode `x', gen(dec_`x')
 drop `x'
 rename dec_`x' `x'
 }
-export delimited using "Allloans_1219.csv", replace
+export delimited using "Allloans_rural.csv", replace
 restore
+
+********** All recent
+preserve
+keep if year==2012 | year==2019
+global var catamount2 catamount3 lender2 reason5 interest duration2 security2 scheme2 interest2
+*drop if interest==99
+keep uniqueid $var
+egen nbmiss=rowmiss($var)
+ta nbmiss
+keep if nbmiss==0
+drop nbmiss
+foreach x in $var {
+decode `x', gen(dec_`x')
+drop `x'
+rename dec_`x' `x'
+}
+export delimited using "Allloans_allrecent.csv", replace
+restore
+
+********** Rural recent
+preserve
+fre Sector
+keep if Sector==1
+keep if year==2012 | year==2019
+global var catamount2 catamount3 lender2 reason5 interest duration2 security2 scheme2 interest2
+*drop if interest==99
+keep uniqueid $var
+egen nbmiss=rowmiss($var)
+ta nbmiss
+keep if nbmiss==0
+drop nbmiss
+foreach x in $var {
+decode `x', gen(dec_`x')
+drop `x'
+rename dec_`x' `x'
+}
+export delimited using "Allloans_ruralrecent.csv", replace
+restore
+
 
 ****************************************
 * END
@@ -119,8 +161,11 @@ restore
 
 
 ****************************************
-* Indiandebt-02_HCHCPCP.R
+* Indiandebt-02_HCPC.R
 ****************************************
+
+
+
 
 
 
@@ -132,22 +177,44 @@ restore
 * Import
 ****************************************
 
-***** 9219
-import delimited using "Allloans_9219_res.csv", clear
-keep uniqueid clusters1
-save"_temp9219", replace
+***** All
+import delimited using "Allloans_all_res.csv", clear
+keep uniqueid cluster
+ta cluster
+rename cluster clust_all
+save"_tempall", replace
 
-***** 1219
-import delimited using "Allloans_1219_res.csv", clear
-keep uniqueid clusters2
-save"_temp1219", replace
+***** All recent
+import delimited using "Allloans_allrecent_res.csv", clear
+keep uniqueid cluster
+ta cluster
+rename cluster clust_allrecent
+save"_tempallrecent", replace
+
+***** Rural
+import delimited using "Allloans_rural_res.csv", clear
+keep uniqueid cluster
+ta cluster
+rename cluster clust_rural
+save"_temprural", replace
+
+***** Rural recent
+import delimited using "Allloans_ruralrecent_res.csv", clear
+keep uniqueid cluster
+ta cluster
+rename cluster clust_ruralrecent
+save"_tempruralrecent", replace
 
 ***** Merge
 use"Loans_v2", clear
 
-merge 1:1 uniqueid using"_temp9219"
+merge 1:1 uniqueid using"_tempall"
 drop _merge
-merge 1:1 uniqueid using"_temp1219"
+merge 1:1 uniqueid using"_tempallrecent"
+drop _merge
+merge 1:1 uniqueid using"_temprural"
+drop _merge
+merge 1:1 uniqueid using"_tempruralrecent"
 drop _merge
 
 save"Loans_v3", replace
@@ -161,72 +228,136 @@ save"Loans_v3", replace
 
 
 
+
+
+
+
 ****************************************
 * Definition
 ****************************************
 use"Loans_v3", clear
 
-*** Verif N
-ta clusters1
-ta clusters2
 
-*** 1992 à 2019
-ta lender2 clusters1, row nofreq
-ta reason2 clusters1, row nofreq
-ta cat3amount clusters1, row nofreq
-ta interest2 clusters1, row nofreq
-ta security2 clusters1, row nofreq
-ta duration2 clusters1, row nofreq
-ta scheme2 clusters1, row nofreq
+*** All
+ta lender2 clust_all, row nofreq
+ta reason2 clust_all, row nofreq
+ta catamount3 clust_all, row nofreq
+ta interest clust_all, row nofreq
+ta security2 clust_all, row nofreq
+ta duration2 clust_all, row nofreq
+ta scheme2 clust_all, row nofreq
 
-ta lender2 clusters1, col nofreq
-ta reason2 clusters1, col nofreq
-ta cat3amount clusters1, col nofreq
-ta interest2 clusters1, col nofreq
-ta security2 clusters1, col nofreq
-ta duration2 clusters1, col nofreq
-ta scheme2 clusters1, col nofreq
+ta lender2 clust_all, col nofreq
+ta reason2 clust_all, col nofreq
+ta catamount3 clust_all, col nofreq
+ta interest clust_all, col nofreq
+ta security2 clust_all, col nofreq
+ta duration2 clust_all, col nofreq
+ta scheme2 clust_all, col nofreq
+
+label define clust_all ///
+1"Institutional" ///
+2"Other reason" ///
+3"Moneylenders" ///
+4"Other lenders" ///
+5"Informal"
+label values clust_all clust_all
+ta clust_all
 
 
-label define clusters1 ///
-1"Family investment" ///
-2"Investment" ///
-3"Survival" ///
-4"Other purpose" ///
-5"Moneylenders" ///
-6"Other lender" ///
-7"Informal" 
-label values clusters1 clusters1
-ta clusters1
 
-*** 2012 à 2019
-ta reason3 clusters2, row nofreq
-ta lender2 clusters2, row nofreq
-ta duration2 clusters2, row nofreq
-ta interest clusters2, row nofreq
-ta scheme2 clusters2, row nofreq
-ta security2 clusters2, row nofreq
-ta cat3amount clusters2, row nofreq
 
-ta reason3 clusters2, col nofreq
-ta lender2 clusters2, col nofreq
-ta duration2 clusters2, col nofreq
-ta interest clusters2, col nofreq
-ta scheme2 clusters2, col nofreq
-ta security2 clusters2, col nofreq
-ta cat3amount clusters2, col nofreq
+*** All recent
+ta lender2 clust_allrecent, row nofreq
+ta reason4 clust_allrecent, row nofreq
+ta catamount3 clust_allrecent, row nofreq
+ta interest clust_allrecent, row nofreq
+ta security2 clust_allrecent, row nofreq
+ta duration2 clust_allrecent, row nofreq
+ta scheme2 clust_allrecent, row nofreq
 
-label define clusters2 ///
-1"Formal agri investment" ///
-2"Housing" ///
-3"Non-agri investment" ///
-4"Other purpose" ///
-5"Health" ///
+ta lender2 clust_allrecent, col nofreq
+ta reason4 clust_allrecent, col nofreq
+ta catamount3 clust_allrecent, col nofreq
+ta interest clust_allrecent, col nofreq
+ta security2 clust_allrecent, col nofreq
+ta duration2 clust_allrecent, col nofreq
+ta scheme2 clust_allrecent, col nofreq
+
+label define clust_allrecent ///
+1"Institutional" ///
+2"Non-farm inv" ///
+3"Other reason" ///
+4"Informal" ///
+5"Other lender"
+label values clust_allrecent clust_allrecent
+ta clust_allrecent
+
+
+*** Rural
+ta lender2 clust_rural, row nofreq
+ta reason2 clust_rural, row nofreq
+ta catamount3 clust_rural, row nofreq
+ta interest clust_rural, row nofreq
+ta security2 clust_rural, row nofreq
+ta duration2 clust_rural, row nofreq
+ta scheme2 clust_rural, row nofreq
+
+ta lender2 clust_rural, col nofreq
+ta reason2 clust_rural, col nofreq
+ta catamount3 clust_rural, col nofreq
+ta interest clust_rural, col nofreq
+ta security2 clust_rural, col nofreq
+ta duration2 clust_rural, col nofreq
+ta scheme2 clust_rural, col nofreq
+
+label define clust_rural ///
+1"Informal" ///
+2"Other lenders" ///
+3"Moneylenders" ///
+4"Other reason" ///
+5"Vhigh amount" ///
+6"Institutional"
+label values clust_rural clust_rural
+ta clust_rural
+
+
+
+
+*** Rural recent
+ta lender2 clust_ruralrecent, row nofreq
+ta reason4 clust_ruralrecent, row nofreq
+ta catamount3 clust_ruralrecent, row nofreq
+ta interest clust_ruralrecent, row nofreq
+ta security2 clust_ruralrecent, row nofreq
+ta duration2 clust_ruralrecent, row nofreq
+ta scheme2 clust_ruralrecent, row nofreq
+
+ta lender2 clust_ruralrecent, col nofreq
+ta reason4 clust_ruralrecent, col nofreq
+ta catamount3 clust_ruralrecent, col nofreq
+ta interest clust_ruralrecent, col nofreq
+ta security2 clust_ruralrecent, col nofreq
+ta duration2 clust_ruralrecent, col nofreq
+ta scheme2 clust_ruralrecent, col nofreq
+
+label define clust_rural ///
+1"Institutional" ///
+2"Vhigh" ///
+3"Non-farm inv" ///
+4"Other reason" ///
+5"Human capital" ///
 6"Moneylenders" ///
-7"Other lender" ///
-8"Informal"
-label values clusters2 clusters2
-ta clusters2
+7"Other lenders" ///
+8"Friends"
+label values clust_rural clust_rural
+ta clust_rural
+
+
+
+
+
+
 
 save"Loans_v4", replace
 ****************************************
