@@ -48,6 +48,17 @@ replace caste="Others" if caste=="9" & year==2019
 
 encode caste, gen(caste2)
 
+gen caste3=.
+label define caste3 1"Caste: SC/ST" 2"Caste: OBC" 3"Caste: Others"
+label values caste3 caste3
+replace caste3=3 if caste2==1
+replace caste3=2 if caste2==2
+replace caste3=3 if caste2==3
+replace caste3=1 if caste2==4
+replace caste3=1 if caste2==5
+
+ta caste2 caste3
+
 * Religion
 tostring religion, replace
 
@@ -81,6 +92,23 @@ replace religion="Zoro" if religion=="7" & year==2019
 replace religion="Others" if religion=="9" & year==2019
 
 encode religion, gen(religion2)
+fre religion2
+
+* Religion3
+gen religion3=.
+label define religion3 1"Reli: Hindu" 2"Reli: Muslim" 3"Reli: Christian" 4"Reli: Other"
+label values religion3 religion3
+replace religion3=4 if religion2==1
+replace religion3=4 if religion2==2
+replace religion3=3 if religion2==3
+replace religion3=1 if religion2==4
+replace religion3=4 if religion2==5
+replace religion3=2 if religion2==6
+replace religion3=4 if religion2==7
+replace religion3=4 if religion2==8
+replace religion3=4 if religion2==9
+
+ta religion2 religion3
 
 
 
@@ -194,7 +222,7 @@ label define Sector 1"Rural" 2"Urban"
 label values Sector Sector
 ta Sector
 
-save "Loans_v1", replace
+save "Loans_v2", replace
 ****************************************
 * END
 
@@ -218,14 +246,28 @@ save "Loans_v1", replace
 ****************************************
 * Selection
 ****************************************
-use "Loans_v1", clear
+use "Loans_v2", clear
 
-drop amount lender scheme duration reason security religion caste
+global loanvar loanid ///
+amount2 amount3cat1 amount3cat2 amount3cat3 amount5cat1 amount5cat2 amount10cat1 ///
+lender2 lender3 lender4 ///
+reason2 reason4 reason5 reason7 ///
+interest interest2 ///
+duration2 security2 scheme2
 
-order uniqueid HHID year Sector State District Weight caste religion HHsize loanid amount catamount3 lender2 reason2 reason3 reason4 reason5 interest interest2 duration security2 scheme2
+
+keep uniqueid HHID year Sector State District Weight ///
+caste3 religion3 HHsize ///
+$loanvar
+
+order uniqueid HHID year Sector State District Weight ///
+caste3 religion3 HHsize ///
+$loanvar
 
 ta year
 
-save "Loans_v2", replace
+drop if interest==99
+
+save "Loans_v3", replace
 ****************************************
 * END

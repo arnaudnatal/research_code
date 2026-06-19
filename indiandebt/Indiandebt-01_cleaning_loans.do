@@ -37,15 +37,16 @@ rename B17_2_q7 scheme
 rename B17_2_q8 duration
 rename B17_2_q9 interest
 rename B17_2_q11 reason
+rename B17_2_q12 reasonbis
 rename B17_2_q13 security
 
 * Selection
 keep HHID ///
 Sector State ///
-amount lender scheme duration interest reason security
+amount lender scheme duration interest reason reasonbis security
 
 * Destring
-destring lender scheme duration interest reason security, replace
+destring lender scheme duration interest reason reasonbis security, replace
 
 * Merge
 merge m:1 HHID using "raw/NSSO1992/Blocks 1,2,3,4,5_Visit 1_Household characteristics.dta", keepusing(B5_q1 B5_q3 B5_q5 Informant_Reln_Head)
@@ -188,20 +189,6 @@ destring HHsize HHtype religion caste, replace
 * Order
 order HHID Sector State District Weight caste religion HHsize HHtype
 
-/*
-b3q8  -- Does any member have any bank account?
-b3q12 -- Receive any remittance during last 365 days?
-
-b4q1  -- Person serial no.
-b4q3  -- Relationship to head
-b4q4  -- Sex
-b4q5  -- Age
-b4q6  -- General education
-b4q7  -- Worker as per usual principal activity status
-b4q8  -- Usual activity-principal status
-b4q9  -- Usual activity-NIC-2008 code
-*/
-
 save"_temp2012", replace
 ****************************************
 * END
@@ -264,23 +251,6 @@ destring HHsize HHtype religion caste, replace
 order HHID Sector State District Weight caste religion HHsize HHtype
 
 save"_temp2019", replace
-
-/*
-block 3 -- 77th_V_I_Final.pdf (p. 185)
-31  -- Person serial no.
-33  -- Relationship to head
-34  -- Sex
-35  -- Age
-36  -- General education
-37  -- Worker as per usual principal activity status
-  -- Usual activity-principal status
-  -- Usual activity-NIC-2008 code
-
-
-Column 7: whether holding deposit account in Commercial bank/ RRB/Co-operative
-bank: 
-*/
-
 
 ****************************************
 * END
@@ -610,7 +580,7 @@ save "Loans_v0", replace
 use "Loans_v0", clear
 
 
-* Amount
+***** Amount
 /*
 CPI base 100 en 2010: https://databank.worldbank.org/source/world-development-indicators/Series/FP.CPI.TOTL
 1992	 29.2
@@ -701,9 +671,16 @@ replace catamount3=4 if cat10amount==9
 replace catamount3=5 if cat10amount==10
 label values catamount3 cat5amount 
 
-ta catamount3
+rename catamount1 amount3cat1
+rename catamount2 amount3cat2
+rename cat3amount amount3cat3
+rename catamount3 amount5cat1
+rename cat5amount amount5cat2
+rename cat10amount amount10cat1
 
-* Security
+
+
+***** Security
 gen security2=.
 label define security2 0"Security: No" 1"Security: Yes"
 label values security2 security2
@@ -717,19 +694,19 @@ replace security2=0 if security==2 & year==2019
 replace security2=1 if security==1 & year==2019
 replace security2=0 if security==.
 
-* Cleaning
+***** Cleaning
 drop HHtype
 bys HHID year: gen loanid=_n
 
-* Reason
+***** Lender2
+recode lender2 (2=77)
+
+***** Reason
 fre reason2
 recode reason2 (2=77) (3=4)
 ta reason2 year, col nofreq
 
-* Lender
-recode lender2 (2=77)
-
-* Reason3
+***** Reason3
 fre reason2
 ta reason if year==2012 | year==2019
 gen reason3=.
@@ -740,7 +717,7 @@ label define reason3 1"Reason: Capital (farm)" 2"Reason: Current (farm)" 3"Reaso
 label values reason3 reason3
 ta reason3
 
-* Reason4
+***** Reason4
 fre reason3
 gen reason4=.
 replace reason4=1 if reason3==1
@@ -765,7 +742,7 @@ label define reason4 ///
 label values reason4 reason4
 ta reason3 reason4
 
-* Reason5
+***** Reason5
 fre reason4
 gen reason5=.
 replace reason5=1 if reason4==1
@@ -784,17 +761,129 @@ label define reason5 ///
 label values reason5 reason5
 ta reason4 reason5
 
-* Interest
+***** Reason6
+fre reason2
+gen reason6=.
+label define reason6 1"Reason: Farm" 2"Reason: Business" 3"Reason: Household" 4"Reason: Repay" 5"Reason: Financial invest" 6"Reason: Other"
+label values reason6 reason6
+foreach y in 2002 2012 2019 {
+gen reason`y'=reason
+}
+gen reason1992=.
+replace reason1992=1 if year==1992 & reason==1 & reasonbis==1
+replace reason1992=1 if year==1992 & reason==2 & reasonbis==1
+replace reason1992=1 if year==1992 & reason==3 & reasonbis==1
+replace reason1992=1 if year==1992 & reason==4 & reasonbis==1
+replace reason1992=1 if year==1992 & reason==5 & reasonbis==1
+replace reason1992=1 if year==1992 & reason==6 & reasonbis==1
+replace reason1992=1 if year==1992 & reason==7 & reasonbis==1
+replace reason1992=1 if year==1992 & reason==8 & reasonbis==1
+replace reason1992=2 if year==1992 & reason==1 & reasonbis==2
+replace reason1992=2 if year==1992 & reason==2 & reasonbis==2
+replace reason1992=2 if year==1992 & reason==3 & reasonbis==2
+replace reason1992=2 if year==1992 & reason==4 & reasonbis==2
+replace reason1992=2 if year==1992 & reason==5 & reasonbis==2
+replace reason1992=2 if year==1992 & reason==6 & reasonbis==2
+replace reason1992=2 if year==1992 & reason==7 & reasonbis==2
+replace reason1992=2 if year==1992 & reason==8 & reasonbis==2
+replace reason1992=3 if year==1992 & reason==1 & reasonbis==3
+replace reason1992=3 if year==1992 & reason==2 & reasonbis==3
+replace reason1992=3 if year==1992 & reason==6 & reasonbis==3
+replace reason1992=3 if year==1992 & reason==7 & reasonbis==3
+replace reason1992=3 if year==1992 & reason==8 & reasonbis==3
+replace reason1992=3 if year==1992 & reason==9
+replace reason1992=3 if year==1992 & reason==10
+replace reason1992=3 if year==1992 & reason==13
+replace reason1992=4 if year==1992 & reason==12
+replace reason1992=5 if year==1992 & reason==11
+replace reason1992=6 if year==1992 & reason==99
+
+replace reason1992=1 if year==1992 & reason1992==. & reason==1
+replace reason1992=2 if year==1992 & reason1992==. & reason==2
+replace reason1992=3 if year==1992 & reason1992==. & reason==3
+
+recode reason2002 (1=1) (2=1) (3=2) (4=2) (5=3) (7=4) (8=5) (9=6) (6=6)
+recode reason2012 (1=1) (2=1) (3=2) (4=2) (8=3) (10=3) (11=3) (12=3) (6=4) (7=5) (9=6) (5=6)
+recode reason2019 (1=1) (2=1) (3=2) (4=2) (8=3) (10=3) (11=3) (12=3) (6=4) (7=5) (9=6) (5=6)
+
+foreach y in 1992 2002 2012 2019 {
+replace reason6=reason`y' if year==`y'
+}
+ta reason6 reason2, m
+ta reason if reason6==. & year==1992
+
+ta reason reason6 if year==1992
+ta reason6 reason2, m
+drop reason1992 reason2002 reason2012 reason2019
+
+ta reason2
+ta reason6
+
+* Reason7
+fre reason6
+gen reason7=.
+label define reason7 1"Reason: Farm" 2"Reason: Business" 3"Reason: Household" 4"Reason: Other"
+label values reason7 reason7
+replace reason7=1 if reason6==1
+replace reason7=2 if reason6==2
+replace reason7=3 if reason6==3
+replace reason7=3 if reason6==4
+replace reason7=4 if reason6==5
+replace reason7=4 if reason6==6
+ta reason6 reason7
+ta reason7 reason2
+
+
+***** Interest
 label define interest 1"Interest: Free" 2"Interest: Simple" 3"Interest: Compound"
 label values interest interest
 recode interest (.=1) (4=99) (9=99)
 ta interest
 
-* Lender3
-ta lender if year==2012
-ta lender if year==2019
+***** Lender3
+ta lender
+ta lender2
+gen lender3=.
+label define lender3 1"Lender: Coop bank" 2"Lender: Bank" 3"Lender: Insurance" 4"Lender: Provident fund" 5"Lender: Other formal" 6"Lender: Landlord" 7"Lender: Agri moneylender" 8"Lender: Pro moneylender" 9"Lender: Relatives/friends" 10"Lender: Other informal" 11"Lender: Other"
+label values lender3 lender3
+foreach y in 1992 2002 2012 2019 {
+gen lender`y'=lender
+}
+recode lender1992 (2=1) (3=2) (4=3) (5=4) (6=5) (7=6) (8=7) (9=8) (11=9) (10=10) (12=10) (1=5) (99=11)
+recode lender2002 (2=1) (3=2) (4=3) (5=4) (6=5) (7=5) (8=5) (9=6) (10=7) (11=8) (13=9) (12=10) (14=10) (1=5) (99=11) 
+recode lender2012 (2=1) (3=2) (4=3) (5=4) (6=5) (7=5) (8=5) (10=5) (11=5) (12=6) (13=7) (14=8) (16=9) (15=10) (17=10) (1=5) (9=11)
+recode lender2019 (3=1) (4=1) (1=2) (2=2) (5=3) (6=4) (8=5) (10=5) (11=5) (12=5) (13=5) (14=6) (15=7) (16=8) (18=9) (7=10) (17=10) (20=10) (9=11) (19=11)
 
-* Indiv id
+foreach y in 1992 2002 2012 2019 {
+replace lender3=lender`y' if year==`y'
+}
+recode lender3 (98=11)
+ta lender3
+drop lender1992 lender2002 lender2012 lender2019
+
+ta lender3 lender2
+
+* Lender4
+ta lender3 year, col nofreq
+gen lender4=.
+label define lender4 1"Lender: Coop bank" 2"Lender: Bank" 3"Lender: Other formal" 4"Lender: Moneylender" 5"Lender: Relatives/friends" 6"Lender: Other informal" 7"Lender: Other"
+label values lender4 lender4
+replace lender4=1 if lender3==1
+replace lender4=2 if lender3==2
+replace lender4=3 if lender3==3
+replace lender4=3 if lender3==4
+replace lender4=3 if lender3==5
+replace lender4=6 if lender3==6
+replace lender4=4 if lender3==7
+replace lender4=4 if lender3==8
+replace lender4=5 if lender3==9
+replace lender4=6 if lender3==10
+replace lender4=7 if lender3==11
+
+ta lender3 lender4
+ta lender4 year, col nofreq
+
+***** Indiv id
 egen uniqueid=group(HHID loanid)
 order uniqueid, first
 

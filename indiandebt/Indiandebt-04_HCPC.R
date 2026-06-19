@@ -1,4 +1,4 @@
-##### Rural/Urbain "OK"
+##### Rural/Urban
 
 ### Initialisation 
 rm(list=ls())
@@ -10,9 +10,9 @@ setwd("C:/Users/Arnaud/Documents/MEGA/Research/Ongoing_Indiandebt/Analysis")
 
 ### Import
 data<-read.csv("Allloans_all.csv")
-var<-data[,c("lender2", "reason2", "catamount2", "interest2", "security2", "duration2", "scheme2"), drop = FALSE]
+var<-data[,c("amount3cat2", "lender4", "reason2", "interest2", "security2", "duration2", "scheme2"), drop = FALSE]
 
-### MCA (12 dim)
+### MCA
 nbaxe<-MCA(var, ncp=50, graph=FALSE)
 nbaxe$eig
 res_mca<-MCA(var, ncp=8, graph=FALSE)
@@ -24,8 +24,8 @@ res_mca<-MCA(var, ncp=8, graph=FALSE)
 #res_mca$var$v.test
 
 ### HCPC
-set.seed(1234)
-res_hcpc<-HCPC(res_mca, kk=500, description=FALSE, graph=FALSE, consol=FALSE)
+set.seed(123)
+res_hcpc<-HCPC(res_mca, kk=100, description=FALSE, graph=FALSE, consol=FALSE)
 plot(res_hcpc,choice="tree")
 #plot(res_hcpc,choice="tree", rect=FALSE)
 #plot(res_hcpc,choice="map", draw.tree=FALSE)
@@ -49,7 +49,7 @@ write.csv(data_clustered, "Allloans_all_res.csv", row.names = FALSE, fileEncodin
 
 
 
-##### Rural/Urbain récent "OK"
+##### Rural/Urban récent
 
 ### Initialisation 
 rm(list=ls())
@@ -61,12 +61,12 @@ setwd("C:/Users/Arnaud/Documents/MEGA/Research/Ongoing_Indiandebt/Analysis")
 
 ### Import
 data<-read.csv("Allloans_allrecent.csv")
-var<-data[,c("lender2", "reason5", "catamount2", "interest2", "security2", "duration2", "scheme2"), drop = FALSE]
+var<-data[,c("amount3cat3", "lender4", "reason5", "interest2", "security2", "duration2", "scheme2"), drop = FALSE]
 
 ### MCA
 nbaxe<-MCA(var, ncp=50, graph=FALSE)
 nbaxe$eig
-res_mca<-MCA(var, ncp=10, graph=FALSE)
+res_mca<-MCA(var, ncp=11, graph=FALSE)
 
 #print(res_mca)
 #res_mca$var$coord
@@ -75,9 +75,9 @@ res_mca<-MCA(var, ncp=10, graph=FALSE)
 #res_mca$var$v.test
 
 ### HCPC
-set.seed(123) #123
+set.seed(123)
 res_hcpc<-HCPC(res_mca, kk=500, description=FALSE, graph=FALSE, consol=FALSE)
-plot(res_hcpc,choice="tree") # 7 groupes
+plot(res_hcpc,choice="tree") 
 #plot(res_hcpc,choice="tree", rect=FALSE)
 #plot(res_hcpc,choice="map", draw.tree=FALSE)
 #plot(res_hcpc,choice="3D.map")

@@ -17,69 +17,16 @@ do"C:/Users/Arnaud/Documents/GitHub/folderanalysis/$link.do"
 
 
 
-****************************************
-* Stat desc
-****************************************
-use"Loans_v2", clear
-
-* How many loans?
-ta year
-
-* How many households?
-preserve
-keep HHID year
-duplicates drop
-ta year
-restore
-
-* Amount
-tabstat amount2, stat(mean p50 sd) by(year)
-
-* Reason given
-ta reason2 year, col nofreq
-
-* Lender
-ta lender2 year, col nofreq
-
-* Duration
-ta duration2 year, col nofreq
-
-* Interest
-ta interest2 year, col nofreq
-
-* Security
-ta security2 year, col nofreq
-
-* Scheme
-ta scheme2 year, col nofreq
-
-****************************************
-* END
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 ****************************************
 * Export
 ****************************************
-use"Loans_v2", clear
+use"Loans_v3", clear
 
 
 ********** All
 preserve
-global var catamount2 catamount3 lender2 reason2 interest duration2 security2 scheme2 interest2
-*drop if interest==99
+global var amount3cat2 amount5cat1 lender4 reason2 reason7 interest interest2 duration2 security2 scheme2
 keep uniqueid $var
 egen nbmiss=rowmiss($var)
 ta nbmiss
@@ -93,12 +40,12 @@ rename dec_`x' `x'
 export delimited using "Allloans_all.csv", replace
 restore
 
+/*
 ********** Rural
 preserve
 fre Sector
 keep if Sector==1
-global var catamount2 catamount3 lender2 reason2 interest duration2 security2 scheme2 interest2
-*drop if interest==99
+global var amount3cat3 lender4 reason2 interest interest2 duration2 security2 scheme2
 keep uniqueid $var
 egen nbmiss=rowmiss($var)
 ta nbmiss
@@ -111,12 +58,12 @@ rename dec_`x' `x'
 }
 export delimited using "Allloans_rural.csv", replace
 restore
+*/
 
 ********** All recent
 preserve
 keep if year==2012 | year==2019
-global var catamount2 catamount3 lender2 reason5 interest duration2 security2 scheme2 interest2
-*drop if interest==99
+global var amount3cat3 lender4 reason5 interest interest2 duration2 security2 scheme2
 keep uniqueid $var
 egen nbmiss=rowmiss($var)
 ta nbmiss
@@ -130,13 +77,13 @@ rename dec_`x' `x'
 export delimited using "Allloans_allrecent.csv", replace
 restore
 
+/*
 ********** Rural recent
 preserve
 fre Sector
 keep if Sector==1
 keep if year==2012 | year==2019
-global var catamount2 catamount3 lender2 reason5 interest duration2 security2 scheme2 interest2
-*drop if interest==99
+global var amount3cat3 lender4 reason5 interest interest2 duration2 security2 scheme2
 keep uniqueid $var
 egen nbmiss=rowmiss($var)
 ta nbmiss
@@ -149,7 +96,7 @@ rename dec_`x' `x'
 }
 export delimited using "Allloans_ruralrecent.csv", replace
 restore
-
+*/
 
 ****************************************
 * END
@@ -191,6 +138,7 @@ ta cluster
 rename cluster clust_allrecent
 save"_tempallrecent", replace
 
+/*
 ***** Rural
 import delimited using "Allloans_rural_res.csv", clear
 keep uniqueid cluster
@@ -204,27 +152,24 @@ keep uniqueid cluster
 ta cluster
 rename cluster clust_ruralrecent
 save"_tempruralrecent", replace
+*/
 
 ***** Merge
-use"Loans_v2", clear
+use"Loans_v3", clear
 
 merge 1:1 uniqueid using"_tempall"
 drop _merge
 merge 1:1 uniqueid using"_tempallrecent"
 drop _merge
+/*
 merge 1:1 uniqueid using"_temprural"
 drop _merge
 merge 1:1 uniqueid using"_tempruralrecent"
 drop _merge
-
-save"Loans_v3", replace
+*/
+save"Loans_v4", replace
 ****************************************
 * Import
-
-
-
-
-
 
 
 
@@ -235,25 +180,29 @@ save"Loans_v3", replace
 ****************************************
 * Definition
 ****************************************
-use"Loans_v3", clear
+use"Loans_v4", clear
 
 
 *** All
-ta lender2 clust_all, row nofreq
+ta clust_all
+ta amount3cat3 clust_all, row nofreq
+ta lender4 clust_all, row nofreq
 ta reason2 clust_all, row nofreq
-ta catamount3 clust_all, row nofreq
-ta interest clust_all, row nofreq
+ta interest2 clust_all, row nofreq
 ta security2 clust_all, row nofreq
 ta duration2 clust_all, row nofreq
 ta scheme2 clust_all, row nofreq
 
-ta lender2 clust_all, col nofreq
+ta amount3cat3 clust_all, col nofreq
+ta lender4 clust_all, col nofreq
 ta reason2 clust_all, col nofreq
-ta catamount3 clust_all, col nofreq
-ta interest clust_all, col nofreq
+ta interest2 clust_all, col nofreq
 ta security2 clust_all, col nofreq
 ta duration2 clust_all, col nofreq
 ta scheme2 clust_all, col nofreq
+
+ta clust_all year, col nofreq
+
 
 label define clust_all ///
 1"Institutional" ///
@@ -268,21 +217,23 @@ ta clust_all
 
 
 *** All recent
-ta lender2 clust_allrecent, row nofreq
-ta reason4 clust_allrecent, row nofreq
-ta catamount3 clust_allrecent, row nofreq
-ta interest clust_allrecent, row nofreq
+ta amount3cat3 clust_allrecent, row nofreq
+ta lender4 clust_allrecent, row nofreq
+ta reason5 clust_allrecent, row nofreq
+ta interest2 clust_allrecent, row nofreq
 ta security2 clust_allrecent, row nofreq
 ta duration2 clust_allrecent, row nofreq
 ta scheme2 clust_allrecent, row nofreq
 
-ta lender2 clust_allrecent, col nofreq
-ta reason4 clust_allrecent, col nofreq
-ta catamount3 clust_allrecent, col nofreq
-ta interest clust_allrecent, col nofreq
+ta amount3cat3 clust_allrecent, col nofreq
+ta lender4 clust_allrecent, col nofreq
+ta reason5 clust_allrecent, col nofreq
+ta interest2 clust_allrecent, col nofreq
 ta security2 clust_allrecent, col nofreq
 ta duration2 clust_allrecent, col nofreq
 ta scheme2 clust_allrecent, col nofreq
+
+ta clust_allrecent year, col nofreq
 
 label define clust_allrecent ///
 1"Institutional" ///
