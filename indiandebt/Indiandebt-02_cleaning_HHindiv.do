@@ -250,7 +250,7 @@ use "Loans_v2", clear
 
 global loanvar loanid ///
 amount2 amount3cat1 amount3cat2 amount3cat3 amount5cat1 amount5cat2 amount10cat1 ///
-lender2 lender3 lender4 ///
+lender2 lender3 lender4 lender5 ///
 reason2 reason4 reason5 reason7 ///
 interest interest2 ///
 duration2 security2 scheme2

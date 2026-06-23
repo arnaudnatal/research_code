@@ -698,9 +698,6 @@ replace security2=0 if security==.
 drop HHtype
 bys HHID year: gen loanid=_n
 
-***** Lender2
-recode lender2 (2=77)
-
 ***** Reason
 fre reason2
 recode reason2 (2=77) (3=4)
@@ -840,6 +837,9 @@ label values interest interest
 recode interest (.=1) (4=99) (9=99)
 ta interest
 
+***** Lender2
+recode lender2 (2=77)
+
 ***** Lender3
 ta lender
 ta lender2
@@ -882,6 +882,22 @@ replace lender4=7 if lender3==11
 
 ta lender3 lender4
 ta lender4 year, col nofreq
+
+* Lender5
+fre lender4
+gen lender5=.
+label define lender5 1"Lender: Formal" 2"Lender: Informal" 3"Lender: Other"
+label values lender5 lender5
+replace lender5=1 if lender4==1
+replace lender5=1 if lender4==2
+replace lender5=1 if lender4==3
+replace lender5=2 if lender4==4
+replace lender5=2 if lender4==5
+replace lender5=2 if lender4==6
+replace lender5=3 if lender4==7
+ta lender4 lender5
+ta lender5 lender2
+ta lender2 lender5
 
 ***** Indiv id
 egen uniqueid=group(HHID loanid)
