@@ -10,28 +10,27 @@ setwd("C:/Users/Arnaud/Documents/MEGA/Research/Ongoing_Indiandebt/Analysis")
 
 ### Import
 data<-read.csv("Allloans_all.csv")
-var<-data[,c("amount3cat3", "lender4", "reason7", "interest", "security2", "duration2", "scheme2"), drop = FALSE]
+var<-data[,c("amount3cat3", "lender5", "reason7", "interest", "security2", "duration2", "scheme2"), drop = FALSE]
 
 ### MCA
 nbaxe<-MCA(var, ncp=50, graph=FALSE)
 nbaxe$eig
-res_mca<-MCA(var, ncp=9, graph=FALSE)
-
-#print(res_mca)
-#res_mca$var$coord
-#res_mca$var$cos2
-#res_mca$var$contrib
-#res_mca$var$v.test
+res_mca<-MCA(var, ncp=10, graph=FALSE)
+print(res_mca)
+res_mca$var$coord
+res_mca$var$cos2
+res_mca$var$contrib
+res_mca$var$v.test
 
 ### HCPC
-set.seed(123)
+set.seed(1234)
 res_hcpc<-HCPC(res_mca, kk=500, description=FALSE, graph=FALSE, consol=FALSE)
-#res_hcpc<-HCPC(res_mca, kk=500, description=FALSE, graph=FALSE, consol=FALSE, nb.clust=9)
+res_hcpc<-HCPC(res_mca, kk=500, description=FALSE, graph=FALSE, consol=FALSE, nb.clust=6)
 plot(res_hcpc,choice="tree", rect=FALSE)
 plot(res_hcpc,choice="tree", rect=TRUE)
 #plot(res_hcpc,choice="map", draw.tree=FALSE)
 #plot(res_hcpc,choice="3D.map")
-#catdes(res_hcpc$data.clust,ncol(res_hcpc$data.clust))
+catdes(res_hcpc$data.clust,ncol(res_hcpc$data.clust))
 
 #
 cluster<-res_hcpc$data.clust$clust
@@ -62,7 +61,7 @@ setwd("C:/Users/Arnaud/Documents/MEGA/Research/Ongoing_Indiandebt/Analysis")
 
 ### Import
 data<-read.csv("Allloans_allrecent.csv")
-var<-data[,c("amount3cat3", "lender4", "reason5", "interest", "security2", "duration2", "scheme2"), drop = FALSE]
+var<-data[,c("amount3cat3", "lender5", "reason5", "interest", "security2", "duration2", "scheme2"), drop = FALSE]
 
 ### MCA
 nbaxe<-MCA(var, ncp=50, graph=FALSE)
@@ -78,7 +77,7 @@ res_mca<-MCA(var, ncp=11, graph=FALSE)
 ### HCPC
 set.seed(123)
 res_hcpc<-HCPC(res_mca, kk=500, description=FALSE, graph=FALSE, consol=FALSE)
-res_hcpc<-HCPC(res_mca, kk=500, description=FALSE, graph=FALSE, consol=FALSE, nb.clust=5)
+res_hcpc<-HCPC(res_mca, kk=500, description=FALSE, graph=FALSE, consol=FALSE, nb.clust=7)
 plot(res_hcpc,choice="tree", rect=FALSE)
 plot(res_hcpc,choice="tree", rect=TRUE)
 
