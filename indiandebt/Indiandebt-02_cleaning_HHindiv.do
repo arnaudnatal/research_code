@@ -23,7 +23,6 @@ do"C:/Users/Arnaud/Documents/GitHub/folderanalysis/$link.do"
 ****************************************
 use "Loans_v1", clear
 
-
 * Caste
 tostring caste, replace
 
@@ -271,3 +270,321 @@ drop if interest==99
 save "Loans_v3", replace
 ****************************************
 * END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Info supp (age, sexe, occ)
+****************************************
+
+***** 1992
+use"raw/NSSO1992/Block 6_Visit 1_Household members and their activity particulars", clear
+* Selection head
+ta B6_q3
+keep if B6_q3=="1"
+* Age
+rename B6_q4 age
+* Sex
+rename B6_q5 sex
+destring sex, replace
+label define sex 1"Sex: Male" 2"Sex: Female"
+label values sex sex
+* Education
+rename B6_q6 educ
+destring educ, replace
+label define educ 1"Not literate" 2"Below primary" 3"Below secondary" 4"Secondary" 5"Graduate or more"
+label values educ educ
+* Occupation
+rename B6_q8 activity
+destring activity, replace
+label define activity 11"SE" 21"SE coolie" 31"Regular" 41"Casual public" 51"Casual" 81"No occ but search" 91"In educ" 92"In domestic duties" 93"In domestic duties" 94"Renters, pension, remitt" 95"Disability" 96"Beggars, prostitute" 97"Others"
+label values activity activity
+ta activity
+* Selection
+keep HHID age sex educ activity
+gen year=1992
+gen head=1
+order HHID year head age sex educ activity
+*
+foreach x in sex educ activity {
+decode `x', gen(`x'_dec)
+drop `x'
+rename `x'_dec `x'
+}
+*
+save "_temp1992", replace
+
+
+***** 2002
+use"raw/NSSO2003/Visit 1 & 2 Combined_Block 4_demographic and other particulars of household members", clear
+* Selection head
+ta B4_q3
+keep if B4_q3=="1"
+* Age
+rename B4_q5 age
+* Sex
+rename B4_q4 sex
+destring sex, replace
+label define sex 1"Sex: Male" 2"Sex: Female"
+label values sex sex
+* Education
+rename B4_q7 educ
+destring educ, replace
+label define educ 1"Not literate" 2"Literate without schooling" 3"Below primary" 4"Primary" 5"Middle" 6"Secondary" 7"Higher secondary" 8"Diploma" 10"Graduate" 11"Postgraduate or more"
+label values educ educ
+* Occupation
+rename B4_q8 activity
+destring activity, replace
+label define activity 11"SE" 12"SE employer" 21"SE coolie" 31"Regular" 41"Casual public" 51"Casual" 81"No occ but search" 91"In educ" 92"In domestic duties" 93"In domestic duties" 94"Renters, pension, remitt" 95"Disability" 96"Beggars, prostitute" 97"Others" 98"Sickness"
+label values activity activity
+ta activity
+* Maritalstatus
+rename B4_q6 maritalstatus
+destring maritalstatus, replace
+label define maritalstatus 1"Status: Unmarried" 2"Status: Married" 3"Status: Widowed" 4"Status: Divorced"
+label values maritalstatus maritalstatus
+* Selection
+keep HHID age sex educ activity maritalstatus
+gen year=2002
+gen head=1
+order HHID year head age sex educ activity maritalstatus
+*
+foreach x in sex educ activity maritalstatus {
+decode `x', gen(`x'_dec)
+drop `x'
+rename `x'_dec `x'
+}
+*
+save "_temp2002", replace
+
+
+***** 2012
+use"raw/NSSO2013/Visit 1 _Block 4_Demographic and other particulars of household members", clear
+* Selection head
+ta b4q3
+keep if b4q3=="1"
+* Age
+rename b4q5 age
+* Sex
+rename b4q4 sex
+destring sex, replace
+label define sex 1"Sex: Male" 2"Sex: Female"
+label values sex sex
+* Education
+rename b4q6 educ
+destring educ, replace
+label define educ 1"Not literate" 2"Literate without schooling" 3"Literate without schooling" 4"Literate without schooling" 5"Below primary" 6"Primary" 7"Middle" 8"Secondary" 10"Higher secondary" 11"Diploma" 12"Graduate" 13"Postgraduate or more"
+label values educ educ
+* Worker
+rename b4q7 worker
+destring worker, replace
+label define worker 1"Worker: Yes" 2"Worker: No"
+label values worker worker
+* Occupation
+rename b4q8 activity
+destring activity, replace
+label define activity 11"SE" 12"SE employer" 21"SE coolie" 31"Regular" 41"Casual public" 51"Casual"
+label values activity activity
+ta activity
+* Selection
+keep HHID age sex educ worker activity
+gen year=2012
+gen head=1
+order HHID year head age sex educ worker activity
+*
+foreach x in sex educ worker activity {
+decode `x', gen(`x'_dec)
+drop `x'
+rename `x'_dec `x'
+}
+*
+save "_temp2012", replace
+
+
+***** 2019
+use"raw/NSSO2019/Visit1  Level - 02 (Block 3) - Demographic and other particulars of household members", clear
+* Selection head
+ta b3q3
+keep if b3q3=="1"
+* Age
+rename b3q5 age
+* Sex
+rename b3q4 sex
+destring sex, replace
+label define sex 1"Sex: Male" 2"Sex: Female"
+label values sex sex
+* Education
+rename b3q6 educ
+destring educ, replace
+label define educ 1"Not literate" 2"Below primary" 3"Primary" 4"Middle" 5"Secondary" 6"Higher secondary" 7"Diploma (upto sec)" 8"Diploma (higher sec)" 10"Diploma (graduation above)" 11"Graduate" 12"Postgraduate or more"
+label values educ educ
+* Selection
+keep HHID age sex educ
+gen year=2019
+gen head=1
+order HHID year head age sex educ
+*
+foreach x in sex educ {
+decode `x', gen(`x'_dec)
+drop `x'
+rename `x'_dec `x'
+}
+*
+save "_temp2019", replace
+
+***** Append
+use"_temp1992", clear
+append using "_temp2002"
+append using "_temp2012"
+append using "_temp2019"
+
+* Sex
+ta sex
+encode sex, gen(sex_enc)
+drop sex
+rename sex_enc sex
+
+* Marital status
+ta maritalstatus
+encode maritalstatus, gen(maritalstatus_enc)
+drop maritalstatus
+rename maritalstatus_enc maritalstatus
+
+* Education
+ta educ
+gen educ2=.
+label define educ2 0"No school" 1"Below primary" 2"Below secondary" 3"Secondary" 4"Graduate or more", replace
+label values educ2 educ2
+replace educ2=0 if educ=="Not literate"
+replace educ2=0 if educ=="Literate without schooling"
+
+replace educ2=1 if educ=="Below primary"
+
+replace educ2=2 if educ=="Below secondary"
+replace educ2=2 if educ=="Primary"
+replace educ2=2 if educ=="Middle"
+
+replace educ2=3 if educ=="Secondary"
+replace educ2=3 if educ=="Diploma"
+replace educ2=3 if educ=="Diploma (upto sec)"
+replace educ2=3 if educ=="Diploma (higher sec)"
+replace educ2=3 if educ=="Higher secondary"
+
+replace educ2=4 if educ=="Diploma (graduation above)"
+replace educ2=4 if educ=="Graduate or more"
+replace educ2=4 if educ=="Graduate"
+replace educ2=4 if educ=="Postgraduate"
+replace educ2=4 if educ=="Postgraduate or more"
+
+* Employment
+ta activity
+ta worker
+gen occ=.
+label define occ 0"Occ: No" 1"Occ: Self-emp" 2"Occ: Casual" 3"Occ: Regular" 4"Occ: Other"
+label values occ occ
+replace occ=0 if worker=="Worker: No"
+replace occ=0 if activity=="Disability"
+replace occ=0 if activity=="In domestic duties"
+replace occ=0 if activity=="In educ"
+replace occ=0 if activity=="No occ but search"
+replace occ=0 if activity=="Renters, pension, remitt"
+replace occ=0 if activity=="Disability"
+replace occ=1 if activity=="SE"
+replace occ=2 if activity=="Casual"
+replace occ=2 if activity=="Casual public"
+replace occ=3 if activity=="Regular"
+replace occ=4 if activity=="Others"
+replace occ=4 if activity=="Beggars, prostitute"
+replace occ=4 if activity=="SE coolie"
+replace occ=4 if activity=="SE employer"
+
+* Head
+label define head 0"Head: No" 1"Head: Yes"
+label values head head
+
+* Selection
+keep HHID year head age sex maritalstatus educ2 occ
+
+* Duplicates
+bys HHID year: gen N=_N
+bys HHID year: gen n=_n
+ta N
+preserve
+drop if N==1
+bys HHID year: egen maxage=max(age)
+keep if maxage==age
+drop if HHID=="3466532" & year==1992 & n==1
+drop N n maxage
+save"_temp", replace
+restore
+
+*
+drop n
+keep if N==1
+append using "_temp"
+drop N
+
+sort HHID year
+
+save"_tempindiv", replace
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Merge indiv
+****************************************
+use "Loans_v3", clear
+
+merge m:1 HHID year using "_tempindiv"
+drop if _merge==2
+ta _merge
+
+order head age sex maritalstatus educ2 occ _merge, after(HHsize)
+
+keep if _merge==3
+drop _merge
+
+* Age
+ta age
+gen agecat=.
+label define agecat 1"Less than 30" 2"30 to 39" 3"40 to 49" 4"50 to 59" 5"60 or more"
+label values agecat agecat
+replace agecat=1 if age<=29
+replace agecat=2 if age>=30 & age<=39
+replace agecat=3 if age>=40 & age<=49
+replace agecat=4 if age>=50 & age<=59
+replace agecat=5 if age>=60
+ta age agecat
+ta agecat, m
+order agecat, after(age)
+
+save "Loans_v4", replace
+****************************************
+* END
+
+
+
+

@@ -21,7 +21,7 @@ do"C:/Users/Arnaud/Documents/GitHub/folderanalysis/$link.do"
 ****************************************
 * Stat desc
 ****************************************
-use"Loans_v3", clear
+use"Loans_v4", clear
 
 * How many loans?
 ta year
@@ -65,7 +65,7 @@ ta scheme2 year, col nofreq
 ****************************************
 * Export
 ****************************************
-use"Loans_v3", clear
+use"Loans_v4", clear
 
 ********** All
 preserve
@@ -131,13 +131,11 @@ restore
 ****************************************
 
 ***** All
-/*
 import delimited using "Allloans_all_res.csv", clear
 keep uniqueid cluster
 ta cluster
 rename cluster clust_all
 save"_tempall", replace
-*/
 
 ***** All recent
 import delimited using "Allloans_allrecent_res.csv", clear
@@ -147,14 +145,14 @@ rename cluster clust_allrecent
 save"_tempallrecent", replace
 
 ***** Merge
-use"Loans_v3", clear
+use"Loans_v4", clear
 
 merge 1:1 uniqueid using"_tempall"
 drop _merge
 merge 1:1 uniqueid using"_tempallrecent"
 drop _merge
 
-save"Loans_v4", replace
+save"Loans_v5", replace
 ****************************************
 * Import
 
@@ -171,7 +169,7 @@ save"Loans_v4", replace
 ****************************************
 * Definition
 ****************************************
-use"Loans_v4", clear
+use"Loans_v5", clear
 
 *** All
 ta clust_all
@@ -205,41 +203,8 @@ label values clust_all clust_all
 ta clust_all
 
 
-*** All recent
-ta clust_allrecent
-ta clust_allrecent year, col nofreq
 
-ta amount3cat3 clust_allrecent, row nofreq
-ta lender5 clust_allrecent, row nofreq
-ta reason5 clust_allrecent, row nofreq
-ta interest clust_allrecent, row nofreq
-ta security2 clust_allrecent, row nofreq
-ta duration2 clust_allrecent, row nofreq
-ta scheme2 clust_allrecent, row nofreq
-
-ta amount3cat3 clust_allrecent, col nofreq
-ta lender5 clust_allrecent, col nofreq
-ta reason5 clust_allrecent, col nofreq
-ta interest clust_allrecent, col nofreq
-ta security2 clust_allrecent, col nofreq
-ta duration2 clust_allrecent, col nofreq
-ta scheme2 clust_allrecent, col nofreq
-
-ta clust_allrecent year, col nofreq
-
-label define clust_allrecent ///
-1"OL - HH" ///
-2"IN - HH" ///
-3"IN - HC" ///
-4"FO/IN - OR" ///
-5"FO - HH" ///
-6"FO - HO" ///
-7"FO - IN"
-label values clust_allrecent clust_allrecent
-ta clust_allrecent
-
-
-save"Loans_v5", replace
+save"Loans_v6", replace
 ****************************************
 * END
 
@@ -257,11 +222,19 @@ save"Loans_v5", replace
 ****************************************
 * Stats 1992 - 2019
 ****************************************
-use"Loans_v5", clear
+use"Loans_v6", clear
 
 * N
 ta clust_all
 tabstat amount2, stat(mean) by(clust_all)
+
+* N over year
+ta clust_all year
+ta clust_all year, col nofreq
+tabstat amount2 if year==1992, stat(mean) by(clust_all)
+tabstat amount2 if year==2002, stat(mean) by(clust_all)
+tabstat amount2 if year==2012, stat(mean) by(clust_all)
+tabstat amount2 if year==2019, stat(mean) by(clust_all)
 
 * Evolution over time
 ta clust_all year, col nofreq
@@ -282,10 +255,35 @@ ta religion3 clust_all, col nofreq
 ta religion3 clust_all, row nofreq
 ta clust_all religion3, chi2 cchi2 exp
 
+* Sex
+ta sex clust_all, col nofreq
+ta sex clust_all, row nofreq
+ta clust_all sex, chi2 cchi2 exp
+
+* Age
+ta agecat clust_all, col nofreq
+ta agecat clust_all, row nofreq
+ta clust_all agecat, chi2 cchi2 exp
+
+* Educ
+ta educ2 clust_all, col nofreq
+ta educ2 clust_all, row nofreq
+ta clust_all educ2, chi2 cchi2 exp
+
+* Occupation
+ta occ clust_all, col nofreq
+ta occ clust_all, row nofreq
+ta clust_all occ, chi2 cchi2 exp
+
+* Maritalstatus
+ta maritalstatus clust_all, col nofreq
+ta maritalstatus clust_all, row nofreq
+ta clust_all maritalstatus, chi2 cchi2 exp
+
 * State
 ta State clust_all, col nofreq
 ta State clust_all, row nofreq
-ta clust_all State, chi2 cchi2 exp
+ta State clust_all, chi2 cchi2 exp
 
 ****************************************
 * END
@@ -298,43 +296,3 @@ ta clust_all State, chi2 cchi2 exp
 
 
 
-
-
-
-/*
-****************************************
-* Stats 2012 - 2019
-****************************************
-use"Loans_v5", clear
-
-* N
-ta clust_allrecent
-tabstat amount2, stat(mean) by(clust_allrecent)
-
-* Evolution over time
-ta clust_allrecent year, col nofreq
-ta clust_allrecent year, chi2 cchi2 exp
-
-* Rural / urban
-ta clust_allrecent Sector, col nofreq
-ta Sector clust_allrecent, row nofreq
-ta clust_allrecent Sector, chi2 cchi2 exp
-
-* Caste
-ta clust_allrecent caste3, col nofreq
-ta caste3 clust_allrecent, row nofreq
-ta clust_allrecent caste3, chi2 cchi2 exp
-
-* Religion
-ta clust_allrecent religion3, col nofreq
-ta religion3 clust_allrecent, row nofreq
-ta clust_allrecent religion3, chi2 cchi2 exp
-
-* State
-ta clust_allrecent State, col nofreq
-ta State clust_allrecent, row nofreq
-ta clust_allrecent State, chi2 cchi2 exp
-
-****************************************
-* END
-*/
