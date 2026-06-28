@@ -43,7 +43,7 @@ Dans "raw" :
 
 
 
-/*
+
 ****************************************
 * Merge base HH
 ****************************************
@@ -68,7 +68,6 @@ rename _merge merge_mpivars
 save"HH_caste_v0.dta", replace
 ****************************************
 * END
-*/
 
 
 
@@ -76,7 +75,8 @@ save"HH_caste_v0.dta", replace
 
 
 
-/*
+
+
 ****************************************
 * Privation bancaire
 ****************************************
@@ -85,13 +85,13 @@ use"HH_caste_v0.dta", clear
 fre hv247
 gen d_bank=0
 replace d_bank=1 if hv247==0
+replace d_bank=1 if hv247==8
 drop hv247
 label var d_bank "RECODE of hv247 (Household has a bank account)"
 
 save"HH_caste_v1.dta", replace
 ****************************************
 * END
-*/
 
 
 
@@ -99,7 +99,8 @@ save"HH_caste_v1.dta", replace
 
 
 
-/*
+
+
 ****************************************
 * Antenatal care
 ****************************************
@@ -118,31 +119,35 @@ A household is deprived if any woman in the household who has given birth in the
 
 * Femme ayant eu une naissance dans les 5 ans
 mdesc m14_1 m14_2 m14_3 m14_4 m14_5 m14_6
-gen birth5 = !missing(m14_1)
+gen birth5=.
+replace birth5=0 if m14_1==.
+replace birth5=1 if m14_1!=.
+ta birth5
 
 * Moins de 4 visites ANC pour la naissance la plus récente
-gen anc_less4 = .
-replace anc_less4 = 1 if birth5==1 & m14_1 < 4
-replace anc_less4 = 0 if birth5==1 & m14_1 >= 4
+gen anc_less4=.
+replace anc_less4=1 if birth5==1 & m14_1<4
+replace anc_less4=0 if birth5==1 & m14_1>=4
 
 * Assistance qualifiée à l’accouchement
-gen skilled_birth = 0 if birth5==1
-replace skilled_birth = 1 if m3a_1==1 | m3b_1==1 | m3c_1==1
+gen skilled_birth=0 if birth5==1
+replace skilled_birth=1 if m3a_1==1 | m3b_1==1 | m3c_1==1
 *
-gen no_skilled_birth = .
-replace no_skilled_birth = 1 if birth5==1 & skilled_birth==0
-replace no_skilled_birth = 0 if birth5==1 & skilled_birth==1
+gen no_skilled_birth=.
+replace no_skilled_birth=1 if birth5==1 & skilled_birth==0
+replace no_skilled_birth=0 if birth5==1 & skilled_birth==1
 
 * Indicateur femme : privée si ANC < 4 OU pas d’assistance qualifiée
-gen anc_dep_woman = .
-replace anc_dep_woman = 1 if birth5==1 & (anc_less4==1 | no_skilled_birth==1)
-replace anc_dep_woman = 0 if birth5==1 & anc_less4==0 & no_skilled_birth==0
+gen anc_dep_woman=.
+replace anc_dep_woman=1 if birth5==1 & (anc_less4==1 | no_skilled_birth==1)
+replace anc_dep_woman=0 if birth5==1 & anc_less4==0 & no_skilled_birth==0
 
 * Agrégation ménage : privé si au moins une femme est privée
-bys hhid: egen anc_dep_hh = max(anc_dep_woman)
+bys hhid: egen anc_dep_hh=max(anc_dep_woman)
 
 * Ménages sans naissance dans les 5 ans dans IR = non privés pour cet indicateur
-replace anc_dep_hh = 0 if missing(anc_dep_hh)
+replace anc_dep_hh=0 if anc_dep_hh==.
+ta anc_dep_hh
 
 * Garder une ligne par ménage pour fusion avec HR
 keep hhid anc_dep_hh hhid_num
@@ -158,11 +163,11 @@ destring hhid, gen(hhid_num)
 merge 1:1 hhid_num using "_temp"
 drop hhid_num
 drop _merge
+recode d_anc (.=0)
 
 save"HH_caste_v2.dta", replace
 ****************************************
 * END
-*/
 
 
 
@@ -171,7 +176,8 @@ save"HH_caste_v2.dta", replace
 
 
 
-/*
+
+
 ****************************************
 * Deprivation score
 ****************************************
@@ -179,7 +185,10 @@ use"HH_caste_v2.dta", clear
 
 ***** Missings?
 mdesc d_cm d_nutr d_satt d_educ d_elct d_wtr d_sani d_hsg d_ckfl d_asst d_bank d_anc
-recode d_anc (.=0)
+egen nbmiss=rowmiss(d_cm d_nutr d_satt d_educ d_elct d_wtr d_sani d_hsg d_ckfl d_asst d_bank d_anc)
+ta nbmiss
+keep if nbmiss==0
+drop nbmiss
 
 ***** Deprivation score OPHDI (10 dim)
 gen dp_score10=((1/6)*d_nutr) ///
@@ -197,6 +206,13 @@ tabstat dp_score10, stat(n mean q min max)
 gen d_mpoor10=.
 replace d_mpoor10=0 if dp_score10<0.333
 replace d_mpoor10=1 if dp_score10>=0.333
+replace d_mpoor10=. if dp_score10==.
+
+* MPI censuré
+gen mpi_cens10=dp_score10 if d_mpoor10==1
+replace mpi_cens10=0 if d_mpoor10==0
+replace mpi_cens10=. if dp_score10==.
+
 
 
 ***** Deprivation score Niti Ayog (12 dim)
@@ -217,12 +233,17 @@ tabstat dp_score12, stat(n mean q min max)
 gen d_mpoor12=.
 replace d_mpoor12=0 if dp_score12<0.333
 replace d_mpoor12=1 if dp_score12>=0.333
+replace d_mpoor12=. if dp_score12==.
+
+* MPI censuré
+gen mpi_cens12=dp_score12 if d_mpoor12==1
+replace mpi_cens12=0 if d_mpoor12==0
+replace mpi_cens12=. if dp_score10==.
 
 
 save"HH_caste_v3.dta", replace
 ****************************************
 * END
-*/
 
 
 
@@ -233,7 +254,8 @@ save"HH_caste_v3.dta", replace
 
 
 
-/*
+
+
 ****************************************
 * Controls
 ****************************************
@@ -261,6 +283,10 @@ ta hv115_01 head_marital
 clonevar head_jatis=NEW9
 * Caste
 clonevar head_caste=sh36
+recode head_caste (8=4) (.=4)
+label define head_caste 1"SC" 2"ST" 3"OBC" 4"Other"
+label values head_caste head_caste
+ta head_caste
 * Religion
 clonevar head_religion=sh34
 fre head_religion
@@ -303,20 +329,11 @@ clonevar loc_district=shdistri
 clonevar loc_rururb=hv025
 
 
-***** MPI censuré
-* 10 dim
-gen mpi_cens10=dp_score10 if d_mpoor10==1
-replace mpi_cens10=0 if d_mpoor10==0
-* 12 dim
-gen mpi_cens12=dp_score12 if d_mpoor12==1
-replace mpi_cens12=0 if d_mpoor12==0
-
-
 
 save"HH_caste_v4.dta", replace
 ****************************************
 * END
-*/
+
 
 
 
@@ -346,8 +363,64 @@ drop n
 order jatis1000, after(head_jatis)
 ta jatis1000
 
-save"HH_caste.dta", replace
+* 5000
+bysort head_jatis: gen n=_N
+gen jatis5000=.
+replace jatis5000=0 if n<5000
+replace jatis5000=1 if n>=5000
+drop n
+order jatis5000, after(jatis1000)
+
+
+save"HH_caste_v5.dta", replace
 ****************************************
 * END
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Indiv level for MPI
+****************************************
+use"raw/IAPR74FL.dta", clear
+
+* Selection
+keep hhid hvidx hv101 hv102 hv103 hv104 hv105 hv109 hv115
+rename hv102 usualresident
+fre usualresident
+drop if usualresident==0
+drop usualresident
+
+* Rename
+rename hv101 relationshiptohead
+rename hv103 sleptlastnight
+rename hv104 sex
+rename hv105 age
+rename hv109 educ
+rename hv115 maritalstatus
+
+* Merge HH infos
+merge m:1 hhid using "HH_caste_v5"
+keep if _merge==3
+drop _merge
+ta head_caste
+fre head_caste
+
+* Order
+order hhid hvidx wgt
+
+save"Indiv_mpi.dta", replace
+****************************************
+* END
+
 
 

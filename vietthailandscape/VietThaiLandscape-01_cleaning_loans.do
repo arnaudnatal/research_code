@@ -7,8 +7,8 @@ cls
 gl link = "vietthailandscape"
 *Cleaning TVSEP
 *-----
-*do"C:/Users/Arnaud/Documents/GitHub/folderanalysis/$link.do"
-cd"C:\Users\anatal\Documents\vtl\Ongoing_VietThaiLandscape\Analysis"
+do"C:/Users/Arnaud/Documents/GitHub/folderanalysis/$link.do"
+*cd"C:\Users\anatal\Documents\vtl\Ongoing_VietThaiLandscape\Analysis"
 *-------------------------
 
 
