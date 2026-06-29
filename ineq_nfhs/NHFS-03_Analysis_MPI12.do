@@ -14,6 +14,7 @@ macro drop _all
 ********** Path to working directory directory
 global directory = "C:\Users\Arnaud\Documents\MEGA\Research\Ongoing_JatisInequalities\Analysis"
 cd"$directory"
+*cd"C:\Users\anatal\Documents\nfhs"
 *-------------------------
 
 
@@ -37,7 +38,6 @@ d3(d_elct d_wtr d_sani d_hsg d_ckfl d_asst d_bank) w3(0.04762 0.04762 0.04762 0.
 [pw=wgt], cutoff(0.33)
 
 
-log using "MPI_area.log"
 ********** By area
 forvalues i=1/2 {
 mpi ///
@@ -46,10 +46,9 @@ d2(d_satt d_educ) w2(0.1667 0.1667) ///
 d3(d_elct d_wtr d_sani d_hsg d_ckfl d_asst d_bank) w3(0.04762 0.04762 0.04762 0.04762 0.04762 0.04762 0.04762) ///
 [pw=wgt] if loc_rururb==`i', cutoff(0.33) nod
 }
-log close
 
 
-log using "MPI_caste.log"
+
 ********** By social groups
 forvalues i=1/4 {
 mpi ///
@@ -58,7 +57,7 @@ d2(d_satt d_educ) w2(0.1667 0.1667) ///
 d3(d_elct d_wtr d_sani d_hsg d_ckfl d_asst d_bank) w3(0.04762 0.04762 0.04762 0.04762 0.04762 0.04762 0.04762) ///
 [pw=wgt] if head_caste==`i', cutoff(0.33) nod
 }
-log close
+
 
 ****************************************
 * END
@@ -82,7 +81,7 @@ mpi ///
 d1(d_cm d_nutr d_anc) w1(0.08333 0.1667 0.08333) ///
 d2(d_satt d_educ) w2(0.1667 0.1667) ///
 d3(d_elct d_wtr d_sani d_hsg d_ckfl d_asst d_bank) w3(0.04762 0.04762 0.04762 0.04762 0.04762 0.04762 0.04762) ///
-[pw=wgt], cutoff(0.33) by(loc_state) nosummary nodecomposition
+[pw=wgt], cutoff(0.33) by(loc_state)
 *matlist e(by_mpi)
 *putexcel set "_states.xlsx", replace
 *putexcel A1=matrix(e(by_mpi)), names
@@ -129,41 +128,22 @@ restore
 
 
 ****************************************
-* Intra/inter sur score censuré
+* Intra/inter Jatis sur score censuré
 ****************************************
-use"Indiv_mpi.dta", clear
-
 /*
 Theil, GE(1)=Within+Between
 */
 
-* Par groupe de caste et par Etats
-fre head_caste
+********** Par Etat
+use"Indiv_mpi.dta", clear
+*
 fre loc_state
-
-gen tokeep=0
-replace tokeep=1 if loc_state==33
-replace tokeep=1 if loc_state==5
-replace tokeep=1 if loc_state==20
-replace tokeep=1 if loc_state==35
-replace tokeep=1 if loc_state==19
-replace tokeep=1 if loc_state==31
-replace tokeep=1 if loc_state==29
-replace tokeep=1 if loc_state==16
-replace tokeep=1 if loc_state==11
-replace tokeep=1 if loc_state==2
-keep if tokeep==1
-ta loc_state
-
-egen statecaste=group(loc_state head_caste), label
-fre statecaste
-
-* Between/Within jatis for each State x Caste
-log using "theil_statecaste.log"
+* 
+log using "theil_state.log"
 tempfile results
-postfile handle statecaste within between using `results', replace
-forvalues i=1/40 {
-qui capture ineqdeco mpi_cens12 if statecaste==`i', by(head_jatis)
+postfile handle loc_state within between using `results', replace
+forvalues i=1/36 {
+qui capture ineqdeco mpi_cens12 if loc_state==`i' [pw=wgt], by(head_jatis)
 if _rc==0 {
 post handle (`i') (r(within_ge1)) (r(between_ge1))
 }
@@ -178,6 +158,31 @@ log close
 
 
 
+
+********** Par groupe de caste et par Etat
+use"Indiv_mpi.dta", clear
+*
+fre loc_state
+egen castestate=group(head_caste loc_state), label
+fre castestate
+*
+log using "theil_castestate.log"
+tempfile results
+postfile handle castestate within between using `results', replace
+forvalues i=1/144 {
+qui capture ineqdeco mpi_cens12 if castestate==`i' [pw=wgt], by(head_jatis)
+if _rc==0 {
+post handle (`i') (r(within_ge1)) (r(between_ge1))
+}
+else {
+post handle (`i') (.) (.)
+}
+}
+postclose handle
+use `results', clear
+list
+log close
+
 ****************************************
 * END
 
@@ -186,3 +191,26 @@ log close
 
 
 
+
+****************************************
+* Maps
+****************************************
+
+* Shape file
+shp2dta using "shapefile/STATE_BOUNDARY.shp", database(india_state) coordinates(india_coord) gencentroids(coord) genid(id) replace 
+
+* Data
+use india_state
+
+* Graph 1
+gen random=runiform()
+spmap random using india_coord, id(id) ///
+fcolor(BuRd) ndfcolor(gs7) ///
+clnumber(6) ///
+title("Share of between group Theil") ///
+legend(position(3) region(lcolor(black) fcolor(white))) ///
+note("Source: NFHS-4 (2015-2016); author's calculations.")
+
+
+****************************************
+* END
