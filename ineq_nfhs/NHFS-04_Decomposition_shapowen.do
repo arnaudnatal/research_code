@@ -39,7 +39,7 @@ i.head_caste ///
 i.loc_state ///
 "i.loc_rururb c.hh_size i.hh_family i.head_sex c.head_age i.head_marital i.head_religion", ///
 scalarexpressions(e(r2)) ///
-: regress dp_score12 @ [pw=wgt]	
+: regress mpi_cens12 @ [pw=wgt]	
 
 
 ***** Jatis / State
@@ -48,7 +48,7 @@ i.head_jatis ///
 i.loc_state ///
 "i.loc_rururb c.hh_size i.hh_family i.head_sex c.head_age i.head_marital i.head_religion", ///
 scalarexpressions(e(r2)) ///
-: regress dp_score12 @ [pw=wgt]	
+: regress mpi_cens12 @ [pw=wgt]	
 
 
 ***** Caste / District
@@ -57,7 +57,7 @@ i.head_caste ///
 i.loc_district ///
 "i.loc_rururb c.hh_size i.hh_family i.head_sex c.head_age i.head_marital i.head_religion", ///
 scalarexpressions(e(r2)) ///
-: regress dp_score12 @ [pw=wgt]	
+: regress mpi_cens12 @ [pw=wgt]	
 
 
 ***** Jatis / District
@@ -66,7 +66,7 @@ i.head_jatis ///
 i.loc_district ///
 "i.loc_rururb c.hh_size i.hh_family i.head_sex c.head_age i.head_marital i.head_religion", ///
 scalarexpressions(e(r2)) ///
-: regress dp_score12 @ [pw=wgt]	
+: regress mpi_cens12 @ [pw=wgt]	
 
 ****************************************
 * END
