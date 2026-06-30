@@ -145,14 +145,13 @@ save"india_state_v3", replace
 
 
 
-
 ****************************************
 * Graph
 ****************************************
 use"india_state_v3", clear
 
 *** MPI (Pradhan et al., 2022)
-colorpalette rocket, n(3) nograph revers
+colorpalette viridis, n(3) nograph reverse
 local colors `r(p)'
 *
 spmap cat1_mpi using india_coord, id(id) ///
@@ -162,10 +161,10 @@ ocolor(white ..) osize(0.05 ..)  ///
 title("Multidimensional poverty index", size(medium)) ///
 legstyle(2) legend(pos(5) size(2) region(fcolor(gs15)))   ///
 note("Source: NFHS-4 (2015-2016); author's calculations.", size(vsmall))
-graph export "mpi_pradhan.png", as(png) replace
+graph export "graph/mpi_pradhan.png", as(png) replace
 
 *** MPI det
-colorpalette rocket, n(5) nograph revers
+colorpalette viridis, n(5) nograph reverse
 local colors `r(p)'
 *
 spmap cat2_mpi using india_coord, id(id) ///
@@ -175,10 +174,10 @@ ocolor(white ..) osize(0.05 ..)  ///
 title("Multidimensional poverty index", size(medium)) ///
 legstyle(2) legend(pos(5) size(2) region(fcolor(gs15)))   ///
 note("Source: NFHS-4 (2015-2016); author's calculations.", size(vsmall))
-graph export "mpi_alt.png", as(png) replace
+graph export "graph/mpi_alt.png", as(png) replace
 
 *** Contrib MPI
-colorpalette rocket, n(3) nograph revers
+colorpalette viridis, n(3) nograph reverse
 local colors `r(p)'
 *
 spmap cat_ratio using india_coord, id(id) ///
@@ -188,10 +187,10 @@ ocolor(white ..) osize(0.05 ..)  ///
 title("Contrib MPI / Contrib pop", size(medium)) ///
 legstyle(2) legend(pos(5) size(2) region(fcolor(gs15)))   ///
 note("Source: NFHS-4 (2015-2016); author's calculations.", size(vsmall))
-graph export "contrib.png", as(png) replace
+graph export "graph/contrib.png", as(png) replace
 
 *** Cat share between tot
-colorpalette rocket, n(7) nograph revers
+colorpalette viridis, n(7) nograph reverse
 local colors `r(p)'
 *
 spmap cat_tot_sharebetween using india_coord, id(id) ///
@@ -201,10 +200,10 @@ ocolor(white ..) osize(0.05 ..)  ///
 title("Share of between jatis inequalities (all castes)", size(medium)) ///
 legstyle(2) legend(pos(5) size(2) region(fcolor(gs15)))   ///
 note("Source: NFHS-4 (2015-2016); author's calculations.", size(vsmall))
-graph export "sharebetween_tot.png", as(png) replace
+graph export "graph/sharebetween_tot.png", as(png) replace
 
 *** Cat share between sc
-colorpalette rocket, n(9) nograph revers
+colorpalette viridis, n(9) nograph reverse
 local colors `r(p)'
 *
 spmap cat_sc_sharebetween using india_coord, id(id) ///
@@ -214,10 +213,10 @@ ocolor(white ..) osize(0.05 ..)  ///
 title("Share of between jatis inequalities (SC)", size(medium)) ///
 legstyle(2) legend(pos(5) size(2) region(fcolor(gs15)))   ///
 note("Source: NFHS-4 (2015-2016); author's calculations.", size(vsmall))
-graph export "sharebetween_sc.png", as(png) replace
+graph export "graph/sharebetween_sc.png", as(png) replace
 
 *** Cat share between st
-colorpalette rocket, n(8) nograph revers
+colorpalette viridis, n(8) nograph reverse
 local colors `r(p)'
 *
 spmap cat_st_sharebetween using india_coord, id(id) ///
@@ -227,10 +226,10 @@ ocolor(white ..) osize(0.05 ..)  ///
 title("Share of between jatis inequalities (ST)", size(medium)) ///
 legstyle(2) legend(pos(5) size(2) region(fcolor(gs15)))   ///
 note("Source: NFHS-4 (2015-2016); author's calculations.", size(vsmall))
-graph export "sharebetween_st.png", as(png) replace
+graph export "graph/sharebetween_st.png", as(png) replace
 
 *** Cat share between obc
-colorpalette rocket, n(9) nograph revers
+colorpalette viridis, n(9) nograph reverse
 local colors `r(p)'
 *
 spmap cat_obc_sharebetween using india_coord, id(id) ///
@@ -240,7 +239,7 @@ ocolor(white ..) osize(0.05 ..)  ///
 title("Share of between jatis inequalities (OBC)", size(medium)) ///
 legstyle(2) legend(pos(5) size(2) region(fcolor(gs15)))   ///
 note("Source: NFHS-4 (2015-2016); author's calculations.", size(vsmall))
-graph export "sharebetween_obc.png", as(png) replace
+graph export "graph/sharebetween_obc.png", as(png) replace
 
 
 ****************************************
