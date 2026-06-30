@@ -134,6 +134,7 @@ restore
 Theil, GE(1)=Within+Between
 */
 
+/*
 ********** Par Etat
 use"Indiv_mpi.dta", clear
 *
@@ -155,22 +156,21 @@ postclose handle
 use `results', clear
 list
 log close
+*/
 
 
 
-
-********** Par groupe de caste et par Etat
+********** Pour SC et par Etat
 use"Indiv_mpi.dta", clear
 *
 fre loc_state
-egen castestate=group(head_caste loc_state), label
-fre castestate
-*
-log using "theil_castestate.log"
+keep if head_caste==1
+* 
+log using "theil_state_sc.log"
 tempfile results
-postfile handle castestate within between using `results', replace
-forvalues i=1/144 {
-qui capture ineqdeco mpi_cens12 if castestate==`i' [pw=wgt], by(head_jatis)
+postfile handle loc_state within between using `results', replace
+forvalues i=1/36 {
+capture ineqdeco mpi_cens12 if loc_state==`i' [pw=wgt], by(head_jatis)
 if _rc==0 {
 post handle (`i') (r(within_ge1)) (r(between_ge1))
 }
@@ -183,33 +183,79 @@ use `results', clear
 list
 log close
 
-****************************************
-* END
+
+********** Pour ST et par Etat
+use"Indiv_mpi.dta", clear
+*
+fre loc_state
+keep if head_caste==2
+* 
+log using "theil_state_st.log"
+tempfile results
+postfile handle loc_state within between using `results', replace
+forvalues i=1/36 {
+capture ineqdeco mpi_cens12 if loc_state==`i' [pw=wgt], by(head_jatis)
+if _rc==0 {
+post handle (`i') (r(within_ge1)) (r(between_ge1))
+}
+else {
+post handle (`i') (.) (.)
+}
+}
+postclose handle
+use `results', clear
+list
+log close
+
+
+********** Pour OBC et par Etat
+use"Indiv_mpi.dta", clear
+*
+fre loc_state
+keep if head_caste==3
+* 
+log using "theil_state_obc.log"
+tempfile results
+postfile handle loc_state within between using `results', replace
+forvalues i=1/36 {
+capture ineqdeco mpi_cens12 if loc_state==`i' [pw=wgt], by(head_jatis)
+if _rc==0 {
+post handle (`i') (r(within_ge1)) (r(between_ge1))
+}
+else {
+post handle (`i') (.) (.)
+}
+}
+postclose handle
+use `results', clear
+list
+log close
 
 
 
 
-
-
-
-****************************************
-* Maps
-****************************************
-
-* Shape file
-shp2dta using "shapefile/STATE_BOUNDARY.shp", database(india_state) coordinates(india_coord) gencentroids(coord) genid(id) replace 
-
-* Data
-use india_state
-
-* Graph 1
-gen random=runiform()
-spmap random using india_coord, id(id) ///
-fcolor(BuRd) ndfcolor(gs7) ///
-clnumber(6) ///
-title("Share of between group Theil") ///
-legend(position(3) region(lcolor(black) fcolor(white))) ///
-note("Source: NFHS-4 (2015-2016); author's calculations.")
+********** Pour other et par Etat
+use"Indiv_mpi.dta", clear
+*
+fre loc_state
+keep if head_caste==4
+* 
+log using "theil_state_oth.log"
+tempfile results
+postfile handle loc_state within between using `results', replace
+forvalues i=1/36 {
+capture ineqdeco mpi_cens12 if loc_state==`i' [pw=wgt], by(head_jatis)
+if _rc==0 {
+post handle (`i') (r(within_ge1)) (r(between_ge1))
+}
+else {
+post handle (`i') (.) (.)
+}
+}
+postclose handle
+use `results', clear
+list
+log close
 
 
 ****************************************
