@@ -98,7 +98,7 @@ replace cat_ratio=2 if ratioMPIsample>=1 & ratioMPIsample<1.5
 replace cat_ratio=3 if ratioMPIsample>=1.5
 
 * Total share between
-label define cat_sharebetween 1"Less than 5%" 2"5-10%" 3"10-20%" 4"20-30%" 5"30-40%" 6"40-50%" 7"50-60%" 8"60-70%" 9"70-80%" 10"80-90%" 11"90% or more"
+label define cat_sharebetween 0"Missing" 1"Less than 5%" 2"5-10%" 3"10-20%" 4"20-30%" 5"30-40%" 6"40-50%" 7"50-60%" 8"60-70%" 9"70-80%" 10"80-90%" 11"90% or more"
 foreach x in tot_sharebetween sc_sharebetween st_sharebetween obc_sharebetween oth_sharebetween {
 gen cat_`x'=.
 replace cat_`x'=1 if `x'<5
@@ -112,6 +112,7 @@ replace cat_`x'=8 if `x'>=60 & `x'<70
 replace cat_`x'=9 if `x'>=70 & `x'<80
 replace cat_`x'=10 if `x'>=80 & `x'<90
 replace cat_`x'=11 if `x'>=90
+replace cat_`x'=0 if `x'==.
 label values cat_`x' cat_sharebetween
 }
 
@@ -161,7 +162,7 @@ ocolor(white ..) osize(0.05 ..)  ///
 title("Multidimensional poverty index", size(medium)) ///
 legstyle(2) legend(pos(5) size(2) region(fcolor(gs15)))   ///
 note("Source: NFHS-4 (2015-2016); author's calculations.", size(vsmall))
-graph export "graph/mpi_pradhan.png", as(png) replace
+graph export "graph/map_mpi_pradhan.png", as(png) replace
 
 *** MPI det
 colorpalette viridis, n(5) nograph reverse
@@ -174,7 +175,7 @@ ocolor(white ..) osize(0.05 ..)  ///
 title("Multidimensional poverty index", size(medium)) ///
 legstyle(2) legend(pos(5) size(2) region(fcolor(gs15)))   ///
 note("Source: NFHS-4 (2015-2016); author's calculations.", size(vsmall))
-graph export "graph/mpi_alt.png", as(png) replace
+graph export "graph/map_mpi_alt.png", as(png) replace
 
 *** Contrib MPI
 colorpalette viridis, n(3) nograph reverse
@@ -187,7 +188,7 @@ ocolor(white ..) osize(0.05 ..)  ///
 title("Contrib MPI / Contrib pop", size(medium)) ///
 legstyle(2) legend(pos(5) size(2) region(fcolor(gs15)))   ///
 note("Source: NFHS-4 (2015-2016); author's calculations.", size(vsmall))
-graph export "graph/contrib.png", as(png) replace
+graph export "graph/map_contrib.png", as(png) replace
 
 *** Cat share between tot
 colorpalette viridis, n(7) nograph reverse
@@ -200,10 +201,10 @@ ocolor(white ..) osize(0.05 ..)  ///
 title("Share of between jatis inequalities (all castes)", size(medium)) ///
 legstyle(2) legend(pos(5) size(2) region(fcolor(gs15)))   ///
 note("Source: NFHS-4 (2015-2016); author's calculations.", size(vsmall))
-graph export "graph/sharebetween_tot.png", as(png) replace
+graph export "graph/map_sharebetween_tot.png", as(png) replace
 
 *** Cat share between sc
-colorpalette viridis, n(9) nograph reverse
+colorpalette viridis, n(10) nograph reverse
 local colors `r(p)'
 *
 spmap cat_sc_sharebetween using india_coord, id(id) ///
@@ -213,10 +214,10 @@ ocolor(white ..) osize(0.05 ..)  ///
 title("Share of between jatis inequalities (SC)", size(medium)) ///
 legstyle(2) legend(pos(5) size(2) region(fcolor(gs15)))   ///
 note("Source: NFHS-4 (2015-2016); author's calculations.", size(vsmall))
-graph export "graph/sharebetween_sc.png", as(png) replace
+graph export "graph/map_sharebetween_sc.png", as(png) replace
 
 *** Cat share between st
-colorpalette viridis, n(8) nograph reverse
+colorpalette viridis, n(9) nograph reverse
 local colors `r(p)'
 *
 spmap cat_st_sharebetween using india_coord, id(id) ///
@@ -226,10 +227,10 @@ ocolor(white ..) osize(0.05 ..)  ///
 title("Share of between jatis inequalities (ST)", size(medium)) ///
 legstyle(2) legend(pos(5) size(2) region(fcolor(gs15)))   ///
 note("Source: NFHS-4 (2015-2016); author's calculations.", size(vsmall))
-graph export "graph/sharebetween_st.png", as(png) replace
+graph export "graph/map_sharebetween_st.png", as(png) replace
 
 *** Cat share between obc
-colorpalette viridis, n(9) nograph reverse
+colorpalette viridis, n(10) nograph reverse
 local colors `r(p)'
 *
 spmap cat_obc_sharebetween using india_coord, id(id) ///
@@ -239,8 +240,20 @@ ocolor(white ..) osize(0.05 ..)  ///
 title("Share of between jatis inequalities (OBC)", size(medium)) ///
 legstyle(2) legend(pos(5) size(2) region(fcolor(gs15)))   ///
 note("Source: NFHS-4 (2015-2016); author's calculations.", size(vsmall))
-graph export "graph/sharebetween_obc.png", as(png) replace
+graph export "graph/map_sharebetween_obc.png", as(png) replace
 
+*** Cat share between other
+colorpalette viridis, n(10) nograph reverse
+local colors `r(p)'
+*
+spmap cat_oth_sharebetween using india_coord, id(id) ///
+clmethod(unique) ///
+fcolor("`colors'") ///
+ocolor(white ..) osize(0.05 ..)  ///
+title("Share of between jatis inequalities (Other castes)", size(medium)) ///
+legstyle(2) legend(pos(5) size(2) region(fcolor(gs15)))   ///
+note("Source: NFHS-4 (2015-2016); author's calculations.", size(vsmall))
+graph export "graph/map_sharebetween_oth.png", as(png) replace
 
 ****************************************
 * END
