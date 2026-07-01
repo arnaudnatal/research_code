@@ -877,20 +877,138 @@ save"Loans_v07", replace
 
 
 
+
+
 ****************************************
-* Data set
+* Derniers recodages ?
 ****************************************
 use"Loans_v07", clear
 
+ta type country, col nofreq // Ok
+ta catamount country, col nofreq // Ok
+ta lender country, col nofreq // À recoder
+ta reason country, col nofreq // À recoder
+ta shock country, col nofreq // Ok
+ta interest country, col nofreq // À reprendre complètement car j'ai zappé la temporalité
+ta collateral country, col nofreq // Ok
+ta secondcollateral country, col nofreq // À recoder
+ta duration country, col nofreq // Ok
+
+* Lender Thai
+ta lender country, col nofreq
+gen lender_thai=.
+fre lender if country==1
+label define lender_thai 1"Lender: Formal" 2"Lender: Cooperative/comm" 3"Lender: Business network" 4"Lender: Informal" 5"Lender: Other"
+label values lender_thai lender_thai
+replace lender_thai=1 if lender==1 & country==1
+replace lender_thai=1 if lender==2 & country==1
+replace lender_thai=1 if lender==3 & country==1
+replace lender_thai=2 if lender==4 & country==1
+replace lender_thai=3 if lender==5 & country==1
+replace lender_thai=4 if lender==6 & country==1
+replace lender_thai=4 if lender==7 & country==1
+replace lender_thai=4 if lender==8 & country==1
+replace lender_thai=5 if lender==9 & country==1
+ta lender lender_thai if country==1
+
+* Lender Viet
+ta lender country, col nofreq
+gen lender_viet=.
+fre lender if country==2
+label define lender_viet 1"Lender: Formal private" 2"Lender: Formal public" 3"Lender: Formal organization" 4"Lender: Business network" 5"Lender: Moneylenders" 6"Lender: Family or friends" 7"Lender: Other"
+label values lender_viet lender_viet
+replace lender_viet=1 if lender==1 & country==2
+replace lender_viet=2 if lender==2 & country==2
+replace lender_viet=3 if lender==3 & country==2
+replace lender_viet=7 if lender==4 & country==2
+replace lender_viet=4 if lender==5 & country==2
+replace lender_viet=5 if lender==6 & country==2
+replace lender_viet=6 if lender==7 & country==2
+replace lender_viet=6 if lender==8 & country==2
+replace lender_viet=7 if lender==9 & country==2
+ta lender lender_viet if country==2
+ta lender_viet
+
+* Lender 2
+fre lender
+clonevar lender2=lender
+fre lender2
+recode lender2 (3=1) (7=6) (8=6)
+label define lender2 1"Lender: Other formal" 2"Lender: Formal pub" 4"Lender: Cooperative" 5"Lender: Business" 6"Lender: Informal" 9"Lender: Other"
+label values lender2 lender2
+ta lender lender2
+
+* Reason
+ta reason country, col nofreq
+clonevar reason2=reason
+fre reason2
+recode reason2 (6=8) (7=8)
+ta reason2 country, col nofreq
+
+* Interest
+ta interest country, col nofreq
+gen interest2=.
+label define interest2 0"Interest: No" 1"Interest: Yes"
+label values interest2 interest2
+replace interest2=0 if interest==1
+replace interest2=1 if interest==2
+replace interest2=1 if interest==3
+replace interest2=1 if interest==4
+replace interest2=1 if interest==5
+replace interest2=1 if interest==6
+ta interest interest2, col nofreq
+
+* Second collateral Thai
+ta secondcollateral country, col nofreq
+clonevar secondcollateral_thai=secondcollateral if country==1
+fre secondcollateral_thai if country==1
+recode secondcollateral_thai (3=5) (4=5)
+
+* Second collateral Viet
+ta secondcollateral country, col nofreq
+clonevar secondcollateral_viet=secondcollateral if country==2
+fre secondcollateral_viet if country==2
+recode secondcollateral_viet (3=5)
+
+* Second collateral
+fre secondcollateral
+clonevar secondcollateral2=secondcollateral
+fre secondcollateral2
+recode secondcollateral2 (3=5) (4=5)
+ta secondcollateral secondcollateral2
+
+save"Loans_v08", replace
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Data set
+****************************************
+use"Loans_v08", clear
 
 ********** All
 preserve
-global var type catamount lender reason shock collateral secondcollateral duration interest
+global var type catamount lender2 reason2 shock collateral secondcollateral2 duration interest2
+keep country year hhid loanid amount $var
 foreach x in $var {
 decode `x', gen(dec_`x')
 drop `x'
 rename dec_`x' `x'
 }
+rename lender2 lender
+rename secondcollateral2 secondcollateral
+rename reason2 reason
+rename interest2 interest
+tab1 type catamount lender reason shock collateral secondcollateral duration interest
 export delimited using "All.csv", replace
 restore
 
@@ -898,12 +1016,18 @@ restore
 ********** Thai
 preserve
 keep if country==1
-global var type catamount lender reason shock collateral secondcollateral duration interest
+global var type catamount lender_thai reason2 shock collateral secondcollateral_thai duration interest2
+keep country year hhid loanid amount $var
 foreach x in $var {
 decode `x', gen(dec_`x')
 drop `x'
 rename dec_`x' `x'
 }
+rename lender_thai lender
+rename reason2 reason
+rename secondcollateral_thai secondcollateral
+rename interest2 interest
+tab1 type catamount lender reason shock collateral secondcollateral duration interest
 export delimited using "Thai.csv", replace
 restore
 
@@ -911,12 +1035,18 @@ restore
 ********** Viet
 preserve
 keep if country==2
-global var type catamount lender reason shock collateral secondcollateral duration interest
+global var type catamount lender_viet reason2 shock collateral secondcollateral_viet duration interest2
+keep country year hhid loanid amount $var
 foreach x in $var {
 decode `x', gen(dec_`x')
 drop `x'
 rename dec_`x' `x'
 }
+rename lender_viet lender
+rename reason2 reason
+rename secondcollateral_viet secondcollateral
+rename interest2 interest
+tab1 type catamount lender reason shock collateral secondcollateral duration interest
 export delimited using "Viet.csv", replace
 restore
 

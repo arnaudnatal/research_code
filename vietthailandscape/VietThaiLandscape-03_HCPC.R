@@ -75,7 +75,7 @@ var<-data[,c("type", "catamount", "lender", "reason", "shock", "interest", "coll
 ### MCA
 nbaxe<-MCA(var, ncp=50, graph=FALSE)
 nbaxe$eig
-res_mca<-MCA(var, ncp=23, graph=FALSE)
+res_mca<-MCA(var, ncp=13, graph=FALSE)
 #print(res_mca)
 #summary(res_mca)
 #res_mca$var$coord
@@ -138,7 +138,7 @@ var<-data[,c("type", "catamount", "lender", "reason", "shock", "interest", "coll
 ### MCA
 nbaxe<-MCA(var, ncp=50, graph=FALSE)
 nbaxe$eig
-res_mca<-MCA(var, ncp=23, graph=FALSE)
+res_mca<-MCA(var, ncp=14, graph=FALSE)
 #print(res_mca)
 #summary(res_mca)
 #res_mca$var$coord
