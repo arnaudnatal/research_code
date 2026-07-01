@@ -493,7 +493,30 @@ rename i_x71129 productive
 rename _x71113 durationunit
 rename _x71112 durationn
  
-
+* Replace lender
+label define lender ///
+    1  "01 - Bank for social policy" ///
+    2  "02 - Bank for agriculture and rural development" ///
+    3  "03 - Credit organization (e.g. PCF)" ///
+    7  "07 - Job placement support fund" ///
+    8  "08 - Socio-political organization (VWU, agricultural organization)" ///
+    11 "11 - Business partner/trader/supplier" ///
+    12 "12 - Money lender" ///
+    13 "13 - Pawnshop" ///
+    14 "14 - Commercial bank" ///
+    20 "20 - Relative in village" ///
+    21 "21 - Relative outside village (same province)" ///
+    22 "22 - Relative other province" ///
+    23 "23 - Relative abroad" ///
+    24 "24 - Friends in village" ///
+    25 "25 - Friends outside village (same province)" ///
+    26 "26 - Friends other province" ///
+    27 "27 - Friends abroad" ///
+    28 "28 - Credit group (Ho/Hui or Phuong)" ///
+    90 "90 - Other, specify" ///
+    98 "98 - No answer"
+label values lender lender
+	
 * Selection
 keep hhid ///
 loanid type amount reason shock lender interestrate collateral secondcoll productive durationunit durationn
@@ -798,210 +821,815 @@ save"Loans_v00.dta", replace
 
 
 ****************************************
-* Cleaning
+* Lenders
 ****************************************
 use"Loans_v00", clear
 
-********** Lender
-gen lender2=""
-replace lender2="Bank" if lender=="Bank for Agriculture and Agricultural Cooperatives (BAAC)"
-replace lender2="Labour" if lender=="Business partner/trader/supplier"
-replace lender2="Other informal" if lender=="Village Fund/Community  Fund(Taksin village fund)"
-replace lender2="Moneylenders" if lender=="Money lender"
-replace lender2="Family" if lender=="Family in village"
-replace lender2="Cooperative" if lender=="Agricultural cooperatives"
-replace lender2="SHG" if lender=="Self help credit group"
-replace lender2="Family" if lender=="family outside village (same province)"
-replace lender2="Bank" if lender=="commercial bank"
-replace lender2="Bank" if lender=="Government Savings Bank"
-replace lender2="Bank" if lender=="Credit companies (e.g. Easy Buy, Quick Cash, AEON etc.)"
-replace lender2="Friends" if lender=="Friends in village"
-replace lender2="Bank" if lender=="Village bank"
-replace lender2="Other formal" if lender=="poverty eradication project"
-replace lender2="Friends" if lender=="friends outside village (same province)"
-replace lender2="Family" if lender=="family other province"
-replace lender2="Bank" if lender=="Government Housing Bank"
-replace lender2="Organization" if lender=="Other socio-political organization"
-replace lender2="Other" if lender=="Other, specify"
-replace lender2="Friends" if lender=="friends other province"
-replace lender2="Pawnbroker" if lender=="pawnshop"
-replace lender2="Other" if lender=="school"
-replace lender2="Cooperative" if lender=="saving cooperative and credit union"
-replace lender2="Labour" if lender=="work office"
-replace lender2="Insurance" if lender=="insurance company"
-replace lender2="Don't know" if lender=="don't know"
-replace lender2="Other informal" if lender=="temple"
-replace lender2="Family" if lender=="family abroad"
-replace lender2="Other" if lender=="student loan fund"
-replace lender2="Government" if lender=="local government"
-replace lender2="Bank" if lender=="Small Industry Finance Corporation/ SME Development Bank"
-replace lender2="Other" if lender=="student loan with payment related to future income"
-replace lender2="Not applicable" if lender=="not applicable"
-replace lender2="Other formal" if lender=="agricultural production restructuring program"
-replace lender2="Bank" if lender=="Export-Import Bank of Thailand or Business Promotion Office at Department of Exp"
-replace lender2="Other formal" if lender=="agricultural land reform office"
-replace lender2="Other formal" if lender=="Job placement support fund"
-replace lender2="Friends" if lender=="friends in village"
-replace lender2="Family" if lender=="familiy outside village (same province)"
-replace lender2="Bank" if lender=="Bank for agriculture and rural development"
-replace lender2="Family" if lender=="family in village"
-replace lender2="Labour" if lender=="Business partner/trader"
-replace lender2="Bank" if lender=="Bank for social policy"
-replace lender2="Organization" if lender=="Socio-political organization(VWU, agricultural organization)"
-replace lender2="Moneylenders" if lender=="money lender"
-replace lender2="Friends" if lender=="friends abroad"
-replace lender2="Bank" if lender=="Commercial bank"
-replace lender2="Credit group" if lender=="Credit organization (e.g. PCF)"
-replace lender2="Credit group" if lender=="credit group (Ho/Hui or Phuong)"
-replace lender2="Family" if lender=="relative in village"
-replace lender2="Family" if lender=="relative other province"
-replace lender2="Family" if lender=="Family in village"
-replace lender2="Other" if lender=="Urban Community Development Organization"
-replace lender2="Family" if lender=="Family in village"
-/*
 preserve
-keep lender lender2
-keep if lender2==""
-drop lender2
+keep lender
 duplicates drop
 restore
-ta lender
-*/
+
+********** Tout en minuscule
+gen lender_clean=lower(strtrim(lender))
 
 
-********** Reason
-gen reason2=""
-replace reason2="Agriculture" if reason=="Agricultural investments"
-replace reason2="Durable goods" if reason=="Buy durable household goods"
-replace reason2="Consumption" if reason=="buying consumption good (e.g. food)"
-replace reason2="Ceremony" if reason=="Ceremony (wedding, funeral, tet)"
-replace reason2="Agriculture" if reason=="Agriculture related expenses  (e.g. fertilizer pesticides)"
-replace reason2="Repay" if reason=="Pay back other debt"
-replace reason2="Housing" if reason=="House or land purchase/construction"
-replace reason2="Education" if reason=="Study"
-replace reason2="Investment" if reason=="Business investments"
-replace reason2="Repay guarantor" if reason=="pay back debt as guarantor (borrower default)"
-replace reason2="Non-relatives" if reason=="relend to non-relatives"
-replace reason2="Health" if reason=="Medical treatment"
-replace reason2="Investment" if reason=="Business related expenses"
-replace reason2="Infrastructure" if reason=="Improving infrastructure (water supply, sanitation etc.)"
-replace reason2="Other" if reason=="Other, specify"
-replace reason2="Don't know" if reason=="don't know"
-replace reason2="Other" if reason=="lawsuit expenses"
-replace reason2="Relatives" if reason=="relend to family members or relatives"
-replace reason2="Labour" if reason=="work abroad"
-replace reason2="Not applicable" if reason=="not applicable"
-replace reason2="Labour" if reason=="work related travelling expense"
-replace reason2="Insurance" if reason=="insurance payment"
-replace reason2="Housing" if reason=="land ownership transfer fee"
-replace reason2="Other" if reason=="compensation"
-replace reason2="Other" if reason=="run for an election"
-replace reason2="Housing" if reason=="house and car repair"
-replace reason2="Investment" if reason=="buy machinne for production"
-replace reason2="Other" if reason=="contribution to public transport project"
-replace reason2="Health" if reason=="give birth"
-replace reason2="Ceremony" if reason=="funeral"
-replace reason2="Labour" if reason=="job fee"
-replace reason2="Housing" if reason=="buy the land"
-replace reason2="Saving" if reason=="Savings"
-/*
+
+********** Enlever les préfixes numériques du type "61 - "
+replace lender_clean=regexr(lender_clean, "^[0-9]+[ ]*-[ ]*", "")
+
+
+********** Nettoyage léger
+replace lender_clean=subinstr(lender_clean, "  ", " ", .)
+replace lender_clean=subinstr(lender_clean, "familiy", "family", .)
+replace lender_clean=subinstr(lender_clean, "community  fund", "community fund", .)
+replace lender_clean=subinstr(lender_clean, "other specify", "other, specify", .)
+gen lender_cat=""
+
+
+********* Catégories fines
+* Banques publiques / développement
+replace lender_cat="public_agricultural_bank" if strpos(lender_clean,"bank for agriculture and agricultural cooperatives") ///
+| strpos(lender_clean,"bank for agriculture and rural development")
+
+replace lender_cat="public_social_policy_bank" if strpos(lender_clean,"bank for social policy")
+
+replace lender_cat="government_savings_bank" if strpos(lender_clean,"government savings bank")
+
+replace lender_cat="government_housing_bank" if strpos(lender_clean,"government housing bank")
+
+replace lender_cat="sme_development_bank" if strpos(lender_clean,"small industry finance") ///
+| strpos(lender_clean,"sme development bank")
+
+replace lender_cat="export_import_business_promotion_bank" if strpos(lender_clean,"export-import bank") ///
+| strpos(lender_clean,"business promotion office")
+
+* Banques commerciales
+replace lender_cat="commercial_bank" if lender_clean=="commercial bank"
+
+* Crédit formel non bancaire
+replace lender_cat="credit_company" if strpos(lender_clean,"credit companies")
+
+replace lender_cat="credit_organization" if strpos(lender_clean,"credit organization")
+
+replace lender_cat="insurance_company" if strpos(lender_clean,"insurance company")
+
+replace lender_cat="pawnshop" if lender_clean=="pawnshop"
+
+* Coopératives / groupes de crédit
+replace lender_cat="agricultural_cooperative" if lender_clean=="agricultural cooperatives"
+
+replace lender_cat="saving_cooperative_credit_union" if strpos(lender_clean,"saving cooperative") ///
+| strpos(lender_clean,"credit union")
+
+replace lender_cat="self_help_credit_group" if lender_clean=="self help credit group"
+
+replace lender_cat="informal_rotating_credit_group" if strpos(lender_clean,"credit group") ///
+| strpos(lender_clean,"ho/hui") ///
+| strpos(lender_clean,"phuong")
+
+* Fonds villageois / communautaires / programmes publics
+replace lender_cat="village_fund" if strpos(lender_clean,"village fund") ///
+| strpos(lender_clean,"community fund")
+
+replace lender_cat="village_bank" if lender_clean=="village bank"
+
+replace lender_cat="poverty_eradication_project" if strpos(lender_clean,"poverty eradication")
+
+replace lender_cat="urban_community_development_org" if strpos(lender_clean,"urban community development")
+
+replace lender_cat="agricultural_restructuring_program" if strpos(lender_clean,"agricultural production restructuring")
+
+replace lender_cat="agricultural_land_reform_office" if strpos(lender_clean,"agricultural land reform")
+
+replace lender_cat="job_placement_support_fund" if strpos(lender_clean,"job placement support")
+
+replace lender_cat="student_loan_fund" if strpos(lender_clean,"student loan fund") ///
+| strpos(lender_clean,"student loan with payment")
+
+replace lender_cat="local_government" if lender_clean=="local government"
+
+* Organisations sociales / politiques / religieuses / école / bureau
+replace lender_cat="socio_political_organization" if strpos(lender_clean,"socio-political organization") ///
+| strpos(lender_clean,"vwu") ///
+| strpos(lender_clean,"agricultural organization")
+
+replace lender_cat="temple" if lender_clean=="temple"
+
+replace lender_cat="school" if lender_clean=="school"
+
+replace lender_cat="work_office" if lender_clean=="work office"
+
+* Relations économiques
+replace lender_cat = "business_partner_trader_supplier" if ///
+    strpos(lender_clean,"business partner") | ///
+    strpos(lender_clean,"trader") | ///
+    strpos(lender_clean,"supplier")
+
+* Prêteurs informels
+replace lender_cat="money_lender" if lender_clean=="money lender"
+
+* Famille / proches par localisation
+replace lender_cat="relative_in_village" if lender_clean=="family in village" ///
+| lender_clean=="relative in village"
+
+replace lender_cat="relative_same_province_outside_village" if strpos(lender_clean,"family outside village") ///
+| strpos(lender_clean,"relative outside village")
+
+replace lender_cat="relative_other_province" if lender_clean=="family other province" ///
+| lender_clean=="relative other province"
+
+replace lender_cat="relative_abroad" if lender_clean=="family abroad" ///
+| lender_clean=="relative abroad"
+
+* Amis par localisation
+replace lender_cat="friends_in_village" if lender_clean=="friends in village"
+
+replace lender_cat="friends_same_province_outside_village" if lender_clean=="friends outside village (same province)"
+
+replace lender_cat="friends_other_province" if lender_clean=="friends other province"
+
+replace lender_cat="friends_abroad" if lender_clean=="friends abroad"
+
+* Autres / manquants
+replace lender_cat="other" if strpos(lender_clean,"other, specify")
+
+replace lender_cat="dont_know" if lender_clean=="don't know"
+
+replace lender_cat="not_applicable" if lender_clean=="not applicable"
+
+* Vérification
+ta lender_cat
+
+
+
+
+********** Catégories agregées
+gen lender_group = ""
+
+* Banques publiques / programmes gouvernementaux
+replace lender_group = "pubank_govprog" if lender_cat == "public_agricultural_bank"
+replace lender_group = "pubank_govprog" if lender_cat == "public_social_policy_bank"
+replace lender_group = "pubank_govprog" if lender_cat == "government_savings_bank"
+replace lender_group = "pubank_govprog" if lender_cat == "government_housing_bank"
+replace lender_group = "pubank_govprog" if lender_cat == "sme_development_bank"
+replace lender_group = "pubank_govprog" if lender_cat == "export_import_business_promotion_bank"
+replace lender_group = "pubank_govprog" if lender_cat == "poverty_eradication_project"
+replace lender_group = "pubank_govprog" if lender_cat == "urban_community_development_org"
+replace lender_group = "pubank_govprog" if lender_cat == "agricultural_restructuring_program"
+replace lender_group = "pubank_govprog" if lender_cat == "agricultural_land_reform_office"
+replace lender_group = "pubank_govprog" if lender_cat == "job_placement_support_fund"
+replace lender_group = "pubank_govprog" if lender_cat == "student_loan_fund"
+replace lender_group = "pubank_govprog" if lender_cat == "local_government"
+
+* Crédit formel privé
+replace lender_group = "formprivcredit" if lender_cat == "commercial_bank"
+replace lender_group = "formprivcredit" if lender_cat == "credit_company"
+replace lender_group = "formprivcredit" if lender_cat == "credit_organization"
+replace lender_group = "formprivcredit" if lender_cat == "insurance_company"
+replace lender_group = "formprivcredit" if lender_cat == "pawnshop"
+
+* Coopératives / crédit communautaire
+replace lender_group = "coopcommcredit" if lender_cat == "agricultural_cooperative"
+replace lender_group = "coopcommcredit" if lender_cat == "saving_cooperative_credit_union"
+replace lender_group = "coopcommcredit" if lender_cat == "self_help_credit_group"
+replace lender_group = "coopcommcredit" if lender_cat == "informal_rotating_credit_group"
+replace lender_group = "coopcommcredit" if lender_cat == "village_fund"
+replace lender_group = "coopcommcredit" if lender_cat == "village_bank"
+
+* Organisations sociales / institutionnelles
+replace lender_group = "socinstorg" if lender_cat == "socio_political_organization"
+replace lender_group = "socinstorg" if lender_cat == "temple"
+replace lender_group = "socinstorg" if lender_cat == "school"
+replace lender_group = "socinstorg" if lender_cat == "work_office"
+
+* Friends
+replace lender_group = "friends" if lender_cat == "friends_abroad"
+replace lender_group = "friends" if lender_cat == "friends_in_village"
+replace lender_group = "friends" if lender_cat == "friends_other_province"
+replace lender_group = "friends" if lender_cat == "friends_same_province_outside_village"
+
+* Relatives
+replace lender_group = "relatives" if lender_cat == "relative_abroad"
+replace lender_group = "relatives" if lender_cat == "relative_in_village"
+replace lender_group = "relatives" if lender_cat == "relative_other_province"
+replace lender_group = "relatives" if lender_cat == "relative_same_province_outside_village"
+
+* Relations commerciales
+replace lender_group = "businetw" if lender_cat == "business_partner_trader_supplier"
+
+* Moneylenders
+replace lender_group = "moneylender" if lender_cat == "money_lender"
+
+* Autre
+replace lender_group = "other" if lender_cat == "other"
+replace lender_group = "other" if lender_cat == "dont_know"
+replace lender_group = "other" if lender_cat == "not_applicable"
+
+
+
+********** Vérification
+ta lender_group
+
+ta lender if lender_group=="businetw"
+ta lender if lender_group=="coopcommcredit"
+ta lender if lender_group=="formprivcredit"
+ta lender if lender_group=="friends"
+ta lender if lender_group=="moneylender"
+ta lender if lender_group=="other"
+ta lender if lender_group=="pubank_govprog"
+ta lender if lender_group=="relatives"
+ta lender if lender_group=="socinstorg"
+
+save"Loans_v01.dta", replace
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Reason
+****************************************
+use"Loans_v01.dta", clear
+
 preserve
-keep reason reason2
-keep if reason2==""
-drop reason2
+keep reason
 duplicates drop
 restore
-ta reason
-*/
 
 
-***** Collateral
-gen collateral2=""
-replace collateral2="Land" if collateral=="land"
-replace collateral2="Assets" if collateral=="other assets (e.g. farm equipment, livestock, valuables)"
-replace collateral2="Crops/stock" if collateral=="use future crops to guanrantee credit"
-replace collateral2="Third person" if collateral=="multiple guarantors"
-replace collateral2="Nothing" if collateral=="no collateral required"
-replace collateral2="Saving" if collateral=="use savings to guanrantee credit"
-replace collateral2="Not applicable" if collateral=="not applicable"
-replace collateral2="Third person" if collateral=="single guarantor"
-replace collateral2="Goods" if collateral=="radio, sterio, VCD/DVD player"
-replace collateral2="Don't know" if collateral=="don't know"
-replace collateral2="Land tax doc" if collateral=="land tax document"
-replace collateral2="Life insurance" if collateral=="life insurance"
-replace collateral2="Assets" if collateral=="car, pick-up car, truck"
-replace collateral2="Crops/stock" if collateral=="stock"
-replace collateral2="Job contract" if collateral=="Salary /work contract"
-replace collateral2="Job contract" if collateral=="salary/work contract"
-replace collateral2="Other" if collateral=="Other, specify"
-/*
+********** Minuscule
+gen reason_clean = lower(strtrim(reason))
+
+
+********** Enlever les préfixes numériques : "7 - ..."
+replace reason_clean = regexr(reason_clean, "^[0-9]+[ ]*-[ ]*", "")
+
+
+********** Nettoyage léger
+replace reason_clean = subinstr(reason_clean, "  ", " ", .)
+replace reason_clean = subinstr(reason_clean, "machinne", "machine", .)
+replace reason_clean = subinstr(reason_clean, "sanitation etc.)", "sanitation etc)", .)
+
+
+
+********** Catégorie
+gen reason_group = ""
+
+* 1. Agriculture
+replace reason_group = "agriculture" if reason_clean == "agricultural investments"
+replace reason_group = "agriculture" if strpos(reason_clean,"agriculture related expenses")
+
+* 2. Business / activité productive
+replace reason_group = "business_productive" if reason_clean == "business investments"
+replace reason_group = "business_productive" if reason_clean == "business related expenses"
+replace reason_group = "business_productive" if reason_clean == "buy machine for production"
+
+* 3. Consommation / biens durables
+replace reason_group = "consumption" if strpos(reason_clean,"buy durable household goods")
+replace reason_group = "consumption" if strpos(reason_clean,"buying consumption good")
+
+* 4. Logement / terre / infrastructure
+replace reason_group = "housing_land_infrastructure" if strpos(reason_clean,"house or land purchase")
+replace reason_group = "housing_land_infrastructure" if reason_clean == "buy the land"
+replace reason_group = "housing_land_infrastructure" if reason_clean == "land ownership transfer fee"
+replace reason_group = "housing_land_infrastructure" if strpos(reason_clean,"improving infrastructure")
+replace reason_group = "housing_land_infrastructure" if reason_clean == "house and car repair"
+
+* 5. Éducation / santé
+replace reason_group = "education_health" if reason_clean == "study"
+replace reason_group = "education_health" if reason_clean == "medical treatment"
+replace reason_group = "education_health" if reason_clean == "give birth"
+
+* 6. Dette / remboursement / garantie
+replace reason_group = "debt_repayment" if reason_clean == "pay back other debt"
+replace reason_group = "debt_repayment" if strpos(reason_clean,"pay back debt as guarantor")
+
+* 7. Relending
+replace reason_group = "relending" if strpos(reason_clean,"relend to family")
+replace reason_group = "relending" if strpos(reason_clean,"relend to non-relatives")
+
+* 8. Migration / travail
+replace reason_group = "work_migration" if reason_clean == "work abroad"
+replace reason_group = "work_migration" if reason_clean == "work related travelling expense"
+replace reason_group = "work_migration" if reason_clean == "job fee"
+
+* 9. Cérémonies / obligations sociales
+replace reason_group = "ceremony_social_obligations" if strpos(reason_clean,"ceremony")
+replace reason_group = "ceremony_social_obligations" if reason_clean == "funeral"
+replace reason_group = "ceremony_social_obligations" if reason_clean == "compensation"
+replace reason_group = "ceremony_social_obligations" if reason_clean == "contribution to public transport project"
+
+* 10. Autres / inconnus / non applicable
+replace reason_group = "other_unknown_na" if strpos(reason_clean,"other, specify")
+replace reason_group = "other_unknown_na" if reason_clean == "don't know"
+replace reason_group = "other_unknown_na" if reason_clean == "not applicable"
+replace reason_group = "other_unknown_na" if reason_clean == "no second usage"
+
+* 11. Autres cas spécifiques
+replace reason_group = "legal_political_insurance" if reason_clean == "lawsuit expenses"
+replace reason_group = "legal_political_insurance" if reason_clean == "insurance payment"
+replace reason_group = "legal_political_insurance" if reason_clean == "run for an election"
+
+replace reason_group = "savings" if reason_clean == "savings"
+
+
+
+********** Group 2
+gen reason_group2 = ""
+
+* 1. Activités productives
+replace reason_group2 = "productive" if reason_group == "agriculture"
+replace reason_group2 = "productive" if reason_group == "business_productive"
+
+* 2. Logement / terrain
+replace reason_group2 = "housing_land" if reason_group == "housing_land_infrastructure"
+
+* 3. Consommation
+replace reason_group2 = "consumption" if reason_group == "consumption"
+
+* 4. Capital humain
+replace reason_group2 = "human_capital" if reason_group == "education_health"
+
+* 5. Remboursement de dettes
+replace reason_group2 = "debt_repayment" if reason_group == "debt_repayment"
+
+* 6. Transferts et obligations sociales
+replace reason_group2 = "transfers" if reason_group == "relending"
+replace reason_group2 = "transfers" if reason_group == "ceremony_social_obligations"
+
+* 7. Travail / migration
+replace reason_group2 = "work_migration" if reason_group == "work_migration"
+
+* 8. Autres
+replace reason_group2 = "other_unknown" if reason_group == "legal_political_insurance"
+replace reason_group2 = "other_unknown" if reason_group == "savings"
+replace reason_group2 = "other_unknown" if reason_group == "other_unknown_na"
+
+
+
+save"Loans_v02.dta", replace
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Collateral
+****************************************
+use"Loans_v02.dta", clear
+
 preserve
-keep collateral collateral2
-keep if collateral2==""
-drop collateral2
+keep collateral
 duplicates drop
 restore
-ta collateral
-*/
 
 
-***** Second collateral
-gen secondcoll2=""
-replace collateral2="Nothing" if collateral=="no other requirement"
-replace collateral2="Third person" if collateral=="other multiple garantors"
-replace collateral2="Not applicable" if collateral=="not applicable"
-replace collateral2="Membership" if collateral=="credit group membership"
-replace collateral2="Third person" if collateral=="individual garantor"
-replace collateral2="Membership" if collateral=="membership in social/political group  (e.g. VWU, farmers' union, party, church)"
-replace collateral2="Saving" if collateral=="savings account at the bank"
-replace collateral2="Don't know" if collateral=="don't know"
-replace collateral2="School" if collateral=="currently enrolled in school or university"
-replace collateral2="Salary" if collateral=="Salary (work contract) or retired salary"
-replace collateral2="No answer" if collateral=="no answer"
-replace collateral2="Land" if collateral=="residential land"
-replace collateral2="Connection" if collateral=="Has relative working in the Bank"
-replace collateral2="Other" if collateral=="poor household"
-replace collateral2="Work contract" if collateral=="salary/work contract"
-replace collateral2="Other" if collateral=="Other, specify"
-replace collateral2="Insurance" if collateral=="Insurance (Life, accident etc.)"
-/*
+
+
+********** Minuscule
+gen collateral_clean = lower(strtrim(collateral))
+
+
+********** Enlever les préfixes numériques : "7 - ..."
+replace collateral_clean = regexr(collateral_clean, "^[0-9]+[ ]*-[ ]*", "")
+
+********** Nettoyage léger
+replace collateral_clean = subinstr(collateral_clean, "  ", " ", .)
+replace collateral_clean = subinstr(collateral_clean, "guanrantee", "guarantee", .)
+replace collateral_clean = subinstr(collateral_clean, "sterio", "stereo", .)
+replace collateral_clean = subinstr(collateral_clean, "salary /work", "salary/work", .)
+replace collateral_clean = subinstr(collateral_clean, "other specify", "other, specify", .)
+
+
+********** Group
+gen collateral_group = ""
+
+* Version fine
+replace collateral_group = "land" if collateral_clean == "land"
+replace collateral_group = "land" if collateral_clean == "land tax document"
+
+replace collateral_group = "physical_assets" if strpos(collateral_clean,"other assets")
+replace collateral_group = "physical_assets" if collateral_clean == "radio, stereo, vcd/dvd player"
+replace collateral_group = "physical_assets" if collateral_clean == "car, pick-up car, truck"
+replace collateral_group = "physical_assets" if collateral_clean == "stock"
+
+replace collateral_group = "future_crops" if strpos(collateral_clean,"future crops")
+replace collateral_group = "savings" if strpos(collateral_clean,"savings")
+replace collateral_group = "life_insurance" if collateral_clean == "life insurance"
+
+replace collateral_group = "guarantor" if collateral_clean == "single guarantor"
+replace collateral_group = "guarantor" if collateral_clean == "multiple guarantors"
+
+replace collateral_group = "salary_work_contract" if collateral_clean == "salary/work contract"
+
+replace collateral_group = "no_collateral" if collateral_clean == "no collateral required"
+
+replace collateral_group = "other_unknown_na" if collateral_clean == "other, specify"
+replace collateral_group = "other_unknown_na" if collateral_clean == "don't know"
+replace collateral_group = "other_unknown_na" if collateral_clean == "not applicable"
+
+
+
+
+********** Version agrégée
+gen collateral_group2 = ""
+
+replace collateral_group2 = "asset_collateral" if collateral_group == "land"
+replace collateral_group2 = "asset_collateral" if collateral_group == "physical_assets"
+replace collateral_group2 = "asset_collateral" if collateral_group == "future_crops"
+replace collateral_group2 = "asset_collateral" if collateral_group == "savings"
+replace collateral_group2 = "asset_collateral" if collateral_group == "life_insurance"
+
+replace collateral_group2 = "personal_guarantee" if collateral_group == "guarantor"
+replace collateral_group2 = "income_contract" if collateral_group == "salary_work_contract"
+replace collateral_group2 = "no_collateral" if collateral_group == "no_collateral"
+replace collateral_group2 = "other_unknown_na" if collateral_group == "other_unknown_na"
+
+
+
+save"Loans_v03.dta", replace
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Second collateral
+****************************************
+use"Loans_v03.dta", clear
+
 preserve
-keep secondcoll secondcoll2
-keep if secondcoll2==""
-drop secondcoll2
+keep secondcoll
 duplicates drop
 restore
-ta secondcoll
-*/
+
+********** Variable source
+gen secondcoll_clean = lower(strtrim(secondcoll))
+
+
+********** Enlever les préfixes numériques : "3 - ..."
+replace secondcoll_clean = regexr(secondcoll_clean, "^[0-9]+[ ]*-[ ]*", "")
+
+********** Nettoyage léger
+replace secondcoll_clean = subinstr(secondcoll_clean, "  ", " ", .)
+replace secondcoll_clean = subinstr(secondcoll_clean, "garantor", "guarantor", .)
+replace secondcoll_clean = subinstr(secondcoll_clean, "garantors", "guarantors", .)
+replace secondcoll_clean = subinstr(secondcoll_clean, "farmers' union", "farmers union", .)
+replace secondcoll_clean = subinstr(secondcoll_clean, "salary (work contract) or retired salary", "salary/work contract", .)
+replace secondcoll_clean = subinstr(secondcoll_clean, "other specify", "other, specify", .)
+
+********** Cat
+gen secondcoll_group = ""
+
+replace secondcoll_group = "no_other_requirement" if secondcoll_clean == "no other requirement"
+
+replace secondcoll_group = "guarantor" if secondcoll_clean == "individual guarantor"
+replace secondcoll_group = "guarantor" if secondcoll_clean == "other multiple guarantors"
+
+replace secondcoll_group = "credit_group_membership" if secondcoll_clean == "credit group membership"
+
+replace secondcoll_group = "social_political_membership" if ///
+    strpos(secondcoll_clean,"membership in social/political group")
+
+replace secondcoll_group = "savings_account" if secondcoll_clean == "savings account at the bank"
+
+replace secondcoll_group = "school_enrollment" if secondcoll_clean == "currently enrolled in school or university"
+
+replace secondcoll_group = "income_contract" if secondcoll_clean == "salary/work contract"
+
+replace secondcoll_group = "residential_land" if secondcoll_clean == "residential land"
+
+replace secondcoll_group = "relative_in_bank" if secondcoll_clean == "has relative working in the bank"
+
+replace secondcoll_group = "poor_household_status" if secondcoll_clean == "poor household"
+
+replace secondcoll_group = "insurance" if strpos(secondcoll_clean,"insurance")
+
+replace secondcoll_group = "other_unknown_na" if secondcoll_clean == "other, specify"
+replace secondcoll_group = "other_unknown_na" if secondcoll_clean == "don't know"
+replace secondcoll_group = "other_unknown_na" if secondcoll_clean == "no answer"
+replace secondcoll_group = "other_unknown_na" if secondcoll_clean == "not applicable"
+
+
+********** Version agrégée
+gen secondcoll_group2 = ""
+
+replace secondcoll_group2 = "no_other_requirement" if secondcoll_group == "no_other_requirement"
+
+replace secondcoll_group2 = "personal_guarantee" if secondcoll_group == "guarantor"
+replace secondcoll_group2 = "membership_requirement" if secondcoll_group == "credit_group_membership"
+replace secondcoll_group2 = "membership_requirement" if secondcoll_group == "social_political_membership"
+
+replace secondcoll_group2 = "financial_or_asset_requirement" if secondcoll_group == "savings_account"
+replace secondcoll_group2 = "financial_or_asset_requirement" if secondcoll_group == "residential_land"
+replace secondcoll_group2 = "financial_or_asset_requirement" if secondcoll_group == "insurance"
+
+replace secondcoll_group2 = "income_or_status_requirement" if secondcoll_group == "income_contract"
+replace secondcoll_group2 = "income_or_status_requirement" if secondcoll_group == "school_enrollment"
+replace secondcoll_group2 = "income_or_status_requirement" if secondcoll_group == "poor_household_status"
+replace secondcoll_group2 = "income_or_status_requirement" if secondcoll_group == "relative_in_bank"
+
+replace secondcoll_group2 = "other_unknown_na" if secondcoll_group == "other_unknown_na"
+
+
+
+save"Loans_v04.dta", replace
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Reste
+****************************************
+use"Loans_v04.dta", clear
 
 
 ***** Type
 ta type
-gen type2=.
+gen type2=2
 label define type2 1"Cash" 2"Other"
 label values type2 type2
 replace type2=1 if type=="Cash"
 replace type2=1 if type=="a loan"
-replace type2=2 if type!="Cash"
-replace type2=2 if type=="a loan"
+replace type2=1 if type=="5 - Cash"
+replace type2=1 if type=="USD"
 *
 ta type type2, m
 drop type
 
 ***** Shock
 ta shock
-gen shock2=.
+gen shock2=0
 label define shock2 0"No" 1"Yes"
 label values shock2 shock2
-replace shock2=0 if shock=="no"
-replace shock2=0 if shock=="don't know"
-replace shock2=0 if shock=="not applicable"
 replace shock2=1 if shock=="yes"
+replace shock2=1 if shock=="1 - Yes"
 *
 ta shock shock2, m
 drop shock
 
+ta year country
 
+***** Duration year
+gen durationyear2=.
+replace durationyear2=durationyear if durationyear!=.
+replace durationyear2=durationn if durationunit==1
+replace durationyear2=durationn/12 if durationunit==2
+replace durationyear2=durationn/52 if durationunit==3
+replace durationyear2=durationn/365 if durationunit==4
+
+mdesc durationyear2
+
+
+save"Loans_v05.dta", replace
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Selection
+****************************************
+use"Loans_v05", clear
+
+
+global loanvar ///
+loanid ///
+amount ///
+interestrate ///
+productive ///
+lender_group ///
+reason_group reason_group2 ///
+collateral_group collateral_group2 ///
+secondcoll_group secondcoll_group2 ///
+type2 ///
+shock2 ///
+durationyear2
+
+* Selection
+keep country year hhid $loanvar
+
+* Missings
+mdesc $loanvar
+ta country year if interestrate==.
+ta country year if durationyear2==.
+ta country year if secondcoll_group==""
+
+* Trop missings
+egen nbmiss=rowmiss($loanvar)
+ta nbmiss
+keep if nbmiss==0
+drop nbmiss
+
+ta year country
+
+save"Loans_v06.dta", replace
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Cleaning and encode
+****************************************
+use"Loans_v06", clear
+
+*** Country
+ta country
+replace country="Thailand" if country=="Thai"
+replace country="Vietnam" if country=="Viet"
+encode country, gen(country_en)
+drop country
+rename country_en country
+fre country
+order country, first
+
+*** Deflate
+ta amount
+gen amount2=amount
+*
+replace amount2=amount*(100/92.6) if country==1 & year==2007
+replace amount2=amount*(100/97.7) if country==1 & year==2008
+replace amount2=amount*(100/100) if country==1 & year==2010
+replace amount2=amount*(100/103.8) if country==1 & year==2011
+replace amount2=amount*(100/110.5) if country==1 & year==2016
+replace amount2=amount*(100/111.3) if country==1 & year==2017
+*
+replace amount2=amount*(100/69.7) if country==2 & year==2007
+replace amount2=amount*(100/85.8) if country==2 & year==2008
+replace amount2=amount*(100/100) if country==2 & year==2010
+replace amount2=amount*(100/118.7) if country==2 & year==2011
+replace amount2=amount*(100/148.4) if country==2 & year==2016
+replace amount2=amount*(100/153.6) if country==2 & year==2017
+order amount2, after(amount)
+drop amount
+rename amount2 amount
+
+*** Lender
+ta lender_group
+ta lender_group country, col nofreq
+gen lender=.
+label define lender 1"Formal private" 2"Formal public" 3"Formal organization" 4"Cooperative/community" 5"Business network" 6"Money lender" 7"Relatives" 8"Friends" 9"Other"
+label values lender lender
+replace lender=1 if lender_group=="formprivcredit"
+replace lender=2 if lender_group=="pubank_govprog"
+replace lender=3 if lender_group=="socinstorg"
+replace lender=4 if lender_group=="coopcommcredit"
+replace lender=5 if lender_group=="businetw"
+replace lender=6 if lender_group=="moneylender"
+replace lender=7 if lender_group=="relatives"
+replace lender=8 if lender_group=="friends"
+replace lender=9 if lender_group=="other"
+ta lender_group lender
+drop lender_group
+
+*** Reason
+ta reason_group country, col nofreq
+ta reason_group2 country, col nofreq
+drop reason_group
+gen reason=.
+label define reason 1"Investment" 2"Housing/land" 3"Human capital" 4"Consumption" 5"Debt repayment" 6"Ceremony or relend" 7"Migration" 8"Other"
+label values reason reason
+replace reason=1 if reason_group2=="productive"
+replace reason=2 if reason_group2=="housing_land"
+replace reason=3 if reason_group2=="human_capital"
+replace reason=4 if reason_group2=="consumption"
+replace reason=5 if reason_group2=="debt_repayment"
+replace reason=6 if reason_group2=="transfers"
+replace reason=7 if reason_group2=="work_migration"
+replace reason=8 if reason_group2=="other_unknown"
+ta reason
+drop reason_group2
+drop productive
+
+*** Type
+rename type2 type
+
+*** Shock
+rename shock2 shock
+
+*** Colleral
+ta collateral_group
+ta collateral_group2
+drop collateral_group
+gen collateral=.
+label define collateral 1"Personal" 2"Asset" 3"Other" 4"No collateral"
+label values collateral collateral
+replace collateral=1 if collateral_group2=="personal_guarantee"
+replace collateral=2 if collateral_group2=="asset_collateral"
+replace collateral=3 if collateral_group2=="income_contract"
+replace collateral=3 if collateral_group2=="other_unknown_na"
+replace collateral=4 if collateral_group2=="no_collateral"
+ta collateral
+drop collateral_group2
+
+*** Second collateral
+ta secondcoll_group
+ta secondcoll_group2
+drop secondcoll_group
+gen secondcollateral=.
+label define secondcollateral 1"Membership" 2"Personal" 3"Asset" 4"Income/stats" 5"Other" 6"No other coll"
+label values secondcollateral secondcollateral
+replace secondcollateral=1 if secondcoll_group2=="membership_requirement"
+replace secondcollateral=2 if secondcoll_group2=="personal_guarantee"
+replace secondcollateral=3 if secondcoll_group2=="financial_or_asset_requirement"
+replace secondcollateral=4 if secondcoll_group2=="income_or_status_requirement"
+replace secondcollateral=5 if secondcoll_group2=="other_unknown_na"
+replace secondcollateral=6 if secondcoll_group2=="no_other_requirement"
+ta secondcollateral
+drop secondcoll_group2
+
+*** Durationyear2
+ta durationyear2
+rename durationyear2 durationyear
+gen duration=.
+label define duration 1"Duration: Less than 1y" 2"Duration: [1;2[" 3"Duration: [2;5[" 4"Duration: 5y or more"
+label values duration duration
+replace duration=1 if durationyear<1
+replace duration=2 if durationyear>=1 & durationyear<2
+replace duration=3 if durationyear>=2 & durationyear<5
+replace duration=4 if durationyear>=5
+ta duration
+drop durationyear
+
+*** Interest rate
+
+
+*** Order
+order country year hhid loanid type amount lender reason shock collateral secondcollateral duration interestrate
 
 ****************************************
 * END
