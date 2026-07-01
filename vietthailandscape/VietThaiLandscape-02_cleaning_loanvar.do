@@ -16,811 +16,6 @@ do"C:/Users/Arnaud/Documents/GitHub/folderanalysis/$link.do"
 
 
 ****************************************
-* 2007 - 2024
-****************************************
-
-
-********** Data
-***** Thailand
-* 2007 - ok
-* 2008 - ok
-* 2010 - ok
-* 2011 - ok
-* 2013 - beaucoup de manquants, mail envoyé
-* 2016 - ok
-* 2017 - ok
-* 2019 - pas dispo pour VN donc je ne le prends pas
-* 2022 - MCQ donc pas sûr de le prendre
-* 2024 - beaucoup de manquants, mail envoyé
-
-***** Vietnam
-* 2007 - ok
-* 2008 - ok
-* 2010 - ok
-* 2011 - ok
-* 2013 - beaucoup de manquants, mail envoyé
-* 2016 - ok
-* 2017 - ok
-* 2022 - MCQ donc pas sûr de le prendre
-* 2024 - beaucoup de manquants, mail envoyé
-
-
-/*
-- append 2007, 2008, 2010, 2011, 2016, 2017
-*/
-
-********** Thailand 2007
-use"raw/th07_borrclean.dta", clear
-
-* Rename
-rename _x71103 loanid
-rename _x71104 type
-rename _x71105 amount
-rename _x71106 reason
-rename _x71107 shock
-rename _x71109 lender
-rename _x71116 interestrate
-rename _x71120 collateral
-rename _x71122 secondcoll
-rename _x71129 productive
-rename _x71113 durationunit
-rename _x71112n durationn
-
-* Selection
-keep hhid ///
-loanid type amount reason shock lender interestrate collateral secondcoll productive durationunit durationn
-order durationunit, before(durationn)
-
-* Decode
-foreach x in type reason shock lender collateral secondcoll {
-decode `x', gen(dec_`x')
-drop `x'
-rename dec_`x' `x'
-}
-
-* Gen
-gen country="Thai"
-gen year=2007
-order country year hhid, first
-
-save"_temp_th07", replace
-
-
-
-
-********** Vietnam 2007
-use"raw/vn07_borrclean.dta", clear
-
-* Rename
-rename _x71103 loanid
-rename _x71104 type
-rename _x71105 amount
-rename _x71106 reason
-rename _x71107 shock
-rename _x71109 lender
-rename _x71116 interestrate
-rename _x71120 collateral
-rename _x71122 secondcoll
-rename _x71129 productive
-rename _x71113 durationunit
-rename _x71112n durationn
-
-
-* Selection
-keep hhid ///
-loanid type amount reason shock lender interestrate collateral secondcoll productive durationunit durationn
-order durationunit, before(durationn)
-
-* Decode
-foreach x in type reason shock lender collateral secondcoll {
-decode `x', gen(dec_`x')
-drop `x'
-rename dec_`x' `x'
-}
-
-* Gen
-gen country="Viet"
-gen year=2007
-order country year hhid, first
-
-save"_temp_vn07", replace
-
-
-
-
-
-********** Thailand 2008
-use"raw/th08_borrclean.dta", clear
-
-* Rename
-rename _x71103 loanid
-rename _x71104 type
-rename _x71105 amount
-rename _x71106a reason
-rename _x71107 shock
-rename _x71109 lender
-rename _x71116 interestrate
-rename _x71120 collateral
-rename _x71122 secondcoll
-rename i_x71129 productive
-rename i_x71126 durationyear
-
-* Selection
-keep hhid ///
-loanid type amount reason shock lender interestrate collateral secondcoll productive durationyear
-
-* Decode
-foreach x in type reason shock lender collateral secondcoll {
-decode `x', gen(dec_`x')
-drop `x'
-rename dec_`x' `x'
-}
-
-* Gen
-gen country="Thai"
-gen year=2008
-order country year hhid, first
-
-save"_temp_th08", replace
-
-
-
-
-********** Vietnam 2008
-use"raw/vn08_borrclean.dta", clear
-
-* Rename
-rename _x71103 loanid
-rename _x71104 type
-rename _x71105 amount
-rename _x71106a reason
-rename _x71107 shock
-rename _x71109 lender
-rename _x71116 interestrate
-rename _x71120 collateral
-rename _x71122 secondcoll
-rename i_x71129 productive
-rename i_x71126 durationyear
-
-* Selection
-keep hhid ///
-loanid type amount reason shock lender interestrate collateral secondcoll productive durationyear
-
-* Decode
-foreach x in type reason shock lender collateral secondcoll {
-decode `x', gen(dec_`x')
-drop `x'
-rename dec_`x' `x'
-}
-
-* Gen
-gen country="Viet"
-gen year=2008
-order country year hhid, first
-
-save"_temp_vn08", replace
-
-
-
-
-
-********** Thailand 2010
-use"raw/th10_borrclean.dta", clear
-
-* Rename
-rename _x71103 loanid
-rename _x71104 type
-rename _x71105 amount
-rename _x71106a reason
-rename _x71107 shock
-rename _x71109 lender
-rename _x71116 interestrate
-rename _x71120 collateral
-rename _x71122 secondcoll
-rename i_x71129 productive
-rename i_x71126 durationyear
-
-* Selection
-keep hhid ///
-loanid type amount reason shock lender interestrate collateral secondcoll productive durationyear
-
-* Decode
-foreach x in type reason shock lender collateral secondcoll {
-decode `x', gen(dec_`x')
-drop `x'
-rename dec_`x' `x'
-}
-
-* Gen
-gen country="Thai"
-gen year=2010
-order country year hhid, first
-
-save"_temp_th10", replace
-
-
-
-
-********** Vietnam 2010
-use"raw/vn10_borrclean.dta", clear
-
-* Rename
-rename _x71103 loanid
-rename _x71104 type
-rename _x71105 amount
-rename _x71106a reason
-rename _x71107 shock
-rename _x71109 lender
-rename _x71116 interestrate
-rename _x71120 collateral
-rename _x71122 secondcoll
-rename i_x71129 productive
-rename i_x71126 durationyear
-
-* Selection
-keep hhid ///
-loanid type amount reason shock lender interestrate collateral secondcoll productive durationyear
-
-* Decode
-foreach x in type reason shock lender collateral secondcoll {
-decode `x', gen(dec_`x')
-drop `x'
-rename dec_`x' `x'
-}
-
-* Gen
-gen country="Viet"
-gen year=2010
-order country year hhid, first
-
-save"_temp_vn10", replace
-
-
-
-
-********** Thailand 2011
-use"raw/th11_borrclean.dta", clear
-
-* Rename
-rename _x71103 loanid
-rename _x71104 type
-rename _x71105 amount
-rename _x71106a reason
-rename _x71107 shock
-rename _x71109 lender
-rename _x71116 interestrate
-rename _x71120 collateral
-rename _x71122 secondcoll
-rename i_x71129 productive
-rename i_x71126 durationyear
-
-* Selection
-keep hhid ///
-loanid type amount reason shock lender interestrate collateral secondcoll productive durationyear
-
-* Decode
-foreach x in type reason shock lender collateral secondcoll {
-decode `x', gen(dec_`x')
-drop `x'
-rename dec_`x' `x'
-}
-
-* Gen
-gen country="Thai"
-gen year=2011
-order country year hhid, first
-
-save"_temp_th11", replace
-
-
-
-
-********** Vietnam 2011
-use"raw/vn11_borrclean.dta", clear
-
-* Rename
-rename _x71103 loanid
-rename _x71104 type
-rename _x71105 amount
-rename _x71106a reason
-rename _x71107 shock
-rename _x71109 lender
-rename _x71116 interestrate
-rename _x71120 collateral
-rename _x71122 secondcoll
-rename i_x71129 productive
-rename i_x71126 durationyear
-
-* Selection
-keep hhid ///
-loanid type amount reason shock lender interestrate collateral secondcoll productive durationyear
-
-* Decode
-foreach x in type reason shock lender collateral secondcoll {
-decode `x', gen(dec_`x')
-drop `x'
-rename dec_`x' `x'
-}
-
-* Gen
-gen country="Viet"
-gen year=2011
-order country year hhid, first
-
-save"_temp_vn11", replace
-
-
-
-
-********** Thailand 2013
-use"raw/th13_borrclean.dta", clear
-
-* Rename
-rename _x71103 loanid
-rename _x71104 type
-rename _x71105 amount
-rename _x71106a reason
-rename _x71107 shock
-rename _x71109 lender
-rename _x71116 interestrate
-rename _x71120 collateral
-rename _x71122 secondcoll
-rename i_x71129 productive
-rename i_x71126 durationyear
-
-* Label
-label define shock 1"yes" 2"no"
-label values shock shock
-
-* Selection
-keep hhid ///
-loanid type amount reason shock lender interestrate collateral secondcoll productive durationyear
-
-* Decode
-foreach x in type reason shock {
-decode `x', gen(dec_`x')
-drop `x'
-rename dec_`x' `x'
-}
-rename lender lender_num
-rename collateral collateral_num
-rename secondcoll secondcoll_num
-
-* Gen
-gen country="Thai"
-gen year=2013
-order country year hhid, first
-
-save"_temp_th13", replace
-
-
-
-
-********** Vietnam 2013
-use"raw/vn13_borrclean.dta", clear
-
-* Rename
-rename _x71103 loanid
-rename _x71104 type
-rename _x71105 amount
-rename _x71106a reason
-rename _x71107 shock
-rename _x71109 lender
-rename _x71116 interestrate
-rename _x71120 collateral
-rename _x71122 secondcoll
-rename i_x71129 productive
-rename i_x71126 durationyear
-
-* Selection
-keep hhid ///
-loanid type amount reason shock lender interestrate collateral secondcoll productive durationyear
-
-* Decode
-foreach x in type reason {
-decode `x', gen(dec_`x')
-drop `x'
-rename dec_`x' `x'
-}
-rename lender lender_num
-rename collateral collateral_num
-rename secondcoll secondcoll_num
-rename shock shock_num
-
-* Gen
-gen country="Viet"
-gen year=2013
-order country year hhid, first
-
-save"_temp_vn13", replace
-
-
-
-
-********** Thailand 2016
-use"raw/th16_borrclean.dta", clear
-
-* Rename
-rename _x71103 loanid
-rename _x71104 type
-rename _x71105 amount
-rename _x71106a reason
-rename _x71107 shock
-rename _x71109 lender
-rename _x71116 interestrate
-rename _x71120 collateral
-rename _x71122 secondcoll
-rename i_x71129 productive
-rename _x71113 durationunit
-rename _x71112 durationn
- 
-
-* Selection
-keep hhid ///
-loanid type amount reason shock lender interestrate collateral secondcoll productive durationunit durationn
-order durationunit, before(durationn)
-
-* Decode
-foreach x in type reason shock lender collateral secondcoll {
-decode `x', gen(dec_`x')
-drop `x'
-rename dec_`x' `x'
-}
-
-* Gen
-gen country="Thai"
-gen year=2016
-order country year hhid, first
-
-save"_temp_th16", replace
-
-
-
-********** Vietnam 2016
-use"raw/vn16_borrclean.dta", clear
-
-* Rename
-rename _x71103 loanid
-rename _x71104 type
-rename _x71105 amount
-rename _x71106a reason
-rename _x71107 shock
-rename _x71109 lender
-rename _x71116 interestrate
-rename _x71120 collateral
-rename _x71122 secondcoll
-rename i_x71129 productive
-rename _x71113 durationunit
-rename _x71112 durationn
- 
-* Replace lender
-label define lender ///
-    1  "01 - Bank for social policy" ///
-    2  "02 - Bank for agriculture and rural development" ///
-    3  "03 - Credit organization (e.g. PCF)" ///
-    7  "07 - Job placement support fund" ///
-    8  "08 - Socio-political organization (VWU, agricultural organization)" ///
-    11 "11 - Business partner/trader/supplier" ///
-    12 "12 - Money lender" ///
-    13 "13 - Pawnshop" ///
-    14 "14 - Commercial bank" ///
-    20 "20 - Relative in village" ///
-    21 "21 - Relative outside village (same province)" ///
-    22 "22 - Relative other province" ///
-    23 "23 - Relative abroad" ///
-    24 "24 - Friends in village" ///
-    25 "25 - Friends outside village (same province)" ///
-    26 "26 - Friends other province" ///
-    27 "27 - Friends abroad" ///
-    28 "28 - Credit group (Ho/Hui or Phuong)" ///
-    90 "90 - Other, specify" ///
-    98 "98 - No answer"
-label values lender lender
-	
-* Selection
-keep hhid ///
-loanid type amount reason shock lender interestrate collateral secondcoll productive durationunit durationn
-order durationunit, before(durationn)
-
-* Decode
-foreach x in type reason shock lender collateral secondcoll {
-decode `x', gen(dec_`x')
-drop `x'
-rename dec_`x' `x'
-}
-
-* Gen
-gen country="Viet"
-gen year=2016
-order country year hhid, first
-
-save"_temp_vn16", replace
-
-
-
-********** Thailand 2017
-use"raw/th17_borrclean.dta", clear
-
-* Rename
-rename _x71103 loanid
-rename _x71104 type
-rename _x71105 amount
-rename _x71106a reason
-rename _x71107 shock
-rename _x71109 lender
-rename _x71116 interestrate
-rename _x71120 collateral
-rename _x71122 secondcoll
-rename i_x71129 productive
-rename _x71113 durationunit
-rename _x71112 durationn
- 
-
-* Selection
-keep hhid ///
-loanid type amount reason shock lender interestrate collateral secondcoll productive durationunit durationn
-order durationunit, before(durationn)
-
-* Decode
-foreach x in type reason shock lender collateral secondcoll {
-decode `x', gen(dec_`x')
-drop `x'
-rename dec_`x' `x'
-}
-
-* Gen
-gen country="Thai"
-gen year=2017
-order country year hhid, first
-
-save"_temp_th17", replace
-
-
-
-
-********** Vietnam 2017
-use"raw/vn17_borrclean.dta", clear
-
-* Rename
-rename _x71103 loanid
-rename _x71104 type
-rename _x71105 amount
-rename _x71106a reason
-rename _x71107 shock
-rename _x71109 lender
-rename _x71116 interestrate
-rename _x71120 collateral
-rename _x71122 secondcoll
-rename i_x71129 productive
-rename _x71113 durationunit
-rename _x71112 durationn
- 
-
-* Selection
-keep hhid ///
-loanid type amount reason shock lender interestrate collateral secondcoll productive durationunit durationn
-order durationunit, before(durationn)
-
-* Decode
-foreach x in type reason shock lender collateral secondcoll {
-decode `x', gen(dec_`x')
-drop `x'
-rename dec_`x' `x'
-}
-
-* Gen
-gen country="Viet"
-gen year=2017
-order country year hhid, first
-
-save"_temp_vn17", replace
-
-
-
-
-
-
-********** Thailand 2019
-use"raw/th19_borr.dta", clear
-
-rename interview__id hhid
-* Rename
-rename borr__id loanid
-rename v71104 type
-rename v71105 amount
-rename v71106__1 reason_busi1
-rename v71106__2 reason_agri1
-rename v71106__3 reason_busi2
-rename v71106__4 reason_agri2
-rename v71106__5 reason_repay
-rename v71106__6 reason_housing
-rename v71106__7 reason_durable
-rename v71106__8 reason_improve
-rename v71106__9 reason_buying
-rename v71106__10 reason_health
-rename v71106__11 reason_ceremony
-rename v71106__12 reason_educ
-rename v71106__14 reason_labour
-rename v71106__18 reason_relend1
-rename v71106__19 reason_relend2
-rename v71106__90 reason_other
-rename v71106__98 reason_noanswer
-rename v71107 shock
-rename v71109 lender
-rename v71116 interestrate
-rename v71120 collateral
-rename v71122__0 secondcoll_no
-rename v71122__1 secondcoll_credit
-rename v71122__2 secondcoll_member
-rename v71122__3 secondcoll_othermult
-rename v71122__4 secondcoll_indiv
-rename v71122__5 secondcoll_saving
-rename v71122__6 secondcoll_curren
-rename v71122__10 secondcoll_salary
-rename v71122__90 secondcoll_other
-rename v71122__98 secondcoll_noanswer
-*rename i_x71129 productive
-rename v71113 durationunit
-rename v71112 durationn
-
-* Selection
-keep hhid ///
-loanid type amount reason_* shock lender interestrate collateral secondcoll_* durationunit durationn
-order durationunit, before(durationn)
-
-* Decode
-foreach x in shock lender collateral durationunit {
-decode `x', gen(dec_`x')
-drop `x'
-rename dec_`x' `x'
-}
-
-* Gen
-gen country="Thai"
-gen year=2019
-order country year hhid, first
-
-save"_temp_th19", replace
-
-
-
-
-
-
-********** Thailand 2022
-use"raw/th22_borr.dta", clear
-
-rename interview__id hhid
-* Rename
-rename borr__id loanid
-rename v71104 type
-rename v71105 amount
-rename v71106__1 reason_busi1
-rename v71106__2 reason_agri1
-rename v71106__3 reason_busi2
-rename v71106__4 reason_agri2
-rename v71106__5 reason_repay
-rename v71106__6 reason_housing
-rename v71106__7 reason_durable
-rename v71106__8 reason_improve
-rename v71106__9 reason_buying
-rename v71106__10 reason_health
-rename v71106__11 reason_ceremony
-rename v71106__12 reason_educ
-rename v71106__14 reason_labour
-rename v71106__18 reason_relend1
-rename v71106__19 reason_relend2
-rename v71106__90 reason_other
-rename v71106__98 reason_noanswer
-rename v71107 shock
-rename v71109 lender
-rename v71116 interestrate
-rename v71120__1 collateral_1
-rename v71120__2 collateral_2
-rename v71120__3 collateral_3
-rename v71120__4 collateral_4
-rename v71120__5 collateral_5
-rename v71120__6 collateral_6
-rename v71120__7 collateral_7
-rename v71120__8 collateral_8
-rename v71120__13 collateral_13
-rename v71120__90 collateral_90
-rename v71120__98 collateral_98
-rename v71122__0 secondcoll_no
-rename v71122__1 secondcoll_credit
-rename v71122__2 secondcoll_member
-rename v71122__3 secondcoll_othermult
-rename v71122__4 secondcoll_indiv
-rename v71122__5 secondcoll_saving
-rename v71122__6 secondcoll_curren
-rename v71122__10 secondcoll_salary
-rename v71122__90 secondcoll_other
-rename v71122__98 secondcoll_noanswer
-*rename i_x71129 productive
-rename v71113 durationunit
-rename v71112 durationn
-
-* Selection
-keep hhid ///
-loanid type amount reason_* shock lender interestrate collateral_* secondcoll_* durationunit durationn
-order durationunit, before(durationn)
-
-* Decode
-foreach x in shock lender durationunit {
-decode `x', gen(dec_`x')
-drop `x'
-rename dec_`x' `x'
-}
-
-* Gen
-gen country="Thai"
-gen year=2022
-order country year hhid, first
-
-save"_temp_th22", replace
-
-
-****************************************
-* END
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-****************************************
-* Append
-****************************************
-use"_temp_th07", clear
-
-append using "_temp_vn07"
-append using "_temp_th08"
-append using "_temp_vn08"
-append using "_temp_th10"
-append using "_temp_vn10"
-append using "_temp_th11"
-append using "_temp_vn11"
-append using "_temp_th16"
-append using "_temp_vn16"
-append using "_temp_th17"
-append using "_temp_vn17"
-
-
-save"Loans_v00.dta", replace
-****************************************
-* END
-
-
-
-
-
-
-
-
-
-****************************************
 * Lenders
 ****************************************
 use"Loans_v00", clear
@@ -1401,7 +596,7 @@ use"Loans_v04.dta", clear
 ***** Type
 ta type
 gen type2=2
-label define type2 1"Cash" 2"Other"
+label define type2 1"Type: Cash" 2"Type: Other"
 label values type2 type2
 replace type2=1 if type=="Cash"
 replace type2=1 if type=="a loan"
@@ -1414,7 +609,7 @@ drop type
 ***** Shock
 ta shock
 gen shock2=0
-label define shock2 0"No" 1"Yes"
+label define shock2 0"Shock: No" 1"Shock: Yes"
 label values shock2 shock2
 replace shock2=1 if shock=="yes"
 replace shock2=1 if shock=="1 - Yes"
@@ -1542,7 +737,7 @@ rename amount2 amount
 ta lender_group
 ta lender_group country, col nofreq
 gen lender=.
-label define lender 1"Formal private" 2"Formal public" 3"Formal organization" 4"Cooperative/community" 5"Business network" 6"Money lender" 7"Relatives" 8"Friends" 9"Other"
+label define lender 1"Lender: Formal private" 2"Lender: Formal public" 3"Lender: Formal organization" 4"Lender: Cooperative/community" 5"Lender: Business network" 6"Lender: Money lender" 7"Lender: Relatives" 8"Lender: Friends" 9"Lender: Other"
 label values lender lender
 replace lender=1 if lender_group=="formprivcredit"
 replace lender=2 if lender_group=="pubank_govprog"
@@ -1561,7 +756,7 @@ ta reason_group country, col nofreq
 ta reason_group2 country, col nofreq
 drop reason_group
 gen reason=.
-label define reason 1"Investment" 2"Housing/land" 3"Human capital" 4"Consumption" 5"Debt repayment" 6"Ceremony or relend" 7"Migration" 8"Other"
+label define reason 1"Reason: Investment" 2"Reason: Housing/land" 3"Reason: Human capital" 4"Reason: Consumption" 5"Reason: Debt repayment" 6"Reason: Ceremony or relend" 7"Reason: Migration" 8"Reason: Other"
 label values reason reason
 replace reason=1 if reason_group2=="productive"
 replace reason=2 if reason_group2=="housing_land"
@@ -1577,6 +772,7 @@ drop productive
 
 *** Type
 rename type2 type
+ta type
 
 *** Shock
 rename shock2 shock
@@ -1586,7 +782,7 @@ ta collateral_group
 ta collateral_group2
 drop collateral_group
 gen collateral=.
-label define collateral 1"Personal" 2"Asset" 3"Other" 4"No collateral"
+label define collateral 1"Collateral: Personal" 2"Collateral: Asset" 3"Collateral: Other" 4"Collateral: Nothing"
 label values collateral collateral
 replace collateral=1 if collateral_group2=="personal_guarantee"
 replace collateral=2 if collateral_group2=="asset_collateral"
@@ -1601,7 +797,7 @@ ta secondcoll_group
 ta secondcoll_group2
 drop secondcoll_group
 gen secondcollateral=.
-label define secondcollateral 1"Membership" 2"Personal" 3"Asset" 4"Income/stats" 5"Other" 6"No other coll"
+label define secondcollateral 1"SecColl: Membership" 2"SecColl: Personal" 3"SecColl: Asset" 4"SecColl: Income/stats" 5"SecColl: Other" 6"SecColl: Nothing"
 label values secondcollateral secondcollateral
 replace secondcollateral=1 if secondcoll_group2=="membership_requirement"
 replace secondcollateral=2 if secondcoll_group2=="personal_guarantee"
@@ -1626,10 +822,107 @@ ta duration
 drop durationyear
 
 *** Interest rate
+ta interestrate
+gen interest=.
+label define interest 1"Interest: No" 2"Interest: Less than 1%" 3"Interest: [1;4[" 4"Interest: [4;8[" 5"Interest: [8;12[" 6"Interest: More than 12%"
+label values interest interest
+replace interest=1 if interestrate==0
+replace interest=2 if interestrate!=0 & interestrate<1
+replace interest=3 if interestrate>=1 & interestrate<4
+replace interest=4 if interestrate>=4 & interestrate<8
+replace interest=5 if interestrate>=8 & interestrate<12
+replace interest=6 if interestrate>=12
+ta interest
+drop interestrate
 
+*** Amount
+* Thailand
+
+foreach y in 2007 2008 2010 2011 2016 2017 {
+xtile thai_catamount`y'=amount if country==1 & year==`y', n(3)
+xtile viet_catamount`y'=amount if country==2 & year==`y', n(3)
+}
+gen catamount=.
+replace catamount=thai_catamount2007 if thai_catamount2007!=.
+replace catamount=viet_catamount2007 if viet_catamount2007!=.
+replace catamount=thai_catamount2008 if thai_catamount2008!=.
+replace catamount=viet_catamount2008 if viet_catamount2008!=.
+replace catamount=thai_catamount2010 if thai_catamount2010!=.
+replace catamount=viet_catamount2010 if viet_catamount2010!=.
+replace catamount=thai_catamount2011 if thai_catamount2011!=.
+replace catamount=viet_catamount2011 if viet_catamount2011!=.
+replace catamount=thai_catamount2016 if thai_catamount2016!=.
+replace catamount=viet_catamount2016 if viet_catamount2016!=.
+replace catamount=thai_catamount2017 if thai_catamount2017!=.
+replace catamount=viet_catamount2017 if viet_catamount2017!=.
+drop thai_catamount*
+drop viet_catamount*
+label define catamount 1"Amount: T1" 2"Amount: T2" 3"Amount: T3"
+label values catamount catamount
 
 *** Order
-order country year hhid loanid type amount lender reason shock collateral secondcollateral duration interestrate
+order country year hhid loanid type amount catamount lender reason shock collateral secondcollateral duration interest
+
+
+save"Loans_v07", replace
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Data set
+****************************************
+use"Loans_v07", clear
+
+
+********** All
+preserve
+global var type catamount lender reason shock collateral secondcollateral duration interest
+foreach x in $var {
+decode `x', gen(dec_`x')
+drop `x'
+rename dec_`x' `x'
+}
+export delimited using "All.csv", replace
+restore
+
+
+********** Thai
+preserve
+keep if country==1
+global var type catamount lender reason shock collateral secondcollateral duration interest
+foreach x in $var {
+decode `x', gen(dec_`x')
+drop `x'
+rename dec_`x' `x'
+}
+export delimited using "Thai.csv", replace
+restore
+
+
+********** Viet
+preserve
+keep if country==2
+global var type catamount lender reason shock collateral secondcollateral duration interest
+foreach x in $var {
+decode `x', gen(dec_`x')
+drop `x'
+rename dec_`x' `x'
+}
+export delimited using "Viet.csv", replace
+restore
 
 ****************************************
 * END
+
+
+
+
