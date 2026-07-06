@@ -138,7 +138,7 @@ save"Loans_v5", replace
 
 
 ****************************************
-* Definition
+* Definition + code State
 ****************************************
 use"Loans_v5", clear
 
@@ -173,7 +173,51 @@ label define clust_all ///
 label values clust_all clust_all
 ta clust_all
 
+********** id des Etats pour merger avec les données geo
+ta State
+gen id=.
+replace id=1 if State=="Dadra & Nagar Haveli"
+replace id=1 if State=="Daman & Diu"
+replace id=6 if State=="Jammu & Kashmir"
+replace id=7 if State=="LADAKH"
+replace id=8 if State=="Himanchal Pradesh"
+replace id=9 if State=="Arunachal Pradesh"
+replace id=10 if State=="Assam"
+replace id=11 if State=="Manipur"
+replace id=12 if State=="Meghalaya"
+replace id=13 if State=="Mizoram"
+replace id=14 if State=="Nagaland"
+replace id=15 if State=="Sikkim"
+replace id=16 if State=="Lakshadweep"
+replace id=17 if State=="Andaman & Nicober Islands"
+replace id=18 if State=="West Bengal"
+replace id=19 if State=="Kerala"
+replace id=20 if State=="Chhattisgarh"
+replace id=21 if State=="Orissa"
+replace id=22 if State=="Chandigarh"
+replace id=23 if State=="Delhi"
+replace id=24 if State=="Gujarat"
+replace id=25 if State=="Haryana"
+replace id=26 if State=="Punjab"
+replace id=27 if State=="Uttar Pradesh"
+replace id=28 if State=="Karnataka"
+replace id=29 if State=="Andhra Pradesh"
+replace id=30 if State=="Bihar"
+replace id=31 if State=="Goa"
+replace id=32 if State=="Jharkhand"
+replace id=33 if State=="Madhya Pradesh"
+replace id=34 if State=="Maharastra"
+replace id=35 if State=="Puducherry"
+replace id=36 if State=="Rajasthan"
+replace id=37 if State=="Tamil Nadu"
+replace id=38 if State=="Telengana"
+replace id=39 if State=="Tripura"
+replace id=40 if State=="Uttarakhand"
 
+order id, after(State)
+
+* Replace 
+replace year=2018 if year==2019
 
 save"Loans_v6", replace
 ****************************************
@@ -205,7 +249,7 @@ ta clust_all year, col nofreq
 tabstat amount2 if year==1992, stat(mean) by(clust_all)
 tabstat amount2 if year==2002, stat(mean) by(clust_all)
 tabstat amount2 if year==2012, stat(mean) by(clust_all)
-tabstat amount2 if year==2019, stat(mean) by(clust_all)
+tabstat amount2 if year==2018, stat(mean) by(clust_all)
 
 * Evolution over time
 ta clust_all year, col nofreq
