@@ -85,6 +85,28 @@ replace cat2_mpi=5 if m0>20
 label define cat2_mpi 1"Less than .05" 2".05-.1" 3".1-.15" 4".15-.2" 5".2 or more"
 label values cat2_mpi cat2_mpi
 
+* Cat A
+ta a
+gen cat_a=.
+replace cat_a=1 if a<.40
+replace cat_a=2 if a>=.40 & a<=.45
+replace cat_a=3 if a>=.45 & a<=.50
+replace cat_a=4 if a>=.50
+label define cat_a 1"Less than .4" 2".4-.45" 3".45-.5" 4".5 or more"
+label values cat_a cat_a
+
+* Cat H
+ta h
+gen cat_h=.
+replace cat_h=1 if h<10
+replace cat_h=2 if h>=10 & h<=20
+replace cat_h=3 if h>=20 & h<=30
+replace cat_h=4 if h>=30 & h<=40
+replace cat_h=5 if h>=40 & h<=50
+replace cat_h=6 if h>=50
+label define cat_h 1"Less than 10%" 2"10-20%" 3"20-30%" 4"30-40%" 5"40-50%" 6"50% or more"
+label values cat_h cat_h
+
 * Contrib pop vs contrib MPI
 ta percentage_sample
 ta contrib_m0
@@ -99,7 +121,7 @@ replace cat_ratio=3 if ratioMPIsample>=1.5
 
 * Total share between
 label define cat_sharebetween 0"Missing" 1"Less than 5%" 2"5-10%" 3"10-20%" 4"20-30%" 5"30-40%" 6"40-50%" 7"50-60%" 8"60-70%" 9"70-80%" 10"80-90%" 11"90% or more"
-foreach x in tot_sharebetween sc_sharebetween st_sharebetween obc_sharebetween oth_sharebetween {
+foreach x in caste_tot_sharebetween tot_sharebetween sc_sharebetween st_sharebetween obc_sharebetween oth_sharebetween {
 gen cat_`x'=.
 replace cat_`x'=1 if `x'<5
 replace cat_`x'=2 if `x'>=5 & `x'<10
@@ -116,9 +138,21 @@ replace cat_`x'=0 if `x'==.
 label values cat_`x' cat_sharebetween
 }
 
+* MPI x Inegalité inter jatis
+gen mpiXjatis=.
+label define mpiXjatis 1"Low MPI / Low ineq" 2"Low MPI / High ineq" 3"High MPI / Low ineq" 4"High MPI / High ineq"
+label value mpiXjatis mpiXjatis
+ta m0 // 6
+ta tot_sharebetween // 12.5
+replace mpiXjatis=1 if m0<6 & tot_sharebetween<12.5
+replace mpiXjatis=2 if m0<6 & tot_sharebetween>12.5
+replace mpiXjatis=3 if m0>6 & tot_sharebetween<12.5
+replace mpiXjatis=4 if m0>6 & tot_sharebetween>12.5
+
+ta mpiXjatis
+
 *
 save"india_state_v3", replace
-
 ****************************************
 * END
 
@@ -138,16 +172,8 @@ save"india_state_v3", replace
 
 
 
-
-
-
-
-
-
-
-
 ****************************************
-* Graph
+* MPI / H / A
 ****************************************
 use"india_state_v3", clear
 
@@ -177,6 +203,32 @@ legstyle(2) legend(pos(5) size(2) region(fcolor(gs15)))   ///
 note("Source: NFHS-4 (2015-2016); author's calculations.", size(vsmall))
 graph export "graph/map_mpi_alt.png", as(png) replace
 
+*** H
+colorpalette viridis, n(6) nograph reverse
+local colors `r(p)'
+*
+spmap cat_h using india_coord, id(id) ///
+clmethod(unique) ///
+fcolor("`colors'") ///
+ocolor(white ..) osize(0.05 ..)  ///
+title("Headcount (H)", size(medium)) ///
+legstyle(2) legend(pos(5) size(2) region(fcolor(gs15)))   ///
+note("Source: NFHS-4 (2015-2016); author's calculations.", size(vsmall))
+graph export "graph/map_h.png", as(png) replace
+
+*** A
+colorpalette viridis, n(4) nograph reverse
+local colors `r(p)'
+*
+spmap cat_a using india_coord, id(id) ///
+clmethod(unique) ///
+fcolor("`colors'") ///
+ocolor(white ..) osize(0.05 ..)  ///
+title("Intensity (A)", size(medium)) ///
+legstyle(2) legend(pos(5) size(2) region(fcolor(gs15)))   ///
+note("Source: NFHS-4 (2015-2016); author's calculations.", size(vsmall))
+graph export "graph/map_a.png", as(png) replace
+
 *** Contrib MPI
 colorpalette viridis, n(3) nograph reverse
 local colors `r(p)'
@@ -189,6 +241,76 @@ title("Contrib MPI / Contrib pop", size(medium)) ///
 legstyle(2) legend(pos(5) size(2) region(fcolor(gs15)))   ///
 note("Source: NFHS-4 (2015-2016); author's calculations.", size(vsmall))
 graph export "graph/map_contrib.png", as(png) replace
+
+
+
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Caste ineq
+****************************************
+use"india_state_v3", clear
+
+*** Cat share between tot
+colorpalette viridis, n(4) nograph reverse
+local colors `r(p)'
+*
+spmap cat_caste_tot_sharebetween using india_coord, id(id) ///
+clmethod(unique) ///
+fcolor("`colors'") ///
+ocolor(white ..) osize(0.05 ..)  ///
+title("Share of between caste inequalities", size(medium)) ///
+legstyle(2) legend(pos(5) size(2) region(fcolor(gs15)))   ///
+note("Source: NFHS-4 (2015-2016); author's calculations.", size(vsmall))
+graph export "graph/map_sharebetween_caste.png", as(png) replace
+
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Jatis ineq
+****************************************
+use"india_state_v3", clear
 
 *** Cat share between tot
 colorpalette viridis, n(7) nograph reverse
@@ -254,6 +376,69 @@ title("Share of between jatis inequalities (Other castes)", size(medium)) ///
 legstyle(2) legend(pos(5) size(2) region(fcolor(gs15)))   ///
 note("Source: NFHS-4 (2015-2016); author's calculations.", size(vsmall))
 graph export "graph/map_sharebetween_oth.png", as(png) replace
+
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* MPI X Jatis ineq
+****************************************
+use"india_state_v3", clear
+
+*** Cat share between tot
+colorpalette viridis, n(4) nograph reverse
+local colors `r(p)'
+*
+spmap mpiXjatis using india_coord, id(id) ///
+clmethod(unique) ///
+fcolor("`colors'") ///
+ocolor(white ..) osize(0.05 ..)  ///
+title("MPI X Between jatis inequalities", size(medium)) ///
+legstyle(2) legend(pos(5) size(2) region(fcolor(gs15)))   ///
+note("Source: NFHS-4 (2015-2016); author's calculations.", size(vsmall))
+graph export "graph/map_mpiXjatis.png", as(png) replace
+
+
+
+*** Deux cartes côte à côte
+*
+colorpalette viridis, n(5) nograph reverse
+local colors `r(p)'
+*
+spmap cat2_mpi using india_coord, id(id) ///
+clmethod(unique) ///
+fcolor("`colors'") ///
+ocolor(white ..) osize(0.05 ..)  ///
+title("Multidimensional poverty index", size(medium)) ///
+legstyle(2) legend(pos(5) size(2) region(fcolor(gs15))) name(m1, replace)
+*
+colorpalette viridis, n(7) nograph reverse
+local colors `r(p)'
+*
+spmap cat_tot_sharebetween using india_coord, id(id) ///
+clmethod(unique) ///
+fcolor("`colors'") ///
+ocolor(white ..) osize(0.05 ..)  ///
+title("Share of between jatis inequalities (all castes)", size(medium)) ///
+legstyle(2) legend(pos(5) size(2) region(fcolor(gs15))) name(m2, replace)
+*
+graph combine m1 m2, col(2) ///
+note("Source: NFHS-4 (2015-2016); author's calculations.", size(vsmall))
+graph export "graph/map_mpiXjatis_bis.png", as(png) replace
 
 ****************************************
 * END

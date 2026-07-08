@@ -115,6 +115,10 @@ d3(d_elct d_wtr d_sani d_hsg d_ckfl d_asst d_bank) w3(0.04762 0.04762 0.04762 0.
 *putexcel set "_states.xlsx", replace
 *putexcel A1=matrix(e(by_mpi)), names
 
+*matlist e(by_dom)
+*putexcel set "_states.xlsx", replace
+*putexcel A1=matrix(e(by_dom)), names
+
 
 
 
@@ -349,6 +353,75 @@ drop contribtot
 
 
 
+****************************************
+* Graph jatis prepa
+****************************************
+import excel "Statistics.xlsx", sheet("data") firstrow clear
+drop if state==""
+
+rename share_d1 contrib_d1
+rename share_d2 contrib_d2
+rename share_d3 contrib_d3
+
+*
+forvalues i=1/3 {
+replace contrib_d`i'=contrib_d`i'*100
+}
+*
+encode state, gen(state_enc)
+drop state
+rename state_enc state
+label define state_enc 1"Andaman & Nicobar" 8"Dadra & nagar", modify
+order state, first
+*
+replace m0=m0/100
+
+*
+save"data_state.dta", replace
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Graph State
+****************************************
+use"data_state", clear
+
+set scheme white_tableau
+
+********** Contribution of dimensions
+gen scontrib1=contrib_d1+contrib_d2
+gen scontrib2=scontrib1+contrib_d3
+*
+twoway ///
+(bar contrib_d1 state) ///
+(rbar contrib_d1 scontrib1 state) ///
+(rbar scontrib1 scontrib2 state) ///
+(function y=33, range(0 36) lcolor(black) lpattern(dash)) ///
+(function y=66, range(0 36) lcolor(black) lpattern(dash)) ///
+, xlabel(1/36, valuelabel angle(45)) xtitle("") ///
+ylabel(0(20)100) ytitle("Percent") ///
+legend(order(1 "Health" 2 "Education" 3 "Standard of living") pos(6) col(3)) ///
+title("Contribution of the dimensions to the MPI by State") ///
+note("Source: NFHS-4 (2015-2016); author's calculcations.", size(vsmall)) ///
+name(dim, replace)
+graph export "graph/state_contribdim.png", as(png) replace
+drop scontrib1 scontrib2
+
+****************************************
+* END
+
+
+
+
 
 
 
@@ -360,6 +433,33 @@ drop contribtot
 /*
 Theil, GE(1)=Within+Between
 */
+
+
+********** Caste par Etat
+use"Indiv_mpi.dta", clear
+*
+fre loc_state
+* 
+log using "theil_state_caste.log"
+tempfile results
+postfile handle loc_state within between using `results', replace
+forvalues i=1/36 {
+qui capture ineqdeco mpi_cens12 if loc_state==`i' [pw=wgt], by(head_caste)
+if _rc==0 {
+post handle (`i') (r(within_ge1)) (r(between_ge1))
+}
+else {
+post handle (`i') (.) (.)
+}
+}
+postclose handle
+use `results', clear
+list
+log close
+
+
+
+
 
 /*
 ********** Par Etat
