@@ -14,6 +14,105 @@ do"C:/Users/Arnaud/Documents/GitHub/folderanalysis/$link.do"
 
 
 
+****************************************
+* Sankey panel
+****************************************
+use"panel_HH_v2", clear
+
+keep HHID_panel year
+gen status=9
+label define status 1"Baseline" 2"Found" 3"Lost" 4"New" 9"Other"
+label values status status
+replace status=1 if year==2010
+
+reshape wide status, i(HHID_panel) j(year)
+
+*
+ta status2010
+
+*
+replace status2016=2 if status2010==1 & status2016==9
+replace status2016=3 if status2010==1 & status2016==.
+replace status2016=4 if status2010==. & status2016==9
+ta status2016
+
+*
+replace status2020=2 if status2016==2 & status2020==9
+replace status2020=2 if status2016==3 & status2020==9
+replace status2020=2 if status2016==4 & status2020==9
+replace status2020=3 if status2016==4 & status2020==.
+replace status2020=3 if status2016==2 & status2020==.
+replace status2020=4 if status2016==. & status2020==9
+ta status2020
+
+*
+replace status2025=2 if status2020==2 & status2025==9
+replace status2025=2 if status2020==3 & status2025==9
+replace status2025=2 if status2020==4 & status2025==9
+replace status2025=3 if status2020==4 & status2025==.
+replace status2025=3 if status2020==2 & status2025==.
+replace status2025=4 if status2020==. & status2025==9
+ta status2025
+
+*
+* Liens étape 1 -> étape 2
+preserve
+contract status2010 status2016
+rename status2010 source
+rename status2016 target
+rename _freq value
+drop if source==. & target==.
+gen layer=1
+tempfile links12
+save `links12'
+restore
+
+* Liens étape 2 -> étape 3
+preserve
+contract status2016 status2020
+rename status2016 source
+rename status2020 target
+rename _freq value
+drop if source==. & target==.
+gen layer=2
+tempfile links23
+save `links23'
+restore
+
+* Liens étape 3 -> étape 4
+preserve
+contract status2020 status2025
+rename status2020 source
+rename status2025 target
+rename _freq value
+drop if source==. & target==.
+gen layer=3
+tempfile links34
+save `links34'
+restore
+
+* Empiler les liens
+use `links12', clear
+append using `links23'
+append using `links34'
+
+* Sankey
+sankey value, from(source) to(target) by(layer) sort1(value, reverse) ///
+ctitles("2010" "2016-2017" "2020-2021" "2025-2026") ///
+noval showtot laba(0) labpos(3) labg(-1) offset(10) ///
+title("Longitudinal structure of household data")
+
+
+****************************************
+* END
+
+
+
+
+
+
+
+
 
 
 
