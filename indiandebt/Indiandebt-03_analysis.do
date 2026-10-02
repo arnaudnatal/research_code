@@ -51,11 +51,47 @@ ta scheme2 year, col nofreq
 
 
 
+****************************************
+* Loan amount
+****************************************
+use"Loans_v4", clear
+
+ta year
+gen time=.
+replace time=1 if year==1992
+replace time=2 if year==2002
+replace time=3 if year==2012
+replace time=4 if year==2019
+label define time 1"1992" 2"2002" 3"2012" 4"2019"
+label values time time
+ta time year, m
+
+bys time: egen med = median(amount2)
+bys time: egen lqt = pctile(amount2), p(25)
+bys time: egen uqt = pctile(amount2), p(75)
+bys time: egen iqr = iqr(amount2)
+bys time: egen mean = mean(amount2)
+gen l = amount2 if(amount2 >= lqt-1.5*iqr)
+bys time: egen ls = min(l)
+gen u = amount2 if(amount2 <= uqt+1.5*iqr)
+bys time: egen us = max(u)
+*
+twoway rbar lqt med time, fcolor(gs12) lcolor(black) barw(.5) || ///
+       rbar med uqt time, fcolor(gs12) lcolor(black) barw(.5) || ///
+       rspike lqt ls time, lcolor(black) || ///
+       rspike uqt us time, lcolor(black) || ///
+       rcap ls ls time, msize(*6) lcolor(black) || ///
+       rcap us us time, msize(*6) pstyle(p1) || ///
+       scatter mean time, msymbol(Oh) msize(*1) mcolor(black) ///
+       legend(off)  xlabel( 1 "1992" 2 "2002" 3 "2012" 4 "2019") ///
+	   ylabel(0(50)350) ///
+       ytitle("1,000 rupees") xtitle("") title("Loan amount (1,000 rupees)") scale(1.2) name(rel, replace)
+graph export "loanamount.png", as(png) replace
 
 
 
-
-
+****************************************
+* END
 
 
 
