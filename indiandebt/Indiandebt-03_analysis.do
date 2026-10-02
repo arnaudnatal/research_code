@@ -300,6 +300,25 @@ ta State clust_all, col nofreq
 ta State clust_all, row nofreq
 ta State clust_all, chi2 cchi2 exp
 
+* Share of household using it over time
+ta clust_all, gen(clust)
+forvalues i=1/6 {
+bys HHID year: egen sclust`i'=sum(clust`i')
+}
+forvalues i=1/6 {
+gen dclust`i'=0
+} 
+forvalues i=1/6 {
+replace dclust`i'=1 if sclust`i'>0 & sclust`i'!=.
+} 
+*
+keep HHID year sclust1 sclust2 sclust3 sclust4 sclust5 sclust6 dclust1 dclust2 dclust3 dclust4 dclust5 dclust6
+duplicates drop
+*
+forvalues i=1/6 {
+ta dclust`i' year, col nofreq
+}
+
 ****************************************
 * END
 
