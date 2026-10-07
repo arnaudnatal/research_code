@@ -7,9 +7,8 @@ cls
 gl link = "indiandebt"
 *MCA
 *-----
-do"C:/Users/Arnaud/Documents/GitHub/folderanalysis/$link.do"
-*cd"C:\Users\anatal\Documents\id"
-*-------------------------
+*do"C:/Users/Arnaud/Documents/GitHub/folderanalysis/$link.do"
+cd"C:\Users\anatal\Documents\indiandebt"*-------------------------
 
 
 

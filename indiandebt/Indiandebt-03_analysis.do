@@ -62,7 +62,7 @@ replace time=1 if year==1992
 replace time=2 if year==2002
 replace time=3 if year==2012
 replace time=4 if year==2019
-label define time 1"1992" 2"2002" 3"2012" 4"2019"
+label define time 1"1991" 2"2002" 3"2012" 4"2018"
 label values time time
 ta time year, m
 
@@ -83,7 +83,7 @@ twoway rbar lqt med time, fcolor(gs12) lcolor(black) barw(.5) || ///
        rcap ls ls time, msize(*6) lcolor(black) || ///
        rcap us us time, msize(*6) pstyle(p1) || ///
        scatter mean time, msymbol(Oh) msize(*1) mcolor(black) ///
-       legend(off)  xlabel( 1 "1992" 2 "2002" 3 "2012" 4 "2019") ///
+       legend(off)  xlabel( 1 "1991" 2 "2002" 3 "2012" 4 "2018") ///
 	   ylabel(0(50)350) ///
        ytitle("1,000 rupees") xtitle("") title("Loan amount (1,000 rupees)") scale(1.2) name(rel, replace)
 graph export "loanamount.png", as(png) replace
@@ -360,6 +360,77 @@ ta dclust`i' year, col nofreq
 
 
 
+
+
+
+
+
+
+****************************************
+* Stats by year 1992 - 2019
+****************************************
+use"Loans_v6", clear
+
+
+cls
+*caste3 religion3 sex agecat educ2 occ maritalstatus Sector State
+foreach x in   {
+ta `x' clust_all if year==1992, nofreq cchi2
+ta `x' clust_all if year==2002, nofreq cchi2
+ta `x' clust_all if year==2012, nofreq cchi2
+ta `x' clust_all if year==2019, nofreq cchi2
+}
+
+
+
+gen clustyear=.
+replace clustyear=1 if year==1992 & clust_all==1
+replace clustyear=2 if year==2002 & clust_all==1
+replace clustyear=3 if year==2012 & clust_all==1
+replace clustyear=4 if year==2019 & clust_all==1
+
+replace clustyear=6 if year==1992 & clust_all==2
+replace clustyear=7 if year==2002 & clust_all==2
+replace clustyear=8 if year==2012 & clust_all==2
+replace clustyear=9 if year==2019 & clust_all==2
+
+replace clustyear=11 if year==1992 & clust_all==3
+replace clustyear=12 if year==2002 & clust_all==3
+replace clustyear=13 if year==2012 & clust_all==3
+replace clustyear=14 if year==2019 & clust_all==3
+
+replace clustyear=16 if year==1992 & clust_all==4
+replace clustyear=17 if year==2002 & clust_all==4
+replace clustyear=18 if year==2012 & clust_all==4
+replace clustyear=19 if year==2019 & clust_all==4
+
+replace clustyear=21 if year==1992 & clust_all==5
+replace clustyear=22 if year==2002 & clust_all==5
+replace clustyear=23 if year==2012 & clust_all==5
+replace clustyear=24 if year==2019 & clust_all==5
+
+replace clustyear=26 if year==1992 & clust_all==6
+replace clustyear=27 if year==2002 & clust_all==6
+replace clustyear=28 if year==2012 & clust_all==6
+replace clustyear=29 if year==2019 & clust_all==6
+
+label define clustyear ///
+1"Clust1 1992" 2"Clust1 2002" 3"Clust1 2012" 4"Clust1 2019" ///
+6"Clust2 1992" 7"Clust2 2002" 8"Clust2 2012" 9"Clust2 2019" ///
+11"Clust3 1992" 12"Clust3 2002" 13"Clust3 2012" 14"Clust3 2019" ///
+16"Clust4 1992" 17"Clust4 2002" 18"Clust4 2012" 19"Clust4 2019" ///
+21"Clust5 1992" 22"Clust5 2002" 23"Clust5 2012" 24"Clust5 2019" ///
+26"Clust6 1992" 27"Clust6 2002" 28"Clust6 2012" 29"Clust6 2019"
+label values clustyear clustyear
+
+
+tabplot caste3 clustyear, percent(clustyear) frame(100) xlabel(,angle(90)) xtitle("") ytitle("") note("") subtitle("")
+tabplot sex clustyear, percent(clustyear) frame(100) xlabel(,angle(90)) xtitle("") ytitle("") note("") subtitle("")
+tabplot agecat clustyear, percent(clustyear) frame(100) xlabel(,angle(90)) xtitle("") ytitle("") note("") subtitle("")
+
+
+****************************************
+* END
 
 
 
