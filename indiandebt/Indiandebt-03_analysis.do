@@ -86,7 +86,7 @@ twoway rbar lqt med time, fcolor(gs12) lcolor(black) barw(.5) || ///
        legend(off)  xlabel( 1 "1991" 2 "2002" 3 "2012" 4 "2018") ///
 	   ylabel(0(50)350) ///
        ytitle("1,000 rupees") xtitle("") title("Loan amount (1,000 rupees)") scale(1.2) name(rel, replace)
-graph export "loanamount.png", as(png) replace
+graph export "graph/loanamount.png", as(png) replace
 
 
 

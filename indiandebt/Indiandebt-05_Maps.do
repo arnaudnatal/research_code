@@ -7,8 +7,9 @@ cls
 gl link = "indiandebt"
 *MCA
 *-----
-*do"C:/Users/Arnaud/Documents/GitHub/folderanalysis/$link.do"
-cd"C:\Users\anatal\Documents\indiandebt"*-------------------------
+do"C:/Users/Arnaud/Documents/GitHub/folderanalysis/$link.do"
+*cd"C:\Users\anatal\Documents\indiandebt"
+*-------------------------
 
 
 
@@ -17,7 +18,6 @@ cd"C:\Users\anatal\Documents\indiandebt"*-------------------------
 * State to id
 ****************************************
 use"Loans_v6", clear
-
 
 keep State
 duplicates drop
@@ -529,8 +529,6 @@ save"Loans_State_v5", replace
 
 
 
-
-
 ****************************************
 * Maps: Share of clusters by State
 ****************************************
@@ -650,6 +648,235 @@ graph export "maps_hhi_vol_state.png", as(png) replace
 ****************************************
 * END
 
+
+
+
+
+
+
+
+
+
+****************************************
+* Maps: Part par cluster 
+****************************************
+
+********** Import part par cluster
+import excel "States.xlsx", sheet("Feuil1") firstrow clear
+rename state State
+
+
+********** Gen id to merge with boundaries
+gen id=.
+replace id=17 if State=="Andaman & Nicober I.."
+replace id=29 if State=="Andhra Pradesh"
+replace id=9 if State=="Arunachal Pradesh"
+replace id=10 if State=="Assam"
+replace id=30 if State=="Bihar"
+replace id=22 if State=="Chandigarh"
+replace id=20 if State=="Chhattisgarh"
+replace id=1 if State=="Dadra & Nagar Haveli"
+replace id=1 if State=="Daman & Diu"
+replace id=23 if State=="Delhi"
+replace id=31 if State=="Goa"
+replace id=24 if State=="Gujarat"
+replace id=25 if State=="Haryana"
+replace id=8 if State=="Himanchal Pradesh"
+replace id=6 if State=="Jammu & Kashmir"
+replace id=32 if State=="Jharkhand"
+replace id=28 if State=="Karnataka"
+replace id=19 if State=="Kerala"
+replace id=16 if State=="Lakshadweep"
+replace id=33 if State=="Madhya Pradesh"
+replace id=34 if State=="Maharastra"
+replace id=11 if State=="Manipur"
+replace id=12 if State=="Meghalaya"
+replace id=13 if State=="Mizoram"
+replace id=14 if State=="Nagaland"
+replace id=21 if State=="Orissa"
+replace id=35 if State=="Puducherry"
+replace id=26 if State=="Punjab"
+replace id=36 if State=="Rajasthan"
+replace id=15 if State=="Sikkim"
+replace id=37 if State=="Tamil Nadu"
+replace id=38 if State=="Telengana"
+replace id=39 if State=="Tripura"
+replace id=27 if State=="Uttar Pradesh"
+replace id=40 if State=="Uttarakhand"
+replace id=18 if State=="West Bengal"
+
+order id, after(State)
+mdesc
+
+
+********** Correction of State boundaries
+*** Dadra & Daman together
+preserve
+keep if id==1
+foreach x in cl1 cl2 cl3 cl4 cl5 cl6 total {
+bys year: egen `x'_n=sum(`x')
+}
+foreach x in cl1 cl2 cl3 cl4 cl5 cl6 total {
+drop `x'
+rename `x'_n `x'
+}
+replace State="Dadra & Nagar Haveli & Daman & Diu"
+duplicates drop
+save"_temp", replace
+restore
+drop if State=="Dadra & Nagar Haveli"
+drop if State=="Daman & Diu"
+append using "_temp"
+sort id year
+erase "_temp.dta"
+
+*** Telengana part of AP in 1992
+preserve
+keep if year==1991
+keep if State=="Andhra Pradesh"
+expand 2
+gen n=_n
+replace State="Telengana" if n==2
+replace id=38 if n==2
+drop if n==1
+drop n
+save"_temp", replace
+restore
+append using "_temp"
+sort id year
+erase "_temp.dta"
+
+*** Telengana part of AP in 2002
+preserve
+keep if year==2002
+keep if State=="Andhra Pradesh"
+expand 2
+gen n=_n
+replace State="Telengana" if n==2
+replace id=38 if n==2
+drop if n==1
+drop n
+save"_temp", replace
+restore
+append using "_temp"
+sort id year
+erase "_temp.dta"
+
+
+*** Chhattisgarh part of MP in 1992
+preserve
+keep if year==1991
+keep if State=="Madhya Pradesh"
+expand 2
+gen n=_n
+replace State="Chhattisgarh" if n==2
+replace id=20 if n==2
+drop if n==1
+drop n
+save"_temp", replace
+restore
+append using "_temp"
+sort id year
+erase "_temp.dta"
+
+
+*** Jharkhand part of Bihar in 1992
+preserve
+keep if year==1991
+keep if State=="Bihar"
+expand 2
+gen n=_n
+replace State="Jharkhand" if n==2
+replace id=32 if n==2
+drop if n==1
+drop n
+save"_temp", replace
+restore
+append using "_temp"
+sort id year
+erase "_temp.dta"
+
+
+
+********** Diff with mean to have under and over representation
+forvalues i=1/6 {
+gen diff_c`i'=cl`i'-total
+}
+
+forvalues i=1/6 {
+gen cat_diff_c`i'=.
+}
+forvalues i=1/6 {
+replace cat_diff_c`i'=1 if diff_c`i'<-5
+replace cat_diff_c`i'=2 if diff_c`i'>=-5 & diff_c`i'<-2
+replace cat_diff_c`i'=3 if diff_c`i'>=-2 & diff_c`i'<=2
+replace cat_diff_c`i'=4 if diff_c`i'>2 & diff_c`i'<=5
+replace cat_diff_c`i'=5 if diff_c`i'>5
+}
+
+label define diff 1"Severe under-representation" 2"Under-representation" 3"No dependency" 4"Over-representation" 5"Severe over-representation"
+label values cat_diff_c1 cat_diff_c2 cat_diff_c3 cat_diff_c4 cat_diff_c5 cat_diff_c6 diff
+
+
+save"_temp", replace
+
+
+
+********** Polygons and data in the same dataset
+use"india_state", clear
+*
+merge 1:m id using "_temp"
+keep if _merge==3
+drop _merge
+erase"_temp.dta"
+
+save"Over_state", replace
+
+
+
+********** Maps
+use"Over_state", clear
+
+set graph off
+*
+foreach y in 1991 2002 2012 2018 {
+preserve
+keep if year==`y'
+forvalues i=1/6 {
+*
+spmap cat_diff_c`i' using india_coord, id(id) ///
+clmethod(custom) ///
+clbreaks(0.5 1.5 2.5 3.5 4.5 5.5) ///
+fcolor(gs15 gs12 gs8 gs4 gs0) ///
+ocolor(white ..) osize(0.05 ..)  ///
+title("Cluster `i'", size(small)) ///
+legstyle(2) legend( ///
+order(2 3 4 5 6) ///
+label(2 "Severe under-representation") ///
+label(3 "Under-representation") ///
+label(4 "No dependency") ///
+label(5 "Over-representation") ///
+label(6 "Severe over-representation") ///
+pos(6) size(2) col(3) region(fcolor(gs15))) ///
+name(y`y'_c`i', replace)
+}
+restore
+}
+
+* Combine
+foreach y in 1991 2002 2012 2018 {
+grc1leg y`y'_c1 y`y'_c2 y`y'_c3 y`y'_c4 y`y'_c5 y`y'_c6, col(2) title("`y'") name(g`y', replace)
+}
+set graph on
+
+graph display g1991
+graph display g2002
+graph display g2012
+graph display g2018
+
+
+****************************************
+* END
 
 
 
