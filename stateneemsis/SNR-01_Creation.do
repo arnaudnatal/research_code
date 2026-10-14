@@ -6,7 +6,8 @@ cls
 *-----
 *Prepa Papers
 *
-cd"C:\Users\Arnaud\Documents\GitHub\research_code\stateneemsis"
+*cd"C:\Users\Arnaud\Documents\GitHub\research_code\stateneemsis"
+cd"C:\Users\anatal\Documents\sonr"
 *-------------------------
 
 
@@ -14,7 +15,7 @@ cd"C:\Users\Arnaud\Documents\GitHub\research_code\stateneemsis"
 * Lists
 ****************************************
 
-global authors Nordman Guérin Venkat Michiels Natal Mouchel DiSantolo Lanos Hilger Kumar Girollet DEspallier Goedecke Reboul Kar Seetahul Roesch
+global authors Nordman Guérin Venkatasubramanian Michiels Natal Mouchel DiSantolo Lanos Hilger Kumar Girollet DEspallier Goedecke Reboul Kar Seetahul Roesch
 global data R N1 N2
 global topics Debt Employment Personality Networks Agriculture Gender Income Wealth Inequality Demonetisation Covid Mobility Marriage Trust Caste Migration Education Discrimination Consumption Saving Decisionmaking
 
@@ -36,7 +37,6 @@ global topics Debt Employment Personality Networks Agriculture Gender Income Wea
 ********** Import
 import excel "NEEMSIS_papers.xlsx", sheet("Papers") firstrow clear
 drop if Title==""
-drop Permanentlink
 save"Papers_v0", replace
 
 ****************************************
@@ -62,7 +62,7 @@ replace `x'=1 if strpos(Authors,"`x'")
 }
 replace DiSantolo=1 if strpos(Authors,"Di Santolo")
 replace DEspallier=1 if strpos(Authors,"D'Espallier")
-order $authors, after(Mainauthor)
+order $authors, after(Authors)
 *
 label define yesno 0"No" 1"Yes"
 foreach x in $authors {
@@ -131,21 +131,9 @@ gen `x'=0
 foreach x in $data {
 replace `x'=1 if strpos(Data,"`x'")
 }
-gen panel=0
-replace panel=1 if R+N1+N2!=1
-label define panel 0 "Cross-section" 1 "Panel"
-label values panel panel
-gen formatpanel=.
-replace formatpanel=1 if panel==1 & R!=0 & N1!=0 & N2==0
-replace formatpanel=2 if panel==1 & R==0 & N1!=0 & N2!=0
-replace formatpanel=3 if panel==1 & R!=0 & N1!=0 & N2!=0
-label define formatpanel 1"R-N1" 2"N1-N2" 3"R-N1-N2"
-label values formatpanel formatpanel
-ta formatpanel
-foreach x in $data {
-label values `x' yesno
-}
-order $data panel formatpanel, after(Data)
+encode Panel, gen(panel)
+order panel, after(Panel)
+drop Panel
 drop Data
 
 
@@ -165,47 +153,34 @@ gen type=.
 replace type=1 if Type=="Journal article"
 replace type=2 if Type=="Book chapter"
 replace type=3 if Type=="Book"
-replace type=4 if Type=="WP only"
+replace type=4 if Type=="Working paper"
 replace type=5 if Type=="Dissertation"
 replace type=6 if Type=="Policy brief"
 replace type=7 if Type=="Blog post"
-label define type 1"Journal article" 2"Book chapter" 3"Book" 4"WP only" 5"Dissertation" 6"Policy brief" 7"Blog post"
+label define type 1"Journal article" 2"Book chapter" 3"Book" 4"Working paper" 5"Dissertation" 6"Policy brief" 7"Blog post"
 label values type type
 order type, after(Type)
 drop Type
 
 
-********** Open access and WP
-label values Open yesno
-label values WP yesno
-*
-gen availability=0
-replace availability=1 if Open==1 | WP==1
-label define availability 0 "No" 1 "Yes"
-label values availability availability
-order availability, after(WP2date)
+********** Thesis
+label define thesis 0"Original research" 1"Research from a Ph.D. thesis"
+label values thesis thesis
+fre thesis
 
 
-********** Date for ongoing and submitted
-fre status
-replace Year=2025 if status==1
-replace Year=2025 if status==2
+********** Access
+encode Access, gen(access)
+order access, after(Access)
+drop Access
 
 
-********** From dissertation?
-label define Fromdissertation 0"Original paper" 1"Paper from thesis"
-label values Fromdissertation Fromdissertation
-fre Fromdissertation
+********** Format
+format Abstract_eng %10s
+format Keywords_eng %10s
+format Keywordscorr_eng %10s
 
 
-
-********** 
-codebook type
-label define type 1"Article" 2"Chapter" 4"W. paper", modify
-fre type
-
-
-*
 save"Papers_v1", replace
 erase"Papers_v0.dta"
 ****************************************
