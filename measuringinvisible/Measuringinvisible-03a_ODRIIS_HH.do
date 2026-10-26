@@ -8,7 +8,7 @@ gl link = "measuringinvisible"
 *ODRIIS at household level
 *-----
 *do "https://raw.githubusercontent.com/arnaudnatal/folderanalysis/main/$link.do"
-do"C:/Users/Arnaud/Documents/GitHub/folderanalysis/$link.do"
+cd"C:\Users\anatal\Documents\invisible\Analysis"
 *-------------------------
 
 
@@ -177,6 +177,11 @@ use"raw/RUME-loans_mainloans_new", replace
 ta loandate
 drop if loansettled==1
 
+preserve
+replace loanamount=loanamount/1000
+tabstat loanamount, stat(n mean sd p50)
+restore
+
 ***** Dummy borrowed
 gen borrowed=0
 replace borrowed=1 if loanamount>0
@@ -235,7 +240,7 @@ ta borrowed
 foreach x in $var {
 ta `x'
 }
-tabstat sbalance sloan avloan if borrowed==1, stat(n mean p50)
+tabstat sbalance sloan avloan if borrowed==1, stat(n mean sd q)
 *
 ****************************************
 * END
@@ -413,6 +418,11 @@ use"raw/NEEMSIS1-loans_mainloans_new", replace
 ta loandate
 drop if loansettled==1
 
+preserve
+replace loanamount=loanamount/1000
+tabstat loanamount, stat(n mean sd p50)
+restore
+
 ***** Dummy borrowed
 gen borrowed=0
 replace borrowed=1 if loanamount>0
@@ -471,7 +481,7 @@ ta borrowed
 foreach x in $var {
 ta `x'
 }
-tabstat sbalance sloan avloan if borrowed==1, stat(n mean p50)
+tabstat sbalance sloan avloan if borrowed==1, stat(n mean sd p50)
 *
 ****************************************
 * END
@@ -649,6 +659,11 @@ use"raw/NEEMSIS2-loans_mainloans_new", replace
 ta loandate
 drop if loansettled==1
 
+preserve
+replace loanamount=loanamount/1000
+tabstat loanamount, stat(n mean sd p50)
+restore
+
 ***** Dummy borrowed
 gen borrowed=0
 replace borrowed=1 if loanamount>0
@@ -707,7 +722,7 @@ ta borrowed
 foreach x in $var {
 ta `x'
 }
-tabstat sbalance sloan avloan if borrowed==1, stat(n mean p50)
+tabstat sbalance sloan avloan if borrowed==1, stat(n mean sd p50)
 *
 ****************************************
 * END

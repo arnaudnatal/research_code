@@ -8,14 +8,14 @@ gl link = "measuringinvisible"
 *NSSO 2013
 *-----
 *do "https://raw.githubusercontent.com/arnaudnatal/folderanalysis/main/$link.do"
-do"C:/Users/Arnaud/Documents/GitHub/folderanalysis/$link.do"
+cd"C:\Users\anatal\Documents\invisible\Analysis"
 *-------------------------
 
 
 /*
 Tamil Nadu	State==33
-Viluppuram	State_District==3307
-Cuddalore	State_District==3318
+Viluppuram	District==7
+Cuddalore	District==18
 Rural		Sector==1
 */
 
@@ -52,6 +52,9 @@ count if State==33
 count if State==33 & Sector==1
 * 5,496 households in rural Tamil Nadu in 2003
 
+**** How many in rural VilCud?
+count if State==33 & Sector==1 & (District==7 | District==18)
+* 613 households in Cuddalore or Viluppuram in 2002
 
 ****************************************
 * END
@@ -113,6 +116,28 @@ drop if B15_2_q24==.
 keep HHID Sector State District B15_2_q6 B15_2_q11 B15_2_q24 Weight B15_2_q5
 destring Sector State District, replace
 destring B15_2_q6 B15_2_q11, replace
+
+preserve
+keep if State==33
+keep if Sector==1
+keep if B15_2_q5!=0
+keep if B15_2_q5>0
+keep if B15_2_q5!=.
+replace B15_2_q5=B15_2_q5/1000
+tabstat B15_2_q5, stat(n mean sd p50)
+restore
+
+preserve
+keep if State==33
+keep if District==7 | District==18
+keep if Sector==1
+keep if B15_2_q5!=0
+keep if B15_2_q5>0
+keep if B15_2_q5!=.
+replace B15_2_q5=B15_2_q5/1000
+tabstat B15_2_q5, stat(n mean sd p50)
+restore
+
 
 * Label  sources + recat
 fre B15_2_q6
@@ -492,57 +517,24 @@ ta slender_moneylender Sector [aweight=Weight], col nofreq
 ta slender_relafrien Sector [aweight=Weight], col nofreq
 ta slender_fininstit Sector [aweight=Weight], col nofreq
 ta spurpose_farmbusi Sector [aweight=Weight], col nofreq
-tabstat samount if sborrowed==1 [aweight=Weight], stat(n mean p50) by(Sector)
-tabstat sloan if sborrowed==1 [aweight=Weight], stat(n mean p50) by(Sector)
-tabstat avloan if sborrowed==1 [aweight=Weight], stat(n mean p50) by(Sector)
-
-
-********** LAST 5 YEARS
-use"NSSO2003-Debt5years_HH", clear
-cls
-* Incidence of indebtedness in All India
-ta sborrowed Sector [aweight=Weight], col nofreq
-ta slender_bank Sector [aweight=Weight], col nofreq
-ta slender_moneylender Sector [aweight=Weight], col nofreq
-ta slender_relafrien Sector [aweight=Weight], col nofreq
-ta slender_fininstit Sector [aweight=Weight], col nofreq
-ta spurpose_farmbusi Sector [aweight=Weight], col nofreq
-tabstat sloan if sborrowed==1 [aweight=Weight], stat(n mean) by(Sector)
+tabstat samount if sborrowed==1 [aweight=Weight], stat(n mean sd p50) by(Sector)
+tabstat sloan if sborrowed==1 [aweight=Weight], stat(n mean sd p50) by(Sector)
+tabstat avloan if sborrowed==1 [aweight=Weight], stat(n mean sd p50) by(Sector)
 
 cls
-* In Tamil Nadu
+* In VilCud
 keep if State==33
+keep if District==7 | District==18
+keep if Sector==1
 ta sborrowed Sector [aweight=Weight], col nofreq
 ta slender_bank Sector [aweight=Weight], col nofreq
 ta slender_moneylender Sector [aweight=Weight], col nofreq
 ta slender_relafrien Sector [aweight=Weight], col nofreq
 ta slender_fininstit Sector [aweight=Weight], col nofreq
 ta spurpose_farmbusi Sector [aweight=Weight], col nofreq
-tabstat sloan if sborrowed==1 [aweight=Weight], stat(n mean) by(Sector)
-
-
-********** LAST YEAR
-use"NSSO2003-Debtlastyear_HH", clear
-cls
-* Incidence of indebtedness in All India
-ta sborrowed Sector [aweight=Weight], col nofreq
-ta slender_bank Sector [aweight=Weight], col nofreq
-ta slender_moneylender Sector [aweight=Weight], col nofreq
-ta slender_relafrien Sector [aweight=Weight], col nofreq
-ta slender_fininstit Sector [aweight=Weight], col nofreq
-ta spurpose_farmbusi Sector [aweight=Weight], col nofreq
-tabstat sloan if sborrowed==1 [aweight=Weight], stat(n mean) by(Sector)
-
-cls
-* In Tamil Nadu
-keep if State==33
-ta sborrowed Sector [aweight=Weight], col nofreq
-ta slender_bank Sector [aweight=Weight], col nofreq
-ta slender_moneylender Sector [aweight=Weight], col nofreq
-ta slender_relafrien Sector [aweight=Weight], col nofreq
-ta slender_fininstit Sector [aweight=Weight], col nofreq
-ta spurpose_farmbusi Sector [aweight=Weight], col nofreq
-tabstat sloan if sborrowed==1 [aweight=Weight], stat(n mean) by(Sector)
+tabstat samount if sborrowed==1 [aweight=Weight], stat(n mean sd p50) by(Sector)
+tabstat sloan if sborrowed==1 [aweight=Weight], stat(n mean sd p50) by(Sector)
+tabstat avloan if sborrowed==1 [aweight=Weight], stat(n mean sd p50) by(Sector)
 
 ****************************************
 * END

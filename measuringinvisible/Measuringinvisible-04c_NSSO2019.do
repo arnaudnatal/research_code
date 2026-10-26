@@ -8,14 +8,14 @@ gl link = "measuringinvisible"
 *NSSO 2019
 *-----
 *do "https://raw.githubusercontent.com/arnaudnatal/folderanalysis/main/$link.do"
-do"C:/Users/Arnaud/Documents/GitHub/folderanalysis/$link.do"
+cd"C:\Users\anatal\Documents\invisible\Analysis"
 *-------------------------
 
 
 /*
 Tamil Nadu	State==33
-Viluppuram	State_District==3307
-Cuddalore	State_District==3318
+Viluppuram	District==07
+Cuddalore	District==18
 Rural		Sector==1
 */
 
@@ -33,7 +33,7 @@ label values Sector Sector
 
 ***** How many households in India?
 preserve
-keep HHID Sector State State_District MLT
+keep HHID Sector State State_District MLT District
 duplicates drop
 ta Sector
 count
@@ -94,9 +94,32 @@ Mais je ne comprends pas la diff avec la variable b14_q16 qui a moins de manquan
 drop if b12q15==.
 
 * To keep
-keep HHID Sector State State_District b12q15 MLT b12q5 b12q10 b12q4
-destring Sector State State_District, replace
+keep HHID Sector State District State_District b12q15 MLT b12q5 b12q10 b12q4
+destring Sector State State_District District, replace
 destring b12q5 b12q10, replace
+
+preserve
+keep if State==33
+keep if Sector==1
+keep if b12q4!=0
+keep if b12q4>0
+keep if b12q4!=.
+replace b12q4=b12q4/1000
+tabstat b12q4, stat(n mean sd p50)
+restore
+
+
+preserve
+keep if State==33
+keep if Sector==1
+keep if District==7 | District==18
+keep if b12q4!=0
+keep if b12q4>0
+keep if b12q4!=.
+replace b12q4=b12q4/1000
+tabstat b12q4, stat(n mean sd p50)
+restore
+
 
 * Label  sources + recat
 fre b12q5
@@ -468,19 +491,6 @@ save"NSSO2019-Debtlastyear_HH", replace
 ********** OUTSTANDING
 use"NSSO2019-Outstanding_HH", clear
 cls
-* Incidence of indebtedness in All India
-ta sborrowed Sector [aweight=MLT], col nofreq
-ta slender_bank Sector [aweight=MLT], col nofreq
-ta slender_moneylender Sector [aweight=MLT], col nofreq
-ta slender_relafrien Sector [aweight=MLT], col nofreq
-ta slender_fininstit Sector [aweight=MLT], col nofreq
-ta spurpose_housing Sector [aweight=MLT], col nofreq
-ta spurpose_education Sector [aweight=MLT], col nofreq
-ta spurpose_health Sector [aweight=MLT], col nofreq
-ta spurpose_farmbusi Sector [aweight=MLT], col nofreq
-tabstat samount if sborrowed==1 [aweight=MLT], stat(n mean) by(Sector)
-tabstat sloan if sborrowed==1 [aweight=MLT], stat(n mean) by(Sector)
-cls
 * In Tamil Nadu
 keep if State==33
 ta sborrowed Sector [aweight=MLT], col nofreq
@@ -492,29 +502,15 @@ ta spurpose_housing Sector [aweight=MLT], col nofreq
 ta spurpose_education Sector [aweight=MLT], col nofreq
 ta spurpose_health Sector [aweight=MLT], col nofreq
 ta spurpose_farmbusi Sector [aweight=MLT], col nofreq
-tabstat samount if sborrowed==1 [aweight=MLT], stat(n mean p50) by(Sector)
-tabstat sloan if sborrowed==1 [aweight=MLT], stat(n mean p50) by(Sector)
-tabstat avloan if sborrowed==1 [aweight=MLT], stat(n mean p50) by(Sector)
-
-
-********** LAST 5 YEARS
-use"NSSO2019-Debt5years_HH", clear
-cls
-* Incidence of indebtedness in All India
-ta sborrowed Sector [aweight=MLT], col nofreq
-ta slender_bank Sector [aweight=MLT], col nofreq
-ta slender_moneylender Sector [aweight=MLT], col nofreq
-ta slender_relafrien Sector [aweight=MLT], col nofreq
-ta slender_fininstit Sector [aweight=MLT], col nofreq
-ta spurpose_housing Sector [aweight=MLT], col nofreq
-ta spurpose_education Sector [aweight=MLT], col nofreq
-ta spurpose_health Sector [aweight=MLT], col nofreq
-ta spurpose_farmbusi Sector [aweight=MLT], col nofreq
-tabstat sloan if sborrowed==1 [aweight=MLT], stat(n mean) by(Sector)
+tabstat samount if sborrowed==1 [aweight=MLT], stat(n mean p50 sd) by(Sector)
+tabstat sloan if sborrowed==1 [aweight=MLT], stat(n mean p50 sd) by(Sector)
+tabstat avloan if sborrowed==1 [aweight=MLT], stat(n mean p50 sd) by(Sector)
 
 cls
-* In Tamil Nadu
+* CudVil
 keep if State==33
+keep if Sector==1
+keep if District=="07" | District=="18"
 ta sborrowed Sector [aweight=MLT], col nofreq
 ta slender_bank Sector [aweight=MLT], col nofreq
 ta slender_moneylender Sector [aweight=MLT], col nofreq
@@ -524,37 +520,9 @@ ta spurpose_housing Sector [aweight=MLT], col nofreq
 ta spurpose_education Sector [aweight=MLT], col nofreq
 ta spurpose_health Sector [aweight=MLT], col nofreq
 ta spurpose_farmbusi Sector [aweight=MLT], col nofreq
-tabstat sloan if sborrowed==1 [aweight=MLT], stat(n mean) by(Sector)
+tabstat samount if sborrowed==1 [aweight=MLT], stat(n mean p50 sd) by(Sector)
+tabstat sloan if sborrowed==1 [aweight=MLT], stat(n mean p50 sd) by(Sector)
 
-
-********** LAST YEAR
-use"NSSO2019-Debtlastyear_HH", clear
-cls
-* Incidence of indebtedness in All India
-ta sborrowed Sector [aweight=MLT], col nofreq
-ta slender_bank Sector [aweight=MLT], col nofreq
-ta slender_moneylender Sector [aweight=MLT], col nofreq
-ta slender_relafrien Sector [aweight=MLT], col nofreq
-ta slender_fininstit Sector [aweight=MLT], col nofreq
-ta spurpose_housing Sector [aweight=MLT], col nofreq
-ta spurpose_education Sector [aweight=MLT], col nofreq
-ta spurpose_health Sector [aweight=MLT], col nofreq
-ta spurpose_farmbusi Sector [aweight=MLT], col nofreq
-tabstat sloan if sborrowed==1 [aweight=MLT], stat(n mean) by(Sector)
-
-cls
-* In Tamil Nadu
-keep if State==33
-ta sborrowed Sector [aweight=MLT], col nofreq
-ta slender_bank Sector [aweight=MLT], col nofreq
-ta slender_moneylender Sector [aweight=MLT], col nofreq
-ta slender_relafrien Sector [aweight=MLT], col nofreq
-ta slender_fininstit Sector [aweight=MLT], col nofreq
-ta spurpose_housing Sector [aweight=MLT], col nofreq
-ta spurpose_education Sector [aweight=MLT], col nofreq
-ta spurpose_health Sector [aweight=MLT], col nofreq
-ta spurpose_farmbusi Sector [aweight=MLT], col nofreq
-tabstat sloan if sborrowed==1 [aweight=MLT], stat(n mean) by(Sector)
 
 ****************************************
 * END
