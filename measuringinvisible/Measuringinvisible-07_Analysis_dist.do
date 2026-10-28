@@ -5,10 +5,10 @@ cls
 *February 16, 2026
 *-----
 gl link = "measuringinvisible"
-*NSSO 2019
+*Analysis districts
 *-----
-cd "C:\Users\Arnaud\Documents\MEGA\Research\Ongoing_Measuringinvisible\Analysis"
-*cd"C:\Users\anatal\Documents\invisible\Analysis"
+*cd "C:\Users\Arnaud\Documents\MEGA\Research\Ongoing_Measuringinvisible\Analysis"
+cd"C:\Users\anatal\Documents\invisible\Analysis"
 *-------------------------
 
 
@@ -55,7 +55,7 @@ graph export "graph/Dist_incidence.png", replace
 
 ***** Graph 2: AOD
 * Mean
-gen sqrtn=sqrt(samplesize*(indebted/100))
+gen sqrtn=sqrt(indebted_n)
 gen low=mean_amount-1.96*(std_amount/sqrtn)
 gen high=mean_amount+1.96*(std_amount/sqrtn)
 
@@ -118,7 +118,7 @@ drop mean_loanamount median_loanamount std_loanamount
 
 ********** Graph 3: Number of loan
 * Mean
-gen sqrtn=sqrt(samplesize*(indebted/100))
+gen sqrtn=sqrt(indebted_n)
 gen low=mean_nbloan-1.96*(std_nbloan/sqrtn)
 gen high=mean_nbloan+1.96*(std_nbloan/sqrtn)
 
