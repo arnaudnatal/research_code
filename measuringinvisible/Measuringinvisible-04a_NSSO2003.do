@@ -48,9 +48,14 @@ replace ruralDist=0 if ruralTN==1
 replace ruralDist=1 if State==33 & Sector==1 & District==7
 replace ruralDist=1 if State==33 & Sector==1 & District==18
 
+* Urban Hyde
+gen Hyderabad=0
+replace Hyderabad=1 if Sector==2 & State==28 & District==5
+
 *
 ta ruralTN
 ta ruralDist
+ta Hyderabad
 
 save"_temp", replace
 
@@ -114,7 +119,7 @@ save"raw/NSSO2003/Visit_1_Block_15_cashloans.dta", replace
 use"raw/NSSO2003/Visit_1_Block_15_cashloans.dta", replace
 
 * Vérification qu'il y ait bien tout les prêts
-merge m:1 HHID using "_temp", keepusing(totHH ruralTN ruralDist)
+merge m:1 HHID using "_temp", keepusing(totHH ruralTN ruralDist Hyderabad)
 keep if _merge==3
 drop _merge totHH
 
@@ -217,7 +222,7 @@ replace `x'=1 if `x'>1
 duplicates drop
 
 * Merge other HH
-merge 1:1 HHID using "_temp", keepusing(ruralTN ruralDist Weight)
+merge 1:1 HHID using "_temp", keepusing(ruralTN ruralDist Hyderabad Weight)
 drop if _merge==1
 drop _merge
 

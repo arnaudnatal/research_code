@@ -8,7 +8,7 @@ gl link = "measuringinvisible"
 *Banerjee et al. (2014), AEJ
 *-----
 *do "https://raw.githubusercontent.com/arnaudnatal/folderanalysis/main/$link.do"
-cd"C:\Users\anatal\Documents\invisible\Analysis"
+cd"C:\Users\Arnaud\Documents\MEGA\Research\Ongoing_Measuringinvisible\Analysis"
 *-------------------------
 
 
@@ -55,16 +55,16 @@ cls
 *Hyderabad 2805
 keep if DISTNAME==2805
 
-
 gen outstanding=0
 replace outstanding=1 if DB4>0 & DB4!=.
 
-
 * Any loan
-fre outstanding
+ta outstanding
+ta outstanding [iweight=SWEIGHT]
 
 * Loan amount
 tabstat DB4 if outstanding==1, stat(n mean sd p50)
+tabstat DB4 if outstanding==1 [weight=SWEIGHT], stat(n mean sd p50)
 
 ****************************************
 * END
@@ -82,17 +82,14 @@ tabstat DB4 if outstanding==1, stat(n mean sd p50)
 use"NSSO2003-Outstanding_HH.dta", replace
 cls
 
-keep if Sector==2
-keep if State==28
-keep if District==5
+keep if Hyderabad==1
 
-
+ta sborrowed
 ta sborrowed [aweight=Weight]
 
 tabstat samount if sborrowed==1 [aweight=Weight], stat(n mean sd p50)
 
 ta slender_relafrien [aweight=Weight]
-
 
 ****************************************
 * END
