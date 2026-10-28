@@ -139,6 +139,7 @@ ta ruralTN
 ta ruralDist
 tabstat B15_2_q5 if ruralTN==1, stat(n mean sd p50)
 tabstat B15_2_q5 if ruralDist==1, stat(n mean sd p50)
+tabstat B15_2_q5 if Hyderabad==1, stat(n mean sd p50)
 
 
 * To keep
