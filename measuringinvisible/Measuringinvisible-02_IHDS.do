@@ -8,7 +8,8 @@ gl link = "measuringinvisible"
 *IHDS
 *-----
 *do "https://raw.githubusercontent.com/arnaudnatal/folderanalysis/main/$link.do"
-cd"C:\Users\anatal\Documents\invisible\Analysis"
+*cd"C:\Users\anatal\Documents\invisible\Analysis"
+cd"C:\Users\Arnaud\Documents\MEGA\Research\Ongoing_Measuringinvisible\Analysis"
 *-------------------------
 
 
@@ -24,27 +25,15 @@ cls
 keep if STATEID==33
 keep if URBAN2011==0
 
-* Borrowed
-ta DB1
-ta DB1 [iweight=WT]
-
-* Sources
-ta DB1A [iweight=WT]
-ta DB1B [iweight=WT]
-ta DB1C [iweight=WT]
-ta DB1D [iweight=WT]
-ta DB1E [iweight=WT]
-ta DB1F [iweight=WT]
-
-* Number
-sum DB2 if DB1==1 [iweight=WT]
-
-* Outstanding amount: How much in total does your household currently owe to others
-gen out=DB5
-recode out (.=0)
-gen outpos=out if out!=. & out>0
-tabstat out outpos [weight=WT], stat(n mean sd q)
-
+* Outstanding amount
+* How much in total does your household currently owe to others
+gen dummyout=0
+replace dummyout=1 if DB5>0 & DB5!=.
+*
+ta dummyout
+ta dummyout [iweight=WT]
+*
+tabstat DB5 if dummyout==1 [weight=WT], stat(n mean sd p50)
 
 ****************************************
 * END
@@ -66,22 +55,15 @@ cls
 keep if STATEID==33
 keep if URBAN==0
 
-* Borrowed
-gen borrowed=.
-replace borrowed=0 if DB1==0 & DB1!=.
-replace borrowed=1 if DB1>0 & DB1!=.
-ta borrowed
-ta borrowed [iweight=SWEIGHT]
-
-* Number of loans
-sum DB1 if borrowed==1 [iweight=SWEIGHT]
-
-* Outstanding amount: How much in total does your household currently owe to others
-gen out=DB4
-recode out (.=0)
-gen outpos=out if out!=. & out>0
-tabstat out outpos [weight=SWEIGHT], stat(n mean sd q)
-
+* Outstanding amount
+* How much in total does your household currently owe to others
+gen dummyout=0
+replace dummyout=1 if DB4>0 & DB4!=.
+*
+ta dummyout
+ta dummyout [iweight=SWEIGHT]
+*
+tabstat DB4 if dummyout==1 [weight=SWEIGHT], stat(n mean sd p50)
 
 ****************************************
 * END
@@ -94,7 +76,7 @@ tabstat out outpos [weight=SWEIGHT], stat(n mean sd q)
 
 
 ****************************************
-* IHDS-II: Only Rural Tamil Nadu
+* IHDS-II: Only Rural Dist
 ****************************************
 use"raw/IHDS-II-36151-0002-Data.dta", replace
 cls
@@ -114,7 +96,7 @@ fre DISTRICT
 
 
 ****************************************
-* IHDS-I: Only Cudd Vilu
+* IHDS-I: Only Rural Dist
 ****************************************
 use"raw/IHDS-I-22626-0002-Data.dta", replace
 cls
