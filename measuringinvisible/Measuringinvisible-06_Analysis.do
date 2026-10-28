@@ -5,10 +5,10 @@ cls
 *February 16, 2026
 *-----
 gl link = "measuringinvisible"
-*NSSO 2019
+*Anaysis
 *-----
-*do "https://raw.githubusercontent.com/arnaudnatal/folderanalysis/main/$link.do"
-cd"C:\Users\anatal\Documents\invisible\Analysis"
+cd "C:\Users\Arnaud\Documents\MEGA\Research\Ongoing_Measuringinvisible\Analysis"
+*cd"C:\Users\anatal\Documents\invisible\Analysis"
 *-------------------------
 
 
@@ -417,21 +417,57 @@ graph export "graph/TN_reasons.png", replace
 ****************************************
 use"Hyderabad_v01.dta", clear
 
-* IOI
-twoway (bar ioi source) ///
-, xtitle("") xlabel(1 "AIDIS" 2 "Banerjee" 3 "IHDS") ///
-ytitle("Per cent") ylabel(0(20)100) ///
-title("Incidence of indebtedness") ///
-name(ioi_hyd, replace)
+fre source
+ta source year
+recode source (3=2) (2=3)
+codebook source
+label define source_code 1"AIDIS 2002" 2"IHDS 2004" 3"BDGK 2005", modify
 
-* IOI inf
-twoway (bar ioi_inf source) ///
-, xtitle("") xlabel(1 "AIDIS" 2 "Banerjee") ///
-ytitle("Per cent") ylabel(0(20)100) ///
-title("Incidence of informal indebtedness") ///
-name(ioiinf_hyd, replace)
+***** Graph 1: IOI
+twoway ///
+(bar ioi source, barw(.6)) ///
+, xlabel(1 "AIDIS 2002" 2 "IHDS 2004" 3 "BDGK 2005") xtitle("") ///
+ylabel(0(10)100) ytitle("Per cent") ///
+title("Incidence of indebtedness") legend(off) name(ioi, replace)
+graph export "graph/Hy_incidence.png", as(png) replace
+
+***** Graph 2: Amount
+* Mean
+gen sqrtn=sqrt(nbHH*(ioi/100))
+gen low=amount_mean-1.96*(amount_sd/sqrtn)
+gen high=amount_mean+1.96*(amount_sd/sqrtn)
+
+twoway ///
+(bar amount_mean source, barw(.6)) ///
+(rcap low high source) ///
+, xlabel(1 "AIDIS 2002" 2 "IHDS 2004" 3 "BDGK 2005") xtitle("") ///
+ylabel(0(20)140) ytitle("1,000 rupees") ///
+title("Mean") legend(off) name(mean, replace)
+
+* Median
+twoway ///
+(bar amount_med source, barw(.6)) ///
+, xlabel(1 "AIDIS 2002" 2 "IHDS 2004" 3 "BDGK 2005") xtitle("") ///
+ylabel(0(20)140) ytitle("1,000 rupees") ///
+title("Median") legend(off) name(med, replace)
+
+*
+graph combine mean med, col(2) title("Household outstanding debt")
+graph export "graph/Hy_outstanding.png", as(png) replace
 
 
+***** Graph 3: IOI inf
+preserve
+drop if source==2
+recode source (3=2)
+label define source_code 1"AIDIS 2002" 2"BDGK 2005", modify
+twoway ///
+(bar ioi_inf source, barw(.6)) ///
+, xlabel(1 "AIDIS 2002" 2 "BDGK 2005") xtitle("") ///
+ylabel(0(10)100) ytitle("Per cent") ///
+title("Incidence of informal indebtedness") legend(off) name(ioi, replace)
+graph export "graph/Hy_incidenceinformal.png", as(png) replace
+restore
 
 ****************************************
 * END

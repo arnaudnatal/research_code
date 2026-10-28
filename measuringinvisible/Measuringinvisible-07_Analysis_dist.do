@@ -7,8 +7,8 @@ cls
 gl link = "measuringinvisible"
 *NSSO 2019
 *-----
-*do "https://raw.githubusercontent.com/arnaudnatal/folderanalysis/main/$link.do"
-cd"C:\Users\anatal\Documents\invisible\Analysis"
+cd "C:\Users\Arnaud\Documents\MEGA\Research\Ongoing_Measuringinvisible\Analysis"
+*cd"C:\Users\anatal\Documents\invisible\Analysis"
 *-------------------------
 
 
