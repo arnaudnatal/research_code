@@ -78,9 +78,9 @@ drop mean_nbloan median_nbloan mean_loanamount median_loanamount
 
 ***** Graph 1: IOI
 twoway ///
-(connected indebted year if source==1, color(plr1)) ///
-(connected indebted year if source==2, color(plb1)) ///
-(connected indebted year if source==3, color(ply1)) ///
+(connected indebted year if source==1, color(plr1) lpattern(shortdash)) ///
+(connected indebted year if source==2, color(plb1) lpattern(solid)) ///
+(connected indebted year if source==3, color(ply1) lpattern(dash)) ///
 , ylabel(0(10)100) xlabel(2000(4)2020) ///
 ytitle("Per cent") xtitle("") ///
 legend(order(1 "IHDS" 2 "AIDIS" 3 "RUME-NEEMSIS") pos(6) col(3)) ///
@@ -96,11 +96,11 @@ gen low=mean_amount-1.96*(std_amount/sqrtn)
 gen high=mean_amount+1.96*(std_amount/sqrtn)
 
 twoway ///
-(connected mean_amount year if source==1, color(plr1)) ///
+(connected mean_amount year if source==1, color(plr1) lpattern(shortdash)) ///
 (rarea low high year if source==1, color(plr1%10)) ///
-(connected mean_amount year if source==2, color(plb1)) ///
+(connected mean_amount year if source==2, color(plb1) lpattern(solid)) ///
 (rarea low high year if source==2, color(plb1%10)) ///
-(connected mean_amount year if source==3, color(ply1)) ///
+(connected mean_amount year if source==3, color(ply1) lpattern(dash)) ///
 (rarea low high year if source==3, color(ply1%10)) ///
 , ylabel(0(20)200) xlabel(2000(4)2020) ///
 ytitle("1,000 rupees") xtitle("") ///
@@ -109,9 +109,9 @@ title("Mean") name(aodci, replace)
 
 * Median
 twoway ///
-(connected median_amount year if source==1, color(plr1)) ///
-(connected median_amount year if source==2, color(plb1)) ///
-(connected median_amount year if source==3, color(ply1)) ///
+(connected median_amount year if source==1, color(plr1) lpattern(shortdash)) ///
+(connected median_amount year if source==2, color(plb1) lpattern(solid)) ///
+(connected median_amount year if source==3, color(ply1) lpattern(dash)) ///
 , ylabel(0(20)200) xlabel(2000(4)2020) ///
 ytitle("1,000 rupees") xtitle("") ///
 legend(order(1 "IHDS" 2 "AIDIS" 3 "RUME-NEEMSIS") pos(6) col(3)) ///
@@ -159,9 +159,9 @@ gen low=mean_nbloan-1.96*(std_nbloan/sqrtn)
 gen high=mean_nbloan+1.96*(std_nbloan/sqrtn)
 
 twoway ///
-(connected mean_nbloan year if source==2, color(plb1)) ///
+(connected mean_nbloan year if source==2, color(plb1) lpattern(solid)) ///
 (rarea low high year if source==2, color(plb1%10)) ///
-(connected mean_nbloan year if source==3, color(ply1)) ///
+(connected mean_nbloan year if source==3, color(ply1) lpattern(dash)) ///
 (rarea low high year if source==3, color(ply1%10)) ///
 , ylabel(0(1)8) xlabel(2000(4)2020) ///
 ytitle("Number of loans") xtitle("") ///
@@ -170,8 +170,8 @@ title("Mean") name(nbmean, replace)
 
 * Median
 twoway ///
-(connected median_nbloan year if source==2, color(plb1)) ///
-(connected median_nbloan year if source==3, color(ply1)) ///
+(connected median_nbloan year if source==2, color(plb1) lpattern(solid)) ///
+(connected median_nbloan year if source==3, color(ply1) lpattern(dash)) ///
 , ylabel(0(1)8) xlabel(2000(4)2020) ///
 ytitle("Number of loans") xtitle("") ///
 legend(order(1 "AIDIS" 2 "RUME-NEEMSIS") pos(6) col(2)) ///
@@ -217,9 +217,9 @@ gen low=mean_loanamount-1.96*(std_loanamount/sqrtn)
 gen high=mean_loanamount+1.96*(std_loanamount/sqrtn)
 
 twoway ///
-(connected mean_loanamount year if source==2, color(plb1)) ///
+(connected mean_loanamount year if source==2, color(plb1) lpattern(solid)) ///
 (rarea low high year if source==2, color(plb1%10)) ///
-(connected mean_loanamount year if source==3, color(ply1)) ///
+(connected mean_loanamount year if source==3, color(ply1) lpattern(dash)) ///
 (rarea low high year if source==3, color(ply1%10)) ///
 , ylabel(0(20)120) xlabel(2000(4)2020) ///
 ytitle("1,000 rupees") xtitle("") ///
@@ -228,8 +228,8 @@ title("Mean") name(loanmean, replace)
 
 * Median
 twoway ///
-(connected median_loanamount year if source==2, color(plb1)) ///
-(connected median_loanamount year if source==3, color(ply1)) ///
+(connected median_loanamount year if source==2, color(plb1) lpattern(solid)) ///
+(connected median_loanamount year if source==3, color(ply1) lpattern(dash)) ///
 , ylabel(0(20)120) xlabel(2000(4)2020) ///
 ytitle("1,000 rupees") xtitle("") ///
 legend(order(1 "AIDIS" 2 "RUME-NEEMSIS") pos(6) col(2)) ///
@@ -269,28 +269,28 @@ drop if source==1
 ********** Graph 5: Lenders
 * Banks
 twoway ///
-(connected l_bank year if source==2, color(plb1)) ///
-(connected l_bank year if source==3, color(ply1)) ///
+(connected l_bank year if source==2, color(plb1) lpattern(solid)) ///
+(connected l_bank year if source==3, color(ply1) lpattern(dash)) ///
 , ylabel(0(20)100) xlabel(2000(5)2020) ///
 ytitle("Per cent") xtitle("") ///
 legend(order(1 "AIDIS" 2 "RUME-NEEMSIS") pos(6) col(2)) ///
 title("Banks") name(bank, replace)
 * Moneylender
 twoway ///
-(connected l_moneylender year if source==2, color(plb1)) ///
-(connected l_moneylender year if source==3, color(ply1)) ///
+(connected l_moneylender year if source==2, color(plb1) lpattern(solid)) ///
+(connected l_moneylender year if source==3, color(ply1) lpattern(dash)) ///
 , ylabel(0(20)100) xlabel(2000(5)2020) ///
 ytitle("Per cent") xtitle("") ///
 legend(order(1 "AIDIS" 2 "RUME-NEEMSIS") pos(6) col(2)) ///
 title("Moneylenders") name(ml, replace)
 * Relatives
 twoway ///
-(connected l_relatives year if source==2, color(plb1)) ///
-(connected l_relatives year if source==3, color(ply1)) ///
+(connected l_relatives year if source==2, color(plb1) lpattern(solid)) ///
+(connected l_relatives year if source==3, color(ply1) lpattern(dash)) ///
 , ylabel(0(20)100) xlabel(2000(5)2020) ///
 ytitle("Per cent") xtitle("") ///
 legend(order(1 "AIDIS" 2 "RUME-NEEMSIS") pos(6) col(2)) ///
-title("Relatives") name(relatives, replace)
+title("Relatives/Friends") name(relatives, replace)
 * Combine
 grc1leg bank ml relatives, title("Incidence of indebtedness") col(3)
 graph export "graph/TN_lenders.png", replace
@@ -335,8 +335,8 @@ drop if source==1
 preserve
 drop if year==2002
 twoway ///
-(connected r_house year if source==2, color(plb1)) ///
-(connected r_house year if source==3, color(ply1)) ///
+(connected r_house year if source==2, color(plb1) lpattern(solid)) ///
+(connected r_house year if source==3, color(ply1) lpattern(dash)) ///
 , ylabel(0(20)100) xlabel(2010(2)2020) ///
 ytitle("Per cent") xtitle("") ///
 legend(order(1 "AIDIS" 2 "RUME-NEEMSIS") pos(6) col(2)) ///
@@ -346,8 +346,8 @@ restore
 preserve
 drop if year==2002
 twoway ///
-(connected r_educ year if source==2, color(plb1)) ///
-(connected r_educ year if source==3, color(ply1)) ///
+(connected r_educ year if source==2, color(plb1) lpattern(solid)) ///
+(connected r_educ year if source==3, color(ply1) lpattern(dash)) ///
 , ylabel(0(20)100) xlabel(2010(2)2020) ///
 ytitle("Per cent") xtitle("") ///
 legend(order(1 "AIDIS" 2 "RUME-NEEMSIS") pos(6) col(2)) ///
@@ -357,8 +357,8 @@ restore
 preserve
 drop if year==2002
 twoway ///
-(connected r_health year if source==2, color(plb1)) ///
-(connected r_health year if source==3, color(ply1)) ///
+(connected r_health year if source==2, color(plb1) lpattern(solid)) ///
+(connected r_health year if source==3, color(ply1) lpattern(dash)) ///
 , ylabel(0(20)100) xlabel(2010(2)2020) ///
 ytitle("Per cent") xtitle("") ///
 legend(order(1 "AIDIS" 2 "RUME-NEEMSIS") pos(6) col(2)) ///
@@ -366,8 +366,8 @@ title("Health") name(heal, replace)
 restore
 * Farm/business
 twoway ///
-(connected r_farmbusi year if source==2, color(plb1)) ///
-(connected r_farmbusi year if source==3, color(ply1)) ///
+(connected r_farmbusi year if source==2, color(plb1) lpattern(solid)) ///
+(connected r_farmbusi year if source==3, color(ply1) lpattern(dash)) ///
 , ylabel(0(20)100) xlabel(2000(5)2020) ///
 ytitle("Per cent") xtitle("") ///
 legend(order(1 "AIDIS" 2 "RUME-NEEMSIS") pos(6) col(2)) ///
