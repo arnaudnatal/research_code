@@ -37,6 +37,12 @@ d2(d_satt d_educ) w2(0.1667 0.1667) ///
 d3(d_elct d_wtr d_sani d_hsg d_ckfl d_asst d_bank) w3(0.04762 0.04762 0.04762 0.04762 0.04762 0.04762 0.04762) ///
 [pw=wgt], cutoff(0.33)
 
+* H
+ta d_mpoor12 [aw=wgt]
+
+* M0
+sum mpi_cens12 [w=wgt]
+
 
 ********** By area
 forvalues i=1/2 {
@@ -434,9 +440,35 @@ drop scontrib1 scontrib2
 Theil, GE(1)=Within+Between
 */
 
+cls
+********** Caste nationale
+use"Indiv_mpi.dta", clear
+
+* Censuré
+theildeco mpi_cens12 [w=wgt], by(head_caste)
+
+
+ineqdeco mpi_cens12 [pw=wgt], by(head_caste)
+*
+elmo mpi_cens12 [aweight=wgt], by(head_jatis)
+matrix list r(R)
+
+* Non censuré
+ineqdeco dp_score12 [pw=wgt], by(head_caste)
+*
+elmo dp_score12 [aweight=wgt], by(head_caste)
+matrix list r(R)
+
+
+
+
+
+
+
 
 ********** Caste par Etat
 use"Indiv_mpi.dta", clear
+
 *
 fre loc_state
 * 
@@ -599,6 +631,98 @@ log close
 
 
 
+
+****************************************
+* Boxplot
+****************************************
+
+********** MPI by caste
+use"Indiv_mpi.dta", clear
+* Weighted score
+gen mpi_cens12_wgt=mpi_cens12*wgt
+* Collapse
+collapse (sum) mpi_cens12_wgt wgt (count) n_indiv=mpi_cens12, by(head_caste)
+* MPI
+gen mpi_caste=mpi_cens12_wgt/wgt
+
+
+********** MPI by jatis
+use"Indiv_mpi.dta", clear
+* Weighted score
+gen mpi_cens12_wgt=mpi_cens12*wgt
+* Collapse
+collapse (sum) mpi_cens12_wgt wgt (count) n_indiv=mpi_cens12, by(head_jatis)
+* MPI
+gen mpi_jatis=mpi_cens12_wgt/wgt
+
+
+********** MPI by state
+use"Indiv_mpi.dta", clear
+* Weighted score
+gen mpi_cens12_wgt=mpi_cens12*wgt
+* Collapse
+collapse (sum) mpi_cens12_wgt wgt (count) n_indiv=mpi_cens12, by(loc_state)
+* MPI
+gen mpi_state=mpi_cens12_wgt/wgt
+
+
+********** MPI by caste and state
+use"Indiv_mpi.dta", clear
+* Weighted score
+gen mpi_cens12_wgt=mpi_cens12*wgt
+* Collapse
+collapse (sum) mpi_cens12_wgt wgt (count) n_indiv=mpi_cens12, by(loc_state head_caste)
+* MPI
+gen mpi_state_caste=mpi_cens12_wgt/wgt
+
+
+********** MPI by jatis and state
+use"Indiv_mpi.dta", clear
+*drop if head_jatis==.
+*drop if head_jatis==1895
+
+* Weighted score
+gen mpi_cens12_wgt=mpi_cens12*wgt
+* Collapse
+collapse (sum) mpi_cens12_wgt wgt (count) n_indiv=mpi_cens12, by(loc_state head_jatis)
+* MPI jatis state
+gen mpi_jatis_state=mpi_cens12_wgt/wgt
+* MPI state
+bysort loc_state: egen sum_wgt=total(wgt)
+bysort loc_state: egen sum_mpi_wgt=total(mpi_cens12_wgt)
+gen mpi_state=sum_mpi_wgt/sum_wgt
+* Part pop jatis
+gen pop_share=wgt/sum_wgt
+
+
+* Variance
+gen contribution=pop_share*(mpi_jatis_state-mpi_state)^2
+bysort loc_state: egen var_between=total(contribution)
+
+* SD
+gen sd_between=sqrt(var_between)
+
+* CV
+gen cv_between=sd_between/mpi_state if mpi_state>0
+
+* Res
+preserve
+bysort loc_state: keep if _n == 1
+list loc_state mpi_state sd_between cv_between, noobs
+restore
+
+
+*** Boxplot
+preserve
+drop if n_indiv<100
+graph hbox mpi_jatis_state, over(loc_state, sort(1)) noout
+restore
+
+*
+
+
+****************************************
+* END
 
 
 
