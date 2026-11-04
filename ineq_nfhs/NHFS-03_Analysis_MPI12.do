@@ -645,52 +645,85 @@ collapse (sum) mpi_cens12_wgt wgt (count) n_indiv=mpi_cens12, by(head_caste)
 * MPI
 gen mpi_caste=mpi_cens12_wgt/wgt
 
+*
+keep if n_indiv>1000
+graph bar mpi_caste, over(head_caste, sort(1))
+restore
+
+
+
+
 
 ********** MPI by jatis
 use"Indiv_mpi.dta", clear
+
+drop if head_jatis==.
+drop if head_jatis==1895
+rename mpi_cens12 depriv
+rename d_mpoor12 poor
+
 * Weighted score
-gen mpi_cens12_wgt=mpi_cens12*wgt
+gen depriv_wgt=depriv*wgt
+gen depriv2_wgt=depriv^2*wgt
+gen wgt_poor=wgt*poor
+
+
 * Collapse
-collapse (sum) mpi_cens12_wgt wgt (count) n_indiv=mpi_cens12, by(head_jatis)
-* MPI
-gen mpi_jatis=mpi_cens12_wgt/wgt
+collapse (sum) depriv_wgt depriv2_wgt wgt wgt_poor (count) n_indiv=depriv (sum) n_poor = poor, by(head_jatis)
 
 
-********** MPI by state
-use"Indiv_mpi.dta", clear
-* Weighted score
-gen mpi_cens12_wgt=mpi_cens12*wgt
-* Collapse
-collapse (sum) mpi_cens12_wgt wgt (count) n_indiv=mpi_cens12, by(loc_state)
-* MPI
-gen mpi_state=mpi_cens12_wgt/wgt
+* MPI par jatis
+gen mpi_jatis=depriv_wgt/wgt
 
+* Score moyen parmi les pauvres (intensité A)
+gen A_jatis=depriv_wgt/wgt_poor if wgt_poor>0
 
-********** MPI by caste and state
-use"Indiv_mpi.dta", clear
-* Weighted score
-gen mpi_cens12_wgt=mpi_cens12*wgt
-* Collapse
-collapse (sum) mpi_cens12_wgt wgt (count) n_indiv=mpi_cens12, by(loc_state head_caste)
-* MPI
-gen mpi_state_caste=mpi_cens12_wgt/wgt
+* Variance des scores parmi les pauvres
+gen var_poor=depriv2_wgt/wgt_poor-A_jatis^2 if wgt_poor>0
+
+* Variance total
+gen double var_all=depriv2_wgt/wgt-mpi_jatis^2
+
+* Scatter : Figure 11 : MPI x Variance parmi les pauvres https://hdr.undp.org/system/files/documents/mpi2019publication.pdf
+keep if n_poor>100
+twoway (scatter var_poor mpi_jatis)
+
+* Bar
+preserve
+keep if n_indiv>1000
+graph bar mpi_jatis, over(head_jatis, sort(1))
+restore
+
+* Box
+preserve
+drop if n_indiv<100
+graph hbox mpi_jatis, noout
+restore
+
+tabstat mpi_jatis, stat(p10 p25 p75 p90)
 
 
 ********** MPI by jatis and state
 use"Indiv_mpi.dta", clear
-*drop if head_jatis==.
-*drop if head_jatis==1895
+
+drop if head_jatis==.
+drop if head_jatis==1895
+rename mpi_cens12 depriv
 
 * Weighted score
-gen mpi_cens12_wgt=mpi_cens12*wgt
+gen depriv_wgt=depriv*wgt
+
 * Collapse
-collapse (sum) mpi_cens12_wgt wgt (count) n_indiv=mpi_cens12, by(loc_state head_jatis)
+collapse (sum) depriv_wgt wgt (count) n_indiv=depriv, by(loc_state head_jatis)
+
 * MPI jatis state
-gen mpi_jatis_state=mpi_cens12_wgt/wgt
+gen mpi_jatis_state=depriv_wgt/wgt
+
 * MPI state
 bysort loc_state: egen sum_wgt=total(wgt)
-bysort loc_state: egen sum_mpi_wgt=total(mpi_cens12_wgt)
+bysort loc_state: egen sum_mpi_wgt=total(depriv_wgt)
 gen mpi_state=sum_mpi_wgt/sum_wgt
+
 * Part pop jatis
 gen pop_share=wgt/sum_wgt
 
@@ -718,7 +751,9 @@ drop if n_indiv<100
 graph hbox mpi_jatis_state, over(loc_state, sort(1)) noout
 restore
 
-*
+*** Scatter
+drop if n_indiv<100
+twoway (scatter cv_jatis_state mpi_jatis_state)
 
 
 ****************************************
