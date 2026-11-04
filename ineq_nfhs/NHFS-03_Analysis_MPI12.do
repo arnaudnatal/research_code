@@ -646,6 +646,7 @@ collapse (sum) mpi_cens12_wgt wgt (count) n_indiv=mpi_cens12, by(head_caste)
 gen mpi_caste=mpi_cens12_wgt/wgt
 
 *
+preserve
 keep if n_indiv>1000
 graph bar mpi_caste, over(head_caste, sort(1))
 restore
