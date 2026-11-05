@@ -432,7 +432,7 @@ drop scontrib1 scontrib2
 
 
 
-
+/*
 ****************************************
 * Intra/inter Jatis sur score censuré
 ****************************************
@@ -458,14 +458,14 @@ ineqdeco dp_score12 [pw=wgt], by(head_caste)
 *
 elmo dp_score12 [aweight=wgt], by(head_caste)
 matrix list r(R)
+*/
 
 
 
 
 
 
-
-
+/*
 ********** Caste par Etat
 use"Indiv_mpi.dta", clear
 
@@ -488,7 +488,7 @@ postclose handle
 use `results', clear
 list
 log close
-
+*/
 
 
 
@@ -633,31 +633,155 @@ log close
 
 
 ****************************************
-* Boxplot
+* Stat nation by caste
 ****************************************
-
-********** MPI by caste
 use"Indiv_mpi.dta", clear
+
+drop if head_jatis==1
+drop if head_jatis==.
+drop if head_jatis==1895
+rename mpi_cens12 depriv
+rename d_mpoor12 poor
+
 * Weighted score
-gen mpi_cens12_wgt=mpi_cens12*wgt
+gen depriv_wgt=depriv*wgt
+gen depriv2_wgt=depriv^2*wgt
+gen wgt_poor=wgt*poor
+
+
 * Collapse
-collapse (sum) mpi_cens12_wgt wgt (count) n_indiv=mpi_cens12, by(head_caste)
+collapse (sum) depriv_wgt depriv2_wgt wgt wgt_poor (count) n_indiv=depriv (sum) n_poor = poor, by(head_caste)
+
 * MPI
-gen mpi_caste=mpi_cens12_wgt/wgt
+gen mpi=depriv_wgt/wgt
 
+* H
+gen H=wgt_poor/wgt
+
+* A
+gen A=depriv_wgt/wgt_poor if wgt_poor>0
+
+
+* Variance des scores parmi les pauvres
+gen var_poor=depriv2_wgt/wgt_poor-A^2 if wgt_poor>0
+
+* Variance total
+gen double var_all=depriv2_wgt/wgt-mpi^2
+
+
+***** Graph
+keep if n_indiv>50
+
+*** Bar with MPI
+cumul mpi_jatis, gen(cmpi)
 *
-preserve
-keep if n_indiv>1000
-graph bar mpi_caste, over(head_caste, sort(1))
-restore
+twoway ///
+(line cmpi mpi_jatis, sort xline(30)) ///
+, xtitle("Multidimensional poverty index") xlabel(0(.1).6) ///
+ytitle("Cumulative per cent of detailed caste groups") ylabel(0(.1)1) ///
+scale(1.1) name(cdf, replace)
+
+*** MPI x Variance parmi les pauvres 
+* (Figure 11) https://hdr.undp.org/system/files/documents/mpi2019publication.pdf
+twoway (scatter var_poor mpi_jatis, msymbol(oh) mcolor(black%80)) ///
+, xlabel(0(.1).6) xtitle("Multidimensional poverty index") ///
+ytitle("Inequality among multidimensionally poor people" "(variance of deprivation scores)") ///
+scale(1.1) name(fig11, replace)
+
+*** A x H
+twoway ///
+(scatter A_jatis H_jatis, msymbol(oh) mcolor(black%80)) ///
+(function y=0.05/x, range(0.05 .2) lcolor(gs12) lpattern(dash)) ///
+(function y=0.10/x, range(0.10 .5) lcolor(gs12) lpattern(dash)) ///
+(function y=0.20/x, range(0.20 1) lcolor(gs12) lpattern(dash)) ///
+(function y=0.30/x, range(0.30 1) lcolor(gs12) lpattern(dash)) ///
+, xlabel(0(.1)1) xtitle("Multidimensional poverty headcount (H)") ///
+ytitle("Average deprivation intensity among the poor (A)") ///
+legend(off) ///
+scale(1.1) name(axh, replace)
+
+
+****************************************
+* END
 
 
 
 
 
-********** MPI by jatis
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Stat nation by caste and jatis
+****************************************
 use"Indiv_mpi.dta", clear
 
+drop if head_jatis==1
+drop if head_jatis==.
+drop if head_jatis==1895
+rename mpi_cens12 depriv
+rename d_mpoor12 poor
+
+* Weighted score
+gen depriv_wgt=depriv*wgt
+gen depriv2_wgt=depriv^2*wgt
+gen wgt_poor=wgt*poor
+
+
+* Collapse
+collapse (sum) depriv_wgt depriv2_wgt wgt wgt_poor (count) n_indiv=depriv (sum) n_poor = poor, by(head_jatis head_caste)
+
+* MPI
+gen mpi=depriv_wgt/wgt
+
+* H
+gen H=wgt_poor/wgt
+
+* A
+gen A=depriv_wgt/wgt_poor if wgt_poor>0
+
+
+***** Graph
+keep if n_indiv>50
+
+
+*** Violin
+violinplot mpi, over(head_caste) hor left fill ///
+now ///
+xlabel(0(.1).7) xtitle("Multidimenional poverty index") ///
+scale(1.1) name(violin, replace)
+
+
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Stat nation by jatis
+****************************************
+use"Indiv_mpi.dta", clear
+
+drop if head_jatis==1
 drop if head_jatis==.
 drop if head_jatis==1895
 rename mpi_cens12 depriv
@@ -672,38 +796,80 @@ gen wgt_poor=wgt*poor
 * Collapse
 collapse (sum) depriv_wgt depriv2_wgt wgt wgt_poor (count) n_indiv=depriv (sum) n_poor = poor, by(head_jatis)
 
+* MPI
+gen mpi=depriv_wgt/wgt
 
-* MPI par jatis
-gen mpi_jatis=depriv_wgt/wgt
+* H
+gen H=wgt_poor/wgt
 
-* Score moyen parmi les pauvres (intensité A)
-gen A_jatis=depriv_wgt/wgt_poor if wgt_poor>0
+* A
+gen A=depriv_wgt/wgt_poor if wgt_poor>0
+
+* Test
+gen _test=mpi-(H*A)
+tabstat _test, stat(mean min max)
+drop _test
 
 * Variance des scores parmi les pauvres
-gen var_poor=depriv2_wgt/wgt_poor-A_jatis^2 if wgt_poor>0
+gen var_poor=depriv2_wgt/wgt_poor-A^2 if wgt_poor>0
 
 * Variance total
-gen double var_all=depriv2_wgt/wgt-mpi_jatis^2
-
-* Scatter : Figure 11 : MPI x Variance parmi les pauvres https://hdr.undp.org/system/files/documents/mpi2019publication.pdf
-keep if n_poor>100
-twoway (scatter var_poor mpi_jatis)
-
-* Bar
-preserve
-keep if n_indiv>1000
-graph bar mpi_jatis, over(head_jatis, sort(1))
-restore
-
-* Box
-preserve
-drop if n_indiv<100
-graph hbox mpi_jatis, noout
-restore
-
-tabstat mpi_jatis, stat(p10 p25 p75 p90)
+gen double var_all=depriv2_wgt/wgt-mpi^2
 
 
+***** Graph
+keep if n_indiv>50
+
+*** Bar with MPI
+cumul mpi, gen(cmpi)
+*
+twoway ///
+(line cmpi mpi, sort xline(30)) ///
+, xtitle("Multidimensional poverty index") xlabel(0(.1).6) ///
+ytitle("Cumulative per cent of detailed caste groups") ylabel(0(.1)1) ///
+scale(1.1) name(cdf, replace)
+
+*** MPI x Variance parmi les pauvres 
+* (Figure 11) https://hdr.undp.org/system/files/documents/mpi2019publication.pdf
+twoway (scatter var_poor mpi, msymbol(oh) mcolor(black%80)) ///
+, xlabel(0(.1).6) xtitle("Multidimensional poverty index") ///
+ytitle("Inequality among multidimensionally poor people" "(variance of deprivation scores)") ///
+scale(1.1) name(fig11, replace)
+
+*** A x H
+twoway ///
+(scatter A H, msymbol(oh) mcolor(black%80)) ///
+(function y=0.05/x, range(0.05 .2) lcolor(gs12) lpattern(dash)) ///
+(function y=0.10/x, range(0.10 .5) lcolor(gs12) lpattern(dash)) ///
+(function y=0.20/x, range(0.20 1) lcolor(gs12) lpattern(dash)) ///
+(function y=0.30/x, range(0.30 1) lcolor(gs12) lpattern(dash)) ///
+, xlabel(0(.1)1) xtitle("Multidimensional poverty headcount (H)") ///
+ytitle("Average deprivation intensity among the poor (A)") ///
+legend(off) ///
+scale(1.1) name(axh, replace)
+
+
+****************************************
+* END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+* Stat by states
+****************************************
 ********** MPI by jatis and state
 use"Indiv_mpi.dta", clear
 
