@@ -119,37 +119,16 @@ replace cat_ratio=1 if ratioMPIsample<1
 replace cat_ratio=2 if ratioMPIsample>=1 & ratioMPIsample<1.5
 replace cat_ratio=3 if ratioMPIsample>=1.5
 
-* Total share between
-label define cat_sharebetween 0"Missing" 1"Less than 5%" 2"5-10%" 3"10-20%" 4"20-30%" 5"30-40%" 6"40-50%" 7"50-60%" 8"60-70%" 9"70-80%" 10"80-90%" 11"90% or more"
-foreach x in caste_tot_sharebetween tot_sharebetween sc_sharebetween st_sharebetween obc_sharebetween oth_sharebetween {
-gen cat_`x'=.
-replace cat_`x'=1 if `x'<5
-replace cat_`x'=2 if `x'>=5 & `x'<10
-replace cat_`x'=3 if `x'>=10 & `x'<20
-replace cat_`x'=4 if `x'>=20 & `x'<30
-replace cat_`x'=5 if `x'>=30 & `x'<40
-replace cat_`x'=6 if `x'>=40 & `x'<50
-replace cat_`x'=7 if `x'>=50 & `x'<60
-replace cat_`x'=8 if `x'>=60 & `x'<70
-replace cat_`x'=9 if `x'>=70 & `x'<80
-replace cat_`x'=10 if `x'>=80 & `x'<90
-replace cat_`x'=11 if `x'>=90
-replace cat_`x'=0 if `x'==.
-label values cat_`x' cat_sharebetween
-}
-
-* MPI x Inegalité inter jatis
-gen mpiXjatis=.
-label define mpiXjatis 1"Low MPI / Low ineq" 2"Low MPI / High ineq" 3"High MPI / Low ineq" 4"High MPI / High ineq"
-label value mpiXjatis mpiXjatis
-ta m0 // 6
-ta tot_sharebetween // 12.5
-replace mpiXjatis=1 if m0<6 & tot_sharebetween<12.5
-replace mpiXjatis=2 if m0<6 & tot_sharebetween>12.5
-replace mpiXjatis=3 if m0>6 & tot_sharebetween<12.5
-replace mpiXjatis=4 if m0>6 & tot_sharebetween>12.5
-
-ta mpiXjatis
+* CV
+ta cv_jatis_wgt
+gen cat_cv=.
+label define cat_cv 1"Less than 0.5" 2"0.5-1" 3"1-2" 4"2 or more"
+label values cat_cv cat_cv
+replace cat_cv=1 if cv_jatis_wgt<0.5
+replace cat_cv=2 if cv_jatis_wgt>=0.5 & cv_jatis_wgt<1
+replace cat_cv=3 if cv_jatis_wgt>=1 & cv_jatis_wgt<2
+replace cat_cv=4 if cv_jatis_wgt>=2
+ta cat_cv
 
 *
 save"india_state_v3", replace
@@ -186,8 +165,7 @@ clmethod(unique) ///
 fcolor("`colors'") ///
 ocolor(white ..) osize(0.05 ..)  ///
 title("Multidimensional poverty index", size(medium)) ///
-legstyle(2) legend(pos(5) size(2) region(fcolor(gs15)))   ///
-note("Source: NFHS-4 (2015-2016); author's calculations.", size(vsmall))
+legstyle(2) legend(pos(5) size(2) region(fcolor(gs15)))  
 graph export "graph/map_mpi_pradhan.png", as(png) replace
 
 *** MPI det
@@ -199,8 +177,7 @@ clmethod(unique) ///
 fcolor("`colors'") ///
 ocolor(white ..) osize(0.05 ..)  ///
 title("Multidimensional poverty index", size(medium)) ///
-legstyle(2) legend(pos(5) size(2) region(fcolor(gs15)))   ///
-note("Source: NFHS-4 (2015-2016); author's calculations.", size(vsmall))
+legstyle(2) legend(pos(5) size(2) region(fcolor(gs15))) 
 graph export "graph/map_mpi_alt.png", as(png) replace
 
 *** H
@@ -211,9 +188,8 @@ spmap cat_h using india_coord, id(id) ///
 clmethod(unique) ///
 fcolor("`colors'") ///
 ocolor(white ..) osize(0.05 ..)  ///
-title("Headcount (H)", size(medium)) ///
-legstyle(2) legend(pos(5) size(2) region(fcolor(gs15)))   ///
-note("Source: NFHS-4 (2015-2016); author's calculations.", size(vsmall))
+title("Multidimensional poverty headcount (H)", size(medium)) ///
+legstyle(2) legend(pos(5) size(2) region(fcolor(gs15))) 
 graph export "graph/map_h.png", as(png) replace
 
 *** A
@@ -224,9 +200,8 @@ spmap cat_a using india_coord, id(id) ///
 clmethod(unique) ///
 fcolor("`colors'") ///
 ocolor(white ..) osize(0.05 ..)  ///
-title("Intensity (A)", size(medium)) ///
-legstyle(2) legend(pos(5) size(2) region(fcolor(gs15)))   ///
-note("Source: NFHS-4 (2015-2016); author's calculations.", size(vsmall))
+title("Average deprivation intensity among the poor  (A)", size(medium)) ///
+legstyle(2) legend(pos(5) size(2) region(fcolor(gs15))) 
 graph export "graph/map_a.png", as(png) replace
 
 *** Contrib MPI
@@ -237,12 +212,34 @@ spmap cat_ratio using india_coord, id(id) ///
 clmethod(unique) ///
 fcolor("`colors'") ///
 ocolor(white ..) osize(0.05 ..)  ///
-title("Contrib MPI / Contrib pop", size(medium)) ///
-legstyle(2) legend(pos(5) size(2) region(fcolor(gs15)))   ///
-note("Source: NFHS-4 (2015-2016); author's calculations.", size(vsmall))
+title("Ratio of the state's share of the national multidimensional" "poverty index and its share of the population", size(medium)) ///
+legstyle(2) legend(pos(5) size(2) region(fcolor(gs15))) ///
+note("{it:Note:} The indicator is calculated as each state's share of aggregate national multidimensional poverty divided by its share of the national population.", size(tiny))
 graph export "graph/map_contrib.png", as(png) replace
 
+*** CV
+colorpalette viridis, n(4) nograph reverse
+local colors `r(p)'
+*
+spmap cat_cv using india_coord, id(id) ///
+clmethod(unique) ///
+fcolor("`colors'") ///
+ocolor(white ..) osize(0.05 ..)  ///
+title("Coefficient of variation of the multidimensional" "poverty index across detailed" "caste groups", size(medium)) ///
+legstyle(2) legend(pos(5) size(2) region(fcolor(gs15))) 
+graph export "graph/map_cvjatis.png", as(png) replace
 
+*** SD
+colorpalette viridis, n(5) nograph reverse
+local colors `r(p)'
+*
+spmap sd_jatis_wgt using india_coord, id(id) ///
+clmethod(q) cln(5) ///
+fcolor("`colors'") ///
+ocolor(white ..) osize(0.05 ..)  ///
+title("Standard deviation of the multidimensional" "poverty index across detailed caste groups", size(medium)) ///
+legstyle(2) legend(pos(5) size(2) region(fcolor(gs15))) 
+graph export "graph/map_sdjatis.png", as(png) replace
 
 ****************************************
 * END
