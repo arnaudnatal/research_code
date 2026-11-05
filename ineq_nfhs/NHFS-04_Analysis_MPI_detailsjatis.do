@@ -27,13 +27,32 @@ cd"$directory"
 
 
 
-
-
-
-
 ****************************************
 * Details for certains jatis
 ****************************************
+
+********** Details on the graphs
+use"Indiv_mpi.dta", clear
+
+gen detail=0
+replace detail=1 if head_jatis==1951
+replace detail=1 if head_jatis==481
+replace detail=1 if head_jatis==144
+replace detail=1 if head_jatis==1319
+
+preserve
+keep if detail==1
+mpi ///
+d1(d_cm d_nutr d_anc) w1(0.08333 0.1667 0.08333) ///
+d2(d_satt d_educ) w2(0.1667 0.1667) ///
+d3(d_elct d_wtr d_sani d_hsg d_ckfl d_asst d_bank) w3(0.04762 0.04762 0.04762 0.04762 0.04762 0.04762 0.04762) ///
+[pw=wgt], cutoff(0.33) by(head_jatis)
+matlist e(by_ind)
+putexcel set "_jatis.xlsx", replace
+putexcel A1=matrix(e(by_ind)), names
+restore
+
+
 
 ********** Highest MPI
 use"Indiv_mpi.dta", clear
@@ -51,8 +70,7 @@ replace highest=1 if head_jatis==1298
 replace highest=1 if head_jatis==692
 
 preserve
-*keep if highest==1
-keep if head_jatis==692
+keep if highest==1
 mpi ///
 d1(d_cm d_nutr d_anc) w1(0.08333 0.1667 0.08333) ///
 d2(d_satt d_educ) w2(0.1667 0.1667) ///
@@ -169,7 +187,13 @@ replace numerous=1 if head_jatis==1707
 replace numerous=1 if head_jatis==1840
 replace numerous=1 if head_jatis==1988
 
-collapse (sum) wgt (mean) lowest highest numerous, by(head_jatis)
+gen detail=0
+replace detail=1 if head_jatis==1951
+replace detail=1 if head_jatis==481
+replace detail=1 if head_jatis==144
+replace detail=1 if head_jatis==1319
+
+collapse (sum) wgt (mean) lowest highest numerous detail, by(head_jatis)
 
 egen sum_wgt=sum(wgt)
 gen share_wgt=wgt*100/sum_wgt
@@ -177,6 +201,7 @@ gen share_wgt=wgt*100/sum_wgt
 list head_jatis share_wgt if lowest==1
 list head_jatis share_wgt if highest==1
 list head_jatis share_wgt if numerous==1
+list head_jatis share_wgt if detail==1
 
 
 ****************************************
@@ -205,7 +230,6 @@ replace contrib_i`i'=contrib_i`i'*100
 }
 *
 save"data_jatis.dta", replace
-
 
 ****************************************
 * END
@@ -633,3 +657,131 @@ graph export "graph/det_lowest.png", as(png) replace
 
 
 
+
+****************************************
+* Graph jatis: Details
+****************************************
+use"data_jatis", clear
+
+set scheme white_tableau
+
+replace jatis="GADIA" if jatis=="GADIA LOHAR"
+
+keep if cat=="details"
+sencode jatis, gen(jatis_enc) gsort(m0)
+drop jatis
+rename jatis_enc jatis
+order jatis, first
+
+* H
+replace h=h*100
+graph bar h, over(jatis, sort(1) label(angle(45))) ///
+ytitle("Per cent") ///
+title("Multidimensional poverty headcount", size(small)) name(h, replace)
+
+* MPI
+graph bar m0, over(jatis, sort(1) label(angle(45))) ///
+ytitle("Multidimensional poverty index") ///
+title("Multidimensional poverty index", size(small)) name(mpi, replace)
+
+* Contribution of dimensions
+gen scontrib1=contrib_d1+contrib_d2
+gen scontrib2=scontrib1+contrib_d3
+*
+twoway ///
+(bar contrib_d1 jatis) ///
+(rbar contrib_d1 scontrib1 jatis) ///
+(rbar scontrib1 scontrib2 jatis) ///
+(function y=33, range(0 4) lcolor(black) lpattern(dash)) ///
+(function y=66, range(0 4) lcolor(black) lpattern(dash)) ///
+, xlabel(1/4, valuelabel angle(45)) xtitle("") ///
+ylabel(0(20)100) ytitle("Per cent") ///
+legend(order(1 "Health" 2 "Educ" 3 "Std liv") pos(6) col(3)) ///
+title("Contributions to the multidimensional poverty index", size(small)) ///
+name(dim, replace)
+drop scontrib1 scontrib2
+
+* Contribution of indic for health
+gen contribtot=contrib_i1+contrib_i2+contrib_i3
+forvalues i=1/3 {
+gen alt_contrib_i`i'=100*(contrib_i`i'/contribtot)
+}
+gen scontrib1=alt_contrib_i1+alt_contrib_i2
+gen scontrib2=scontrib1+alt_contrib_i3
+*
+twoway ///
+(bar alt_contrib_i1 jatis) ///
+(rbar alt_contrib_i1 scontrib1 jatis) ///
+(rbar scontrib1 scontrib2 jatis) ///
+(function y=25, range(0 4) lcolor(black) lpattern(dash)) ///
+(function y=75, range(0 4) lcolor(black) lpattern(dash)) ///
+, xlabel(1/4, valuelabel angle(45)) xtitle("") ///
+ylabel(0(20)100) ytitle("Per cent") ///
+legend(order(1 "Child mort" 2 "Nutr" 3 "Mat hea") pos(6) col(3)) ///
+title("Contribution to the health dimension", size(small)) ///
+name(health, replace)
+drop alt_contrib_i1 alt_contrib_i2 alt_contrib_i3
+drop scontrib1 scontrib2
+drop contribtot
+
+* Contribution of indic for education
+gen contribtot=contrib_i4+contrib_i5
+forvalues i=4/5 {
+gen alt_contrib_i`i'=100*(contrib_i`i'/contribtot)
+}
+gen scontrib1=alt_contrib_i4+alt_contrib_i5
+*
+twoway ///
+(bar alt_contrib_i4 jatis) ///
+(rbar alt_contrib_i4 scontrib1 jatis) ///
+(function y=50, range(0 4) lcolor(black) lpattern(dash)) ///
+, xlabel(1/4, valuelabel angle(45)) xtitle("") ///
+ylabel(0(20)100) ytitle("Per cent") ///
+legend(order(1 "School att" 2 "Years of school") pos(6) col(2)) ///
+title("Contribution to the education dimension", size(small)) ///
+name(educ, replace)
+drop alt_contrib_i4 alt_contrib_i5
+drop scontrib1
+drop contribtot
+
+* Contribution of indic for std liv
+gen contribtot=contrib_i6+contrib_i7+contrib_i8+contrib_i9+contrib_i10+contrib_i11+contrib_i12
+forvalues i=6/12 {
+gen alt_contrib_i`i'=100*(contrib_i`i'/contribtot)
+}
+gen scontrib1=alt_contrib_i6+alt_contrib_i7
+gen scontrib2=scontrib1+alt_contrib_i8
+gen scontrib3=scontrib2+alt_contrib_i9
+gen scontrib4=scontrib3+alt_contrib_i10
+gen scontrib5=scontrib4+alt_contrib_i11
+gen scontrib6=scontrib5+alt_contrib_i12
+*
+twoway ///
+(bar alt_contrib_i6 jatis) ///
+(rbar alt_contrib_i6 scontrib1 jatis) ///
+(rbar scontrib1 scontrib2 jatis) ///
+(rbar scontrib2 scontrib3 jatis) ///
+(rbar scontrib3 scontrib4 jatis) ///
+(rbar scontrib4 scontrib5 jatis) ///
+(rbar scontrib5 scontrib6 jatis) ///
+(function y=14.2857, range(0 4) lcolor(black) lpattern(dash)) ///
+(function y=28.5714, range(0 4) lcolor(black) lpattern(dash)) ///
+(function y=42.8571, range(0 4) lcolor(black) lpattern(dash)) ///
+(function y=57.1429, range(0 4) lcolor(black) lpattern(dash)) ///
+(function y=71.4286, range(0 4) lcolor(black) lpattern(dash)) ///
+(function y=85.7143, range(0 4) lcolor(black) lpattern(dash)) ///
+, xlabel(1/4, valuelabel angle(45)) xtitle("") ///
+ylabel(0(20)100) ytitle("Per cent") ///
+legend(order(1 "Elec" 2 "Water" 3 "Sanit" 4 "Hous" 5 "Cook" 6 "Assets" 7 "Bank") pos(6) col(3)) ///
+title("Contribution to the std liv dimension", size(small)) ///
+name(stdliv, replace)
+drop alt_contrib_i6 alt_contrib_i7 alt_contrib_i8 alt_contrib_i9 alt_contrib_i10 alt_contrib_i11 alt_contrib_i12
+drop scontrib1 scontrib2 scontrib3 scontrib4 scontrib5 scontrib6
+drop contribtot
+
+* 
+graph combine mpi h dim health educ stdliv
+graph export "graph/det_details.png", as(png) replace
+
+****************************************
+* END

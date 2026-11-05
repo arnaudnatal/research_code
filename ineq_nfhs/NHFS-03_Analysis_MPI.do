@@ -14,6 +14,7 @@ macro drop _all
 ********** Path to working directory directory
 global directory = "C:\Users\Arnaud\Documents\MEGA\Research\Ongoing_JatisInequalities\Analysis"
 cd"$directory"
+set scheme white_tableau
 *cd"C:\Users\anatal\Documents\nfhs"
 *-------------------------
 
@@ -326,30 +327,54 @@ graph export "graph/cdf_jatis.png", as(png) replace
 
 *** MPI x Variance parmi les pauvres 
 * (Figure 11) https://hdr.undp.org/system/files/documents/mpi2019publication.pdf
+gen jati_label=""
+replace jati_label="Varli" if head_jatis==1951
+replace jati_label="Gadia Lohar" if head_jatis==481
+replace jati_label="Bantar" if head_jatis==144
+replace jati_label="Nai" if head_jatis==1319
+*
 twoway ///
 (scatter var_poor mpi, msymbol(oh) mcolor(black%80)) ///
+(scatter var_poor mpi if inlist(head_jatis, 1951, 481, 144, 1319), msymbol(oh) mcolor(red%80) mlabel(jati_label) mlabposition(3)  mlabsize(small) mlabcolor(red)) ///
 (qfit var_poor mpi, lcolor(gs12)) ///
 , xlabel(0(.1).6) xtitle("Multidimensional poverty index") ///
 ytitle("Inequality among multidimensionally poor people" "(variance of deprivation scores)") legend(off) ///
 scale(1.1) name(fig11, replace) ///
 note("{it:Note:} For detailed caste groups comprising more than 50 individuals. Detailed caste groups are not" "weighted: each caste, regardless of its population size, counts as one statistical individual.", size(vsmall))
 graph export "graph/mpixvar_jatis.png", as(png) replace
-
+/*
+preserve
+keep if mpi>.25
+keep if mpi<.3
+sort var_poor
+restore
+*/
 
 *** A x H
+*gen jati_label=""
+*replace jati_label="Gadia Lohar" if head_jatis==481
+*
 twoway ///
 (scatter A H, msymbol(oh) mcolor(black%80)) ///
-(function y=0.05/x, range(0.05 .2) lcolor(gs12) lpattern(dash)) ///
+(scatter A H if inlist(head_jatis, 144, 481, 1951, 1319), msymbol(oh) mcolor(red%80) mlabel(jati_label) mlabposition(3)  mlabsize(small) mlabcolor(red)) ///
+(function y=0.05/x, range(0.05 .2) lcolor(gs12) lpattern(solid)) ///
 (function y=0.10/x, range(0.10 .5) lcolor(gs12) lpattern(dash)) ///
-(function y=0.20/x, range(0.20 1) lcolor(gs12) lpattern(dash)) ///
-(function y=0.30/x, range(0.30 1) lcolor(gs12) lpattern(dash)) ///
+(function y=0.20/x, range(0.20 1) lcolor(gs12) lpattern(shortdash)) ///
+(function y=0.30/x, range(0.30 1) lcolor(gs12) lpattern(longdash)) ///
 , xlabel(0(.1)1) xtitle("Multidimensional poverty headcount (H)") ///
 ytitle("Average deprivation intensity among the poor (A)") ///
-legend(off) ///
+legend(order(2 "MPI=0.05" 3 "MPI=0.10" 4 "MPI=0.20" 5 "MPI=0.30") col(4) position(6)) ///
 scale(1.1) name(axh, replace) ///
 note("{it:Note:} For detailed caste groups comprising more than 50 individuals. Detailed caste groups are not" "weighted: each caste, regardless of its population size, counts as one statistical individual.", size(vsmall))
 graph export "graph/hxa_jatis.png", as(png) replace
-
+/*
+preserve
+keep if mpi>.27
+keep if mpi<.33
+sort wgt
+keep if head_jatis==1951 | head_jatis==1319
+restore
+*/
 
 ***** Details for jatis with the highest MPI
 preserve
