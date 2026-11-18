@@ -363,7 +363,7 @@ twoway ///
 (function y=0.30/x, range(0.30 1) lcolor(gs12) lpattern(longdash)) ///
 , xlabel(0(.1)1) xtitle("Multidimensional poverty headcount (H)") ///
 ytitle("Average deprivation intensity among the poor (A)") ///
-legend(order(2 "MPI=0.05" 3 "MPI=0.10" 4 "MPI=0.20" 5 "MPI=0.30") col(4) position(6)) ///
+legend(order(3 "MPI=0.05" 4 "MPI=0.10" 5 "MPI=0.20" 6 "MPI=0.30") col(4) position(6)) ///
 scale(1.1) name(axh, replace) ///
 note("{it:Note:} For detailed caste groups comprising more than 50 individuals. Detailed caste groups are not" "weighted: each caste, regardless of its population size, counts as one statistical individual.", size(vsmall))
 graph export "graph/hxa_jatis.png", as(png) replace
